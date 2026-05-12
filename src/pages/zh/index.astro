@@ -1,0 +1,299 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import providers from '../../data/providers.json';
+import { t } from '../../i18n/utils';
+
+const locale = 'zh';
+
+// Sort by overall rank
+const sortedProviders = [...providers].sort((a, b) => a.overallRank - b.overallRank);
+const domesticProviders = sortedProviders.filter(p => p.category === 'domestic');
+const intlProviders = sortedProviders.filter(p => p.category === 'international');
+
+// JSON-LD: FAQPage for homepage
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": t(locale, 'home.faq.q1'),
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": t(locale, 'home.faq.a1').replace(/<[^>]+>/g, '')
+      }
+    },
+    {
+      "@type": "Question",
+      "name": t(locale, 'home.faq.q2'),
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": t(locale, 'home.faq.a2').replace(/<[^>]+>/g, '')
+      }
+    },
+    {
+      "@type": "Question",
+      "name": t(locale, 'home.faq.q3'),
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": t(locale, 'home.faq.a3').replace(/<[^>]+>/g, '')
+      }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title="AI API Token 价格对比与深度测评 | APIRank"
+  description="APIRank：最全面的 AI API Token 价格对比网站。收录 OpenAI、Claude、DeepSeek、Google Gemini、阿里通义、百度文心、腾讯混元、字节豆包、智谱 GLM、月之暗面 Kimi 等主流 AI 厂商的最新价格、免费额度、国内可用性，帮你找到最划算的 AI API 方案。"
+>
+  <!-- JSON-LD FAQ -->
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center max-w-3xl mx-auto">
+        <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          {t(locale, 'home.hero.title')}
+          <span class="text-blue-600">{t(locale, 'home.hero.titleHighlight')}</span>
+          {t(locale, 'home.hero.titleSuffix')}
+        </h1>
+        <p class="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed">
+          {t(locale, 'home.hero.subtitle')}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a href="#providers" class="btn-primary text-lg py-3 px-8">
+            {t(locale, 'home.hero.ctaCompare')}
+          </a>
+          <a href="/zh/tutorials" class="btn-secondary text-lg py-3 px-8">
+            {t(locale, 'home.hero.ctaTutorials')}
+          </a>
+        </div>
+      </div>
+      
+      <!-- Quick Stats -->
+      <div class="mt-12 grid grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto text-center">
+        <div>
+          <div class="text-3xl sm:text-4xl font-bold text-blue-600">10+</div>
+          <div class="text-sm text-gray-500 mt-1">{t(locale, 'home.stats.providers')}</div>
+        </div>
+        <div>
+          <div class="text-3xl sm:text-4xl font-bold text-green-600">50+</div>
+          <div class="text-sm text-gray-500 mt-1">{t(locale, 'home.stats.models')}</div>
+        </div>
+        <div>
+          <div class="text-3xl sm:text-4xl font-bold text-indigo-600">{t(locale, 'home.stats.updateFrequency')}</div>
+          <div class="text-sm text-gray-500 mt-1">Updates</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AdSense Position 1: After Hero -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="adsense-placeholder h-28 rounded-lg"></div>
+  </section>
+
+  <!-- Domestic Providers Section -->
+  <section id="providers" class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-3 mb-8">
+        <span class="text-2xl">🇨🇳</span>
+        <h2 class="text-2xl font-bold text-gray-900">{t(locale, 'home.domestic.title')}</h2>
+        <span class="badge badge-success text-xs">{t(locale, 'home.domestic.badge')}</span>
+      </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {domesticProviders.map((provider) => (
+          <a href={`/zh/providers/${provider.id}`} class="provider-card group">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                {provider.nameCn}
+              </h3>
+              <span class={`badge text-xs ${provider.overallRank <= 3 ? 'badge-success' : 'bg-gray-100 text-gray-600'}`}>
+                #{provider.overallRank}
+              </span>
+            </div>
+            <p class="text-sm text-gray-500">{provider.name}</p>
+            <div class="mt-3 space-y-1 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-500">{t(locale, 'common.input')}</span>
+                <span class="font-medium text-gray-900">{provider.pricing.input}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">{t(locale, 'common.output')}</span>
+                <span class="font-medium text-gray-900">{provider.pricing.output}</span>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              <div class="flex items-center gap-2">
+                <span class="text-green-600 text-xs font-medium">{provider.availabilityCN}</span>
+                <span class="flex-1"></span>
+                <span class="text-xs text-gray-400">{t(locale, 'common.freeTier')}</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">{provider.freeTier}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- International Providers Section -->
+  <section class="py-12 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-3 mb-8">
+        <span class="text-2xl">🌍</span>
+        <h2 class="text-2xl font-bold text-gray-900">{t(locale, 'home.intl.title')}</h2>
+        <span class="badge badge-warning text-xs">{t(locale, 'home.intl.badge')}</span>
+      </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {intlProviders.map((provider) => (
+          <a href={`/zh/providers/${provider.id}`} class="provider-card group">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                {provider.nameCn}
+              </h3>
+              <span class="badge bg-blue-100 text-blue-700 text-xs">
+                #{provider.overallRank}
+              </span>
+            </div>
+            <p class="text-sm text-gray-500">{provider.name}</p>
+            <div class="mt-3 space-y-1 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-500">{t(locale, 'common.input')}</span>
+                <span class="font-medium text-gray-900">{provider.pricing.input}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-500">{t(locale, 'common.output')}</span>
+                <span class="font-medium text-gray-900">{provider.pricing.output}</span>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              <div class="flex items-center gap-2">
+                <span class={`text-xs font-medium ${provider.availabilityCN.includes('❌') ? 'text-red-500' : 'text-yellow-500'}`}>
+                  {provider.availabilityCN}
+                </span>
+                <span class="flex-1"></span>
+                <span class="text-xs text-gray-400">{t(locale, 'common.freeTier')}</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">{provider.freeTier}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- AdSense Position 2: After Provider Grid -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="adsense-placeholder h-28 rounded-lg"></div>
+  </section>
+
+  <!-- Price Comparison Table -->
+  <section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">{t(locale, 'home.table.title')}</h2>
+      
+      <div class="overflow-x-auto">
+        <table class="table-token">
+          <thead>
+            <tr>
+              <th>{t(locale, 'home.tableCols.vendor')}</th>
+              <th>{t(locale, 'home.tableCols.models')}</th>
+              <th>{t(locale, 'home.tableCols.input')}</th>
+              <th>{t(locale, 'home.tableCols.output')}</th>
+              <th>{t(locale, 'home.tableCols.cnAvailable')}</th>
+              <th>{t(locale, 'home.tableCols.freeTier')}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedProviders.map((p) => (
+              <tr>
+                <td class="font-semibold text-gray-900">{p.nameCn}</td>
+                <td class="text-gray-600">{p.models.slice(0, 2).join(', ')}</td>
+                <td class="font-mono text-sm">{p.pricing.input}</td>
+                <td class="font-mono text-sm">{p.pricing.output}</td>
+                <td>
+                  <span class={`badge text-xs ${p.availabilityCN.includes('✅') ? 'badge-success' : p.availabilityCN.includes('⚠️') ? 'badge-warning' : 'badge-danger'}`}>
+                    {p.availabilityCN}
+                  </span>
+                </td>
+                <td class="text-xs text-gray-500">{p.freeTier}</td>
+                <td>
+                  <a href={`/zh/providers/${p.id}`} class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                    {t(locale, 'common.viewDetails')}
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="py-12 bg-gray-50">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">{t(locale, 'home.faq.title')}</h2>
+      
+      <div class="space-y-6">
+        <details class="bg-white rounded-lg border border-gray-200 p-5 group">
+          <summary class="font-semibold text-gray-900 cursor-pointer list-none flex justify-between items-center">
+            {t(locale, 'home.faq.q1')}
+            <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <p class="mt-3 text-gray-600 leading-relaxed" set:html={t(locale, 'home.faq.a1')} />
+        </details>
+        
+        <details class="bg-white rounded-lg border border-gray-200 p-5 group">
+          <summary class="font-semibold text-gray-900 cursor-pointer list-none flex justify-between items-center">
+            {t(locale, 'home.faq.q2')}
+            <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <p class="mt-3 text-gray-600 leading-relaxed" set:html={t(locale, 'home.faq.a2')} />
+        </details>
+        
+        <details class="bg-white rounded-lg border border-gray-200 p-5 group">
+          <summary class="font-semibold text-gray-900 cursor-pointer list-none flex justify-between items-center">
+            {t(locale, 'home.faq.q3')}
+            <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <p class="mt-3 text-gray-600 leading-relaxed" set:html={t(locale, 'home.faq.a3')} />
+        </details>
+        
+        <details class="bg-white rounded-lg border border-gray-200 p-5 group">
+          <summary class="font-semibold text-gray-900 cursor-pointer list-none flex justify-between items-center">
+            {t(locale, 'home.faq.q4')}
+            <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+          </summary>
+          <p class="mt-3 text-gray-600 leading-relaxed" set:html={t(locale, 'home.faq.a4')} />
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-16 bg-blue-600">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4">
+        {t(locale, 'home.cta.title')}
+      </h2>
+      <p class="text-blue-100 mb-8">
+        {t(locale, 'home.cta.subtitle')}
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="#providers" class="bg-white text-blue-600 font-semibold py-3 px-8 rounded-lg hover:bg-blue-50 transition-colors">
+          {t(locale, 'home.cta.btnCompare')}
+        </a>
+        <a href="/zh/tutorials" class="bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg hover:bg-blue-800 transition-colors">
+          {t(locale, 'home.cta.btnTutorials')}
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

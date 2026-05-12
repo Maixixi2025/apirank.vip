@@ -1,19 +1,31 @@
 ---
+import { t, type Locale } from '../i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const pathWithoutLang = Astro.url.pathname.replace(/^\/(en|zh)/, '') || '/';
+const enPath = `/en${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
+const zhPath = `/zh${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
+
 const navLinks = [
-  { href: '/', label: '首页' },
-  { href: '/providers', label: 'AI 厂商' },
-  { href: '/tutorials', label: '使用教程' },
-  { href: '/about', label: '关于我们' },
+  { href: `/${locale}`, label: t(locale, 'nav.home') },
+  { href: `/${locale}/providers`, label: t(locale, 'nav.providers') },
+  { href: `/${locale}/tutorials`, label: t(locale, 'nav.tutorials') },
+  { href: `/${locale}/about`, label: t(locale, 'nav.about') },
 ];
 
-const currentPath = Astro.url.pathname;
+const currentPath = Astro.url.pathname.replace(/^\/(en|zh)/, '') || '/';
 ---
 
 <header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-2">
+      <a href={`/${locale}`} class="flex items-center gap-2">
         <svg class="w-8 h-8 text-blue-600" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="32" height="32" rx="8" fill="currentColor"/>
           <path d="M8 16L14 10L20 16L14 22L8 16Z" fill="white"/>
@@ -29,7 +41,7 @@ const currentPath = Astro.url.pathname;
             href={link.href}
             class:list={[
               'text-sm font-medium transition-colors',
-              currentPath === link.href
+              currentPath === link.href.replace(/^\/(en|zh)/, '') || currentPath === link.href
                 ? 'text-blue-600'
                 : 'text-gray-600 hover:text-blue-600'
             ]}
@@ -41,9 +53,22 @@ const currentPath = Astro.url.pathname;
       
       <!-- Lang Switch + CTA -->
       <div class="flex items-center gap-3">
-        <a href="/en" class="text-xs text-gray-500 hover:text-blue-600">EN / 中文</a>
-        <a href="/go/deepseek" class="btn-primary text-sm py-1.5 px-3">
-          免费试用
+        <div class="flex items-center gap-1 text-xs border border-gray-200 rounded-md p-0.5">
+          <a
+            href={enPath}
+            class:list={['px-2 py-1 rounded font-medium transition-colors', locale === 'en' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-blue-600']}
+          >
+            EN
+          </a>
+          <a
+            href={zhPath}
+            class:list={['px-2 py-1 rounded font-medium transition-colors', locale === 'zh' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-blue-600']}
+          >
+            中文
+          </a>
+        </div>
+        <a href={`/${locale}/go/deepseek`} class="btn-primary text-sm py-1.5 px-3">
+          {locale === 'zh' ? '免费试用' : 'Try Free'}
         </a>
       </div>
     </div>

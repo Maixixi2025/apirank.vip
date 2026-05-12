@@ -1,25 +1,11 @@
 ---
-const footerLinks = {
-  'AI 厂商': [
-    { label: 'OpenAI', href: '/providers/openai' },
-    { label: 'Anthropic', href: '/providers/anthropic' },
-    { label: 'Google AI', href: '/providers/google' },
-    { label: 'DeepSeek', href: '/providers/deepseek' },
-    { label: '阿里云通义', href: '/providers/aliyun' },
-  ],
-  '资源': [
-    { label: '使用教程', href: '/tutorials' },
-    { label: 'Token 价格对比', href: '/providers' },
-    { label: 'AI 最新资讯', href: '/news' },
-  ],
-  '关于': [
-    { label: '关于我们', href: '/about' },
-    { label: '联系我们', href: '/about#contact' },
-    { label: '隐私政策', href: '/privacy' },
-    { label: '免责声明', href: '/disclaimer' },
-  ],
-};
+import { t, type Locale } from '../i18n/utils';
 
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
@@ -37,38 +23,54 @@ const year = new Date().getFullYear();
           <span class="font-bold text-lg text-white">APIRank</span>
         </div>
         <p class="text-sm text-gray-400 leading-relaxed">
-          专注 AI API 价格对比与深度测评，帮开发者找到最划算的 AI Token 方案。
+          {t(locale, 'footer.tagline')}
         </p>
         <p class="text-xs text-gray-500 mt-4">
-          京ICP备XXXXXXXX号 | © {year} APIRank
+          © {year} APIRank
         </p>
       </div>
       
       <!-- Links -->
-      {Object.entries(footerLinks).map(([category, links]) => (
-        <div>
-          <h3 class="font-semibold text-white mb-3 text-sm">{category}</h3>
-          <ul class="space-y-2">
-            {links.map(link => (
-              <li>
-                <a href={link.href} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      <div>
+        <h3 class="font-semibold text-white mb-3 text-sm">
+          {locale === 'zh' ? '热门厂商' : 'Top Providers'}
+        </h3>
+        <ul class="space-y-2">
+          <li><a href={`/${locale}/providers/openai`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">OpenAI</a></li>
+          <li><a href={`/${locale}/providers/anthropic`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">Anthropic</a></li>
+          <li><a href={`/${locale}/providers/google`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">Google AI</a></li>
+          <li><a href={`/${locale}/providers/deepseek`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">DeepSeek</a></li>
+        </ul>
+      </div>
+      
+      <div>
+        <h3 class="font-semibold text-white mb-3 text-sm">
+          {locale === 'zh' ? '资源' : 'Resources'}
+        </h3>
+        <ul class="space-y-2">
+          <li><a href={`/${locale}/tutorials`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">{t(locale, 'nav.tutorials')}</a></li>
+          <li><a href={`/${locale}/providers`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">{t(locale, 'nav.providers')}</a></li>
+        </ul>
+      </div>
+      
+      <div>
+        <h3 class="font-semibold text-white mb-3 text-sm">
+          {t(locale, 'nav.about')}
+        </h3>
+        <ul class="space-y-2">
+          <li><a href={`/${locale}/about`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">{t(locale, 'nav.about')}</a></li>
+        </ul>
+      </div>
     </div>
     
     <!-- Bottom -->
     <div class="border-t border-gray-800 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-xs text-gray-500">
-        本网站部分内容来自公开数据，价格信息仅供参考，购买前请以官网最新定价为准。
+        {t(locale, 'footer.disclaimer')}
       </p>
       <div class="flex gap-4">
-        <a href="/sitemap.xml" class="text-xs text-gray-500 hover:text-blue-400">Sitemap</a>
-        <a href="/llms.txt" class="text-xs text-gray-500 hover:text-blue-400">LLMs.txt</a>
+        <a href={`/${locale}/sitemap.xml`} class="text-xs text-gray-500 hover:text-blue-400">Sitemap</a>
+        <a href={`/${locale}/llms.txt`} class="text-xs text-gray-500 hover:text-blue-400">LLMs.txt</a>
       </div>
     </div>
   </div>

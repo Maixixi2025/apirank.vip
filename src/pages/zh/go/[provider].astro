@@ -1,0 +1,46 @@
+---
+export function getStaticPaths() {
+  const providers = ['openai', 'anthropic', 'deepseek', 'google', 'aliyun', 'baidu', 'kimi', 'zhipu', 'tencent', 'bytedance'];
+  return providers.map(provider => ({ params: { provider } }));
+}
+
+const { provider } = Astro.params;
+
+// Official URLs (for now, affiliate URLs will be added when approved)
+const urls = {
+  openai: 'https://platform.openai.com',
+  anthropic: 'https://www.anthropic.com',
+  deepseek: 'https://platform.deepseek.com',
+  google: 'https://ai.google.dev',
+  aliyun: 'https://help.aliyun.com/zh/dashscope',
+  baidu: 'https://cloud.baidu.com/doc/wenxin',
+  kimi: 'https://platform.moonshot.cn',
+  zhipu: 'https://open.bigmodel.cn',
+  tencent: 'https://cloud.tencent.com/document/product',
+  bytedance: 'https://www.volcengine.com/product/doubao',
+};
+
+const targetUrl = urls[provider] || 'https://apirank.vip';
+---
+
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="refresh" content={`0;url=${targetUrl}`} />
+  <link rel="canonical" href={targetUrl} />
+  <title>跳转至 {provider}...</title>
+  <script define:vars={{ targetUrl }}>
+    window.location.replace(targetUrl);
+  </script>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gray-50">
+  <div class="text-center">
+    <div class="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+    <p class="text-gray-600 mb-2">正在跳转到 {provider}...</p>
+    <p class="text-sm text-gray-400">
+      如果没有跳转，请 <a href={targetUrl} class="text-blue-600 hover:underline">点击这里</a>
+    </p>
+  </div>
+</body>
+</html>

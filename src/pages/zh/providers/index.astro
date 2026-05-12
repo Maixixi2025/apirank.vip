@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import providers from '../../../data/providers.json';
+import { t } from '../../../i18n/utils';
+
+const locale = 'zh';
+const sortedProviders = [...providers].sort((a, b) => a.overallRank - b.overallRank);
+---
+
+<BaseLayout
+  title="AI API Token 价格对比 | APIRank"
+  description="收录 OpenAI、Claude、DeepSeek、Gemini、通义千问、文心一言等 10+ AI 厂商的 API Token 价格对比，实时更新，帮你找到最划算的 AI 方案。"
+>
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">{t(locale, 'nav.home')}</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">{t(locale, 'nav.providers')}</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-900 mb-3">{t(locale, 'providers.title')}</h1>
+      <p class="text-gray-600">{t(locale, 'providers.subtitle')}</p>
+    </div>
+
+    <!-- Full Comparison Table -->
+    <div class="mb-12 overflow-x-auto">
+      <table class="table-token bg-white rounded-xl overflow-hidden shadow-sm">
+        <thead>
+          <tr class="bg-gray-50">
+            <th>#</th>
+            <th>{t(locale, 'home.tableCols.vendor')}</th>
+            <th>{t(locale, 'home.tableCols.models')}</th>
+            <th>{t(locale, 'home.tableCols.input')}</th>
+            <th>{t(locale, 'home.tableCols.output')}</th>
+            <th>{t(locale, 'home.tableCols.cnAvailable')}</th>
+            <th>{t(locale, 'home.tableCols.freeTier')}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedProviders.map((p) => (
+            <tr>
+              <td>
+                <span class={`badge text-xs ${p.overallRank <= 3 ? 'badge-success' : 'bg-gray-100 text-gray-600'}`}>
+                  #{p.overallRank}
+                </span>
+              </td>
+              <td class="font-semibold text-gray-900">{p.nameCn}</td>
+              <td class="text-gray-600 text-sm">{p.models.slice(0, 2).join(', ')}</td>
+              <td class="font-mono text-sm">{p.pricing.input}</td>
+              <td class="font-mono text-sm">{p.pricing.output}</td>
+              <td>
+                <span class={`badge text-xs ${p.availabilityCN.includes('✅') ? 'badge-success' : p.availabilityCN.includes('⚠️') ? 'badge-warning' : 'badge-danger'}`}>
+                  {p.availabilityCN}
+                </span>
+              </td>
+              <td class="text-xs text-gray-500">{p.freeTier}</td>
+              <td>
+                <a href={`/zh/providers/${p.id}`} class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                  {t(locale, 'common.viewDetails')}
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</BaseLayout>

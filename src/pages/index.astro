@@ -1,50 +1,41 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import providers from '../data/providers.json';
+import { t } from '../i18n/utils';
 
-// Sort by overall rank
+const locale = 'en';
+
 const sortedProviders = [...providers].sort((a, b) => a.overallRank - b.overallRank);
 const domesticProviders = sortedProviders.filter(p => p.category === 'domestic');
 const intlProviders = sortedProviders.filter(p => p.category === 'international');
 
-// JSON-LD: FAQPage for homepage
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
     {
       "@type": "Question",
-      "name": "哪个 AI API 最便宜？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "按单位性能比，DeepSeek-V3 和智谱 GLM-4 性价比最高。豆包价格最低但模型能力有限。建议根据具体任务选择。"
-      }
+      "name": "Which AI API is the cheapest?",
+      "acceptedAnswer": { "@type": "Answer", "text": "By absolute price, Doubao and DeepSeek-V3 are the cheapest. But considering model capability, DeepSeek offers the best value — currently the most recommended low-cost high-performance option." }
     },
     {
       "@type": "Question",
-      "name": "国内可以直连的 AI API 有哪些？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "DeepSeek、阿里云通义、百度文心、腾讯混元、字节豆包、智谱 GLM、月之暗面 Kimi 都支持国内直连，无需代理。"
-      }
+      "name": "Can I use OpenAI and Claude API in China?",
+      "acceptedAnswer": { "@type": "Answer", "text": "In theory yes, but a proxy service is required. Direct access from China is restricted or extremely slow. We recommend using domestic direct-access options (like DeepSeek, Zhipu GLM) or an API proxy service." }
     },
     {
       "@type": "Question",
-      "name": "如何申请 OpenAI API？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "访问 platform.openai.com 注册账号，充值后即可使用。需要代理访问，国内用户需要 VPN 或代理服务。"
-      }
+      "name": "Is DeepSeek API actually usable? How is the quality?",
+      "acceptedAnswer": { "@type": "Answer", "text": "DeepSeek-V3 and DeepSeek-R1 have reached GPT-4 level capability, even stronger in coding and math reasoning. DeepSeek-R1 supports chain-of-thought output with transparent reasoning." }
     }
   ]
 };
 ---
 
 <BaseLayout
-  title="AI API Token 价格对比与深度测评 | APIRank"
-  description="APIRank：最全面的 AI API Token 价格对比网站。收录 OpenAI、Anthropic、DeepSeek、Google Gemini、阿里通义、百度文心等主流 AI 厂商的最新价格、免费额度、国内可用性，帮你找到最划算的 AI API 方案。"
+  title="AI API Token Price Comparison & In-Depth Reviews | APIRank"
+  description="APIRank: The most comprehensive AI API token price comparison site. Compare latest pricing, free tiers, and China accessibility for OpenAI, Anthropic, DeepSeek, Google Gemini, Alibaba, Baidu, Tencent, ByteDance, Zhipu, Moonshot, and more."
 >
-  <!-- JSON-LD FAQ -->
   <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
 
   <!-- Hero Section -->
@@ -52,84 +43,71 @@ const faqJsonLd = {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="text-center max-w-3xl mx-auto">
         <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-          找到最划算的
+          Find the Most Cost-Effective
           <span class="text-blue-600">AI Token</span>
-          方案
+          Plan
         </h1>
         <p class="text-lg sm:text-xl text-gray-600 mb-8 leading-relaxed">
-          收录 OpenAI、Claude、DeepSeek、Gemini 等
-          <strong>10+ 主流 AI 厂商</strong>的最新 API 价格，
-          实时更新，免费对比，帮你省钱。
+          Compare real-time pricing from 10+ top AI providers including OpenAI, Claude, DeepSeek, Gemini, and more. Always up to date, completely free.
         </p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
           <a href="#providers" class="btn-primary text-lg py-3 px-8">
-            查看价格对比 →
+            View Price Comparison →
           </a>
           <a href="/tutorials" class="btn-secondary text-lg py-3 px-8">
-            新手教程
+            Getting Started
           </a>
         </div>
       </div>
       
-      <!-- Quick Stats -->
       <div class="mt-12 grid grid-cols-3 gap-4 sm:gap-8 max-w-2xl mx-auto text-center">
         <div>
           <div class="text-3xl sm:text-4xl font-bold text-blue-600">10+</div>
-          <div class="text-sm text-gray-500 mt-1">收录厂商</div>
+          <div class="text-sm text-gray-500 mt-1">Providers</div>
         </div>
         <div>
           <div class="text-3xl sm:text-4xl font-bold text-green-600">50+</div>
-          <div class="text-sm text-gray-500 mt-1">覆盖模型</div>
+          <div class="text-sm text-gray-500 mt-1">Models</div>
         </div>
         <div>
-          <div class="text-3xl sm:text-4xl font-bold text-indigo-600">实时</div>
-          <div class="text-sm text-gray-500 mt-1">价格更新</div>
+          <div class="text-3xl sm:text-4xl font-bold text-indigo-600">Real-time</div>
+          <div class="text-sm text-gray-500 mt-1">Updates</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- AdSense Position 1: After Hero -->
+  <!-- AdSense Position 1 -->
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <div class="adsense-placeholder h-28 rounded-lg"></div>
   </section>
 
-  <!-- Domestic Providers Section -->
+  <!-- Domestic Providers -->
   <section id="providers" class="py-12 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-3 mb-8">
         <span class="text-2xl">🇨🇳</span>
-        <h2 class="text-2xl font-bold text-gray-900">国内可用 AI API</h2>
-        <span class="badge badge-success text-xs">国内直连</span>
+        <h2 class="text-2xl font-bold text-gray-900">AI APIs Available in China</h2>
+        <span class="badge badge-success text-xs">Direct Access</span>
       </div>
       
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {domesticProviders.map((provider) => (
           <a href={`/providers/${provider.id}`} class="provider-card group">
             <div class="flex items-center justify-between">
-              <h3 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                {provider.nameCn}
-              </h3>
-              <span class={`badge text-xs ${provider.overallRank <= 3 ? 'badge-success' : 'bg-gray-100 text-gray-600'}`}>
-                #{provider.overallRank}
-              </span>
+              <h3 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{provider.nameCn}</h3>
+              <span class={`badge text-xs ${provider.overallRank <= 3 ? 'badge-success' : 'bg-gray-100 text-gray-600'}`}>#{provider.overallRank}</span>
             </div>
             <p class="text-sm text-gray-500">{provider.name}</p>
             <div class="mt-3 space-y-1 text-sm">
-              <div class="flex justify-between">
-                <span class="text-gray-500">输入</span>
-                <span class="font-medium text-gray-900">{provider.pricing.input}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-500">输出</span>
-                <span class="font-medium text-gray-900">{provider.pricing.output}</span>
-              </div>
+              <div class="flex justify-between"><span class="text-gray-500">Input</span><span class="font-medium text-gray-900">{provider.pricing.input}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Output</span><span class="font-medium text-gray-900">{provider.pricing.output}</span></div>
             </div>
             <div class="mt-3 pt-3 border-t border-gray-100">
               <div class="flex items-center gap-2">
                 <span class="text-green-600 text-xs font-medium">{provider.availabilityCN}</span>
                 <span class="flex-1"></span>
-                <span class="text-xs text-gray-400">免费额度</span>
+                <span class="text-xs text-gray-400">Free Credits</span>
               </div>
               <p class="text-xs text-gray-500 mt-1">{provider.freeTier}</p>
             </div>
@@ -139,44 +117,32 @@ const faqJsonLd = {
     </div>
   </section>
 
-  <!-- International Providers Section -->
+  <!-- International Providers -->
   <section class="py-12 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center gap-3 mb-8">
         <span class="text-2xl">🌍</span>
-        <h2 class="text-2xl font-bold text-gray-900">国际 AI API</h2>
-        <span class="badge badge-warning text-xs">需代理</span>
+        <h2 class="text-2xl font-bold text-gray-900">International AI APIs</h2>
+        <span class="badge badge-warning text-xs">Proxy Required</span>
       </div>
       
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {intlProviders.map((provider) => (
           <a href={`/providers/${provider.id}`} class="provider-card group">
             <div class="flex items-center justify-between">
-              <h3 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                {provider.nameCn}
-              </h3>
-              <span class="badge bg-blue-100 text-blue-700 text-xs">
-                #{provider.overallRank}
-              </span>
+              <h3 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{provider.nameCn}</h3>
+              <span class="badge bg-blue-100 text-blue-700 text-xs">#{provider.overallRank}</span>
             </div>
             <p class="text-sm text-gray-500">{provider.name}</p>
             <div class="mt-3 space-y-1 text-sm">
-              <div class="flex justify-between">
-                <span class="text-gray-500">输入</span>
-                <span class="font-medium text-gray-900">{provider.pricing.input}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-gray-500">输出</span>
-                <span class="font-medium text-gray-900">{provider.pricing.output}</span>
-              </div>
+              <div class="flex justify-between"><span class="text-gray-500">Input</span><span class="font-medium text-gray-900">{provider.pricing.input}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Output</span><span class="font-medium text-gray-900">{provider.pricing.output}</span></div>
             </div>
             <div class="mt-3 pt-3 border-t border-gray-100">
               <div class="flex items-center gap-2">
-                <span class={`text-xs font-medium ${provider.availabilityCN.includes('❌') ? 'text-red-500' : 'text-yellow-500'}`}>
-                  {provider.availabilityCN}
-                </span>
+                <span class={`text-xs font-medium ${provider.availabilityCN.includes('❌') ? 'text-red-500' : 'text-yellow-500'}`}>{provider.availabilityCN}</span>
                 <span class="flex-1"></span>
-                <span class="text-xs text-gray-400">免费额度</span>
+                <span class="text-xs text-gray-400">Free Credits</span>
               </div>
               <p class="text-xs text-gray-500 mt-1">{provider.freeTier}</p>
             </div>
@@ -186,7 +152,7 @@ const faqJsonLd = {
     </div>
   </section>
 
-  <!-- AdSense Position 2: After Provider Grid -->
+  <!-- AdSense Position 2 -->
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <div class="adsense-placeholder h-28 rounded-lg"></div>
   </section>
@@ -194,19 +160,13 @@ const faqJsonLd = {
   <!-- Price Comparison Table -->
   <section class="py-12 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-gray-900 mb-6">💰 Token 价格对比表</h2>
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">💰 Token Price Comparison</h2>
       
       <div class="overflow-x-auto">
         <table class="table-token">
           <thead>
             <tr>
-              <th>厂商</th>
-              <th>热门模型</th>
-              <th>输入价格</th>
-              <th>输出价格</th>
-              <th>国内可用</th>
-              <th>综合评分</th>
-              <th></th>
+              <th>Provider</th><th>Popular Models</th><th>Input</th><th>Output</th><th>China Available</th><th>Free Tier</th><th></th>
             </tr>
           </thead>
           <tbody>
@@ -216,22 +176,9 @@ const faqJsonLd = {
                 <td class="text-gray-600">{p.models.slice(0, 2).join(', ')}</td>
                 <td class="font-mono text-sm">{p.pricing.input}</td>
                 <td class="font-mono text-sm">{p.pricing.output}</td>
-                <td>
-                  <span class={`badge text-xs ${p.availabilityCN.includes('✅') ? 'badge-success' : p.availabilityCN.includes('⚠️') ? 'badge-warning' : 'badge-danger'}`}>
-                    {p.availabilityCN}
-                  </span>
-                </td>
-                <td>
-                  <div class="flex items-center gap-1">
-                    <span class="text-yellow-500">★</span>
-                    <span class="font-semibold">{p.overallRank <= 3 ? '⭐⭐⭐' : p.overallRank <= 6 ? '⭐⭐' : '⭐'}</span>
-                  </div>
-                </td>
-                <td>
-                  <a href={`/providers/${p.id}`} class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                    查看详情 →
-                  </a>
-                </td>
+                <td><span class={`badge text-xs ${p.availabilityCN.includes('✅') ? 'badge-success' : p.availabilityCN.includes('⚠️') ? 'badge-warning' : 'badge-danger'}`}>{p.availabilityCN}</span></td>
+                <td class="text-xs text-gray-500">{p.freeTier}</td>
+                <td><a href={`/providers/${p.id}`} class="text-blue-600 hover:text-blue-800 text-sm font-medium">View Details →</a></td>
               </tr>
             ))}
           </tbody>
@@ -243,52 +190,46 @@ const faqJsonLd = {
   <!-- FAQ Section -->
   <section class="py-12 bg-gray-50">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">❓ 常见问题</h2>
+      <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">❓ Frequently Asked Questions</h2>
       
       <div class="space-y-6">
         <details class="bg-white rounded-lg border border-gray-200 p-5 group">
           <summary class="font-semibold text-gray-900 cursor-pointer list-none flex justify-between items-center">
-            哪个 AI API 最便宜？
+            Which AI API is the cheapest?
             <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
           </summary>
           <p class="mt-3 text-gray-600 leading-relaxed">
-            按绝对价格，<strong>字节豆包</strong>和<strong>DeepSeek-V3</strong>最便宜。但要综合考虑模型能力，
-            <strong>DeepSeek</strong>在性价比上最强，是目前最推荐的低价高能方案。
+            By absolute price, <strong>ByteDance Doubao</strong> and <strong>DeepSeek-V3</strong> are the cheapest. But considering model capability, <strong>DeepSeek</strong> offers the best value — currently the most recommended low-cost high-performance option.
           </p>
         </details>
         
         <details class="bg-white rounded-lg border border-gray-200 p-5 group">
           <summary class="font-semibold text-gray-900 cursor-pointer list-none flex justify-between items-center">
-            国内可以用 OpenAI 和 Claude API 吗？
+            Can I use OpenAI and Claude API in China?
             <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
           </summary>
           <p class="mt-3 text-gray-600 leading-relaxed">
-            理论上可以，但需要<strong>代理服务</strong>。国内直连会被限制或速度极慢。
-            建议使用国内可直连的方案（如 DeepSeek、智谱GLM），或使用
-            <a href="/providers/openai" class="text-blue-600 underline">API 反代服务</a>。
+            In theory yes, but a <strong>proxy service</strong> is required. Direct access from China is restricted or extremely slow. We recommend using domestic direct-access options (like DeepSeek, Zhipu GLM), or an <a href="/providers/openai" class="text-blue-600 underline">API proxy service</a>.
           </p>
         </details>
         
         <details class="bg-white rounded-lg border border-gray-200 p-5 group">
           <summary class="font-semibold text-gray-900 cursor-pointer list-none flex justify-between items-center">
-            DeepSeek API 真的能用吗？质量如何？
+            Is DeepSeek API actually usable? How is the quality?
             <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
           </summary>
           <p class="mt-3 text-gray-600 leading-relaxed">
-            <strong>DeepSeek-V3</strong>和<strong>DeepSeek-R1</strong>已经达到 GPT-4 级别，
-            在编程和数学推理上甚至更强。DeepSeek-R1 支持思维链输出，推理过程透明。
-            唯一缺点是生态不如 OpenAI 丰富，但价格是 OpenAI 的几十分之一。
+            <strong>DeepSeek-V3</strong> and <strong>DeepSeek-R1</strong> have reached GPT-4 level capability, even stronger in coding and math reasoning. DeepSeek-R1 supports chain-of-thought output with transparent reasoning. The only downside is the ecosystem is not as rich as OpenAI's, but the price is a fraction of OpenAI's.
           </p>
         </details>
         
         <details class="bg-white rounded-lg border border-gray-200 p-5 group">
           <summary class="font-semibold text-gray-900 cursor-pointer list-none flex justify-between items-center">
-            如何申请这些 AI API？
+            How do I apply for these AI APIs?
             <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
           </summary>
           <p class="mt-3 text-gray-600 leading-relaxed">
-            每个厂商流程类似：注册账号 → 实名认证（国内平台）→ 充值/购买资源包 → 获取 API Key → 开始调用。
-            具体教程请查看我们的<a href="/tutorials" class="text-blue-600 underline">使用教程</a>页面。
+            The process is similar for all providers: Register account → Identity verification (domestic platforms) → Top up / buy resource pack → Get API Key → Start calling. See our <a href="/tutorials" class="text-blue-600 underline">tutorials</a> for specific guides.
           </p>
         </details>
       </div>
@@ -298,19 +239,11 @@ const faqJsonLd = {
   <!-- CTA Section -->
   <section class="py-16 bg-blue-600">
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4">
-        准备好开始使用了吗？
-      </h2>
-      <p class="text-blue-100 mb-8">
-        立即对比各平台价格，选择最适合你的 AI 方案
-      </p>
+      <h2 class="text-2xl sm:text-3xl font-bold text-white mb-4">Ready to get started?</h2>
+      <p class="text-blue-100 mb-8">Compare prices across all platforms and choose the AI plan that fits you best</p>
       <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="#providers" class="bg-white text-blue-600 font-semibold py-3 px-8 rounded-lg hover:bg-blue-50 transition-colors">
-          查看价格对比
-        </a>
-        <a href="/tutorials" class="bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg hover:bg-blue-800 transition-colors">
-          新手教程
-        </a>
+        <a href="#providers" class="bg-white text-blue-600 font-semibold py-3 px-8 rounded-lg hover:bg-blue-50 transition-colors">View Price Comparison</a>
+        <a href="/tutorials" class="bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg hover:bg-blue-800 transition-colors">Getting Started</a>
       </div>
     </div>
   </section>
