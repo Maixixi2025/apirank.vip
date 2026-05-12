@@ -1,0 +1,100 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  ogImage?: string;
+  canonicalUrl?: string;
+  lang?: string;
+  type?: 'website' | 'article';
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  ogImage = '/og-default.png',
+  canonicalUrl = Astro.url.href,
+  lang = 'zh-CN',
+  type = 'website',
+  noindex = false,
+} = Astro.props;
+
+const siteUrl = 'https://apirank.vip';
+const ogImageUrl = `${siteUrl}${ogImage}`;
+const fullTitle = title.includes('APIRank') ? title : `${title} | APIRank`;
+---
+
+<!DOCTYPE html>
+<html lang={lang} class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Primary Meta Tags -->
+  <title>{fullTitle}</title>
+  <meta name="title" content={fullTitle} />
+  <meta name="description" content={description} />
+  {noindex && <meta name="robots" content="noindex, nofollow" />}
+  
+  <!-- Canonical -->
+  <link rel="canonical" href={canonicalUrl} />
+  
+  <!-- i18n Hreflang -->
+  <link rel="alternate" hreflang="zh-CN" href={`${siteUrl}${Astro.url.pathname.replace(/^\/(en|zh)/, '')}`} />
+  <link rel="alternate" hreflang="en-US" href={`${siteUrl}/en${Astro.url.pathname.replace(/^\/(en|zh)/, '')}`} />
+  <link rel="alternate" hreflang="x-default" href={`${siteUrl}${Astro.url.pathname.replace(/^\/(en|zh)/, '')}`} />
+  
+  <!-- Open Graph -->
+  <meta property="og:type" content={type} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:image" content={ogImageUrl} />
+  <meta property="og:locale" content={lang === 'zh-CN' ? 'zh_CN' : 'en_US'} />
+  <meta property="og:site_name" content="APIRank" />
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImageUrl} />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  
+  <!-- JSON-LD: WebSite -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "APIRank",
+    "url": siteUrl,
+    "description": description,
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": `${siteUrl}/?q={search_term_string}`,
+      "query-input": "required name=search_term_string"
+    }
+  })} />
+  
+  <!-- JSON-LD: Organization -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": siteUrl,
+    "logo": `${siteUrl}/favicon.svg`,
+    "sameAs": []
+  })} />
+</head>
+<body class="min-h-screen flex flex-col">
+  <Header />
+  <main class="flex-1">
+    <slot />
+  </main>
+  <Footer />
+</body>
+</html>

@@ -1,0 +1,143 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import providers from '../../data/providers.json';
+
+export function getStaticPaths() {
+  return [{ params: {} }];
+}
+
+const sortedProviders = [...providers].sort((a, b) => a.overallRank - b.overallRank);
+const domestic = sortedProviders.filter(p => p.category === 'domestic');
+const intl = sortedProviders.filter(p => p.category === 'international');
+---
+
+<BaseLayout
+  title="AI API Token 价格对比 | APIRank"
+  description="收录 OpenAI、Claude、DeepSeek、Gemini、通义千问、文心一言等 10+ AI 厂商的 API Token 价格对比，实时更新，帮你找到最划算的 AI 方案。"
+>
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">AI 厂商</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-900 mb-3">AI API Token 价格对比</h1>
+      <p class="text-gray-600">10+ 主流 AI 厂商 · 50+ 模型 · 价格实时更新</p>
+    </div>
+
+    <!-- Full Comparison Table -->
+    <div class="mb-12 overflow-x-auto">
+      <table class="table-token bg-white rounded-xl overflow-hidden shadow-sm">
+        <thead>
+          <tr class="bg-gray-50">
+            <th>排名</th>
+            <th>厂商</th>
+            <th>热门模型</th>
+            <th>输入价格</th>
+            <th>输出价格</th>
+            <th>国内可用</th>
+            <th>免费额度</th>
+            <th>详情</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedProviders.map((p) => (
+            <tr>
+              <td>
+                <span class={`font-bold ${p.overallRank <= 3 ? 'text-green-600' : 'text-gray-600'}`}>
+                  #{p.overallRank}
+                </span>
+              </td>
+              <td>
+                <div class="font-semibold text-gray-900">{p.nameCn}</div>
+                <div class="text-xs text-gray-400">{p.name}</div>
+              </td>
+              <td class="text-sm text-gray-600 max-w-32">
+                {p.models.slice(0, 2).join(', ')}
+              </td>
+              <td class="font-mono text-sm">{p.pricing.input}</td>
+              <td class="font-mono text-sm">{p.pricing.output}</td>
+              <td>
+                <span class={`badge text-xs ${p.availabilityCN.includes('✅') ? 'badge-success' : p.availabilityCN.includes('⚠️') ? 'badge-warning' : 'badge-danger'}`}>
+                  {p.availabilityCN}
+                </span>
+              </td>
+              <td class="text-xs text-gray-500 max-w-32">{p.freeTier}</td>
+              <td>
+                <a href={`/providers/${p.id}`} class="text-blue-600 hover:underline text-sm font-medium">
+                  查看 →
+                </a>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Domestic Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        �🇳 国内可用 AI API
+        <span class="badge badge-success text-sm">国内直连</span>
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {domestic.map(p => (
+          <a href={`/providers/${p.id}`} class="provider-card">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-gray-900">{p.nameCn}</h3>
+              <span class="text-green-600 font-bold">#{p.overallRank}</span>
+            </div>
+            <div class="text-sm text-gray-500">{p.name}</div>
+            <div class="mt-3 space-y-1">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">输入</span>
+                <span class="font-mono font-medium">{p.pricing.input}</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">输出</span>
+                <span class="font-mono font-medium">{p.pricing.output}</span>
+              </div>
+            </div>
+            <div class="mt-3 text-xs text-gray-400">{p.freeTier}</div>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- International Section -->
+    <section>
+      <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        🌍 国际 AI API
+        <span class="badge badge-warning text-sm">需代理</span>
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {intl.map(p => (
+          <a href={`/providers/${p.id}`} class="provider-card">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-gray-900">{p.nameCn}</h3>
+              <span class="text-blue-600 font-bold">#{p.overallRank}</span>
+            </div>
+            <div class="text-sm text-gray-500">{p.name}</div>
+            <div class="mt-3 space-y-1">
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">输入</span>
+                <span class="font-mono font-medium">{p.pricing.input}</span>
+              </div>
+              <div class="flex justify-between text-sm">
+                <span class="text-gray-500">输出</span>
+                <span class="font-mono font-medium">{p.pricing.output}</span>
+              </div>
+            </div>
+            <div class="mt-3 text-xs text-red-400">{p.availabilityCN}</div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
+</BaseLayout>
