@@ -24,7 +24,7 @@ export function getLocalePath(locale: Locale, path: string): string {
     path = path.slice(1);
   }
   if (locale === 'en') {
-    return `/${path}`;
+    return `/en/${path}`;
   }
   return `/zh/${path}`;
 }
