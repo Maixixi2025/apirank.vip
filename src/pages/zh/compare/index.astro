@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import providers from '../../../data/providers.json';
+import comparePairs from '../../../data/pseo/compare-pairs.json';
+
+const title = 'AI API 对比 — 哪家更强 | APIRank';
+const description = `${providers.length}家AI API提供商两两对比：价格、功能、国内访问、适用场景。APIRank帮你找到最适合的AI API。`;
+---
+
+<BaseLayout title={title} description={description} locale="zh">
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">对比</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <h1 class="text-3xl font-bold text-gray-900 mb-3">AI API 对比</h1>
+        <p class="text-lg text-gray-600">
+          {comparePairs.length} 个两两对比。选两个提供商，看看谁更强。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {comparePairs.map(pair => {
+          const provA = providers.find(p => p.id === pair.a);
+          const provB = providers.find(p => p.id === pair.b);
+          if (!provA || !provB) return null;
+          return (
+            <a href={`/zh/compare/${pair.a}-vs-${pair.b}`} class="block bg-white rounded-xl border border-gray-200 p-5 hover:border-blue-300 hover:shadow-md transition-all group">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="flex-1 text-center">
+                  <span class="font-bold text-gray-900 text-sm">{provA.nameCn}</span>
+                  <div class="text-xs text-gray-400 mt-0.5">#{provA.overallRank}</div>
+                </div>
+                <span class="text-gray-400 font-bold text-lg">vs</span>
+                <div class="flex-1 text-center">
+                  <span class="font-bold text-gray-900 text-sm">{provB.nameCn}</span>
+                  <div class="text-xs text-gray-400 mt-0.5">#{provB.overallRank}</div>
+                </div>
+              </div>
+              <p class="text-xs text-gray-500 line-clamp-2">{pair.verdict.zh}</p>
+              <div class="mt-3 flex flex-wrap gap-1">
+                {pair.useCases.slice(0, 3).map(uc => (
+                  <span class="bg-gray-100 text-gray-500 px-2 py-0.5 rounded text-xs">{uc}</span>
+                ))}
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

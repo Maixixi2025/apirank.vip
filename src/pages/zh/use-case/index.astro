@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import useCases from '../../../data/pseo/use-cases.json';
+
+const title = 'AI API 使用场景 — 找到最适合你项目的提供商 | APIRank';
+const description = '8个AI API使用场景解析：代码生成、复杂推理、写作、中文任务、长文档处理、多模态、预算敏感型项目、快速集成。';
+---
+
+<BaseLayout title={title} description={description} locale="zh">
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">使用场景</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <h1 class="text-3xl font-bold text-gray-900 mb-3">AI API 使用场景</h1>
+        <p class="text-lg text-gray-600">
+          覆盖 {useCases.length} 个使用场景。找到最适合你项目的 AI API 提供商。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {useCases.map(uc => (
+          <a href={`/zh/use-case/${uc.id}`} class="block bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-md transition-all group">
+            <h2 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">{uc.label.zh}</h2>
+            <p class="text-sm text-gray-500 mb-4">共 {uc.providers.length} 家提供商</p>
+            <div class="flex flex-wrap gap-1.5">
+              {uc.providers.slice(0, 4).map(pid => {
+                const pMap = { openai:'OpenAI', anthropic:'Anthropic', deepseek:'DeepSeek', google:'Google', aliyun:'阿里云', baidu:'百度', kimi:'Kimi', zhipu:'智谱' };
+                return pMap[pid] ? (
+                  <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs">{pMap[pid]}</span>
+                ) : null;
+              })}
+              {uc.providers.length > 4 && (
+                <span class="text-gray-400 text-xs">+{uc.providers.length - 4}</span>
+              )}
+            </div>
+            <div class="mt-4 text-blue-600 text-sm font-medium group-hover:underline">对比提供商 →</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,10 +1,34 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const tutorials = [
+  {
+    slug: 'deepseek-api-review',
+    title: 'DeepSeek API Review 2026: Pricing, Free Credits & Direct China Access',
+    description: 'Complete review of DeepSeek API: pricing, free credits, models, and how to access directly from China. Save up to 90% vs OpenAI.',
+    date: '2026-05-14',
+    tag: 'API Review',
+    emoji: '🔬',
+    readTime: '8 min',
+  },
+  {
+    slug: 'deepseek-vs-openai-api-china',
+    title: 'DeepSeek vs OpenAI vs Google AI: How Chinese Developers Choose in 2026',
+    description: 'Compare DeepSeek, OpenAI, and Google AI APIs — pricing, free credits, China access, and model capabilities. Find the best AI API for China-based developers.',
+    date: '2026-05-13',
+    tag: 'Comparison',
+    emoji: '⚖️',
+    readTime: '8 min',
+  },
+];
+
+// Sort by date descending
+const sortedTutorials = tutorials.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 ---
 
 <BaseLayout
   title="AI API Tutorials - Getting Started | APIRank"
-  description="Step-by-step guides to help you get started with AI APIs. Learn how to apply for API keys, make your first API call, and integrate AI into your projects."
+  description="Step-by-step guides and in-depth comparisons to help you choose the right AI API. DeepSeek vs OpenAI, pricing guides, and more."
 >
   <div class="bg-gray-50 border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -18,40 +42,28 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="text-center mb-12">
-      <h1 class="text-3xl font-bold text-gray-900 mb-3">Tutorials</h1>
-      <p class="text-gray-600">Step-by-step guides to help you get started with AI APIs</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-3">AI API Tutorials</h1>
+      <p class="text-gray-600">In-depth reviews and comparisons to help you choose the right AI API</p>
     </div>
 
     <div class="space-y-6">
-      <a href="/providers/deepseek" class="block bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-md transition-all">
-        <div class="flex items-center gap-4">
-          <div class="text-3xl">🔑</div>
-          <div>
-            <h2 class="text-lg font-bold text-gray-900 mb-1">How to Get a DeepSeek API Key</h2>
-            <p class="text-gray-500 text-sm">Step-by-step guide to register, verify, and get your DeepSeek API key in minutes.</p>
+      {sortedTutorials.map((t) => (
+        <a href={`/tutorials/${t.slug}`} class="block bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-md transition-all">
+          <div class="flex items-center gap-4 mb-3">
+            <div class="text-3xl">{t.emoji}</div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="badge badge-primary text-xs">{t.tag}</span>
+                <span class="text-xs text-gray-400">{t.date}</span>
+                <span class="text-xs text-gray-400">•</span>
+                <span class="text-xs text-gray-400">{t.readTime} read</span>
+              </div>
+              <h2 class="text-lg font-bold text-gray-900">{t.title}</h2>
+            </div>
           </div>
-        </div>
-      </a>
-
-      <a href="/providers/openai" class="block bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-md transition-all">
-        <div class="flex items-center gap-4">
-          <div class="text-3xl">🤖</div>
-          <div>
-            <h2 class="text-lg font-bold text-gray-900 mb-1">How to Use OpenAI API from China</h2>
-            <p class="text-gray-500 text-sm">Learn how to access OpenAI API with or without a proxy service.</p>
-          </div>
-        </div>
-      </a>
-
-      <a href="/providers/anthropic" class="block bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-md transition-all">
-        <div class="flex items-center gap-4">
-          <div class="text-3xl">🧠</div>
-          <div>
-            <h2 class="text-lg font-bold text-gray-900 mb-1">Claude API Getting Started Guide</h2>
-            <p class="text-gray-500 text-sm">Everything you need to know to start using Claude via API.</p>
-          </div>
-        </div>
-      </a>
+          <p class="text-gray-500 text-sm">{t.description}</p>
+        </a>
+      ))}
     </div>
   </div>
 </BaseLayout>

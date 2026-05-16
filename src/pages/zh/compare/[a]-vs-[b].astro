@@ -1,0 +1,380 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import providers from '../../../data/providers.json';
+import comparePairs from '../../../data/pseo/compare-pairs.json';
+
+export function getStaticPaths() {
+  return comparePairs.map(pair => ({
+    params: {
+      a: pair.a,
+      b: pair.b,
+    },
+    props: { pair },
+  }));
+}
+
+const { a, b } = Astro.params;
+const { pair } = Astro.props;
+
+const provA = providers.find(p => p.id === a);
+const provB = providers.find(p => p.id === b);
+
+if (!provA || !provB) {
+  return Astro.redirect('/zh/providers');
+}
+
+const title = `${provA.nameCn} vs ${provB.nameCn} — API 对比 2026 | APIRank`;
+const description = `${provA.nameCn} 与 ${provB.nameCn} API 对比：价格、上下文窗口、国内访问、免费额度及适用场景。APIRank 帮你找到最合适的 AI API 提供商。`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ComparisonModel",
+  "name": `${provA.nameCn} vs ${provB.nameCn} API 对比`,
+  "description": description,
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "对比", "item": "https://apirank.vip/zh/compare" },
+    { "@type": "ListItem", "position": 3, "name": `${provA.nameCn} vs ${provB.nameCn}`, "item": `https://apirank.vip/zh/compare/${a}-vs-${b}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `${provA.nameCn} 和 ${provB.nameCn} 哪个更便宜？`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${provA.nameCn} 输入：${provA.pricing.input}；输出：${provA.pricing.output}。${provB.nameCn} 输入：${provB.pricing.input}；输出：${provB.pricing.output}。`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `${provA.nameCn} 和 ${provB.nameCn} 国内访问情况如何？`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${provA.nameCn}：${provA.availabilityCN}。${provB.nameCn}：${provB.availabilityCN}。`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `${provA.nameCn} vs ${provB.nameCn} 的结论是什么？`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": pair.verdict.zh
+      }
+    }
+  ]
+};
+
+const relatedPairs = comparePairs.filter(p =>
+  (p.a === a || p.a === b || p.b === a || p.b === b) && p.id !== pair.id
+).slice(0, 3);
+---
+
+<BaseLayout title={title} description={description} type="article" locale="zh">
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <!-- Breadcrumb -->
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/compare" class="hover:text-blue-600">对比</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">{provA.nameCn} vs {provB.nameCn}</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-3">
+              {provA.nameCn} vs {provB.nameCn} — API 对比
+            </h1>
+            <p class="text-lg text-gray-600 mb-4">
+              价格、功能和适用场景的全面对比。更新于 {new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}。
+            </p>
+            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+              <p class="text-blue-800 font-medium">
+                ⚡ 结论：{pair.verdict.zh}
+              </p>
+            </div>
+          </header>
+
+          <div class="adsense-placeholder h-24 rounded-lg"></div>
+
+          <!-- 价格对比表 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">💰 价格对比</h2>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gray-100">
+                  <th class="text-left py-3 font-semibold text-gray-500">指标</th>
+                  <th class="text-center py-3 font-bold text-gray-900">{provA.nameCn}</th>
+                  <th class="text-center py-3 font-bold text-gray-900">{provB.nameCn}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-50">
+                <tr>
+                  <td class="py-3 font-medium text-gray-600">输入价格</td>
+                  <td class="py-3 text-center font-mono font-semibold text-blue-600">{provA.pricing.input}</td>
+                  <td class="py-3 text-center font-mono font-semibold text-blue-600">{provB.pricing.input}</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-gray-600">输出价格</td>
+                  <td class="py-3 text-center font-mono font-semibold text-green-600">{provA.pricing.output}</td>
+                  <td class="py-3 text-center font-mono font-semibold text-green-600">{provB.pricing.output}</td>
+                </tr>
+                {provA.pricing.cacheRead && (
+                  <tr>
+                    <td class="py-3 font-medium text-gray-600">缓存读取</td>
+                    <td class="py-3 text-center font-mono text-gray-700">{provA.pricing.cacheRead}</td>
+                    <td class="py-3 text-center font-mono text-gray-700">{provB.pricing.cacheRead || '—'}</td>
+                  </tr>
+                )}
+                {provA.pricing.cacheWrite && (
+                  <tr>
+                    <td class="py-3 font-medium text-gray-600">缓存写入</td>
+                    <td class="py-3 text-center font-mono text-gray-700">{provA.pricing.cacheWrite}</td>
+                    <td class="py-3 text-center font-mono text-gray-700">{provB.pricing.cacheWrite || '—'}</td>
+                  </tr>
+                )}
+                <tr class="bg-gray-50">
+                  <td class="py-3 font-medium text-gray-600">国内访问</td>
+                  <td class={`py-3 text-center font-semibold ${provA.availabilityCN.includes('✅') ? 'text-green-600' : provA.availabilityCN.includes('⚠️') ? 'text-yellow-600' : 'text-red-500'}`}>{provA.availabilityCN}</td>
+                  <td class={`py-3 text-center font-semibold ${provB.availabilityCN.includes('✅') ? 'text-green-600' : provB.availabilityCN.includes('⚠️') ? 'text-yellow-600' : 'text-red-500'}`}>{provB.availabilityCN}</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-gray-600">免费额度</td>
+                  <td class="py-3 text-center text-gray-700 text-sm">{provA.freeTier}</td>
+                  <td class="py-3 text-center text-gray-700 text-sm">{provB.freeTier}</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-gray-600">模型数量</td>
+                  <td class="py-3 text-center font-semibold">{provA.modelCount}+</td>
+                  <td class="py-3 text-center font-semibold">{provB.modelCount}+</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-gray-600">综合排名</td>
+                  <td class="py-3 text-center font-bold text-blue-600">#{provA.overallRank}</td>
+                  <td class="py-3 text-center font-bold text-blue-600">#{provB.overallRank}</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- 模型 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🤖 支持的模型</h2>
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <h3 class="font-semibold text-gray-800 mb-2">{provA.nameCn}</h3>
+                <div class="flex flex-wrap gap-1">
+                  {provA.models.slice(0, 8).map(m => (
+                    <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-mono">{m}</span>
+                  ))}
+                  {provA.models.length > 8 && (
+                    <span class="text-gray-400 text-xs">+{provA.models.length - 8} 更多</span>
+                  )}
+                </div>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800 mb-2">{provB.nameCn}</h3>
+                <div class="flex flex-wrap gap-1">
+                  {provB.models.slice(0, 8).map(m => (
+                    <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-mono">{m}</span>
+                  ))}
+                  {provB.models.length > 8 && (
+                    <span class="text-gray-400 text-xs">+{provB.models.length - 8} 更多</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 优势 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">✨ 优势</h2>
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <h3 class="font-semibold text-green-700 mb-3">{provA.nameCn}</h3>
+                <ul class="space-y-2">
+                  {provA.highlights.map(h => (
+                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                      <span class="text-green-500 mt-0.5">✓</span>
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 class="font-semibold text-green-700 mb-3">{provB.nameCn}</h3>
+                <ul class="space-y-2">
+                  {provB.highlights.map(h => (
+                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                      <span class="text-green-500 mt-0.5">✓</span>
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- 劣势 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">⚠️ 劣势</h2>
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <h3 class="font-semibold text-red-700 mb-3">{provA.nameCn}</h3>
+                <ul class="space-y-2">
+                  {provA.cons.map(c => (
+                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                      <span class="text-red-400 mt-0.5">×</span>
+                      <span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 class="font-semibold text-red-700 mb-3">{provB.nameCn}</h3>
+                <ul class="space-y-2">
+                  {provB.cons.map(c => (
+                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                      <span class="text-red-400 mt-0.5">×</span>
+                      <span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- 适用场景 -->
+          <section class="bg-indigo-50 rounded-xl border border-indigo-100 p-6">
+            <h2 class="text-xl font-bold text-indigo-900 mb-3">🎯 最佳适用场景</h2>
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <h3 class="font-semibold text-indigo-800 mb-2">{provA.nameCn}</h3>
+                <p class="text-indigo-700 text-sm">{provA.bestFor}</p>
+              </div>
+              <div>
+                <h3 class="font-semibold text-indigo-800 mb-2">{provB.nameCn}</h3>
+                <p class="text-indigo-700 text-sm">{provB.bestFor}</p>
+              </div>
+            </div>
+          </section>
+
+          <div class="adsense-placeholder h-24 rounded-lg"></div>
+
+          <!-- FAQ -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">❓ 常见问题</h2>
+            <div class="space-y-4">
+              <details class="group" open>
+                <summary class="font-semibold text-gray-800 cursor-pointer list-none flex items-center justify-between">
+                  {provA.nameCn} 和 {provB.nameCn} 哪个更便宜？
+                  <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-gray-600 mt-2 text-sm">
+                  {provA.nameCn} — 输入：{provA.pricing.input}，输出：{provA.pricing.output}。{provB.nameCn} — 输入：{provB.pricing.input}，输出：{provB.pricing.output}。
+                </p>
+              </details>
+              <div class="border-t border-gray-100"></div>
+              <details class="group">
+                <summary class="font-semibold text-gray-800 cursor-pointer list-none flex items-center justify-between">
+                  国内访问哪个更好？
+                  <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-gray-600 mt-2 text-sm">
+                  {provA.nameCn}：{provA.availabilityCN}。{provB.nameCn}：{provB.availabilityCN}。
+                </p>
+              </details>
+              <div class="border-t border-gray-100"></div>
+              <details class="group">
+                <summary class="font-semibold text-gray-800 cursor-pointer list-none flex items-center justify-between">
+                  综合结论是什么？
+                  <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-gray-600 mt-2 text-sm">{pair.verdict.zh}</p>
+              </details>
+            </div>
+          </section>
+
+          <!-- 相关对比 -->
+          {relatedPairs.length > 0 && (
+            <section class="bg-gray-50 rounded-xl border border-gray-200 p-6">
+              <h2 class="text-lg font-bold text-gray-900 mb-4">🔗 相关对比</h2>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {relatedPairs.map(rel => {
+                  const relA = providers.find(p => p.id === rel.a);
+                  const relB = providers.find(p => p.id === rel.b);
+                  return (
+                    <a href={`/zh/compare/${rel.a}-vs-${rel.b}`} class="block bg-white rounded-lg border border-gray-200 p-3 hover:border-blue-300 hover:shadow-sm transition-all">
+                      <span class="font-semibold text-sm text-gray-800">{relA?.nameCn}</span>
+                      <span class="text-gray-400 mx-1">vs</span>
+                      <span class="font-semibold text-sm text-gray-800">{relB?.nameCn}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+        </div>
+
+        <!-- 侧边栏 -->
+        <aside class="space-y-6">
+          <div class="bg-white rounded-xl border border-gray-200 p-6 sticky top-20">
+            <h3 class="font-bold text-gray-900 mb-3">快速开始</h3>
+            <div class="space-y-3">
+              <a href={`/zh/providers/${provA.id}`} class="btn-secondary w-full text-center block text-sm">{provA.nameCn} 详情 →</a>
+              <a href={`/zh/providers/${provB.id}`} class="btn-secondary w-full text-center block text-sm">{provB.nameCn} 详情 →</a>
+              <a href="/zh/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">查看全部 →</a>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="font-bold text-gray-900 mb-4">⚡ 快速对比</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between"><span class="text-gray-500">{provA.nameCn} 排名</span><span class="font-bold text-blue-600">#{provA.overallRank}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">{provB.nameCn} 排名</span><span class="font-bold text-blue-600">#{provB.overallRank}</span></div>
+              <div class="border-t border-gray-100 pt-3">
+                <div class="flex justify-between"><span class="text-gray-500">对比总数</span><span class="font-semibold">{comparePairs.length}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="font-bold text-gray-900 mb-4">🏆 所有提供商</h3>
+            <div class="space-y-2">
+              {providers.sort((a, b) => a.overallRank - b.overallRank).map(p => (
+                <a href={`/zh/providers/${p.id}`} class="flex items-center justify-between py-1.5 text-sm hover:text-blue-600 transition-colors">
+                  <span>{p.nameCn}</span>
+                  <span class="text-gray-400 text-xs">#{p.overallRank}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </article>
+</BaseLayout>

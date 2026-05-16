@@ -7,16 +7,30 @@ interface Props {
 
 const { locale } = Astro.props;
 
-const pathWithoutLang = Astro.url.pathname.replace(/^\/(en|zh)/, '') || '/';
-const enPath = `/en${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
+// With prefixDefaultLocale: false, EN is root (no /en prefix), ZH is /zh/...
+// stripLangPrefix: /zh/tutorials → /tutorials, /providers → /providers, /zh → /
+const stripLangPrefix = (pathname: string) => pathname.replace(/^\/(en|zh)/, '') || '/';
+
+const pathWithoutLang = stripLangPrefix(Astro.url.pathname);
+// EN path: root URL (no prefix) → / or /tutorials etc.
+// ZH path: always /zh prefix
+const enPath = pathWithoutLang === '/' ? '/' : `/${pathWithoutLang.replace(/^\//, '')}`;
 const zhPath = `/zh${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
 
-const navLinks = [
-  { href: `/${locale}`, label: t(locale, 'nav.home') },
-  { href: `/${locale}/providers`, label: t(locale, 'nav.providers') },
-  { href: `/${locale}/tutorials`, label: t(locale, 'nav.tutorials') },
-  { href: `/${locale}/about`, label: t(locale, 'nav.about') },
-];
+// EN is root (no /en prefix), ZH is /zh/...
+const navLinks = locale === 'en'
+  ? [
+      { href: '/', label: 'Home' },
+      { href: '/providers', label: 'Providers' },
+      { href: '/tutorials', label: 'Tutorials' },
+      { href: '/about', label: 'About' },
+    ]
+  : [
+      { href: '/zh', label: '首页' },
+      { href: '/zh/providers', label: '全部厂商' },
+      { href: '/zh/tutorials', label: '使用教程' },
+      { href: '/zh/about', label: '关于我们' },
+    ];
 
 const currentPath = Astro.url.pathname.replace(/^\/(en|zh)/, '') || '/';
 ---

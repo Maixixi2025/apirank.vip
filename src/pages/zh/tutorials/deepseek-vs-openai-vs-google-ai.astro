@@ -1,0 +1,583 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import providers from '../../../data/providers.json';
+
+const slug = 'deepseek-vs-openai-vs-google-ai';
+const date = '2026-05-13';
+
+const zhTitle = 'DeepSeek vs OpenAI vs Google AI：2026年中国开发者如何选择';
+const zhDescription = '深度对比 DeepSeek、OpenAI、Google AI 三大 AI API：价格、免费额度、中国访问、模型能力。中国开发者选哪家最合适？';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/en/tutorials/${slug}`;
+
+// JSON-LD for Article
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+};
+
+// JSON-LD for BreadcrumbList
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+// JSON-LD for FAQPage
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "在中国不用代理能使用OpenAI的API吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不能。OpenAI的API在中国大陆被封锁。你需要一个可用的代理或VPN服务，这增加了运维复杂度和潜在的可靠性问题。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "DeepSeek的模型质量够用于生产环境吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "够用。DeepSeek-V3在大多数标准任务上与GPT-4o具有竞争力的表现。DeepSeek-R1在推理和代码任务上表现出色。对于大多数应用，DeepSeek模型完全足够。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "哪家提供商的免费额度最划算？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Google AI（Gemini 2.0 Flash无限免费）最大方，其次是DeepSeek（注册送$2）和OpenAI（新用户$5）。但免费额度均有速率限制。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Google AI在国内可以访问吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "部分可以。部分Google AI服务在国内可以间歇性使用，但可靠性很差。对于生产应用，不要依赖直连访问。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "哪家最适合中文NLP任务？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "DeepSeek由于中文训练数据丰富，通常在中文语言任务上表现良好。OpenAI的GPT-4o中文处理能力也不错。专业中文NLP可以考虑智谱或阿里云。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "切换提供商的难度大吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "三家都提供OpenAI兼容格式的API。DeepSeek的API格式与OpenAI最为接近，迁移相对简单。Google AI使用不同格式，但提供迁移指南。"
+      }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={`${zhTitle} | APIRank`}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <!-- hreflang alternate -->
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <!-- Breadcrumb -->
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">DeepSeek vs OpenAI vs Google AI</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">DeepSeek vs OpenAI vs Google AI：2026年中国开发者如何选择</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-05-13">2026年5月13日</time>
+              <span>•</span>
+              <span>对比测评</span>
+              <span>•</span>
+              <span>约8分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              深度对比 DeepSeek、OpenAI、Google AI 三大 AI API：价格、免费额度、中国访问、模型能力。中国开发者选哪家最合适？
+            </p>
+          </header>
+
+          <div class="adsense-placeholder h-24 rounded-lg"></div>
+
+          <!-- 前言 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">前言</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              2026年，中国开发者面临一个独特的困境：世界上最强大的AI模型往往在中国大陆难以访问，而国内替代品虽然访问便捷，但在能力上偶有不足。本文将DeepSeek、OpenAI和Google AI的实际差异掰开揉碎，帮你为项目做出正确选择。
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+              这个选择并不简单。OpenAI提供无与伦比的模型能力和成熟的生态。DeepSeek以极低价格和中国直连体验著称。Google AI则处于中间位置——能力强大，偶尔可访问，但不够稳定。来看真实数据。
+            </p>
+          </section>
+
+          <!-- 核心对比 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">核心对比：价格、访问方式与能力</h2>
+
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">价格明细（每百万token）</h3>
+            <div class="overflow-x-auto mb-6">
+              <table class="table-token w-full text-sm">
+                <thead>
+                  <tr class="bg-gray-50">
+                    <th class="px-4 py-2 text-left font-semibold">提供商</th>
+                    <th class="px-4 py-2 text-left font-semibold">模型</th>
+                    <th class="px-4 py-2 text-left font-semibold">输入价格</th>
+                    <th class="px-4 py-2 text-left font-semibold">输出价格</th>
+                    <th class="px-4 py-2 text-left font-semibold">缓存读取</th>
+                    <th class="px-4 py-2 text-left font-semibold">免费额度</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-t">
+                    <td class="px-4 py-2 font-semibold text-blue-600">DeepSeek</td>
+                    <td class="px-4 py-2">DeepSeek-V3</td>
+                    <td class="px-4 py-2 font-mono">¥1 / 1M</td>
+                    <td class="px-4 py-2 font-mono">¥2 / 1M</td>
+                    <td class="px-4 py-2 font-mono">¥0.1 / 1M</td>
+                    <td class="px-4 py-2">注册送 $2</td>
+                  </tr>
+                  <tr class="border-t bg-gray-50">
+                    <td class="px-4 py-2 font-semibold text-blue-600">OpenAI</td>
+                    <td class="px-4 py-2">GPT-4o</td>
+                    <td class="px-4 py-2 font-mono">$2.50 / 1M</td>
+                    <td class="px-4 py-2 font-mono">$10 / 1M</td>
+                    <td class="px-4 py-2 font-mono">$0.01 / 1M</td>
+                    <td class="px-4 py-2">新用户 $5</td>
+                  </tr>
+                  <tr class="border-t">
+                    <td class="px-4 py-2 font-semibold text-blue-600">Google AI</td>
+                    <td class="px-4 py-2">Gemini 2.5 Flash</td>
+                    <td class="px-4 py-2 font-mono">$0.016 / 1M</td>
+                    <td class="px-4 py-2 font-mono">$0.06 / 1M</td>
+                    <td class="px-4 py-2 font-mono">$0.005 / 1M</td>
+                    <td class="px-4 py-2">2.0 Flash 无限免费</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="text-gray-700 text-sm mb-4">
+              DeepSeek的定价以人民币结算，折合每百万token输入约 <strong>$0.14–1.10</strong> — 仅为OpenAI的几十分之一。Google AI的Gemini 2.5 Flash以$0.016/1M的输入价格，性价比惊人。
+            </p>
+
+            <h3 class="text-lg font-semibold text-gray-800 mb-3 mt-6">中国访问实况</h3>
+            <div class="overflow-x-auto">
+              <table class="table-token w-full text-sm">
+                <thead>
+                  <tr class="bg-gray-50">
+                    <th class="px-4 py-2 text-left font-semibold">提供商</th>
+                    <th class="px-4 py-2 text-left font-semibold">中国访问</th>
+                    <th class="px-4 py-2 text-left font-semibold">稳定性</th>
+                    <th class="px-4 py-2 text-left font-semibold">接入难度</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-t">
+                    <td class="px-4 py-2 font-semibold text-green-600">DeepSeek</td>
+                    <td class="px-4 py-2 text-green-700">✅ 国内直连</td>
+                    <td class="px-4 py-2">高</td>
+                    <td class="px-4 py-2">低 — 申请API Key即可</td>
+                  </tr>
+                  <tr class="border-t bg-gray-50">
+                    <td class="px-4 py-2 font-semibold text-red-600">OpenAI</td>
+                    <td class="px-4 py-2 text-red-700">❌ 需代理/VPN</td>
+                    <td class="px-4 py-2">不可用</td>
+                    <td class="px-4 py-2">高 — 需要稳定代理</td>
+                  </tr>
+                  <tr class="border-t">
+                    <td class="px-4 py-2 font-semibold text-yellow-600">Google AI</td>
+                    <td class="px-4 py-2 text-yellow-700">⚠️ 不稳定/部分可用</td>
+                    <td class="px-4 py-2">低</td>
+                    <td class="px-4 py-2">中 — 可能需要代理</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+              <p class="text-sm text-blue-800 font-medium">
+                💡 <strong>DeepSeek在中国访问上遥遥领先。</strong> 无需代理、无IP封锁、无可靠性顾虑。对于国内生产应用，这往往是决定性因素。
+              </p>
+            </div>
+          </section>
+
+          <!-- DeepSeek -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">DeepSeek：预算杀手</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              DeepSeek已成为注重成本的中国开发者的首选。DeepSeek-V3模型以GPT-4o约十分之一的价格提供具有竞争力的性能。其推理模型DeepSeek-R1能有效处理复杂的多步骤问题。
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <h3 class="font-semibold text-green-700 mb-2">✅ 核心优势</h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                  <li>• 国内直连API访问</li>
+                  <li>• DeepSeek-V3输入¥1/1M — 最低价的顶级模型</li>
+                  <li>• DeepSeek-R1处理复杂推理任务</li>
+                  <li>• 新用户注册送$2</li>
+                  <li>• 国内响应速度快</li>
+                </ul>
+              </div>
+              <div>
+                <h3 class="font-semibold text-red-700 mb-2">⚠️ 局限性</h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                  <li>• 生态较小 — 集成工具较少</li>
+                  <li>• 国际支付不便</li>
+                  <li>• 部分复杂任务上能力仍落后于GPT-4o</li>
+                </ul>
+              </div>
+            </div>
+
+            <p class="text-sm text-gray-600">
+              <strong>适用场景：</strong>国内开发者、预算敏感型项目、需要控制成本的国内SaaS产品。
+            </p>
+          </section>
+
+          <!-- OpenAI -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">OpenAI：能力之王</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              OpenAI仍是AI能力的标杆。GPT-4o以最高水平处理复杂推理、创意写作、代码生成和多模态任务。从微调到Assistants API再到嵌入向量，生态成熟且文档完善。
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <h3 class="font-semibold text-green-700 mb-2">✅ 核心优势</h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                  <li>• 最强大的模型（GPT-4o、o1、o3）</li>
+                  <li>• 最成熟的生态和工具链</li>
+                  <li>• 最佳开发者体验</li>
+                  <li>• 新用户$5免费额度</li>
+                </ul>
+              </div>
+              <div>
+                <h3 class="font-semibold text-red-700 mb-2">⚠️ 局限性</h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                  <li>• 国内无法直接访问 — 需要代理</li>
+                  <li>• 价格高于其他选项</li>
+                  <li>• 代理可靠性增加运维复杂度</li>
+                </ul>
+              </div>
+            </div>
+
+            <p class="text-sm text-gray-600">
+              <strong>适用场景：</strong>国际产品、出海应用、需要绝对最佳模型质量的任务。
+            </p>
+          </section>
+
+          <!-- Google AI -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Google AI：性价比黑马</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              Google AI的Gemini模型已有大幅进步。Gemini 2.5 Flash以$0.016/1M输入的出色性价比提供强大能力。200K上下文窗口在长文档处理方面仍是同级最佳。
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <h3 class="font-semibold text-green-700 mb-2">✅ 核心优势</h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                  <li>• Gemini 2.5 Flash $0.016/1M — 最佳性价比</li>
+                  <li>• 200K上下文窗口 — 整本书/代码库轻松处理</li>
+                  <li>• 多模态能力（文本、图像、音频、视频）</li>
+                  <li>• 慷慨的免费额度（2.0 Flash无限免费）</li>
+                </ul>
+              </div>
+              <div>
+                <h3 class="font-semibold text-red-700 mb-2">⚠️ 局限性</h3>
+                <ul class="space-y-2 text-sm text-gray-700">
+                  <li>• 国内访问不稳定、不可靠</li>
+                  <li>• 文档质量参差不齐</li>
+                  <li>• API行为在版本更新时可能不可预测</li>
+                </ul>
+              </div>
+            </div>
+
+            <p class="text-sm text-gray-600">
+              <strong>适用场景：</strong>需要长上下文的应用、多模态工作流、已使用Google Cloud生态的团队。
+            </p>
+          </section>
+
+          <!-- 横向对比 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">横向对比：什么场景选什么</h2>
+            <div class="overflow-x-auto">
+              <table class="table-token w-full text-sm">
+                <thead>
+                  <tr class="bg-gray-50">
+                    <th class="px-4 py-2 text-left font-semibold">使用场景</th>
+                    <th class="px-4 py-2 text-left font-semibold">推荐</th>
+                    <th class="px-4 py-2 text-left font-semibold">原因</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-t"><td class="px-4 py-2">国内SaaS产品</td><td class="px-4 py-2 font-semibold text-green-600">DeepSeek</td><td class="px-4 py-2">直连、低价</td></tr>
+                  <tr class="border-t bg-gray-50"><td class="px-4 py-2">国际产品</td><td class="px-4 py-2 font-semibold text-blue-600">OpenAI</td><td class="px-4 py-2">模型质量最佳，无需代理</td></tr>
+                  <tr class="border-t"><td class="px-4 py-2">长文档分析</td><td class="px-4 py-2 font-semibold text-purple-600">Google AI</td><td class="px-4 py-2">200K上下文，价格有竞争力</td></tr>
+                  <tr class="border-t bg-gray-50"><td class="px-4 py-2">预算紧张的创业公司</td><td class="px-4 py-2 font-semibold text-green-600">DeepSeek</td><td class="px-4 py-2">价格是OpenAI的1/10</td></tr>
+                  <tr class="border-t"><td class="px-4 py-2">复杂推理任务</td><td class="px-4 py-2 font-semibold text-blue-600">OpenAI o1/o3</td><td class="px-4 py-2">仍是能力标杆</td></tr>
+                  <tr class="border-t bg-gray-50"><td class="px-4 py-2">多模态应用</td><td class="px-4 py-2 font-semibold">Google AI 或 OpenAI</td><td class="px-4 py-2">两者图像/音频处理均强</td></tr>
+                  <tr class="border-t"><td class="px-4 py-2">中文NLP任务</td><td class="px-4 py-2 font-semibold text-green-600">DeepSeek</td><td class="px-4 py-2">中文训练数据丰富</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- 预算对比 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">真实成本对比：100美元预算能跑多少</h2>
+            <p class="text-gray-700 mb-4"><strong>$100的API调用费用：</strong></p>
+            <ul class="space-y-3 mb-4">
+              <li class="flex items-start gap-3">
+                <span class="text-green-500 font-bold mt-0.5">●</span>
+                <span><strong>DeepSeek：</strong>约7.15亿token输入（按¥1/1M ≈ $0.14/1M）</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-blue-500 font-bold mt-0.5">●</span>
+                <span><strong>OpenAI GPT-4o：</strong>约4000万token输入（按$2.50/1M）</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="text-purple-500 font-bold mt-0.5">●</span>
+                <span><strong>Google Gemini 2.5 Flash：</strong>约62.5亿token输入（按$0.016/1M）</span>
+              </li>
+            </ul>
+            <p class="text-gray-700">
+              DeepSeek让你的预算撑得最久，差距巨大。Google AI出奇地高效。OpenAI每token质量最高，但烧钱速度也最快。
+            </p>
+          </section>
+
+          <!-- 优缺点 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">优缺点总结</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+              <div>
+                <h3 class="font-bold text-gray-900 mb-3">DeepSeek</h3>
+                <ul class="space-y-2 text-sm">
+                  <li class="flex items-start gap-2"><span class="text-green-500">✅</span> 价格最低，没有之一</li>
+                  <li class="flex items-start gap-2"><span class="text-green-500">✅</span> 国内直连</li>
+                  <li class="flex items-start gap-2"><span class="text-green-500">✅</span> 推理能力强（R1）</li>
+                  <li class="flex items-start gap-2"><span class="text-red-500">⚠️</span> 生态较小</li>
+                  <li class="flex items-start gap-2"><span class="text-red-500">⚠️</span> 国际支付不便</li>
+                </ul>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-900 mb-3">OpenAI</h3>
+                <ul class="space-y-2 text-sm">
+                  <li class="flex items-start gap-2"><span class="text-green-500">✅</span> 能力最强的模型</li>
+                  <li class="flex items-start gap-2"><span class="text-green-500">✅</span> 成熟的生态系统</li>
+                  <li class="flex items-start gap-2"><span class="text-green-500">✅</span> 最完善的开发者工具</li>
+                  <li class="flex items-start gap-2"><span class="text-red-500">⚠️</span> 国内需代理</li>
+                  <li class="flex items-start gap-2"><span class="text-red-500">⚠️</span> 价格较高</li>
+                </ul>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-900 mb-3">Google AI</h3>
+                <ul class="space-y-2 text-sm">
+                  <li class="flex items-start gap-2"><span class="text-green-500">✅</span> 出色性价比（2.5 Flash）</li>
+                  <li class="flex items-start gap-2"><span class="text-green-500">✅</span> 超大上下文窗口</li>
+                  <li class="flex items-start gap-2"><span class="text-green-500">✅</span> 慷慨的免费额度</li>
+                  <li class="flex items-start gap-2"><span class="text-red-500">⚠️</span> 国内访问不可靠</li>
+                  <li class="flex items-start gap-2"><span class="text-red-500">⚠️</span> 文档质量不稳定</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- 常见问题 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">常见问题</h2>
+
+            <div class="space-y-4">
+              <details class="group" open>
+                <summary class="font-semibold text-gray-900 cursor-pointer list-none flex items-center justify-between">
+                  <span>Q: 在中国不用代理能使用OpenAI的API吗？</span>
+                  <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-gray-700 mt-2 text-sm">不能。OpenAI的API在中国大陆被封锁。你需要一个可用的代理或VPN服务，这增加了运维复杂度和潜在的可靠性问题。</p>
+              </details>
+
+              <div class="border-t pt-4">
+                <details class="group">
+                  <summary class="font-semibold text-gray-900 cursor-pointer list-none flex items-center justify-between">
+                    <span>Q: DeepSeek的模型质量够用于生产环境吗？</span>
+                    <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                  </summary>
+                  <p class="text-gray-700 mt-2 text-sm">够用。DeepSeek-V3在大多数标准任务上与GPT-4o具有竞争力的表现。DeepSeek-R1在推理和代码任务上表现出色。对于大多数应用，DeepSeek模型完全足够。</p>
+                </details>
+              </div>
+
+              <div class="border-t pt-4">
+                <details class="group">
+                  <summary class="font-semibold text-gray-900 cursor-pointer list-none flex items-center justify-between">
+                    <span>Q: 哪家提供商的免费额度最划算？</span>
+                    <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                  </summary>
+                  <p class="text-gray-700 mt-2 text-sm">Google AI（Gemini 2.0 Flash无限免费）最大方，其次是DeepSeek（注册送$2）和OpenAI（新用户$5）。但免费额度均有速率限制。</p>
+                </details>
+              </div>
+
+              <div class="border-t pt-4">
+                <details class="group">
+                  <summary class="font-semibold text-gray-900 cursor-pointer list-none flex items-center justify-between">
+                    <span>Q: Google AI在国内可以访问吗？</span>
+                    <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                  </summary>
+                  <p class="text-gray-700 mt-2 text-sm">部分可以。部分Google AI服务在国内可以间歇性使用，但可靠性很差。对于生产应用，不要依赖直连访问。</p>
+                </details>
+              </div>
+
+              <div class="border-t pt-4">
+                <details class="group">
+                  <summary class="font-semibold text-gray-900 cursor-pointer list-none flex items-center justify-between">
+                    <span>Q: 哪家最适合中文NLP任务？</span>
+                    <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                  </summary>
+                  <p class="text-gray-700 mt-2 text-sm">DeepSeek由于中文训练数据丰富，通常在中文语言任务上表现良好。OpenAI的GPT-4o中文处理能力也不错。专业中文NLP可以考虑智谱或阿里云。</p>
+                </details>
+              </div>
+
+              <div class="border-t pt-4">
+                <details class="group">
+                  <summary class="font-semibold text-gray-900 cursor-pointer list-none flex items-center justify-between">
+                    <span>Q: 切换提供商的难度大吗？</span>
+                    <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                  </summary>
+                  <p class="text-gray-700 mt-2 text-sm">三家都提供OpenAI兼容格式的API。DeepSeek的API格式与OpenAI最为接近，迁移相对简单。Google AI使用不同格式，但提供迁移指南。</p>
+                </details>
+              </div>
+            </div>
+          </section>
+
+          <!-- 结论 -->
+          <section class="bg-indigo-50 rounded-xl border border-indigo-100 p-6">
+            <h2 class="text-xl font-bold text-indigo-900 mb-4">结论</h2>
+            <p class="text-indigo-800 mb-4">
+              对于<strong>国内开发者</strong>，DeepSeek是务实之选：直连访问、极低价格、足够的能力表现。接入无摩擦，成本可预测。
+            </p>
+            <p class="text-indigo-800 mb-4">
+              对于<strong>国际产品</strong>或需要绝对最佳模型质量的任务，尽管需要代理，OpenAI仍是首选。
+            </p>
+            <p class="text-indigo-800 mb-4">
+              对于<strong>长上下文或多模态应用</strong>，且预算有限，Google AI的Gemini 2.5 Flash值得考虑——但前提是你能稳定访问它。
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-3 mt-6">
+              <a href="/zh/providers/deepseek" class="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-green-700 transition-colors text-sm">
+                国内开发者首选 DeepSeek →
+              </a>
+              <a href="/zh/providers/openai" class="inline-flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm">
+                追求最佳质量选 OpenAI →
+              </a>
+              <a href="/zh/providers/google" class="inline-flex items-center justify-center gap-2 bg-purple-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-purple-700 transition-colors text-sm">
+                追求极致性价比选 Google AI →
+              </a>
+            </div>
+          </section>
+
+          <div class="adsense-placeholder h-24 rounded-lg"></div>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="space-y-6">
+          <div class="bg-white rounded-xl border border-gray-200 p-6 sticky top-20">
+            <h3 class="font-bold text-gray-900 mb-4">文章目录</h3>
+            <nav class="space-y-2 text-sm">
+              <a href="#introduction" class="block text-gray-600 hover:text-blue-600">前言</a>
+              <a href="#comparison" class="block text-gray-600 hover:text-blue-600">核心对比</a>
+              <a href="#deepseek" class="block text-gray-600 hover:text-blue-600">DeepSeek分析</a>
+              <a href="#openai" class="block text-gray-600 hover:text-blue-600">OpenAI分析</a>
+              <a href="#google" class="block text-gray-600 hover:text-blue-600">Google AI分析</a>
+              <a href="#when-to-choose" class="block text-gray-600 hover:text-blue-600">场景选择</a>
+              <a href="#budget" class="block text-gray-600 hover:text-blue-600">$100预算对比</a>
+              <a href="#faq" class="block text-gray-600 hover:text-blue-600">常见问题</a>
+            </nav>
+          </div>
+
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="font-bold text-gray-900 mb-4">对比提供商</h3>
+            <div class="space-y-3">
+              {providers.filter(p => ['deepseek', 'openai', 'google'].includes(p.id)).map(p => (
+                <a href={`/zh/providers/${p.id}`} class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors border-b border-gray-100 last:border-0">
+                  <span>{p.nameCn || p.name}</span>
+                  <span class="text-gray-400">#{p.overallRank}</span>
+                </a>
+              ))}
+              <a href="/zh/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">查看全部提供商 →</a>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100 p-6">
+            <h3 class="font-bold text-gray-900 mb-2">快速结论</h3>
+            <p class="text-sm text-gray-700 mb-3">
+              <strong>国内开发者</strong>：DeepSeek在访问和价格上胜出。
+            </p>
+            <p class="text-sm text-gray-700">
+              <strong>追求最佳质量</strong>：OpenAI仍领先。
+            </p>
+            <p class="text-sm text-gray-700 mt-2">
+              <strong>长上下文需求</strong>：Google AI的200K窗口无出其右。
+            </p>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </article>
+</BaseLayout>

@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import useCases from '../../data/pseo/use-cases.json';
+
+const title = 'AI API Use Cases — Find the Right Provider for Your Project | APIRank';
+const description = '8 AI API use cases explained: code generation, reasoning, writing, Chinese tasks, long context, multimodal, budget projects, and easy integration.';
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Use Cases</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10">
+        <h1 class="text-3xl font-bold text-gray-900 mb-3">AI API Use Cases</h1>
+        <p class="text-lg text-gray-600">
+          {useCases.length} use cases covered. Find the best AI provider for your specific project.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {useCases.map(uc => (
+          <a href={`/use-case/${uc.id}`} class="block bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-md transition-all group">
+            <h2 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">{uc.label.en}</h2>
+            <p class="text-sm text-gray-500 mb-4">{uc.providers.length} providers available</p>
+            <div class="flex flex-wrap gap-1.5">
+              {uc.providers.slice(0, 4).map(pid => {
+                const p = ['openai','anthropic','deepseek','google','aliyun','baidu','kimi','zhipu'].find(id => id === pid);
+                return p ? (
+                  <span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs font-mono capitalize">{p}</span>
+                ) : null;
+              })}
+              {uc.providers.length > 4 && (
+                <span class="text-gray-400 text-xs">+{uc.providers.length - 4}</span>
+              )}
+            </div>
+            <div class="mt-4 text-blue-600 text-sm font-medium group-hover:underline">Compare providers →</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

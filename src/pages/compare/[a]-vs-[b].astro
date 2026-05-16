@@ -1,0 +1,429 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import providers from '../../data/providers.json';
+import comparePairs from '../../data/pseo/compare-pairs.json';
+
+export function getStaticPaths() {
+  return comparePairs.map(pair => ({
+    params: {
+      a: pair.a,
+      b: pair.b,
+    },
+    props: { pair },
+  }));
+}
+
+const { a, b } = Astro.params;
+const { pair } = Astro.props;
+
+const provA = providers.find(p => p.id === a);
+const provB = providers.find(p => p.id === b);
+
+if (!provA || !provB) {
+  return Astro.redirect('/providers');
+}
+
+// Helper: parse price string like "$0.15-15/1M tokens" or "¥1-8/1M tokens"
+function parsePrice(priceStr) {
+  if (!priceStr) return null;
+  const match = priceStr.match(/([¥$])?([\d.]+)-([\d.]+)\/?/);
+  if (!match) return null;
+  const currency = match[1] || '$';
+  const min = parseFloat(match[2]);
+  const max = parseFloat(match[3]);
+  return { currency, min, max, raw: priceStr };
+}
+
+function formatPrice(prov) {
+  const inp = parsePrice(prov.pricing.input);
+  const out = parsePrice(prov.pricing.output);
+  const inpStr = prov.pricing.input.includes('/1M')
+    ? prov.pricing.input
+    : prov.pricing.input + '/1K';
+  const outStr = prov.pricing.output.includes('/1M')
+    ? prov.pricing.output
+    : prov.pricing.output + '/1K';
+  return { inp, out, inpStr, outStr };
+}
+
+const pA = formatPrice(provA);
+const pB = formatPrice(provB);
+
+const title = `${provA.name} vs ${provB.name} — API Comparison 2026 | APIRank`;
+const description = `Compare ${provA.name} vs ${provB.name} API: pricing, context window, China access, free tier, and use case fit. Find the right AI API provider at APIRank.`;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ComparisonModel",
+  "name": `${provA.name} vs ${provB.name} API Comparison`,
+  "description": description,
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "item": {
+        "@type": "Product",
+        "name": `${provA.name} API`,
+        "description": provA.highlightsEN?.[0] || provA.highlights[0],
+      }
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "item": {
+        "@type": "Product",
+        "name": `${provB.name} API`,
+        "description": provB.highlightsEN?.[0] || provB.highlights[0],
+      }
+    }
+  ]
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Compare", "item": "https://apirank.vip/compare" },
+    { "@type": "ListItem", "position": 3, "name": `${provA.name} vs ${provB.name}`, "item": `https://apirank.vip/compare/${a}-vs-${b}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `Which is cheaper, ${provA.name} or ${provB.name}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${provA.name} input: ${provA.pricing.input}; output: ${provA.pricing.output}. ${provB.name} input: ${provB.pricing.input}; output: ${provB.pricing.output}.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `Which is better for China access, ${provA.name} or ${provB.name}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${provA.name}: ${provA.availabilityEN}. ${provB.name}: ${provB.availabilityEN}.`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `What is the verdict for ${provA.name} vs ${provB.name}?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": pair.verdict.en
+      }
+    }
+  ]
+};
+
+const relatedPairs = comparePairs.filter(p =>
+  (p.a === a || p.a === b || p.b === a || p.b === b) && p.id !== pair.id
+).slice(0, 3);
+---
+
+<BaseLayout title={title} description={description} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <!-- Breadcrumb -->
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/compare" class="hover:text-blue-600">Compare</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">{provA.name} vs {provB.name}</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-2 space-y-8">
+
+          <!-- Header -->
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-3">
+              {provA.name} vs {provB.name} — API Comparison
+            </h1>
+            <p class="text-lg text-gray-600 mb-4">
+              Head-to-head comparison of pricing, features, and use case fit. Updated {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.
+            </p>
+            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+              <p class="text-blue-800 font-medium">
+                ⚡ Verdict: {pair.verdict.en}
+              </p>
+            </div>
+          </header>
+
+          <div class="adsense-placeholder h-24 rounded-lg"></div>
+
+          <!-- Pricing Comparison Table -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">💰 Pricing Comparison</h2>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gray-100">
+                  <th class="text-left py-3 font-semibold text-gray-500">Metric</th>
+                  <th class="text-center py-3 font-bold text-gray-900">{provA.name}</th>
+                  <th class="text-center py-3 font-bold text-gray-900">{provB.name}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-50">
+                <tr>
+                  <td class="py-3 font-medium text-gray-600">Input Price</td>
+                  <td class="py-3 text-center font-mono font-semibold text-blue-600">{provA.pricing.input}</td>
+                  <td class="py-3 text-center font-mono font-semibold text-blue-600">{provB.pricing.input}</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-gray-600">Output Price</td>
+                  <td class="py-3 text-center font-mono font-semibold text-green-600">{provA.pricing.output}</td>
+                  <td class="py-3 text-center font-mono font-semibold text-green-600">{provB.pricing.output}</td>
+                </tr>
+                {provA.pricing.cacheRead && (
+                  <tr>
+                    <td class="py-3 font-medium text-gray-600">Cache Read</td>
+                    <td class="py-3 text-center font-mono text-gray-700">{provA.pricing.cacheRead}</td>
+                    <td class="py-3 text-center font-mono text-gray-700">{provB.pricing.cacheRead || '—'}</td>
+                  </tr>
+                )}
+                {provA.pricing.cacheWrite && (
+                  <tr>
+                    <td class="py-3 font-medium text-gray-600">Cache Write</td>
+                    <td class="py-3 text-center font-mono text-gray-700">{provA.pricing.cacheWrite}</td>
+                    <td class="py-3 text-center font-mono text-gray-700">{provB.pricing.cacheWrite || '—'}</td>
+                  </tr>
+                )}
+                <tr class="bg-gray-50">
+                  <td class="py-3 font-medium text-gray-600">China Access</td>
+                  <td class={`py-3 text-center font-semibold ${provA.availabilityEN.includes('✅') ? 'text-green-600' : provA.availabilityEN.includes('⚠️') ? 'text-yellow-600' : 'text-red-500'}`}>{provA.availabilityEN}</td>
+                  <td class={`py-3 text-center font-semibold ${provB.availabilityEN.includes('✅') ? 'text-green-600' : provB.availabilityEN.includes('⚠️') ? 'text-yellow-600' : 'text-red-500'}`}>{provB.availabilityEN}</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-gray-600">Free Tier</td>
+                  <td class="py-3 text-center text-gray-700 text-sm">{provA.freeTierEN}</td>
+                  <td class="py-3 text-center text-gray-700 text-sm">{provB.freeTierEN}</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-gray-600">Models</td>
+                  <td class="py-3 text-center font-semibold">{provA.modelCount}+</td>
+                  <td class="py-3 text-center font-semibold">{provB.modelCount}+</td>
+                </tr>
+                <tr>
+                  <td class="py-3 font-medium text-gray-600">Overall Rank</td>
+                  <td class="py-3 text-center font-bold text-blue-600">#{provA.overallRank}</td>
+                  <td class="py-3 text-center font-bold text-blue-600">#{provB.overallRank}</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- Supported Models -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🤖 Supported Models</h2>
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <h3 class="font-semibold text-gray-800 mb-2">{provA.name}</h3>
+                <div class="flex flex-wrap gap-1">
+                  {provA.models.slice(0, 8).map(m => (
+                    <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-mono">{m}</span>
+                  ))}
+                  {provA.models.length > 8 && (
+                    <span class="text-gray-400 text-xs">+{provA.models.length - 8} more</span>
+                  )}
+                </div>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-800 mb-2">{provB.name}</h3>
+                <div class="flex flex-wrap gap-1">
+                  {provB.models.slice(0, 8).map(m => (
+                    <span class="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-mono">{m}</span>
+                  ))}
+                  {provB.models.length > 8 && (
+                    <span class="text-gray-400 text-xs">+{provB.models.length - 8} more</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Pros & Cons Side by Side -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">✨ Pros</h2>
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <h3 class="font-semibold text-green-700 mb-3">{provA.name}</h3>
+                <ul class="space-y-2">
+                  {(provA.highlightsEN || provA.highlights).map(h => (
+                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                      <span class="text-green-500 mt-0.5">✓</span>
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 class="font-semibold text-green-700 mb-3">{provB.name}</h3>
+                <ul class="space-y-2">
+                  {(provB.highlightsEN || provB.highlights).map(h => (
+                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                      <span class="text-green-500 mt-0.5">✓</span>
+                      <span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">⚠️ Cons</h2>
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <h3 class="font-semibold text-red-700 mb-3">{provA.name}</h3>
+                <ul class="space-y-2">
+                  {(provA.consEN || provA.cons).map(c => (
+                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                      <span class="text-red-400 mt-0.5">×</span>
+                      <span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 class="font-semibold text-red-700 mb-3">{provB.name}</h3>
+                <ul class="space-y-2">
+                  {(provB.consEN || provB.cons).map(c => (
+                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                      <span class="text-red-400 mt-0.5">×</span>
+                      <span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- Best For -->
+          <section class="bg-indigo-50 rounded-xl border border-indigo-100 p-6">
+            <h2 class="text-xl font-bold text-indigo-900 mb-3">🎯 Best For</h2>
+            <div class="grid grid-cols-2 gap-6">
+              <div>
+                <h3 class="font-semibold text-indigo-800 mb-2">{provA.name}</h3>
+                <p class="text-indigo-700 text-sm">{provA.bestForEN || provA.bestFor}</p>
+              </div>
+              <div>
+                <h3 class="font-semibold text-indigo-800 mb-2">{provB.name}</h3>
+                <p class="text-indigo-700 text-sm">{provB.bestForEN || provB.bestFor}</p>
+              </div>
+            </div>
+          </section>
+
+          <div class="adsense-placeholder h-24 rounded-lg"></div>
+
+          <!-- FAQ -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">❓ FAQ</h2>
+            <div class="space-y-4">
+              <details class="group" open>
+                <summary class="font-semibold text-gray-800 cursor-pointer list-none flex items-center justify-between">
+                  Which is cheaper, {provA.name} or {provB.name}?
+                  <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-gray-600 mt-2 text-sm">
+                  {provA.name} — Input: {provA.pricing.input}, Output: {provA.pricing.output}. {provB.name} — Input: {provB.pricing.input}, Output: {provB.pricing.output}.
+                </p>
+              </details>
+              <div class="border-t border-gray-100"></div>
+              <details class="group">
+                <summary class="font-semibold text-gray-800 cursor-pointer list-none flex items-center justify-between">
+                  Which is better for China access?
+                  <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-gray-600 mt-2 text-sm">
+                  {provA.name}: {provA.availabilityEN}. {provB.name}: {provB.availabilityEN}.
+                </p>
+              </details>
+              <div class="border-t border-gray-100"></div>
+              <details class="group">
+                <summary class="font-semibold text-gray-800 cursor-pointer list-none flex items-center justify-between">
+                  What is the overall verdict?
+                  <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-gray-600 mt-2 text-sm">{pair.verdict.en}</p>
+              </details>
+            </div>
+          </section>
+
+          <!-- Related Comparisons -->
+          {relatedPairs.length > 0 && (
+            <section class="bg-gray-50 rounded-xl border border-gray-200 p-6">
+              <h2 class="text-lg font-bold text-gray-900 mb-4">🔗 Related Comparisons</h2>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {relatedPairs.map(rel => {
+                  const relA = providers.find(p => p.id === rel.a);
+                  const relB = providers.find(p => p.id === rel.b);
+                  return (
+                    <a href={`/compare/${rel.a}-vs-${rel.b}`} class="block bg-white rounded-lg border border-gray-200 p-3 hover:border-blue-300 hover:shadow-sm transition-all">
+                      <span class="font-semibold text-sm text-gray-800">{relA?.name}</span>
+                      <span class="text-gray-400 mx-1">vs</span>
+                      <span class="font-semibold text-sm text-gray-800">{relB?.name}</span>
+                    </a>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="space-y-6">
+          <!-- Quick CTA -->
+          <div class="bg-white rounded-xl border border-gray-200 p-6 sticky top-20">
+            <h3 class="font-bold text-gray-900 mb-3">Get Started Fast</h3>
+            <div class="space-y-3">
+              <a href={`/providers/${provA.id}`} class="btn-secondary w-full text-center block text-sm">{provA.name} Details →</a>
+              <a href={`/providers/${provB.id}`} class="btn-secondary w-full text-center block text-sm">{provB.name} Details →</a>
+              <a href="/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">View All Providers →</a>
+            </div>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="font-bold text-gray-900 mb-4">⚡ Quick Stats</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between"><span class="text-gray-500">{provA.name} Rank</span><span class="font-bold text-blue-600">#{provA.overallRank}</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">{provB.name} Rank</span><span class="font-bold text-blue-600">#{provB.overallRank}</span></div>
+              <div class="border-t border-gray-100 pt-3">
+                <div class="flex justify-between"><span class="text-gray-500">Total Comparisons</span><span class="font-semibold">{comparePairs.length}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- All Providers -->
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="font-bold text-gray-900 mb-4">🏆 All Providers</h3>
+            <div class="space-y-2">
+              {providers.sort((a, b) => a.overallRank - b.overallRank).map(p => (
+                <a href={`/providers/${p.id}`} class="flex items-center justify-between py-1.5 text-sm hover:text-blue-600 transition-colors">
+                  <span>{p.name}</span>
+                  <span class="text-gray-400 text-xs">#{p.overallRank}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </article>
+</BaseLayout>

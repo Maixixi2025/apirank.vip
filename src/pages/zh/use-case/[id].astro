@@ -1,0 +1,267 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import providers from '../../../data/providers.json';
+import useCases from '../../../data/pseo/use-cases.json';
+
+export function getStaticPaths() {
+  return useCases.map(uc => ({
+    params: { id: uc.id },
+    props: { uc },
+  }));
+}
+
+const { id } = Astro.params;
+const { uc } = Astro.props;
+
+const ucProviders = providers.filter(p => uc.providers.includes(p.id));
+const sortedProviders = ucProviders.sort((a, b) => a.overallRank - b.overallRank);
+
+const best = sortedProviders[0];
+const budgetPick = sortedProviders.find(p => p.priceRank === 5) || sortedProviders[sortedProviders.length - 1];
+const chinaPick = sortedProviders.find(p => p.category === 'domestic');
+
+const title = `${uc.label.zh} — 最佳AI API推荐对比 2026 | APIRank`;
+const description = `${ucProviders.length}家AI API提供商对比：${uc.label.zh}场景下的价格、功能、国内访问、免费额度。2026年最新数据。`;
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "使用场景", "item": "https://apirank.vip/zh/use-case" },
+    { "@type": "ListItem", "position": 3, "name": uc.label.zh, "item": `https://apirank.vip/zh/use-case/${id}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": `${uc.label.zh} 用哪个 AI API 最好？`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${best?.nameCn} 是我们的首选，综合排名#${best?.overallRank}，输入价格${best?.pricing.input}。`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `${uc.label.zh} 哪个 AI API 最便宜？`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${budgetPick?.nameCn} 价格最低，输入${budgetPick?.pricing.input}。`
+      }
+    },
+    {
+      "@type": "Question",
+      "name": `${uc.label.zh} 哪个 AI API 国内可以访问？`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": `${chinaPick?.nameCn}（${chinaPick?.availabilityCN}）是${uc.label.zh}场景下国内访问的最佳选择。`
+      }
+    }
+  ]
+};
+---
+
+<BaseLayout title={title} description={description} type="article" locale="zh">
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/use-case" class="hover:text-blue-600">使用场景</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">{uc.label.zh}</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-3">
+              {uc.label.zh} — AI API 推荐
+            </h1>
+            <p class="text-lg text-gray-600 mb-4">
+              共 {sortedProviders.length} 家提供商参与对比。更新于 {new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}。
+            </p>
+            <div class="flex flex-wrap gap-3">
+              <a href={`/zh/compare/${best?.id}-vs-${sortedProviders[1]?.id}`} class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                ⚔️ {best?.nameCn} vs {sortedProviders[1]?.nameCn}
+              </a>
+              <a href={`/zh/providers/${best?.id}`} class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">
+                📖 {best?.nameCn} 详情 →
+              </a>
+            </div>
+          </header>
+
+          <div class="adsense-placeholder h-24 rounded-lg"></div>
+
+          <!-- 快速选择 -->
+          <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-green-50 border border-green-100 rounded-xl p-4">
+              <div class="text-xs text-green-600 font-semibold uppercase tracking-wide mb-1">🏆 首选</div>
+              <div class="font-bold text-gray-900">{best?.nameCn}</div>
+              <div class="text-sm text-gray-500 mt-1">{best?.availabilityCN}</div>
+            </div>
+            <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-4">
+              <div class="text-xs text-yellow-600 font-semibold uppercase tracking-wide mb-1">💰 低价首选</div>
+              <div class="font-bold text-gray-900">{budgetPick?.nameCn}</div>
+              <div class="text-sm text-gray-500 mt-1">输入 {budgetPick?.pricing.input}</div>
+            </div>
+            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+              <div class="text-xs text-blue-600 font-semibold uppercase tracking-wide mb-1">🇨🇳 国内首选</div>
+              <div class="font-bold text-gray-900">{chinaPick?.nameCn}</div>
+              <div class="text-sm text-gray-500 mt-1">{chinaPick?.availabilityCN}</div>
+            </div>
+          </section>
+
+          <!-- 对比表 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">📊 {uc.label.zh} — 提供商对比</h2>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gray-100">
+                  <th class="text-left py-3 font-semibold text-gray-500">提供商</th>
+                  <th class="text-center py-3 font-semibold text-gray-500">输入价格</th>
+                  <th class="text-center py-3 font-semibold text-gray-500">输出价格</th>
+                  <th class="text-center py-3 font-semibold text-gray-500">国内访问</th>
+                  <th class="text-center py-3 font-semibold text-gray-500">免费额度</th>
+                  <th class="text-center py-3 font-semibold text-gray-500">排名</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-50">
+                {sortedProviders.map((p, i) => (
+                  <tr class={i === 0 ? 'bg-green-50' : ''}>
+                    <td class="py-3">
+                      <a href={`/zh/providers/${p.id}`} class="font-semibold text-gray-900 hover:text-blue-600">{p.nameCn}</a>
+                    </td>
+                    <td class="py-3 text-center font-mono text-blue-600 text-xs">{p.pricing.input}</td>
+                    <td class="py-3 text-center font-mono text-green-600 text-xs">{p.pricing.output}</td>
+                    <td class={`py-3 text-center text-xs font-semibold ${p.availabilityCN.includes('✅') ? 'text-green-600' : p.availabilityCN.includes('⚠️') ? 'text-yellow-600' : 'text-red-500'}`}>{p.availabilityCN.split(' ')[0]}</td>
+                    <td class="py-3 text-center text-xs text-gray-600">{p.freeTier.split('（')[0].trim()}</td>
+                    <td class="py-3 text-center font-bold text-blue-600">#{p.overallRank}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+
+          <!-- 首选详情 -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">🏆 最佳选择：{best?.nameCn}</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <h3 class="font-semibold text-green-700 mb-2">✨ 优势</h3>
+                <ul class="space-y-1.5">
+                  {best?.highlights.map(h => (
+                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                      <span class="text-green-500 mt-0.5">✓</span><span>{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h3 class="font-semibold text-red-700 mb-2">⚠️ 劣势</h3>
+                <ul class="space-y-1.5">
+                  {best?.cons.map(c => (
+                    <li class="flex items-start gap-2 text-sm text-gray-700">
+                      <span class="text-red-400 mt-0.5">×</span><span>{c}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div class="mt-4 p-4 bg-gray-50 rounded-lg">
+              <p class="text-sm text-gray-600"><span class="font-semibold">🎯 适用场景：</span> {best?.bestFor}</p>
+            </div>
+          </section>
+
+          <div class="adsense-placeholder h-24 rounded-lg"></div>
+
+          <!-- FAQ -->
+          <section class="bg-white rounded-xl border border-gray-200 p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">❓ 常见问题</h2>
+            <div class="space-y-4">
+              <details class="group" open>
+                <summary class="font-semibold text-gray-800 cursor-pointer list-none flex items-center justify-between">
+                  {uc.label.zh} 用哪个 AI API 最好？
+                  <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-gray-600 mt-2 text-sm">
+                  {best?.nameCn} 是我们的首选，综合排名#{best?.overallRank}，输入价格{best?.pricing.input}，{best?.availabilityCN}。
+                </p>
+              </details>
+              <div class="border-t border-gray-100"></div>
+              <details class="group">
+                <summary class="font-semibold text-gray-800 cursor-pointer list-none flex items-center justify-between">
+                  {uc.label.zh} 哪个最便宜？
+                  <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-gray-600 mt-2 text-sm">
+                  {budgetPick?.nameCn} 价格最低，输入{budgetPick?.pricing.input}，适合{uc.label.zh}预算敏感型项目。
+                </p>
+              </details>
+              <div class="border-t border-gray-100"></div>
+              <details class="group">
+                <summary class="font-semibold text-gray-800 cursor-pointer list-none flex items-center justify-between">
+                  {uc.label.zh} 哪些提供商支持国内访问？
+                  <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                </summary>
+                <p class="text-gray-600 mt-2 text-sm">
+                  {ucProviders.filter(p => p.category === 'domestic').map(p => p.nameCn).join('、')} 是国内访问最稳定的选择。
+                </p>
+              </details>
+            </div>
+          </section>
+
+          <!-- 相关场景 -->
+          <section class="bg-gray-50 rounded-xl border border-gray-200 p-6">
+            <h2 class="text-lg font-bold text-gray-900 mb-4">🔗 相关使用场景</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {useCases.filter(u => u.id !== id).slice(0, 4).map(u => (
+                <a href={`/zh/use-case/${u.id}`} class="block bg-white rounded-lg border border-gray-200 p-3 text-center hover:border-blue-300 hover:shadow-sm transition-all">
+                  <span class="text-sm font-medium text-gray-800">{u.label.zh}</span>
+                </a>
+              ))}
+            </div>
+          </section>
+
+        </div>
+
+        <!-- 侧边栏 -->
+        <aside class="space-y-6">
+          <div class="bg-white rounded-xl border border-gray-200 p-6 sticky top-20">
+            <h3 class="font-bold text-gray-900 mb-3">快速开始</h3>
+            <div class="space-y-3">
+              <a href={`/zh/providers/${best?.id}`} class="btn-primary w-full text-center block">查看 {best?.nameCn} →</a>
+              <a href="/zh/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">所有提供商 →</a>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="font-bold text-gray-900 mb-4">🏆 所有提供商</h3>
+            <div class="space-y-2">
+              {providers.sort((a, b) => a.overallRank - b.overallRank).map(p => (
+                <a href={`/zh/providers/${p.id}`} class="flex items-center justify-between py-1.5 text-sm hover:text-blue-600 transition-colors">
+                  <span>{p.nameCn}</span>
+                  <span class="text-gray-400 text-xs">#{p.overallRank}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </article>
+</BaseLayout>

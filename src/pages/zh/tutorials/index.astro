@@ -3,58 +3,69 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { t } from '../../../i18n/utils';
 
 const locale = 'zh';
+
+const tutorials = [
+  {
+    slug: 'deepseek-api-review',
+    title: 'DeepSeek API 完整测评：2026价格、免费额度、中国直连',
+    description: '深度测评 DeepSeek API：价格、免费额度、模型能力、中国直连访问。深度求索 vs OpenAI 能省多少？',
+    date: '2026-05-14',
+    tag: 'API 测评',
+    emoji: '🔬',
+    readTime: '8 分钟',
+  },
+  {
+    slug: 'deepseek-vs-openai-api-china',
+    title: 'DeepSeek vs OpenAI vs Google AI：2026年中国开发者如何选择',
+    description: '深度对比 DeepSeek、OpenAI、Google AI 三大 AI API：价格、免费额度、中国访问、模型能力。中国开发者选哪家最合适？',
+    date: '2026-05-13',
+    tag: '对比评测',
+    emoji: '⚖️',
+    readTime: '8 分钟',
+  },
+];
+
+const sortedTutorials = tutorials.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 ---
 
 <BaseLayout
-  title="AI API 使用教程 - 入门指南 | APIRank"
-  description="一步步教你如何使用 AI API。包括如何申请 API Key、发起第一次 API 调用、以及如何将 AI 集成到你的项目中。"
+  title="AI API 教程 - 入门指南 | APIRank"
+  description="深度对比和评测，帮助你选择最合适的 AI API。DeepSeek vs OpenAI、API 价格指南等。"
 >
   <div class="bg-gray-50 border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <nav class="flex items-center gap-2 text-sm text-gray-500">
         <a href="/zh" class="hover:text-blue-600">{t(locale, 'nav.home')}</a>
         <span>›</span>
-        <span class="text-gray-900 font-medium">{t(locale, 'nav.tutorials')}</span>
+        <span class="text-gray-900 font-medium">教程</span>
       </nav>
     </div>
   </div>
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="text-center mb-12">
-      <h1 class="text-3xl font-bold text-gray-900 mb-3">{t(locale, 'tutorials.title')}</h1>
-      <p class="text-gray-600">{t(locale, 'tutorials.subtitle')}</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-3">AI API 教程</h1>
+      <p class="text-gray-600">深度评测与对比，帮助你选择最适合的 AI API</p>
     </div>
 
     <div class="space-y-6">
-      <a href="/zh/providers/deepseek" class="block bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-md transition-all">
-        <div class="flex items-center gap-4">
-          <div class="text-3xl">🔑</div>
-          <div>
-            <h2 class="text-lg font-bold text-gray-900 mb-1">如何申请 DeepSeek API Key</h2>
-            <p class="text-gray-500 text-sm">分步指南：注册、实名认证、获取 API Key，只需几分钟即可完成。</p>
+      {sortedTutorials.map((t) => (
+        <a href={`/zh/tutorials/${t.slug}`} class="block bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-md transition-all">
+          <div class="flex items-center gap-4 mb-3">
+            <div class="text-3xl">{t.emoji}</div>
+            <div class="flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="badge badge-primary text-xs">{t.tag}</span>
+                <span class="text-xs text-gray-400">{t.date}</span>
+                <span class="text-xs text-gray-400">•</span>
+                <span class="text-xs text-gray-400">{t.readTime} 阅读</span>
+              </div>
+              <h2 class="text-lg font-bold text-gray-900">{t.title}</h2>
+            </div>
           </div>
-        </div>
-      </a>
-
-      <a href="/zh/providers/openai" class="block bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-md transition-all">
-        <div class="flex items-center gap-4">
-          <div class="text-3xl">🤖</div>
-          <div>
-            <h2 class="text-lg font-bold text-gray-900 mb-1">国内如何用 OpenAI API</h2>
-            <p class="text-gray-500 text-sm">了解如何使用或不使用代理服务访问 OpenAI API。</p>
-          </div>
-        </div>
-      </a>
-
-      <a href="/zh/providers/anthropic" class="block bg-white rounded-xl border border-gray-200 p-6 hover:border-blue-300 hover:shadow-md transition-all">
-        <div class="flex items-center gap-4">
-          <div class="text-3xl">🧠</div>
-          <div>
-            <h2 class="text-lg font-bold text-gray-900 mb-1">Claude API 入门指南</h2>
-            <p class="text-gray-500 text-sm">开始使用 Claude API 所需了解的一切。</p>
-          </div>
-        </div>
-      </a>
+          <p class="text-gray-500 text-sm">{t.description}</p>
+        </a>
+      ))}
     </div>
   </div>
 </BaseLayout>
