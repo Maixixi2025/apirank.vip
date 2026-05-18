@@ -8,6 +8,7 @@ const locale = 'en';
 const sortedProviders = [...providers].sort((a, b) => a.overallRank - b.overallRank);
 const domesticProviders = sortedProviders.filter(p => p.category === 'domestic');
 const intlProviders = sortedProviders.filter(p => p.category === 'international');
+const aggregatorProviders = sortedProviders.filter(p => p.category === 'aggregator');
 
 // JSON-LD: FAQPage for homepage
 const faqJsonLd = {
@@ -183,6 +184,53 @@ const faqJsonLd = {
   <!-- AdSense Position 2: After Provider Grid -->
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <div class="adsense-placeholder h-28 rounded-lg"></div>
+  </section>
+
+  <!-- AI API Gateways & Aggregators Section -->
+  <section class="py-12 bg-indigo-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-2xl">🔗</span>
+        <h2 class="text-2xl font-bold text-gray-900">AI API Gateways & Aggregators</h2>
+      </div>
+      <p class="text-gray-500 text-sm mb-8">One API key → 400+ models. Unified access with auto-routing and model flexibility.</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {aggregatorProviders.map((provider) => (
+          <a href={`/providers/${provider.id}`} class="provider-card group bg-white border-indigo-100 hover:border-indigo-300">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                {provider.name}
+              </h3>
+              <span class="badge bg-indigo-100 text-indigo-700 text-xs">
+                #{provider.overallRank}
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">{provider.modelCount}+ models</p>
+            <div class="mt-3 space-y-1 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-500">Top Feature</span>
+              </div>
+              <p class="text-gray-700 text-xs">{provider.highlightsEN?.[0] || provider.highlights[0]}</p>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-medium text-indigo-600">{provider.availabilityEN}</span>
+                <span class="flex-1"></span>
+                <span class="text-xs text-gray-400">Free</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">{provider.freeTierEN}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="mt-6 text-center">
+        <a href="/tutorials/openrouter-review" class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+          OpenRouter Review: Is the aggregators worth it? →
+        </a>
+      </div>
+    </div>
   </section>
 
   <!-- Price Comparison Table -->

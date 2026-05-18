@@ -9,6 +9,7 @@ const locale = 'zh';
 const sortedProviders = [...providers].sort((a, b) => a.overallRank - b.overallRank);
 const domesticProviders = sortedProviders.filter(p => p.category === 'domestic');
 const intlProviders = sortedProviders.filter(p => p.category === 'international');
+const aggregatorProviders = sortedProviders.filter(p => p.category === 'aggregator');
 
 // JSON-LD: FAQPage for homepage
 const faqJsonLd = {
@@ -190,6 +191,53 @@ const faqJsonLd = {
   <!-- AdSense Position 2: After Provider Grid -->
   <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <div class="adsense-placeholder h-28 rounded-lg"></div>
+  </section>
+
+  <!-- AI API 网关与聚合器 -->
+  <section class="py-12 bg-indigo-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-2xl">🔗</span>
+        <h2 class="text-2xl font-bold text-gray-900">AI API 网关与聚合器</h2>
+      </div>
+      <p class="text-gray-500 text-sm mb-8">一个 API Key → 400+ 模型。统一访问、自动路由、灵活切换模型。</p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {aggregatorProviders.map((provider) => (
+          <a href={`/zh/providers/${provider.id}`} class="provider-card group bg-white border-indigo-100 hover:border-indigo-300">
+            <div class="flex items-center justify-between">
+              <h3 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                {provider.nameCn}
+              </h3>
+              <span class="badge bg-indigo-100 text-indigo-700 text-xs">
+                #{provider.overallRank}
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">{provider.modelCount}+ 模型</p>
+            <div class="mt-3 space-y-1 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-500">核心优势</span>
+              </div>
+              <p class="text-gray-700 text-xs">{provider.highlights?.[0]}</p>
+            </div>
+            <div class="mt-3 pt-3 border-t border-gray-100">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-medium text-indigo-600">{provider.availabilityCN}</span>
+                <span class="flex-1"></span>
+                <span class="text-xs text-gray-400">免费额度</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-1">{provider.freeTier}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="mt-6 text-center">
+        <a href="/zh/tutorials/openrouter-review" class="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+          OpenRouter 评测：一个 API Key 用 400+ 模型，值得吗？ →
+        </a>
+      </div>
+    </div>
   </section>
 
   <!-- Price Comparison Table -->
