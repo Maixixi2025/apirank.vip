@@ -1,0 +1,373 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'ai-agent-hosting-vps-deployment';
+const date = '2026-05-30';
+const locale = 'en';
+
+const enTitle = 'How to Host AI Agents 24/7: VPS + API Setup Guide 2026';
+const enDescription = 'Deploy AI agents on a VPS with a cost-effective API backend. Best VPS picks, API tier comparison, and step-by-step Ollama/LangChain setup for production AI agents.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "id": `https://apirank.vip/tutorials/${slug}`
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can I run AI agents on a cheap VPS?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. A VPS with 2 vCPU + 4GB RAM (e.g., RackNerd at $1.99/mo) can run quantized open-source models via Ollama. For production agents requiring GPT-4o or Claude, use a cloud API instead."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the cheapest API for AI agents?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "DeepSeek-R1 is the most cost-effective at ¥1/1M input tokens — 60x cheaper than GPT-4o. For open-source model hosting, Ollama on a $5/mo VPS beats cloud API costs at scale."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I keep AI agents running 24/7?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use systemd to run your agent as a service (not a background process). Set up auto-restart on crash, and monitor with a simple health check endpoint. For critical production agents, use PM2 or Docker."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ollama vs cloud API — which is better for AI agents?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ollama + self-hosted: lower cost per call at scale, full data privacy, no rate limits. Cloud APIs (DeepSeek, OpenAI): better model quality, zero maintenance, easier setup. Use Ollama for dev/small scale; cloud APIs for production."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What VPS do AI agents need?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For self-hosted models: 2 vCPU + 4GB minimum for 7B models, 4 vCPU + 16GB for 70B models. For API-only agents: even a $2/mo VPS is enough to run the agent logic. RackNerd and Vultr are the best value choices."
+      }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={`${enTitle} | APIRank`}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/en" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">AI Agent VPS Hosting</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <header class="mb-8">
+      <div class="flex items-center gap-3 text-sm text-gray-500 mb-3">
+        <span>Tutorial</span>
+        <span>·</span>
+        <span>Updated May 30, 2026</span>
+        <span>·</span>
+        <span>12 min read</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">{enTitle}</h1>
+      <p class="text-lg text-gray-600">Running AI agents 24/7 requires a server and a cost-effective API backend. This guide covers the best VPS picks, API tier comparison, and deployment steps using Ollama and LangChain.</p>
+    </header>
+
+    <div class="prose prose-lg max-w-none">
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Why Host AI Agents on a VPS?</h2>
+      <p class="text-gray-700 mb-4">Cloud AI APIs (OpenAI, Anthropic) charge per token. For high-volume agents that run hundreds of calls per minute, the costs add up fast. Self-hosting on a VPS + open-source models cuts costs by 90% while keeping agents running around the clock.</p>
+      <p class="text-gray-700 mb-4">The trade-off: you manage the infrastructure. But with modern tools like Ollama, that complexity is minimal — a few commands to get a production-grade LLM running.</p>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Best VPS for AI Agents (2026)</h2>
+      <div class="overflow-x-auto mb-6">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">Provider</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">Price</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">Specs</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">Best For</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="https://vpstier.com/blog/racknerd-deep-review-2025" class="text-blue-600 hover:underline">RackNerd</a></td>
+              <td class="py-2 px-3">$1.99/mo</td>
+              <td class="py-2 px-3">1 vCPU / 1GB / 10GB SSD</td>
+              <td class="py-2 px-3 text-gray-600">Dev, testing, lightweight agents</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="https://vpstier.com/blog/racknerd-deep-review-2025" class="text-blue-600 hover:underline">RackNerd</a></td>
+              <td class="py-2 px-3">$5.99/mo</td>
+              <td class="py-2 px-3">2 vCPU / 4GB / 50GB SSD</td>
+              <td class="py-2 px-3 text-gray-600"><strong>Best value for 7B models via Ollama</strong></td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="https://vpstier.com/blog/vultr-deep-review" class="text-blue-600 hover:underline">Vultr</a></td>
+              <td class="py-2 px-3">$6/mo</td>
+              <td class="py-2 px-3">1 vCPU / 2GB / 55GB SSD</td>
+              <td class="py-2 px-3 text-gray-600">Production-grade reliability</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="https://vpstier.com/blog/vultr-deep-review" class="text-blue-600 hover:underline">Vultr</a></td>
+              <td class="py-2 px-3">$24/mo</td>
+              <td class="py-2 px-3">4 vCPU / 8GB / 160GB SSD</td>
+              <td class="py-2 px-3 text-gray-600">70B models, high-throughput agents</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-gray-500 mb-6"><a href="https://vpstier.com" class="text-blue-600 hover:underline">vpstier.com</a> has full reviews of these VPS providers with performance benchmarks and real-world test results.</p>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">AI API Tiers for Agent Backends</h2>
+      <div class="overflow-x-auto mb-6">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">API</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">Input</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">Output</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">Strength</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">China</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="/use-case/ai-agent-hosting" class="text-blue-600 hover:underline">DeepSeek R1</a></td>
+              <td class="py-2 px-3">¥1/1M tokens</td>
+              <td class="py-2 px-3">¥2/1M tokens</td>
+              <td class="py-2 px-3 text-gray-600">Best cost-performance, strong reasoning</td>
+              <td class="py-2 px-3">✅ Direct</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="/use-case/code-generation" class="text-blue-600 hover:underline">OpenAI o1</a></td>
+              <td class="py-2 px-3">$15/1M tokens</td>
+              <td class="py-2 px-3">$60/1M tokens</td>
+              <td class="py-2 px-3 text-gray-600">Function calling, multi-step reasoning</td>
+              <td class="py-2 px-3">❌ Proxy</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="/use-case/multi-model" class="text-blue-600 hover:underline">OpenRouter</a></td>
+              <td class="py-2 px-3">Model + 5.5%</td>
+              <td class="py-2 px-3">Model + 5.5%</td>
+              <td class="py-2 px-3 text-gray-600">400+ models, unified access</td>
+              <td class="py-2 px-3">✅ Direct</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="/use-case/long-context" class="text-blue-600 hover:underline">Claude 3.7</a></td>
+              <td class="py-2 px-3">$3/1M tokens</td>
+              <td class="py-2 px-3">$15/1M tokens</td>
+              <td class="py-2 px-3 text-gray-600">200K context, writing quality</td>
+              <td class="py-2 px-3">❌ Proxy</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="/tutorials/openrouter-review" class="text-blue-600 hover:underline">FreeModel</a></td>
+              <td class="py-2 px-3">Free credits</td>
+              <td class="py-2 px-3">Model-dependent</td>
+              <td class="py-2 px-3 text-gray-600">DeepSeek official, direct in China</td>
+              <td class="py-2 px-3">✅ Direct</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-gray-600 mb-6">Compare all AI API providers on <a href="https://apirank.vip" class="text-blue-600 hover:underline">APIRank</a> — pricing, features, and China availability in one place.</p>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Recommended Combinations</h2>
+
+      <div class="bg-green-50 border border-green-200 rounded-lg p-5 mb-5">
+        <h3 class="font-bold text-gray-900 mb-2">🟢 Budget Combo: RackNerd + Ollama + DeepSeek</h3>
+        <p class="text-gray-700 text-sm mb-2"><strong>VPS:</strong> RackNerd $5.99/mo (2 vCPU / 4GB RAM)</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>Model:</strong> Ollama + DeepSeek-R1-Distill (quantized)</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>API:</strong> DeepSeek API ¥1/1M tokens — nearly free at scale</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>Total:</strong> ~$6/mo for a self-hosted agent capable of complex reasoning</p>
+        <p class="text-gray-600 text-xs mt-2"><a href="https://vpstier.com/blog/racknerd-deep-review-2025" class="text-blue-600 hover:underline">RackNerd review with benchmark →</a></p>
+      </div>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-5">
+        <h3 class="font-bold text-gray-900 mb-2">🔵 Production Combo: Vultr + LangChain + OpenAI/Claude</h3>
+        <p class="text-gray-700 text-sm mb-2"><strong>VPS:</strong> Vultr $24/mo (4 vCPU / 8GB RAM)</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>Agent Framework:</strong> LangChain or CrewAI</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>API:</strong> OpenAI o1 or Claude 3.7 for reasoning tasks</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>Total:</strong> ~$24/mo + API costs — handles 1000+ agent calls/day</p>
+      </div>
+
+      <div class="bg-purple-50 border border-purple-200 rounded-lg p-5 mb-6">
+        <h3 class="font-bold text-gray-900 mb-2">🟣 China-Optimized: Vultr + FreeModel</h3>
+        <p class="text-gray-700 text-sm mb-2"><strong>VPS:</strong> Vultr $6/mo or RackNerd $5.99/mo</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>API:</strong> <a href="/tutorials/openrouter-review" class="text-blue-600 hover:underline">FreeModel.dev</a> — official DeepSeek partner, direct from China</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>Total:</strong> ~$6/mo, no proxy needed, DeepSeek V3 and R1 available</p>
+      </div>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Deploy Ollama on VPS in 5 Steps</h2>
+
+      <div class="space-y-4 mb-8">
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-1">Spin up a VPS (Ubuntu 22.04)</h3>
+            <p class="text-gray-600 text-sm">Choose RackNerd $5.99 or Vultr $6. Deploy via their dashboard. Note the public IP.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-1">SSH in and install Ollama</h3>
+            <div class="bg-gray-900 text-green-400 rounded px-3 py-2 font-mono text-sm mt-1 mb-2">curl -fsSL https://ollama.com/install.sh | sh</div>
+            <p class="text-gray-600 text-sm">Works on Ubuntu, Debian, CentOS. 2GB RAM minimum.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-1">Pull a model</h3>
+            <div class="bg-gray-900 text-green-400 rounded px-3 py-2 font-mono text-sm mt-1 mb-2">ollama pull deepseek-r1:7b</div>
+            <p class="text-gray-600 text-sm">7B model needs ~4GB disk. For 70B, get a Vultr $24/mo instance with 8GB RAM.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">4</div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-1">Start the API server</h3>
+            <div class="bg-gray-900 text-green-400 rounded px-3 py-2 font-mono text-sm mt-1 mb-2">ollama serve</div>
+            <p class="text-gray-600 text-sm">Ollama runs on port 11434. Expose it behind a simple nginx reverse proxy with API key auth for security.</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">5</div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-1">Connect your agent framework</h3>
+            <div class="bg-gray-900 text-green-400 rounded px-3 py-2 font-mono text-sm mt-1 mb-2">export OLLAMA_BASE_URL=http://YOUR_VPS_IP:11434</div>
+            <p class="text-gray-600 text-sm">Use LangChain's Ollama integration or CrewAI. Your agent now routes through your self-hosted LLM.</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Self-Hosted vs Cloud API: When to Use Which</h2>
+      <div class="overflow-x-auto mb-6">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">Scenario</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">Recommendation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 text-gray-700">High-volume, cost-sensitive agents</td>
+              <td class="py-2 px-3 font-medium text-green-700">Ollama + open-source model on VPS</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 text-gray-700">Complex reasoning / function calling</td>
+              <td class="py-2 px-3 font-medium text-blue-700">OpenAI o1 or Claude 3.7 via API</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 text-gray-700">China-based, no proxy needed</td>
+              <td class="py-2 px-3 font-medium text-green-700">DeepSeek API or FreeModel (direct)</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 text-gray-700">Multi-model evaluation / benchmarking</td>
+              <td class="py-2 px-3 font-medium text-blue-700">OpenRouter (400+ models, one key)</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 text-gray-700">Prototyping / dev environment</td>
+              <td class="py-2 px-3 font-medium text-gray-700">Free tier of any cloud API</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+      <div class="space-y-4 mb-8">
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">Can I run AI agents on a cheap VPS?</h3>
+          <p class="text-gray-600 text-sm">Yes. A VPS with 2 vCPU + 4GB RAM (e.g., RackNerd at $1.99/mo) can run quantized open-source models via Ollama. For production agents requiring GPT-4o or Claude, use a cloud API instead.</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">What's the cheapest API for AI agents?</h3>
+          <p class="text-gray-600 text-sm">DeepSeek-R1 is the most cost-effective at ¥1/1M input tokens — 60x cheaper than GPT-4o. For open-source model hosting, Ollama on a $5/mo VPS beats cloud API costs at scale.</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">How do I keep AI agents running 24/7?</h3>
+          <p class="text-gray-600 text-sm">Use systemd to run your agent as a service (not a background process). Set up auto-restart on crash, and monitor with a simple health check endpoint. For critical production agents, use PM2 or Docker.</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">Ollama vs cloud API — which is better for AI agents?</h3>
+          <p class="text-gray-600 text-sm">Ollama + self-hosted: lower cost per call at scale, full data privacy, no rate limits. Cloud APIs (DeepSeek, OpenAI): better model quality, zero maintenance, easier setup. Use Ollama for dev/small scale; cloud APIs for production.</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">What VPS do AI agents need?</h3>
+          <p class="text-gray-600 text-sm">For self-hosted models: 2 vCPU + 4GB minimum for 7B models, 4 vCPU + 16GB for 70B models. For API-only agents: even a $2/mo VPS is enough to run the agent logic. RackNerd and Vultr are the best value choices.</p>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mt-8">
+        <h3 class="font-bold text-gray-900 mb-3">Start Building</h3>
+        <p class="text-gray-600 text-sm mb-4">Compare AI API pricing and features on <a href="https://apirank.vip" class="text-blue-600 hover:underline">APIRank</a>. Find the right provider for your agent workload. Then pick a VPS from <a href="https://vpstier.com" class="text-blue-600 hover:underline">vpstier.com</a> to host your agent 24/7.</p>
+        <div class="flex flex-wrap gap-3">
+          <a href="/" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">Compare AI APIs →</a>
+          <a href="https://vpstier.com/blog/racknerd-deep-review-2025" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300">Best VPS for AI →</a>
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

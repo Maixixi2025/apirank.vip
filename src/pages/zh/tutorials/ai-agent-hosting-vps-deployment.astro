@@ -1,0 +1,373 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'ai-agent-hosting-vps-deployment';
+const date = '2026-05-30';
+const locale = 'zh';
+
+const zhTitle = 'AI Agent 托管完整指南：VPS + API 部署 2026';
+const zhDescription = '在 VPS 上 24/7 运行 AI Agent。2026 年最佳 VPS 推荐、API 方案对比、Ollama/LangChain 5 步部署教程，让你的 AI Agent 低成本跑满全天候。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "id": `https://apirank.vip/zh/tutorials/${slug}`
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "便宜的 VPS 能跑 AI Agent 吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "能。2核CPU + 4GB内存的 VPS（如 RackNerd $1.99/月）可以通过 Ollama 运行量化后的开源模型。需要 GPT-4o 或 Claude 等顶级模型的生产级 Agent，建议直接用云端 API。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "AI Agent 最便宜的 API 是哪个？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "DeepSeek-R1：¥1/百万 tokens，比 GPT-4o 便宜 60 倍。如果用量大，自托管 Ollama + 开源模型的单次成本更低。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "怎么让 AI Agent 24/7 运行不中断？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "用 systemd 将 Agent 作为服务运行（不要用 nohup 丢后台）。设置崩溃自动重启，加上简单的健康检查接口。生产环境推荐用 PM2 或 Docker 管理。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ollama vs 云端 API，AI Agent 用哪个好？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Ollama 自托管：单次调用成本低，数据完全私密，无限速。云端 API（DeepSeek、OpenAI）：模型质量更高，零运维，开箱即用。开发和小规模用 Ollama，生产环境用云端 API。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "AI Agent 需要什么配置的 VPS？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "自托管模型：7B 模型最低 2核CPU + 4GB，70B 模型需要 4核CPU + 16GB。仅运行 Agent 逻辑：甚至 2刀/月的 VPS 都够用。RackNerd 和 Vultr 是性价比最优选择。"
+      }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={`${zhTitle} | APIRank`}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">AI Agent 托管部署</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <header class="mb-8">
+      <div class="flex items-center gap-3 text-sm text-gray-500 mb-3">
+        <span>教程</span>
+        <span>·</span>
+        <span>更新于 2026年5月30日</span>
+        <span>·</span>
+        <span>约12分钟阅读</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">{zhTitle}</h1>
+      <p class="text-lg text-gray-600">AI Agent 需要 24/7 运行，你需要一台服务器 + 一个性价比高的 API 后端。本文涵盖最佳 VPS 推荐、API 方案对比，以及 Ollama/LangChain 的 5 步部署教程。</p>
+    </header>
+
+    <div class="prose prose-lg max-w-none">
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么要在 VPS 上托管 AI Agent？</h2>
+      <p class="text-gray-700 mb-4">云端 AI API（OpenAI、Anthropic）按 token 计费。对于每分钟需要运行数百次调用的高频 Agent，成本会迅速飙升。在 VPS 上自托管开源模型，成本降低 90%，同时 Agent 可以全天候运行。</p>
+      <p class="text-gray-700 mb-4">代价是你需要管理基础设施。但有了 Ollama 这样的现代工具，复杂度已经很低——几条命令就能跑起一个生产级的 LLM。</p>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">2026 年 AI Agent 最佳 VPS 推荐</h2>
+      <div class="overflow-x-auto mb-6">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">商家</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">价格</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">配置</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">适用场景</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="https://vpstier.com/zh/blog/racknerd-deep-review-2025" class="text-blue-600 hover:underline">RackNerd</a></td>
+              <td class="py-2 px-3">$1.99/月</td>
+              <td class="py-2 px-3">1核 / 1GB / 10GB SSD</td>
+              <td class="py-2 px-3 text-gray-600">开发、测试、轻量 Agent</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="https://vpstier.com/zh/blog/racknerd-deep-review-2025" class="text-blue-600 hover:underline">RackNerd</a></td>
+              <td class="py-2 px-3">$5.99/月</td>
+              <td class="py-2 px-3">2核 / 4GB / 50GB SSD</td>
+              <td class="py-2 px-3 text-gray-600"><strong>跑 7B 模型性价比最高</strong></td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="https://vpstier.com/zh/blog/vultr-deep-review" class="text-blue-600 hover:underline">Vultr</a></td>
+              <td class="py-2 px-3">$6/月</td>
+              <td class="py-2 px-3">1核 / 2GB / 55GB SSD</td>
+              <td class="py-2 px-3 text-gray-600">生产级稳定性</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="https://vpstier.com/zh/blog/vultr-deep-review" class="text-blue-600 hover:underline">Vultr</a></td>
+              <td class="py-2 px-3">$24/月</td>
+              <td class="py-2 px-3">4核 / 8GB / 160GB SSD</td>
+              <td class="py-2 px-3 text-gray-600">70B 模型、高吞吐 Agent</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-gray-500 mb-6"><a href="https://vpstier.com" class="text-blue-600 hover:underline">vpstier.com</a> 有这些 VPS 商家的完整评测和实际性能测试数据。</p>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">AI API 方案对比（Agent 后端）</h2>
+      <div class="overflow-x-auto mb-6">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">API</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">输入价格</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">输出价格</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">优势</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">国内访问</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="/zh/use-case/ai-agent-hosting" class="text-blue-600 hover:underline">DeepSeek R1</a></td>
+              <td class="py-2 px-3">¥1/百万tokens</td>
+              <td class="py-2 px-3">¥2/百万tokens</td>
+              <td class="py-2 px-3 text-gray-600">性价比最高，推理能力强</td>
+              <td class="py-2 px-3">✅ 直连</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="/zh/use-case/code-generation" class="text-blue-600 hover:underline">OpenAI o1</a></td>
+              <td class="py-2 px-3">$15/百万tokens</td>
+              <td class="py-2 px-3">$60/百万tokens</td>
+              <td class="py-2 px-3 text-gray-600">函数调用、多步推理</td>
+              <td class="py-2 px-3">❌ 需代理</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="/zh/use-case/multi-model" class="text-blue-600 hover:underline">OpenRouter</a></td>
+              <td class="py-2 px-3">模型+5.5%</td>
+              <td class="py-2 px-3">模型+5.5%</td>
+              <td class="py-2 px-3 text-gray-600">400+模型，统一接口</td>
+              <td class="py-2 px-3">✅ 直连</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="/zh/use-case/long-context" class="text-blue-600 hover:underline">Claude 3.7</a></td>
+              <td class="py-2 px-3">$3/百万tokens</td>
+              <td class="py-2 px-3">$15/百万tokens</td>
+              <td class="py-2 px-3 text-gray-600">200K上下文，写作质量</td>
+              <td class="py-2 px-3">❌ 需代理</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 font-medium"><a href="/zh/tutorials/openrouter-review" class="text-blue-600 hover:underline">FreeModel</a></td>
+              <td class="py-2 px-3">注册送额度</td>
+              <td class="py-2 px-3">模型相关</td>
+              <td class="py-2 px-3 text-gray-600">DeepSeek官方合作，国内直连</td>
+              <td class="py-2 px-3">✅ 直连</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-sm text-gray-600 mb-6">在 <a href="https://apirank.vip/zh" class="text-blue-600 hover:underline">APIRank</a> 查看所有 AI API 提供商的完整对比——价格、功能、国内访问情况一目了然。</p>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">推荐组合方案</h2>
+
+      <div class="bg-green-50 border border-green-200 rounded-lg p-5 mb-5">
+        <h3 class="font-bold text-gray-900 mb-2">🟢 省钱组合：RackNerd + Ollama + DeepSeek</h3>
+        <p class="text-gray-700 text-sm mb-2"><strong>VPS：</strong>RackNerd $5.99/月（2核 / 4GB内存）</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>模型：</strong>Ollama + DeepSeek-R1-Distill（量化版）</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>API：</strong>DeepSeek API ¥1/百万 tokens——规模化后几乎免费</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>合计：</strong>约 $6/月，跑起一个具备复杂推理能力的自托管 Agent</p>
+        <p class="text-gray-600 text-xs mt-2"><a href="https://vpstier.com/zh/blog/racknerd-deep-review-2025" class="text-blue-600 hover:underline">RackNerd 详细评测 + 性能测试 →</a></p>
+      </div>
+
+      <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 mb-5">
+        <h3 class="font-bold text-gray-900 mb-2">🔵 生产级组合：Vultr + LangChain + OpenAI/Claude</h3>
+        <p class="text-gray-700 text-sm mb-2"><strong>VPS：</strong>Vultr $24/月（4核 / 8GB内存）</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>Agent 框架：</strong>LangChain 或 CrewAI</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>API：</strong>OpenAI o1 或 Claude 3.7 处理复杂推理任务</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>合计：</strong>约 $24/月 + API 费用——可应对每天 1000+ 次 Agent 调用</p>
+      </div>
+
+      <div class="bg-purple-50 border border-purple-200 rounded-lg p-5 mb-6">
+        <h3 class="font-bold text-gray-900 mb-2">🟣 国内优化组合：Vultr + FreeModel</h3>
+        <p class="text-gray-700 text-sm mb-2"><strong>VPS：</strong>Vultr $6/月 或 RackNerd $5.99/月</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>API：</strong><a href="/zh/tutorials/openrouter-review" class="text-blue-600 hover:underline">FreeModel.dev</a>——DeepSeek 官方合作商，国内直连无需代理</p>
+        <p class="text-gray-700 text-sm mb-2"><strong>合计：</strong>约 $6/月，DeepSeek V3 和 R1 均可使用，无需魔法上网</p>
+      </div>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">5 步在 VPS 上部署 Ollama</h2>
+
+      <div class="space-y-4 mb-8">
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">1</div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-1">购买 VPS（Ubuntu 22.04）</h3>
+            <p class="text-gray-600 text-sm">选择 RackNerd $5.99 或 Vultr $6。通过控制台部署，记下公网 IP。</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">2</div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-1">SSH 登录并安装 Ollama</h3>
+            <div class="bg-gray-900 text-green-400 rounded px-3 py-2 font-mono text-sm mt-1 mb-2">curl -fsSL https://ollama.com/install.sh | sh</div>
+            <p class="text-gray-600 text-sm">支持 Ubuntu、Debian、CentOS。最低 2GB 内存要求。</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">3</div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-1">拉取模型</h3>
+            <div class="bg-gray-900 text-green-400 rounded px-3 py-2 font-mono text-sm mt-1 mb-2">ollama pull deepseek-r1:7b</div>
+            <p class="text-gray-600 text-sm">7B 模型需要约 4GB 磁盘。70B 模型需使用 Vultr $24/月实例（8GB 内存）。</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">4</div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-1">启动 API 服务</h3>
+            <div class="bg-gray-900 text-green-400 rounded px-3 py-2 font-mono text-sm mt-1 mb-2">ollama serve</div>
+            <p class="text-gray-600 text-sm">Ollama 运行在 11434 端口。用简单的 nginx 反向代理 + API Key 认证暴露到公网（保证安全）。</p>
+          </div>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">5</div>
+          <div>
+            <h3 class="font-semibold text-gray-900 mb-1">连接 Agent 框架</h3>
+            <div class="bg-gray-900 text-green-400 rounded px-3 py-2 font-mono text-sm mt-1 mb-2">export OLLAMA_BASE_URL=http://YOUR_VPS_IP:11434</div>
+            <p class="text-gray-600 text-sm">使用 LangChain 的 Ollama 集成或 CrewAI。Agent 现在通过你的自托管 LLM 处理请求。</p>
+          </div>
+        </div>
+      </div>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">自托管 vs 云端 API：什么时候用哪个</h2>
+      <div class="overflow-x-auto mb-6">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-gray-200">
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">场景</th>
+              <th class="text-left py-2 px-3 font-semibold text-gray-700">推荐方案</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 text-gray-700">高频、成本敏感的 Agent</td>
+              <td class="py-2 px-3 font-medium text-green-700">Ollama + 开源模型（VPS 自托管）</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 text-gray-700">复杂推理 / 函数调用</td>
+              <td class="py-2 px-3 font-medium text-blue-700">OpenAI o1 或 Claude 3.7（API 调用）</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 text-gray-700">国内用户、无需代理</td>
+              <td class="py-2 px-3 font-medium text-green-700">DeepSeek API 或 FreeModel（直连）</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 text-gray-700">多模型评测 / 对比测试</td>
+              <td class="py-2 px-3 font-medium text-blue-700">OpenRouter（400+模型，一个 key）</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 px-3 text-gray-700">原型开发 / 测试环境</td>
+              <td class="py-2 px-3 font-medium text-gray-700">任一云 API 的免费额度</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+      <div class="space-y-4 mb-8">
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">便宜的 VPS 能跑 AI Agent 吗？</h3>
+          <p class="text-gray-600 text-sm">能。2核CPU + 4GB内存的 VPS（如 RackNerd $1.99/月）可以通过 Ollama 运行量化后的开源模型。需要 GPT-4o 或 Claude 等顶级模型的生产级 Agent，建议直接用云端 API。</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">AI Agent 最便宜的 API 是哪个？</h3>
+          <p class="text-gray-600 text-sm">DeepSeek-R1：¥1/百万 tokens，比 GPT-4o 便宜 60 倍。如果用量大，自托管 Ollama + 开源模型的单次成本更低。</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">怎么让 AI Agent 24/7 运行不中断？</h3>
+          <p class="text-gray-600 text-sm">用 systemd 将 Agent 作为服务运行（不要用 nohup 丢后台）。设置崩溃自动重启，加上简单的健康检查接口。生产环境推荐用 PM2 或 Docker 管理。</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">Ollama vs 云端 API，AI Agent 用哪个好？</h3>
+          <p class="text-gray-600 text-sm">Ollama 自托管：单次调用成本低，数据完全私密，无限速。云端 API（DeepSeek、OpenAI）：模型质量更高，零运维，开箱即用。开发和小规模用 Ollama，生产环境用云端 API。</p>
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 mb-1">AI Agent 需要什么配置的 VPS？</h3>
+          <p class="text-gray-600 text-sm">自托管模型：7B 模型最低 2核CPU + 4GB，70B 模型需要 4核CPU + 16GB。仅运行 Agent 逻辑：甚至 2刀/月的 VPS 都够用。RackNerd 和 Vultr 是性价比最优选择。</p>
+        </div>
+      </div>
+
+      <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mt-8">
+        <h3 class="font-bold text-gray-900 mb-3">开始搭建</h3>
+        <p class="text-gray-600 text-sm mb-4">在 <a href="https://apirank.vip/zh" class="text-blue-600 hover:underline">APIRank</a> 对比 AI API 价格和功能，为你的 Agent 工作负载找到最合适的方案。然后从 <a href="https://vpstier.com/zh" class="text-blue-600 hover:underline">vpstier.com</a> 选一个 VPS，让你的 Agent 全天候运行。</p>
+        <div class="flex flex-wrap gap-3">
+          <a href="/zh" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">查看 AI API 对比 →</a>
+          <a href="https://vpstier.com/zh/blog/racknerd-deep-review-2025" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-300">AI Agent 最佳 VPS →</a>
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
