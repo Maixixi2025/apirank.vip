@@ -1,0 +1,303 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'stability-ai-api-review';
+const date = '2026-06-01';
+const locale = 'zh';
+
+const zhTitle = 'Stability AI API 测评 2026：Stable Diffusion 3.5、Stable Image Ultra 与 Stable Video 4D 全栈解析';
+const zhDescription = '完整测评 Stability AI Platform API：SD 3.5 按 credit 计价、Stable Image Ultra 对比 FLUX、Stable Video 4D 4D 视频、国内访问方案，以及与 Replicate、Hugging Face Inference 的对比。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Stability AI 的 API 比自部署 Stable Diffusion 便宜吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "低到中等用量（每月 10K 张图以下），API 算上 GPU 租赁、电费、运维成本后更便宜。高用量（每月 100K+ 张）且 24/7 运行，自部署在 AWS 或 Lambda Labs 上可与 API 价格持平或更低。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Stable Diffusion 3.5 生成的图能商用吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "可以。Stability AI Community License 允许年收入 100 万美元以下的个人和公司商用。年收入超过 100 万的企业需购买 Stability AI Enterprise License。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Stability AI 的 API 在国内能用吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不能直连。platform.stability.ai 域名被屏蔽。你需要一个稳定代理（如香港或新加坡 VPS 作为正向代理）才能从国内服务器调用 API。如果需要国内直连，可考虑通义万相（阿里云）或智谱 GLM 图像 API。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Stable Image Ultra 和 Stable Diffusion 3.5 Large 有什么区别？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Stable Image Ultra 是更高调的优、闭源端点，针对商用级图像做了优化（更好的文字渲染、更好的手部、更稳定的风格）。Stable Diffusion 3.5 Large 是通过 API 暴露的开源权重模型，提供更细粒度的控制。Stable Image Ultra 贵约 23%，但开箱即用的效果明显更好。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Stable Video 4D 能用于生产吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "截至 2026 年它是唯一的商用 4D 视频 API，但质量仍处于预精剪阶段。最适合做预可视化、研发和短营销片段——还不适合做高保真最终渲染。如果是 2D 图生视频，Stable Video Diffusion 更成熟。" }
+    },
+    {
+      "@type": "Question",
+      "name": "可以随时取消吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "可以——没有订阅。你预购 credit 套包永不过期。停止使用 API 后，credit 仍保留在账户中。" }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Stability AI API 测评</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Stability AI API 测评 2026：Stable Diffusion 3.5、Stable Image Ultra 与 Stable Video 4D</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-01">2026年6月1日</time>
+              <span>•</span>
+              <span>API 测评</span>
+              <span>•</span>
+              <span>~9 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Stability AI Platform API 完整测评：SD 3.5 按 credit 计价、Stable Image Ultra 对比 FLUX、Stable Video 4D 4D 视频、国内访问方案，以及与 Replicate、Hugging Face Inference 的对比。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR：</strong>Stability AI Platform API 是 2026 年访问 Stable Diffusion 生态最全面的商业网关——SD 3.5 Large、Stable Image Ultra、Stable Video 4D 全部统一在 credit 计费体系下。$100 ≈ 770 张 SD 3.5 Large。国内访问需稳定代理。最适合生产级图像/视频管线；如果做开源模型实验，可选 Replicate；如果要自部署，则选 Hugging Face。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>引言：开源图像生成的王者归来</h2>
+            <p>Stability AI 是 Stable Diffusion 背后的公司——这个模型家族在 2022-2024 年定义了开源图像生成时代，并在 2026 年继续引领该领域。Stability AI Platform API 是其最新模型的商业网关：Stable Diffusion 3.5（Large、Large Turbo、Medium）、Stable Image Core、Stable Image Ultra、Stable LM 2 12B、Stable Code 3B，以及 Stable Video 4D。</p>
+            <p>Stability AI 在 2026 年的差异化优势在于其模型组合的广度。竞争对手通常聚焦单一模态，而 Stability AI 提供专门的端点：文生图、图生图、文生视频、图生视频、4D 视频生成、语言理解、代码补全——全部通过同一个 API key，使用同一个 credit 池计费。</p>
+            <p>本测评覆盖 Stability AI Platform API：每个模型的 credit 定价、免费额度、国内访问现实，以及与 Replicate（按秒计费 GPU）和 Hugging Face Inference（开源权重模型）的对比。</p>
+
+            <h2>Stability AI Platform API 价格详解</h2>
+            <p>Stability AI Platform 采用 <strong>credit 计费模式</strong>。每次 API 调用根据模型和操作消耗固定数量的 credit。Credit 提前购买，永不过期。</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">模型</th><th class="px-3 py-2 text-left">操作</th><th class="px-3 py-2 text-left">Credits</th><th class="px-3 py-2 text-left">美元成本</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Stable Diffusion 3.5 Large</td><td class="px-3 py-2 border-b">文生图 (1024×1024)</td><td class="px-3 py-2 border-b">6.5 credits</td><td class="px-3 py-2 border-b">~$0.13</td></tr>
+                <tr><td class="px-3 py-2 border-b">Stable Diffusion 3.5 Large Turbo</td><td class="px-3 py-2 border-b">文生图 (1024×1024)</td><td class="px-3 py-2 border-b">4.0 credits</td><td class="px-3 py-2 border-b">~$0.08</td></tr>
+                <tr><td class="px-3 py-2 border-b">Stable Diffusion 3.5 Medium</td><td class="px-3 py-2 border-b">文生图 (1024×1024)</td><td class="px-3 py-2 border-b">3.5 credits</td><td class="px-3 py-2 border-b">~$0.07</td></tr>
+                <tr><td class="px-3 py-2 border-b">Stable Image Core</td><td class="px-3 py-2 border-b">文生图 (1024×1024)</td><td class="px-3 py-2 border-b">3.0 credits</td><td class="px-3 py-2 border-b">~$0.06</td></tr>
+                <tr><td class="px-3 py-2 border-b">Stable Image Ultra</td><td class="px-3 py-2 border-b">文生图 (1024×1024)</td><td class="px-3 py-2 border-b">8.0 credits</td><td class="px-3 py-2 border-b">~$0.16</td></tr>
+                <tr><td class="px-3 py-2 border-b">Stable Video 4D</td><td class="px-3 py-2 border-b">4D 视频 (每秒)</td><td class="px-3 py-2 border-b">可变</td><td class="px-3 py-2 border-b">~$0.50/秒</td></tr>
+                <tr><td class="px-3 py-2 border-b">Stable LM 2 12B</td><td class="px-3 py-2 border-b">文本生成 (1M tokens)</td><td class="px-3 py-2 border-b">200 credits</td><td class="px-3 py-2 border-b">~$4.00</td></tr>
+                <tr><td class="px-3 py-2 border-b">Stable Code 3B</td><td class="px-3 py-2 border-b">代码补全 (1M tokens)</td><td class="px-3 py-2 border-b">150 credits</td><td class="px-3 py-2 border-b">~$3.00</td></tr>
+              </tbody>
+            </table>
+            <p class="text-sm text-gray-500 mt-2">*价格反映 Standard API 套餐（$0.02/credit）。Volume 套餐在 100K credit 等级可降至 $0.01/credit。</p>
+
+            <h3>免费额度</h3>
+            <ul>
+              <li><strong>注册即送 25 credits</strong>（无需信用卡）</li>
+              <li>足够生成 <strong>3-4 张 Stable Diffusion 3.5 Large</strong> 或 <strong>8 张 Stable Image Core</strong></li>
+              <li>免费 credit 30 天内未使用将过期</li>
+              <li>免费套餐有更低速率限制：50 req/min，月 150K credit 上限</li>
+            </ul>
+
+            <h3>100 美元能跑多少？</h3>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">套餐</th><th class="px-3 py-2 text-left">Credits</th><th class="px-3 py-2 text-left">用量</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Standard ($0.02/credit)</td><td class="px-3 py-2 border-b">5,000 credits</td><td class="px-3 py-2 border-b">~770 张 SD 3.5 Large，或 1,667 张 Stable Image Core，或 200 秒 Stable Video 4D</td></tr>
+                <tr><td class="px-3 py-2 border-b">Volume ($0.01/credit)</td><td class="px-3 py-2 border-b">10,000 credits</td><td class="px-3 py-2 border-b">~1,540 张 SD 3.5 Large</td></tr>
+                <tr><td class="px-3 py-2 border-b">Enterprise (定制)</td><td class="px-3 py-2 border-b">协商</td><td class="px-3 py-2 border-b">批量折扣 + 专属支持</td></tr>
+              </tbody>
+            </table>
+            <p>Standard 套餐下，$100 可生成约 770 张 SD 3.5 Large——够一个小型生产负载（营销素材、博客配图、应用 UI 原型），但不足以支撑大批量商品图。</p>
+
+            <h2>Stability AI Platform 的核心优势</h2>
+            <ul>
+              <li><strong>Stable Diffusion 3.5 SOTA 质量</strong>：3.5 Large 在大多数基准测试上与闭源模型持平或超越，同时仍可在 Stability AI Community License 下商业使用。</li>
+              <li><strong>一站式多模态 API</strong>：文生图、图生图、局部重绘、外扩、超分、图生视频、文生视频、4D 视频——一个 API key 全部搞定。</li>
+              <li><strong>Stable Video 4D 先发优势</strong>：首批商业化 4D 视频生成 API 之一。同价位下无竞品提供 4D 能力。</li>
+              <li><strong>C2PA 内容凭证</strong>：每张生成的图像都嵌入 C2PA 清单——对出版社、新闻媒体、品牌安全合规至关重要。</li>
+              <li><strong>Credit 计费灵活</strong>：无订阅锁定。Credit 永不过期。用多少付多少。</li>
+              <li><strong>开源权重可用</strong>：Stability AI 也在 Hugging Face 发布开源权重，如果你用满 API 配额，可无缝迁移到自部署。</li>
+              <li><strong>Enterprise 套餐提供 BAA</strong>：医疗场景可申请 HIPAA 合规套餐。</li>
+            </ul>
+
+            <h2>需要注意的局限</h2>
+            <ul>
+              <li><strong>国内访问需稳定代理</strong>：<code>platform.stability.ai</code> 域名在国内被屏蔽。你需要可靠的代理或 VPN 才能注册、管理 credit、调用 API。</li>
+              <li><strong>无中文界面和文档</strong>：Dashboard 和 API 文档仅英文版。中文社区支持仅限 Discord 和几个非官方 Telegram 群。</li>
+              <li><strong>低档套餐速率限制严格</strong>：Developer/Standard 套餐上限 150 req/min。高负载工作流需要协商 enterprise 配额。</li>
+              <li><strong>Stable Video 4D 成本难预估</strong>：4D 视频按输出时长计费，根据分辨率和帧数变化。成本可能快速累积。</li>
+              <li><strong>API 与开源权重有功能延迟</strong>：部分功能（如 ControlNet 变体）在 Hugging Face 开源权重发布数周后，Platform API 才支持。</li>
+            </ul>
+
+            <h2>Stability AI vs Replicate vs Hugging Face Inference</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">维度</th><th class="px-3 py-2 text-left">Stability AI Platform</th><th class="px-3 py-2 text-left">Replicate</th><th class="px-3 py-2 text-left">Hugging Face Inference</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">计费模式</td><td class="px-3 py-2 border-b">Credits（按调用）</td><td class="px-3 py-2 border-b">按秒（GPU 时间）</td><td class="px-3 py-2 border-b">按 token / 按图</td></tr>
+                <tr><td class="px-3 py-2 border-b">国内访问</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">❌ 需代理</td></tr>
+                <tr><td class="px-3 py-2 border-b">图像质量（SOTA）</td><td class="px-3 py-2 border-b">SD 3.5 Large / Stable Image Ultra</td><td class="px-3 py-2 border-b">FLUX、SD 3.5（社区）</td><td class="px-3 py-2 border-b">取决于模型</td></tr>
+                <tr><td class="px-3 py-2 border-b">视频支持</td><td class="px-3 py-2 border-b">Stable Video Diffusion、4D</td><td class="px-3 py-2 border-b">取决于模型</td><td class="px-3 py-2 border-b">有限</td></tr>
+                <tr><td class="px-3 py-2 border-b">4D 视频</td><td class="px-3 py-2 border-b">✅ 先发</td><td class="px-3 py-2 border-b">❌ 不支持</td><td class="px-3 py-2 border-b">❌ 不支持</td></tr>
+                <tr><td class="px-3 py-2 border-b">开源权重可用</td><td class="px-3 py-2 border-b">✅ 有（Hugging Face）</td><td class="px-3 py-2 border-b">❌ 没有</td><td class="px-3 py-2 border-b">✅ 原生</td></tr>
+                <tr><td class="px-3 py-2 border-b">Enterprise/BAA</td><td class="px-3 py-2 border-b">✅ 支持</td><td class="px-3 py-2 border-b">⚠️ 有限</td><td class="px-3 py-2 border-b">⚠️ 有限</td></tr>
+                <tr><td class="px-3 py-2 border-b">免费 credit</td><td class="px-3 py-2 border-b">25（一次性）</td><td class="px-3 py-2 border-b">有限（按活动）</td><td class="px-3 py-2 border-b">$0.10/小时（免费套餐）</td></tr>
+                <tr><td class="px-3 py-2 border-b">最佳场景</td><td class="px-3 py-2 border-b">生产级图像/视频管线</td><td class="px-3 py-2 border-b">开源模型实验</td><td class="px-3 py-2 border-b">开源权重模型访问</td></tr>
+              </tbody>
+            </table>
+
+            <h2>使用场景推荐</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">使用场景</th><th class="px-3 py-2 text-left">推荐方案</th><th class="px-3 py-2 text-left">理由</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">大规模生产图像生成</td><td class="px-3 py-2 border-b">Stability AI Platform</td><td class="px-3 py-2 border-b">Credit 计费、C2PA、SOTA 质量</td></tr>
+                <tr><td class="px-3 py-2 border-b">4D 视频生成</td><td class="px-3 py-2 border-b">Stability AI Platform</td><td class="px-3 py-2 border-b">唯一商用选项</td></tr>
+                <tr><td class="px-3 py-2 border-b">开源模型实验</td><td class="px-3 py-2 border-b">Replicate</td><td class="px-3 py-2 border-b">按秒计费、FLUX/SD 社区</td></tr>
+                <tr><td class="px-3 py-2 border-b">自部署 SD + 自定义管线</td><td class="px-3 py-2 border-b">Hugging Face Inference</td><td class="px-3 py-2 border-b">开源权重 + transformers 库</td></tr>
+                <tr><td class="px-3 py-2 border-b">营销/品牌图像</td><td class="px-3 py-2 border-b">Stability AI Platform (Stable Image Ultra)</td><td class="px-3 py-2 border-b">商用 License，风格一致</td></tr>
+                <tr><td class="px-3 py-2 border-b">电商商品图</td><td class="px-3 py-2 border-b">Stability AI Platform (Stable Image Core)</td><td class="px-3 py-2 border-b">最便宜，快速迭代</td></tr>
+              </tbody>
+            </table>
+
+            <h2>快速上手步骤</h2>
+            <ol>
+              <li><strong>注册</strong>：访问 <a href="https://platform.stability.ai" class="text-blue-600 hover:underline">platform.stability.ai</a>，使用 Google 或 GitHub 账号登录。</li>
+              <li><strong>领取免费 credit</strong>：25 credit 自动到账。30 天内用完。</li>
+              <li><strong>生成 API key</strong>：Dashboard → API Keys → Create new key。妥善保管——key 不过期但可轮换。</li>
+              <li><strong>安装 SDK</strong>：<code>pip install stability-sdk</code>（Python）或直接用 REST API。</li>
+              <li><strong>测试调用</strong>：跑一次小规模 Stable Image Core（~3 credits）验证连通性。</li>
+              <li><strong>扩大用量</strong>：预购 credit 套包（$10 / $50 / $500），或在 100K credit 等级申请 Volume 定价。</li>
+            </ol>
+
+            <h2>常见问题 FAQ</h2>
+            <p><strong>Q：Stability AI 的 API 比自部署 Stable Diffusion 便宜吗？</strong></p>
+            <p>A：低到中等用量（每月 10K 张图以下），API 算上 GPU 租赁、电费、运维成本后更便宜。高用量（每月 100K+ 张）且 24/7 运行，自部署在 AWS 或 Lambda Labs 上可与 API 价格持平或更低。</p>
+
+            <p><strong>Q：Stable Diffusion 3.5 生成的图能商用吗？</strong></p>
+            <p>A：可以。Stability AI Community License 允许年收入 100 万美元以下的个人和公司商用。年收入超过 100 万的企业需购买 Stability AI Enterprise License。</p>
+
+            <p><strong>Q：Stability AI 的 API 在国内能用吗？</strong></p>
+            <p>A：不能直连。<code>platform.stability.ai</code> 域名被屏蔽。你需要一个稳定代理（如香港或新加坡 VPS 作为正向代理）才能从国内服务器调用 API。如果需要国内直连，可考虑通义万相（阿里云）或智谱 GLM 图像 API。</p>
+
+            <p><strong>Q：Stable Image Ultra 和 Stable Diffusion 3.5 Large 有什么区别？</strong></p>
+            <p>A：Stable Image Ultra 是更高调的优、闭源端点，针对商用级图像做了优化（更好的文字渲染、更好的手部、更稳定的风格）。Stable Diffusion 3.5 Large 是通过 API 暴露的开源权重模型，提供更细粒度的控制。Stable Image Ultra 贵约 23%，但开箱即用的效果明显更好。</p>
+
+            <p><strong>Q：Stable Video 4D 能用于生产吗？</strong></p>
+            <p>A：截至 2026 年它是唯一的商用 4D 视频 API，但质量仍处于预精剪阶段。最适合做预可视化、研发和短营销片段——还不适合做高保真最终渲染。如果是 2D 图生视频，Stable Video Diffusion 更成熟。</p>
+
+            <p><strong>Q：可以随时取消吗？</strong></p>
+            <p>A：可以——没有订阅。你预购 credit 套包永不过期。停止使用 API 后，credit 仍保留在账户中。</p>
+
+            <h2>结论</h2>
+            <p>Stability AI Platform API 是 2026 年访问 Stable Diffusion 生态最全面的商业网关。Credit 计费、C2PA 内容凭证、独家的 Stable Video 4D 端点，使其成为生产级图像和视频生成管线的最佳选择——前提是你能从国内通过稳定代理路由流量。</p>
+            <p>如果只需要文生图和 FLUX 质量的结果，Replicate 提供更丰富的社区模型。如果需要开源权重模型自部署，Hugging Face Inference 是天然之选。但如果专攻 Stability AI 模型家族——尤其是需要 Stable Video 4D——Platform API 是唯一选择。</p>
+
+            <h2>终版对比表</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Provider</th><th class="px-3 py-2 text-left">计费模式</th><th class="px-3 py-2 text-left">最佳场景</th><th class="px-3 py-2 text-left">国内访问</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Stability AI Platform</td><td class="px-3 py-2 border-b">Credits 按次</td><td class="px-3 py-2 border-b">生产图像/视频管线</td><td class="px-3 py-2 border-b">❌ 需代理</td></tr>
+                <tr><td class="px-3 py-2 border-b">Replicate</td><td class="px-3 py-2 border-b">按秒（GPU 时间）</td><td class="px-3 py-2 border-b">开源模型实验</td><td class="px-3 py-2 border-b">❌ 需代理</td></tr>
+                <tr><td class="px-3 py-2 border-b">Hugging Face Inference</td><td class="px-3 py-2 border-b">按 token / 按图</td><td class="px-3 py-2 border-b">开源权重模型</td><td class="px-3 py-2 border-b">❌ 需代理</td></tr>
+                <tr><td class="px-3 py-2 border-b">通义万相（阿里云）</td><td class="px-3 py-2 border-b">Credits 按次</td><td class="px-3 py-2 border-b">国内直连图像生成</td><td class="px-3 py-2 border-b">✅ 直连</td></tr>
+                <tr><td class="px-3 py-2 border-b">智谱 GLM 图像</td><td class="px-3 py-2 border-b">按调用</td><td class="px-3 py-2 border-b">国内直连，中文</td><td class="px-3 py-2 border-b">✅ 直连</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-gray-50 p-6 rounded-lg mt-8">
+            <h3 class="text-lg font-semibold mb-2">相关资源</h3>
+            <ul class="space-y-2 text-sm">
+              <li>• <a href="/zh/tutorials/replicate-api-review" class="text-blue-600 hover:underline">Replicate API 测评</a> — 按秒 GPU 计费，开源模型丰富</li>
+              <li>• <a href="/zh/providers/replicate" class="text-blue-600 hover:underline">APIRank 上的 Replicate</a> — 价格、模型、Provider 对比</li>
+              <li>• <a href="/zh/tutorials/cohere-ai-api-review" class="text-blue-600 hover:underline">Cohere AI API 测评</a> — 企业级文本/Embedding 替代方案</li>
+            </ul>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">关键信息</h3>
+            <dl class="text-sm space-y-2">
+              <div class="flex justify-between"><dt class="text-gray-500">提供商</dt><dd class="font-medium">Stability AI</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">成立年份</dt><dd class="font-medium">2019</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">免费 Credit</dt><dd class="font-medium">25</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">计价单位</dt><dd class="font-medium">Credits</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">国内访问</dt><dd class="font-medium text-red-600">需代理</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">许可证</dt><dd class="font-medium">Community / Enterprise</dd></div>
+            </dl>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">适用场景</h3>
+            <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+              <li>生产级图像管线</li>
+              <li>4D 视频生成</li>
+              <li>Stable Diffusion 3.5 接入</li>
+              <li>商用级图像生成</li>
+              <li>HIPAA / 企业合规</li>
+            </ul>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 text-center">
+            <p class="text-xs text-blue-700 uppercase tracking-wide mb-1">广告位</p>
+            <p class="text-sm text-gray-500">AdSense 占位</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
