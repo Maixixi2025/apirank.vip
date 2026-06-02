@@ -1,0 +1,340 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'groq-api-review';
+const date = '2026-06-02';
+const locale = 'zh';
+
+const zhTitle = 'Groq API 测评 2026：LPU 驱动最快 LLM 推理，Llama 3.3 70B 仅 $0.59/M';
+const zhDescription = '完整测评 Groq API：LPU 推理引擎速度、Llama 3.3 70B 价格（$0.59/M）、OpenAI 兼容 API、免费额度、国内访问方案，以及与 Together AI、Fireworks AI 的对比。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Groq 比 OpenAI 便宜多少？",
+      "acceptedAnswer": { "@type": "Answer", "text": "大幅便宜。Llama 3.3 70B 输出价大约是 GPT-4o 输出的 1/19（$0.79 vs $15 每 1M tokens）。即使考虑质量略低，单任务成本通常低 60-80%。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Groq 支持流式输出吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "支持——Groq 的 OpenAI 兼容 API 默认支持 Server-Sent Events (SSE) 流式输出。token 在请求后 50-150ms 内开始流出。" }
+    },
+    {
+      "@type": "Question",
+      "name": "能在 Groq 上 fine-tune 模型吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不能。Groq 是纯推理。要微调，用 Together AI（完整 LoRA/QLoRA 支持）或 Fireworks AI（专有微调）。你可以在另一家微调，导出合并后的权重，再通过 GroqCloud 的自定义模型端点（仅 Groq Enterprise 套餐）服务。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Groq 相比自部署 Llama 3.3 70B on AWS 怎么样？",
+      "acceptedAnswer": { "@type": "Answer", "text": "AWS p5.48xlarge（8x H100）单实例成本约 $98/小时。满载时可以服务 ~3,000 tok/sec——与 Groq 付费套餐相当，但 24/7 成本约 $70K/月。对突发性工作负载 Groq 胜出；对 24/7 高量，自部署预留实例可能在 6-12 个月后打平。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Groq 在国内能用吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不能直连。api.groq.com 和 console.groq.com 都被屏蔽。你需要一个稳定代理（香港、新加坡或美国 VPS 作为正向代理）才能从国内服务器调用 API。如果需要国内直连，可考虑 FreeModel（聚合 Groq + 其它模型 + 国内直连网关）或 DeepSeek（CN 原生）。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Groq 的免费额度真的免费吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "真的——无需信用卡、无试用期、不会自动转付费。永久每天 1,000 请求。限制严格（30 req/min），但真实用户可以在免费套餐上无限跑业余项目。" }
+    },
+    {
+      "@type": "Question",
+      "name": "超过免费额度速率限制会怎样？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Groq 返回 HTTP 429（Too Many Requests），附带 Retry-After 头。客户端实现指数退避重试。免费额度每分钟和每天 00:00 UTC 重置。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Groq 能用于生产吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "能——付费套餐与免费套餐 SLA 相同（文档中没有 SLA 变化），但速率限制按用量协商。对任务关键型工作负载，申请 Groq Enterprise 套餐，增加专用容量和 SOC 2 合规。" }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Groq API 测评</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Groq API 测评 2026：LPU 驱动最快 LLM 推理，Llama 3.3 70B 仅 $0.59/M</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-02">2026 年 6 月 2 日</time>
+              <span>•</span>
+              <span>API 测评</span>
+              <span>•</span>
+              <span>~9 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Groq LPU 推理引擎测评：Llama 3.3 70B $0.59/M tokens、Llama 3.1 8B 1,250 tok/sec、OpenAI 兼容 API、慷慨免费额度、国内访问指南。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR：</strong>Groq 拥有 2026 年最快的 LLM 推理——Llama 3.1 8B 1,250 tok/sec、Llama 3.3 70B ~500 tok/sec，首 token 延迟 &lt;100ms。OpenAI 兼容 API 加每天 1,000 次免费请求，是实时聊天、语音 Agent、代码补全的默认选择。国内访问需稳定代理；如果要国内直连，用 FreeModel。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>引言：把延迟当作品质的速度优先型推理服务商</h2>
+            <p>当一个聊天机器人回答要等 8 秒钟，用户早已关闭标签页。在生产级 LLM 应用里，延迟已经悄悄成为最重要的质量指标——而 Groq 把整家公司都押在解决这个问题上。</p>
+            <p>Groq 是 2016 年由 Jonathan Ross（Google TPU 原始架构师之一）在硅谷山景城创立的芯片公司。其旗舰产品是 <strong>LPU（Language Processing Unit）推理引擎</strong>——一块自研芯片加上配套编译器栈，从设计之初就为顺序文本生成优化。GPU 推理追求吞吐量，而 LPU 提供 <strong>确定性低延迟</strong> token 流式输出：Llama 3.1 8B Instant 在 Groq 上能跑到 <strong>1,250 tokens/秒</strong>，而同样的模型在大多数云 GPU 上只能跑到 100-200 tokens/秒。</p>
+            <p>2024 年 Groq 从售卖自建硬件转型为运营公开推理 API。到 2026 年该平台已托管最受欢迎的开源模型——Llama 3.3 70B、Llama 3.1 8B、Mixtral 8x7B、Gemma 2 9B，加上语音转文字的 Whisper Large V3——并通过 <strong>OpenAI 兼容的 REST 端点</strong>暴露。已有的 OpenAI SDK 代码通常只需要改 2 行就能跑：替换 base URL 和 API key。</p>
+            <p>本测评覆盖 2026 年的 Groq API：按模型定价、免费额度、LPU 速度的真实表现、纯推理产品的取舍、国内访问方案，以及 Groq 与 Together AI、Fireworks AI、直接 OpenAI 的对比。</p>
+
+            <h2>Groq API 价格详解</h2>
+            <p>Groq 采用 <strong>按 token 计费</strong>，按秒结算。没有订阅、没有承诺、没有最低消费。免费额度足够开发和小演示，付费套餐按使用量计费。</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">模型</th><th class="px-3 py-2 text-left">输入（$/1M）</th><th class="px-3 py-2 text-left">输出（$/1M）</th><th class="px-3 py-2 text-left">上下文</th><th class="px-3 py-2 text-left">LPU 速度（tok/sec）</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Llama 3.1 8B Instant</td><td class="px-3 py-2 border-b">$0.05</td><td class="px-3 py-2 border-b">$0.08</td><td class="px-3 py-2 border-b">128K</td><td class="px-3 py-2 border-b">~1,250</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B Versatile</td><td class="px-3 py-2 border-b">$0.59</td><td class="px-3 py-2 border-b">$0.79</td><td class="px-3 py-2 border-b">128K</td><td class="px-3 py-2 border-b">~500</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.1 70B Versatile（旧）</td><td class="px-3 py-2 border-b">$0.59</td><td class="px-3 py-2 border-b">$0.79</td><td class="px-3 py-2 border-b">128K</td><td class="px-3 py-2 border-b">~480</td></tr>
+                <tr><td class="px-3 py-2 border-b">Mixtral 8x7B</td><td class="px-3 py-2 border-b">$0.24</td><td class="px-3 py-2 border-b">$0.24</td><td class="px-3 py-2 border-b">32K</td><td class="px-3 py-2 border-b">~700</td></tr>
+                <tr><td class="px-3 py-2 border-b">Gemma 2 9B</td><td class="px-3 py-2 border-b">$0.20</td><td class="px-3 py-2 border-b">$0.20</td><td class="px-3 py-2 border-b">8K</td><td class="px-3 py-2 border-b">~900</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama Guard 3 8B</td><td class="px-3 py-2 border-b">$0.20</td><td class="px-3 py-2 border-b">$0.20</td><td class="px-3 py-2 border-b">8K</td><td class="px-3 py-2 border-b">~1,000</td></tr>
+                <tr><td class="px-3 py-2 border-b">Whisper Large V3（语音）</td><td class="px-3 py-2 border-b">—</td><td class="px-3 py-2 border-b">$0.006/分钟音频</td><td class="px-3 py-2 border-b">—</td><td class="px-3 py-2 border-b">—</td></tr>
+              </tbody>
+            </table>
+            <p class="text-sm text-gray-500 mt-2">*价格反映 2026-06-02 公开 API。输出 token 的成本是 Groq 与 GPU 竞品差距最大的地方——Llama 3.3 70B 输出价格大约是 GPT-4o 输出的 1/19。</p>
+
+            <h3>免费额度：包含什么</h3>
+            <ul>
+              <li><strong>30 请求/分钟</strong>（每个项目）</li>
+              <li><strong>14,400 tokens/分钟</strong>（每个项目）</li>
+              <li><strong>1,000 请求/天</strong>（每个项目）</li>
+              <li>无需信用卡</li>
+              <li>与付费套餐同模型质量</li>
+              <li>速率限制每分钟和每天 00:00 UTC 重置</li>
+            </ul>
+            <p>对一次 500 token 的回答，30 req/min 让你可以服务大约每秒 1 个聊天用户——非常适合个人开发。生产流量需要升级到付费套餐（付费与免费速率限制相同，只是付费才能放量）。</p>
+
+            <h3>100 美元能买什么？</h3>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">工作负载</th><th class="px-3 py-2 text-left">$100 买（Llama 3.3 70B）</th><th class="px-3 py-2 text-left">$100 买（Llama 3.1 8B）</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">输入 tokens</td><td class="px-3 py-2 border-b">169M tokens</td><td class="px-3 py-2 border-b">2,000M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">输出 tokens</td><td class="px-3 py-2 border-b">126M tokens</td><td class="px-3 py-2 border-b">1,250M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">平均混合（输入:输出 = 1:3）</td><td class="px-3 py-2 border-b">~140M 总 tokens</td><td class="px-3 py-2 border-b">~1,500M 总 tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">实际聊天会话（平均 1K 总 tokens）</td><td class="px-3 py-2 border-b">~140,000 次对话</td><td class="px-3 py-2 border-b">~1,500,000 次对话</td></tr>
+              </tbody>
+            </table>
+            <p>对 1 万用户 × 5 消息/天 × 1K tokens 的聊天机器人，Llama 3.3 70B 月成本约 <strong>$21.50</strong>——大约是同等 GPT-4o 用量的 1/4，速度快 5-10 倍。</p>
+
+            <h2>Groq 的核心优势</h2>
+            <ul>
+              <li><strong>LPU 速度领先</strong>：Llama 3.1 8B 1,250 tok/sec，Llama 3.3 70B ~500 tok/sec。流式响应 <strong>100ms 内首 token</strong>——大多数 GPU 栈要 1-3 秒。</li>
+              <li><strong>OpenAI 兼容 API</strong>：已有的 OpenAI Python/Node SDK 改一行就能用。从 OpenAI 迁移到 Groq 几乎零成本：<code>client = OpenAI(api_key=GROQ_KEY, base_url="https://api.groq.com/openai/v1")</code>。</li>
+              <li><strong>慷慨的免费额度</strong>：1,000 请求/天，无需信用卡，周末 hackathon 项目零成本跑通。大部分竞品免费额度只有 50-200 请求/天。</li>
+              <li><strong>专注开源模型</strong>：Groq 托管顶尖开源模型（Llama 3.3 70B、Mixtral、Gemma），没有闭源模型的数据隐私顾虑——对医疗、金融、法律等受监管行业很有用。</li>
+              <li><strong>Whisper Large V3 极低价</strong>：$0.006/分钟音频转录，大约是 OpenAI Whisper API 的 1/10。非常适合呼叫中心转录或播客摘要。</li>
+              <li><strong>确定性延迟</strong>：与 GPU 推理（负载下能波动 2-5 倍）不同，LPU 推理有稳定、可预测的响应时间。这对语音 Agent 至关重要——不一致的延迟会破坏对话流畅度。</li>
+              <li><strong>无承诺、无最少席位</strong>：纯按 token 计费。启动时不需要企业合同谈判。</li>
+            </ul>
+
+            <h2>需要考虑的局限</h2>
+            <ul>
+              <li><strong>国内访问需稳定代理</strong>：<code>console.groq.com</code> 和 <code>api.groq.com</code> 都在国内被屏蔽。你需要一个稳定的香港、新加坡或美国 VPS 作为正向代理才能注册、管理 API key、调用 API。</li>
+              <li><strong>模型选择比 OpenAI/Anthropic 少</strong>：Groq 只托管开源模型（Llama、Mixtral、Gemma、Whisper）。没有 GPT-4o，没有 Claude，没有 Gemini Pro。如果需要闭源 SOTA，Groq 不合适。</li>
+              <li><strong>没有 fine-tuning 服务</strong>：Groq 是纯推理。如果需要 fine-tune Llama 3.3 70B 到你的数据，必须用另一家（Together AI、Fireworks AI 或自部署），然后只在 Groq 上服务微调后的模型。</li>
+              <li><strong>免费额度生产环境不够用</strong>：30 req/min 和 1K req/day 适合开发但任何正式产品都用不了。生产需要付费。</li>
+              <li><strong>最大上下文窗口 128K</strong>：Groq 的 Llama 模型上限 128K tokens。GPT-4o 提供 1M，Claude 200K。如果你的场景是处理 500 页 PDF，Groq 装不下。</li>
+              <li><strong>偶尔容量限流</strong>：高峰时段（美国工作时间），Groq 免费套餐偶尔返回 429 错误。付费套餐有预留容量，但要留 10-15% 余量。</li>
+              <li><strong>不支持原生视觉或音频输出（仅文本 LLM）</strong>：多模态 LLM 场景需要把 Groq（文本）和另一个视觉 API 组合。</li>
+            </ul>
+
+            <h2>Groq vs Together AI vs Fireworks AI vs OpenAI</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">维度</th><th class="px-3 py-2 text-left">Groq</th><th class="px-3 py-2 text-left">Together AI</th><th class="px-3 py-2 text-left">Fireworks AI</th><th class="px-3 py-2 text-left">OpenAI（GPT-4o）</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">推理速度（Llama 3.1 8B）</td><td class="px-3 py-2 border-b">~1,250 tok/sec</td><td class="px-3 py-2 border-b">~150 tok/sec</td><td class="px-3 py-2 border-b">~250 tok/sec</td><td class="px-3 py-2 border-b">N/A</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B 输入价</td><td class="px-3 py-2 border-b">$0.59/M</td><td class="px-3 py-2 border-b">$0.90/M</td><td class="px-3 py-2 border-b">$0.90/M</td><td class="px-3 py-2 border-b">N/A</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B 输出价</td><td class="px-3 py-2 border-b">$0.79/M</td><td class="px-3 py-2 border-b">$0.90/M</td><td class="px-3 py-2 border-b">$0.90/M</td><td class="px-3 py-2 border-b">N/A</td></tr>
+                <tr><td class="px-3 py-2 border-b">免费额度</td><td class="px-3 py-2 border-b">1,000 请求/天</td><td class="px-3 py-2 border-b">$5 credit</td><td class="px-3 py-2 border-b">$1 credit</td><td class="px-3 py-2 border-b">$5（3 个月）</td></tr>
+                <tr><td class="px-3 py-2 border-b">Fine-tuning</td><td class="px-3 py-2 border-b">❌ 不支持</td><td class="px-3 py-2 border-b">✅ 支持</td><td class="px-3 py-2 border-b">✅ 支持</td><td class="px-3 py-2 border-b">✅ 支持</td></tr>
+                <tr><td class="px-3 py-2 border-b">闭源模型</td><td class="px-3 py-2 border-b">❌ 无</td><td class="px-3 py-2 border-b">❌ 无</td><td class="px-3 py-2 border-b">❌ 无</td><td class="px-3 py-2 border-b">✅ GPT-4o、o1</td></tr>
+                <tr><td class="px-3 py-2 border-b">国内访问</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">❌ 需代理</td></tr>
+                <tr><td class="px-3 py-2 border-b">OpenAI 兼容 API</td><td class="px-3 py-2 border-b">✅ 是</td><td class="px-3 py-2 border-b">✅ 是</td><td class="px-3 py-2 border-b">✅ 是</td><td class="px-3 py-2 border-b">— 原生</td></tr>
+                <tr><td class="px-3 py-2 border-b">最佳场景</td><td class="px-3 py-2 border-b">实时聊天、语音</td><td class="px-3 py-2 border-b">微调、批量</td><td class="px-3 py-2 border-b">生产推理</td><td class="px-3 py-2 border-b">SOTA 推理</td></tr>
+              </tbody>
+            </table>
+            <p>规律：<strong>Groq 在速度和单价上赢，Together AI 在微调和模型丰富度上赢，Fireworks AI 在企业可靠性上赢，OpenAI 在原始模型质量上赢。</strong>对延迟敏感的应用，Groq 是 2026 年的默认选择。</p>
+
+            <h2>使用场景推荐</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">场景</th><th class="px-3 py-2 text-left">推荐方案</th><th class="px-3 py-2 text-left">理由</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">实时聊天机器人（首 token &lt;200ms）</td><td class="px-3 py-2 border-b">Groq（Llama 3.1 8B Instant）</td><td class="px-3 py-2 border-b">1,250 tok/sec，$0.05/M 输入</td></tr>
+                <tr><td class="px-3 py-2 border-b">语音 Agent / 电话机器人</td><td class="px-3 py-2 border-b">Groq（Llama 3.3 70B Versatile）</td><td class="px-3 py-2 border-b">确定性低延迟，多语种能力强</td></tr>
+                <tr><td class="px-3 py-2 border-b">代码补全 IDE</td><td class="px-3 py-2 border-b">Groq（Llama 3.1 8B Instant）</td><td class="px-3 py-2 border-b">响应 &lt;100ms，几乎免费</td></tr>
+                <tr><td class="px-3 py-2 border-b">音频转录管线</td><td class="px-3 py-2 border-b">Groq（Whisper Large V3）</td><td class="px-3 py-2 border-b">$0.006/分钟——比 OpenAI Whisper 便宜 10 倍</td></tr>
+                <tr><td class="px-3 py-2 border-b">微调领域模型部署</td><td class="px-3 py-2 border-b">Together AI 或 Fireworks AI</td><td class="px-3 py-2 border-b">只有他们支持微调</td></tr>
+                <tr><td class="px-3 py-2 border-b">长上下文文档分析（500K+ tokens）</td><td class="px-3 py-2 border-b">OpenAI（GPT-4o 1M 上下文）</td><td class="px-3 py-2 border-b">Groq 上限 128K</td></tr>
+                <tr><td class="px-3 py-2 border-b">SOTA 推理（数学、代码）</td><td class="px-3 py-2 border-b">OpenAI（o1、o3）</td><td class="px-3 py-2 border-b">Groq 没有专门推理模型</td></tr>
+                <tr><td class="px-3 py-2 border-b">批量处理（百万级文档）</td><td class="px-3 py-2 border-b">Fireworks AI</td><td class="px-3 py-2 border-b">更高吞吐量，大规模单价更低</td></tr>
+                <tr><td class="px-3 py-2 border-b">国内直连（无需代理）</td><td class="px-3 py-2 border-b"><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> 或 DeepSeek</td><td class="px-3 py-2 border-b">都提供直连国内访问</td></tr>
+              </tbody>
+            </table>
+
+            <h2>快速上手步骤</h2>
+            <ol>
+              <li><strong>注册</strong>：访问 <a href="https://console.groq.com" class="text-blue-600 hover:underline">console.groq.com</a>，使用 Google 或 GitHub 账号登录。</li>
+              <li><strong>生成 API key</strong>：Console → API Keys → Create new key。妥善保管——key 可轮换但不过期。</li>
+              <li><strong>安装 OpenAI SDK</strong>（或直接用 REST）：<code>pip install openai</code>（Python）、<code>npm install openai</code>（Node.js），或任意 HTTP 客户端。</li>
+              <li><strong>测试调用</strong>：跑一次 100 token 的 Llama 3.1 8B 请求。首次响应应在 &lt;500ms 内到达。</li>
+              <li><strong>从 OpenAI 迁移</strong>：把 <code>base_url</code> 改为 <code>https://api.groq.com/openai/v1</code>，并使用 Groq 模型名（如 <code>llama-3.1-8b-instant</code>）。</li>
+              <li><strong>扩大用量</strong>：从免费升级到付费套餐，获取更高速率限制。无需合同。</li>
+            </ol>
+
+            <h2>常见问题 FAQ</h2>
+            <p><strong>Q：Groq 比 OpenAI 便宜多少？</strong></p>
+            <p>A：大幅便宜。Llama 3.3 70B 输出价大约是 GPT-4o 输出的 1/19（$0.79 vs $15 每 1M tokens）。即使考虑质量略低，单任务成本通常低 60-80%。</p>
+
+            <p><strong>Q：Groq 支持流式输出吗？</strong></p>
+            <p>A：支持——Groq 的 OpenAI 兼容 API 默认支持 Server-Sent Events (SSE) 流式输出。token 在请求后 50-150ms 内开始流出。</p>
+
+            <p><strong>Q：能在 Groq 上 fine-tune 模型吗？</strong></p>
+            <p>A：不能。Groq 是纯推理。要微调，用 Together AI（完整 LoRA/QLoRA 支持）或 Fireworks AI（专有微调）。你可以在另一家微调，导出合并后的权重，再通过 GroqCloud 的自定义模型端点（仅 Groq Enterprise 套餐）服务。</p>
+
+            <p><strong>Q：Groq 相比自部署 Llama 3.3 70B on AWS 怎么样？</strong></p>
+            <p>A：AWS p5.48xlarge（8x H100）单实例成本约 $98/小时。满载时可以服务 ~3,000 tok/sec——与 Groq 付费套餐相当，但 24/7 成本约 $70K/月。对突发性工作负载 Groq 胜出；对 24/7 高量，自部署预留实例可能在 6-12 个月后打平。</p>
+
+            <p><strong>Q：Groq 在国内能用吗？</strong></p>
+            <p>A：不能直连。<code>api.groq.com</code> 和 <code>console.groq.com</code> 都被屏蔽。你需要一个稳定代理（香港、新加坡或美国 VPS 作为正向代理）才能从国内服务器调用 API。如果需要国内直连，可考虑 <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a>（聚合 Groq + 其它模型 + 国内直连网关）或 DeepSeek（CN 原生）。</p>
+
+            <p><strong>Q：Groq 的免费额度真的免费吗？</strong></p>
+            <p>A：真的——无需信用卡、无试用期、不会自动转付费。永久每天 1,000 请求。限制严格（30 req/min），但真实用户可以在免费套餐上无限跑业余项目。</p>
+
+            <p><strong>Q：超过免费额度速率限制会怎样？</strong></p>
+            <p>A：Groq 返回 HTTP 429（Too Many Requests），附带 <code>Retry-After</code> 头。客户端实现指数退避重试。免费额度每分钟和每天 00:00 UTC 重置。</p>
+
+            <p><strong>Q：Groq 能用于生产吗？</strong></p>
+            <p>A：能——付费套餐与免费套餐 SLA 相同（文档中没有 SLA 变化），但速率限制按用量协商。对任务关键型工作负载，申请 Groq Enterprise 套餐，增加专用容量和 SOC 2 合规。</p>
+
+            <h2>结论</h2>
+            <p>Groq 是 2026 年 <strong>速度敏感型 LLM 应用</strong> 的默认选择：实时聊天机器人、语音 Agent、代码补全，以及任何首 token 延迟 &lt;200ms 重要的场景。LPU 引擎在吞吐量（Llama 3.1 8B 1,250 tok/sec）和确定性低延迟上的结合，是 GPU 服务商无法企及的。</p>
+            <p>代价是模型选择——Groq 只托管开源模型，所以如果需要 GPT-4o 级别的推理能力，仍需要 OpenAI 或 Anthropic。对 80% 的 LLM 应用——Llama 3.3 70B 或 Mixtral "够用"的场景（聊天、摘要、抽取、分类）——Groq 在提供 <strong>比任何主要竞品都更低的单任务成本</strong> 同时快 5-10 倍。</p>
+            <p>如果需要微调，用 Together AI 或 Fireworks AI。如果需要闭源 SOTA，用 OpenAI 或 Anthropic。如果需要国内直连，用 <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a>（聚合 Groq + 其它模型，提供国内直连网关）或 DeepSeek。其他场景——从 Groq 免费套餐开始，改 2 行代码迁移你的 OpenAI 客户端。</p>
+
+            <h2>终版对比表</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">提供商</th><th class="px-3 py-2 text-left">定价（Llama 70B 级）</th><th class="px-3 py-2 text-left">速度</th><th class="px-3 py-2 text-left">微调</th><th class="px-3 py-2 text-left">国内访问</th><th class="px-3 py-2 text-left">最佳场景</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b"><strong>Groq</strong></td><td class="px-3 py-2 border-b">$0.59 入 / $0.79 出 每 1M</td><td class="px-3 py-2 border-b">~500 tok/sec</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">实时聊天、语音 Agent</td></tr>
+                <tr><td class="px-3 py-2 border-b">Together AI</td><td class="px-3 py-2 border-b">$0.90 入 / $0.90 出 每 1M</td><td class="px-3 py-2 border-b">~150 tok/sec</td><td class="px-3 py-2 border-b">✅</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">微调、批量处理</td></tr>
+                <tr><td class="px-3 py-2 border-b">Fireworks AI</td><td class="px-3 py-2 border-b">$0.90 入 / $0.90 出 每 1M</td><td class="px-3 py-2 border-b">~250 tok/sec</td><td class="px-3 py-2 border-b">✅</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">企业级生产推理</td></tr>
+                <tr><td class="px-3 py-2 border-b">OpenAI（GPT-4o）</td><td class="px-3 py-2 border-b">$2.50 入 / $10 出 每 1M</td><td class="px-3 py-2 border-b">~100 tok/sec</td><td class="px-3 py-2 border-b">✅</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">SOTA 推理</td></tr>
+                <tr><td class="px-3 py-2 border-b">Anthropic（Claude 3.5）</td><td class="px-3 py-2 border-b">$3 入 / $15 出 每 1M</td><td class="px-3 py-2 border-b">~80 tok/sec</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">长上下文、安全补全</td></tr>
+                <tr><td class="px-3 py-2 border-b">DeepSeek（V3）</td><td class="px-3 py-2 border-b">$0.14 入 / $0.28 出 每 1M</td><td class="px-3 py-2 border-b">~60 tok/sec</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">✅ 直连</td><td class="px-3 py-2 border-b">国内直连、低成本</td></tr>
+                <tr><td class="px-3 py-2 border-b"><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a></td><td class="px-3 py-2 border-b">聚合商定价</td><td class="px-3 py-2 border-b">取决于模型</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">✅ 直连</td><td class="px-3 py-2 border-b">国内直连聚合</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-gray-50 p-6 rounded-lg mt-8">
+            <h3 class="text-lg font-semibold mb-2">相关资源</h3>
+            <ul class="space-y-2 text-sm">
+              <li>• <a href="/zh/tutorials/together-ai-api-review" class="text-blue-600 hover:underline">Together AI API 测评</a> — 开源模型微调和批量处理</li>
+              <li>• <a href="/zh/tutorials/fireworks-ai-api-review" class="text-blue-600 hover:underline">Fireworks AI API 测评</a> — 企业级生产推理</li>
+              <li>• <a href="/zh/tutorials/openai-gpt-4o-review" class="text-blue-600 hover:underline">OpenAI GPT-4o 测评</a> — 闭源 SOTA 对比</li>
+              <li>• <a href="/zh/providers/groq" class="text-blue-600 hover:underline">APIRank 上的 Groq</a> — 价格、模型、Provider 对比</li>
+            </ul>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">关键信息</h3>
+            <dl class="text-sm space-y-2">
+              <div class="flex justify-between"><dt class="text-gray-500">提供商</dt><dd class="font-medium">Groq</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">成立年份</dt><dd class="font-medium">2016</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">硬件</dt><dd class="font-medium">LPU（自研 ASIC）</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">免费额度</dt><dd class="font-medium">1,000 请求/天</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">计价单位</dt><dd class="font-medium">按 token</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">国内访问</dt><dd class="font-medium text-red-600">需代理</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Llama 3.3 70B 速度</dt><dd class="font-medium">~500 tok/sec</dd></div>
+            </dl>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">最佳场景</h3>
+            <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+              <li>实时聊天机器人</li>
+              <li>语音 Agent 与电话机器人</li>
+              <li>代码补全 IDE</li>
+              <li>音频转录</li>
+              <li>低延迟流式应用</li>
+            </ul>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-2">国内直连替代方案</h3>
+            <p class="text-sm text-gray-700 mb-3">如果需要 Groq 模型且国内直连（无需代理），可考虑 FreeModel：</p>
+            <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 text-center">
+            <p class="text-xs text-blue-700 uppercase tracking-wide mb-1">广告</p>
+            <p class="text-sm text-gray-500">广告位 — AdSense 占位</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

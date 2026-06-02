@@ -1,0 +1,340 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'groq-api-review';
+const date = '2026-06-02';
+const locale = 'en';
+
+const enTitle = 'Groq API Review 2026: LPU Speed & Llama 3.3 70B';
+const enDescription = 'Groq API review: LPU inference engine speed, Llama 3.3 70B pricing ($0.59/M), OpenAI-compatible REST API, free tier limits, and China access guide.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Groq cheaper than OpenAI for the same workload?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, dramatically. For an equivalent Llama 3.3 70B workload, Groq output is ~5x cheaper than GPT-4o output ($0.79 vs $15 per 1M tokens). Even accounting for slightly lower quality, the cost-per-successful-task is usually 60-80% lower." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Groq support streaming?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — Groq's OpenAI-compatible API supports Server-Sent Events (SSE) streaming out of the box. Tokens begin streaming within 50-150ms of the request." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I fine-tune models on Groq?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Groq is inference-only. For fine-tuning, use Together AI (full LoRA/QLoRA support) or Fireworks AI (proprietary fine-tuning). You can fine-tune on another provider, export the merged weights, and serve them via GroqCloud's custom model endpoint (Groq Enterprise tier only)." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Groq compare to self-hosting Llama 3.3 70B on AWS?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Self-hosting on AWS p5.48xlarge (8x H100) costs ~$98/hour for the instance alone. At full utilization, you can serve ~3,000 tok/sec — comparable to Groq's paid tier, but with 24/7 cost (~$70K/month). For bursty workloads, Groq wins; for 24/7 high-volume, self-hosting on a reserved instance may break even after 6-12 months." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Groq work from China?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Not directly. The api.groq.com and console.groq.com domains are blocked. You need a stable proxy (Hong Kong, Singapore, or US VPS running as a forward proxy) to call the API from China-based servers. For China-direct access, consider FreeModel (aggregator with Groq models + China access) or DeepSeek (CN-native)." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Groq's free tier truly free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — no credit card, no trial period, no automatic conversion to paid. You get 1,000 requests/day forever. Limits are tight (30 req/min) but real users can build hobby projects on the free tier indefinitely." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if I exceed the free-tier rate limit?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Groq returns HTTP 429 (Too Many Requests) with a Retry-After header. Implement exponential backoff in your client. The free tier resets every minute and every day at 00:00 UTC." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use Groq for production?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — the paid tier is the same SLA as free tier (no documented SLA change), but rate limits are negotiated based on usage. For mission-critical workloads, request the Groq Enterprise tier which adds dedicated capacity and SOC 2 compliance." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/en" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Groq API Review</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Groq API Review 2026: LPU-Powered Fastest LLM Inference, Llama 3.3 70B at $0.59/M</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-02">June 2, 2026</time>
+              <span>•</span>
+              <span>API Review</span>
+              <span>•</span>
+              <span>~9 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Groq LPU inference engine review: Llama 3.3 70B at $0.59/M, 1,250 tok/sec on Llama 3.1 8B, OpenAI-compatible API, generous free tier, and China access guide.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> Groq runs the fastest LLM inference in 2026 — Llama 3.1 8B at 1,250 tok/sec and Llama 3.3 70B at ~500 tok/sec, with sub-100ms first-token latency. The OpenAI-compatible API and 1,000 free requests/day make it the default choice for real-time chat, voice agents, and code completion. China access requires a stable proxy; for China-direct, use FreeModel.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>Introduction: The Speed-First Inference Provider</h2>
+            <p>When a chatbot response takes 8 seconds, the user has already closed the tab. Latency has quietly become the most important quality metric for any production LLM application — and Groq has bet the entire company on solving it.</p>
+            <p>Groq is the Mountain View company founded by Jonathan Ross (one of the original Google TPU architects) in 2016. Their product is the <strong>LPU (Language Processing Unit)</strong> inference engine — a custom-built chip plus compiler stack designed from the ground up for sequential text generation. Unlike GPU inference, which is throughput-optimized, LPU delivers <strong>deterministic low-latency</strong> token streaming: Llama 3.1 8B Instant runs at <strong>1,250 tokens/second</strong> on Groq, compared to roughly 100-200 tokens/second on most cloud GPUs.</p>
+            <p>In 2024, Groq pivoted from selling on-prem hardware to running a public inference API. By 2026 the platform hosts the most popular open-source models — Llama 3.3 70B, Llama 3.1 8B, Mixtral 8x7B, Gemma 2 9B, plus Whisper Large V3 for speech — and exposes them through an <strong>OpenAI-compatible REST endpoint</strong>. Existing OpenAI SDK code usually works with a 2-line change: swap the base URL and the API key.</p>
+            <p>This review covers the Groq API in 2026: per-model pricing, free tier limits, the reality of LPU speed, the trade-offs of an inference-only product, China access, and how Groq compares to Together AI, Fireworks AI, and direct OpenAI.</p>
+
+            <h2>Groq API Pricing Breakdown</h2>
+            <p>Groq uses <strong>per-token pricing</strong> billed by the second. There is no subscription, no commitment, and no minimum spend. The free tier is generous enough for development and small demos; the paid tier is pay-as-you-go.</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Model</th><th class="px-3 py-2 text-left">Input ($/1M)</th><th class="px-3 py-2 text-left">Output ($/1M)</th><th class="px-3 py-2 text-left">Context</th><th class="px-3 py-2 text-left">LPU Speed (tok/sec)</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Llama 3.1 8B Instant</td><td class="px-3 py-2 border-b">$0.05</td><td class="px-3 py-2 border-b">$0.08</td><td class="px-3 py-2 border-b">128K</td><td class="px-3 py-2 border-b">~1,250</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B Versatile</td><td class="px-3 py-2 border-b">$0.59</td><td class="px-3 py-2 border-b">$0.79</td><td class="px-3 py-2 border-b">128K</td><td class="px-3 py-2 border-b">~500</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.1 70B Versatile (legacy)</td><td class="px-3 py-2 border-b">$0.59</td><td class="px-3 py-2 border-b">$0.79</td><td class="px-3 py-2 border-b">128K</td><td class="px-3 py-2 border-b">~480</td></tr>
+                <tr><td class="px-3 py-2 border-b">Mixtral 8x7B</td><td class="px-3 py-2 border-b">$0.24</td><td class="px-3 py-2 border-b">$0.24</td><td class="px-3 py-2 border-b">32K</td><td class="px-3 py-2 border-b">~700</td></tr>
+                <tr><td class="px-3 py-2 border-b">Gemma 2 9B</td><td class="px-3 py-2 border-b">$0.20</td><td class="px-3 py-2 border-b">$0.20</td><td class="px-3 py-2 border-b">8K</td><td class="px-3 py-2 border-b">~900</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama Guard 3 8B</td><td class="px-3 py-2 border-b">$0.20</td><td class="px-3 py-2 border-b">$0.20</td><td class="px-3 py-2 border-b">8K</td><td class="px-3 py-2 border-b">~1,000</td></tr>
+                <tr><td class="px-3 py-2 border-b">Whisper Large V3 (ASR)</td><td class="px-3 py-2 border-b">—</td><td class="px-3 py-2 border-b">$0.006/min audio</td><td class="px-3 py-2 border-b">—</td><td class="px-3 py-2 border-b">—</td></tr>
+              </tbody>
+            </table>
+            <p class="text-sm text-gray-500 mt-2">*Prices reflect the public API as of 2026-06-02. Output token cost is where Groq's pricing differs most from GPU-hosted competitors — Llama 3.3 70B output is ~5x cheaper than GPT-4o output.</p>
+
+            <h3>Free Tier: What's Included</h3>
+            <ul>
+              <li><strong>30 requests/minute</strong> (per project)</li>
+              <li><strong>14,400 tokens/minute</strong> (per project)</li>
+              <li><strong>1,000 requests/day</strong> (per project)</li>
+              <li>No credit card required</li>
+              <li>Same model quality as paid tier</li>
+              <li>Rate limits reset every minute and every day at 00:00 UTC</li>
+            </ul>
+            <p>For a typical 500-token response, 30 requests/min lets you serve ~1 chat user per second — perfect for solo development. For production traffic, upgrade to the paid tier (no rate limit changes from paid→free, only on paid).</p>
+
+            <h3>How Much Can You Get for $100?</h3>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Workload</th><th class="px-3 py-2 text-left">$100 buys (Llama 3.3 70B)</th><th class="px-3 py-2 text-left">$100 buys (Llama 3.1 8B)</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Input tokens</td><td class="px-3 py-2 border-b">169M tokens</td><td class="px-3 py-2 border-b">2,000M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Output tokens</td><td class="px-3 py-2 border-b">126M tokens</td><td class="px-3 py-2 border-b">1,250M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Average mixed (1:3 in/out)</td><td class="px-3 py-2 border-b">~140M total tokens</td><td class="px-3 py-2 border-b">~1,500M total tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Realistic chat sessions (avg 1K total tokens)</td><td class="px-3 py-2 border-b">~140,000 chats</td><td class="px-3 py-2 border-b">~1,500,000 chats</td></tr>
+              </tbody>
+            </table>
+            <p>For a chatbot serving 10K users × 5 messages/day × 1K tokens, monthly cost on Llama 3.3 70B is roughly <strong>$21.50</strong> — about 1/4 the cost of equivalent GPT-4o usage, and 5-10x faster.</p>
+
+            <h2>Key Advantages of Groq</h2>
+            <ul>
+              <li><strong>LPU speed leadership</strong>: 1,250 tokens/sec on Llama 3.1 8B and ~500 tok/sec on Llama 3.3 70B. Streaming responses start in <strong>under 100ms</strong> — versus 1-3 seconds on most GPU stacks.</li>
+              <li><strong>OpenAI-compatible API</strong>: Existing OpenAI Python/Node SDKs work with one line change. Migration from OpenAI → Groq is trivial: <code>client = OpenAI(api_key=GROQ_KEY, base_url="https://api.groq.com/openai/v1")</code>.</li>
+              <li><strong>Generous free tier</strong>: 1,000 requests/day with no credit card means a weekend hackathon project can run at zero cost. Most competitors' free tiers cap at 50-200 requests/day.</li>
+              <li><strong>Open-source model focus</strong>: Groq hosts the leading open models (Llama 3.3 70B, Mixtral, Gemma) without the data privacy concerns of closed models — useful for regulated industries (healthcare, finance, legal).</li>
+              <li><strong>Whisper Large V3 at rock-bottom price</strong>: $0.006/minute audio transcription is roughly 10x cheaper than OpenAI's Whisper API. Great for call-center transcription or podcast summarization.</li>
+              <li><strong>Deterministic latency</strong>: Unlike GPU inference (which can spike 2-5x under load), LPU inference has stable, predictable response times. This matters for voice agents where inconsistent latency breaks the conversation flow.</li>
+              <li><strong>No commitments or seat minimums</strong>: Pure pay-per-token. No enterprise contract negotiation required to start.</li>
+            </ul>
+
+            <h2>Limitations to Consider</h2>
+            <ul>
+              <li><strong>China access requires stable proxy</strong>: <code>console.groq.com</code> and <code>api.groq.com</code> are both blocked in mainland China. You need a reliable Hong Kong, Singapore, or US-based proxy to sign up, manage API keys, and call the API.</li>
+              <li><strong>Smaller model selection than OpenAI/Anthropic</strong>: Groq hosts open-source models only (Llama, Mixtral, Gemma, Whisper). No GPT-4o, no Claude, no Gemini Pro. If you need closed-source SOTA, Groq isn't the right fit.</li>
+              <li><strong>No fine-tuning service</strong>: Groq is inference-only. If you need to fine-tune Llama 3.3 70B on your data, you must use a different provider (Together AI, Fireworks AI, or self-host) and only use Groq for serving the fine-tuned model.</li>
+              <li><strong>Free-tier rate limits strict for production</strong>: 30 req/min and 1K req/day are fine for development but unusable for any live product. Paid tier is needed for production.</li>
+              <li><strong>Max context window 128K</strong>: Groq's Llama models cap at 128K tokens. GPT-4o offers 1M, Claude 200K. If your use case is processing 500-page PDFs, Groq won't fit.</li>
+              <li><strong>Occasional capacity throttling</strong>: During peak hours (US business hours), Groq's free tier occasionally returns 429 errors. The paid tier has reserved capacity, but budget 10-15% headroom.</li>
+              <li><strong>No native vision or audio output (text-only LLMs)</strong>: For multimodal LLM use cases, you need to combine Groq (text) with a separate vision API.</li>
+            </ul>
+
+            <h2>Groq vs Together AI vs Fireworks AI vs OpenAI</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Factor</th><th class="px-3 py-2 text-left">Groq</th><th class="px-3 py-2 text-left">Together AI</th><th class="px-3 py-2 text-left">Fireworks AI</th><th class="px-3 py-2 text-left">OpenAI (GPT-4o)</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Inference speed (Llama 3.1 8B)</td><td class="px-3 py-2 border-b">~1,250 tok/sec</td><td class="px-3 py-2 border-b">~150 tok/sec</td><td class="px-3 py-2 border-b">~250 tok/sec</td><td class="px-3 py-2 border-b">N/A</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B input price</td><td class="px-3 py-2 border-b">$0.59/M</td><td class="px-3 py-2 border-b">$0.90/M</td><td class="px-3 py-2 border-b">$0.90/M</td><td class="px-3 py-2 border-b">N/A</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B output price</td><td class="px-3 py-2 border-b">$0.79/M</td><td class="px-3 py-2 border-b">$0.90/M</td><td class="px-3 py-2 border-b">$0.90/M</td><td class="px-3 py-2 border-b">N/A</td></tr>
+                <tr><td class="px-3 py-2 border-b">Free tier</td><td class="px-3 py-2 border-b">1,000 req/day</td><td class="px-3 py-2 border-b">$5 credit</td><td class="px-3 py-2 border-b">$1 credit</td><td class="px-3 py-2 border-b">$5 (3 months)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Fine-tuning</td><td class="px-3 py-2 border-b">❌ No</td><td class="px-3 py-2 border-b">✅ Yes</td><td class="px-3 py-2 border-b">✅ Yes</td><td class="px-3 py-2 border-b">✅ Yes</td></tr>
+                <tr><td class="px-3 py-2 border-b">Closed-source models</td><td class="px-3 py-2 border-b">❌ No</td><td class="px-3 py-2 border-b">❌ No</td><td class="px-3 py-2 border-b">❌ No</td><td class="px-3 py-2 border-b">✅ GPT-4o, o1</td></tr>
+                <tr><td class="px-3 py-2 border-b">China access</td><td class="px-3 py-2 border-b">❌ Proxy</td><td class="px-3 py-2 border-b">❌ Proxy</td><td class="px-3 py-2 border-b">❌ Proxy</td><td class="px-3 py-2 border-b">❌ Proxy</td></tr>
+                <tr><td class="px-3 py-2 border-b">OpenAI-compatible API</td><td class="px-3 py-2 border-b">✅ Yes</td><td class="px-3 py-2 border-b">✅ Yes</td><td class="px-3 py-2 border-b">✅ Yes</td><td class="px-3 py-2 border-b">— Native</td></tr>
+                <tr><td class="px-3 py-2 border-b">Best for</td><td class="px-3 py-2 border-b">Real-time chat, voice</td><td class="px-3 py-2 border-b">Fine-tuning, batch</td><td class="px-3 py-2 border-b">Production inference</td><td class="px-3 py-2 border-b">SOTA reasoning</td></tr>
+              </tbody>
+            </table>
+            <p>The pattern: <strong>Groq wins on speed and price-per-token, Together AI wins on fine-tuning and model variety, Fireworks AI wins on enterprise reliability, OpenAI wins on raw model quality.</strong> For real-time applications where latency is critical, Groq is the default choice in 2026.</p>
+
+            <h2>Use Case Recommendations</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Use Case</th><th class="px-3 py-2 text-left">Recommended</th><th class="px-3 py-2 text-left">Why</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Real-time chatbot (sub-200ms first token)</td><td class="px-3 py-2 border-b">Groq (Llama 3.1 8B Instant)</td><td class="px-3 py-2 border-b">1,250 tok/sec, $0.05/M input</td></tr>
+                <tr><td class="px-3 py-2 border-b">Voice agent / phone bot</td><td class="px-3 py-2 border-b">Groq (Llama 3.3 70B Versatile)</td><td class="px-3 py-2 border-b">Deterministic low latency, good multilingual</td></tr>
+                <tr><td class="px-3 py-2 border-b">Code completion IDE</td><td class="px-3 py-2 border-b">Groq (Llama 3.1 8B Instant)</td><td class="px-3 py-2 border-b">Sub-100ms response, near-free</td></tr>
+                <tr><td class="px-3 py-2 border-b">Audio transcription pipeline</td><td class="px-3 py-2 border-b">Groq (Whisper Large V3)</td><td class="px-3 py-2 border-b">$0.006/min — 10x cheaper than OpenAI Whisper</td></tr>
+                <tr><td class="px-3 py-2 border-b">Fine-tuned domain model serving</td><td class="px-3 py-2 border-b">Together AI or Fireworks AI</td><td class="px-3 py-2 border-b">Only they support fine-tuning</td></tr>
+                <tr><td class="px-3 py-2 border-b">Long-context document analysis (500K+ tokens)</td><td class="px-3 py-2 border-b">OpenAI (GPT-4o 1M context)</td><td class="px-3 py-2 border-b">Groq caps at 128K</td></tr>
+                <tr><td class="px-3 py-2 border-b">Best-in-class reasoning (math, code)</td><td class="px-3 py-2 border-b">OpenAI (o1, o3)</td><td class="px-3 py-2 border-b">Groq has no reasoning-tuned models</td></tr>
+                <tr><td class="px-3 py-2 border-b">Batch processing (millions of documents)</td><td class="px-3 py-2 border-b">Fireworks AI</td><td class="px-3 py-2 border-b">Higher throughput, lower per-token cost at scale</td></tr>
+                <tr><td class="px-3 py-2 border-b">China-direct (no proxy)</td><td class="px-3 py-2 border-b"><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> or DeepSeek</td><td class="px-3 py-2 border-b">Both offer direct CN access</td></tr>
+              </tbody>
+            </table>
+
+            <h2>How to Get Started</h2>
+            <ol>
+              <li><strong>Sign up</strong>: Visit <a href="https://console.groq.com" class="text-blue-600 hover:underline">console.groq.com</a> and create an account (Google or GitHub OAuth).</li>
+              <li><strong>Generate API key</strong>: Console → API Keys → Create new key. Store securely — keys can be rotated but not expired.</li>
+              <li><strong>Install OpenAI SDK</strong> (or use REST): <code>pip install openai</code> (Python), <code>npm install openai</code> (Node.js), or any HTTP client.</li>
+              <li><strong>Test call</strong>: Run a 100-token Llama 3.1 8B request. First response should arrive in &lt;500ms.</li>
+              <li><strong>Migrate from OpenAI</strong>: Change <code>base_url</code> to <code>https://api.groq.com/openai/v1</code> and use a Groq model name (e.g. <code>llama-3.1-8b-instant</code>).</li>
+              <li><strong>Scale up</strong>: Move from free to paid tier for higher rate limits. No contract needed.</li>
+            </ol>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Is Groq cheaper than OpenAI for the same workload?</strong></p>
+            <p>A: Yes, dramatically. For an equivalent Llama 3.3 70B workload, Groq output is ~5x cheaper than GPT-4o output ($0.79 vs $15 per 1M tokens). Even accounting for slightly lower quality, the cost-per-successful-task is usually 60-80% lower.</p>
+
+            <p><strong>Q: Does Groq support streaming?</strong></p>
+            <p>A: Yes — Groq's OpenAI-compatible API supports Server-Sent Events (SSE) streaming out of the box. Tokens begin streaming within 50-150ms of the request.</p>
+
+            <p><strong>Q: Can I fine-tune models on Groq?</strong></p>
+            <p>A: No. Groq is inference-only. For fine-tuning, use Together AI (full LoRA/QLoRA support) or Fireworks AI (proprietary fine-tuning). You can fine-tune on another provider, export the merged weights, and serve them via GroqCloud's custom model endpoint (Groq Enterprise tier only).</p>
+
+            <p><strong>Q: How does Groq compare to self-hosting Llama 3.3 70B on AWS?</strong></p>
+            <p>A: Self-hosting on AWS p5.48xlarge (8x H100) costs ~$98/hour for the instance alone. At full utilization, you can serve ~3,000 tok/sec — comparable to Groq's paid tier, but with 24/7 cost (~$70K/month). For bursty workloads, Groq wins; for 24/7 high-volume, self-hosting on a reserved instance may break even after 6-12 months.</p>
+
+            <p><strong>Q: Does Groq work from China?</strong></p>
+            <p>A: Not directly. The <code>api.groq.com</code> and <code>console.groq.com</code> domains are blocked. You need a stable proxy (Hong Kong, Singapore, or US VPS running as a forward proxy) to call the API from China-based servers. For China-direct access, consider <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> (aggregator with Groq models + China access) or DeepSeek (CN-native).</p>
+
+            <p><strong>Q: Is Groq's free tier truly free?</strong></p>
+            <p>A: Yes — no credit card, no trial period, no automatic conversion to paid. You get 1,000 requests/day forever. Limits are tight (30 req/min) but real users can build hobby projects on the free tier indefinitely.</p>
+
+            <p><strong>Q: What happens if I exceed the free-tier rate limit?</strong></p>
+            <p>A: Groq returns HTTP 429 (Too Many Requests) with a <code>Retry-After</code> header. Implement exponential backoff in your client. The free tier resets every minute and every day at 00:00 UTC.</p>
+
+            <p><strong>Q: Can I use Groq for production?</strong></p>
+            <p>A: Yes — the paid tier is the same SLA as free tier (no documented SLA change), but rate limits are negotiated based on usage. For mission-critical workloads, request the Groq Enterprise tier which adds dedicated capacity and SOC 2 compliance.</p>
+
+            <h2>Conclusion</h2>
+            <p>Groq is the default choice in 2026 for <strong>speed-sensitive LLM applications</strong>: real-time chatbots, voice agents, code completion, and any use case where sub-200ms first-token latency matters. The LPU engine's combination of throughput (1,250 tok/sec on Llama 3.1 8B) and deterministic low latency is unmatched by GPU-based providers.</p>
+            <p>The trade-off is model selection — Groq hosts open-source models only, so if you need GPT-4o-level reasoning, you still need OpenAI or Anthropic. For the 80% of LLM applications where Llama 3.3 70B or Mixtral is "good enough" (chat, summarization, extraction, classification), Groq delivers <strong>better cost-per-successful-task than any major competitor</strong> while being 5-10x faster.</p>
+            <p>If you need fine-tuning, use Together AI or Fireworks AI. If you need closed-source SOTA, use OpenAI or Anthropic. If you need China-direct access, use <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> (which aggregates Groq + others with a China-direct gateway) or DeepSeek. For everything else — start with Groq's free tier and migrate your OpenAI client with a 2-line change.</p>
+
+            <h2>Comparison Table (Final)</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Provider</th><th class="px-3 py-2 text-left">Pricing (Llama 70B-class)</th><th class="px-3 py-2 text-left">Speed</th><th class="px-3 py-2 text-left">Fine-tuning</th><th class="px-3 py-2 text-left">China Access</th><th class="px-3 py-2 text-left">Best For</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b"><strong>Groq</strong></td><td class="px-3 py-2 border-b">$0.59 in / $0.79 out per 1M</td><td class="px-3 py-2 border-b">~500 tok/sec</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">❌ Proxy</td><td class="px-3 py-2 border-b">Real-time chat, voice agents</td></tr>
+                <tr><td class="px-3 py-2 border-b">Together AI</td><td class="px-3 py-2 border-b">$0.90 in / $0.90 out per 1M</td><td class="px-3 py-2 border-b">~150 tok/sec</td><td class="px-3 py-2 border-b">✅</td><td class="px-3 py-2 border-b">❌ Proxy</td><td class="px-3 py-2 border-b">Fine-tuning, batch processing</td></tr>
+                <tr><td class="px-3 py-2 border-b">Fireworks AI</td><td class="px-3 py-2 border-b">$0.90 in / $0.90 out per 1M</td><td class="px-3 py-2 border-b">~250 tok/sec</td><td class="px-3 py-2 border-b">✅</td><td class="px-3 py-2 border-b">❌ Proxy</td><td class="px-3 py-2 border-b">Enterprise production inference</td></tr>
+                <tr><td class="px-3 py-2 border-b">OpenAI (GPT-4o)</td><td class="px-3 py-2 border-b">$2.50 in / $10 out per 1M</td><td class="px-3 py-2 border-b">~100 tok/sec</td><td class="px-3 py-2 border-b">✅</td><td class="px-3 py-2 border-b">❌ Proxy</td><td class="px-3 py-2 border-b">Best-in-class reasoning</td></tr>
+                <tr><td class="px-3 py-2 border-b">Anthropic (Claude 3.5)</td><td class="px-3 py-2 border-b">$3 in / $15 out per 1M</td><td class="px-3 py-2 border-b">~80 tok/sec</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">❌ Proxy</td><td class="px-3 py-2 border-b">Long-context, safe completions</td></tr>
+                <tr><td class="px-3 py-2 border-b">DeepSeek (V3)</td><td class="px-3 py-2 border-b">$0.14 in / $0.28 out per 1M</td><td class="px-3 py-2 border-b">~60 tok/sec</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">✅ Direct</td><td class="px-3 py-2 border-b">China-direct, low cost</td></tr>
+                <tr><td class="px-3 py-2 border-b"><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a></td><td class="px-3 py-2 border-b">Aggregator pricing</td><td class="px-3 py-2 border-b">Model-dependent</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">✅ Direct</td><td class="px-3 py-2 border-b">China-direct aggregator</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-gray-50 p-6 rounded-lg mt-8">
+            <h3 class="text-lg font-semibold mb-2">Related Resources</h3>
+            <ul class="space-y-2 text-sm">
+              <li>• <a href="/tutorials/together-ai-api-review" class="text-blue-600 hover:underline">Together AI API Review</a> — for fine-tuning and batch processing on open-source models</li>
+              <li>• <a href="/tutorials/fireworks-ai-api-review" class="text-blue-600 hover:underline">Fireworks AI API Review</a> — enterprise production inference</li>
+              <li>• <a href="/tutorials/openai-gpt-4o-review" class="text-blue-600 hover:underline">OpenAI GPT-4o Review</a> — SOTA closed-source comparison</li>
+              <li>• <a href="/providers/groq" class="text-blue-600 hover:underline">Groq on APIRank</a> — pricing, models, and provider comparison</li>
+            </ul>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">Quick Facts</h3>
+            <dl class="text-sm space-y-2">
+              <div class="flex justify-between"><dt class="text-gray-500">Provider</dt><dd class="font-medium">Groq</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Founded</dt><dd class="font-medium">2016</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Hardware</dt><dd class="font-medium">LPU (custom ASIC)</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Free Tier</dt><dd class="font-medium">1,000 req/day</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Pricing Unit</dt><dd class="font-medium">Per token</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">China Access</dt><dd class="font-medium text-red-600">Proxy required</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Llama 3.3 70B Speed</dt><dd class="font-medium">~500 tok/sec</dd></div>
+            </dl>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">Best For</h3>
+            <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+              <li>Real-time chatbots</li>
+              <li>Voice agents & phone bots</li>
+              <li>Code completion IDEs</li>
+              <li>Audio transcription</li>
+              <li>Low-latency streaming apps</li>
+            </ul>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-2">China-Direct Alternative</h3>
+            <p class="text-sm text-gray-700 mb-3">For Groq models with China-direct access (no proxy), check out FreeModel:</p>
+            <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 text-center">
+            <p class="text-xs text-blue-700 uppercase tracking-wide mb-1">Advertisement</p>
+            <p class="text-sm text-gray-500">Ad slot — AdSense placeholder</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
