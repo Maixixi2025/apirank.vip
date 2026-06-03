@@ -1,0 +1,442 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'openai-compatible-api-2026';
+const date = '2026-06-03';
+const locale = 'en';
+
+const enTitle = 'OpenAI-Compatible API 2026: 10 Providers';
+const enDescription = 'Compare 10 OpenAI-compatible API providers in 2026: Groq, OpenRouter, Together AI, FreeModel, DeepSeek. Migration code, pricing, China access.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Will switching from OpenAI to another provider actually save money?",
+      "acceptedAnswer": { "@type": "Answer", "text": "For most workloads, yes. 50-90% cost reduction is realistic. The exception is if you need GPT-4o-class reasoning specifically. For Llama 70B-class workloads, Groq and DeepSeek are 5-10x cheaper than GPT-4o. Test with your own prompts before migrating." }
+    },
+    {
+      "@type": "Question",
+      "name": "Do all OpenAI-compatible APIs support function calling?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Most do, but the implementation varies. Groq, OpenRouter, Together AI, and Fireworks AI all support the OpenAI-style tools parameter. Some smaller providers only support the older function_call parameter or skip tool use entirely. Always verify with a test call." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which provider is best for production in 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "For OpenAI-compatible production: Groq (if you can tolerate open models), Together AI (if you need fine-tuning), or OpenRouter (if you need model flexibility). For China production: FreeModel or apikey.fun. For data-sensitive workloads: self-hosted vLLM." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use the OpenAI Python SDK with these providers?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Set base_url to the provider's endpoint and the rest of your code works unchanged. Most providers' docs show the exact one-line change for OpenAI, Anthropic, and LlamaIndex SDKs." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Anthropic Claude OpenAI-compatible?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Claude uses a different API schema (Messages API, not Chat Completions). To use Claude through an OpenAI-compatible interface, route through OpenRouter or apikey.fun, which wrap Claude in OpenAI format. Direct Claude usage requires the anthropic SDK." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does caching work across providers?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Anthropic pioneered prompt caching, OpenAI added it, and most OpenAI-compatible providers now support it. Cache reads are typically 50-90% cheaper than the standard input price. For long system prompts over 2K tokens, caching saves significant money. The implementation is provider-specific." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which provider has the best free tier?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Groq. You get 1,000 requests per day, no credit card, no expiration. Most others cap at $1-10 in credits that expire in 30-90 days. Groq's free tier is genuinely useful for hobby projects and small production workloads." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">OpenAI-Compatible API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">OpenAI-Compatible API 2026: 10 Drop-in Replacement Endpoints Compared</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-03">June 3, 2026</time>
+              <span>•</span>
+              <span>API Compatibility Comparison</span>
+              <span>•</span>
+              <span>~11 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              If you build with the OpenAI Python or Node SDK, you can switch to roughly 30 other LLM providers by changing a single base_url parameter. This guide ranks the 10 OpenAI-compatible endpoints that actually matter in 2026, with real pricing, speed numbers, and a working migration recipe.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> The OpenAI-compatible API ecosystem is mature enough that for most LLM workloads you do not need OpenAI as your primary provider. Groq is the speed leader (1,250 tok/sec on Llama 8B). DeepSeek V3 is the cheapest top-tier model ($0.14/1M input). FreeModel and apikey.fun offer China-direct multi-model access. Migration is a 2-line change in your existing client.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>What Is an OpenAI-Compatible API?</h2>
+            <p>An OpenAI-compatible API is a REST endpoint that mirrors the OpenAI Chat Completions schema. Same POST /v1/chat/completions path, same JSON request body, same stream:true Server-Sent Events response, same tools/function_call payload for tool use. A provider that implements this contract gets drop-in compatibility with the official openai Python and Node SDKs (set base_url), plus langchain, llama-index, autogen, and most agent frameworks. It also works with local coding tools like Cursor, Continue.dev, Aider, Cline, and OpenHands.</p>
+            <p>The most common deviations are model names (each provider has its own naming), authentication header (most use Authorization: Bearer, a few use x-api-key), and streaming format (most use SSE, a few wrap responses in JSON lines).</p>
+
+            <h2>Why Developers Switch from OpenAI in 2026</h2>
+            <p>The reasons in order of frequency:</p>
+            <ol>
+              <li><strong>Cost.</strong> Llama 3.3 70B on Groq is $0.59 per 1M input tokens versus $2.50 for GPT-4o-mini. For a 100M-token-per-month workload, the difference is roughly $190/month vs $250/month on the cheap model, and much more on the flagship.</li>
+              <li><strong>Latency.</strong> Groq's LPU serves Llama 3.1 8B at roughly 1,250 tokens/sec, with first-token latency under 100ms. OpenAI's GPT-4o-mini averages 300-500ms time-to-first-token. For voice agents, the difference is the difference between usable and unusable.</li>
+              <li><strong>China access.</strong> api.openai.com is blocked in mainland China. FreeModel, DeepSeek, and apikey.fun all offer China-direct endpoints with no proxy.</li>
+              <li><strong>Model selection.</strong> OpenAI has 8 main models. OpenRouter has 200+. Together AI and Fireworks host every recent open-source release within days of publication.</li>
+              <li><strong>Fine-tuning.</strong> OpenAI fine-tuning is closed and expensive. Together AI, Fireworks, and Anyscale expose full LoRA/QLoRA fine-tuning on any open model.</li>
+              <li><strong>Data privacy.</strong> Closed OpenAI models send your prompts to OpenAI's infrastructure. Self-hosted vLLM or Together's dedicated endpoints keep data on infrastructure you control.</li>
+            </ol>
+
+            <h2>The 10 OpenAI-Compatible Providers Worth Knowing in 2026</h2>
+
+            <h3>1. OpenRouter (The Aggregator)</h3>
+            <ul>
+              <li><strong>Endpoint:</strong> https://openrouter.ai/api/v1</li>
+              <li><strong>Models:</strong> 200+ (GPT-4o, Claude 3.5, Gemini, Llama, Mistral, DeepSeek, Qwen, plus community fine-tunes)</li>
+              <li><strong>Pricing:</strong> Pass-through (provider price + about 5% OpenRouter fee for some routes)</li>
+              <li><strong>Free tier:</strong> Some models free, most paid</li>
+              <li><strong>China access:</strong> Proxy required</li>
+              <li><strong>Best for:</strong> Multi-model comparison, fallback routing, accessing closed models without separate accounts</li>
+            </ul>
+
+            <h3>2. Groq (Speed Leader)</h3>
+            <ul>
+              <li><strong>Endpoint:</strong> https://api.groq.com/openai/v1</li>
+              <li><strong>Models:</strong> Llama 3.3 70B, Llama 3.1 8B, Mixtral, Gemma, Whisper Large V3</li>
+              <li><strong>Pricing:</strong> $0.05 to $0.59 per 1M input, $0.08 to $0.79 per 1M output (fastest LPU engine)</li>
+              <li><strong>Free tier:</strong> 1,000 requests/day, 30 req/min, no credit card</li>
+              <li><strong>China access:</strong> Proxy required</li>
+              <li><strong>Best for:</strong> Real-time chat, voice agents, code completion where sub-200ms latency matters</li>
+            </ul>
+
+            <h3>3. Together AI (Fine-tuning + Inference)</h3>
+            <ul>
+              <li><strong>Endpoint:</strong> https://api.together.xyz/v1</li>
+              <li><strong>Models:</strong> 200+ open models, full LoRA/QLoRA fine-tuning support</li>
+              <li><strong>Pricing:</strong> $0.18 to $0.90 per 1M input, $0.18 to $0.90 per 1M output depending on model</li>
+              <li><strong>Free tier:</strong> $5 credit on signup</li>
+              <li><strong>China access:</strong> Proxy required</li>
+              <li><strong>Best for:</strong> Custom fine-tuned models, batch processing, dedicated endpoints</li>
+            </ul>
+
+            <h3>4. Fireworks AI (Production Inference)</h3>
+            <ul>
+              <li><strong>Endpoint:</strong> https://api.fireworks.ai/inference/v1</li>
+              <li><strong>Models:</strong> 100+ open models, optimized inference engine (faster than Together on some benchmarks)</li>
+              <li><strong>Pricing:</strong> $0.20 to $0.90 per 1M input, $0.20 to $0.90 per 1M output</li>
+              <li><strong>Free tier:</strong> $1 credit on signup</li>
+              <li><strong>China access:</strong> Proxy required</li>
+              <li><strong>Best for:</strong> Production LLM deployments, batch processing at scale</li>
+            </ul>
+
+            <h3>5. Anyscale (Enterprise Ray-Based)</h3>
+            <ul>
+              <li><strong>Endpoint:</strong> https://api.endpoints.anyscale.com/v1</li>
+              <li><strong>Models:</strong> Llama, Mistral, custom models on Ray Serve infrastructure</li>
+              <li><strong>Pricing:</strong> $0.50 to $1.00 per 1M input for hosted models, custom pricing for dedicated</li>
+              <li><strong>Free tier:</strong> $10 credit on signup (more generous than most)</li>
+              <li><strong>China access:</strong> Proxy required</li>
+              <li><strong>Best for:</strong> Enterprises that need dedicated capacity, Ray/Anyscale stack users</li>
+            </ul>
+
+            <h3>6. FreeModel (China-Direct Aggregator)</h3>
+            <ul>
+              <li><strong>Endpoint:</strong> https://api.freemodel.dev/v1</li>
+              <li><strong>Models:</strong> 50+ including DeepSeek V3/R1, Qwen 2.5, Llama 3.1-3.3, Mistral, Claude 3.5 Sonnet, GPT-4o</li>
+              <li><strong>Pricing:</strong> Model-dependent, generally below official Western pricing</li>
+              <li><strong>Free tier:</strong> Credits on registration</li>
+              <li><strong>China access:</strong> Direct (no proxy), the main selling point</li>
+              <li><strong>Best for:</strong> China-based developers who need international models (Claude, GPT-4o) without a proxy</li>
+            </ul>
+            <p><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">Sign up via FreeModel</a> to access DeepSeek, Claude, and GPT-4o through one OpenAI-compatible endpoint with China-direct routing.</p>
+
+            <h3>7. DeepSeek (Cheapest Top-Tier Model)</h3>
+            <ul>
+              <li><strong>Endpoint:</strong> https://api.deepseek.com/v1</li>
+              <li><strong>Models:</strong> DeepSeek-V3, DeepSeek-R1 (reasoning), DeepSeek-Coder</li>
+              <li><strong>Pricing:</strong> $0.14 to $0.27 per 1M input, $0.28 to $1.10 per 1M output, the cheapest top-tier model in 2026</li>
+              <li><strong>Free tier:</strong> $2 credit on signup</li>
+              <li><strong>China access:</strong> Direct (CN-native company)</li>
+              <li><strong>Best for:</strong> Reasoning tasks, code generation, cost-sensitive high-volume workloads</li>
+            </ul>
+
+            <h3>8. apikey.fun (China-Direct Claude + GPT)</h3>
+            <ul>
+              <li><strong>Endpoint:</strong> https://api.apikey.fun/v1</li>
+              <li><strong>Models:</strong> 40+ including Claude 3.5 Sonnet, GPT-4o, Gemini 2.5 Pro, DeepSeek, Qwen, Kimi</li>
+              <li><strong>Pricing:</strong> ¥1 = $1 (transparent formula: official price × group multiplier ÷ 7)</li>
+              <li><strong>Free tier:</strong> New user signup credit</li>
+              <li><strong>China access:</strong> Direct</li>
+              <li><strong>Best for:</strong> China developers who need Claude Code, OpenAI Codex, and Gemini 2.5 Pro without a proxy</li>
+            </ul>
+
+            <h3>9. vLLM (Self-Hosted Open Source)</h3>
+            <ul>
+              <li><strong>Endpoint:</strong> Self-hosted, default http://localhost:8000/v1</li>
+              <li><strong>Models:</strong> Any HuggingFace model that fits in your GPU</li>
+              <li><strong>Pricing:</strong> Your hardware cost (about $2-4/hour for an A100, $1-2/hour for H100 spot)</li>
+              <li><strong>Free tier:</strong> N/A (self-hosted)</li>
+              <li><strong>China access:</strong> Whatever your server has</li>
+              <li><strong>Best for:</strong> Data privacy, cost at scale above 10M tokens/day, custom models</li>
+            </ul>
+
+            <h3>10. LiteLLM (The Universal Gateway)</h3>
+            <ul>
+              <li><strong>Endpoint:</strong> Self-hosted proxy, default http://localhost:4000</li>
+              <li><strong>Models:</strong> Routes to 100+ providers (OpenAI, Anthropic, Bedrock, Vertex, Azure, all the providers above)</li>
+              <li><strong>Pricing:</strong> Free (open source) plus the cost of whatever it routes to</li>
+              <li><strong>Free tier:</strong> N/A</li>
+              <li><strong>China access:</strong> Whatever the upstream has</li>
+              <li><strong>Best for:</strong> Multi-provider routing, fallback chains, budget caps, unified logging across providers</li>
+            </ul>
+
+            <h2>Pricing Comparison (Llama 3.3 70B-class Models)</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Provider</th><th class="px-3 py-2 text-left">Input ($/1M)</th><th class="px-3 py-2 text-left">Output ($/1M)</th><th class="px-3 py-2 text-left">Free Tier</th><th class="px-3 py-2 text-left">Cache Discount</th><th class="px-3 py-2 text-left">Best Deal</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">DeepSeek V3</td><td class="px-3 py-2 border-b">$0.14</td><td class="px-3 py-2 border-b">$0.28</td><td class="px-3 py-2 border-b">$2 credit</td><td class="px-3 py-2 border-b">$0.014 cached</td><td class="px-3 py-2 border-b">Cheapest SOTA</td></tr>
+                <tr><td class="px-3 py-2 border-b">Groq Llama 70B</td><td class="px-3 py-2 border-b">$0.59</td><td class="px-3 py-2 border-b">$0.79</td><td class="px-3 py-2 border-b">1K req/day</td><td class="px-3 py-2 border-b">No</td><td class="px-3 py-2 border-b">Fastest</td></tr>
+                <tr><td class="px-3 py-2 border-b">Together AI Llama 70B</td><td class="px-3 py-2 border-b">$0.90</td><td class="px-3 py-2 border-b">$0.90</td><td class="px-3 py-2 border-b">$5 credit</td><td class="px-3 py-2 border-b">$0.45 cached</td><td class="px-3 py-2 border-b">Fine-tuning</td></tr>
+                <tr><td class="px-3 py-2 border-b">Fireworks AI Llama 70B</td><td class="px-3 py-2 border-b">$0.90</td><td class="px-3 py-2 border-b">$0.90</td><td class="px-3 py-2 border-b">$1 credit</td><td class="px-3 py-2 border-b">$0.45 cached</td><td class="px-3 py-2 border-b">Enterprise</td></tr>
+                <tr><td class="px-3 py-2 border-b">OpenAI GPT-4o-mini</td><td class="px-3 py-2 border-b">$0.15</td><td class="px-3 py-2 border-b">$0.60</td><td class="px-3 py-2 border-b">$5 (3 mo)</td><td class="px-3 py-2 border-b">$0.075 cached</td><td class="px-3 py-2 border-b">Reference</td></tr>
+                <tr><td class="px-3 py-2 border-b">OpenAI GPT-4o</td><td class="px-3 py-2 border-b">$2.50</td><td class="px-3 py-2 border-b">$10.00</td><td class="px-3 py-2 border-b">$5 (3 mo)</td><td class="px-3 py-2 border-b">$1.25 cached</td><td class="px-3 py-2 border-b">Premium</td></tr>
+                <tr><td class="px-3 py-2 border-b">Anthropic Claude 3.5 Sonnet</td><td class="px-3 py-2 border-b">$3.00</td><td class="px-3 py-2 border-b">$15.00</td><td class="px-3 py-2 border-b">$5 (1 mo)</td><td class="px-3 py-2 border-b">$0.30 cached</td><td class="px-3 py-2 border-b">Reasoning</td></tr>
+                <tr><td class="px-3 py-2 border-b">Google Gemini 2.5 Pro</td><td class="px-3 py-2 border-b">$1.25</td><td class="px-3 py-2 border-b">$10.00</td><td class="px-3 py-2 border-b">2 req/min free</td><td class="px-3 py-2 border-b">$0.31 cached</td><td class="px-3 py-2 border-b">Long context</td></tr>
+              </tbody>
+            </table>
+            <p>DeepSeek V3 is 5-10x cheaper than Claude 3.5 Sonnet for similar reasoning quality. Groq is the cheapest for the Llama 70B class specifically because of LPU efficiency. GPT-4o-mini is the cheapest OpenAI-native option and the easiest migration path.</p>
+
+            <h2>Migration Guide: 3 Lines to Switch Providers</h2>
+            <p>Here is the same client code working against 6 different providers:</p>
+            <pre><code class="language-python"># Before (OpenAI)
+from openai import OpenAI
+client = OpenAI(api_key="sk-...")  # uses default base_url
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[&#123;"role": "user", "content": "Hello"&#125;]
+)</code></pre>
+            <pre><code class="language-python"># After (Groq, drop-in)
+from openai import OpenAI
+client = OpenAI(
+    api_key="gsk_...",
+    base_url="https://api.groq.com/openai/v1"  # only change
+)
+response = client.chat.completions.create(
+    model="llama-3.1-8b-instant",  # only model name change
+    messages=[&#123;"role": "user", "content": "Hello"&#125;]
+)</code></pre>
+            <pre><code class="language-python"># DeepSeek (cheapest)
+client = OpenAI(api_key="sk-...", base_url="https://api.deepseek.com/v1")
+response = client.chat.completions.create(model="deepseek-chat", messages=[...])
+
+# Together AI
+client = OpenAI(api_key="...", base_url="https://api.together.xyz/v1")
+response = client.chat.completions.create(model="meta-llama/Llama-3.3-70B-Instruct-Turbo", messages=[...])
+
+# OpenRouter (200+ models)
+client = OpenAI(api_key="sk-or-...", base_url="https://openrouter.ai/api/v1")
+response = client.chat.completions.create(model="anthropic/claude-3.5-sonnet", messages=[...])
+
+# FreeModel (China-direct, 50+ models)
+client = OpenAI(api_key="fm-...", base_url="https://api.freemodel.dev/v1")
+response = client.chat.completions.create(model="deepseek-v3", messages=[...])
+
+# apikey.fun (China-direct, Claude + GPT)
+client = OpenAI(api_key="akf-...", base_url="https://api.apikey.fun/v1")
+response = client.chat.completions.create(model="claude-3-5-sonnet", messages=[...])</code></pre>
+            <p>Two changes per migration: base_url and model name. Streaming, function calling, and structured outputs (JSON mode) all work identically.</p>
+
+            <h2>Use Case Recommendations</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Use Case</th><th class="px-3 py-2 text-left">Recommended</th><th class="px-3 py-2 text-left">Why</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Real-time chatbot, sub-200ms first token</td><td class="px-3 py-2 border-b">Groq (Llama 3.1 8B Instant)</td><td class="px-3 py-2 border-b">1,250 tok/sec, $0.05/M input</td></tr>
+                <tr><td class="px-3 py-2 border-b">Voice agent / phone bot</td><td class="px-3 py-2 border-b">Groq (Llama 3.3 70B Versatile)</td><td class="px-3 py-2 border-b">Deterministic low latency</td></tr>
+                <tr><td class="px-3 py-2 border-b">Code completion IDE</td><td class="px-3 py-2 border-b">Groq (Llama 3.1 8B Instant)</td><td class="px-3 py-2 border-b">Sub-100ms response, near-free</td></tr>
+                <tr><td class="px-3 py-2 border-b">Reasoning tasks (math, planning)</td><td class="px-3 py-2 border-b">DeepSeek-R1 or OpenAI o1</td><td class="px-3 py-2 border-b">Reasoning-tuned models</td></tr>
+                <tr><td class="px-3 py-2 border-b">Cost-sensitive batch (millions of docs)</td><td class="px-3 py-2 border-b">DeepSeek V3 or Fireworks</td><td class="px-3 py-2 border-b">Cheapest per-token, high throughput</td></tr>
+                <tr><td class="px-3 py-2 border-b">Fine-tuned domain model</td><td class="px-3 py-2 border-b">Together AI or Fireworks</td><td class="px-3 py-2 border-b">LoRA/QLoRA support</td></tr>
+                <tr><td class="px-3 py-2 border-b">Multi-model fallback (chat app)</td><td class="px-3 py-2 border-b">OpenRouter</td><td class="px-3 py-2 border-b">Single API, 200+ models, automatic routing</td></tr>
+                <tr><td class="px-3 py-2 border-b">China-direct production</td><td class="px-3 py-2 border-b"><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> or apikey.fun</td><td class="px-3 py-2 border-b">No proxy, Western models accessible</td></tr>
+                <tr><td class="px-3 py-2 border-b">Data-sensitive (healthcare, legal)</td><td class="px-3 py-2 border-b">Self-hosted vLLM</td><td class="px-3 py-2 border-b">Data never leaves your infra</td></tr>
+                <tr><td class="px-3 py-2 border-b">Multi-provider unified logging</td><td class="px-3 py-2 border-b">LiteLLM proxy</td><td class="px-3 py-2 border-b">One billing, one log, one auth</td></tr>
+              </tbody>
+            </table>
+
+            <h2>Limitations and Gotchas</h2>
+            <ul>
+              <li><strong>Model naming is not standardized.</strong> Groq uses llama-3.1-8b-instant, Together uses meta-llama/Llama-3.3-70B-Instruct-Turbo, OpenRouter uses meta-llama/llama-3.3-70b-instruct. The same underlying model has 3+ different IDs across providers.</li>
+              <li><strong>Function calling support varies.</strong> Most providers support OpenAI-style tools parameter, but some legacy ones require function_call. Always test your specific tool schema.</li>
+              <li><strong>Streaming is SSE on most, but not all.</strong> A few providers wrap streams in JSON lines. The OpenAI Python SDK handles both transparently, but custom clients need to detect the format.</li>
+              <li><strong>Token counting differs.</strong> Most providers use a tokenizer close to GPT-4's, but Qwen and DeepSeek use their own BPE tokenizers. A "1K tokens" in your code might bill 1,200 tokens on a different provider.</li>
+              <li><strong>Rate limits are per-provider, not per-model.</strong> A provider with 100 models may have one global rate limit, so heavy use of one model can starve the others.</li>
+              <li><strong>Some "OpenAI-compatible" endpoints are partial.</strong> A handful of providers skip the embeddings endpoint, the audio endpoint, or the assistants endpoint. Always check the provider's /v1/models listing before migrating.</li>
+            </ul>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Will switching from OpenAI to another provider actually save money?</strong></p>
+            <p>A: For most workloads, yes. 50-90% cost reduction is realistic. The exception is if you need GPT-4o-class reasoning specifically. For Llama 70B-class workloads, Groq and DeepSeek are 5-10x cheaper than GPT-4o. The catch is that model quality differs. Test with your own prompts before migrating.</p>
+
+            <p><strong>Q: Do all OpenAI-compatible APIs support function calling?</strong></p>
+            <p>A: Most do, but the implementation varies. Groq, OpenRouter, Together AI, and Fireworks AI all support the OpenAI-style tools parameter. Some smaller providers only support the older function_call parameter or skip tool use entirely. Always verify with a test call.</p>
+
+            <p><strong>Q: Which provider is best for production in 2026?</strong></p>
+            <p>A: For OpenAI-compatible production: Groq (if you can tolerate open models), Together AI (if you need fine-tuning), or OpenRouter (if you need model flexibility). For China production: <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> or apikey.fun. For data-sensitive workloads: self-hosted vLLM.</p>
+
+            <p><strong>Q: Can I use the OpenAI Python SDK with these providers?</strong></p>
+            <p>A: Yes. That is the whole point. Set base_url to the provider's endpoint and the rest of your code works unchanged. Most providers' docs show the exact one-line change for OpenAI, Anthropic, and LlamaIndex SDKs.</p>
+
+            <p><strong>Q: Is Anthropic Claude OpenAI-compatible?</strong></p>
+            <p>A: No. Claude uses a different API schema (Messages API, not Chat Completions). To use Claude through an OpenAI-compatible interface, route through OpenRouter or apikey.fun, which wrap Claude in OpenAI format. Direct Claude usage requires the anthropic SDK.</p>
+
+            <p><strong>Q: How does caching work across providers?</strong></p>
+            <p>A: Anthropic pioneered prompt caching, OpenAI added it, and most OpenAI-compatible providers now support it. Cache reads are typically 50-90% cheaper than the standard input price. For long system prompts over 2K tokens, caching saves significant money. The implementation is provider-specific, so check each provider's docs.</p>
+
+            <p><strong>Q: Which provider has the best free tier?</strong></p>
+            <p>A: Groq. You get 1,000 requests per day, no credit card, no expiration. Most others cap at $1-10 in credits that expire in 30-90 days. Groq's free tier is genuinely useful for hobby projects and small production workloads.</p>
+
+            <h2>Comparison Table (Final)</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Provider</th><th class="px-3 py-2 text-left">Endpoint Type</th><th class="px-3 py-2 text-left">Top Use Case</th><th class="px-3 py-2 text-left">Cheapest Model</th><th class="px-3 py-2 text-left">Speed Tier</th><th class="px-3 py-2 text-left">China Access</th><th class="px-3 py-2 text-left">Best For</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b"><strong>OpenRouter</strong></td><td class="px-3 py-2 border-b">Aggregator (200+)</td><td class="px-3 py-2 border-b">Multi-model access</td><td class="px-3 py-2 border-b">Varies</td><td class="px-3 py-2 border-b">Varies</td><td class="px-3 py-2 border-b">Proxy</td><td class="px-3 py-2 border-b">Routing, fallback</td></tr>
+                <tr><td class="px-3 py-2 border-b"><strong>Groq</strong></td><td class="px-3 py-2 border-b">Inference-only</td><td class="px-3 py-2 border-b">Real-time apps</td><td class="px-3 py-2 border-b">$0.05/M (Llama 8B)</td><td class="px-3 py-2 border-b">Fastest (LPU)</td><td class="px-3 py-2 border-b">Proxy</td><td class="px-3 py-2 border-b">Voice, chat</td></tr>
+                <tr><td class="px-3 py-2 border-b"><strong>Together AI</strong></td><td class="px-3 py-2 border-b">Inference + fine-tuning</td><td class="px-3 py-2 border-b">Custom models</td><td class="px-3 py-2 border-b">$0.18/M (Llama 8B)</td><td class="px-3 py-2 border-b">Medium</td><td class="px-3 py-2 border-b">Proxy</td><td class="px-3 py-2 border-b">Fine-tuning</td></tr>
+                <tr><td class="px-3 py-2 border-b"><strong>Fireworks AI</strong></td><td class="px-3 py-2 border-b">Inference-only</td><td class="px-3 py-2 border-b">Production</td><td class="px-3 py-2 border-b">$0.20/M (Llama 8B)</td><td class="px-3 py-2 border-b">Fast</td><td class="px-3 py-2 border-b">Proxy</td><td class="px-3 py-2 border-b">Batch, enterprise</td></tr>
+                <tr><td class="px-3 py-2 border-b"><strong>Anyscale</strong></td><td class="px-3 py-2 border-b">Enterprise Ray-based</td><td class="px-3 py-2 border-b">Dedicated capacity</td><td class="px-3 py-2 border-b">$0.50/M (Llama 70B)</td><td class="px-3 py-2 border-b">Medium</td><td class="px-3 py-2 border-b">Proxy</td><td class="px-3 py-2 border-b">Enterprise</td></tr>
+                <tr><td class="px-3 py-2 border-b"><strong>FreeModel</strong></td><td class="px-3 py-2 border-b">Aggregator (50+, CN)</td><td class="px-3 py-2 border-b">China-direct</td><td class="px-3 py-2 border-b">Model-dependent</td><td class="px-3 py-2 border-b">Medium</td><td class="px-3 py-2 border-b">Direct</td><td class="px-3 py-2 border-b">China + Western models</td></tr>
+                <tr><td class="px-3 py-2 border-b"><strong>DeepSeek</strong></td><td class="px-3 py-2 border-b">Native Chinese</td><td class="px-3 py-2 border-b">Cost-sensitive</td><td class="px-3 py-2 border-b">$0.14/M (V3)</td><td class="px-3 py-2 border-b">Fast</td><td class="px-3 py-2 border-b">Direct</td><td class="px-3 py-2 border-b">Cheapest SOTA</td></tr>
+                <tr><td class="px-3 py-2 border-b"><strong>apikey.fun</strong></td><td class="px-3 py-2 border-b">Aggregator (40+, CN)</td><td class="px-3 py-2 border-b">Claude/GPT in China</td><td class="px-3 py-2 border-b">¥1=$1 formula</td><td class="px-3 py-2 border-b">Medium</td><td class="px-3 py-2 border-b">Direct</td><td class="px-3 py-2 border-b">Claude Code users</td></tr>
+                <tr><td class="px-3 py-2 border-b"><strong>vLLM</strong></td><td class="px-3 py-2 border-b">Self-hosted OSS</td><td class="px-3 py-2 border-b">Data privacy</td><td class="px-3 py-2 border-b">Hardware cost</td><td class="px-3 py-2 border-b">Depends on GPU</td><td class="px-3 py-2 border-b">Yours</td><td class="px-3 py-2 border-b">Privacy, scale</td></tr>
+                <tr><td class="px-3 py-2 border-b"><strong>LiteLLM</strong></td><td class="px-3 py-2 border-b">Universal gateway</td><td class="px-3 py-2 border-b">Multi-provider routing</td><td class="px-3 py-2 border-b">Free (proxy only)</td><td class="px-3 py-2 border-b">N/A</td><td class="px-3 py-2 border-b">N/A</td><td class="px-3 py-2 border-b">Unified logging</td></tr>
+              </tbody>
+            </table>
+
+            <h2>Conclusion</h2>
+            <p>The OpenAI-compatible API ecosystem in 2026 is mature enough that for most LLM workloads, you do not need OpenAI as your primary provider. The decision tree is now:</p>
+            <ul>
+              <li>Need raw SOTA reasoning? Use OpenAI o1/o3 or Claude 3.5 Sonnet (via OpenRouter).</li>
+              <li>Need speed? Use Groq, full stop.</li>
+              <li>Need cost at scale? Use DeepSeek V3, then Groq for open models.</li>
+              <li>Need fine-tuning? Use Together AI or Fireworks AI.</li>
+              <li>Need China access? Use <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> (50+ models) or apikey.fun (Claude/GPT in China).</li>
+              <li>Need data privacy? Use self-hosted vLLM.</li>
+            </ul>
+            <p>The migration cost is near-zero. Change base_url and model in your existing OpenAI client, test, deploy. Most teams find they can replace 60-80% of their OpenAI usage with 30-50% of the cost, with latency improvements on real-time use cases.</p>
+            <p>If you want to start exploring without signing up for 10 services, begin with <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a>. One account gets you DeepSeek, Qwen, Llama, Claude, and GPT-4o through a single OpenAI-compatible endpoint, with China-direct access included. Pair that with Groq's free tier for real-time workloads, and you have a 90% production-ready stack on day one.</p>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Fastest:</strong> Groq (LPU, 1,250 tok/sec)</li>
+                <li><strong>Cheapest SOTA:</strong> DeepSeek V3 ($0.14/1M)</li>
+                <li><strong>Best free tier:</strong> Groq (1K req/day)</li>
+                <li><strong>China-direct:</strong> FreeModel, apikey.fun</li>
+                <li><strong>Most models:</strong> OpenRouter (200+)</li>
+                <li><strong>Fine-tuning:</strong> Together AI, Fireworks</li>
+              </ul>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Migration Recipe</h3>
+              <p class="text-sm text-gray-600 mb-2">Two changes per provider switch:</p>
+              <pre><code class="language-python text-xs">client = OpenAI(
+  api_key="...",
+  base_url="https://api.provider.com/v1"
+)
+client.chat.completions.create(
+  model="provider-model-id",
+  messages=[...]
+)</code></pre>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/groq-api-review/" class="text-blue-600 hover:underline">Groq API Review</a></li>
+                <li><a href="/tutorials/cheapest-llm-api-pricing-2026/" class="text-blue-600 hover:underline">Cheapest LLM API 2026</a></li>
+                <li><a href="/tutorials/deepseek-api-review/" class="text-blue-600 hover:underline">DeepSeek API Review</a></li>
+                <li><a href="/tutorials/freemodel-api-review/" class="text-blue-600 hover:underline">FreeModel API Review</a></li>
+                <li><a href="/tutorials/apikeyfun-api-review/" class="text-blue-600 hover:underline">APIKEY.FUN Review</a></li>
+              </ul>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Provider Categories</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/providers/" class="text-blue-600 hover:underline">All API Providers</a></li>
+                <li><a href="/providers/?category=aggregator" class="text-blue-600 hover:underline">API Aggregators</a></li>
+                <li><a href="/providers/?category=international" class="text-blue-600 hover:underline">International APIs</a></li>
+                <li><a href="/providers/?category=domestic" class="text-blue-600 hover:underline">Chinese APIs</a></li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Try FreeModel</h3>
+              <p class="text-sm text-gray-700 mb-3">China-direct access to 50+ models via one OpenAI-compatible endpoint.</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+            </div>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">Ad</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
