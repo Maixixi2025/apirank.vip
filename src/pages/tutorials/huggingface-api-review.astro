@@ -1,0 +1,313 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'huggingface-api-review';
+const date = '2026-06-03';
+const locale = 'en';
+
+const enTitle = 'Hugging Face API Review 2026: Inference API, Spaces & Endpoints';
+const enDescription = 'Hugging Face Inference API review: serverless LLM pricing (Llama 3.3 70B at $0.59/M), Spaces free tier, Dedicated Endpoints cost, China access, and Replicate/Together AI comparison.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Hugging Face Inference API cheaper than running the model on my own GPU?",
+      "acceptedAnswer": { "@type": "Answer", "text": "For low-to-moderate volume (under 10M tokens/day), the Serverless Inference API is cheaper when you factor in GPU rental, electricity, and DevOps time. At high volume (100M+ tokens/day) with a 24/7 workload, Dedicated Endpoints or self-hosting on Lambda Labs / AWS can match or beat the API price. The break-even point is typically around $1,000/month of inference spend." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use the Inference API output commercially?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes for most open-weight models (Llama 3.3, Qwen 2.5, Mistral, Mixtral, Phi-3, BGE, SDXL, Whisper). Each model has its own license — check the model card. Meta's Llama 3 license allows commercial use above 700M monthly active users only with a separate commercial agreement. Most other models are commercially unrestricted." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Hugging Face Inference API work from China?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Not directly. The huggingface.co and huggingface.hub domains are throttled by the GFW. Some developers use hf-mirror.com (community mirror, no SLA) or a stable proxy. For production China-direct access, use ModelScope (Alibaba) or SiliconFlow for Chinese open models, or OpenAI-compatible resellers like b.ai for proprietary models." }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the difference between Serverless Inference API and Dedicated Endpoints?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Serverless is pay-per-use with shared GPU pools and 5–30s cold starts. Dedicated Endpoints are private A10G/A100/H100 instances you control — no cold start, predictable latency, but you pay hourly ($0.60–$5/hr) regardless of utilization. Dedicated is for production; Serverless is for bursty/dev traffic." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I bring my own fine-tuned model to the Inference API?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — upload your fine-tuned weights to a Hub repo (private if needed), and the Inference API will route requests to it via any of the 7 inference providers. Pricing is set by HF and is typically $0.05–$1.00/M tokens depending on model size." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Spaces free tier enough for a real product?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Free Spaces sleep after 48 hours idle and have limited CPU. PRO ($9/month) gives you persistent A10G GPU with longer uptime — fine for a demo, not for production traffic. For production, use Dedicated Endpoints or a separate cloud VM (Lambda Labs, RunPod, Vast.ai)." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/en" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Hugging Face API Review</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Hugging Face API Review 2026: Inference API, Spaces & Dedicated Endpoints</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-03">June 3, 2026</time>
+              <span>•</span>
+              <span>API Review</span>
+              <span>•</span>
+              <span>~9 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Hugging Face Inference API complete review: serverless LLM pricing (Llama 3.3 70B at $0.59/M), Spaces free tier, Dedicated Endpoints cost, China access workarounds, and how it compares to Replicate and Together AI.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> The Hugging Face Inference API is the most flexible commercial gateway to the open-source AI ecosystem in 2026 — 1M+ models, multi-provider auto-routing, and a free Spaces tier. Llama 3.3 70B at $0.59/M input. $100 ≈ 75M input tokens. China access requires a stable proxy or hf-mirror.com. Best for open-weight experimentation, embedding/RAG pipelines, and quick A/B testing; Together AI is cheaper for LLM production serving at scale.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>Introduction: The Open-Source Model Hub's Commercial API</h2>
+            <p>Hugging Face started in 2016 as a chatbot company. In 2026 it is the de-facto home of open-source AI — over 1 million models, 250K+ datasets, and the dominant distribution channel for Meta, Mistral, Alibaba, and other labs shipping open weights. The Hugging Face Inference API is the commercial gateway to that ecosystem: a single REST endpoint that can route requests to Llama 3.3 70B, Qwen 2.5, BGE embeddings, Stable Diffusion XL, or Whisper — all behind one token.</p>
+            <p>For developers, this means no more deploying your own GPU fleet to evaluate an open-weight model. The Inference API auto-scales across 7 inference providers (Together AI, Replicate, fal.ai, Fireworks, etc.), charges per-token or per-second, and returns results in a few hundred milliseconds for popular models.</p>
+            <p>This review covers the three Hugging Face API surfaces — Serverless Inference API, Spaces (free GPU hosting for demos), and Dedicated Endpoints (private deployments) — including pricing per model family, the reality of accessing the platform from mainland China, and how it compares to Replicate (per-second GPU billing) and Together AI (raw model serving at near-cost).</p>
+
+            <h2>Hugging Face Inference API Pricing Breakdown</h2>
+            <p>Hugging Face's pricing is <strong>model-dependent</strong> because each model on the Hub is hosted by an Inference Provider who sets their own rates. The 7 providers include Together AI, Replicate, fal.ai, Fireworks AI, Hyperbolic, Nebius, and HF's own hardware.</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Model Family</th><th class="px-3 py-2 text-left">Input ($/M tok)</th><th class="px-3 py-2 text-left">Output ($/M tok)</th><th class="px-3 py-2 text-left">Latency (TTFT)</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B Instruct</td><td class="px-3 py-2 border-b">$0.59</td><td class="px-3 py-2 border-b">$0.79</td><td class="px-3 py-2 border-b">0.3–1.2s</td></tr>
+                <tr><td class="px-3 py-2 border-b">Qwen 2.5 72B Instruct</td><td class="px-3 py-2 border-b">$0.40</td><td class="px-3 py-2 border-b">$0.60</td><td class="px-3 py-2 border-b">0.4–1.0s</td></tr>
+                <tr><td class="px-3 py-2 border-b">Mistral 7B Instruct</td><td class="px-3 py-2 border-b">$0.05</td><td class="px-3 py-2 border-b">$0.10</td><td class="px-3 py-2 border-b">0.1–0.4s</td></tr>
+                <tr><td class="px-3 py-2 border-b">Mixtral 8x7B</td><td class="px-3 py-2 border-b">$0.27</td><td class="px-3 py-2 border-b">$0.27</td><td class="px-3 py-2 border-b">0.3–0.7s</td></tr>
+                <tr><td class="px-3 py-2 border-b">Phi-3 Medium 14B</td><td class="px-3 py-2 border-b">$0.14</td><td class="px-3 py-2 border-b">$0.14</td><td class="px-3 py-2 border-b">0.2–0.5s</td></tr>
+                <tr><td class="px-3 py-2 border-b">BGE-large-en-v1.5 (embeddings)</td><td class="px-3 py-2 border-b">$0.01</td><td class="px-3 py-2 border-b">—</td><td class="px-3 py-2 border-b">0.05s</td></tr>
+                <tr><td class="px-3 py-2 border-b">Stable Diffusion XL</td><td class="px-3 py-2 border-b">$0.0015/image</td><td class="px-3 py-2 border-b">—</td><td class="px-3 py-2 border-b">1–3s</td></tr>
+                <tr><td class="px-3 py-2 border-b">Whisper Large v3 (ASR)</td><td class="px-3 py-2 border-b">$0.001/minute</td><td class="px-3 py-2 border-b">—</td><td class="px-3 py-2 border-b">streaming</td></tr>
+              </tbody>
+            </table>
+            <p class="text-sm text-gray-500 mt-2">*Prices reflect the cheapest inference provider for each model. Multiple providers compete, so HF surfaces the lowest rate by default.</p>
+
+            <h3>Three Pricing Surfaces</h3>
+            <ol>
+              <li><strong>Serverless Inference API</strong> — Pay per token/image/second. Auto-scales. Cold starts of 5–30s on the first request after idle. Best for bursty traffic and prototype validation.</li>
+              <li><strong>Spaces (Free + PRO)</strong> — Free CPU and basic GPU for hosting Gradio/Streamlit demos. PRO subscription ($9/month) upgrades to A10G GPU with 8 vCPU and longer idle timeouts. Best for showcasing models, not for production.</li>
+              <li><strong>Dedicated Endpoints</strong> — Private A100/H100 instances reserved for your account. $0.60–$5.00/hr depending on GPU tier. No cold start. SLA-backed. Best for production-grade latency and compliance.</li>
+            </ol>
+
+            <h3>Free Tier: What's Included</h3>
+            <ul>
+              <li><strong>$0.10/hr of free CPU compute</strong> on Spaces (sleeps after 48h idle on free tier)</li>
+              <li><strong>Limited Inference API credits</strong> for newly published models in the first 30 days (varies)</li>
+              <li><strong>Public Spaces</strong> get more compute than private on the free plan</li>
+              <li><strong>PRO subscription ($9/month)</strong>: A10G GPU on Spaces, faster Inference API, 5x more monthly private repo storage</li>
+            </ul>
+
+            <h3>How Much Can You Get for $100?</h3>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Plan</th><th class="px-3 py-2 text-left">Spend</th><th class="px-3 py-2 text-left">Use Case Volume</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Serverless (Llama 3.3 70B: $0.59/M in + $0.79/M out)</td><td class="px-3 py-2 border-b">$100</td><td class="px-3 py-2 border-b">~75M input tokens + 30M output tokens (≈ 6,000 long conversations)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Dedicated A10G ($0.60/hr)</td><td class="px-3 py-2 border-b">$100</td><td class="px-3 py-2 border-b">~166 hours = ~7 days of 24/7 inference on a single model</td></tr>
+                <tr><td class="px-3 py-2 border-b">Dedicated A100 80GB ($3.00/hr)</td><td class="px-3 py-2 border-b">$100</td><td class="px-3 py-2 border-b">~33 hours = ~1.5 days of high-throughput LLM serving</td></tr>
+                <tr><td class="px-3 py-2 border-b">Spaces PRO ($9/month)</td><td class="px-3 py-2 border-b">$108/year</td><td class="px-3 py-2 border-b">1 year of A10G demo hosting</td></tr>
+              </tbody>
+            </table>
+            <p>At the Serverless tier, $100 yields ~75M input tokens on Llama 3.3 70B — enough for a small production workload (chatbot, doc summarization, code review) serving a few hundred users per day.</p>
+
+            <h2>Key Advantages of the Hugging Face API</h2>
+            <ul>
+              <li><strong>Largest model catalog in the world</strong>: 1M+ public models, including Llama 3.3, Qwen 2.5, Mistral, Mixtral, Phi-3, BGE, Whisper, SDXL — all under one API key.</li>
+              <li><strong>Open weights available</strong>: Almost every model on the Hub can be downloaded and self-hosted. The API is a convenience layer over open weights, not a black box.</li>
+              <li><strong>Multi-provider routing</strong>: HF aggregates 7 inference providers and surfaces the cheapest by default. You can pick a specific provider for latency or region.</li>
+              <li><strong>Spaces free GPU</strong>: Demos and prototypes can run on free CPU or PRO A10G hardware — no need to deploy a separate Cloudflare/Vercel layer.</li>
+              <li><strong>Inference Endpoints for compliance</strong>: Private A100/H100 deployments with HIPAA, SOC 2, and EU data residency options for enterprise.</li>
+              <li><strong>Hub integration</strong>: Models auto-update from the Hub. If Meta ships Llama 4 next week, you'll see it on the Inference API in days, not months.</li>
+              <li><strong>Transformers library compatibility</strong>: The huggingface_hub Python SDK, transformers library, and InferenceClient are the most-used AI libraries on GitHub (200K+ stars combined).</li>
+            </ul>
+
+            <h2>Limitations to Consider</h2>
+            <ul>
+              <li><strong>China access requires stable proxy</strong>: The huggingface.co and huggingface.hub domains are throttled or blocked in mainland China. Some Chinese companies have built mirror sites (hf-mirror.com), but stability varies.</li>
+              <li><strong>Cold start latency on Serverless</strong>: First request after idle can take 5–30 seconds. Production workloads needing consistent latency should use Dedicated Endpoints.</li>
+              <li><strong>Pricing is model-dependent</strong>: Unlike OpenAI or Anthropic (one fixed price per model), HF pricing varies by inference provider. Budgeting is harder.</li>
+              <li><strong>No native Chinese models on par with ModelScope</strong>: The largest Chinese open models (Qwen, DeepSeek, GLM, Yi) are mirrored on HF, but ModelScope (Alibaba) and Wisemodel have the originals first.</li>
+              <li><strong>Dedicated Endpoints cost premium</strong>: $0.60–$5.00/hr is more expensive than running your own A10G on Lambda Labs ($0.60/hr) or AWS spot (~$0.40/hr). You pay for the managed UX.</li>
+              <li><strong>Rate limits on free tier</strong>: 5–10 req/min on Serverless Inference API without a paid plan. Bursty workloads hit the wall fast.</li>
+            </ul>
+
+            <h2>Hugging Face vs Replicate vs Together AI</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Factor</th><th class="px-3 py-2 text-left">Hugging Face Inference API</th><th class="px-3 py-2 text-left">Replicate</th><th class="px-3 py-2 text-left">Together AI</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Pricing model</td><td class="px-3 py-2 border-b">Per-token or per-image (model-dependent)</td><td class="px-3 py-2 border-b">Per-second (GPU time)</td><td class="px-3 py-2 border-b">Per-token (LLM-only)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Model catalog</td><td class="px-3 py-2 border-b">1M+ (largest)</td><td class="px-3 py-2 border-b">10K+ (curated community)</td><td class="px-3 py-2 border-b">200+ (LLM/embedding focus)</td></tr>
+                <tr><td class="px-3 py-2 border-b">China access</td><td class="px-3 py-2 border-b">❌ Proxy required (or hf-mirror.com)</td><td class="px-3 py-2 border-b">❌ Proxy required</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">Cold start</td><td class="px-3 py-2 border-b">5–30s (serverless)</td><td class="px-3 py-2 border-b">5–15s (cold)</td><td class="px-3 py-2 border-b">&lt;1s (warm pools)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Free credits</td><td class="px-3 py-2 border-b">$0.10/hr CPU Spaces</td><td class="px-3 py-2 border-b">$5 signup credit</td><td class="px-3 py-2 border-b">$5 signup credit</td></tr>
+                <tr><td class="px-3 py-2 border-b">Open-weight hosting</td><td class="px-3 py-2 border-b">✅ Yes (native)</td><td class="px-3 py-2 border-b">❌ No (compute only)</td><td class="px-3 py-2 border-b">❌ No (serving only)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Dedicated hardware</td><td class="px-3 py-2 border-b">✅ Yes (Dedicated Endpoints)</td><td class="px-3 py-2 border-b">❌ No</td><td class="px-3 py-2 border-b">✅ Yes (Reserved)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Best for</td><td class="px-3 py-2 border-b">Model discovery + prototyping</td><td class="px-3 py-2 border-b">Open-source model experimentation</td><td class="px-3 py-2 border-b">LLM production serving</td></tr>
+              </tbody>
+            </table>
+
+            <h2>Use Case Recommendations</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Use Case</th><th class="px-3 py-2 text-left">Recommended</th><th class="px-3 py-2 text-left">Why</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Quick open-weight model A/B testing</td><td class="px-3 py-2 border-b">Hugging Face Inference API</td><td class="px-3 py-2 border-b">Auto-routes to cheapest provider, no GPU setup</td></tr>
+                <tr><td class="px-3 py-2 border-b">Production LLM serving at scale</td><td class="px-3 py-2 border-b">Together AI or Dedicated Endpoints</td><td class="px-3 py-2 border-b">Lower cold start, predictable per-token cost</td></tr>
+                <tr><td class="px-3 py-2 border-b">Embedding pipeline for RAG</td><td class="px-3 py-2 border-b">Hugging Face Inference API (BGE)</td><td class="px-3 py-2 border-b">$0.01/M tokens, batch support, on-the-fly model swap</td></tr>
+                <tr><td class="px-3 py-2 border-b">Image generation (FLUX, SDXL)</td><td class="px-3 py-2 border-b">Replicate</td><td class="px-3 py-2 border-b">Per-image billing, more model variety</td></tr>
+                <tr><td class="px-3 py-2 border-b">Whisper ASR at scale</td><td class="px-3 py-2 border-b">Hugging Face Inference API</td><td class="px-3 py-2 border-b">$0.001/minute, streaming, batch endpoint</td></tr>
+                <tr><td class="px-3 py-2 border-b">Hosting a Gradio demo</td><td class="px-3 py-2 border-b">Spaces Free or PRO</td><td class="px-3 py-2 border-b">Built-in, GPU included, no infra to manage</td></tr>
+                <tr><td class="px-3 py-2 border-b">Chinese open models (Qwen, GLM)</td><td class="px-3 py-2 border-b">ModelScope or HF (mirror)</td><td class="px-3 py-2 border-b">First-party support on ModelScope</td></tr>
+              </tbody>
+            </table>
+
+            <h2>How to Get Started</h2>
+            <ol>
+              <li><strong>Sign up</strong>: Create a free account at <a href="https://huggingface.co" class="text-blue-600 hover:underline">huggingface.co</a> (Google or GitHub OAuth).</li>
+              <li><strong>Generate API token</strong>: Settings → Access Tokens → New token. Choose read for inference-only, write for Spaces/uploads.</li>
+              <li><strong>Pick a model</strong>: Browse the Models page. Filter by Inference API availability (green ⚡ icon = serverless ready).</li>
+              <li><strong>Test in Playground</strong>: Most model pages have a "Hosted inference API" widget — test prompts directly in browser.</li>
+              <li><strong>Install SDK</strong>: <code>pip install huggingface_hub</code> (Python) or use the REST endpoint with curl.</li>
+              <li><strong>Scale up</strong>: Subscribe to PRO ($9/month) for faster Spaces, or provision a Dedicated Endpoint for production latency.</li>
+            </ol>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Is Hugging Face Inference API cheaper than running the model on my own GPU?</strong></p>
+            <p>A: For low-to-moderate volume (under 10M tokens/day), the Serverless Inference API is cheaper when you factor in GPU rental, electricity, and DevOps time. At high volume (100M+ tokens/day) with a 24/7 workload, Dedicated Endpoints or self-hosting on Lambda Labs / AWS can match or beat the API price. The break-even point is typically around $1,000/month of inference spend.</p>
+
+            <p><strong>Q: Can I use the Inference API output commercially?</strong></p>
+            <p>A: Yes for most open-weight models (Llama 3.3, Qwen 2.5, Mistral, Mixtral, Phi-3, BGE, SDXL, Whisper). Each model has its own license — check the model card. Meta's Llama 3 license allows commercial use above 700M monthly active users only with a separate commercial agreement. Most other models are commercially unrestricted.</p>
+
+            <p><strong>Q: Does Hugging Face Inference API work from China?</strong></p>
+            <p>A: Not directly. The huggingface.co and huggingface.hub domains are throttled by the GFW. Some developers use hf-mirror.com (community mirror, no SLA) or a stable proxy. For production China-direct access, use ModelScope (Alibaba) or SiliconFlow for Chinese open models, or OpenAI-compatible resellers like b.ai for proprietary models.</p>
+
+            <p><strong>Q: What's the difference between Serverless Inference API and Dedicated Endpoints?</strong></p>
+            <p>A: Serverless is pay-per-use with shared GPU pools and 5–30s cold starts. Dedicated Endpoints are private A10G/A100/H100 instances you control — no cold start, predictable latency, but you pay hourly ($0.60–$5/hr) regardless of utilization. Dedicated is for production; Serverless is for bursty/dev traffic.</p>
+
+            <p><strong>Q: Can I bring my own fine-tuned model to the Inference API?</strong></p>
+            <p>A: Yes — upload your fine-tuned weights to a Hub repo (private if needed), and the Inference API will route requests to it via any of the 7 inference providers. Pricing is set by HF and is typically $0.05–$1.00/M tokens depending on model size.</p>
+
+            <p><strong>Q: Is Spaces free tier enough for a real product?</strong></p>
+            <p>A: No. Free Spaces sleep after 48 hours idle and have limited CPU. PRO ($9/month) gives you persistent A10G GPU with longer uptime — fine for a demo, not for production traffic. For production, use Dedicated Endpoints or a separate cloud VM (Lambda Labs, RunPod, Vast.ai).</p>
+
+            <h2>Conclusion</h2>
+            <p>The Hugging Face Inference API is the most flexible commercial gateway to the open-source AI ecosystem in 2026. With 1M+ models, multi-provider auto-routing, and a free Spaces tier for demos, it's the natural starting point for any developer evaluating open weights. The trade-off is cold-start latency on Serverless (5–30s) and proxy-dependent China access.</p>
+            <p>If you need production-grade LLM serving with sub-second latency, Together AI is more cost-efficient at scale. If you need image generation variety beyond SDXL, Replicate has the community model catalog. But for open-weight experimentation, embedding pipelines, and quick model A/B testing, the Hugging Face Inference API is the only API that gives you Llama 3.3, Qwen 2.5, Mistral, BGE, SDXL, and Whisper behind one key.</p>
+
+            <h2>Comparison Table (Final)</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Provider</th><th class="px-3 py-2 text-left">Pricing Model</th><th class="px-3 py-2 text-left">Best For</th><th class="px-3 py-2 text-left">China Access</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Hugging Face Inference API</td><td class="px-3 py-2 border-b">Per-token / per-image (model-dependent)</td><td class="px-3 py-2 border-b">Open-weight model A/B testing, embeddings</td><td class="px-3 py-2 border-b">❌ Proxy required (or hf-mirror.com)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Replicate</td><td class="px-3 py-2 border-b">Per-second (GPU time)</td><td class="px-3 py-2 border-b">Open-source model experimentation</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">Together AI</td><td class="px-3 py-2 border-b">Per-token (LLM-only)</td><td class="px-3 py-2 border-b">LLM production serving</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">ModelScope</td><td class="px-3 py-2 border-b">Per-token / free tier</td><td class="px-3 py-2 border-b">Chinese open models (Qwen, GLM, Yi)</td><td class="px-3 py-2 border-b">✅ Direct</td></tr>
+                <tr><td class="px-3 py-2 border-b">SiliconFlow (硅基流动)</td><td class="px-3 py-2 border-b">Per-token</td><td class="px-3 py-2 border-b">Chinese open models, China-direct</td><td class="px-3 py-2 border-b">✅ Direct</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-gray-50 p-6 rounded-lg mt-8">
+            <h3 class="text-lg font-semibold mb-2">Related Resources</h3>
+            <ul class="space-y-2 text-sm">
+              <li>• <a href="/tutorials/replicate-api-review" class="text-blue-600 hover:underline">Replicate API Review</a> — per-second GPU billing and open-source model variety</li>
+              <li>• <a href="/tutorials/together-ai-api-review" class="text-blue-600 hover:underline">Together AI API Review</a> — raw model serving at near-cost</li>
+              <li>• <a href="/tutorials/stability-ai-api-review" class="text-blue-600 hover:underline">Stability AI API Review</a> — production image/video pipelines</li>
+              <li>• <a href="/providers/huggingface" class="text-blue-600 hover:underline">Hugging Face on APIRank</a> — pricing, models, and provider comparison</li>
+            </ul>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">Quick Facts</h3>
+            <dl class="text-sm space-y-2">
+              <div class="flex justify-between"><dt class="text-gray-500">Provider</dt><dd class="font-medium">Hugging Face</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Founded</dt><dd class="font-medium">2016</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Model Count</dt><dd class="font-medium">1M+</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Pricing Unit</dt><dd class="font-medium">Per-token / per-image</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">China Access</dt><dd class="font-medium text-red-600">Proxy required</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Free Tier</dt><dd class="font-medium">$0.10/hr CPU Spaces</dd></div>
+            </dl>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">Best For</h3>
+            <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+              <li>Open-weight model A/B testing</li>
+              <li>Embedding / RAG pipelines (BGE)</li>
+              <li>Whisper ASR at scale</li>
+              <li>Gradio demo hosting (Spaces)</li>
+              <li>Multi-model experimentation</li>
+            </ul>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 text-center">
+            <p class="text-xs text-blue-700 uppercase tracking-wide mb-1">Advertisement</p>
+            <p class="text-sm text-gray-500">Ad slot — AdSense placeholder</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
