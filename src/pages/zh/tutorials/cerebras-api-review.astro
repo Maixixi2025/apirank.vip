@@ -1,0 +1,233 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'cerebras-api-review';
+const date = '2026-06-04';
+const locale = 'zh';
+
+const zhTitle = 'Cerebras API 测评 2026：WSE-3 推理速度 2,000 tok/s';
+const zhDescription = 'Cerebras Inference API 完整测评：Llama 3.3 70B 每百万 token $0.60、WSE-3 芯片 2,000+ tok/s、零冷启动、OpenAI API 兼容、与 Groq / Together AI 对比。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Cerebras 真的比 GPU 方案快很多吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "是的。在 Llama 3.3 70B 上，Cerebras 达到 2,000+ tok/s，而 Together AI（A100）约 120 tok/s，Replicate（A10G）约 80 tok/s。WSE-3 将整个模型保持在芯片上，避免了 GPU 推理的内存带宽瓶颈，实测比典型 GPU 部署快 10-20 倍。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Cerebras 对比 GPT-4o 的性价比如何？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Cerebras 运行 Llama 3.3 70B 成本为 $0.60/M tokens，GPT-4o 为 $2.50/M in + $10.00/M out。在输入输出均衡的场景下，Cerebras 便宜约 20 倍，同时生成速度快 20 倍以上。大多数任务上 Llama 3.3 70B 质量与 GPT-4o 相当。" }
+    },
+    {
+      "@type": "Question",
+      "name": "在中国能用 Cerebras 吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不能直接使用。Cerebras 基础设施托管在美国，国内开发者需要稳定的海外代理或 VPN。国内直连场景推荐 DeepSeek 或阿里云百炼。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Cerebras 支持 function calling 吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "支持——原生支持 OpenAI 风格的 function calling、工具定义和结构化输出（JSON 模式）。Llama 3.3 70B 的工具调用能力在 Berkeley Function Calling Leaderboard 上与 GPT-4o 相当。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Cerebras 有哪些模型？",
+      "acceptedAnswer": { "@type": "Answer", "text": "截至 2026 年 6 月，提供 Llama 3.3 70B Instruct、Llama 3.1 8B/70B Instruct、Command R+、Llama 3.2 Vision 11B 和 GPT-Neo。Cerebras 是精选模式，只托管最热门开源 LLM。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Cerebras 有专属实例或 SLA 吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "目前提供共享推理池（持续热实例），没有专属实例选项。专属端点功能正在开发中。共享池延迟稳定在亚秒级，但目前没有正式 SLA 保障。" }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Cerebras API 测评</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Cerebras API 测评 2026：WSE-3 推理速度 2,000 tok/s</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-04">2026 年 6 月 4 日</time>
+              <span>•</span>
+              <span>API 测评</span>
+              <span>•</span>
+              <span>约 10 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Cerebras Inference API 完整测评：Llama 3.3 70B 每百万 token $0.60、WSE-3 芯片 2,000+ tok/s、零冷启动、OpenAI API 兼容、与 Groq / Together AI 对比。
+            </p>
+          </header>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>引言：晶圆级芯片带来的推理革命</h2>
+            <p>Cerebras Systems 成立于 2016 年，目标是制造全球最大的芯片——晶圆级引擎（WSE）。与传统 GPU 集群不同，Cerebras 设计了一块完整的硅晶圆作为单一处理器。第三代 WSE-3 包含 4 万亿个晶体管，在远低于数百块 H100 的功耗下提供同等计算能力。</p>
+            <p>2024 年，Cerebras 推出 Cerebras Inference API，提供 Llama 3.3 70B、Llama 3.1 8B/70B 等开源模型的推理服务，速度远超 GPU 方案。测试显示 Llama 3.3 70B 的推理速度超过 2,000 tokens/秒——比 Groq 的 LPU 快 5-10 倍，比 Together AI 或 Replicate 的典型 GPU 部署快 20 倍。</p>
+            <p>对开发者而言，核心差异在于 Cerebras 提供 OpenAI API 兼容的接口，原生支持 function calling、流式输出和工具调用。这意味着你可以将 GPT-4o 后端替换为 Cerebras 托管的 Llama 3.3 70B，在节约 95% 成本的同时获得 10-20 倍的响应速度。</p>
+
+            <h2>Cerebras Inference API 定价</h2>
+            <p>Cerebras 采用<strong>统一输入输出定价</strong>——无论 tokens 是输入还是输出，统一按每百万 tokens 计费。</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">模型</th><th class="px-3 py-2 text-left">统一费率 ($/M tok)</th><th class="px-3 py-2 text-left">速度 (tok/s)</th><th class="px-3 py-2 text-left">冷启动</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B Instruct</td><td class="px-3 py-2 border-b">$0.60</td><td class="px-3 py-2 border-b">2,000+</td><td class="px-3 py-2 border-b">0ms（持续热池）</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.1 8B Instruct</td><td class="px-3 py-2 border-b">$0.10</td><td class="px-3 py-2 border-b">4,500+</td><td class="px-3 py-2 border-b">0ms（持续热池）</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.1 70B Instruct</td><td class="px-3 py-2 border-b">$0.50</td><td class="px-3 py-2 border-b">1,800+</td><td class="px-3 py-2 border-b">0ms（持续热池）</td></tr>
+                <tr><td class="px-3 py-2 border-b">Command R+</td><td class="px-3 py-2 border-b">$0.50</td><td class="px-3 py-2 border-b">1,500+</td><td class="px-3 py-2 border-b">0ms（持续热池）</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.2 Vision 11B</td><td class="px-3 py-2 border-b">$0.15</td><td class="px-3 py-2 border-b">1,000+</td><td class="px-3 py-2 border-b">0ms（持续热池）</td></tr>
+              </tbody>
+            </table>
+
+            <h3>免费额度</h3>
+            <p>Cerebras 注册即送 <strong>$5 免费额度</strong>，试用期无需绑定信用卡。之后的付费方式是预充值，没有月费或最低消费限制。</p>
+
+            <h3>$100 能做什么？</h3>
+            <p>按 Llama 3.3 70B 的 $0.60/M tokens 计算，$100 可以购买约 <strong>1.67 亿 tokens</strong>。实际场景：约 8,000 次长对话、约 335,000 次 API 调用、连续流式对话约 20 小时。</p>
+
+            <h2>速度对比：Cerebras vs. 竞品</h2>
+            <p>Cerebras Inference 最大的亮点是极致的 token 生成速度。WSE-3 芯片在单个时钟周期内处理整个 transformer 层，完全消除了 GPU 推理的内存带宽瓶颈。</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">提供商</th><th class="px-3 py-2 text-left">Llama 3.3 70B 速度</th><th class="px-3 py-2 text-left">首 token 延迟</th><th class="px-3 py-2 text-left">价格</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b font-semibold">Cerebras</td><td class="px-3 py-2 border-b font-semibold">2,000+ tok/s</td><td class="px-3 py-2 border-b">低于 200ms</td><td class="px-3 py-2 border-b font-semibold">$0.60/M（统一）</td></tr>
+                <tr><td class="px-3 py-2 border-b">Groq (LPU)</td><td class="px-3 py-2 border-b">450 tok/s</td><td class="px-3 py-2 border-b">低于 300ms</td><td class="px-3 py-2 border-b">$1.78/M</td></tr>
+                <tr><td class="px-3 py-2 border-b">Together AI</td><td class="px-3 py-2 border-b">120 tok/s</td><td class="px-3 py-2 border-b">低于 1s</td><td class="px-3 py-2 border-b">$1.38/M</td></tr>
+                <tr><td class="px-3 py-2 border-b">Replicate</td><td class="px-3 py-2 border-b">80 tok/s</td><td class="px-3 py-2 border-b">5-15s 冷启动</td><td class="px-3 py-2 border-b">~$1.20/M</td></tr>
+                <tr><td class="px-3 py-2 border-b">OpenAI GPT-4o</td><td class="px-3 py-2 border-b">80 tok/s</td><td class="px-3 py-2 border-b">低于 500ms</td><td class="px-3 py-2 border-b">$12.50/M</td></tr>
+              </tbody>
+            </table>
+
+            <h2>Cerebras 的核心优势</h2>
+            <ul>
+              <li><strong>惊人的速度</strong>：Llama 3.3 70B 达到 2,000+ tok/s —— 是公开可用的开源 70B 模型中最快的。</li>
+              <li><strong>零冷启动</strong>：维护持续热推理池，每个请求都能获得一致的延迟。</li>
+              <li><strong>OpenAI API 兼容</strong>：可直接替换 OpenAI 的 Chat Completions API，迁移只需更改 URL 和 API key。</li>
+              <li><strong>成本效益</strong>：$0.60/M tokens 比 Groq ($1.78/M)、Together AI ($1.38/M) 更便宜，比 GPT-4o ($12.50/M) 节省 95%。</li>
+              <li><strong>原生 function calling</strong>：支持工具调用、结构化输出和 JSON 模式。</li>
+            </ul>
+
+            <h2>需要考虑的限制</h2>
+            <ul>
+              <li><strong>国内访问需要代理</strong>：基础设施位于美国，没有中国区域部署。</li>
+              <li><strong>模型选择有限</strong>：只托管最热门的开源 LLM，约 6 个模型。</li>
+              <li><strong>统一输入输出定价</strong>：无法针对高输入场景优化成本。</li>
+              <li><strong>无多模态能力</strong>：无文生图、音频处理或 embeddings。</li>
+              <li><strong>无缓存折扣</strong>：重复前缀按全额计费。</li>
+            </ul>
+
+            <h2>Cerebras vs. Groq vs. Together AI vs. Replicate</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">对比项</th><th class="px-3 py-2 text-left">Cerebras</th><th class="px-3 py-2 text-left">Groq (LPU)</th><th class="px-3 py-2 text-left">Together AI</th><th class="px-3 py-2 text-left">Replicate</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B 速度</td><td class="px-3 py-2 border-b">2,000+ tok/s</td><td class="px-3 py-2 border-b">450 tok/s</td><td class="px-3 py-2 border-b">120 tok/s</td><td class="px-3 py-2 border-b">80 tok/s</td></tr>
+                <tr><td class="px-3 py-2 border-b">冷启动</td><td class="px-3 py-2 border-b">0ms (持续热)</td><td class="px-3 py-2 border-b">低于 1s</td><td class="px-3 py-2 border-b">5-30s</td><td class="px-3 py-2 border-b">5-15s</td></tr>
+                <tr><td class="px-3 py-2 border-b">价格</td><td class="px-3 py-2 border-b">$0.60/M</td><td class="px-3 py-2 border-b">$1.78/M</td><td class="px-3 py-2 border-b">$1.38/M</td><td class="px-3 py-2 border-b">~$1.20/M</td></tr>
+                <tr><td class="px-3 py-2 border-b">模型数量</td><td class="px-3 py-2 border-b">~6</td><td class="px-3 py-2 border-b">~20</td><td class="px-3 py-2 border-b">200+</td><td class="px-3 py-2 border-b">10K+</td></tr>
+                <tr><td class="px-3 py-2 border-b">Function Calling</td><td class="px-3 py-2 border-b">✅ 原生</td><td class="px-3 py-2 border-b">✅ 原生</td><td class="px-3 py-2 border-b">✅ 原生</td><td class="px-3 py-2 border-b">❌ 有限</td></tr>
+                <tr><td class="px-3 py-2 border-b">免费额度</td><td class="px-3 py-2 border-b">$5</td><td class="px-3 py-2 border-b">❌ 无</td><td class="px-3 py-2 border-b">$5</td><td class="px-3 py-2 border-b">$5</td></tr>
+                <tr><td class="px-3 py-2 border-b">国内访问</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">❌ 需代理</td><td class="px-3 py-2 border-b">❌ 需代理</td></tr>
+              </tbody>
+            </table>
+
+            <h2>结论</h2>
+            <p>Cerebras Inference 代表了 LLM 推理领域的范式转变。WSE-3 芯片在 Llama 3.3 70B 上实现 2,000+ tok/s 的速度——超过任何公开可用的 GPU 或 LPU 方案——而成本仅为 $0.60/M tokens。配合零冷启动、原生 OpenAI API 兼容和 function calling 支持，它是 2026 年延迟敏感型 LLM 应用的最优选择。</p>
+            <p>限制也很明确：模型选择有限、无中国区域部署、无缓存折扣。但如果你追求纯文本 LLM 场景的最高速度和最低延迟成本，Cerebras 是目前最值得考虑的选择。</p>
+
+            <h2>对比表（最终）</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">提供商</th><th class="px-3 py-2 text-left">定价模型</th><th class="px-3 py-2 text-left">最佳场景</th><th class="px-3 py-2 text-left">国内访问</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b font-semibold">Cerebras</td><td class="px-3 py-2 border-b">统一 $0.60/M tok</td><td class="px-3 py-2 border-b">超高速 LLM 推理 (2,000+ tok/s)</td><td class="px-3 py-2 border-b">❌ 需代理</td></tr>
+                <tr><td class="px-3 py-2 border-b">Groq (LPU)</td><td class="px-3 py-2 border-b">$1.78/M</td><td class="px-3 py-2 border-b">快速推理 (450 tok/s)</td><td class="px-3 py-2 border-b">❌ 需代理</td></tr>
+                <tr><td class="px-3 py-2 border-b">Together AI</td><td class="px-3 py-2 border-b">$1.38/M</td><td class="px-3 py-2 border-b">生产级 LLM 服务 (120 tok/s)</td><td class="px-3 py-2 border-b">❌ 需代理</td></tr>
+                <tr><td class="px-3 py-2 border-b">Replicate</td><td class="px-3 py-2 border-b">按秒 GPU</td><td class="px-3 py-2 border-b">开源模型实验</td><td class="px-3 py-2 border-b">❌ 需代理</td></tr>
+                <tr><td class="px-3 py-2 border-b">OpenAI GPT-4o</td><td class="px-3 py-2 border-b">$12.50/M</td><td class="px-3 py-2 border-b">顶级质量 & 多模态</td><td class="px-3 py-2 border-b">❌ 需代理</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">快速概览</h3>
+            <dl class="text-sm space-y-2">
+              <div class="flex justify-between"><dt class="text-gray-500">提供商</dt><dd class="font-medium">Cerebras</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">成立时间</dt><dd class="font-medium">2016</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">模型数量</dt><dd class="font-medium">~6</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">最高速度</dt><dd class="font-medium text-green-600">2,000+ tok/s</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">国内访问</dt><dd class="font-medium text-red-600">需代理</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">免费额度</dt><dd class="font-medium">$5</dd></div>
+            </dl>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">适用场景</h3>
+            <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+              <li>超高速聊天机器人</li>
+              <li>实时代码补全</li>
+              <li>高吞吐文档处理</li>
+              <li>Agent 工具调用</li>
+              <li>低成本 GPT-4o 替代</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

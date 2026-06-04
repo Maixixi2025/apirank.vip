@@ -1,0 +1,314 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'cerebras-api-review';
+const date = '2026-06-04';
+const locale = 'en';
+
+const enTitle = 'Cerebras API Review 2026: WSE-3 Inference Speed';
+const enDescription = 'Cerebras Inference API review: Llama 3.3 70B at $0.60/M, WSE-3 at 2,000+ tok/s, zero cold start, OpenAI API compatible. Compare to Groq and Together AI.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Cerebras Inference actually faster than GPU-based alternatives?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, by a significant margin. On Llama 3.3 70B, Cerebras achieves 2,000+ tok/s vs. 120 tok/s on Together AI (A100) and 80 tok/s on Replicate (A10G). The WSE-3 chip processes the entire model on-wafer, avoiding the memory bandwidth bottleneck that limits GPU inference. Internal benchmarks show 10-20x speedup over typical GPU deployments." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Cerebras pricing compare to OpenAI GPT-4o?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Cerebras running Llama 3.3 70B costs $0.60/M tokens (combined input+output). OpenAI GPT-4o costs $2.50/M input + $10.00/M output. For a typical conversation with equal input and output, Cerebras is roughly 20x cheaper. Quality is comparable for most tasks, though GPT-4o still leads in creative writing and nuanced instruction following." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use Cerebras from China?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Not directly. Cerebras infrastructure is hosted in the US. Developers in mainland China need a stable overseas proxy or VPN. Some developers access Cerebras through OpenAI-compatible API resellers that aggregate multiple backends, though this adds latency. For China-direct access, consider DeepSeek or Alibaba Cloud (Bailian)." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Cerebras support function calling and tool use?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — native support for OpenAI-style function calling, tool definitions, and structured output (JSON mode). This makes Cerebras a drop-in replacement for agentic workloads that were originally built for GPT-4o. Llama 3.3 70B has strong tool-calling capabilities, performing comparably to GPT-4o on the Berkeley Function Calling Leaderboard." }
+    },
+    {
+      "@type": "Question",
+      "name": "What models are available on Cerebras Inference?",
+      "acceptedAnswer": { "@type": "Answer", "text": "As of June 2026, Cerebras hosts Llama 3.3 70B Instruct, Llama 3.1 8B and 70B Instruct, Command R+, Llama 3.2 Vision 11B, and GPT-Neo. They prioritize the most popular open-weight LLMs and add models based on community demand. Unlike Hugging Face Inference API (1M+ models), Cerebras is curated." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Cerebras offer dedicated endpoints or SLAs?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Cerebras currently offers shared inference pools with always-hot instances. Dedicated endpoint support is in development. For production workloads, the shared pool has been reliable with consistent sub-second latency, but there is no formal SLA guarantee yet. Enterprise customers should contact Cerebras directly for custom deployments." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/en" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Cerebras API Review</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Cerebras API Review 2026: WSE-3 Inference at 2,000 tok/s</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-04">June 4, 2026</time>
+              <span>•</span>
+              <span>API Review</span>
+              <span>•</span>
+              <span>~10 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Cerebras Inference API review: Llama 3.3 70B at $0.60/M tokens, WSE-3 chip delivers 2,000+ tok/s, zero cold start, OpenAI API compatible. Compared to Groq and Together AI.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> Cerebras Inference runs Llama 3.3 70B at 2,000+ tok/s for $0.60/M tokens — 10-20x faster than GPU-based inference at 20x lower cost than GPT-4o. Zero cold start, OpenAI API compatible, native function calling. Best for latency-sensitive LLM applications: chatbots, code completion, real-time content generation. Trade-offs: limited model selection (~6 LLMs), no China-region deployment, no embeddings or image gen.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>Introduction: The Wafer-Scale Revolution in LLM Inference</h2>
+            <p>Cerebras Systems was founded in 2016 to build the world's largest chip — the Wafer-Scale Engine (WSE). Instead of stitching together hundreds of small GPUs, Cerebras designed a single, massive silicon wafer that functions as one processor. The WSE-3, their third generation, contains 4 trillion transistors and delivers compute rivaling hundreds of H100 GPUs in a fraction of the power envelope.</p>
+            <p>In 2024, Cerebras launched the Cerebras Inference API, offering access to Llama 3.3 70B, Llama 3.1 8B/70B, and other open-weight models at speeds far exceeding GPU-based inference. Benchmarks show Llama 3.3 70B at over 2,000 tokens per second — 5-10x faster than Groq's LPU and 20x faster than typical GPU deployments on Together AI or Replicate.</p>
+            <p>For developers, the key differentiator is that Cerebras offers OpenAI API-compatible endpoints with native function calling, streaming, and tool use support. This means you can swap your GPT-4o backend for a Cerebras-hosted Llama 3.3 70B endpoint and get responses 10-20x faster with comparable quality — at a fraction of the cost.</p>
+
+            <h2>Cerebras Inference API Pricing</h2>
+            <p>Cerebras uses a <strong>combined input + output</strong> pricing model. Unlike OpenAI (separate input and output rates) or Groq (per-token), Cerebras charges a flat rate per million tokens regardless of whether they're input or output.</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Model</th><th class="px-3 py-2 text-left">Combined Rate ($/M tok)</th><th class="px-3 py-2 text-left">Speed (tok/s)</th><th class="px-3 py-2 text-left">Cold Start</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B Instruct</td><td class="px-3 py-2 border-b">$0.60</td><td class="px-3 py-2 border-b">2,000+</td><td class="px-3 py-2 border-b">0ms (always hot)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.1 8B Instruct</td><td class="px-3 py-2 border-b">$0.10</td><td class="px-3 py-2 border-b">4,500+</td><td class="px-3 py-2 border-b">0ms (always hot)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.1 70B Instruct</td><td class="px-3 py-2 border-b">$0.50</td><td class="px-3 py-2 border-b">1,800+</td><td class="px-3 py-2 border-b">0ms (always hot)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Command R+</td><td class="px-3 py-2 border-b">$0.50</td><td class="px-3 py-2 border-b">1,500+</td><td class="px-3 py-2 border-b">0ms (always hot)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.2 Vision 11B</td><td class="px-3 py-2 border-b">$0.15</td><td class="px-3 py-2 border-b">1,000+</td><td class="px-3 py-2 border-b">0ms (always hot)</td></tr>
+              </tbody>
+            </table>
+            <p class="text-sm text-gray-500 mt-2">*Pricing is transparent — no hidden token taxes or inference provider surcharges. Cerebras operates its own hardware end-to-end.</p>
+
+            <h3>Free Tier</h3>
+            <p>Cerebras offers <strong>$5 in free credits</strong> upon signup, no credit card required for the initial trial. After that, you top up with prepaid credits. There is no monthly subscription or minimum commitment.</p>
+
+            <h3>How Much Can You Get for $100?</h3>
+            <p>At $0.60/M tokens for Llama 3.3 70B, $100 buys approximately <strong>167 million tokens</strong> of combined input + output. In practical terms:</p>
+            <ul>
+              <li><strong>~8,000 long-form conversations</strong> (10K input + 10K output each)</li>
+              <li><strong>~335,000 API calls</strong> with 500 tokens each</li>
+              <li><strong>Continuous streaming</strong> for roughly 20 hours of chat interaction</li>
+            </ul>
+            <p>This makes Cerebras one of the most cost-effective high-speed inference options — dramatically cheaper than GPT-4o ($2.50/M input + $10/M output = $12.50/M combined) while offering 10x+ the throughput.</p>
+
+            <h2>Speed Benchmark: Cerebras vs. Alternatives</h2>
+            <p>The hallmark of Cerebras Inference is its extraordinary token generation speed. The WSE-3 chip processes entire transformer layers in a single clock cycle, eliminating the memory bandwidth bottleneck that limits GPU inference.</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Provider</th><th class="px-3 py-2 text-left">Llama 3.3 70B Speed</th><th class="px-3 py-2 text-left">First Token Latency</th><th class="px-3 py-2 text-left">Pricing ($/M tok)</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b font-semibold">Cerebras</td><td class="px-3 py-2 border-b font-semibold">2,000+ tok/s</td><td class="px-3 py-2 border-b">under 200ms</td><td class="px-3 py-2 border-b font-semibold">$0.60 (combined)</td></tr>
+                <tr><td class="px-3 py-2 border-b">Groq (LPU)</td><td class="px-3 py-2 border-b">450 tok/s</td><td class="px-3 py-2 border-b">under 300ms</td><td class="px-3 py-2 border-b">$0.79 + $0.99 = $1.78/M</td></tr>
+                <tr><td class="px-3 py-2 border-b">Together AI</td><td class="px-3 py-2 border-b">120 tok/s</td><td class="px-3 py-2 border-b">under 1s</td><td class="px-3 py-2 border-b">$0.59 + $0.79 = $1.38/M</td></tr>
+                <tr><td class="px-3 py-2 border-b">Replicate</td><td class="px-3 py-2 border-b">80 tok/s</td><td class="px-3 py-2 border-b">5-15s cold start</td><td class="px-3 py-2 border-b">~$1.20/M</td></tr>
+                <tr><td class="px-3 py-2 border-b">OpenAI GPT-4o</td><td class="px-3 py-2 border-b">80 tok/s</td><td class="px-3 py-2 border-b">under 500ms</td><td class="px-3 py-2 border-b">$2.50 + $10.00 = $12.50/M</td></tr>
+              </tbody>
+            </table>
+
+            <h3>What Does 2,000 tok/s Feel Like?</h3>
+            <p>At 2,000 tok/s, a 500-token response appears in <strong>250 milliseconds</strong> — effectively instant to a human reader. A 10,000-token code review completes in 5 seconds. This opens up use cases that are impractical with slower inference: real-time code completion, interactive document drafting, and conversational agents that can generate multi-paragraph responses without noticeable delay.</p>
+
+            <h2>Key Advantages of Cerebras Inference</h2>
+            <ul>
+              <li><strong>Blazing speed</strong>: 2,000+ tok/s on Llama 3.3 70B — the fastest publicly available inference for an open-weight 70B model. The WSE-3 eliminates memory bandwidth as a bottleneck by keeping all model weights on-chip.</li>
+              <li><strong>Zero cold start</strong>: Unlike serverless GPU inference (5-30s cold start on Together AI, Replicate, Hugging Face), Cerebras maintains always-hot inference pools. Every request gets identical latency.</li>
+              <li><strong>OpenAI API compatibility</strong>: Drop-in replacement for OpenAI Chat Completions API. Same request/response format, streaming, function calling, and JSON mode. Migration requires changing one URL and one API key.</li>
+              <li><strong>Cost efficiency</strong>: At $0.60/M tokens (combined), Cerebras is cheaper than Groq ($1.78/M), Together AI ($1.38/M), and dramatically cheaper than GPT-4o ($12.50/M).</li>
+              <li><strong>Function calling ready</strong>: Native support for tool use, structured output, and JSON mode. Use Cerebras-hosted Llama 3.3 70B as the reasoning engine for agentic workflows.</li>
+              <li><strong>No rate limiting noise</strong>: No soft rate limits. Pay for what you use, throughput scales with prepaid balance.</li>
+            </ul>
+
+            <h2>Limitations to Consider</h2>
+            <ul>
+              <li><strong>China access requires proxy</strong>: Cerebras infrastructure is US-based. No China-region deployment or CDN edge. Developers in mainland China need a stable overseas proxy.</li>
+              <li><strong>Limited model selection</strong>: Cerebras focuses on the most popular open-weight LLMs. No Mixtral 8x7B, Phi-3, Qwen 2.5, BGE embeddings, or Stable Diffusion.</li>
+              <li><strong>Combined input+output pricing</strong>: Simpler but you cannot optimize for high-input/low-output workloads like you can with per-token billing.</li>
+              <li><strong>No multimodal (beyond Llama 3.2 Vision)</strong>: No image generation, audio processing, or embeddings. Pure text-in/text-out inference engine.</li>
+              <li><strong>No cache-aware pricing</strong>: Unlike OpenAI or DeepSeek, no reduced rates for cached input tokens.</li>
+              <li><strong>Still evolving</strong>: Enterprise features (dedicated instances, SLA guarantees) are in development.</li>
+            </ul>
+
+            <h2>Cerebras vs. Groq vs. Together AI vs. Replicate</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Factor</th><th class="px-3 py-2 text-left">Cerebras</th><th class="px-3 py-2 text-left">Groq (LPU)</th><th class="px-3 py-2 text-left">Together AI</th><th class="px-3 py-2 text-left">Replicate</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B Speed</td><td class="px-3 py-2 border-b">2,000+ tok/s</td><td class="px-3 py-2 border-b">450 tok/s</td><td class="px-3 py-2 border-b">120 tok/s</td><td class="px-3 py-2 border-b">80 tok/s</td></tr>
+                <tr><td class="px-3 py-2 border-b">Cold start</td><td class="px-3 py-2 border-b">0ms (always hot)</td><td class="px-3 py-2 border-b">under 1s</td><td class="px-3 py-2 border-b">5-30s</td><td class="px-3 py-2 border-b">5-15s</td></tr>
+                <tr><td class="px-3 py-2 border-b">Pricing ($/M tok)</td><td class="px-3 py-2 border-b">$0.60 (combined)</td><td class="px-3 py-2 border-b">$0.79 + $0.99</td><td class="px-3 py-2 border-b">$0.59 + $0.79</td><td class="px-3 py-2 border-b">~$1.20/M</td></tr>
+                <tr><td class="px-3 py-2 border-b">Model diversity</td><td class="px-3 py-2 border-b">~6 LLMs</td><td class="px-3 py-2 border-b">~20 models</td><td class="px-3 py-2 border-b">200+ models</td><td class="px-3 py-2 border-b">10K+ models</td></tr>
+                <tr><td class="px-3 py-2 border-b">Function calling</td><td class="px-3 py-2 border-b">✅ Native</td><td class="px-3 py-2 border-b">✅ Native</td><td class="px-3 py-2 border-b">✅ Native</td><td class="px-3 py-2 border-b">❌ Limited</td></tr>
+                <tr><td class="px-3 py-2 border-b">Vision support</td><td class="px-3 py-2 border-b">✅ Llama 3.2 Vision</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">✅ LLaVA, Qwen-VL</td><td class="px-3 py-2 border-b">✅ Various</td></tr>
+                <tr><td class="px-3 py-2 border-b">Free tier</td><td class="px-3 py-2 border-b">$5 credits</td><td class="px-3 py-2 border-b">❌ No</td><td class="px-3 py-2 border-b">$5 credits</td><td class="px-3 py-2 border-b">$5 credits</td></tr>
+                <tr><td class="px-3 py-2 border-b">China access</td><td class="px-3 py-2 border-b">❌ Proxy required</td><td class="px-3 py-2 border-b">❌ Proxy required</td><td class="px-3 py-2 border-b">❌ Proxy required</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+              </tbody>
+            </table>
+
+            <h3>When to Choose Cerebras</h3>
+            <p>Cerebras dominates when <strong>speed is the primary constraint</strong>. If you're building real-time chatbots where sub-200ms first token latency matters, code completion tools that need instant multi-line completions, high-throughput document processing at lowest cost, or agentic workflows with tool calls at human conversation speed — Cerebras is unmatched.</p>
+
+            <h2>Use Case Recommendations</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Use Case</th><th class="px-3 py-2 text-left">Recommended</th><th class="px-3 py-2 text-left">Why</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Real-time customer support chatbot</td><td class="px-3 py-2 border-b">Cerebras (Llama 3.3 70B)</td><td class="px-3 py-2 border-b">2,000 tok/s means answers appear instantly</td></tr>
+                <tr><td class="px-3 py-2 border-b">Code review / PR summarization</td><td class="px-3 py-2 border-b">Cerebras (Llama 3.3 70B)</td><td class="px-3 py-2 border-b">10K-token code diff summarized in ~5 seconds</td></tr>
+                <tr><td class="px-3 py-2 border-b">Multi-turn conversational agent</td><td class="px-3 py-2 border-b">Cerebras (Llama 3.3 70B)</td><td class="px-3 py-2 border-b">Always-hot pool avoids cold start penalties</td></tr>
+                <tr><td class="px-3 py-2 border-b">Production LLM serving at scale</td><td class="px-3 py-2 border-b">Cerebras or Together AI</td><td class="px-3 py-2 border-b">Cerebras for speed, Together AI for variety</td></tr>
+                <tr><td class="px-3 py-2 border-b">Open-source model evaluation</td><td class="px-3 py-2 border-b">Replicate or Together AI</td><td class="px-3 py-2 border-b">More models to compare side-by-side</td></tr>
+                <tr><td class="px-3 py-2 border-b">Embedding pipeline (RAG)</td><td class="px-3 py-2 border-b">Hugging Face or OpenAI</td><td class="px-3 py-2 border-b">Cerebras does not support embeddings</td></tr>
+                <tr><td class="px-3 py-2 border-b">Image generation</td><td class="px-3 py-2 border-b">Replicate (FLUX, SDXL)</td><td class="px-3 py-2 border-b">Cerebras is text-only</td></tr>
+              </tbody>
+            </table>
+
+            <h2>How to Get Started with Cerebras</h2>
+            <ol>
+              <li><strong>Sign up</strong>: Visit <a href="https://inference.cerebras.ai" class="text-blue-600 hover:underline">inference.cerebras.ai</a> and create an account.</li>
+              <li><strong>Get API key</strong>: Navigate to the API Keys section and generate a new key. You receive $5 in free credits.</li>
+              <li><strong>Install SDK</strong>: Use the standard OpenAI Python SDK — Cerebras API is OpenAI-compatible.</li>
+              <li><strong>Send your first request</strong>: Use the standard Chat Completions format. All OpenAI features work out of the box.</li>
+              <li><strong>Monitor usage</strong>: The Cerebras dashboard shows real-time token usage, latency breakdowns, and spend.</li>
+            </ol>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Is Cerebras Inference actually faster than GPU-based alternatives?</strong></p>
+            <p>A: Yes, by a significant margin. On Llama 3.3 70B, Cerebras achieves 2,000+ tok/s vs. 120 tok/s on Together AI (A100) and 80 tok/s on Replicate (A10G). The WSE-3 chip processes the entire model on-wafer, avoiding the memory bandwidth bottleneck.</p>
+
+            <p><strong>Q: How does Cerebras pricing compare to OpenAI GPT-4o?</strong></p>
+            <p>A: Cerebras running Llama 3.3 70B costs $0.60/M tokens. OpenAI GPT-4o costs $2.50/M input + $10.00/M output. For typical usage, Cerebras is roughly 20x cheaper while offering 20x faster generation.</p>
+
+            <p><strong>Q: Can I use Cerebras from China?</strong></p>
+            <p>A: Not directly. Developers in mainland China need a stable overseas proxy. For China-direct access, consider DeepSeek or Alibaba Cloud (Bailian).</p>
+
+            <p><strong>Q: Does Cerebras support function calling and tool use?</strong></p>
+            <p>A: Yes — native support for OpenAI-style function calling, tool definitions, and structured output (JSON mode). This makes Cerebras a drop-in replacement for agentic workloads built for GPT-4o.</p>
+
+            <p><strong>Q: What models are available on Cerebras Inference?</strong></p>
+            <p>A: As of June 2026: Llama 3.3 70B, Llama 3.1 8B/70B, Command R+, Llama 3.2 Vision 11B, and GPT-Neo. Cerebras is curated, focusing on the most popular open-weight LLMs.</p>
+
+            <p><strong>Q: Does Cerebras offer dedicated endpoints or SLAs?</strong></p>
+            <p>A: Shared inference pools with always-hot instances only. Dedicated endpoints are in development. The shared pool has been reliable but there is no formal SLA yet.</p>
+
+            <h2>Conclusion</h2>
+            <p>Cerebras Inference represents a paradigm shift in LLM serving. The WSE-3 chip delivers 2,000+ tok/s on Llama 3.3 70B — faster than any publicly available GPU or LPU alternative — at a cost of just $0.60/M tokens. Combined with zero cold start, native OpenAI API compatibility, and function calling support, it is the most compelling option for latency-sensitive LLM applications in 2026.</p>
+            <p>The trade-offs are real: limited model selection, no China region deployment, and no cache-aware pricing. For model experimentation or multimodal pipelines, you will need a complementary provider like Together AI or Replicate. But for pure text-based LLM serving where speed matters — chatbots, code completion, real-time content generation — Cerebras is the fastest and most cost-effective choice available today.</p>
+            <p>If you are building a user-facing AI product and want responses to feel instantaneous, Cerebras is worth serious consideration. The $5 free trial is enough to process 8 million tokens and evaluate whether wafer-scale inference fits your workload.</p>
+
+            <h2>Comparison Table (Final)</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Provider</th><th class="px-3 py-2 text-left">Pricing Model</th><th class="px-3 py-2 text-left">Best For</th><th class="px-3 py-2 text-left">China Access</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b font-semibold">Cerebras</td><td class="px-3 py-2 border-b">Combined $0.60/M tok</td><td class="px-3 py-2 border-b">Ultra-fast LLM serving (2,000+ tok/s)</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">Groq (LPU)</td><td class="px-3 py-2 border-b">$0.79 + $0.99/M</td><td class="px-3 py-2 border-b">Fast LLM serving (450 tok/s)</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">Together AI</td><td class="px-3 py-2 border-b">$0.59 + $0.79/M</td><td class="px-3 py-2 border-b">Production LLM serving (120 tok/s)</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">Replicate</td><td class="px-3 py-2 border-b">Per-second GPU billing</td><td class="px-3 py-2 border-b">Open-source model experimentation</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">OpenAI GPT-4o</td><td class="px-3 py-2 border-b">$2.50 + $10.00/M</td><td class="px-3 py-2 border-b">Top-tier model quality & multimodal</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-gray-50 p-6 rounded-lg mt-8">
+            <h3 class="text-lg font-semibold mb-2">Related Resources</h3>
+            <ul class="space-y-2 text-sm">
+              <li>• <a href="/tutorials/groq-api-review" class="text-blue-600 hover:underline">Groq API Review</a> — LPU-based fast inference at 450 tok/s</li>
+              <li>• <a href="/tutorials/together-ai-api-review" class="text-blue-600 hover:underline">Together AI API Review</a> — production LLM serving at near-cost</li>
+              <li>• <a href="/tutorials/replicate-api-review" class="text-blue-600 hover:underline">Replicate API Review</a> — per-second GPU billing, model variety</li>
+              <li>• <a href="/providers/cerebras" class="text-blue-600 hover:underline">Cerebras on APIRank</a> — pricing, models, and provider comparison</li>
+            </ul>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">Quick Facts</h3>
+            <dl class="text-sm space-y-2">
+              <div class="flex justify-between"><dt class="text-gray-500">Provider</dt><dd class="font-medium">Cerebras</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Founded</dt><dd class="font-medium">2016</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Model Count</dt><dd class="font-medium">~6</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Pricing Unit</dt><dd class="font-medium">Combined $0.60/M tok</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Top Speed</dt><dd class="font-medium text-green-600">2,000+ tok/s</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">China Access</dt><dd class="font-medium text-red-600">Proxy required</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Free Tier</dt><dd class="font-medium">$5 credits</dd></div>
+            </dl>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">Best For</h3>
+            <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+              <li>Ultra-fast chatbot / customer support</li>
+              <li>Real-time code completion</li>
+              <li>High-throughput document processing</li>
+              <li>Agentic tool-calling workflows</li>
+              <li>Low-cost GPT-4o alternative</li>
+            </ul>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 text-center">
+            <p class="text-xs text-blue-700 uppercase tracking-wide mb-1">Advertisement</p>
+            <p class="text-sm text-gray-500">Ad slot — AdSense placeholder</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
