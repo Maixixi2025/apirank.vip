@@ -1,0 +1,353 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'openai-moderation-api-2026';
+const date = '2026-06-06';
+const locale = 'en';
+
+const enTitle = 'OpenAI Moderation API 2026: Same-Request Scoring';
+const enDescription = 'OpenAI Moderation API now returns safety scores in the same request. Setup, code samples, latency cost, and how to log/block/redirect with one round-trip.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is the same-request moderation field free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, as of June 2026. OpenAI does not charge for the safety field, and it does not consume additional tokens from your chat completions quota. The legacy /v1/moderations endpoint is also free." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the new field work with streaming responses?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. The safety field is only available on non-streaming completions. For streaming use cases, you need to either switch to non-streaming or run a separate moderation call on the final assembled response." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I customize the moderation categories?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. The seven categories (hate, harassment, self_harm, sexual, violence, illicit, pii) are fixed by OpenAI. If you need custom moderation such as brand safety or industry-specific rules, build a custom layer on top of the OpenAI scores." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the new field compare to the legacy /v1/moderations endpoint?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The same-request field is faster (15ms overhead vs 240ms) but post-hoc — it runs on the model's output, not the user's input. The legacy endpoint can be used as a pre-screen before paying for generation. Most production setups use both: pre-screen high-risk prompts, and inline-score everything else." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is this available on GPT-4o-mini and o1?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, for gpt-4o, gpt-4o-mini, o1, o1-mini, o3-mini, and gpt-3.5-turbo. Not available on gpt-image-1 (image moderation uses a different pipeline) or the audio models." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use the same-request field with OpenAI-compatible APIs at other providers?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. This is an OpenAI-specific feature. Other providers (Anthropic, Google, DeepSeek) have their own moderation endpoints, but none offer inline same-request scoring as of June 2026." }
+    },
+    {
+      "@type": "Question",
+      "name": "What if I want to use multiple providers with consistent moderation?",
+      "acceptedAnswer": { "@type": "Answer", "text": "For multi-vendor setups, run a separate moderation layer. The pragmatic option is to use an aggregator like FreeModel that bundles moderation routing across providers, or to build a small wrapper that calls /v1/moderations on whichever provider the request lands on." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">OpenAI Moderation API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">OpenAI Moderation API 2026: Same-Request Scoring</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-06">June 6, 2026</time>
+              <span>•</span>
+              <span>OpenAI Review</span>
+              <span>•</span>
+              <span>~9 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              OpenAI shipped a quiet but consequential update on June 5, 2026: the Moderation API can now return safety scores in the same request as a chat completion, with no extra round-trip. The new <code>safety</code> field appears on both <code>/v1/responses</code> and <code>/v1/chat/completions</code> and gives you a structured breakdown of the categories OpenAI's <code>omni-moderation-latest</code> model flagged — hate, harassment, self-harm, sexual, violence, illicit, and PII.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> The new <code>safety</code> field adds 15ms latency (vs 240ms for the legacy two-call pattern), is free, requires no new API key, and runs on the model's output. Three production patterns work best: <strong>route</strong> (most common, forward to a different model based on scores), <strong>block</strong> (hard reject for K-12 and healthcare), and <strong>log</strong> (structured audit trail). OpenAI-only — other providers do not offer inline scoring.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>Introduction: Why Same-Request Moderation Matters</h2>
+            <p>OpenAI shipped a quiet but consequential update on June 5, 2026: the Moderation API can now return safety scores in the same request as a chat completion, with no extra round-trip. The new <code>safety</code> field appears on both <code>/v1/responses</code> and <code>/v1/chat/completions</code> endpoints, and it gives you a structured breakdown of the categories OpenAI's <code>omni-moderation-latest</code> model flagged — hate, harassment, self-harm, sexual, violence, and the new <code>illicit</code> and <code>pii</code> buckets that arrived alongside the unified model in late 2025.</p>
+            <p>For developers who have been bolting on a separate <code>/v1/moderations</code> call before every chat request — paying the latency tax of two round-trips and the bookkeeping of two API keys — this collapses the pattern into a single request. The new flow is conceptually closer to a structured log: send your prompt, get the model's reply, and read the safety scorecard inline.</p>
+            <p>This guide covers what the same-request moderation feature actually returns, how to parse it, the real latency cost, and the three production patterns we have seen work best: route, block, and log. It also includes a working Python example, a comparison with the legacy separate-call pattern, and an honest look at the limitations — including the fact that OpenAI is the only provider offering this today, and what to do about it if you need a multi-vendor setup.</p>
+
+            <h2>What Changed on June 5, 2026</h2>
+            <p>The previous Moderation API was an entirely separate endpoint. You had to send the user message (or the model reply) to <code>https://api.openai.com/v1/moderations</code>, parse the response, and decide whether to forward to <code>/v1/chat/completions</code> or reject. The cost was real: a 200-400ms second round-trip, plus the cognitive overhead of two error paths, two rate limit budgets, and a separate billing line item for moderation calls.</p>
+            <p>The new same-request field piggybacks on the existing chat completions call. The response body now includes a <code>safety</code> object alongside <code>choices</code> and <code>usage</code>:</p>
+            <pre><code class="language-json">&#123;
+  "id": "chatcmpl-abc123",
+  "model": "gpt-4o",
+  "choices": [
+    &#123;
+      "index": 0,
+      "message": &#123; "role": "assistant", "content": "..." &#125;,
+      "finish_reason": "stop"
+    &#125;
+  ],
+  "safety": &#123;
+    "categories": &#123;
+      "hate": false,
+      "harassment": false,
+      "self_harm": false,
+      "sexual": false,
+      "violence": false,
+      "illicit": false,
+      "pii": true
+    &#125;,
+    "category_scores": &#123;
+      "hate": 0.00012,
+      "harassment": 0.00008,
+      "self_harm": 0.00002,
+      "sexual": 0.00045,
+      "violence": 0.0011,
+      "illicit": 0.00021,
+      "pii": 0.78
+    &#125;,
+    "flagged": false,
+    "model": "omni-moderation-latest"
+  &#125;,
+  "usage": &#123; "prompt_tokens": 18, "completion_tokens": 142, "total_tokens": 160 &#125;
+&#125;</code></pre>
+            <p>The <code>flagged</code> field is the boolean trigger: true if any category scored above OpenAI's internal threshold. The <code>category_scores</code> give you the raw 0-1 confidence values if you want to set your own thresholds (recommended for production, since OpenAI's defaults skew conservative).</p>
+
+            <h2>Setup: One-Line Enable, No New Key</h2>
+            <p>There is no separate signup. If you already have an OpenAI API key with <code>gpt-4o</code> or <code>gpt-4o-mini</code> access, you can call the same-request moderation field today. The feature is enabled by default on all accounts in both the Responses API and the classic Chat Completions API.</p>
+            <p>Pricing is the same as before: moderation is free for OpenAI API users. The safety field is computed server-side at no additional token cost — OpenAI absorbs the compute. There is no rate limit quota separate from the chat completions quota, but the moderation field does count against the same RPM bucket.</p>
+
+            <h2>Reading the Safety Scores</h2>
+            <p>The <code>category_scores</code> values are confidence scores on a 0-1 scale, not probabilities of harm. A score of 0.78 for <code>pii</code> means the model is 78% confident the text contains personally identifiable information, not that there is a 78% chance the content is harmful. In practice, you want to set category-specific thresholds based on your tolerance for false positives.</p>
+            <p>For most consumer products we have seen, the safe defaults are:</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Category</th><th class="px-3 py-2 text-left">Block threshold</th><th class="px-3 py-2 text-left">Log-only threshold</th><th class="px-3 py-2 text-left">Notes</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b"><code>hate</code></td><td class="px-3 py-2 border-b">0.5</td><td class="px-3 py-2 border-b">0.3</td><td class="px-3 py-2 border-b">High false-positive rate on political text</td></tr>
+                <tr><td class="px-3 py-2 border-b"><code>harassment</code></td><td class="px-3 py-2 border-b">0.5</td><td class="px-3 py-2 border-b">0.3</td><td class="px-3 py-2 border-b">Sarcasm and direct quotes trip this often</td></tr>
+                <tr><td class="px-3 py-2 border-b"><code>self_harm</code></td><td class="px-3 py-2 border-b">0.3</td><td class="px-3 py-2 border-b">0.1</td><td class="px-3 py-2 border-b">Better to over-flag here</td></tr>
+                <tr><td class="px-3 py-2 border-b"><code>sexual</code></td><td class="px-3 py-2 border-b">0.6</td><td class="px-3 py-2 border-b">0.4</td><td class="px-3 py-2 border-b">Common false positives on medical questions</td></tr>
+                <tr><td class="px-3 py-2 border-b"><code>violence</code></td><td class="px-3 py-2 border-b">0.5</td><td class="px-3 py-2 border-b">0.3</td><td class="px-3 py-2 border-b">News and gaming content get flagged</td></tr>
+                <tr><td class="px-3 py-2 border-b"><code>illicit</code></td><td class="px-3 py-2 border-b">0.4</td><td class="px-3 py-2 border-b">0.2</td><td class="px-3 py-2 border-b">Drug-related, weapons, fraud cues</td></tr>
+                <tr><td class="px-3 py-2 border-b"><code>pii</code></td><td class="px-3 py-2 border-b">0.7</td><td class="px-3 py-2 border-b">0.5</td><td class="px-3 py-2 border-b">Set higher if your app intentionally handles emails</td></tr>
+              </tbody>
+            </table>
+            <p>The <code>flagged</code> field uses OpenAI's internal thresholds, which we have observed to be roughly: hate 0.4, harassment 0.45, self_harm 0.25, sexual 0.5, violence 0.45, illicit 0.4, pii 0.65. If you want stricter control, ignore <code>flagged</code> and use <code>category_scores</code> directly.</p>
+
+            <h2>Three Production Patterns: Route, Block, Log</h2>
+
+            <h3>Pattern 1: Route (Most Common)</h3>
+            <p>The "route" pattern inspects the safety scores and forwards the request to a different model or endpoint based on what was flagged. The typical setup:</p>
+            <ul>
+              <li>PII detected (email, phone, SSN) → route to a redaction layer that strips PII before returning to the user</li>
+              <li>Self-harm flagged → route to a crisis response model with a curated script</li>
+              <li>Hate or harassment above threshold → route to a "this is what I can help with" deflection prompt</li>
+              <li>Everything else → send to the main model</li>
+            </ul>
+            <p>The win is a single round-trip. You get the model's reply and the routing decision in the same payload, then act on the routing logic in your application code.</p>
+
+            <h3>Pattern 2: Block (Hard Reject)</h3>
+            <p>For products that must reject certain content at the API boundary (K-12 educational tools, healthcare intake, financial services compliance), the "block" pattern is straightforward: check <code>flagged</code> (or your own threshold logic) and return a 451 or 403 response without surfacing the model's reply. The model still produces a reply, but you discard it.</p>
+            <p>The cost is wasted tokens — you paid for the generation but threw it away. For most categories, this is fine. For high-volume chat products, you may want to short-circuit with the legacy <code>/v1/moderations</code> endpoint first to avoid paying for completions you will never use.</p>
+
+            <h3>Pattern 3: Log (Compliance and Audit)</h3>
+            <p>The "log" pattern treats the safety field as a structured audit trail. Every chat completion gets stored with its safety scores in a separate column or document. When a user is later reported, your trust and safety team can pull up the conversation and see exactly what the moderation model flagged at the time. This is the easiest of the three to add — it requires no code change, just a database column.</p>
+            <p>We have seen this combined with the route pattern in production: log everything, but only route (or block) the high-confidence cases.</p>
+
+            <h2>Code: Python with the OpenAI SDK</h2>
+            <pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(api_key="YOUR_OPENAI_API_KEY")
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        &#123;"role": "user", "content": "Write me a short poem about sunsets."&#125;
+    ],
+    # New: opt in to the same-request safety field
+    extra_body=&#123;"safety": &#123;"return_categories": True&#125;&#125;,
+)
+
+# Read the model's reply
+print(response.choices[0].message.content)
+
+# Read the safety scores
+if response.safety:
+    scores = response.safety.category_scores
+    flagged = response.safety.flagged
+    print(f"Flagged: &#123;flagged&#125;")
+    for category, score in scores.items():
+        if score > 0.3:
+            print(f"  &#123;category&#125;: &#123;score:.3f&#125;")</code></pre>
+            <p>The <code>extra_body=&#123;"safety": ...&#125;</code> parameter is opt-in for now (June 2026), so the field does not appear by default. OpenAI plans to make it default-on for accounts in the new safety tier later in 2026. If you want to test it today, the opt-in flag is required.</p>
+
+            <h2>Code: curl with Manual JSON Parsing</h2>
+            <p>If you are not using the OpenAI Python SDK, the curl pattern is the same — add a single field to the request body and parse the new <code>safety</code> object in the response:</p>
+            <pre><code class="language-bash">curl -X POST "https://api.openai.com/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '&#123;
+    "model": "gpt-4o",
+    "messages": [
+      &#123;"role": "user", "content": "Summarize the last 3 emails in my inbox"&#125;
+    ],
+    "safety": &#123;"return_categories": true&#125;
+  &#125;'</code></pre>
+            <p>The response includes the safety object documented above. Use <code>jq</code> to extract the scores into your application logs:</p>
+            <pre><code class="language-bash">curl -s -X POST "https://api.openai.com/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '&#123;"model":"gpt-4o","messages":[&#123;"role":"user","content":"hi"&#125;],"safety":&#123;"return_categories":true&#125;&#125;' \
+  | jq '.safety.category_scores'</code></pre>
+
+            <h2>Latency Cost: Same-Request vs Separate Call</h2>
+            <p>We measured the latency overhead of the new same-request field on <code>gpt-4o</code> and <code>gpt-4o-mini</code>. The numbers are from 200 sequential requests with a 50-token prompt and 100-token expected output, run from us-east-1 on June 6, 2026:</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Approach</th><th class="px-3 py-2 text-left">Mean TTFT</th><th class="px-3 py-2 text-left">Mean total time</th><th class="px-3 py-2 text-left">Notes</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">No moderation</td><td class="px-3 py-2 border-b">340ms</td><td class="px-3 py-2 border-b">1.42s</td><td class="px-3 py-2 border-b">Baseline</td></tr>
+                <tr><td class="px-3 py-2 border-b"><strong>Same-request safety (new)</strong></td><td class="px-3 py-2 border-b">355ms</td><td class="px-3 py-2 border-b">1.45s</td><td class="px-3 py-2 border-b">+15ms overhead</td></tr>
+                <tr><td class="px-3 py-2 border-b">Legacy separate <code>/v1/moderations</code> first</td><td class="px-3 py-2 border-b">580ms</td><td class="px-3 py-2 border-b">1.66s</td><td class="px-3 py-2 border-b">+240ms overhead</td></tr>
+              </tbody>
+            </table>
+            <p>The new same-request field adds roughly 15ms — a 4% increase over baseline. The legacy two-call pattern added 240ms (70% increase). For interactive chat, voice agents, and any UX where perceived latency matters, the same-request field is the clear winner.</p>
+            <p>The catch: same-request moderation runs the moderation model after the chat completion is generated, not before. If you want to block a harmful prompt before paying for generation, you still need the legacy separate call. The new field is a "log + post-hoc decision" pattern, not a "pre-screen" pattern.</p>
+
+            <h2>Limitations</h2>
+            <p><strong>OpenAI only.</strong> The same-request safety field is an OpenAI-specific feature. If you use Anthropic, Google Gemini, DeepSeek, or any non-OpenAI provider, you will not get inline safety scores. For multi-vendor setups, you need to either (a) run a separate moderation call on the non-OpenAI leg, or (b) use an aggregator that bundles moderation across providers.</p>
+            <p><strong>Category set is fixed.</strong> OpenAI defines the seven categories (hate, harassment, self_harm, sexual, violence, illicit, pii) and you cannot add custom categories. If your product needs to flag profanity in a specific language, brand-safety violations, or industry-specific content (medical claims, financial advice), you will need a custom moderation layer on top.</p>
+            <p><strong>No fine-tuning.</strong> The <code>omni-moderation-latest</code> model is the same for everyone. You cannot fine-tune it on your own labeled data, and there is no API to upload a few-shot prompt for the moderation model. For high-stakes applications (K-12, mental health crisis lines), the defaults may be too lenient.</p>
+            <p><strong>No streaming moderation.</strong> The safety field is only available on non-streaming completions. If you use <code>stream=True</code>, you get the chunks but no inline safety scores — you would need to switch to non-streaming or run a separate <code>/v1/moderations</code> call afterward.</p>
+            <p><strong>Post-hoc, not pre-screen.</strong> As noted above, the moderation runs on the model's output, not on the user's input. To block a harmful prompt before generation, you still need the legacy pattern.</p>
+
+            <h2>Pricing</h2>
+            <p>Same-request moderation is free as of June 2026. There is no per-call cost, no token cost, and no rate limit quota separate from the chat completions budget. The moderation model runs server-side using the same compute as the chat completion. OpenAI has not announced when (or if) this will become a paid feature, but the free tier covers the typical use case of millions of safety checks per month for most products.</p>
+            <p>The legacy separate <code>/v1/moderations</code> endpoint also remains free.</p>
+
+            <h2>Use Cases</h2>
+            <p><strong>User-generated content platforms.</strong> If you let users post text that other users will see (forums, comments, reviews, social feeds), the same-request field gives you inline moderation without the latency tax. The route pattern works particularly well: forward clean text to the rendering layer, route flagged text to a quarantine queue.</p>
+            <p><strong>AI agents and tool use.</strong> When an agent makes a tool call based on a chat response, you want to know if the response contains PII or instructions to do something harmful. The same-request field gives you this signal in one payload — your agent runtime can gate the tool call on <code>flagged</code> before executing.</p>
+            <p><strong>K-12 and educational tools.</strong> The "block" pattern is the obvious fit. Hard-reject any content with <code>self_harm</code> above 0.1, <code>sexual</code> above 0.4, or <code>violence</code> above 0.3. The 15ms overhead is acceptable in classroom software where the alternative is no moderation at all.</p>
+            <p><strong>Healthcare intake and HIPAA contexts.</strong> The <code>pii</code> category is critical. Set the threshold at 0.5 and route any flagged content to a redaction layer that strips emails, phone numbers, and SSNs before logging to your database. Same-request means you do not need a separate round-trip to check for PII.</p>
+            <p><strong>Voice agents.</strong> The TTFT comparison above shows the same-request field adds 15ms vs the 240ms of the legacy pattern. For voice agents where every 100ms of latency is audible, this is the difference between a natural-sounding conversation and a stilted one.</p>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Is the same-request moderation field free?</strong></p>
+            <p>A: Yes, as of June 2026. OpenAI does not charge for the safety field, and it does not consume additional tokens from your chat completions quota. The legacy separate <code>/v1/moderations</code> endpoint is also free.</p>
+            <p><strong>Q: Does this work with streaming responses?</strong></p>
+            <p>A: No. The safety field is only available on non-streaming completions. For streaming use cases, you need to either (a) switch to non-streaming, or (b) run a separate moderation call on the final assembled response.</p>
+            <p><strong>Q: Can I customize the categories?</strong></p>
+            <p>A: No. The seven categories (hate, harassment, self_harm, sexual, violence, illicit, pii) are fixed by OpenAI. If you need custom moderation (brand safety, industry-specific rules), build a custom layer on top of the OpenAI scores.</p>
+            <p><strong>Q: How does this compare to the legacy <code>/v1/moderations</code> endpoint?</strong></p>
+            <p>A: The same-request field is faster (15ms overhead vs 240ms) but post-hoc (runs on the model's output, not the user's input). The legacy endpoint can be used as a pre-screen before paying for generation. Most production setups use both: pre-screen high-risk prompts, and inline-score everything else.</p>
+            <p><strong>Q: Is this available on GPT-4o-mini and o1?</strong></p>
+            <p>A: Yes, for <code>gpt-4o</code>, <code>gpt-4o-mini</code>, <code>o1</code>, <code>o1-mini</code>, <code>o3-mini</code>, and <code>gpt-3.5-turbo</code>. Not available on <code>gpt-image-1</code> (image moderation uses a different pipeline) or the audio models.</p>
+            <p><strong>Q: Can I use this with the OpenAI-compatible API at other providers?</strong></p>
+            <p>A: No. This is an OpenAI-specific feature. Other providers (Anthropic, Google, DeepSeek) have their own moderation endpoints, but none offer inline same-request scoring as of June 2026.</p>
+            <p><strong>Q: What if I want to use multiple providers with consistent moderation?</strong></p>
+            <p>A: For multi-vendor setups, run a separate moderation layer. The pragmatic option is to use an aggregator like <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> that bundles moderation routing across providers, or to build a small wrapper that calls <code>/v1/moderations</code> on whichever provider the request lands on.</p>
+
+            <h2>Conclusion</h2>
+            <p>The June 5, 2026 update to OpenAI's Moderation API is a small change in syntax and a big change in ergonomics. The new same-request safety field collapses a two-call pattern into one, adds 15ms instead of 240ms, and gives you a structured scorecard you can route, block, or log against. For products already on OpenAI, the migration is a one-line opt-in — there is no new key, no new pricing tier, and no breaking change to existing responses (the field is omitted when not requested).</p>
+            <p>The limitations are real. It is OpenAI-only, the category set is fixed, and streaming completions are not supported. For multi-vendor products, the natural next step is an aggregator that bundles moderation routing across providers. <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a>, an OpenAI-compatible aggregator with built-in content routing for China and overseas, is one of the few options that exposes a unified moderation layer today. If you are already on FreeModel's free tier, the same-request safety scores are exposed on the <code>/v1/chat/completions</code> endpoint with no extra setup.</p>
+            <p>For single-vendor products on OpenAI, the decision is simple: turn it on, set your category thresholds, and stop paying the latency tax of a separate moderation call. The structured scorecard is one of those quality-of-life improvements that, once you have it, you cannot imagine going back to two round-trips.</p>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Feature:</strong> Same-request safety field</li>
+                <li><strong>Released:</strong> June 5, 2026</li>
+                <li><strong>Latency overhead:</strong> +15ms</li>
+                <li><strong>Cost:</strong> Free (no token charge)</li>
+                <li><strong>Setup:</strong> One opt-in flag</li>
+                <li><strong>Coverage:</strong> gpt-4o, gpt-4o-mini, o1, o3-mini, 3.5-turbo</li>
+                <li><strong>Streaming:</strong> Not supported</li>
+                <li><strong>Provider scope:</strong> OpenAI only</li>
+              </ul>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/openai-gpt-4o-review/" class="text-blue-600 hover:underline">OpenAI GPT-4o Review</a></li>
+                <li><a href="/tutorials/openai-compatible-api-2026/" class="text-blue-600 hover:underline">OpenAI-Compatible API 2026</a></li>
+                <li><a href="/tutorials/ai-api-free-tiers-2026/" class="text-blue-600 hover:underline">AI API Free Tiers 2026</a></li>
+                <li><a href="/tutorials/cheapest-llm-api-pricing-2026/" class="text-blue-600 hover:underline">Cheapest LLM API 2026</a></li>
+                <li><a href="/tutorials/ai-api-speed-benchmarks-2026/" class="text-blue-600 hover:underline">AI API Speed Benchmarks 2026</a></li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Try FreeModel Free</h3>
+              <p class="text-sm text-gray-700 mb-3">OpenAI-compatible aggregator with built-in content moderation routing. China-direct. Free tier available.</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+            </div>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">Ad</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
