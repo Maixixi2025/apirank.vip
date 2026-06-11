@@ -1,0 +1,212 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'digitalocean-gradient-api-review';
+const date = '2026-06-09';
+const locale = 'en';
+
+const enTitle = 'DigitalOcean Gradient API 2026: H100 Inference + OpenRouter Hookup';
+const enDescription = 'DigitalOcean Gradient AI review: H100/H200 GPU inference from $2.16/hr, serverless endpoints from $0.0005/1K tokens, 14 hosted models, June 3 OpenRouter integration. Compared to RunPod, CoreWeave, SambaNova.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Is DigitalOcean Gradient a model provider or just a GPU rental platform?", "acceptedAnswer": { "@type": "Answer", "text": "Both. GPU Droplets are the rental side; the Gradient AI Platform is the serverless inference and agent layer. The June 3 OpenRouter integration makes both accessible through one model name." } },
+    { "@type": "Question", "name": "Can I run closed models like GPT-4o or Claude 3.5 on Gradient?", "acceptedAnswer": { "@type": "Answer", "text": "No. Gradient is open-weights only. For closed models, use OpenAI, Anthropic, or route through OpenRouter with a different provider string." } },
+    { "@type": "Question", "name": "How much does Llama 3.3 70B cost on Gradient?", "acceptedAnswer": { "@type": "Answer", "text": "$0.90 per 1M tokens combined input + output. For comparison, the same model is $1.00/M on SambaNova and $1.38/M on Groq. Cheaper option for the same model is OpenRouter with a DeepSeek or Mistral provider." } },
+    { "@type": "Question", "name": "Is there a free tier?", "acceptedAnswer": { "@type": "Answer", "text": "$200 in credits for 60 days on signup. No permanent free tier. The cheapest paid tier is Llama 3.1 8B at $0.20/M tokens." } },
+    { "@type": "Question", "name": "Can I use Gradient from inside China?", "acceptedAnswer": { "@type": "Answer", "text": "The dashboard is blocked, but the API endpoint works at 200-400ms additional latency. For lower latency, route through OpenRouter's digitalocean/llama-3.3-70b-instruct model name and use OpenRouter's China-direct edge." } },
+    { "@type": "Question", "name": "Does Gradient support function calling / tool use?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, on the chat completions endpoint. The Agent platform also has hosted tool bindings for common patterns (web search, calculator, code execution)." } },
+    { "@type": "Question", "name": "How does the OpenRouter integration work?", "acceptedAnswer": { "@type": "Answer", "text": "OpenRouter added digitalocean/ as a model prefix on June 3, 2026. You can route any request to digitalocean/llama-3.3-70b-instruct, digitalocean/llama-3.1-405b-instruct, and a few other model names. Billing is the same — OpenRouter's 5.5% platform fee applies, but you do not need a separate DigitalOcean account." } },
+    { "@type": "Question", "name": "Can I deploy my own private model on Gradient?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, on GPU Droplets with vLLM / TGI / SGLang. The serverless endpoint is restricted to the curated 14-model catalog." } }
+  ]
+};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">DigitalOcean Gradient API 2026: H100 Inference for the Rest of Us</h1>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Introduction: Why the OpenRouter Hookup Matters</h2>
+<p class="text-gray-700 leading-relaxed my-4">On June 3, 2026, DigitalOcean quietly became a model provider on OpenRouter. That sentence does not sound like much. DigitalOcean has been a household name for indie developers since the $5/month droplet era, and "model provider" is a phrase that gets thrown around a lot. But the move is more strategic than it looks, because the team that built Gradient is the same team that has spent three years selling $2.16/hour H100s to people who used to pay AWS four times that. Adding OpenRouter as a distribution channel means every OpenRouter user — and OpenRouter processes north of 4 trillion tokens per month at this point — can now route traffic to Gradient's hosted Llama 3.3 70B, Llama 3.1 405B, and DeepSeek V2.5 endpoints without ever creating a DigitalOcean account.</p>
+<p class="text-gray-700 leading-relaxed my-4">For teams that already use DigitalOcean for their database, object storage, and app server, the Gradient API is a natural extension: same dashboard, same API token, same billing, but now the inference layer lives next to the rest of the stack. For teams that do not use DigitalOcean today, Gradient is worth a second look for three reasons — H100 and H200 GPU access at indie pricing, a serverless inference mode that bills per token instead of per GPU hour, and a Knowledge Base / Agent platform that handles the boring RAG plumbing (vector store, chunking, embedding) in the same UI.</p>
+<p class="text-gray-700 leading-relaxed my-4">This review walks through the API surface, the pricing, the model catalog, the speed story, the China access situation, and the comparison with the alternatives — RunPod, CoreWeave, SambaNova, Together AI, and the OpenRouter direct model providers.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What DigitalOcean Gradient Actually Is</h2>
+<p class="text-gray-700 leading-relaxed my-4">Gradient is two products glued together:</p>
+<p class="text-gray-700 leading-relaxed my-4">1. <strong>GPU Droplets</strong> — the long-standing DigitalOcean virtual machines with H100, H200, L40S, or A100 GPUs attached. You rent the box by the hour, you install vLLM or TGI, and you run inference. This is the boring part, and it is the part most people already know.</p>
+<p class="text-gray-700 leading-relaxed my-4">2. <strong>Gradient AI Platform</strong> — a serverless inference and agent layer that was relaunched in late 2025. You point the platform at a Hugging Face model (or pick one of the curated 14), and the platform handles GPU autoscaling, batching, and request routing. You pay per token. There is no GPU to manage.</p>
+<p class="text-gray-700 leading-relaxed my-4">The Knowledge Base and Agent features sit on top of the serverless layer. Knowledge Base is a managed vector store (you upload PDFs / docs, the platform chunks and embeds them), and Agent is a hosted tool-calling runtime that ties the inference endpoint to the Knowledge Base. If you have ever stitched together LangChain, Pinecone, and OpenAI, you can imagine what Gradient is going for.</p>
+<p class="text-gray-700 leading-relaxed my-4">The June 3 OpenRouter integration is the missing piece. Until this month, using Gradient's hosted models meant going to the DigitalOcean dashboard, generating an API token, and pointing your code at <code class="bg-gray-100 px-1 rounded text-sm">https://inference.do-ai.run/v1/</code>. Now you can route any OpenRouter request through DigitalOcean's inference cluster with a model string like <code class="bg-gray-100 px-1 rounded text-sm">digitalocean/llama-3.3-70b-instruct</code>. Same model, same price, but you do not have to know DigitalOcean exists.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Model Catalog: 14 Curated Open-Source Models</h2>
+<p class="text-gray-700 leading-relaxed my-4">Gradient's model list is short and deliberate. Unlike Together AI (200+ models) or Hugging Face (600+), Gradient ships with 14 hand-picked open-source models, all optimized on H100 or L40S hardware:</p>
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200"><thead><tr><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Model</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Parameters</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Hardware</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Best For</th></tr></thead><tbody><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Llama 3.3 70B Instruct</td><td class="px-4 py-2 text-sm text-gray-700 border-b">70B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">H100</td><td class="px-4 py-2 text-sm text-gray-700 border-b">General chat, default for production</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Llama 3.1 405B Instruct</td><td class="px-4 py-2 text-sm text-gray-700 border-b">405B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">H100 x4</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Hardest reasoning tasks</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Llama 3.1 8B Instruct</td><td class="px-4 py-2 text-sm text-gray-700 border-b">8B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">L40S</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Bulk classification, routing</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Mistral 7B Instruct</td><td class="px-4 py-2 text-sm text-gray-700 border-b">7B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">L40S</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Lowest cost, high throughput</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Mistral Nemo</td><td class="px-4 py-2 text-sm text-gray-700 border-b">12B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">L40S</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Multilingual, mid-tier</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Mixtral 8x7B Instruct</td><td class="px-4 py-2 text-sm text-gray-700 border-b">47B (active)</td><td class="px-4 py-2 text-sm text-gray-700 border-b">L40S</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Cost-effective MoE</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Qwen 2.5 72B Instruct</td><td class="px-4 py-2 text-sm text-gray-700 border-b">72B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">H100</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Strong Chinese and English</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Qwen 2.5 Coder 32B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">32B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">H100</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Code generation</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">DeepSeek V2.5 Chat</td><td class="px-4 py-2 text-sm text-gray-700 border-b">236B (active)</td><td class="px-4 py-2 text-sm text-gray-700 border-b">H100</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Reasoning + code</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">DeepSeek Coder V2</td><td class="px-4 py-2 text-sm text-gray-700 border-b">236B (active)</td><td class="px-4 py-2 text-sm text-gray-700 border-b">H100</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Code completion</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Nous Hermes 2 Mixtral</td><td class="px-4 py-2 text-sm text-gray-700 border-b">47B (active)</td><td class="px-4 py-2 text-sm text-gray-700 border-b">L40S</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Fine-tuned chat</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">OpenHermes 2.5</td><td class="px-4 py-2 text-sm text-gray-700 border-b">7B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">L40S</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Lightweight chat</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Phi-3 Medium</td><td class="px-4 py-2 text-sm text-gray-700 border-b">14B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">L40S</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Reasoning, small footprint</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Whisper Large V3</td><td class="px-4 py-2 text-sm text-gray-700 border-b">1.5B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">L40S</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Speech-to-text</td></tr></tbody></table></div>
+<p class="text-gray-700 leading-relaxed my-4">The list is curated. DigitalOcean benchmarks every model on its own eval suite before shipping it, and models that fall below the accuracy threshold get pulled. The 405B Llama model is the headline — it is the only fully-open 405B-class model you can call via OpenRouter right now at sub-second TTFT.</p>
+<p class="text-gray-700 leading-relaxed my-4">The trade-off is obvious: if you need Anthropic Claude, OpenAI GPT, or Google Gemini, you have to call those providers directly. Gradient is an open-weights host. For closed models, use OpenRouter's other providers.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">API Surface: OpenAI-Compatible, Plus a Native SDK</h2>
+<p class="text-gray-700 leading-relaxed my-4">The serverless inference endpoint follows the OpenAI <code class="bg-gray-100 px-1 rounded text-sm">/v1/chat/completions</code> shape. A request that works against <code class="bg-gray-100 px-1 rounded text-sm">api.openai.com</code> works against Gradient after swapping the base URL and key:</p>
+<pre><code class="language-python">import openai
+
+client = openai.OpenAI(
+    base_url=&quot;https://inference.do-ai.run/v1/&quot;,
+    api_key=&quot;YOUR_GRADIENT_API_TOKEN&quot;,
+)
+
+response = client.chat.completions.create(
+    model=&quot;llama-3.3-70b-instruct&quot;,
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Summarize the OpenRouter integration.&quot;}],
+)</code></pre>
+<p class="text-gray-700 leading-relaxed my-4">This OpenAI compatibility means LangChain, LlamaIndex, AutoGen, and the OpenAI Python SDK all work against Gradient with zero code changes beyond the base URL.</p>
+<p class="text-gray-700 leading-relaxed my-4">On top of the OpenAI shape, Gradient exposes:</p>
+<ul class="list-disc list-inside text-gray-700 my-3 space-y-1">
+<li><strong>Agent endpoint</strong> (<code class="bg-gray-100 px-1 rounded text-sm">/v1/agents/{agent_id}/invoke</code>) — call a hosted agent that already has a Knowledge Base and tool bindings attached.</li>
+<li><strong>Knowledge Base endpoint</strong> (<code class="bg-gray-100 px-1 rounded text-sm">/v1/knowledge_bases/{kb_id}/search</code>) — direct vector search without the LLM in the loop.</li>
+<li><strong>Embeddings endpoint</strong> (<code class="bg-gray-100 px-1 rounded text-sm">/v1/embeddings</code>) — bge-large-en and bge-m3 are the defaults.</li>
+<li><strong>Speech-to-text endpoint</strong> (<code class="bg-gray-100 px-1 rounded text-sm">/v1/audio/transcriptions</code>) — Whisper Large V3.</li>
+<li><strong>Reranker endpoint</strong> — bge-reranker-v2-m3 for RAG pipelines.</li>
+</ul>
+<p class="text-gray-700 leading-relaxed my-4">There is also a first-party CLI (<code class="bg-gray-100 px-1 rounded text-sm">doctl ai</code>) and a Terraform provider for IaC teams.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Pricing: GPU Hour vs Per-Token</h2>
+<p class="text-gray-700 leading-relaxed my-4">Gradient's pricing has two layers, and the choice between them is the most important decision a new user will make.</p>
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">GPU Droplets (you manage the box)</h3>
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200"><thead><tr><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">GPU</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">VRAM</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Hourly Rate</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Monthly (24/7)</th></tr></thead><tbody><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">H200</td><td class="px-4 py-2 text-sm text-gray-700 border-b">141 GB</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$3.20/hr</td><td class="px-4 py-2 text-sm text-gray-700 border-b">~$2,330</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">H100</td><td class="px-4 py-2 text-sm text-gray-700 border-b">80 GB</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$2.16/hr</td><td class="px-4 py-2 text-sm text-gray-700 border-b">~$1,575</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">L40S</td><td class="px-4 py-2 text-sm text-gray-700 border-b">48 GB</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$1.12/hr</td><td class="px-4 py-2 text-sm text-gray-700 border-b">~$817</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">A100</td><td class="px-4 py-2 text-sm text-gray-700 border-b">40 GB</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.76/hr</td><td class="px-4 py-2 text-sm text-gray-700 border-b">~$554</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">A100</td><td class="px-4 py-2 text-sm text-gray-700 border-b">80 GB</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$1.10/hr</td><td class="px-4 py-2 text-sm text-gray-700 border-b">~$802</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">RTX 4000 Ada</td><td class="px-4 py-2 text-sm text-gray-700 border-b">20 GB</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.50/hr</td><td class="px-4 py-2 text-sm text-gray-700 border-b">~$365</td></tr></tbody></table></div>
+<p class="text-gray-700 leading-relaxed my-4">At $2.16/hour for an H100, DigitalOcean is roughly 30-50% cheaper than AWS <code class="bg-gray-100 px-1 rounded text-sm">p5.48xlarge</code> ($4.10/hr for an H100) and 20% cheaper than RunPod's on-demand H100. The reservation discounts (1-year and 3-year) go further, but only make sense for steady-state inference.</p>
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Serverless Inference (no GPU to manage)</h3>
+<p class="text-gray-700 leading-relaxed my-4">Per-token pricing on Llama 3.1 8B starts at $0.0005 per 1,000 tokens (input and output combined at the smaller model). For the larger models, the per-token rate scales roughly with parameter count:</p>
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200"><thead><tr><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Model</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Per 1M tokens (input)</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Per 1M tokens (output)</th></tr></thead><tbody><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Llama 3.1 8B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.20</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.20</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Mistral 7B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.20</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.20</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Qwen 2.5 72B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.90</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.90</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Llama 3.3 70B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.90</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.90</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">DeepSeek V2.5</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$1.20</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$1.20</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b">Llama 3.1 405B</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$3.20</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$3.20</td></tr></tbody></table></div>
+<p class="text-gray-700 leading-relaxed my-4">Free credits: <strong>$200 valid for 60 days</strong> on signup. That is enough to run roughly 1 billion tokens on Llama 3.3 70B or 10 billion tokens on Llama 3.1 8B. After the credits expire, there is no permanent free tier — the model is paid-only.</p>
+<p class="text-gray-700 leading-relaxed my-4">For comparison, the same Llama 3.3 70B on SambaNova is $0.30 input / $0.70 output ($1.00 combined) per 1M tokens, and on Groq is $0.59 / $0.79 ($1.38 combined). Gradient at $0.90 combined is competitive but not the cheapest. The cheap-tier crown still goes to OpenRouter's DeepSeek V3 routing at ~$0.50 combined per 1M tokens.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Speed Benchmarks</h2>
+<p class="text-gray-700 leading-relaxed my-4">From DigitalOcean's published numbers and independent measurements of the serverless endpoints:</p>
+<ul class="list-disc list-inside text-gray-700 my-3 space-y-1">
+<li><strong>Llama 3.1 8B</strong>: ~190 tok/s output, TTFT ~180ms (US east, H100)</li>
+<li><strong>Llama 3.3 70B</strong>: ~75 tok/s output, TTFT ~320ms</li>
+<li><strong>Llama 3.1 405B</strong>: ~38 tok/s output, TTFT ~480ms</li>
+<li><strong>Qwen 2.5 72B</strong>: ~70 tok/s output, TTFT ~340ms</li>
+<li><strong>DeepSeek V2.5 (236B MoE)</strong>: ~52 tok/s output, TTFT ~420ms</li>
+<li><strong>Mixtral 8x7B</strong>: ~95 tok/s output, TTFT ~260ms</li>
+</ul>
+<p class="text-gray-700 leading-relaxed my-4">Cold start on the serverless endpoint is the weak point — first request after a quiet period takes 2-3 seconds while the platform provisions an H100. Sustained throughput after warmup is competitive with Groq and SambaNova on the 8B and 70B tiers, and significantly behind Groq on the 405B tier (Groq's 405B hits 60+ tok/s because of the LPU architecture; H100 inference tops out around 40 tok/s regardless of provider).</p>
+<p class="text-gray-700 leading-relaxed my-4">For agentic workloads that mix small and large models, the recommended pattern is to route classification / routing / parsing calls to Llama 3.1 8B (cheap, fast) and reserve 70B / 405B calls for the actual reasoning step. Gradient's Knowledge Base and Agent features are designed around this split.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">China Access</h2>
+<p class="text-gray-700 leading-relaxed my-4">DigitalOcean's data centers are in New York, San Francisco, Amsterdam, Frankfurt, London, Singapore, and Bangalore. There is no mainland China region, and the dashboard at <code class="bg-gray-100 px-1 rounded text-sm">cloud.digitalocean.com</code> is blocked at the network level in many Chinese ISPs.</p>
+<p class="text-gray-700 leading-relaxed my-4">For Chinese developers:</p>
+<ul class="list-disc list-inside text-gray-700 my-3 space-y-1">
+<li><strong>The dashboard</strong> requires a stable proxy. Expect occasional CAPTCHA friction.</li>
+<li><strong>The API endpoint</strong> (<code class="bg-gray-100 px-1 rounded text-sm">inference.do-ai.run</code>) is reachable from inside China at roughly 200-400ms additional latency over the US-direct baseline.</li>
+<li><strong>OpenRouter routing is the workaround.</strong> Route through OpenRouter's <code class="bg-gray-100 px-1 rounded text-sm">digitalocean/llama-3.3-70b-instruct</code> model string, and OpenRouter's existing China-direct edge handles the connectivity. This is the lowest-friction path for Chinese teams as of June 2026.</li>
+<li><strong>Payment</strong>: DigitalOcean accepts Visa, Mastercard, PayPal, and crypto (BTC, ETH, USDC). Chinese UnionPay cards are not directly supported, but Binance / stablecoin top-up via the crypto path works.</li>
+</ul>
+<p class="text-gray-700 leading-relaxed my-4">In short: Gradient is a US/EU-hosted platform with no China region, but the OpenRouter integration and crypto payment make it workable for Chinese teams that do not need the dashboard.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How Gradient Compares to Alternatives</h2>
+<p class="text-gray-700 leading-relaxed my-4">The "AI inference platform" market in 2026 is crowded. Gradient is not the cheapest, the fastest, or the most model-rich. Where it wins is the "boring infrastructure" position: same dashboard as your database, same API token as your Spaces buckets, same Terraform provider as the rest of your stack.</p>
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200"><thead><tr><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Provider</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Models</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Cheapest Tier</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">China Access</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">OpenRouter Provider</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-700 border-b">Notes</th></tr></thead><tbody><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b"><strong>DigitalOcean Gradient</strong></td><td class="px-4 py-2 text-sm text-gray-700 border-b">14 (open only)</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.0005/1K tok</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Proxy / OpenRouter</td><td class="px-4 py-2 text-sm text-gray-700 border-b">✅ (since 6/3)</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Indie pricing on H100, full DO ecosystem</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b"><strong>SambaNova</strong></td><td class="px-4 py-2 text-sm text-gray-700 border-b">9 (open only)</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.10/M tok</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Proxy</td><td class="px-4 py-2 text-sm text-gray-700 border-b">❌</td><td class="px-4 py-2 text-sm text-gray-700 border-b">SN40L chip, 1,000+ tok/s on 70B</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b"><strong>Together AI</strong></td><td class="px-4 py-2 text-sm text-gray-700 border-b">200+ (open + closed)</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.06/M tok</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Proxy</td><td class="px-4 py-2 text-sm text-gray-700 border-b">❌</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Highest model count under $1/M</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b"><strong>RunPod</strong></td><td class="px-4 py-2 text-sm text-gray-700 border-b">200+</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.40/hr (H100)</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Proxy</td><td class="px-4 py-2 text-sm text-gray-700 border-b">❌</td><td class="px-4 py-2 text-sm text-gray-700 border-b">GPU rental focus, less managed</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b"><strong>CoreWeave</strong></td><td class="px-4 py-2 text-sm text-gray-700 border-b">50+</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$2.15/hr (H100)</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Proxy</td><td class="px-4 py-2 text-sm text-gray-700 border-b">❌</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Enterprise / NVIDIA partnership</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b"><strong>Fireworks AI</strong></td><td class="px-4 py-2 text-sm text-gray-700 border-b">100+</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.20/M tok</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Proxy</td><td class="px-4 py-2 text-sm text-gray-700 border-b">❌</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Function calling optimized</td></tr><tr class="hover:bg-gray-50"><td class="px-4 py-2 text-sm text-gray-700 border-b"><strong>Cerebras</strong></td><td class="px-4 py-2 text-sm text-gray-700 border-b">6</td><td class="px-4 py-2 text-sm text-gray-700 border-b">$0.10/M tok (combo)</td><td class="px-4 py-2 text-sm text-gray-700 border-b">Proxy</td><td class="px-4 py-2 text-sm text-gray-700 border-b">❌</td><td class="px-4 py-2 text-sm text-gray-700 border-b">WSE-3 wafer-scale, 2,000+ tok/s</td></tr></tbody></table></div>
+<p class="text-gray-700 leading-relaxed my-4">If the deciding factor is price per token on the smallest model, SambaNova and Cerebras win. If the deciding factor is the broadest model catalog, Together AI wins. If the deciding factor is "I already pay DigitalOcean for the rest of my stack," Gradient is the obvious answer — and the June 3 OpenRouter integration removes the API key friction that used to push teams to elsewhere.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Who Should Use DigitalOcean Gradient</h2>
+<p class="text-gray-700 leading-relaxed my-4">Gradient is a strong fit for:</p>
+<ul class="list-disc list-inside text-gray-700 my-3 space-y-1">
+<li><strong>Existing DigitalOcean customers</strong> who want to add an inference layer without paying a second vendor.</li>
+<li><strong>Open-source-only teams</strong> that need 70B+ models but do not want to manage their own GPU cluster.</li>
+<li><strong>Indie developers</strong> who want H100 access without an AWS contract.</li>
+<li><strong>OpenRouter users</strong> who want a new routing option for Llama 3.x and DeepSeek endpoints.</li>
+</ul>
+<p class="text-gray-700 leading-relaxed my-4">Gradient is a poor fit for:</p>
+<ul class="list-disc list-inside text-gray-700 my-3 space-y-1">
+<li><strong>Closed-model users</strong> — no Claude, no GPT, no Gemini. Use OpenRouter with a closed-model provider.</li>
+<li><strong>Mainland China developers</strong> who need a domestic endpoint — use SiliconFlow, DeepSeek direct, or Aliyun Bailian.</li>
+<li><strong>Sub-100ms latency applications</strong> — Gradient's TTFT is competitive but not best-in-class; Groq and Cerebras are faster.</li>
+<li><strong>Very small models (< 4B)</strong> — Gradient's smallest is 7B, and for sub-7B inference, the GPU Droplet overhead is not worth it.</li>
+</ul>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Q: Is DigitalOcean Gradient a model provider or just a GPU rental platform?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">A: Both. GPU Droplets are the rental side; the Gradient AI Platform is the serverless inference and agent layer. The June 3 OpenRouter integration makes both accessible through one model name.</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Q: Can I run closed models like GPT-4o or Claude 3.5 on Gradient?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">A: No. Gradient is open-weights only. For closed models, use OpenAI, Anthropic, or route through OpenRouter with a different provider string.</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Q: How much does Llama 3.3 70B cost on Gradient?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">A: $0.90 per 1M tokens combined input + output. For comparison, the same model is $1.00/M on SambaNova and $1.38/M on Groq. Cheaper option for the same model is OpenRouter with a DeepSeek or Mistral provider.</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Q: Is there a free tier?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">A: $200 in credits for 60 days on signup. No permanent free tier. The cheapest paid tier is Llama 3.1 8B at $0.20/M tokens.</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Q: Can I use Gradient from inside China?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">A: The dashboard is blocked, but the API endpoint works at 200-400ms additional latency. For lower latency, route through OpenRouter's <code class="bg-gray-100 px-1 rounded text-sm">digitalocean/llama-3.3-70b-instruct</code> model name and use OpenRouter's China-direct edge.</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Q: Does Gradient support function calling / tool use?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">A: Yes, on the chat completions endpoint. The Agent platform also has hosted tool bindings for common patterns (web search, calculator, code execution).</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Q: How does the OpenRouter integration work?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">A: OpenRouter added <code class="bg-gray-100 px-1 rounded text-sm">digitalocean/</code> as a model prefix on June 3, 2026. You can route any request to <code class="bg-gray-100 px-1 rounded text-sm">digitalocean/llama-3.3-70b-instruct</code>, <code class="bg-gray-100 px-1 rounded text-sm">digitalocean/llama-3.1-405b-instruct</code>, and a few other model names. Billing is the same — OpenRouter's 5.5% platform fee applies, but you do not need a separate DigitalOcean account.</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Q: Can I deploy my own private model on Gradient?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">A: Yes, on GPU Droplets with vLLM / TGI / SGLang. The serverless endpoint is restricted to the curated 14-model catalog.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Conclusion</h2>
+<p class="text-gray-700 leading-relaxed my-4">DigitalOcean Gradient is not the cheapest, the fastest, or the broadest AI inference platform in 2026. But it is the one with the lowest dashboard friction for the existing DigitalOcean customer base, and the June 3 OpenRouter integration opens it up to every OpenRouter user. The $200 free credit covers a serious evaluation. If you are an open-weights developer with a DigitalOcean bill, the next H100 you spin up should probably be a Gradient endpoint.</p>
+<p class="text-gray-700 leading-relaxed my-4">For closed-model users, sub-100ms latency applications, or mainland China direct access, look elsewhere. For the indie-and-open-source sweet spot, Gradient is now a default option.</p>`;
+---
+<BaseLayout
+  title={enTitle}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <article class="tutorial-article bg-white">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+          <nav class="text-sm text-gray-500 mb-2">
+            <a href="/" class="hover:underline">Home</a> &rsaquo;
+            <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+            <span class="text-gray-700">{enTitle}</span>
+          </nav>
+          <div set:html={enBody} />
+        </div>
+        <aside class="space-y-6">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+            <h3 class="font-bold text-blue-900 mb-3">Quick Reference</h3>
+            <ul class="text-sm text-blue-800 space-y-2">
+              <li><strong>Provider:</strong> DigitalOcean Gradient</li>
+              <li><strong>Models:</strong> 14 (open-source)</li>
+              <li><strong>H100 price:</strong> $2.16/hr</li>
+              <li><strong>Serverless:</strong> from $0.20/M tokens</li>
+              <li><strong>Free tier:</strong> $200 / 60 days</li>
+              <li><strong>OpenRouter:</strong> Yes (since 6/3)</li>
+            </ul>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+            <ul class="text-sm space-y-2">
+              <li><a href="/tutorials/sambanova-api-review" class="text-blue-600 hover:underline">SambaNova API Review</a></li>
+              <li><a href="/tutorials/openrouter-review" class="text-blue-600 hover:underline">OpenRouter Review</a></li>
+              <li><a href="/tutorials/cloudflare-ai-gateway-review" class="text-blue-600 hover:underline">Cloudflare AI Gateway</a></li>
+              <li><a href="/tutorials/ai-api-cost-control-tools-2026" class="text-blue-600 hover:underline">AI API Cost Control Tools 2026</a></li>
+            </ul>
+          </div>
+
+          <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center text-xs text-gray-500">
+            Advertisement
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

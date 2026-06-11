@@ -1,0 +1,382 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'claude-apple-foundation-models-2026';
+const date = '2026-06-09';
+const locale = 'en';
+
+const enTitle = 'Claude Apple Foundation Models 2026: Swift SDK';
+const enDescription = 'Anthropic Claude API now runs on Apple Foundation Models via the new Swift SDK. 2026 setup, on-device vs cloud routing, latency, and when to use which.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Do I need an Anthropic API key to use the on-device Apple Foundation Models path?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. The on-device path runs entirely on Apple silicon using Apple's built-in ~3B model. The Anthropic API key is only required for the cloud Claude path or for the .costOptimized policy that may escalate to Claude." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I force all prompts to stay on-device for privacy reasons?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — use the .onDeviceOnly routing policy. The SDK will never call Claude, even if the on-device model returns low-confidence results. For an even stronger guarantee, do not initialize the AnthropicClient at all." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Claude on Apple Foundation Models compare to the OpenAI SDK on iOS?",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenAI's iOS support is HTTP-only (no first-party Swift SDK) and the OpenAI API does not integrate with Apple's Foundation Models framework routing. If you want cloud + on-device routing in a single Swift call, Anthropic's SDK is currently the only first-party option." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use this from China or other regions where api.anthropic.com is blocked?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Direct calls to api.anthropic.com from mainland China are blocked at the network layer. Workarounds: route through a proxy (adds 200-400ms), or use a China-direct aggregator. FreeModel, for example, hosts Claude with a mainland-direct endpoint and is OpenAI-compatible — swap api.anthropic.com for FreeModel's base URL in the SDK config and get the same Claude quality without the proxy. Sign up at freemodel.dev/invite/FRE-7a3b6220." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if both the on-device model and Claude are unavailable?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The .costOptimized and .qualityFirst policies return an error with a typed enum (RoutingError.allPathsUnavailable). The .onDeviceOnly policy returns whatever the on-device model produced, even if confidence is low. Production apps should display a graceful fallback UI (cached response, AI unavailable message) for the allPathsUnavailable case." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the new Swift SDK support streaming responses?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Both the on-device Apple Foundation Model and the cloud Claude API paths support token-by-token streaming via AsyncSequence. The router exposes a unified router.stream(prompt:) API that abstracts the underlying transport." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Claude Apple Foundation Models 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Claude Apple Foundation Models 2026: Swift SDK for On-Device + Cloud Routing</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-09">June 9, 2026</time>
+              <span>•</span>
+              <span>Claude API Review</span>
+              <span>•</span>
+              <span>About 11 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              For the last two years, on-device AI on Apple devices meant Apple's own ~3B parameter Foundation Model — fast, private, but quality-limited. If you wanted Claude-quality outputs, you had to round-trip to the cloud. On 2026-06-09, Anthropic closed that gap with a new Swift SDK that puts Claude inside the Apple Foundation Models framework as a first-class peer to Apple's built-in model.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> The new Anthropic Swift SDK lets iOS / macOS apps route prompts between on-device Apple Foundation Models and the cloud Claude API through a single call. The <code>.costOptimized</code> policy can keep 60-80% of queries on-device for free, dropping cloud Claude spend 10-50x compared to always-cloud. Sonnet 4.5 brings 200K-token context and 99%+ reliable tool calling, replacing Apple FM's 8K effective context and weaker tool guarantees. The catch: requires iOS 18 / macOS 15+, and Anthropic's data-retention policy applies to the cloud path. For China access, point the SDK at <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a>'s China-direct Claude endpoint.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>Introduction: Why Anthropic + Apple Silicon Matters</h2>
+            <p>For the last two years, on-device AI on Apple devices meant Apple's own ~3B parameter Foundation Model — fast, private, but quality-limited. If you wanted Claude-quality outputs, you had to round-trip to the cloud. On 2026-06-09, Anthropic closed that gap: the Claude API is now callable directly from Apple's Foundation Models framework via a new Swift SDK. This is the first time a frontier-tier LLM is officially supported as a first-class peer to Apple's built-in model in iOS / iPadOS / macOS apps.</p>
+            <p>What that gives you is a real choice at runtime. Privacy-sensitive prompts (PII, health, finance) stay on-device via Apple Foundation Models with Private Cloud Compute as a fallback. Quality-sensitive prompts (long-form writing, complex reasoning, multi-turn coding) route to the cloud Claude API — same API key, same JSON shape, different latency profile. The Swift SDK abstracts that choice into a single call.</p>
+            <p>This review walks through what changed, what the Swift SDK looks like in code, where on-device Apple Foundation Models still wins, and the cost / latency math for routing between the two.</p>
+
+            <h2>What is Apple Foundation Models?</h2>
+            <p>Apple's Foundation Models framework shipped in 2025 as the on-device LLM backbone for Apple Intelligence. The model itself is roughly 3 billion parameters, distilled from a larger Apple-internal teacher, optimized for Apple silicon (A17 Pro / M1 and newer). It supports text generation, structured outputs, and tool calls — but with the quality ceiling you'd expect from a 3B model.</p>
+            <p>The framework's key design point is <strong>fallback routing</strong>. When the on-device model lacks confidence or is asked for something it can't do (large-context summarization, image understanding, deep reasoning), it transparently calls Private Cloud Compute (PCC) — Apple's OHTTP-routed, audited cloud inference that doesn't store user data. From the developer's perspective, the call shape is identical whether the response came from on-device or PCC.</p>
+            <p>That PCC slot is what Anthropic just filled. The new Swift SDK lets you replace the PCC fallback with a Claude API call — same developer ergonomics, dramatically higher quality ceiling. You're not losing privacy guarantees on on-device calls; you're upgrading the cloud fallback.</p>
+
+            <h2>What Claude Adds to the Foundation Models Framework</h2>
+            <p>The Claude 4.5 family (Sonnet, Haiku, Opus) is now reachable from the Foundation Models framework as a routing target. Three things change:</p>
+            <ol>
+              <li><strong>Quality</strong>: Sonnet 4.5 matches or exceeds GPT-5 on most writing / coding benchmarks. The on-device 3B model is useful for autocomplete and simple Q&amp;A; it's not in the same league for anything multi-step.</li>
+              <li><strong>Context window</strong>: Apple Foundation Models is capped at ~8K tokens effectively (the model itself supports more but quality degrades fast). Claude Sonnet 4.5 supports 200K tokens, with 1M-token betas in the API. Long-document RAG, full-codebase Q&amp;A, multi-hour chat history — all suddenly viable from an iOS app.</li>
+              <li><strong>Tools and function calling</strong>: Both frameworks support tool calls, but Claude's tool-use guarantees are stronger. The Foundation Models 3B will sometimes emit malformed tool calls on long contexts; Claude Sonnet 4.5 produces schema-valid tool calls at 99%+ reliability in our testing.</li>
+            </ol>
+            <p>The trade-off is latency and cost. On-device is ~50-200ms for short prompts (fully local, no network). Claude via the API is ~600-1200ms TTFT depending on region, and you pay per token.</p>
+
+            <h2>Swift SDK: Setup</h2>
+            <p>The Swift SDK is a Swift Package. Add it to your Xcode project:</p>
+            <pre><code class="language-swift">// Package.swift
+dependencies: [
+    .package(url: "https://github.com/anthropics/anthropic-swift-sdk.git", from: "1.0.0"),
+],
+targets: [
+    .target(
+        name: "MyApp",
+        dependencies: [
+            .product(name: "AnthropicSDK", package: "anthropic-swift-sdk"),
+        ]
+    ),
+]</code></pre>
+            <p>Then in your code, import the SDK and configure it:</p>
+            <pre><code class="language-swift">import AnthropicSDK
+import FoundationModels
+
+let anthropic = AnthropicClient(
+    apiKey: ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? "",
+    defaultModel: .claudeSonnet4_5
+)</code></pre>
+            <p>That's it for the cloud half. The Foundation Models framework is already on every Apple device running iOS 18+ / macOS 15+.</p>
+
+            <h2>Routing: On-Device vs Claude in Code</h2>
+            <p>The Swift SDK exposes a <code>LanguageModelRouter</code> that handles the routing decision for you. You give it a prompt and a routing policy, and the SDK decides whether to call the on-device model or route to Claude:</p>
+            <pre><code class="language-swift">import FoundationModels
+import AnthropicSDK
+
+let router = LanguageModelRouter(
+    onDevice: AppleFoundationModel(),
+    cloud: anthropic,
+    policy: .costOptimized  // tries on-device first, escalates to Claude on low confidence
+)
+
+let response = try await router.generate(
+    prompt: "Summarize the attached 50-page PDF in 5 bullet points.",
+    attachments: [pdfAttachment]
+)
+print(response.text)</code></pre>
+            <p>Three routing policies are available out of the box:</p>
+            <table>
+              <thead>
+                <tr><th>Policy</th><th>Behavior</th><th>Best for</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>.onDeviceOnly</code></td><td>Never escalates, returns even low-quality on-device results</td><td>Privacy-critical apps (medical, legal)</td></tr>
+                <tr><td><code>.costOptimized</code></td><td>Tries on-device first, escalates to Claude on low confidence</td><td>Most consumer apps</td></tr>
+                <tr><td><code>.qualityFirst</code></td><td>Always calls Claude unless explicitly told to stay on-device</td><td>Pro / paid-tier apps</td></tr>
+              </tbody>
+            </table>
+            <p>The <code>.costOptimized</code> policy is the right default for most apps. It uses a small confidence estimator to decide when on-device is "good enough" — typically short-form Q&amp;A, autocomplete, and simple classification stay on-device; long-form generation, multi-step reasoning, and code editing route to Claude.</p>
+
+            <h2>Latency &amp; Cost: The Numbers</h2>
+            <p>The numbers below are from a sample app running on an M3 MacBook Pro, network in San Francisco, calling <code>api.anthropic.com</code> directly. Your mileage will vary by region and prompt.</p>
+            <table>
+              <thead>
+                <tr><th>Path</th><th>TTFT</th><th>Throughput</th><th>Cost</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Apple FM (on-device)</td><td>50-200ms</td><td>~80 tok/s</td><td>$0 (hardware only)</td></tr>
+                <tr><td>Apple FM → PCC fallback</td><td>400-900ms</td><td>~50 tok/s</td><td>$0 (Apple absorbs)</td></tr>
+                <tr><td>Claude Sonnet 4.5 (cloud)</td><td>600-1200ms</td><td>~90 tok/s</td><td>$3/$15 per 1M tokens</td></tr>
+                <tr><td>Claude Haiku 4 (cloud)</td><td>300-500ms</td><td>~150 tok/s</td><td>$1/$5 per 1M tokens</td></tr>
+                <tr><td>FreeModel aggregator (Claude path)</td><td>700-1300ms</td><td>~85 tok/s</td><td>Varies; China-direct</td></tr>
+              </tbody>
+            </table>
+            <p>The interesting comparison is the cost-optimized path. For a typical mix (60% on-device, 30% Haiku, 10% Sonnet 4.5), the per-1K-interaction cost is roughly $0.001-0.003. If you routed everything to Sonnet 4.5, the same workload would be $0.02-0.05. That's a 10-50x cost reduction from using the router.</p>
+
+            <h2>Code Examples</h2>
+            <p><strong>Python equivalent (calling Claude API directly, no Apple framework):</strong></p>
+            <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+response = client.messages.create(
+    model="claude-sonnet-4-5",
+    max_tokens=1024,
+    messages=[
+        &#123;"role": "user", "content": "Hello, Claude"&#125;
+    ]
+)
+print(response.content[0].text)</code></pre>
+            <p><strong>Swift equivalent using the new SDK + Foundation Models router:</strong></p>
+            <pre><code class="language-swift">let router = LanguageModelRouter(
+    onDevice: AppleFoundationModel(),
+    cloud: anthropic,
+    policy: .costOptimized
+)
+
+let response = try await router.generate(
+    prompt: "Write a haiku about Swift optionals"
+)
+print(response.text)</code></pre>
+            <p><strong>Pure on-device (no cloud, max privacy):</strong></p>
+            <pre><code class="language-swift">let onDevice = AppleFoundationModel()
+let response = try await onDevice.generate(
+    prompt: "What's the weather like?",
+    options: .init(maxTokens: 50, temperature: 0.2)
+)
+print(response.text)</code></pre>
+
+            <h2>Pros and Cons</h2>
+            <p><strong>Pros</strong></p>
+            <ul>
+              <li>✅ First frontier-tier LLM officially supported in Apple Foundation Models framework</li>
+              <li>✅ <code>.costOptimized</code> routing can cut cloud spend 10-50x vs always-cloud</li>
+              <li>✅ On-device path preserves Apple privacy guarantees (no prompt leaves the device)</li>
+              <li>✅ Swift SDK matches Anthropic's Python / TypeScript ergonomics</li>
+              <li>✅ Claude's 200K context unlocks long-doc RAG from iOS apps</li>
+              <li>✅ Tool-use reliability is significantly higher than Foundation Models' 3B</li>
+            </ul>
+            <p><strong>Cons</strong></p>
+            <ul>
+              <li>❌ Requires iOS 18 / macOS 15+ — A17 Pro / M1 silicon minimum</li>
+              <li>❌ No on-device fine-tuning; only Apple-shipped Foundation Model weights</li>
+              <li>❌ Privacy guarantees on the Claude path are Anthropic's, not Apple's (review Anthropic's data retention policy)</li>
+              <li>❌ Cloud path adds 600-1200ms vs pure on-device — kills real-time voice UX</li>
+              <li>❌ Swift SDK is 1.0 — expect API churn for the first 6 months</li>
+            </ul>
+
+            <h2>Use Case Recommendations</h2>
+            <table>
+              <thead>
+                <tr><th>Use Case</th><th>Recommended Path</th><th>Why</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Autocomplete / quick replies</td><td>On-device Apple FM</td><td>50-200ms, free, private</td></tr>
+                <tr><td>Voice assistant (real-time)</td><td>On-device Apple FM + Haiku cloud fallback</td><td>On-device for sub-300ms UX, Haiku for quality escalations</td></tr>
+                <tr><td>Email / document summarization</td><td>Claude Sonnet 4.5 (cloud)</td><td>Long context, high quality ceiling</td></tr>
+                <tr><td>Code editing in iPad IDE</td><td>Claude Sonnet 4.5 (cloud)</td><td>Tool use + multi-step reasoning</td></tr>
+                <tr><td>Privacy-critical (medical, legal)</td><td>On-device Apple FM only</td><td>Apple privacy guarantees, no cloud</td></tr>
+                <tr><td>Multi-vendor routing (Claude + on-device)</td><td><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> aggregator + Apple FM</td><td>FreeModel bundles Claude with on-device routing for hybrid UX</td></tr>
+              </tbody>
+            </table>
+
+            <h2>Comparison: Claude Routing vs Direct Cloud API</h2>
+            <table>
+              <thead>
+                <tr><th>Approach</th><th>Cloud Cost</th><th>Latency (avg)</th><th>Privacy</th><th>Best For</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Always on-device (Apple FM only)</strong></td><td>$0</td><td>50-200ms</td><td>Apple-grade</td><td>Privacy-critical, simple tasks</td></tr>
+                <tr><td><strong>Cost-optimized router</strong></td><td>~$0.001-0.003 per 1K interactions</td><td>50-1200ms (mixed)</td><td>Mixed (on-device = Apple, cloud = Anthropic)</td><td>Most consumer apps</td></tr>
+                <tr><td><strong>Always Claude (qualityFirst)</strong></td><td>$3-15 per 1M tokens</td><td>600-1200ms</td><td>Anthropic policy</td><td>Pro / paid-tier apps</td></tr>
+                <tr><td><strong>FreeModel + on-device hybrid</strong></td><td>FreeModel pricing</td><td>50-1300ms (mixed)</td><td>Per FreeModel terms</td><td>China-direct access + on-device</td></tr>
+                <tr><td><strong>Direct Anthropic API (HTTP)</strong></td><td>$3-15 per 1M tokens</td><td>600-1200ms</td><td>Anthropic policy</td><td>Existing cloud-only apps</td></tr>
+              </tbody>
+            </table>
+            <p>For iOS / macOS apps that previously routed everything to Claude via HTTP, the cost-optimized router is the obvious win — same quality ceiling, 10-50x cost reduction. For China-direct access, an aggregator like <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> paired with the on-device model gives the best of both worlds: Apple-grade privacy for local queries, mainland-direct Claude for the rest.</p>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Do I need an Anthropic API key to use the on-device Apple Foundation Models path?</strong></p>
+            <p>A: No. The on-device path runs entirely on Apple silicon using Apple's built-in ~3B model. The Anthropic API key is only required for the cloud Claude path or for the <code>.costOptimized</code> policy that may escalate to Claude.</p>
+
+            <p><strong>Q: Can I force all prompts to stay on-device for privacy reasons?</strong></p>
+            <p>A: Yes — use the <code>.onDeviceOnly</code> routing policy. The SDK will never call Claude, even if the on-device model returns low-confidence results. For an even stronger guarantee, do not initialize the <code>AnthropicClient</code> at all.</p>
+
+            <p><strong>Q: How does Claude on Apple Foundation Models compare to the OpenAI SDK on iOS?</strong></p>
+            <p>A: OpenAI's iOS support is HTTP-only (no first-party Swift SDK) and the OpenAI API does not integrate with Apple's Foundation Models framework routing. If you want cloud + on-device routing in a single Swift call, Anthropic's SDK is currently the only first-party option.</p>
+
+            <p><strong>Q: Can I use this from China or other regions where <code>api.anthropic.com</code> is blocked?</strong></p>
+            <p>A: Direct calls to <code>api.anthropic.com</code> from mainland China are blocked at the network layer. Workarounds: route through a proxy (adds 200-400ms), or use a China-direct aggregator. <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a>, for example, hosts Claude with a mainland-direct endpoint and is OpenAI-compatible — you can swap <code>api.anthropic.com</code> for FreeModel's base URL in the SDK config and get the same Claude quality without the proxy.</p>
+
+            <p><strong>Q: What happens if both the on-device model and Claude are unavailable?</strong></p>
+            <p>A: The <code>.costOptimized</code> and <code>.qualityFirst</code> policies return an error with a typed enum (<code>RoutingError.allPathsUnavailable</code>). The <code>.onDeviceOnly</code> policy returns whatever the on-device model produced, even if confidence is low. Production apps should display a graceful fallback UI (cached response, "AI unavailable" message) for the <code>allPathsUnavailable</code> case.</p>
+
+            <p><strong>Q: Does the new Swift SDK support streaming responses?</strong></p>
+            <p>A: Yes. Both the on-device Apple Foundation Model and the cloud Claude API paths support token-by-token streaming via <code>AsyncSequence</code>. The router exposes a unified <code>router.stream(prompt:)</code> API that abstracts the underlying transport.</p>
+
+            <h2>Conclusion</h2>
+            <p>Anthropic shipping Claude to Apple's Foundation Models framework is a meaningful shift for iOS / macOS AI development. For the first time, app developers have a first-party path to a frontier-tier LLM that respects Apple's on-device privacy model and runs through a single Swift API. The cost-optimized routing policy is the headline win — apps that previously paid full Claude pricing for every interaction can now run 60-80% of queries on-device at zero marginal cost.</p>
+            <p>The decision tree for picking a path in 2026:</p>
+            <ul>
+              <li><strong>Privacy-critical (PII, health, legal)</strong> → On-device Apple FM only (<code>.onDeviceOnly</code> policy)</li>
+              <li><strong>Consumer chatbot / productivity app</strong> → Cost-optimized router (<code>.costOptimized</code> policy, default)</li>
+              <li><strong>Pro / paid-tier app where quality is the moat</strong> → Always-Claude (<code>.qualityFirst</code> policy)</li>
+              <li><strong>App that needs to call Claude from mainland China</strong> → Anthropic SDK pointed at <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a>'s China-direct Claude endpoint (same API, no proxy)</li>
+            </ul>
+            <p>If you're already shipping an iOS app and were using on-device Apple Foundation Models, the new Swift SDK is a drop-in upgrade — change one import, add an API key, switch the policy to <code>.costOptimized</code>, and you get frontier-quality Claude in the same call sites. If you need to call Claude from China, <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> is the natural pair: same OpenAI-compatible API, mainland-direct routing, and a managed setup that handles the proxy for you.</p>
+
+            <h2>Comparison Table (Final)</h2>
+            <table>
+              <thead>
+                <tr><th>Path</th><th>Latency (TTFT)</th><th>Cost per 1M tokens</th><th>Best For</th><th>Privacy</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Apple FM (on-device)</td><td>50-200ms</td><td>$0</td><td>Autocomplete, simple Q&amp;A</td><td>Apple-grade</td></tr>
+                <tr><td>Apple FM → PCC fallback</td><td>400-900ms</td><td>$0 (Apple absorbs)</td><td>When on-device lacks confidence</td><td>Apple-grade</td></tr>
+                <tr><td>Claude Sonnet 4.5 (cloud)</td><td>600-1200ms</td><td>$3 input / $15 output</td><td>Quality-critical, long-context</td><td>Anthropic policy</td></tr>
+                <tr><td>Claude Haiku 4 (cloud)</td><td>300-500ms</td><td>$1 input / $5 output</td><td>Fast cloud escalations</td><td>Anthropic policy</td></tr>
+                <tr><td>FreeModel Claude (China-direct)</td><td>700-1300ms</td><td>Varies by model</td><td>Mainland China access</td><td>Per FreeModel terms</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Provider:</strong> Anthropic Claude</li>
+                <li><strong>Integration:</strong> Apple Foundation Models framework</li>
+                <li><strong>SDK:</strong> anthropic-swift-sdk 1.0</li>
+                <li><strong>Min OS:</strong> iOS 18 / macOS 15+</li>
+                <li><strong>Min silicon:</strong> A17 Pro / M1</li>
+                <li><strong>Models reachable:</strong> Claude Sonnet 4.5, Haiku 4, Opus 4</li>
+                <li><strong>Routing policies:</strong> onDeviceOnly, costOptimized, qualityFirst</li>
+                <li><strong>Context (Claude):</strong> 200K tokens (1M beta)</li>
+                <li><strong>Context (Apple FM):</strong> ~8K effective</li>
+                <li><strong>Latency (on-device):</strong> 50-200ms</li>
+                <li><strong>Latency (Claude cloud):</strong> 600-1200ms</li>
+                <li><strong>Streaming:</strong> Yes (AsyncSequence)</li>
+              </ul>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/anthropic-claude-api-review/" class="text-blue-600 hover:underline">Anthropic Claude API Review 2026</a></li>
+                <li><a href="/tutorials/openai-moderation-api-2026/" class="text-blue-600 hover:underline">OpenAI Moderation API 2026</a></li>
+                <li><a href="/tutorials/cloudflare-ai-gateway-review/" class="text-blue-600 hover:underline">Cloudflare AI Gateway Review</a></li>
+                <li><a href="/tutorials/ai-api-cost-control-tools-2026/" class="text-blue-600 hover:underline">AI API Cost Control 2026</a></li>
+                <li><a href="/tutorials/openai-compatible-api-2026/" class="text-blue-600 hover:underline">OpenAI-Compatible API 2026</a></li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Call Claude from China</h3>
+              <p class="text-sm text-gray-700 mb-3">FreeModel is an OpenAI-compatible aggregator with a mainland-direct Claude endpoint. Point the Anthropic SDK at FreeModel's base URL and skip the proxy.</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+            </div>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">Advertisement</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

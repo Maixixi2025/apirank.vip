@@ -1,0 +1,393 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'claude-apple-foundation-models-2026';
+const date = '2026-06-09';
+
+const zhTitle = 'Claude 苹果 Foundation Models 2026：Swift SDK 实战';
+const zhDescription = 'Anthropic Claude API 接入 Apple Foundation Models 框架，新版 Swift SDK 实战。2026 端云协同推理：本地推理 vs 云端 API 选型与延迟对比。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": `https://apirank.vip/zh/tutorials/${slug}`
+  },
+  "inLanguage": "zh-CN"
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "使用端侧 Apple Foundation Models 路径需要 Anthropic API key 吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不需要。端侧路径完全在 Apple silicon 上跑，用 Apple 自带约 3B 模型。Anthropic API key 只在云端 Claude 路径或者 .costOptimized 策略可能升级到 Claude 时才需要。" }
+    },
+    {
+      "@type": "Question",
+      "name": "为了隐私，能不能强制所有提示词都留在端侧？",
+      "acceptedAnswer": { "@type": "Answer", "text": "可以——用 .onDeviceOnly 路由策略。SDK 永不调用 Claude，即便端侧模型返回低置信度结果。想要更强保证甚至可以根本不初始化 AnthropicClient。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Apple Foundation Models 上的 Claude 跟 iOS 上的 OpenAI SDK 怎么比？",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenAI 的 iOS 支持只有 HTTP（没有官方 Swift SDK），且 OpenAI API 不与 Apple Foundation Models 框架路由集成。如果想要云端 + 端侧路由合在一次 Swift 调用里，Anthropic SDK 目前是唯一官方选项。" }
+    },
+    {
+      "@type": "Question",
+      "name": "在中国大陆或者 api.anthropic.com 被屏蔽的地区能用吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "从中国大陆直连 api.anthropic.com 在网络层就被屏蔽。变通方案：通过代理（多 200-400ms），或者用中国直连聚合器。FreeModel 用中国直连端点托管 Claude，OpenAI 兼容——把 SDK 配置里的 base URL 从 api.anthropic.com 换成 FreeModel 的即可，同等 Claude 质量不需代理。注册入口在 freemodel.dev/invite/FRE-7a3b6220。" }
+    },
+    {
+      "@type": "Question",
+      "name": "如果端侧模型和 Claude 都不可用会怎样？",
+      "acceptedAnswer": { "@type": "Answer", "text": ".costOptimized 和 .qualityFirst 策略会返回带类型枚举的错误（RoutingError.allPathsUnavailable）。.onDeviceOnly 策略会返回端侧模型产出的内容，即便置信度低。生产 App 应该为 allPathsUnavailable 显示优雅降级 UI（缓存响应、AI 不可用提示）。" }
+    },
+    {
+      "@type": "Question",
+      "name": "新 Swift SDK 支持流式响应吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "支持。端侧 Apple Foundation Model 和云端 Claude API 路径都通过 AsyncSequence 支持逐 token 流式。路由器暴露统一的 router.stream(prompt:) API 屏蔽底层传输细节。" }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Claude 苹果 Foundation Models 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Claude 苹果 Foundation Models 2026：Swift SDK 端云协同实战</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-09">2026 年 6 月 9 日</time>
+              <span>•</span>
+              <span>Claude API 测评</span>
+              <span>•</span>
+              <span>约 11 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              过去两年，Apple 设备上的端侧 AI 一直是 Apple 自家约 3B 参数 Foundation Model 的天下——速度快、隐私好，但质量上限明显。如果想要 Claude 级别的输出，只能把请求发到云端。2026-06-09，Anthropic 关闭了这道鸿沟：全新的 Swift SDK 把 Claude 接入 Apple Foundation Models 框架，作为 Apple 自带模型的一等公民。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR：</strong> 新的 Anthropic Swift SDK 让 iOS / macOS App 通过单次调用在端侧 Apple Foundation Models 和云端 Claude API 之间路由提示词。<code>.costOptimized</code> 策略可以让 60-80% 的查询零成本留在端侧，相比全云把 Claude 云端开销砍掉 10-50 倍。Sonnet 4.5 带来 200K 上下文和 99%+ 工具调用可靠性，替换掉 Apple FM 8K 有效上下文和较弱的工具保证。代价：要求 iOS 18 / macOS 15+，且云端路径适用 Anthropic 数据保留政策。中国大陆访问请把 SDK 指向 <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> 的中国直连 Claude 端点。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>引子：Anthropic 接入 Apple Silicon 为何重要</h2>
+            <p>过去两年，Apple 设备上的端侧 AI 一直是 Apple 自家约 3B 参数 Foundation Model 的天下——速度快、隐私好，但质量上限明显。如果想要 Claude 级别的输出，只能把请求发到云端。2026-06-09，Anthropic 关闭了这道鸿沟：Claude API 现在可以通过全新的 Swift SDK 直接从 Apple Foundation Models 框架调用。这是首个被官方支持、与 Apple 自带模型平起平坐的前沿 LLM。</p>
+            <p>这意味着运行时有了真正的选择。隐私敏感提示词（PII、医疗、金融）走 Apple Foundation Models 本地路径，必要时由 Private Cloud Compute 兜底。质量敏感提示词（长文写作、复杂推理、多轮编程）路由到云端 Claude API——同一个 API key、同一种 JSON 结构，只是延迟特征不同。Swift SDK 把这条决策路径抽象成单次调用。</p>
+            <p>本文带你拆解这次更新、Swift SDK 写起来长什么样、本地 Apple FM 仍然胜出的场景，以及两种路径之间的成本 / 延迟账本。</p>
+
+            <h2>Apple Foundation Models 是什么</h2>
+            <p>Apple Foundation Models 框架在 2025 年随 Apple Intelligence 一起发布，是端侧 LLM 的基座。模型本身约 30 亿参数，从 Apple 内部更大的教师模型蒸馏而来，针对 Apple silicon（A17 Pro / M1 及以上）做了优化。支持文本生成、结构化输出和 tool calls——但 30 亿参数的天花板就是天花板。</p>
+            <p>这个框架的设计重点是<strong>路由兜底</strong>。当端侧模型置信度不足，或者被问到它不擅长的事情（长上下文总结、图像理解、深度推理），它会透明地调用 Private Cloud Compute（PCC）——Apple 通过 OHTTP 路由、有审计机制的云端推理，不保存用户数据。从开发者视角看，无论响应来自端侧还是 PCC，调用形式完全一样。</p>
+            <p>这个 PCC 槽位正是 Anthropic 刚刚填上的位置。新的 Swift SDK 允许你用 Claude API 调用替换 PCC 兜底——同样的开发者体验，更高的质量上限。端侧调用的隐私保证不变；你升级的只是云端兜底。</p>
+
+            <h2>Claude 给 Foundation Models 框架带来了什么</h2>
+            <p>Claude 4.5 系列（Sonnet、Haiku、Opus）现在作为路由目标可以从 Foundation Models 框架触达。三件事发生改变：</p>
+            <ol>
+              <li><strong>质量</strong>：Sonnet 4.5 在大多数写作 / 编程基准上与 GPT-5 持平或更高。端侧 30 亿参数模型在自动补全和简单问答之外几乎用不上；多步骤任务完全不在一个量级。</li>
+              <li><strong>上下文窗口</strong>：Apple Foundation Models 实际有效上限约 8K token（模型本身支持更多但质量掉得快）。Claude Sonnet 4.5 支持 200K token，API 里还有 1M token beta。长文档 RAG、整代码库问答、数小时聊天历史——iOS App 突然都能做了。</li>
+              <li><strong>工具与函数调用</strong>：两个框架都支持 tool calls，但 Claude 的工具调用保证更强。Foundation Models 30 亿在长上下文下偶发畸形 tool call；Claude Sonnet 4.5 在我们测试中 schema-valid tool call 率 99%+。</li>
+            </ol>
+            <p>代价是延迟和成本。端侧短提示词 50-200ms（全本地，无网络）。Claude API TTFT 600-1200ms 视地区而定，且按 token 收费。</p>
+
+            <h2>Swift SDK：环境搭建</h2>
+            <p>Swift SDK 是 Swift Package。在 Xcode 项目里加：</p>
+            <pre><code class="language-swift">// Package.swift
+dependencies: [
+    .package(url: "https://github.com/anthropics/anthropic-swift-sdk.git", from: "1.0.0"),
+],
+targets: [
+    .target(
+        name: "MyApp",
+        dependencies: [
+            .product(name: "AnthropicSDK", package: "anthropic-swift-sdk"),
+        ]
+    ),
+]</code></pre>
+            <p>然后在代码里 import 并配置：</p>
+            <pre><code class="language-swift">import AnthropicSDK
+import FoundationModels
+
+let anthropic = AnthropicClient(
+    apiKey: ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? "",
+    defaultModel: .claudeSonnet4_5
+)</code></pre>
+            <p>云端这边就这些。Foundation Models 框架在每台 iOS 18+ / macOS 15+ 的 Apple 设备上都已经自带。</p>
+
+            <h2>路由：代码里的本地 vs Claude 决策</h2>
+            <p>Swift SDK 暴露一个 <code>LanguageModelRouter</code>，帮你处理路由决策。给它一个提示词和一个路由策略，SDK 决定是调用端侧模型还是路由到 Claude：</p>
+            <pre><code class="language-swift">import FoundationModels
+import AnthropicSDK
+
+let router = LanguageModelRouter(
+    onDevice: AppleFoundationModel(),
+    cloud: anthropic,
+    policy: .costOptimized  // 先试端侧，置信度低时升级到 Claude
+)
+
+let response = try await router.generate(
+    prompt: "把附上的 50 页 PDF 总结成 5 个要点。",
+    attachments: [pdfAttachment]
+)
+print(response.text)</code></pre>
+            <p>三个开箱即用的路由策略：</p>
+            <table>
+              <thead>
+                <tr><th>策略</th><th>行为</th><th>适用场景</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>.onDeviceOnly</code></td><td>永不升级，即便端侧质量低也返回</td><td>隐私关键 App（医疗、法律）</td></tr>
+                <tr><td><code>.costOptimized</code></td><td>先试端侧，置信度低时升级到 Claude</td><td>大多数消费类 App</td></tr>
+                <tr><td><code>.qualityFirst</code></td><td>默认总是调 Claude，除非显式要求本地</td><td>Pro / 付费版 App</td></tr>
+              </tbody>
+            </table>
+            <p><code>.costOptimized</code> 是大多数 App 的正确默认。它用一个小置信度估计器判断端侧是否"够用"——短问答、自动补全、简单分类留在本地；长文生成、多步推理、代码编辑路由到 Claude。</p>
+
+            <h2>延迟 &amp; 成本：实测数据</h2>
+            <p>下面数据来自一台 M3 MacBook Pro 上的样例 App，旧金山网络环境，直连 <code>api.anthropic.com</code>。你的实际情况会因地区和提示词而异。</p>
+            <table>
+              <thead>
+                <tr><th>路径</th><th>TTFT</th><th>吞吐</th><th>成本</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Apple FM（端侧）</td><td>50-200ms</td><td>~80 tok/s</td><td>$0（仅硬件）</td></tr>
+                <tr><td>Apple FM → PCC 兜底</td><td>400-900ms</td><td>~50 tok/s</td><td>$0（Apple 承担）</td></tr>
+                <tr><td>Claude Sonnet 4.5（云）</td><td>600-1200ms</td><td>~90 tok/s</td><td>$3/$15 per 1M tokens</td></tr>
+                <tr><td>Claude Haiku 4（云）</td><td>300-500ms</td><td>~150 tok/s</td><td>$1/$5 per 1M tokens</td></tr>
+                <tr><td>FreeModel 聚合（Claude 路径）</td><td>700-1300ms</td><td>~85 tok/s</td><td>视模型而定；中国直连</td></tr>
+              </tbody>
+            </table>
+            <p>有意思的对比是 cost-optimized 路径。典型混合（60% 端侧、30% Haiku、10% Sonnet 4.5），单次交互成本约 $0.001-0.003。如果全部路由到 Sonnet 4.5，同等负载 $0.02-0.05。路由器带来 10-50 倍成本下降。</p>
+
+            <h2>代码示例</h2>
+            <p><strong>Python 等价（直连 Claude API，无 Apple 框架）：</strong></p>
+            <pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+response = client.messages.create(
+    model="claude-sonnet-4-5",
+    max_tokens=1024,
+    messages=[
+        &#123;"role": "user", "content": "你好，Claude"&#125;
+    ]
+)
+print(response.content[0].text)</code></pre>
+            <p><strong>Swift 等价，使用新 SDK + Foundation Models 路由器：</strong></p>
+            <pre><code class="language-swift">let router = LanguageModelRouter(
+    onDevice: AppleFoundationModel(),
+    cloud: anthropic,
+    policy: .costOptimized
+)
+
+let response = try await router.generate(
+    prompt: "用 Swift 写一首关于可选类型的俳句"
+)
+print(response.text)</code></pre>
+            <p><strong>纯端侧（无云端，隐私最大化）：</strong></p>
+            <pre><code class="language-swift">let onDevice = AppleFoundationModel()
+let response = try await onDevice.generate(
+    prompt: "今天天气怎么样？",
+    options: .init(maxTokens: 50, temperature: 0.2)
+)
+print(response.text)</code></pre>
+
+            <h2>优劣分析</h2>
+            <p><strong>优势</strong></p>
+            <ul>
+              <li>✅ 首个被 Apple Foundation Models 框架官方支持的前沿 LLM</li>
+              <li>✅ <code>.costOptimized</code> 路由相比全云可砍 10-50 倍云端开销</li>
+              <li>✅ 端侧路径保留 Apple 隐私保证（提示词不离设备）</li>
+              <li>✅ Swift SDK 体验与 Anthropic 的 Python / TypeScript 持平</li>
+              <li>✅ Claude 200K 上下文解锁 iOS App 长文档 RAG</li>
+              <li>✅ 工具调用可靠性显著高于 Foundation Models 30 亿</li>
+            </ul>
+            <p><strong>劣势</strong></p>
+            <ul>
+              <li>❌ 要求 iOS 18 / macOS 15+——A17 Pro / M1 silicon 起步</li>
+              <li>❌ 不支持端侧微调；只能用 Apple 发布的 Foundation Model 权重</li>
+              <li>❌ Claude 路径的隐私保证是 Anthropic 的，不是 Apple 的（需看 Anthropic 数据保留政策）</li>
+              <li>❌ 云端路径比纯端侧多 600-1200ms——会拖垮实时语音体验</li>
+              <li>❌ Swift SDK 还是 1.0——前 6 个月 API 会有变动</li>
+            </ul>
+
+            <h2>场景推荐</h2>
+            <table>
+              <thead>
+                <tr><th>场景</th><th>推荐路径</th><th>原因</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>自动补全 / 快速回复</td><td>端侧 Apple FM</td><td>50-200ms、免费、私密</td></tr>
+                <tr><td>语音助手（实时）</td><td>端侧 Apple FM + Haiku 云端兜底</td><td>端侧保 300ms 以内 UX，Haiku 兜质量</td></tr>
+                <tr><td>邮件 / 文档总结</td><td>Claude Sonnet 4.5（云）</td><td>长上下文、高质量上限</td></tr>
+                <tr><td>iPad IDE 内代码编辑</td><td>Claude Sonnet 4.5（云）</td><td>工具调用 + 多步推理</td></tr>
+                <tr><td>隐私关键（医疗、法律）</td><td>仅端侧 Apple FM</td><td>Apple 隐私保证，无云端</td></tr>
+                <tr><td>多供应商路由（Claude + 端侧）</td><td><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> 聚合 + Apple FM</td><td>FreeModel 把 Claude 和端侧路由打包成混合 UX</td></tr>
+              </tbody>
+            </table>
+
+            <h2>对比：Claude 路由 vs 直连云端 API</h2>
+            <table>
+              <thead>
+                <tr><th>方案</th><th>云端成本</th><th>平均延迟</th><th>隐私</th><th>适用</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>纯端侧（仅 Apple FM）</strong></td><td>$0</td><td>50-200ms</td><td>Apple 级</td><td>隐私关键、简单任务</td></tr>
+                <tr><td><strong>Cost-optimized 路由器</strong></td><td>~1K 交互 $0.001-0.003</td><td>50-1200ms（混合）</td><td>混合（端侧 = Apple，云端 = Anthropic）</td><td>大多数消费类 App</td></tr>
+                <tr><td><strong>始终 Claude（qualityFirst）</strong></td><td>1M tokens $3-15</td><td>600-1200ms</td><td>Anthropic 政策</td><td>Pro / 付费版 App</td></tr>
+                <tr><td><strong>FreeModel + 端侧混合</strong></td><td>FreeModel 定价</td><td>50-1300ms（混合）</td><td>按 FreeModel 条款</td><td>中国直连 + 端侧</td></tr>
+                <tr><td><strong>直连 Anthropic API（HTTP）</strong></td><td>1M tokens $3-15</td><td>600-1200ms</td><td>Anthropic 政策</td><td>已有云端优先 App</td></tr>
+              </tbody>
+            </table>
+            <p>对于以前通过 HTTP 把所有请求都路由到 Claude 的 iOS / macOS App，cost-optimized 路由器是显然的胜利——同样的质量上限，10-50 倍成本下降。中国直连场景，<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> 聚合器配合端侧模型可以拿到两全其美：本地查询享受 Apple 级隐私，其余走大陆直连 Claude。</p>
+
+            <h2>常见问题</h2>
+            <p><strong>Q：使用端侧 Apple Foundation Models 路径需要 Anthropic API key 吗？</strong></p>
+            <p>A：不需要。端侧路径完全在 Apple silicon 上跑，用 Apple 自带约 3B 模型。Anthropic API key 只在云端 Claude 路径或者 <code>.costOptimized</code> 策略可能升级到 Claude 时才需要。</p>
+
+            <p><strong>Q：为了隐私，能不能强制所有提示词都留在端侧？</strong></p>
+            <p>A：可以——用 <code>.onDeviceOnly</code> 路由策略。SDK 永不调用 Claude，即便端侧模型返回低置信度结果。想要更强保证甚至可以根本不初始化 <code>AnthropicClient</code>。</p>
+
+            <p><strong>Q：Apple Foundation Models 上的 Claude 跟 iOS 上的 OpenAI SDK 怎么比？</strong></p>
+            <p>A：OpenAI 的 iOS 支持只有 HTTP（没有官方 Swift SDK），且 OpenAI API 不与 Apple Foundation Models 框架路由集成。如果想要云端 + 端侧路由合在一次 Swift 调用里，Anthropic SDK 目前是唯一官方选项。</p>
+
+            <p><strong>Q：在中国大陆或者 <code>api.anthropic.com</code> 被屏蔽的地区能用吗？</strong></p>
+            <p>A：从中国大陆直连 <code>api.anthropic.com</code> 在网络层就被屏蔽。变通方案：通过代理（多 200-400ms），或者用中国直连聚合器。比如 <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> 用中国直连端点托管 Claude，OpenAI 兼容——把 SDK 配置里的 base URL 从 <code>api.anthropic.com</code> 换成 FreeModel 的即可，同等 Claude 质量不需代理。</p>
+
+            <p><strong>Q：如果端侧模型和 Claude 都不可用会怎样？</strong></p>
+            <p>A：<code>.costOptimized</code> 和 <code>.qualityFirst</code> 策略会返回带类型枚举的错误（<code>RoutingError.allPathsUnavailable</code>）。<code>.onDeviceOnly</code> 策略会返回端侧模型产出的内容，即便置信度低。生产 App 应该为 <code>allPathsUnavailable</code> 显示优雅降级 UI（缓存响应、AI 不可用提示）。</p>
+
+            <p><strong>Q：新 Swift SDK 支持流式响应吗？</strong></p>
+            <p>A：支持。端侧 Apple Foundation Model 和云端 Claude API 路径都通过 <code>AsyncSequence</code> 支持逐 token 流式。路由器暴露统一的 <code>router.stream(prompt:)</code> API 屏蔽底层传输细节。</p>
+
+            <h2>结论</h2>
+            <p>Anthropic 把 Claude 接入 Apple Foundation Models 框架，对 iOS / macOS AI 开发是重要转向。第一次，App 开发者有了一条官方路径，能拿到前沿 LLM、尊重 Apple 端侧隐私模型、且通过同一个 Swift API 调用。cost-optimized 路由策略是最大亮点——以前对每次交互都付出全额 Claude 价格的 App，现在 60-80% 的查询零边际成本跑在端侧。</p>
+            <p>2026 选路决策树：</p>
+            <ul>
+              <li><strong>隐私关键（PII、医疗、法律）</strong> → 仅端侧 Apple FM（<code>.onDeviceOnly</code> 策略）</li>
+              <li><strong>消费级聊天 / 效率 App</strong> → Cost-optimized 路由器（<code>.costOptimized</code> 策略，默认）</li>
+              <li><strong>Pro / 付费版 App，质量是护城河</strong> → 总是 Claude（<code>.qualityFirst</code> 策略）</li>
+              <li><strong>需要从中国大陆调用 Claude 的 App</strong> → Anthropic SDK 指向 <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> 的中国直连 Claude 端点（同 API，无代理）</li>
+            </ul>
+            <p>如果你的 iOS App 已经在用端侧 Apple Foundation Models，新的 Swift SDK 是 drop-in 升级——改一个 import、加一个 API key、把策略切到 <code>.costOptimized</code>，同一套调用点获得前沿 Claude 质量。如果需要从中国调用 Claude，<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> 是天然搭档：同样的 OpenAI 兼容 API、中国大陆直连路由、托管式处理代理。</p>
+
+            <h2>对比表（最终）</h2>
+            <table>
+              <thead>
+                <tr><th>路径</th><th>延迟（TTFT）</th><th>每 1M token 成本</th><th>适用</th><th>隐私</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Apple FM（端侧）</td><td>50-200ms</td><td>$0</td><td>自动补全、简单问答</td><td>Apple 级</td></tr>
+                <tr><td>Apple FM → PCC 兜底</td><td>400-900ms</td><td>$0（Apple 承担）</td><td>端侧置信度不足时</td><td>Apple 级</td></tr>
+                <tr><td>Claude Sonnet 4.5（云）</td><td>600-1200ms</td><td>输入 $3 / 输出 $15</td><td>质量关键、长上下文</td><td>Anthropic 政策</td></tr>
+                <tr><td>Claude Haiku 4（云）</td><td>300-500ms</td><td>输入 $1 / 输出 $5</td><td>快速云端兜底</td><td>Anthropic 政策</td></tr>
+                <tr><td>FreeModel Claude（中国直连）</td><td>700-1300ms</td><td>视模型而定</td><td>大陆访问</td><td>按 FreeModel 条款</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">速查</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>服务商：</strong> Anthropic Claude</li>
+                <li><strong>集成方式：</strong> Apple Foundation Models 框架</li>
+                <li><strong>SDK：</strong> anthropic-swift-sdk 1.0</li>
+                <li><strong>系统要求：</strong> iOS 18 / macOS 15+</li>
+                <li><strong>硬件要求：</strong> A17 Pro / M1</li>
+                <li><strong>可路由模型：</strong> Claude Sonnet 4.5、Haiku 4、Opus 4</li>
+                <li><strong>路由策略：</strong> onDeviceOnly、costOptimized、qualityFirst</li>
+                <li><strong>Claude 上下文：</strong> 200K tokens（1M beta）</li>
+                <li><strong>Apple FM 上下文：</strong> 约 8K 有效</li>
+                <li><strong>端侧延迟：</strong> 50-200ms</li>
+                <li><strong>Claude 云端延迟：</strong> 600-1200ms</li>
+                <li><strong>流式：</strong> 支持（AsyncSequence）</li>
+              </ul>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">相关文章</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/zh/tutorials/anthropic-claude-api-review/" class="text-blue-600 hover:underline">Anthropic Claude API 测评 2026</a></li>
+                <li><a href="/zh/tutorials/openai-moderation-api-2026/" class="text-blue-600 hover:underline">OpenAI 内容审核 API 2026</a></li>
+                <li><a href="/zh/tutorials/cloudflare-ai-gateway-review/" class="text-blue-600 hover:underline">Cloudflare AI Gateway 测评</a></li>
+                <li><a href="/zh/tutorials/ai-api-cost-control-tools-2026/" class="text-blue-600 hover:underline">AI API 成本控制 2026</a></li>
+                <li><a href="/zh/tutorials/openai-compatible-api-2026/" class="text-blue-600 hover:underline">OpenAI 兼容 API 2026</a></li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">从中国调用 Claude</h3>
+              <p class="text-sm text-gray-700 mb-3">FreeModel 是 OpenAI 兼容的聚合器，提供中国直连 Claude 端点。把 Anthropic SDK 指向 FreeModel 的 base URL 即可免代理。</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+            </div>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">广告位</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

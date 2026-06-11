@@ -1,0 +1,344 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'siliconflow-api-review';
+const date = '2026-06-08';
+const locale = 'en';
+
+const enTitle = 'SiliconFlow API 2026: 100+ Models from ¥0.4/M';
+const enDescription = 'SiliconFlow (硅基流动) API review: 100+ open-source models, Qwen3.5/DeepSeek-R1/GLM-4 hosted in China, OpenAI-compatible API, pricing from ¥0.4/1M tokens.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is SiliconFlow's API really OpenAI-compatible, including function calling?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The chat-completions endpoint is fully compatible — the request and response shapes match OpenAI's. Function calling works, but tool-use guarantees are weaker: the model may emit malformed tool calls on long context windows. For high-stakes tool use, validate outputs with a schema parser." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does SiliconFlow pricing compare to running my own inference cluster?",
+      "acceptedAnswer": { "@type": "Answer", "text": "At under ~5M tokens/day, SiliconFlow is cheaper than a single A100 80GB instance (which costs ~¥7K/month retail in China). Above 50M tokens/day, dedicated inference on H800 or H100 becomes cost-competitive." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use SiliconFlow from outside China?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, but you will pay 300-500ms added latency and may need a mainland-China proxy for stable access. Most overseas teams use it only when they specifically need Qwen3.5 or Nex-N2-Pro." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does SiliconFlow have a free tier that's actually usable?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — the current signup promo gives ¥1-200 in credits depending on the campaign. ¥100 is enough for ~50M tokens on Qwen2.5-7B, which is workable for prototyping but not for production." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Nex-N2-Pro, and why should I care?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Nex-N2-Pro is a 397B MoE reasoning model built on Qwen3.5, first hosted on SiliconFlow on 2026-06-08. It targets GPT-5.5-level coding and math benchmark scores at one-third the input token price. Worth evaluating if your workload is reasoning-heavy." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does SiliconFlow compare to FreeModel for a China-direct aggregator setup?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Both are China-direct and OpenAI-compatible, but SiliconFlow has deeper model coverage (Qwen3.5/DeepSeek/GLM exclusive tier) while FreeModel bundles moderation routing for multi-vendor workflows. A common pattern is SiliconFlow as the primary provider plus FreeModel as the fallback for moderation and aggregation across multiple vendors — FreeModel can be signed up at freemodel.dev/invite/FRE-7a3b6220 for a managed multi-vendor setup." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does SiliconFlow keep training data from API requests?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Per the published privacy policy, request data is stored for 30 days for abuse monitoring and then deleted. The data is not used to train new models unless explicit opt-in is given." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">SiliconFlow API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">SiliconFlow API 2026: One-Stop LLM Hosting for Chinese Developers</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-08">June 8, 2026</time>
+              <span>•</span>
+              <span>SiliconFlow Review</span>
+              <span>•</span>
+              <span>About 10 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              When Qwen3.5 launched in May 2026 with the first 1M-token context window on an open-weights model, the question for most Chinese developers was not "can I run it?" — the question was "how do I call it without paying OpenAI prices or building my own inference cluster?" That question is what SiliconFlow was built to answer.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> SiliconFlow hosts 100+ open-source LLMs (Qwen3.5, DeepSeek-R1, GLM-4, Llama 3) on Chinese infrastructure with direct mainland access. OpenAI-compatible API means zero SDK rewriting. Pricing starts at ¥0.4/1M tokens — about 80% cheaper than OpenAI for the same volume. No GPT/Claude hosting, weaker tool-use guarantees, and overseas latency adds 300-500ms. For Chinese teams: it's the default choice. For overseas teams: use it only when you specifically need Qwen3.5 or Nex-N2-Pro.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>Introduction: Why a Chinese-First Aggregator Matters Now</h2>
+            <p>When Qwen3.5 launched in May 2026 with the first 1M-token context window on an open-weights model, the question for most Chinese developers was not "can I run it?" — the question was "how do I call it without paying OpenAI prices or building my own inference cluster?" That question is what SiliconFlow was built to answer.</p>
+            <p>SiliconFlow (硅基流动) started as a GPU cloud provider in 2022, then pivoted in late 2023 to focus exclusively on LLM inference. By 2026, the platform hosts more than 100 open-source models — including the full Qwen family, DeepSeek-R1, GLM-4.6, Llama 3.3 70B, and the freshly-released Nex-N2-Pro 397B MoE reasoning model — all behind an OpenAI-compatible REST API. The API is reachable from inside mainland China without a proxy, and the entry price of ¥0.4 per million tokens is roughly 80% lower than what OpenAI charges for GPT-4o-mini on the same volume.</p>
+            <p>The platform is not a perfect substitute for OpenAI or Anthropic — there is no GPT-5 or Claude 4.8 hosted there, and overseas developers will find the latency higher than calling US providers directly. But for any Chinese team that needs to call Qwen, DeepSeek, or GLM in production, SiliconFlow is currently the lowest-friction option. This review walks through the API surface, pricing, speed benchmarks, and the comparison with alternatives like FreeModel and OpenRouter.</p>
+
+            <h2>What SiliconFlow Actually Hosts</h2>
+            <p>The model catalog is large and growing fast. Three model families dominate the listing page:</p>
+            <ul>
+              <li><strong>Qwen series</strong>: Qwen3.5-Plus, Qwen2.5-72B-Instruct, Qwen2.5-Coder-32B-Instruct, plus smaller Qwen2.5-7B/14B variants for cost-sensitive workloads.</li>
+              <li><strong>DeepSeek series</strong>: DeepSeek-R1 (full 671B), DeepSeek-V3-0324, DeepSeek-Coder-V2, and DeepSeek-Chat.</li>
+              <li><strong>GLM series</strong>: GLM-4-Plus, GLM-4-9b-chat, GLM-4V (vision), plus the GLM-Reasoning line.</li>
+            </ul>
+            <p>Beyond those three, SiliconFlow also hosts Meta-Llama 3.3 70B, Mistral, Mixtral, BAAI/Aquila, and a growing list of community fine-tunes. The Nex-N2-Pro model — a 397B MoE reasoning model built on Qwen3.5 with claimed GPT-5.5 parity on coding and math — is a SiliconFlow exclusive as of June 2026. If you want to call it via API, this is currently the only place to do so.</p>
+            <p>The catalog is curated rather than completely open: every model is benchmarked by SiliconFlow before listing, and models that fail their internal accuracy threshold are pulled. This is why the model count (100+) is lower than OpenRouter's (300+) — quality gating is real.</p>
+
+            <h2>API Surface: OpenAI-Compatible, Plus Extras</h2>
+            <p>The main API endpoint follows the OpenAI <code>/v1/chat/completions</code> and <code>/v1/embeddings</code> shape. A request that works against <code>api.openai.com</code> will work against SiliconFlow's endpoint after swapping the base URL and key:</p>
+            <pre><code class="language-python">import requests
+response = requests.post(
+    "https://api.siliconflow.cn/v1/chat/completions",
+    headers=&#123;"Authorization": "Bearer YOUR_API_KEY"&#125;,
+    json=&#123;
+        "model": "Qwen/Qwen2.5-72B-Instruct",
+        "messages": [&#123;"role": "user", "content": "hi"&#125;],
+    &#125;,
+    timeout=30,
+)
+print(response.json()["choices"][0]["message"]["content"])</code></pre>
+            <p>This OpenAI compatibility means existing tools — LlamaIndex, LangChain, OpenAI's official Python SDK, even AutoGen — work against SiliconFlow with only a base URL change. No SDK swap required.</p>
+            <p>On top of the OpenAI shape, SiliconFlow adds a few China-specific endpoints:</p>
+            <ul>
+              <li><strong>Video generation</strong>: <code>Kwai-Kolors/Kolors-V1</code> and a small set of community models.</li>
+              <li><strong>Speech-to-text</strong>: CosyVoice and Paraformer, useful for voice assistant use cases.</li>
+              <li><strong>Image generation</strong>: Stable Diffusion 3, Kolors, plus SDXL variants.</li>
+              <li><strong>Reranker endpoint</strong>: <code>BAAI/bge-reranker-v2-m3</code> for production RAG pipelines.</li>
+            </ul>
+            <p>For most teams, the chat-completions endpoint is what they will use day-to-day.</p>
+
+            <h2>Pricing: How the Numbers Stack Up</h2>
+            <p>SiliconFlow's pricing is in RMB, not USD. The 2026-06-08 rate sheet for popular models:</p>
+            <table>
+              <thead>
+                <tr><th>Model</th><th>Input (per 1M tokens)</th><th>Output (per 1M tokens)</th><th>Notes</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Qwen2.5-7B-Instruct</td><td>¥0.4</td><td>¥0.4</td><td>Cheapest tier, suitable for bulk</td></tr>
+                <tr><td>Qwen2.5-Coder-32B-Instruct</td><td>¥1.0</td><td>¥1.0</td><td>Coding tasks</td></tr>
+                <tr><td>Qwen2.5-72B-Instruct</td><td>¥2.0</td><td>¥2.0</td><td>Default for production chat</td></tr>
+                <tr><td>Qwen3.5-Plus</td><td>¥4.0</td><td>¥12.0</td><td>Long-context flagship</td></tr>
+                <tr><td>DeepSeek-R1</td><td>¥4.0</td><td>¥16.0</td><td>Full 671B reasoning</td></tr>
+                <tr><td>DeepSeek-V3</td><td>¥2.0</td><td>¥8.0</td><td>Chat workhorse</td></tr>
+                <tr><td>GLM-4-9b-chat</td><td>¥1.0</td><td>¥1.0</td><td>Cheap mid-tier</td></tr>
+                <tr><td>Meta-Llama-3.3-70B-Instruct</td><td>¥2.0</td><td>¥2.0</td><td>Llama parity</td></tr>
+                <tr><td>Nex-N2-Pro</td><td>¥6.0</td><td>¥18.0</td><td>Newest, exclusive</td></tr>
+              </tbody>
+            </table>
+            <p>For comparison, OpenAI's GPT-4o-mini at $0.15/$0.60 per 1M tokens is roughly ¥1.10/¥4.40 at current rates. That means Qwen2.5-72B at ¥2.00/¥2.00 is comparable to GPT-4o-mini pricing — but with the bonus of no international payment friction for Chinese teams.</p>
+            <p>SiliconFlow also runs frequent promo top-ups (¥100-200 free credits for new accounts, plus bonus credits on recharge) that effectively drop the price further for small-to-mid volume users.</p>
+
+            <h2>Speed Benchmarks</h2>
+            <p>Latency claims vary by model and region. From SiliconFlow's own published benchmarks and independent measurements:</p>
+            <ul>
+              <li><strong>Qwen2.5-7B</strong>: ~85 tok/s, TTFT ~150ms (intra-China)</li>
+              <li><strong>Qwen2.5-72B</strong>: ~38 tok/s, TTFT ~280ms</li>
+              <li><strong>DeepSeek-R1 (671B)</strong>: ~22 tok/s, TTFT ~1.2s</li>
+              <li><strong>Meta-Llama-3.3-70B</strong>: ~42 tok/s, TTFT ~250ms</li>
+              <li><strong>Nex-N2-Pro (397B MoE)</strong>: ~28 tok/s, TTFT ~800ms</li>
+            </ul>
+            <p>These numbers are competitive with Groq and SambaNova on the smaller models, and noticeably slower than Groq on the larger ones. The trade-off is access — for Chinese developers, Groq requires a stable proxy and adds 200-400ms of network overhead. SiliconFlow's intra-China latency advantage more than compensates on the small/medium models.</p>
+
+            <h2>Reliability and Quotas</h2>
+            <p>The published rate limits are aggressive by 2026 standards:</p>
+            <ul>
+              <li><strong>Free tier</strong>: 100 RPM, 10K TPM (per minute)</li>
+              <li><strong>Paid (¥100+ recharge)</strong>: 500 RPM, 100K TPM</li>
+              <li><strong>Enterprise (sales-channel)</strong>: custom limits, dedicated inference</li>
+            </ul>
+            <p>Uptime in 2026 has been consistently above 99.9% per the public status page, with the only major incident being a 6-hour partial outage on 2026-04-12 caused by an upstream Kubernetes upgrade.</p>
+
+            <h2>Pros and Cons</h2>
+            <p><strong>Pros</strong></p>
+            <ul>
+              <li>✅ Lowest-friction access to Qwen3.5/DeepSeek-R1/GLM-4 from inside China</li>
+              <li>✅ OpenAI-compatible API — no SDK rewrite</li>
+              <li>✅ ¥0.4/1M tokens entry price is hard to beat</li>
+              <li>✅ 100+ curated models, quality-gated</li>
+              <li>✅ Free tier (¥1-200 depending on promo) is generous enough for prototyping</li>
+              <li>✅ Embeddings + reranker + image + speech endpoints included</li>
+            </ul>
+            <p><strong>Cons</strong></p>
+            <ul>
+              <li>❌ No GPT-5, Claude 4.8, Gemini 2.5 hosting (Chinese-hosted only)</li>
+              <li>❌ Overseas developers face 300-500ms added latency</li>
+              <li>❌ Function calling works but lacks tool-use guarantees of OpenAI/Anthropic</li>
+              <li>❌ Newer models (Nex-N2-Pro) can be 5-10x more expensive than base tier</li>
+              <li>❌ No public roadmap or SOC2 certification listed at the API tier</li>
+            </ul>
+
+            <h2>Use Case Recommendations</h2>
+            <table>
+              <thead>
+                <tr><th>Use Case</th><th>Recommended Model on SiliconFlow</th><th>Why</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Chatbot for Chinese users</td><td>Qwen2.5-72B-Instruct</td><td>¥2/¥2, native Chinese, 72B quality</td></tr>
+                <tr><td>RAG with Chinese documents</td><td>Qwen2.5-72B + bge-reranker-v2-m3</td><td>Same provider, lower latency</td></tr>
+                <tr><td>Code generation (Chinese)</td><td>Qwen2.5-Coder-32B-Instruct</td><td>¥1/¥1, code-tuned</td></tr>
+                <tr><td>Long-context summarization</td><td>Qwen3.5-Plus</td><td>1M token context</td></tr>
+                <tr><td>Reasoning / math / logic</td><td>DeepSeek-R1 or Nex-N2-Pro</td><td>Full 671B or 397B MoE</td></tr>
+                <tr><td>Vision / image understanding</td><td>GLM-4V (vision) or Qwen-VL-Max</td><td>Native Chinese vision</td></tr>
+                <tr><td>Bulk embeddings</td><td>BAAI/bge-m3</td><td>¥0.4/1M, SOTA Chinese embeddings</td></tr>
+                <tr><td>Voice assistant</td><td>CosyVoice + Paraformer</td><td>One provider for STT + TTS</td></tr>
+              </tbody>
+            </table>
+
+            <h2>Comparison: SiliconFlow vs FreeModel vs OpenRouter</h2>
+            <table>
+              <thead>
+                <tr><th>Provider</th><th>Best For</th><th>China Access</th><th>Entry Price</th><th>Models</th><th>OpenAI-Compatible</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>SiliconFlow</strong></td><td>Chinese open-source models (Qwen/DeepSeek/GLM)</td><td>✅ Direct</td><td>¥0.4/1M tok</td><td>100+</td><td>✅</td></tr>
+                <tr><td><strong>FreeModel</strong></td><td>Multi-provider aggregator with built-in moderation routing</td><td>✅ Direct</td><td>Varies by model</td><td>50+</td><td>✅</td></tr>
+                <tr><td><strong>OpenRouter</strong></td><td>US/European teams wanting every model under one bill</td><td>❌ Proxy</td><td>$0.50/1M tok</td><td>300+</td><td>✅</td></tr>
+                <tr><td><strong>DeepSeek (official)</strong></td><td>Direct-from-vendor pricing</td><td>✅ Direct</td><td>¥1/1M tok</td><td>15+</td><td>✅</td></tr>
+                <tr><td><strong>Together AI</strong></td><td>US/EU production serving 200+ open-source</td><td>❌ Proxy</td><td>$0.18/1M tok</td><td>200+</td><td>✅</td></tr>
+              </tbody>
+            </table>
+            <p>For a Chinese team that needs Qwen, DeepSeek, or GLM with low latency, SiliconFlow is the default choice. For teams that also need GPT/Claude and prefer consolidated billing, OpenRouter is the answer despite the proxy overhead. FreeModel sits between these — it is also a China-direct aggregator, and pairs well with SiliconFlow as a secondary for moderation routing or model variants not on SiliconFlow yet.</p>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Is SiliconFlow's API really OpenAI-compatible, including function calling?</strong></p>
+            <p>A: The chat-completions endpoint is fully compatible — the request and response shapes match OpenAI's. Function calling works, but tool-use guarantees are weaker: the model may emit malformed tool calls on long context windows. For high-stakes tool use, validate outputs with a schema parser.</p>
+            <p><strong>Q: How does SiliconFlow pricing compare to running my own inference cluster?</strong></p>
+            <p>A: At under ~5M tokens/day, SiliconFlow is cheaper than a single A100 80GB instance (which costs ~¥7K/month retail in China). Above 50M tokens/day, dedicated inference on H800 or H100 becomes cost-competitive.</p>
+            <p><strong>Q: Can I use SiliconFlow from outside China?</strong></p>
+            <p>A: Yes, but you will pay 300-500ms added latency and may need a mainland-China proxy for stable access. Most overseas teams use it only when they specifically need Qwen3.5 or Nex-N2-Pro.</p>
+            <p><strong>Q: Does SiliconFlow have a free tier that's actually usable?</strong></p>
+            <p>A: Yes — the current signup promo gives ¥1-200 in credits depending on the campaign. ¥100 is enough for ~50M tokens on Qwen2.5-7B, which is workable for prototyping but not for production.</p>
+            <p><strong>Q: What is Nex-N2-Pro, and why should I care?</strong></p>
+            <p>A: Nex-N2-Pro is a 397B MoE reasoning model built on Qwen3.5, first hosted on SiliconFlow on 2026-06-08. It targets GPT-5.5-level coding and math benchmark scores at one-third the input token price. Worth evaluating if your workload is reasoning-heavy.</p>
+            <p><strong>Q: How does SiliconFlow compare to FreeModel for a China-direct aggregator setup?</strong></p>
+            <p>A: Both are China-direct and OpenAI-compatible, but SiliconFlow has deeper model coverage (Qwen3.5/DeepSeek/GLM exclusive tier) while FreeModel bundles moderation routing for multi-vendor workflows. A common pattern is SiliconFlow as the primary provider plus FreeModel as the fallback for moderation and aggregation across multiple vendors — FreeModel can be signed up at <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">freemodel.dev/invite/FRE-7a3b6220</a> for a managed multi-vendor setup.</p>
+            <p><strong>Q: Does SiliconFlow keep training data from API requests?</strong></p>
+            <p>A: Per the published privacy policy, request data is stored for 30 days for abuse monitoring and then deleted. The data is not used to train new models unless explicit opt-in is given.</p>
+
+            <h2>Conclusion</h2>
+            <p>For Chinese developers building production systems on Qwen, DeepSeek, or GLM, SiliconFlow is the most direct path. The OpenAI-compatible API removes integration friction, the ¥0.4/1M tokens entry price is hard to beat, and the model catalog is broad enough that you can usually run your entire stack on one provider. The downsides — no GPT/Claude hosting, weaker tool-use guarantees, lower throughput on 400B+ models — are real, but for the target use cases (Chinese-language chatbots, RAG on Chinese docs, bulk embeddings) they are not blockers.</p>
+            <p>The decision tree for picking a provider in 2026:</p>
+            <ul>
+              <li>Need Qwen3.5/DeepSeek-R1/GLM-4 with low latency from inside China → <strong>SiliconFlow</strong></li>
+              <li>Need GPT-5/Claude 4.8/Gemini 2.5 also, consolidated billing → <strong>OpenRouter</strong></li>
+              <li>Need a China-direct aggregator with built-in moderation routing and multi-vendor fallback → <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a></li>
+              <li>Need Llama 3.3 70B at 2,000+ tok/s and don't need Chinese → <strong>Cerebras or Groq</strong></li>
+            </ul>
+            <p>If your team is already deploying on SiliconFlow and wants a backup provider for moderation routing or to call OpenAI/Anthropic from China, <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> is the natural pair — same China-direct setup, OpenAI-compatible, and bundles moderation routing across multiple vendors so a single integration covers both China-direct and overseas model access.</p>
+
+            <h2>Comparison Table (Final)</h2>
+            <table>
+              <thead>
+                <tr><th>Provider</th><th>Pricing Model</th><th>Best For</th><th>China Access</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>SiliconFlow</strong></td><td>¥0.4-2/1M tok input, ¥0.4-2/1M tok output</td><td>Chinese open-source model access (Qwen/DeepSeek/GLM)</td><td>✅ Direct</td></tr>
+                <tr><td><strong>FreeModel</strong></td><td>Varies by model</td><td>Multi-provider aggregation with moderation routing</td><td>✅ Direct</td></tr>
+                <tr><td><strong>OpenRouter</strong></td><td>$0.50/1M tok (varies)</td><td>All-models-under-one-bill for US/EU</td><td>❌ Proxy</td></tr>
+                <tr><td><strong>DeepSeek (official)</strong></td><td>¥1/1M tok input, ¥2/1M tok output</td><td>DeepSeek-only direct from vendor</td><td>✅ Direct</td></tr>
+                <tr><td><strong>Together AI</strong></td><td>$0.18-0.88/1M tok</td><td>200+ open-source models, US/EU serving</td><td>❌ Proxy</td></tr>
+                <tr><td><strong>SambaNova</strong></td><td>$0.30-$3.00/1M tok</td><td>405B / R1 frontier at dataflow speed</td><td>❌ Proxy</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Provider:</strong> SiliconFlow (硅基流动)</li>
+                <li><strong>Launched:</strong> 2022 (GPU cloud), 2023-pivot to LLM</li>
+                <li><strong>Models:</strong> 100+ open-source</li>
+                <li><strong>Entry price:</strong> ¥0.4/1M tokens</li>
+                <li><strong>API compatibility:</strong> OpenAI-shaped</li>
+                <li><strong>China access:</strong> ✅ Direct</li>
+                <li><strong>Free tier:</strong> ¥1-200 credits (promo)</li>
+                <li><strong>Flagship:</strong> Nex-N2-Pro (397B MoE, exclusive)</li>
+                <li><strong>Rate limits:</strong> 100 RPM free, 500 RPM paid</li>
+                <li><strong>Uptime 2026:</strong> 99.9%+</li>
+              </ul>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/openai-compatible-api-2026/" class="text-blue-600 hover:underline">OpenAI-Compatible API 2026</a></li>
+                <li><a href="/tutorials/ai-api-free-tiers-2026/" class="text-blue-600 hover:underline">AI API Free Tiers 2026</a></li>
+                <li><a href="/tutorials/ai-api-speed-benchmarks-2026/" class="text-blue-600 hover:underline">AI API Speed Benchmarks 2026</a></li>
+                <li><a href="/tutorials/cheapest-llm-api-pricing-2026/" class="text-blue-600 hover:underline">Cheapest LLM API Pricing 2026</a></li>
+                <li><a href="/tutorials/cloudflare-ai-gateway-review/" class="text-blue-600 hover:underline">Cloudflare AI Gateway Review</a></li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Try FreeModel alongside</h3>
+              <p class="text-sm text-gray-700 mb-3">OpenAI-compatible aggregator with built-in moderation routing for multi-vendor setups. China-direct, free tier available.</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+            </div>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">Advertisement</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

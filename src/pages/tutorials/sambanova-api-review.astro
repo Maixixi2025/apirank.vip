@@ -1,0 +1,354 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'sambanova-api-review';
+const date = '2026-06-07';
+const locale = 'en';
+
+const enTitle = 'SambaNova API 2026: SN40L Dataflow + Llama 405B';
+const enDescription = 'SambaNova Cloud API review: SN40L Reconfigurable Dataflow Unit at 1,000+ tok/s, exclusive Llama 3.1 405B hosting, DeepSeek-R1 full, OpenAI API compatible.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is SambaNova Cloud actually faster than GPU-based alternatives?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, but not the fastest. On Llama 3.3 70B, SambaNova delivers 600+ tok/s vs. 120 tok/s on Together AI (A100) and 80 tok/s on Replicate (A10G). The SN40L dataflow architecture keeps model weights on-chip, avoiding the HBM-fetch bottleneck that limits GPU inference. Cerebras is faster on raw token throughput (2,000+ tok/s) but SambaNova is the only option for Llama 3.1 405B at sub-second TTFT." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does SambaNova pricing compare to GPT-4o?",
+      "acceptedAnswer": { "@type": "Answer", "text": "SambaNova running Llama 3.3 70B costs $0.30/M input + $0.70/M output (combined ~$1.00/M for balanced usage). OpenAI GPT-4o costs $2.50/M input + $10.00/M output. For typical workloads with equal input and output, SambaNova is roughly 10-12x cheaper while offering comparable or better quality on coding and reasoning tasks. For Llama 3.1 405B, SambaNova charges $3.00/M in + $5.00/M out — still significantly cheaper than GPT-4o for tasks that need 405B-class capability." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use SambaNova Cloud from China?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Not directly. SambaNova infrastructure is hosted in the US. Developers in mainland China need a stable overseas proxy or VPN. For China-direct access, consider DeepSeek or Alibaba Cloud (Bailian), both of which operate China-region deployments." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does SambaNova Cloud support function calling and tool use?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — native support for OpenAI-style function calling, tool definitions, and structured output (JSON mode). This makes SambaNova a drop-in replacement for agentic workloads originally built for GPT-4o. Llama 3.3 70B and Llama 3.1 405B both have strong tool-calling capabilities, performing comparably to GPT-4o on the Berkeley Function Calling Leaderboard." }
+    },
+    {
+      "@type": "Question",
+      "name": "What models are available on SambaNova Cloud?",
+      "acceptedAnswer": { "@type": "Answer", "text": "As of June 2026, SambaNova Cloud hosts Meta-Llama-3.3-70B-Instruct, Meta-Llama-3.1-8B/70B/405B-Instruct, DeepSeek-R1 (full 671B), DeepSeek-V3-0324, Qwen2.5-72B-Instruct, Qwen2.5-Coder-32B-Instruct, and sambanova-1 (proprietary, in private preview). The catalog focuses on frontier-size models where the SN40L dataflow advantage is largest. For embeddings, image generation, or audio, you will need a complementary provider." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does SambaNova offer dedicated endpoints or SLAs?",
+      "acceptedAnswer": { "@type": "Answer", "text": "SambaNova Cloud currently offers shared inference pools with always-hot instances. Dedicated endpoint support is in development. For production workloads, the shared pool has been reliable with consistent sub-second latency, but there is no formal SLA guarantee yet. Enterprise customers with SLA requirements should contact SambaNova directly for DataScale on-premises deployment, which includes formal uptime guarantees." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between SambaNova Cloud and SambaNova DataScale?",
+      "acceptedAnswer": { "@type": "Answer", "text": "SambaNova Cloud is the public API hosted in SambaNova data centers — pay per token, scale elastically, no infrastructure management. DataScale is the on-premises hardware system (8-16 SN40L SambaNodes in a rack) sold to enterprises for private deployment. DataScale is required for government, healthcare, and finance customers who cannot send data to public clouds. Pricing for DataScale goes through SambaNova sales team and is not published." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/en" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">SambaNova API Review</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">SambaNova API 2026: SN40L Dataflow Speed Meets Llama 405B</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-07">June 7, 2026</time>
+              <span>•</span>
+              <span>API Review</span>
+              <span>•</span>
+              <span>~11 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              SambaNova Cloud API review: SN40L Reconfigurable Dataflow Unit at 1,000+ tok/s, exclusive Llama 3.1 405B hosting, DeepSeek-R1 full 671B, OpenAI API compatible. Compared to Cerebras, Groq, and Together AI.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> SambaNova Cloud runs Llama 3.1 8B at 1,200+ tok/s and Llama 3.3 70B at 600+ tok/s on the SN40L Reconfigurable Dataflow Unit. It is the only cloud provider hosting full Llama 3.1 405B and full DeepSeek-R1 671B at sub-second time-to-first-token and per-token pricing. OpenAI API compatible, $5 free credits, native function calling. Best for frontier-size model serving (405B, R1), long-context workloads, and on-prem DataScale deployment. Trade-offs: limited model selection (~9 models), no China region, no cache discount pricing, no embeddings or image gen.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>Introduction: The Dataflow Alternative to GPUs and LPUs</h2>
+            <p>SambaNova Systems was founded in 2017 by a Stanford professor and two of his former PhD students — Kunle Olukotun, Chris Ré, and Rodrigo Liang. The trio saw a problem coming: as language models grew from billions to hundreds of billions of parameters, the GPU-centric approach to inference would hit a wall. Memory bandwidth, not compute, would become the bottleneck. The fix, they argued, was not to build a better GPU. It was to abandon the von Neumann architecture entirely.</p>
+            <p>The result is the <strong>Reconfigurable Dataflow Unit (RDU)</strong>, a chip designed from the ground up for the way transformer models actually move data. Unlike GPUs (which fetch weights from HBM every forward pass) or Groq's LPU (which streams weights deterministically from SRAM), the RDU is <strong>reconfigured per model</strong> — the dataflow graph is compiled into the silicon itself, and weights stay in on-chip memory the entire time the model is running. The third-generation chip, the SN40L, sits on a board called the SN40L-8, eight of which are packed into a 19-inch rack unit to form a SambaNode.</p>
+            <p>The performance numbers from the SN40L are striking. On Llama 3.1 8B, SambaNova publishes benchmarks of over 1,000 tokens per second per user — about 2-3x Groq's LPU and 10x typical GPU deployments. On Llama 3.1 405B, the only cloud provider offering the full 405-billion-parameter model with sub-second time-to-first-token is SambaNova, because the model fits in the memory of a single SambaNode (1.5 TB of on-chip SRAM across the eight RDUs). For DeepSeek-R1 (671B parameters), SambaNova's dataflow approach keeps the model warm on-chip and avoids the swap-to-disk penalties that GPU clusters face.</p>
+            <p>In 2024, SambaNova opened up this infrastructure as the <strong>SambaNova Cloud</strong> API — an OpenAI-compatible endpoint that lets any developer call Llama 3.1 405B, DeepSeek-R1, and other frontier models at dataflow speed. The pricing is competitive with Groq and Cerebras, the API surface is familiar, and the platform supports streaming, function calling, and JSON mode out of the box. This review covers the SN40L architecture, the SambaNova Cloud pricing, the model catalog (including the exclusive 405B and R1 hosting), and how SambaNova compares to Cerebras, Groq, and Together AI for the workloads where inference speed is the binding constraint.</p>
+
+            <h2>SambaNova Cloud Pricing</h2>
+            <p>SambaNova Cloud uses standard per-token input and output pricing, the same model OpenAI and Groq use. Unlike Cerebras (which charges a flat combined rate), SambaNova's pricing reflects the actual cost asymmetry between input (prefill) and output (decode) compute.</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Model</th><th class="px-3 py-2 text-left">Input ($/M tok)</th><th class="px-3 py-2 text-left">Output ($/M tok)</th><th class="px-3 py-2 text-left">Speed (tok/s)</th><th class="px-3 py-2 text-left">Notes</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Meta-Llama-3.1-8B-Instruct</td><td class="px-3 py-2 border-b">$0.10</td><td class="px-3 py-2 border-b">$0.20</td><td class="px-3 py-2 border-b">1,200+</td><td class="px-3 py-2 border-b">Fastest 8B in cloud</td></tr>
+                <tr><td class="px-3 py-2 border-b">Meta-Llama-3.3-70B-Instruct</td><td class="px-3 py-2 border-b">$0.30</td><td class="px-3 py-2 border-b">$0.70</td><td class="px-3 py-2 border-b">600+</td><td class="px-3 py-2 border-b">Balanced quality/speed</td></tr>
+                <tr><td class="px-3 py-2 border-b">Meta-Llama-3.1-70B-Instruct</td><td class="px-3 py-2 border-b">$0.30</td><td class="px-3 py-2 border-b">$0.60</td><td class="px-3 py-2 border-b">600+</td><td class="px-3 py-2 border-b">Stable 70B option</td></tr>
+                <tr><td class="px-3 py-2 border-b">Meta-Llama-3.1-405B-Instruct</td><td class="px-3 py-2 border-b">$3.00</td><td class="px-3 py-2 border-b">$5.00</td><td class="px-3 py-2 border-b">100+</td><td class="px-3 py-2 border-b">Exclusive full 405B host</td></tr>
+                <tr><td class="px-3 py-2 border-b">DeepSeek-R1 (671B)</td><td class="px-3 py-2 border-b">$3.00</td><td class="px-3 py-2 border-b">$5.00</td><td class="px-3 py-2 border-b">80+</td><td class="px-3 py-2 border-b">Full 671B reasoning model</td></tr>
+                <tr><td class="px-3 py-2 border-b">Qwen2.5-72B-Instruct</td><td class="px-3 py-2 border-b">$0.30</td><td class="px-3 py-2 border-b">$0.60</td><td class="px-3 py-2 border-b">550+</td><td class="px-3 py-2 border-b">Strong coding / Chinese</td></tr>
+                <tr><td class="px-3 py-2 border-b">Qwen2.5-Coder-32B-Instruct</td><td class="px-3 py-2 border-b">$0.15</td><td class="px-3 py-2 border-b">$0.30</td><td class="px-3 py-2 border-b">800+</td><td class="px-3 py-2 border-b">Code-specialized</td></tr>
+              </tbody>
+            </table>
+            <p class="text-sm text-gray-500 mt-2">*SambaNova publishes no soft rate limits. The $5 free credits work against the entire model catalog without a separate tier.</p>
+
+            <h3>Free Tier</h3>
+            <p>SambaNova Cloud offers <strong>$5 in free credits</strong> on signup, with no credit card required for the initial trial. This is enough to process roughly 10 million tokens on Llama 3.1 8B (at $0.30/M combined) — a meaningful amount for evaluating the platform on real workloads. After the trial, you top up with prepaid credits in $10 increments. There is no monthly subscription or minimum commitment.</p>
+
+            <h3>How Much Can You Get for $100?</h3>
+            <p>At $1.00/M tokens combined for Llama 3.3 70B, $100 buys approximately <strong>100 million tokens</strong> of combined input + output. In practical terms:</p>
+            <ul>
+              <li>~5,000 long-form conversations (10K input + 10K output each)</li>
+              <li>~200,000 API calls with 500 tokens each</li>
+              <li>~33 hours of continuous streaming at typical assistant response rates</li>
+            </ul>
+            <p>For the larger models, $100 on Llama 3.1 405B ($4.00/M combined) gets you 25 million tokens — enough for ~1,200 long-form conversations or 50,000 mid-sized API calls. This makes SambaNova Cloud one of the most cost-effective ways to run the full 405B model, especially compared to self-hosting (which requires 8x H100 GPUs at minimum, plus hosting and power).</p>
+
+            <h2>Speed Benchmark: SambaNova vs. Cerebras, Groq, Together AI</h2>
+            <p>The SN40L's dataflow architecture delivers a different kind of speed than the alternatives. Where Cerebras's WSE-3 wins on raw token throughput (because the entire model is on one wafer), and Groq's LPU wins on low latency for short prompts, SambaNova's RDU wins on <strong>throughput per user</strong> for long-context workloads.</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Provider</th><th class="px-3 py-2 text-left">Llama 3.3 70B Speed</th><th class="px-3 py-2 text-left">Llama 3.1 8B Speed</th><th class="px-3 py-2 text-left">First-Token Latency</th><th class="px-3 py-2 text-left">Hardware</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b font-semibold">SambaNova (SN40L)</td><td class="px-3 py-2 border-b">600+ tok/s</td><td class="px-3 py-2 border-b">1,200+ tok/s</td><td class="px-3 py-2 border-b">under 150ms</td><td class="px-3 py-2 border-b">Reconfigurable Dataflow Unit</td></tr>
+                <tr><td class="px-3 py-2 border-b">Cerebras (WSE-3)</td><td class="px-3 py-2 border-b">2,000+ tok/s</td><td class="px-3 py-2 border-b">4,500+ tok/s</td><td class="px-3 py-2 border-b">under 200ms</td><td class="px-3 py-2 border-b">Wafer-Scale Engine</td></tr>
+                <tr><td class="px-3 py-2 border-b">Groq (LPU)</td><td class="px-3 py-2 border-b">450 tok/s</td><td class="px-3 py-2 border-b">900 tok/s</td><td class="px-3 py-2 border-b">under 300ms</td><td class="px-3 py-2 border-b">Language Processing Unit</td></tr>
+                <tr><td class="px-3 py-2 border-b">Together AI (A100)</td><td class="px-3 py-2 border-b">120 tok/s</td><td class="px-3 py-2 border-b">280 tok/s</td><td class="px-3 py-2 border-b">under 1s</td><td class="px-3 py-2 border-b">NVIDIA A100</td></tr>
+                <tr><td class="px-3 py-2 border-b">Replicate (A10G)</td><td class="px-3 py-2 border-b">80 tok/s</td><td class="px-3 py-2 border-b">200 tok/s</td><td class="px-3 py-2 border-b">5-15s cold</td><td class="px-3 py-2 border-b">NVIDIA A10G</td></tr>
+              </tbody>
+            </table>
+            <p>SambaNova sits in the second tier of speed players, behind Cerebras on raw throughput but ahead of Groq on Llama 3.1 8B and well ahead of any GPU-based provider. The platform's real edge is the 405B hosting — neither Cerebras nor Groq offers the full 405B model with comparable latency. Self-hosting 405B on 8x H100 clusters gets you 30-50 tok/s at best.</p>
+
+            <h3>What Does 1,200 tok/s Feel Like?</h3>
+            <p>On Llama 3.1 8B, a 500-token response appears in <strong>under 420 milliseconds</strong> — effectively instant to a human reader. A 4,000-token code review completes in roughly 3.3 seconds. This opens up use cases that are awkward with slower inference: real-time code completion in IDEs, interactive document drafting, and conversational agents that can generate multi-paragraph responses without any typing delay.</p>
+
+            <h2>Key Advantages of SambaNova Cloud</h2>
+            <ul>
+              <li><strong>Exclusive 405B hosting</strong>: SambaNova is the only cloud provider offering Llama 3.1 405B-Instruct at sub-second latency and per-token pricing. The full model fits in 1.5 TB of on-chip SRAM across eight SN40L RDUs in a single SambaNode — no model sharding, no GPU cluster orchestration.</li>
+              <li><strong>DeepSeek-R1 with full 671B parameters</strong>: Most "DeepSeek-R1" cloud offerings route to a distilled version (1.5B to 70B). SambaNova Cloud runs the full 671B model, including the chain-of-thought reasoning, on the SN40L — at 80+ tok/s with sub-second time-to-first-token.</li>
+              <li><strong>Dataflow efficiency</strong>: The RDU's compiled dataflow graph eliminates the weight-fetch bottleneck. For workloads with long context windows (10K-100K input tokens), SambaNova's prefill speed is 5-10x faster than equivalent GPU deployments, because the model weights stay on-chip and do not need to be re-streamed from HBM for every prompt.</li>
+              <li><strong>OpenAI API compatibility</strong>: Drop-in replacement for OpenAI's Chat Completions API. Uses the same request/response format, supports streaming, function calling, JSON mode, and the system/user/assistant message structure. Migration requires changing the base URL and API key.</li>
+              <li><strong>Energy efficiency</strong>: Per published benchmarks, the SN40L delivers 5-10x better tokens-per-joule than equivalent GPU clusters. For enterprises with sustainability targets or high power costs, this is a meaningful differentiator at scale.</li>
+              <li><strong>No rate limit noise</strong>: SambaNova Cloud publishes no soft rate limits. You pay for what you use, throughput scales with your prepaid balance. No 429 errors or quota surprises during traffic spikes.</li>
+              <li><strong>Private deployment option</strong>: Beyond the cloud, SambaNova sells the DataScale system (8-16 SN40L SambaNodes in a rack) for on-premises deployment. This is the option for government, healthcare, and finance customers who cannot send data to public clouds.</li>
+            </ul>
+
+            <h2>Limitations to Consider</h2>
+            <ul>
+              <li><strong>China access requires proxy</strong>: SambaNova Cloud is hosted in the US. There is no China-region deployment or CDN edge. Developers in mainland China need a stable overseas proxy or VPN. For China-direct access, DeepSeek or Alibaba Cloud (Bailian) are better options.</li>
+              <li><strong>Limited model selection</strong>: SambaNova Cloud focuses on the most strategic models: Llama family, DeepSeek family, Qwen family, and the upcoming sambanova-1. You will not find Mixtral, Phi-3, Gemma, BGE embeddings, or Stable Diffusion. If your pipeline requires multiple model types, you will need a secondary provider.</li>
+              <li><strong>No cache-aware pricing</strong>: OpenAI, Anthropic, DeepSeek, and Google offer reduced rates for cached input tokens (50-90% off). SambaNova does not have this feature yet, so repeated prompt prefixes are billed at full price.</li>
+              <li><strong>No embeddings or image generation</strong>: SambaNova is a pure text-in/text-out inference engine. It does not support text embeddings, image generation, audio processing, or speech-to-text. You will need a complementary provider for multimodal pipelines.</li>
+              <li><strong>Enterprise pricing opaque</strong>: Cloud pricing is transparent per token. Enterprise pricing for DataScale on-prem systems and high-volume cloud contracts goes through SambaNova's sales team — no public rate sheet, no self-serve quote.</li>
+              <li><strong>Newer entrant</strong>: SambaNova Cloud launched in 2024. The model catalog, developer tools, and ecosystem integrations are still maturing. Cerebras, Groq, and Together AI have more mature tooling (LangChain, LlamaIndex, vLLM compatibility).</li>
+            </ul>
+
+            <h2>SambaNova vs. Cerebras vs. Groq vs. Together AI vs. Replicate</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Factor</th><th class="px-3 py-2 text-left">SambaNova</th><th class="px-3 py-2 text-left">Cerebras</th><th class="px-3 py-2 text-left">Groq</th><th class="px-3 py-2 text-left">Together AI</th><th class="px-3 py-2 text-left">Replicate</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Hardware</td><td class="px-3 py-2 border-b">SN40L RDU</td><td class="px-3 py-2 border-b">WSE-3 wafer</td><td class="px-3 py-2 border-b">LPU</td><td class="px-3 py-2 border-b">A100/H100</td><td class="px-3 py-2 border-b">A10G/H100</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.3 70B Speed</td><td class="px-3 py-2 border-b">600+ tok/s</td><td class="px-3 py-2 border-b">2,000+ tok/s</td><td class="px-3 py-2 border-b">450 tok/s</td><td class="px-3 py-2 border-b">120 tok/s</td><td class="px-3 py-2 border-b">80 tok/s</td></tr>
+                <tr><td class="px-3 py-2 border-b">Llama 3.1 8B Speed</td><td class="px-3 py-2 border-b">1,200+ tok/s</td><td class="px-3 py-2 border-b">4,500+ tok/s</td><td class="px-3 py-2 border-b">900 tok/s</td><td class="px-3 py-2 border-b">280 tok/s</td><td class="px-3 py-2 border-b">200 tok/s</td></tr>
+                <tr><td class="px-3 py-2 border-b">405B support</td><td class="px-3 py-2 border-b">✅ Exclusive</td><td class="px-3 py-2 border-b">❌ No</td><td class="px-3 py-2 border-b">❌ No</td><td class="px-3 py-2 border-b">✅ Hosted, slower</td><td class="px-3 py-2 border-b">❌ No</td></tr>
+                <tr><td class="px-3 py-2 border-b">DeepSeek-R1 full</td><td class="px-3 py-2 border-b">✅ 671B</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">✅ Hosted</td><td class="px-3 py-2 border-b">❌</td></tr>
+                <tr><td class="px-3 py-2 border-b">Pricing (70B, $/M tok)</td><td class="px-3 py-2 border-b">$0.30 in + $0.70 out</td><td class="px-3 py-2 border-b">$0.60 (combined)</td><td class="px-3 py-2 border-b">$0.79 in + $0.99 out</td><td class="px-3 py-2 border-b">$0.59 in + $0.79 out</td><td class="px-3 py-2 border-b">~$1.20/M</td></tr>
+                <tr><td class="px-3 py-2 border-b">Model diversity</td><td class="px-3 py-2 border-b">~9 curated</td><td class="px-3 py-2 border-b">~6 LLMs</td><td class="px-3 py-2 border-b">~20 models</td><td class="px-3 py-2 border-b">200+ models</td><td class="px-3 py-2 border-b">10K+ models</td></tr>
+                <tr><td class="px-3 py-2 border-b">Function calling</td><td class="px-3 py-2 border-b">✅ Native</td><td class="px-3 py-2 border-b">✅ Native</td><td class="px-3 py-2 border-b">✅ Native</td><td class="px-3 py-2 border-b">✅ Native</td><td class="px-3 py-2 border-b">❌ Limited</td></tr>
+                <tr><td class="px-3 py-2 border-b">Embeddings</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">❌</td><td class="px-3 py-2 border-b">✅ Multiple</td><td class="px-3 py-2 border-b">✅ Many</td></tr>
+                <tr><td class="px-3 py-2 border-b">Free tier</td><td class="px-3 py-2 border-b">$5 credits</td><td class="px-3 py-2 border-b">$5 credits</td><td class="px-3 py-2 border-b">❌ No</td><td class="px-3 py-2 border-b">$5 credits</td><td class="px-3 py-2 border-b">$5 credits</td></tr>
+                <tr><td class="px-3 py-2 border-b">China access</td><td class="px-3 py-2 border-b">❌ Proxy required</td><td class="px-3 py-2 border-b">❌ Proxy required</td><td class="px-3 py-2 border-b">❌ Proxy required</td><td class="px-3 py-2 border-b">❌ Proxy required</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">Best for</td><td class="px-3 py-2 border-b">405B / R1 hosting</td><td class="px-3 py-2 border-b">Ultra-fast text serving</td><td class="px-3 py-2 border-b">Fast text serving</td><td class="px-3 py-2 border-b">Production multi-model</td><td class="px-3 py-2 border-b">Model experimentation</td></tr>
+              </tbody>
+            </table>
+
+            <h3>When to Choose SambaNova</h3>
+            <p>SambaNova Cloud is the right pick when you need <strong>frontier-size models at speed</strong>:</p>
+            <ul>
+              <li><strong>Llama 3.1 405B production serving</strong> — the only cloud provider with sub-second TTFT on the full 405B model</li>
+              <li><strong>DeepSeek-R1 reasoning</strong> — full 671B chain-of-thought, not a distilled smaller model</li>
+              <li><strong>Long-context workloads</strong> — 10K-100K input prompts where GPU prefill becomes a bottleneck</li>
+              <li><strong>Energy-conscious enterprises</strong> — 5-10x better tokens-per-joule than GPU clusters</li>
+              <li><strong>Hybrid cloud + on-prem</strong> — same SN40L hardware runs in SambaNova Cloud or on-premises as DataScale</li>
+              <li><strong>Government / regulated industries</strong> — DataScale on-prem deployment for FedRAMP, IL5, or HIPAA workloads</li>
+            </ul>
+            <p>If you need model diversity (embeddings, image gen, audio), Together AI or Hugging Face offer broader catalogs. If you need raw speed on 8B/70B models, Cerebras is faster. If you need free-tier speed testing without credit card, Groq is no longer free (free tier removed in 2025). For pure text-based LLM serving where frontier model size matters, SambaNova is the only practical option in 2026.</p>
+
+            <h2>Use Case Recommendations</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Use Case</th><th class="px-3 py-2 text-left">Recommended</th><th class="px-3 py-2 text-left">Why</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Llama 3.1 405B production serving</td><td class="px-3 py-2 border-b font-semibold">SambaNova (SN40L)</td><td class="px-3 py-2 border-b">Only cloud with sub-second 405B TTFT at per-token pricing</td></tr>
+                <tr><td class="px-3 py-2 border-b">DeepSeek-R1 with full reasoning</td><td class="px-3 py-2 border-b font-semibold">SambaNova (SN40L)</td><td class="px-3 py-2 border-b">Full 671B R1, not distilled; 80+ tok/s with reasoning traces</td></tr>
+                <tr><td class="px-3 py-2 border-b">Real-time customer support chatbot</td><td class="px-3 py-2 border-b">Cerebras (Llama 3.3 70B)</td><td class="px-3 py-2 border-b">2,000 tok/s = instant answers, lower per-token cost</td></tr>
+                <tr><td class="px-3 py-2 border-b">Code completion in IDE</td><td class="px-3 py-2 border-b font-semibold">SambaNova (Qwen2.5-Coder-32B)</td><td class="px-3 py-2 border-b">800+ tok/s on a code-specialized 32B; better than 8B for completions</td></tr>
+                <tr><td class="px-3 py-2 border-b">Long-context document Q&A (50K+ tokens)</td><td class="px-3 py-2 border-b font-semibold">SambaNova (Llama 3.1 70B)</td><td class="px-3 py-2 border-b">On-chip weights = no HBM re-fetch penalty for long prefill</td></tr>
+                <tr><td class="px-3 py-2 border-b">Production LLM serving at scale</td><td class="px-3 py-2 border-b font-semibold">SambaNova or Cerebras</td><td class="px-3 py-2 border-b">SambaNova for 405B, Cerebras for 70B and below</td></tr>
+                <tr><td class="px-3 py-2 border-b">Multi-model experimentation</td><td class="px-3 py-2 border-b">Together AI or Replicate</td><td class="px-3 py-2 border-b">More models to compare side-by-side</td></tr>
+                <tr><td class="px-3 py-2 border-b">Embedding pipeline (RAG)</td><td class="px-3 py-2 border-b">Hugging Face or OpenAI</td><td class="px-3 py-2 border-b">SambaNova does not support embeddings</td></tr>
+                <tr><td class="px-3 py-2 border-b">Image generation</td><td class="px-3 py-2 border-b">Replicate (FLUX, SDXL)</td><td class="px-3 py-2 border-b">SambaNova is text-only</td></tr>
+                <tr><td class="px-3 py-2 border-b">Energy-constrained on-prem</td><td class="px-3 py-2 border-b font-semibold">SambaNova DataScale</td><td class="px-3 py-2 border-b">5-10x better tokens-per-joule than GPU racks</td></tr>
+              </tbody>
+            </table>
+
+            <h2>How to Get Started with SambaNova Cloud</h2>
+            <ol>
+              <li><strong>Sign up</strong>: Visit <a href="https://cloud.sambanova.ai" class="text-blue-600 hover:underline">cloud.sambanova.ai</a> and create an account with email or Google OAuth.</li>
+              <li><strong>Get API key</strong>: Navigate to the API Keys section in your dashboard and generate a new key. You will receive $5 in free credits.</li>
+              <li><strong>Install SDK</strong>: SambaNova Cloud is OpenAI-compatible. Use the standard OpenAI Python SDK:
+                <pre><code class="language-python">from openai import OpenAI
+client = OpenAI(
+    api_key="your-sambanova-api-key",
+    base_url="https://api.sambanova.ai/v1"
+)</code></pre>
+              </li>
+              <li><strong>Pick a model</strong>: Start with <code>Meta-Llama-3.1-8B-Instruct</code> for cheap experimentation, then move to <code>Meta-Llama-3.3-70B-Instruct</code> for production quality, and <code>Meta-Llama-3.1-405B-Instruct</code> when you need frontier capability.</li>
+              <li><strong>Send your first request</strong>: Use the standard Chat Completions format. All OpenAI features (streaming, function calling, response_format) work out of the box.</li>
+              <li><strong>Monitor usage</strong>: The SambaNova dashboard shows real-time token usage, latency breakdowns, and spend. Top up credits as needed.</li>
+            </ol>
+            <p>For on-prem DataScale systems (16+ SN40L SambaNodes in a rack), contact SambaNova's enterprise sales team. Lead time is typically 8-12 weeks for hardware delivery plus on-site installation.</p>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Is SambaNova Cloud actually faster than GPU-based alternatives?</strong></p>
+            <p>A: Yes, but not the fastest. On Llama 3.3 70B, SambaNova delivers 600+ tok/s vs. 120 tok/s on Together AI (A100) and 80 tok/s on Replicate (A10G). The SN40L's dataflow architecture keeps model weights on-chip, avoiding the HBM-fetch bottleneck that limits GPU inference. Internal benchmarks show 3-5x speedup over A100 and 5-10x speedup over A10G for typical workloads. Cerebras is faster on raw token throughput (2,000+ tok/s) but SambaNova is the only option for Llama 3.1 405B at sub-second TTFT.</p>
+
+            <p><strong>Q: How does SambaNova pricing compare to GPT-4o?</strong></p>
+            <p>A: SambaNova running Llama 3.3 70B costs $0.30/M input + $0.70/M output (combined ~$1.00/M for balanced usage). OpenAI GPT-4o costs $2.50/M input + $10.00/M output. For typical workloads with equal input and output, SambaNova is roughly 10-12x cheaper while offering comparable or better quality on coding and reasoning tasks. For Llama 3.1 405B, SambaNova charges $3.00/M in + $5.00/M out — still significantly cheaper than GPT-4o for tasks that need 405B-class capability.</p>
+
+            <p><strong>Q: Can I use SambaNova Cloud from China?</strong></p>
+            <p>A: Not directly. SambaNova infrastructure is hosted in the US. Developers in mainland China need a stable overseas proxy or VPN. Some developers access SambaNova through OpenAI-compatible API resellers that aggregate multiple backends, though this adds latency. For China-direct access, consider DeepSeek or Alibaba Cloud (Bailian), both of which operate China-region deployments.</p>
+
+            <p><strong>Q: Does SambaNova Cloud support function calling and tool use?</strong></p>
+            <p>A: Yes — native support for OpenAI-style function calling, tool definitions, and structured output (JSON mode). This makes SambaNova a drop-in replacement for agentic workloads originally built for GPT-4o. Llama 3.3 70B and Llama 3.1 405B both have strong tool-calling capabilities, performing comparably to GPT-4o on the Berkeley Function Calling Leaderboard.</p>
+
+            <p><strong>Q: What models are available on SambaNova Cloud?</strong></p>
+            <p>A: As of June 2026, SambaNova Cloud hosts Meta-Llama-3.3-70B-Instruct, Meta-Llama-3.1-8B/70B/405B-Instruct, DeepSeek-R1 (full 671B), DeepSeek-V3-0324, Qwen2.5-72B-Instruct, Qwen2.5-Coder-32B-Instruct, and sambanova-1 (proprietary, in private preview). The catalog focuses on frontier-size models where the SN40L's dataflow advantage is largest. For embeddings, image generation, or audio, you will need a complementary provider.</p>
+
+            <p><strong>Q: Does SambaNova offer dedicated endpoints or SLAs?</strong></p>
+            <p>A: SambaNova Cloud currently offers shared inference pools with always-hot instances. Dedicated endpoint support is in development. For production workloads, the shared pool has been reliable with consistent sub-second latency, but there is no formal SLA guarantee yet. Enterprise customers with SLA requirements should contact SambaNova directly for DataScale on-premises deployment, which includes formal uptime guarantees.</p>
+
+            <p><strong>Q: What is the difference between SambaNova Cloud and SambaNova DataScale?</strong></p>
+            <p>A: SambaNova Cloud is the public API hosted in SambaNova's data centers — pay per token, scale elastically, no infrastructure management. DataScale is the on-premises hardware system (8-16 SN40L SambaNodes in a rack) sold to enterprises for private deployment. DataScale is required for government, healthcare, and finance customers who cannot send data to public clouds. Pricing for DataScale goes through SambaNova's sales team and is not published.</p>
+
+            <h2>Conclusion</h2>
+            <p>SambaNova Cloud represents a different bet on the future of LLM inference. Where Cerebras bets on raw throughput, Groq bets on low latency, and Together AI bets on model diversity, SambaNova bets on <strong>frontier-size models at speed</strong>. The SN40L's dataflow architecture is uniquely capable of running Llama 3.1 405B and DeepSeek-R1 671B at sub-second time-to-first-token — workloads that no GPU cloud can match at per-token pricing.</p>
+            <p>The trade-offs are real: limited model selection (no embeddings, no image gen), no China-region deployment, no cache-aware pricing, and a newer platform with less mature tooling. For model experimentation or multimodal pipelines, Together AI or Replicate offer broader catalogs. For pure speed on 8B/70B text models, Cerebras is faster and cheaper.</p>
+            <p>But for the workloads where frontier model size is the binding constraint — production 405B serving, full DeepSeek-R1 reasoning, long-context document Q&A — SambaNova is the only practical cloud option in 2026. The $5 free trial is enough to run 10 million tokens on Llama 3.1 8B and evaluate whether dataflow inference fits your workload. For enterprises with on-prem requirements, DataScale delivers the same SN40L performance in your own data center.</p>
+            <p>If you are building with Llama 3.1 405B or DeepSeek-R1 and want responses to feel instantaneous, SambaNova is worth serious consideration. The combination of dataflow speed, exclusive frontier model hosting, and OpenAI API compatibility makes it the most differentiated inference platform in 2026.</p>
+
+            <h2>Comparison Table (Final)</h2>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Provider</th><th class="px-3 py-2 text-left">Pricing Model</th><th class="px-3 py-2 text-left">Best For</th><th class="px-3 py-2 text-left">China Access</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b font-semibold">SambaNova (SN40L)</td><td class="px-3 py-2 border-b">$0.30 in + $0.70 out (70B), $3.00 in + $5.00 out (405B)</td><td class="px-3 py-2 border-b">Frontier model hosting (405B / R1)</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">Cerebras (WSE-3)</td><td class="px-3 py-2 border-b">Combined $0.60/M tokens</td><td class="px-3 py-2 border-b">Ultra-fast 8B/70B LLM serving (2,000+ tok/s)</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">Groq (LPU)</td><td class="px-3 py-2 border-b">$0.79 in + $0.99 out per M tok</td><td class="px-3 py-2 border-b">Fast 8B/70B LLM serving (450 tok/s)</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">Together AI</td><td class="px-3 py-2 border-b">$0.59 in + $0.79 out per M tok</td><td class="px-3 py-2 border-b">Production LLM serving, 200+ models</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">Replicate</td><td class="px-3 py-2 border-b">Per-second GPU billing</td><td class="px-3 py-2 border-b">Open-source model experimentation</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+                <tr><td class="px-3 py-2 border-b">OpenAI GPT-4o</td><td class="px-3 py-2 border-b">$2.50 in + $10.00 out per M tok</td><td class="px-3 py-2 border-b">Top-tier model quality and multimodal</td><td class="px-3 py-2 border-b">❌ Proxy required</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-gray-50 p-6 rounded-lg mt-8">
+            <h3 class="text-lg font-semibold mb-2">Related Resources</h3>
+            <ul class="space-y-2 text-sm">
+              <li>• <a href="/tutorials/cerebras-api-review" class="text-blue-600 hover:underline">Cerebras API Review</a> — Wafer-Scale Engine at 2,000+ tok/s</li>
+              <li>• <a href="/tutorials/groq-api-review" class="text-blue-600 hover:underline">Groq API Review</a> — LPU-based fast inference at 450 tok/s</li>
+              <li>• <a href="/tutorials/together-ai-api-review" class="text-blue-600 hover:underline">Together AI API Review</a> — production LLM serving at near-cost</li>
+              <li>• <a href="/providers/sambanova" class="text-blue-600 hover:underline">SambaNova on APIRank</a> — pricing, models, and provider comparison</li>
+            </ul>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">Quick Facts</h3>
+            <dl class="text-sm space-y-2">
+              <div class="flex justify-between"><dt class="text-gray-500">Provider</dt><dd class="font-medium">SambaNova</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Founded</dt><dd class="font-medium">2017</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Hardware</dt><dd class="font-medium">SN40L RDU</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Model Count</dt><dd class="font-medium">~9 curated</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Top Speed (8B)</dt><dd class="font-medium text-green-600">1,200+ tok/s</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Exclusive</dt><dd class="font-medium">405B / R1 671B</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">China Access</dt><dd class="font-medium text-red-600">Proxy required</dd></div>
+              <div class="flex justify-between"><dt class="text-gray-500">Free Tier</dt><dd class="font-medium">$5 credits</dd></div>
+            </dl>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="text-base font-semibold text-gray-900 mb-3">Best For</h3>
+            <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
+              <li>Llama 3.1 405B production serving</li>
+              <li>Full DeepSeek-R1 671B reasoning</li>
+              <li>Long-context document Q&A (50K+ tokens)</li>
+              <li>Energy-conscious on-prem deployment</li>
+              <li>Code completion at 800+ tok/s (Qwen Coder)</li>
+            </ul>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 text-center">
+            <p class="text-xs text-blue-700 uppercase tracking-wide mb-1">Advertisement</p>
+            <p class="text-sm text-gray-500">Ad slot — AdSense placeholder</p>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

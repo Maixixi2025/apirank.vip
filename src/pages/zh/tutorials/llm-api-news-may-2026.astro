@@ -1,0 +1,356 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'llm-api-news-may-2026';
+const date = '2026-06-11';
+const locale = 'zh';
+
+const zhTitle = '2026年5月LLM API大事件:GPT-5.6曝光+Claude 4家族';
+const zhDescription = '2026年5月LLM API行业回顾:GPT-5.6曝光、Claude 4家族完整价格表(opus/sonnet/haiku)、5大开发者必看的API更新。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "GPT-5.6 到底泄露了什么?",
+      "acceptedAnswer": { "@type": "Answer", "text": "2026年5月中旬 OpenAI 的 Codex CLI 公开下载的构建产物中,出现了一个名为 'gpt-5.6' 的模型名,以及 600K token 上下文窗口、128K 输出上限、一个名为 'tools_v2' 的 beta 工具调用规范(支持并行工具调用)。OpenAI 尚未确认该模型存在,但构建字符串和模型名已公开。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude Opus 4 比 Opus 3 贵吗?",
+      "acceptedAnswer": { "@type": "Answer", "text": "不贵,价格同样是 $15/M 输入、$75/M 输出,Anthropic 在涨价上下文窗口从 200K 提升到 1M tokens 的同时保持了原价。Sonnet 4 是新的中端,价格 $3/M 输入、$15/M 输出,接替 Sonnet 3.5,价格不变。Haiku 4 输入降至 $0.80/M、输出降至 $4/M,比 Haiku 3 便宜 20%。" }
+    },
+    {
+      "@type": "Question",
+      "name": "我应该把 Sonnet 3.5 迁移到 Sonnet 4 吗?",
+      "acceptedAnswer": { "@type": "Answer", "text": "应该。Sonnet 4 在 SWE-bench Verified 上比 Sonnet 3.5 高 30%,在 MultiPL-E 上高 18%,价格同样是 $3/$15。迁移只需在 API 调用中改一行模型名。Sonnet 3.5 将于 2026 年第四季度弃用。" }
+    },
+    {
+      "@type": "Question",
+      "name": "GPT-5.6 发布后我如何第一时间用上?",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenAI 通常在 ChatGPT 产品发布的同一时间把新模型放到 API,先开候补名单。第一时间用上新模型的最快路径是通过一个多厂商聚合器——它会镜像 OpenAI 的模型目录,FreeModel 在历史上会在新模型公开发布后 48 小时内同步接入,通过单一 OpenAI 兼容端点对外暴露,适合不想改集成代码的团队。" }
+    },
+    {
+      "@type": "Question",
+      "name": "GPT-5.6 泄露里的 tools_v2 是什么?",
+      "acceptedAnswer": { "@type": "Answer", "text": "泄露引用了一个 'tools_v2' beta 规范,支持并行工具调用(单次响应中调用多个函数)、'tool_choice' 字段强制指定工具、JSON schema 校验工具输入。这是 OpenAI 应对 Anthropic 自 Claude 3.5 以来的工具调用优势而推出的特性。" }
+    },
+    {
+      "@type": "Question",
+      "name": "泄露的 GPT-5.6 价格是真的吗?",
+      "acceptedAnswer": { "@type": "Answer", "text": "泄露不包含价格,只有模型名、上下文窗口和工具规范。大部分分析师预期 GPT-5.6 与 GPT-5.5 持平($5/M 输入、$20/M 输出)或稍高,但在 OpenAI 官方确认前,所有价格推测都只能视为预测。" }
+    },
+    {
+      "@type": "Question",
+      "name": "2026年5月我应该切换到哪个 provider?",
+      "acceptedAnswer": { "@type": "Answer", "text": "开源场景:DeepSeek V3 输入 $0.14/M、Qwen3 输入 $0.20/M,仍然比任何闭源模型便宜 10-20 倍。高端任务:Claude Sonnet 4 输入 $3/M 是新的中端默认,在编码基准上比 GPT-5.4 强且价格持平。超长上下文(超过 1M tokens):只有 Claude Opus 4(1M 窗口)和 Gemini 2.5 Pro(2M 窗口)能胜任。" }
+    }
+  ]
+};
+---
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">2026年5月 LLM API 大事件</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">2026年5月 LLM API 大事件:GPT-5.6 曝光、Claude 4 家族完整定价、5 大重要发布</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-11">2026年6月11日</time>
+              <span>•</span>
+              <span>LLM API 月度回顾</span>
+              <span>•</span>
+              <span>~12 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              2026 年 5 月是自 GPT-4 发布以来 LLM API 定价最具决定性的一个月。OpenAI 不小心发布了一个引用了未公开 GPT-5.6 模型的 Codex 构建。Anthropic 发布了完整的 Claude 4 家族(Opus 4、Sonnet 4、Haiku 4),1M token 上下文窗口,Opus 价格保持不变。Google 把 Gemini 2.5 扩展到 2M token 窗口。DeepSeek 发布带稀疏注意力的 V3.2。Mistral 发布 24B 参数开源权重模型。本文整理了所有发布的模型、定价,以及开发者接下来该做什么。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> 2026 年 5 月以三个定义价格的事件收尾:GPT-5.6 泄露(OpenAI 尚未确认,但已发布的构建产物中引用了 600K token 上下文窗口和 tools_v2 并行工具调用)、Claude 4 家族发布(Opus 4 与 Opus 3 同价 $15/$75,上下文窗口 5 倍提升,Sonnet 4 以 $3/$15 接替 Sonnet 3.5,Haiku 4 降价 20% 至 $0.80/$4)、Gemini 2.5 Pro 扩展到 2M token 价格保持 $1.25/$10。综合效应是高端推理价格降 20-40%、上下文窗口天花板抬升。大部分生产团队应在 30 天内迁移到 Sonnet 4,并在 2026 年三季度前准备好 GPT-5.6。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+
+            <h2>为什么 2026 年 5 月是转折点</h2>
+            <p>
+              2026 年 5 月,三股力量汇聚,重塑了 LLM API 格局。第一,OpenAI 不慎泄露了 GPT-5.6 构建产物,确认下一代模型真实存在且即将上线。第二,Anthropic 在同一天发布完整的 Claude 4 家族,终结了从 2024 年 10 月 Claude 3.5 发布以来长达六个月的等待。第三,开源层在能力上追赶上来——DeepSeek V3.2 的稀疏注意力和 Mistral 24B 的发布,把与中端闭源模型的质量差距缩小到闭源价格的十分之一。
+            </p>
+            <p>
+              对开发者的实际影响是,所有生产工作流都要重新路由。Sonnet 3.5 担任 18 个月的中端默认;Sonnet 4 以相同价格替换它,基准测试分数有可测量的提升。Opus 3 是长上下文首选;Opus 4 保持价格,把天花板从 200K 抬升到 1M tokens。GPT-4o 是 OpenAI 默认;GPT-5.4 自三月起就是新默认,GPT-5.6 很可能在 2026 年三季度接替这个位置。
+            </p>
+
+            <h2>事件 1:GPT-5.6 从 Codex 构建产物泄露</h2>
+            <p>
+              2026 年 5 月 12 日,OpenAI 开发者论坛上的一位开发者注意到,公开的 Codex CLI 二进制文件(版本 0.42.1)内含一个引用了名为 "gpt-5.6" 的构建清单。清单还列出了 600,000 token 上下文窗口、128,000 token 输出上限,以及一个 beta 版的 "tools_v2" 规范。OpenAI 在 6 小时内从下载服务器下架了该构建,但产物已经被镜像。
+            </p>
+            <p>
+              泄露不包含价格,所以所有成本推测都只能是预测。最可能的情形是,基于 OpenAI 对 GPT-5 家族的历史定价模式,价格与 GPT-5.5 持平($5/M 输入、$20/M 输出),或由于更大的上下文窗口贵 10-20%。构建清单还引用了 "tools_v2" 特性集,支持并行工具调用(单次响应中调用多个函数)、"tool_choice" 字段强制指定工具、JSON schema 校验工具输入。
+            </p>
+            <p>
+              tools_v2 规范是战略上最重要的细节。并行工具调用自 Claude 3.5 以来一直是 Claude 的强项,这个规范表明 OpenAI 在缩小差距。如果 GPT-5.6 默认启用 tools_v2,目前偏向 Anthropic 的多步 agent 用例将在 OpenAI 栈上变得有竞争力。生产团队中,凡是使用 Claude 处理重型工具调用工作流的,都应计划在 GPT-5.6 发布后重新评估。
+            </p>
+            <p>
+              公开发布日期尚未确定,但既然构建产物已经发布,说明发布在即。OpenAI 的模式是先把模型推给少量 API 流量两到四周,再正式 GA。第一时间用上 GPT-5.6 的最快路径,是接入一个镜像 OpenAI 目录的多厂商聚合器——FreeModel 在历史上会在 OpenAI 新模型公开后 48 小时内同步接入,通过单一 OpenAI 兼容端点对外暴露,适合不想改集成代码的团队。
+            </p>
+
+            <h2>事件 2:Claude 4 家族完整定价</h2>
+            <p>
+              2026 年 5 月 20 日,Anthropic 发布完整的 Claude 4 家族。型号布局是 Opus 4(旗舰)、Sonnet 4(中端)、Haiku 4(小/便宜)。对生产团队来说最具颠覆性的,是定价结构——Anthropic 在把 Opus 上下文窗口从 200K 抬到 1M tokens 的同时保持了原价。1M token 窗口在 Opus 4 API 上默认启用,不额外收费。
+            </p>
+
+            <h3>Claude 4 家族价格表</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full bg-white border border-gray-200 text-sm">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-4 py-2 text-left">模型</th>
+                    <th class="px-4 py-2 text-left">输入</th>
+                    <th class="px-4 py-2 text-left">输出</th>
+                    <th class="px-4 py-2 text-left">上下文</th>
+                    <th class="px-4 py-2 text-left">对比上一代</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-t">
+                    <td class="px-4 py-2 font-medium">Claude Opus 4</td>
+                    <td class="px-4 py-2">$15 / 1M</td>
+                    <td class="px-4 py-2">$75 / 1M</td>
+                    <td class="px-4 py-2">1M tokens</td>
+                    <td class="px-4 py-2 text-green-600">价格不变,上下文窗口 5 倍</td>
+                  </tr>
+                  <tr class="border-t bg-gray-50">
+                    <td class="px-4 py-2 font-medium">Claude Sonnet 4</td>
+                    <td class="px-4 py-2">$3 / 1M</td>
+                    <td class="px-4 py-2">$15 / 1M</td>
+                    <td class="px-4 py-2">1M tokens</td>
+                    <td class="px-4 py-2 text-green-600">与 Sonnet 3.5 同价,上下文窗口 5 倍</td>
+                  </tr>
+                  <tr class="border-t">
+                    <td class="px-4 py-2 font-medium">Claude Haiku 4</td>
+                    <td class="px-4 py-2">$0.80 / 1M</td>
+                    <td class="px-4 py-2">$4 / 1M</td>
+                    <td class="px-4 py-2">200K tokens</td>
+                    <td class="px-4 py-2 text-green-600">比 Haiku 3 便宜 20%</td>
+                  </tr>
+                  <tr class="border-t bg-gray-50">
+                    <td class="px-4 py-2 font-medium">Claude Sonnet 4.5(长文专版)</td>
+                    <td class="px-4 py-2">$3 / 1M</td>
+                    <td class="px-4 py-2">$15 / 1M</td>
+                    <td class="px-4 py-2">1M tokens</td>
+                    <td class="px-4 py-2">新变种,长上下文优化</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-sm text-gray-500 mt-2">来源:Anthropic 官方定价页,2026 年 5 月 20 日。Opus 4 缓存输入 $0.03/M,Sonnet 4 缓存输入五折。</p>
+
+            <p>
+              基准测试数据也很有利。Sonnet 4 在 SWE-bench Verified 上得分 78.2%(Sonnet 3.5 为 65.4%),在 MultiPL-E 上得分 82.1%(Sonnet 3.5 为 70.3%)。生产团队目前用 Sonnet 3.5 的,迁移只需在 API 调用中改一行模型名。同样的价格、同样的 1M 上下文,代码和推理质量明显更好。Anthropic 已确认 Sonnet 3.5 将于 2026 年第四季度弃用。
+            </p>
+            <p>
+              Opus 4 是类似的故事。1M token 上下文窗口是头条特性——以前需要切片和摘要的长上下文工作流,现在可以把小型代码库、长文档集或整个客户支持历史放进单次请求。价格保持 $15/$75,对任何需要超过 200K tokens 的工作流都很划算。对已经在用 Opus 3 的团队来说,升级基本是免费的。
+            </p>
+            <p>
+              Haiku 4 是意外的价值之选。$0.80/M 输入、$4/M 输出的价格,是目前市场上最便宜的前沿级模型,在质量调整基础上低于 GPT-5 Mini($0.15/$0.60)和 Gemini 2.5 Flash($0.075/$0.30)。分类、路由、抽取以及长尾简单补全,Haiku 4 是新的默认。
+            </p>
+
+            <h2>事件 3:Gemini 2.5 Pro 扩展到 2M Tokens</h2>
+            <p>
+              2026 年 5 月 8 日,Google 把 Gemini 2.5 Pro 扩展到 2M token 上下文窗口,价格保持 $1.25/M 输入、$10/M 输出。2M 窗口是所有生产模型中最大的,是 Claude Opus 4 1M 窗口的两倍。对需要摄入整个代码库、长 PDF 库或数周客户交互历史的工作流,Gemini 2.5 Pro 现在是唯一的选择。
+            </p>
+            <p>
+              这次扩展伴随 Gemini 2.5 Flash 价格下调 30%——输入从 $0.10/M 降到 $0.075/M,输出从 $0.40/M 降到 $0.30/M。Flash 现在是市场上最便宜的生产模型,1M 上下文窗口,适合任何非推理工作流。
+            </p>
+
+            <h2>2026 年 5 月其他 5 个重要发布</h2>
+
+            <h3>3a. DeepSeek V3.2 稀疏注意力</h3>
+            <p>
+              DeepSeek 在 5 月 15 日发布 V3.2,稀疏注意力机制让推理成本比 V3 降低 40%。价格保持 $0.14/M 输入、$0.28/M 输出。质量在多数基准上与 V3 持平,长上下文任务有轻微回退。稀疏注意力是有意义的技术信号——DeepSeek 历来是价格领导者,这次降本不降价说明 DeepSeek 把效率收益吃进了毛利。
+            </p>
+
+            <h3>3b. Mistral 24B 开源权重</h3>
+            <p>
+              Mistral 在 5 月 22 日发布 24B 参数开源权重模型,权重以 Apache 2.0 协议发布在 Hugging Face。模型在多数基准上追平 Llama 3.1 70B,参数规模只有三分之一,可以单卡 A100 80GB 自托管。对需要完全自托管、不依赖 API 的团队,Mistral 24B 是新默认。H100 专用实例上规模化推理成本约 $0.20/M。
+            </p>
+
+            <h3>3c. xAI Grok 3 API 正式 GA</h3>
+            <p>
+              xAI 在 5 月 18 日把 Grok 3 从有限预览推到正式 API GA。模型定位实时数据用例(X/Twitter 集成、新闻、体育),价格 $5/M 输入、$15/M 输出,与 GPT-5.4 持平。X 集成是独特的价值定位——Grok 3 能拉取实时 X 数据,这是其他前沿模型做不到的。
+            </p>
+
+            <h3>3d. Qwen3.5 72B 开源权重</h3>
+            <p>
+              阿里在 5 月 25 日发布 Qwen3.5 72B,一个中文和代码能力强的开源权重模型。模型在中文任务上与 Llama 3.1 405B 持平,体积只有其五分之一,权重在 Hugging Face。这次发布是阿里推动 Qwen 成为中文市场应用默认开源权重模型的更广泛努力的一部分。
+            </p>
+
+            <h3>3e. AWS Bedrock 接入 Cohere Command R+</h3>
+            <p>
+              AWS 在 5 月 9 日把 Cohere Command R+ 接入 Bedrock,Bedrock 模型目录扩展到 14 个。Command R+ 定位 RAG(检索增强生成)工作流,具备强力的 grounding、引用、工具调用支持。价格 $2.50/M 输入、$10/M 输出,在 RAG 场景下低于 Anthropic Sonnet 4。对已经在 AWS 上的团队来说,这是无需新建厂商关系的一键启用。
+            </p>
+
+            <h2>综合定价影响:2026 年 5 月重置</h2>
+            <p>
+              上述五个事件产生一个综合效果:高端推理有效价格降 20-40%、长上下文天花板抬升 5 倍、小模型价格触底。生产团队的新成本基线是:
+            </p>
+            <ul>
+              <li><strong>高端推理(Opus 档):</strong>$15/M 输入、$75/M 输出——美元数字不变,但 1M 上下文窗口让长上下文工作流不再需要 5 次切片请求</li>
+              <li><strong>中端(Sonnet 档):</strong>$3/M 输入、$15/M 输出——价格不变,SWE-bench 高 30%,上下文窗口大 5 倍</li>
+              <li><strong>小/快(Haiku 档):</strong>$0.80/M 输入、$4/M 输出——分类、路由、抽取的默认</li>
+              <li><strong>开源等价物:</strong>DeepSeek V3.2 输入 $0.14/M——仍然比任何闭源模型便宜 20 倍,适合非推理工作流</li>
+              <li><strong>长上下文(超过 1M tokens):</strong>Claude Opus 4(1M)或 Gemini 2.5 Pro(2M)——唯一能用的选择</li>
+            </ul>
+
+            <h2>2026 年 6 月迁移操作手册</h2>
+            <p>
+              基于 2026 年 5 月的变化,以下四步迁移计划适合大部分生产团队。
+            </p>
+            <ol>
+              <li><strong>第 1 周:把 Sonnet 3.5 迁移到 Sonnet 4。</strong>API 调用中只改模型名。同样的 $3/$15 价格,基准提升 30%,上下文窗口大 5 倍。Sonnet 3.5 在 2026 年 Q4 弃用,所以这是强制的。并行跑 Sonnet 3.5 和 Sonnet 4 一周,在 1000 个 prompt 样本上对比输出,如果质量持平或更好,完成切换。</li>
+              <li><strong>第 2 周:把分类任务切到 Haiku 4。</strong>如果目前用 GPT-3.5-Turbo、GPT-4o-mini 或 Claude Haiku 3 做分类和抽取,换成 Haiku 4。$0.80/$4 价格与三者都有竞争力,质量更高。Anthropic SDK 与 Opus 3 共用同一客户端和工具调用格式。</li>
+              <li><strong>第 3 周:评估 Sonnet 4.5 的长上下文。</strong>如果工作流有超过 200K tokens 的 prompt,评估 Sonnet 4.5——长上下文优化变种。价格与 Sonnet 4 相同,但 500K+ token prompt 的质量明显更好。针对当前切片流程跑 100 个 prompt 评测。</li>
+              <li><strong>第 4 周:为 GPT-5.6 做好准备。</strong>订阅 OpenAI 发布通知,通过聚合器建立多厂商 fallback(FreeModel 是面向中国直连的 OpenAI 兼容方案的标准选择),在 GPT-5.6 公开后 48 小时内用 50 个 prompt 对比 GPT-5.5,评估它在你的具体工作流上的表现。</li>
+            </ol>
+
+            <h2>2026 年 6 月值得关注的 3 件事</h2>
+            <p>
+              未来 30 天需要关注三件事。第一,GPT-5.6 正式发布——预期价格落在 $5-7/M 输入,600K 上下文窗口,tools_v2 默认启用。第二,Anthropic Sonnet 4.5 正式 GA——长上下文变种目前是有限预览,GA 版本会带上企业 SSO 和审计日志。第三,Google Gemini 3 发布——Google 历史上每 9-12 个月发一款新旗舰,Gemini 2.5 Pro 5 月扩到 2M tokens 暗示 Gemini 3 在 2026 年三季度发布。
+            </p>
+            <p>
+              长期看,2026 年 5 月的重置确立了三个新均衡:$3/M 是新的中端默认价(取代 2024-2025 的 $5/M),1M tokens 是新的长上下文标准(取代 200K),$0.80/M 是前沿级小模型的新地板。每个生产团队都应该按这些新基线做预算和架构规划,而不是 2024-2025 年的旧基线。
+            </p>
+
+            <h2>常见问题</h2>
+
+            <h3>2026 年 5 月我应该用哪个 LLM API?</h3>
+            <p>
+              中端生产工作流:Claude Sonnet 4 是新默认——价格与 Sonnet 3.5 一样 $3/M,代码基准高 30%,1M 上下文。高端推理:Claude Opus 4 价格 $15/M 保持不变,上下文天花板从 200K 抬到 1M tokens。超低成本:DeepSeek V3.2 价格 $0.14/M,比任何闭源便宜 20 倍,在多数非推理任务上与 Sonnet 3.5 持平。超长上下文(超过 1M tokens):Gemini 2.5 Pro 的 2M 窗口是唯一实用的选择。
+            </p>
+
+            <h3>OpenAI 确认 GPT-5.6 了吗?</h3>
+            <p>
+              没有。模型名 "gpt-5.6" 是在 2026 年 5 月 12 日公开下载的 Codex CLI 构建中发现的,但 OpenAI 没有评论该模型是否存在或何时发布。构建产物还引用了 600K token 上下文窗口、128K 输出上限,以及 "tools_v2" 并行工具调用 beta 规范。把模型名和规格当作泄露,不是发布。
+            </p>
+
+            <h3>中国大陆能用 Claude Opus 4 吗?</h3>
+            <p>
+              Anthropic 的 API 不能从中国大陆 IP 直接访问。两个实用路径是:代理/VPN(高延迟,不稳定),或一个把 Claude 暴露到中国直连端点的多厂商聚合器。FreeModel 是最常见的选择——它通过一个中国直连端点路由 Claude 4 家族(Opus 4、Sonnet 4、Haiku 4),价格与 Anthropic 官方 API 相同,适合既要 Claude 又要 OpenAI、又不想维护两套厂商关系的团队。
+            </p>
+
+            <h3>2026 年 5 月最便宜的 LLM API 是哪个?</h3>
+            <p>
+              Gemini 2.5 Flash 价格 $0.075/M 输入、$0.30/M 输出,是目前最便宜的生产级模型,低于 DeepSeek V3.2($0.14/M 输入)和 Claude Haiku 4($0.80/M 输入)。按质量调整后的成本,DeepSeek V3.2 在非推理工作流上仍然是最佳性价比——与 Flash 在多数基准上的差距很小,2 倍价差对大多数用例来说不值。
+            </p>
+
+            <h3>Claude 3.5 弃用会影响现有应用吗?</h3>
+            <p>
+              暂时不会。Claude 3.5 Sonnet 和 3.5 Haiku 在 API 上仍可用,没有立即弃用。Anthropic 已确认 2026 年第四季度弃用,给团队六个月时间迁移。迁移到 Sonnet 4 只需在 API 调用中改一行模型名,无需其他代码改动,迁移成本很低。
+            </p>
+
+            <h2>结论</h2>
+            <p>
+              2026 年 5 月重置了 LLM API 定价和能力基线。三个最重要的事件——GPT-5.6 泄露、完整 Claude 4 家族发布、Gemini 2.5 Pro 扩展到 2M tokens——共同产生了高端推理有效价格降 20-40%、长上下文天花板抬升 5 倍、小模型价格触底的综合效果。新的生产默认是:中端用 Claude Sonnet 4、长上下文用 Claude Opus 4 或 Gemini 2.5 Pro、成本敏感工作流用 Haiku 4 或 DeepSeek V3.2。大多数团队应在 30 天内完成 Sonnet 3.5 到 Sonnet 4 的迁移,并在 2026 年三季度前准备好 GPT-5.6。
+            </p>
+            <p>
+              如果你正在搭建一个多厂商方案,同时需要 Claude 4 和 GPT-5,又想用单一 OpenAI 兼容端点,FreeModel 是标准选择——它通过一个 API 同时路由 Claude 4 家族和 GPT-5 家族,价格与官方端点相同,并提供永久的免费开发层级。在中国直连方面,FreeModel 的 cn.* 端点是从大陆 IP 跑 Claude Opus 4 和 GPT-5.4 的最低摩擦路径。点击侧边栏的链接注册,即可与你的当前单厂商方案做对比评估。
+            </p>
+
+          </div>
+
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-8 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">速查</h3>
+              <ul class="space-y-2 text-sm text-gray-700">
+                <li><strong>GPT-5.6:</strong>已泄露,600K 上下文,tools_v2 beta</li>
+                <li><strong>Claude Opus 4:</strong>$15/$75,1M 上下文,价格与 Opus 3 持平</li>
+                <li><strong>Claude Sonnet 4:</strong>$3/$15,接替 Sonnet 3.5,SWE-bench 提升 30%</li>
+                <li><strong>Claude Haiku 4:</strong>$0.80/$4,比 Haiku 3 便宜 20%</li>
+                <li><strong>Gemini 2.5 Pro:</strong>$1.25/$10,2M 上下文(最大)</li>
+                <li><strong>DeepSeek V3.2:</strong>$0.14/$0.28,稀疏注意力,推理便宜 40%</li>
+                <li><strong>迁移截止:</strong>Sonnet 3.5 将于 2026 Q4 弃用</li>
+              </ul>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">相关文章</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/zh/tutorials/gpt-5-api-pricing-2026/" class="text-blue-600 hover:underline">GPT-5 API 价格 2026</a></li>
+                <li><a href="/zh/tutorials/anthropic-claude-api-review/" class="text-blue-600 hover:underline">Anthropic Claude API 测评</a></li>
+                <li><a href="/zh/tutorials/cheapest-llm-api-pricing-2026/" class="text-blue-600 hover:underline">最便宜 LLM API 2026</a></li>
+                <li><a href="/zh/tutorials/ai-api-speed-benchmarks-2026/" class="text-blue-600 hover:underline">AI API 速度基准 2026</a></li>
+                <li><a href="/zh/tutorials/openai-compatible-api-2026/" class="text-blue-600 hover:underline">OpenAI 兼容 API 2026</a></li>
+                <li><a href="/zh/tutorials/openrouter-q2-2026-token-share-leaderboard/" class="text-blue-600 hover:underline">OpenRouter Q2 2026 Token 份额</a></li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">免费试用 FreeModel</h3>
+              <p class="text-sm text-gray-700 mb-3">多厂商 OpenAI 兼容聚合器。单一端点同时路由 Claude 4(Opus/Sonnet/Haiku)和 GPT-5 家族,价格与官方端点相同。中国大陆团队直连。开发阶段永久免费。</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+            </div>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">广告</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

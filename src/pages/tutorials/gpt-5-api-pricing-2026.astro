@@ -1,0 +1,457 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-5-api-pricing-2026';
+const date = '2026-06-10';
+const locale = 'en';
+
+const enTitle = 'GPT-5 API Pricing 2026: 5.5 vs 5.4 vs Mini';
+const enDescription = 'GPT-5 API pricing 2026: 5.5 at $5/M, 5.4 at $2.50/M, Mini at $0.15/M. Batch 50% off, cached input tiers, and a real cost comparison.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Which GPT-5 model should I use for a chat product?",
+      "acceptedAnswer": { "@type": "Answer", "text": "GPT-5.4 is the right default for most chat products in 2026. The price-quality gap between 5.4 and 5.5 is small (within 5-10% on most chat benchmarks), but the cost difference is 2x. Reserve 5.5 for the long-context requests (over 100K input tokens) where the model has a measurable advantage, and use Mini for the classification and routing calls." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is GPT-5 cheaper than GPT-4o?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, on input. GPT-5.4 at $2.50/M is half the GPT-4o rate of $5/M, and Mini at $0.15/M is dramatically cheaper than GPT-4o-mini at $0.15/M (the same). For most workloads, migrating from GPT-4o to GPT-5.4 is a 2x cost reduction with comparable or better quality." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I mix models in the same workflow?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, and you should. The standard pattern is to use Mini for the long tail of simple completions (intent classification, routing, summarization, extraction), 5.4 for the bulk of user-facing completions, and 5.5 for the hardest tasks. The OpenAI Python SDK supports all three models with the same call shape." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the cached input discount work?",
+      "acceptedAnswer": { "@type": "Answer", "text": "When you send a request with a prefix that matches a cache entry (at least 1,024 tokens, last used within 5 minutes for the 5-minute tier or 1 hour for the 1-hour tier), OpenAI charges a discount on the cached portion. The 5-minute tier is automatic and gives 50% off. The 1-hour tier is opt-in (prompt_cache_retention: '1h') and gives 25% off." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the Batch API worth the 24-hour wait?",
+      "acceptedAnswer": { "@type": "Answer", "text": "For evals, bulk content generation, and backfill jobs, yes — the 50% discount is significant at scale. For interactive workloads, no. The 24-hour SLA is incompatible with any user-facing product." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use GPT-5 from China?",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenAI is not directly accessible from mainland China. The three paths are proxy/VPN (high latency, unreliable), FreeModel (China-direct OpenAI-compatible aggregator with the same prices), or Azure OpenAI Service through 21Vianet (separate billing, 3-7 day onboarding). For most Chinese teams, FreeModel is the cheapest drop-in." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a free tier?",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenAI gives $5 in free credit to new accounts (valid for 3 months), but there is no permanent free tier for GPT-5. FreeModel has a permanent free tier for development use of GPT-5.4 and Mini (60 RPM, 100K tokens per day). For production, you need a paid account at OpenAI direct, FreeModel, or Azure." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happened to GPT-5.2?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Deprecated on June 5, 2026, with the Copilot retirement running through August 2026. Direct API access is expected to end Q4 2026. Most production workloads should migrate to 5.4 (cheaper, similar quality) or 5.5 (flagship, new) by Q3 2026." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">GPT-5 API Pricing 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">GPT-5 API Pricing 2026: 5.5 vs 5.4 vs Mini — Real Cost Math</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-10">June 10, 2026</time>
+              <span>•</span>
+              <span>OpenAI Pricing</span>
+              <span>•</span>
+              <span>~14 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              The GPT-5 family has settled into a three-tier lineup in 2026, and the pricing differences between the tiers are large enough that picking the wrong model for your workload is a 20x cost mistake waiting to happen. GPT-5.5 is the new flagship at $5 per million input tokens, GPT-5.4 sits at the mid-tier at $2.50 per million, and GPT-5 Mini is the budget option at $0.15 per million. On the output side the spread is wider: $15/M, $10/M, and $0.60/M respectively.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> GPT-5.5 at $5/$15 per million tokens is the flagship for the hardest reasoning tasks. GPT-5.4 at $2.50/$10 is the workhorse for most production deployments — 90% of 5.5 quality at half the price. GPT-5 Mini at $0.15/$0.60 is the budget tier for high-volume agents and classification. Two compounding levers: <strong>Batch API</strong> (50% off all rates, async only) and <strong>cached input</strong> (50% off prompt tokens via the 5-minute tier, 25% off via the 1-hour tier). For China access, <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="underline">FreeModel</a> routes the GPT-5 lineup from a China-direct OpenAI-compatible endpoint with the same prices.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>Why This Matters: 20x Cost Difference Between Tiers</h2>
+            <p>The price story for 2026 is not just the headline rate. There are two compounding levers: the Batch API (50% off everything, async only) and the cached input discount (50% off prompt tokens that hit the 5-minute or 1-hour cache tier). For repetitive workloads — agents that re-read the same system prompt, RAG systems that send the same long document, code review tools that re-parse a repo's source tree — the cached input lever is the difference between a profitable product and a money pit.</p>
+            <p>This guide is the pricing page we wished we had when picking a model: the real per-token rates for all three tiers, the Batch and cache math, three concrete $100 / $1,000 / $10,000 budget worked examples, and a decision tree for which model fits which workload. It also covers the China access angle (GPT-5 is not directly accessible, and the OpenAI-compatible aggregator <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> routes the same models from a China-direct endpoint) so you can pick the cheapest delivery path, not just the cheapest model.</p>
+
+            <h2>The 2026 GPT-5 Lineup</h2>
+
+            <h3>GPT-5.5 — Flagship ($5/M in, $15/M out)</h3>
+            <p>Released March 2026 as the new top-tier model, GPT-5.5 is the workhorse for the hardest reasoning tasks: 800K context window, native multimodal (text + image + audio), and the strongest scores on coding (SWE-bench), math (MATH), and graduate-level reasoning (GPQA) benchmarks as of June 2026. The price is double the GPT-5.4 rate on both input and output, so the rule is simple: use 5.5 only when the cheaper tiers are measurably failing your eval.</p>
+            <p>The real sweet spot for 5.5 is long-context synthesis. If you are sending 200K+ tokens of input (entire codebases, research papers, legal contracts) and need the model to reason across the full context, the 5.5 advantage over 5.4 widens. For short prompts (under 4K tokens) the gap is usually within 5-10% on quality benchmarks, which is rarely worth the 2x cost.</p>
+            <p>Pricing (as of June 10, 2026):</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Component</th><th class="px-3 py-2 text-left">Rate</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Input (text)</td><td class="px-3 py-2 border-b">$5.00 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Input (cached, 5-min)</td><td class="px-3 py-2 border-b">$2.50 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Input (cached, 1-hour)</td><td class="px-3 py-2 border-b">$3.75 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Output (text)</td><td class="px-3 py-2 border-b">$15.00 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Output (cached write)</td><td class="px-3 py-2 border-b">$3.75 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Audio input</td><td class="px-3 py-2 border-b">$10.00 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Audio output</td><td class="px-3 py-2 border-b">$30.00 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Image input</td><td class="px-3 py-2 border-b">$5.00 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Batch API (all rates)</td><td class="px-3 py-2 border-b">50% off</td></tr>
+              </tbody>
+            </table>
+
+            <h3>GPT-5.4 — Mid-Tier ($2.50/M in, $10/M out)</h3>
+            <p>GPT-5.4 is the workhorse for most production deployments in 2026. The model is a generation behind the flagship but the price-quality tradeoff is favorable: 90% of 5.5 quality on most reasoning tasks, 100% on simpler classification and extraction workloads, at exactly half the input cost. For most teams shipping a real product, 5.4 is the default choice.</p>
+            <p>The 5.4 context window is 400K tokens — half of 5.5 but still 3-4x what most production prompts need. Multimodal support is identical to 5.5 (text, image, audio). The main limitation: on the hardest reasoning benchmarks (SWE-bench Verified above 80%, GPQA Diamond above 75%), 5.4 trails 5.5 by 5-8 points.</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Component</th><th class="px-3 py-2 text-left">Rate</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Input (text)</td><td class="px-3 py-2 border-b">$2.50 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Input (cached, 5-min)</td><td class="px-3 py-2 border-b">$1.25 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Input (cached, 1-hour)</td><td class="px-3 py-2 border-b">$1.875 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Output (text)</td><td class="px-3 py-2 border-b">$10.00 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Output (cached write)</td><td class="px-3 py-2 border-b">$2.50 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Audio input</td><td class="px-3 py-2 border-b">$5.00 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Audio output</td><td class="px-3 py-2 border-b">$20.00 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Image input</td><td class="px-3 py-2 border-b">$2.50 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Batch API (all rates)</td><td class="px-3 py-2 border-b">50% off</td></tr>
+              </tbody>
+            </table>
+
+            <h3>GPT-5 Mini — Budget ($0.15/M in, $0.60/M out)</h3>
+            <p>GPT-5 Mini is the new budget tier that replaced the GPT-4o-mini and GPT-3.5-turbo lines in late 2025. At $0.15/$0.60 per million tokens it is the cheapest OpenAI model in 2026 that is still worth using for production — anything cheaper and the quality drops off the cliff. The context window is 256K, multimodal support is text and image only (no audio), and the model is optimized for high-throughput low-latency workloads.</p>
+            <p>The Mini tier is what makes the 2026 economics work for agents. If you are building an agent framework that makes 50+ LLM calls per task, running the orchestrator on Mini at $0.60/M output and reserving 5.5 for the final synthesis step is the standard pattern. The same agent at 5.5 across the board would cost 25x more on the orchestrator calls and would not be faster (Mini has the same TTFT as 5.4 on simple prompts).</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Component</th><th class="px-3 py-2 text-left">Rate</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">Input (text)</td><td class="px-3 py-2 border-b">$0.15 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Input (cached, 5-min)</td><td class="px-3 py-2 border-b">$0.075 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Input (cached, 1-hour)</td><td class="px-3 py-2 border-b">$0.1125 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Output (text)</td><td class="px-3 py-2 border-b">$0.60 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Output (cached write)</td><td class="px-3 py-2 border-b">$0.15 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Audio input</td><td class="px-3 py-2 border-b">not supported</td></tr>
+                <tr><td class="px-3 py-2 border-b">Audio output</td><td class="px-3 py-2 border-b">not supported</td></tr>
+                <tr><td class="px-3 py-2 border-b">Image input</td><td class="px-3 py-2 border-b">$0.15 per 1M tokens</td></tr>
+                <tr><td class="px-3 py-2 border-b">Batch API (all rates)</td><td class="px-3 py-2 border-b">50% off</td></tr>
+              </tbody>
+            </table>
+
+            <h2>Batch API: 50% Off, Async</h2>
+            <p>The Batch API is the single biggest discount OpenAI offers in 2026: 50% off every rate on every model, in exchange for async delivery. You submit a JSONL file (up to 50,000 requests per batch, 200MB per file), the batch completes within 24 hours (usually 1-6 hours in practice), and you pay the half-rate on every token used.</p>
+            <p>The tradeoff is latency. Batch is not for interactive user-facing workloads. It is for:</p>
+            <ul>
+              <li>Evaluation pipelines: scoring 10,000 model outputs against ground truth</li>
+              <li>Bulk content generation: producing product descriptions, translations, summaries in batch</li>
+              <li>Backfill jobs: re-classifying historical data, generating embeddings for old documents</li>
+              <li>Offline analytics: running the model on a nightly data warehouse job</li>
+            </ul>
+            <p>For real-time chat, agent loops, or any workload where the user is waiting, Batch is not an option. The 24-hour SLA makes it fundamentally different from the streaming Chat Completions API.</p>
+            <p>Worked example: a team that runs 100M output tokens of evaluation work per month on GPT-5.5:</p>
+            <ul>
+              <li>Chat Completions API at $15/M output = $1,500/month</li>
+              <li>Batch API at $7.50/M output = $750/month</li>
+              <li>Savings: $750/month, 50% off</li>
+            </ul>
+
+            <h2>Cached Input: 50% Off Repeated Prompts</h2>
+            <p>The cached input discount is the second lever, and for many production workloads it is the bigger lever. When you send the same long prefix repeatedly (a 50K-token system prompt, a 200K-token document for RAG, a 1MB code file in a code review tool), OpenAI caches the prompt tokens and charges a discount on the cached portion.</p>
+            <p>There are two cache tiers in 2026:</p>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Tier</th><th class="px-3 py-2 text-left">Discount</th><th class="px-3 py-2 text-left">Cache lifetime</th><th class="px-3 py-2 text-left">Best for</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">5-minute cache</td><td class="px-3 py-2 border-b">50% off</td><td class="px-3 py-2 border-b">5 minutes of inactivity</td><td class="px-3 py-2 border-b">Interactive sessions, agent loops, multi-turn chat</td></tr>
+                <tr><td class="px-3 py-2 border-b">1-hour cache</td><td class="px-3 py-2 border-b">25% off</td><td class="px-3 py-2 border-b">1 hour of inactivity</td><td class="px-3 py-2 border-b">Batch jobs, scheduled reports, evals, RAG with stable corpora</td></tr>
+              </tbody>
+            </table>
+            <p>The 5-minute tier is the default that gets applied automatically. When you send a request where the prefix matches a cache entry that was last used within 5 minutes, the cached portion is billed at 50% off. There is no opt-in — OpenAI applies it transparently. The catch: the cache must be at least 1,024 tokens to qualify, and the cache key is the literal byte sequence of the prefix, so even a single whitespace change invalidates it.</p>
+            <p>The 1-hour tier is opt-in. You set <code>prompt_cache_retention: "1h"</code> in the API call, and OpenAI extends the cache lifetime to 1 hour (still 25% off instead of 50%, because the storage cost is higher). This is the right tier for batch jobs that send the same large document repeatedly — evaluation suites, RAG systems with stable corpora, code review tools that re-process the same repo.</p>
+            <p>Worked example: a RAG system that sends a 200K-token document on every query:</p>
+            <ul>
+              <li>Without cache: 200K input tokens × $5/M (5.5) = $1.00 per query</li>
+              <li>With 5-min cache hit (50% off on the 200K): 200K × $2.50/M = $0.50 per query</li>
+              <li>With 1-hour cache hit (25% off on the 200K): 200K × $3.75/M = $0.75 per query</li>
+            </ul>
+
+            <h2>Real Cost Math: Three Budgets</h2>
+            <p>These worked examples assume a 1:3 input-to-output ratio (typical for chat and agent workloads) and standard rates (no Batch, no cache). The output share dominates the bill, so reducing output tokens is the highest-leverage optimization.</p>
+
+            <h3>$100/month Budget</h3>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Model</th><th class="px-3 py-2 text-left">Input tokens</th><th class="px-3 py-2 text-left">Output tokens</th><th class="px-3 py-2 text-left">Best for</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">GPT-5.5</td><td class="px-3 py-2 border-b">20M</td><td class="px-3 py-2 border-b">6.67M</td><td class="px-3 py-2 border-b">Hard reasoning, small-file code review</td></tr>
+                <tr><td class="px-3 py-2 border-b">GPT-5.4</td><td class="px-3 py-2 border-b">40M</td><td class="px-3 py-2 border-b">10M</td><td class="px-3 py-2 border-b">General chat, mid-size document analysis</td></tr>
+                <tr><td class="px-3 py-2 border-b">GPT-5 Mini</td><td class="px-3 py-2 border-b">666M</td><td class="px-3 py-2 border-b">166M</td><td class="px-3 py-2 border-b">High-volume agents, classification, large-corpus RAG</td></tr>
+              </tbody>
+            </table>
+
+            <h3>$1,000/month Budget</h3>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Model</th><th class="px-3 py-2 text-left">Input tokens</th><th class="px-3 py-2 text-left">Output tokens</th><th class="px-3 py-2 text-left">Best for</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">GPT-5.5</td><td class="px-3 py-2 border-b">200M</td><td class="px-3 py-2 border-b">66.7M</td><td class="px-3 py-2 border-b">Mid-size product with 5.5 as default</td></tr>
+                <tr><td class="px-3 py-2 border-b">GPT-5.4</td><td class="px-3 py-2 border-b">400M</td><td class="px-3 py-2 border-b">100M</td><td class="px-3 py-2 border-b">Production deployment, default 5.4 with 5.5 fallback</td></tr>
+                <tr><td class="px-3 py-2 border-b">GPT-5 Mini</td><td class="px-3 py-2 border-b">6.66B</td><td class="px-3 py-2 border-b">1.66B</td><td class="px-3 py-2 border-b">Mass-market product, classification-heavy, RAG at scale</td></tr>
+              </tbody>
+            </table>
+
+            <h3>$10,000/month Budget</h3>
+            <table class="w-full text-sm">
+              <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Model</th><th class="px-3 py-2 text-left">Input tokens</th><th class="px-3 py-2 text-left">Output tokens</th><th class="px-3 py-2 text-left">Best for</th></tr></thead>
+              <tbody>
+                <tr><td class="px-3 py-2 border-b">GPT-5.5</td><td class="px-3 py-2 border-b">2B</td><td class="px-3 py-2 border-b">666.7M</td><td class="px-3 py-2 border-b">Flagship product, agents, large document analysis</td></tr>
+                <tr><td class="px-3 py-2 border-b">GPT-5.4</td><td class="px-3 py-2 border-b">4B</td><td class="px-3 py-2 border-b">1B</td><td class="px-3 py-2 border-b">Multi-product suite, 5.4 as the workhorse</td></tr>
+                <tr><td class="px-3 py-2 border-b">GPT-5 Mini</td><td class="px-3 py-2 border-b">66.6B</td><td class="px-3 py-2 border-b">16.6B</td><td class="px-3 py-2 border-b">Mass-market classification, search, recommendations</td></tr>
+              </tbody>
+            </table>
+            <p>At $10,000, the architecture matters more than the model choice. The teams spending this much are typically running a router that dispatches requests to the right model — 5.5 for the hardest queries, 5.4 for the bulk, Mini for the long tail of simple completions. The OpenAI Python SDK supports the <code>batches</code> endpoint directly, and most teams pair it with a routing layer like <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> (an OpenAI-compatible aggregator that lets you route the same model from a different endpoint without changing code).</p>
+
+            <h2>Decision Tree: Which Model When</h2>
+            <p>Is the task simple classification, extraction, or routing?</p>
+            <ul>
+              <li>Yes: GPT-5 Mini</li>
+              <li>No, continue.</li>
+            </ul>
+            <p>Is the input under 4K tokens and the task is general chat/completion?</p>
+            <ul>
+              <li>Yes: GPT-5.4</li>
+              <li>No, continue.</li>
+            </ul>
+            <p>Is the input over 100K tokens (long-context synthesis)?</p>
+            <ul>
+              <li>Yes: GPT-5.5</li>
+              <li>No, continue.</li>
+            </ul>
+            <p>Is the task a hard coding or math problem where quality is the differentiator?</p>
+            <ul>
+              <li>Yes: GPT-5.5</li>
+              <li>No, continue.</li>
+            </ul>
+            <p>Default: GPT-5.4</p>
+            <p>The decision tree is intentionally conservative. The default is 5.4, not 5.5, because the price-quality gap is favorable for 5.4 in 2026. You should only reach for 5.5 when you have evidence that 5.4 is failing on your specific workload.</p>
+
+            <h2>China Access and FreeModel</h2>
+            <p>OpenAI is not directly accessible from mainland China as of June 2026. The pricing above is the same everywhere OpenAI is accessible, but Chinese developers typically go through one of three paths:</p>
+            <ol>
+              <li>Proxy/VPN access to OpenAI direct — high latency (200-500ms added), variable reliability, occasional rate limits.</li>
+              <li>OpenAI-compatible aggregator with China-direct access — <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> is the most established option. It exposes the GPT-5 family behind a China-direct OpenAI-compatible endpoint, with the same prices as OpenAI direct (no markup) for paid tiers and a free tier that covers 5.4 and Mini for development.</li>
+              <li>Azure OpenAI Service — runs in China through 21Vianet partnership. Slightly different pricing (Azure is a separate billing relationship) and a 3-7 day onboarding process.</li>
+            </ol>
+            <p>The FreeModel angle is the cheapest drop-in for most Chinese teams: same prices, same OpenAI SDK, China-direct latency. The migration is a base URL swap. The only catch: FreeModel's free tier is rate-limited to 60 RPM, which is enough for development but not for production.</p>
+
+            <h2>Code: Python with the OpenAI SDK</h2>
+            <pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(api_key="YOUR_OPENAI_API_KEY")
+
+# Default: GPT-5.4 (mid-tier, best price/quality balance)
+response = client.chat.completions.create(
+    model="gpt-5.4",
+    messages=[
+        &#123;"role": "system", "content": "You are a helpful assistant."&#125;,
+        &#123;"role": "user", "content": "Summarize the last 3 emails in my inbox."&#125;,
+    ],
+)
+
+print(response.choices[0].message.content)
+print(f"Tokens: &#123;response.usage.total_tokens&#125;")</code></pre>
+            <p>To use cached input (automatic 5-minute cache on prompts over 1,024 tokens):</p>
+            <pre><code class="language-python"># First request: full price, writes to cache
+response1 = client.chat.completions.create(
+    model="gpt-5.4",
+    messages=[
+        &#123;"role": "system", "content": LONG_SYSTEM_PROMPT&#125;,  # 50K tokens
+        &#123;"role": "user", "content": "Query 1"&#125;,
+    ],
+)
+
+# Subsequent requests within 5 minutes: 50% off on the cached prefix
+response2 = client.chat.completions.create(
+    model="gpt-5.4",
+    messages=[
+        &#123;"role": "system", "content": LONG_SYSTEM_PROMPT&#125;,  # same prefix
+        &#123;"role": "user", "content": "Query 2"&#125;,
+    ],
+)
+
+# Check cached tokens in the response
+print(f"Cached: &#123;response2.usage.prompt_tokens_details.cached_tokens&#125;")</code></pre>
+            <p>To opt into 1-hour cache:</p>
+            <pre><code class="language-python">response = client.chat.completions.create(
+    model="gpt-5.4",
+    messages=[...],
+    extra_body=&#123;"prompt_cache_retention": "1h"&#125;,  # 25% off instead of 50%
+)</code></pre>
+
+            <h2>Code: curl with Manual JSON</h2>
+            <pre><code class="language-bash">curl -X POST "https://api.openai.com/v1/chat/completions" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -d '&#123;
+    "model": "gpt-5.4",
+    "messages": [
+      &#123;"role": "system", "content": "You are a helpful assistant."&#125;,
+      &#123;"role": "user", "content": "Write a haiku about programming."&#125;
+    ]
+  &#125;'</code></pre>
+            <p>To use Batch (50% off all rates):</p>
+            <pre><code class="language-bash"># 1. Create a JSONL file with one request per line
+cat &gt; batch_input.jsonl &lt;&lt; 'EOF'
+&#123;"custom_id": "req-1", "method": "POST", "url": "/v1/chat/completions", "body": &#123;"model": "gpt-5.4", "messages": [&#123;"role": "user", "content": "Hello"&#125;]&#125;&#125;
+&#123;"custom_id": "req-2", "method": "POST", "url": "/v1/chat/completions", "body": &#123;"model": "gpt-5.4", "messages": [&#123;"role": "user", "content": "World"&#125;]&#125;&#125;
+EOF
+
+# 2. Upload the batch input file
+BATCH_FILE=$(curl -s -X POST "https://api.openai.com/v1/files" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -F "file=@batch_input.jsonl" \
+  -F "purpose=batch" | jq -r .id)
+
+# 3. Create the batch
+BATCH_ID=$(curl -s -X POST "https://api.openai.com/v1/batches" \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d "&#123;\"input_file_id\": \"$BATCH_FILE\", \"endpoint\": \"/v1/chat/completions\", \"completion_window\": \"24h\"&#125;" | jq -r .id)
+
+echo "Batch created: $BATCH_ID"</code></pre>
+
+            <h2>Limitations</h2>
+            <p><strong>GPT-5 is not a single model.</strong> The "GPT-5" name covers three tiers (5.5, 5.4, Mini) with three different price points and three different capability profiles. If you see a benchmark quoted for "GPT-5" without specifying the tier, the result is most likely from GPT-5.5 (the flagship) and will not apply to 5.4 or Mini.</p>
+            <p><strong>Cache hits are not guaranteed.</strong> The 5-minute cache is best-effort. If OpenAI evicts your cache entry (high load, capacity management), the next request pays full price. Most production workloads see 80-95% cache hit rates on repeated prompts, but the 5-20% miss rate means you should not budget assuming 100% cache hits.</p>
+            <p><strong>The cached write fee is real.</strong> On the first request that writes a new long prefix to the cache, you pay the input rate plus a 25% "cache write" surcharge. For one-off workloads that do not benefit from repeated access, the cache is not a cost saver.</p>
+            <p><strong>Mini has no audio support.</strong> If your workload includes audio (transcription, voice agents, audio classification), you need 5.4 or 5.5. Mini handles text and image only.</p>
+            <p><strong>Batch has a 24-hour SLA.</strong> For real-time workloads, Batch is not an option. The 24-hour completion window is the contract; most batches complete in 1-6 hours but you cannot depend on faster.</p>
+            <p><strong>China access requires a workaround.</strong> OpenAI is not directly accessible from mainland China. The three paths are proxy, FreeModel (China-direct OpenAI-compatible aggregator), or Azure OpenAI (separate billing).</p>
+
+            <h2>Use Cases</h2>
+            <p><strong>Building a chat product with 10K DAU.</strong> Default to <strong>GPT-5.4</strong> for the main chat. Use <strong>GPT-5 Mini</strong> for intent classification, routing decisions, and conversation summarization. Reserve <strong>GPT-5.5</strong> for the long-context synthesis requests where users upload 100K+ tokens of document. At a typical chat workload (1,000 input + 500 output tokens per message), 10K DAU at 10 messages per day = 100M output tokens, which fits in the $1,000 budget for 5.4.</p>
+            <p><strong>Building a code review tool.</strong> Use <strong>GPT-5.5</strong> for the final review (the differentiator is quality). Use <strong>GPT-5.4</strong> for the pre-filtering step that decides which PRs to surface. Use <strong>GPT-5 Mini</strong> for the "is this PR description clear?" classification. The cached input lever matters here: a 200K-token repo context can be cached for repeated PRs, halving the input cost on the follow-up calls.</p>
+            <p><strong>Building a RAG system on a 10M-token corpus.</strong> Use <strong>GPT-5.4</strong> for the answer generation, with the retrieved document prefix cached for the 1-hour tier. Without cache, a 200K-token retrieved document costs $0.50 per query on 5.4 input alone. With 1-hour cache at 25% off, the same query costs $0.375 — and if the same document is queried repeatedly (typical for a "what is the company's vacation policy" question), the 5-minute cache at 50% off drops it to $0.25.</p>
+            <p><strong>Building a high-volume moderation or classification pipeline.</strong> Use <strong>GPT-5 Mini</strong> exclusively. At $0.15/$0.60 per million tokens, the cost is negligible for millions of decisions per day. The quality is more than sufficient for binary classification, and the latency is the lowest of the three tiers.</p>
+            <p><strong>Migrating from the GPT-5.2 line (deprecated June 2026).</strong> The migration to GPT-5.4 is a one-line model string change. The pricing is lower (5.4 at $2.50/$10 vs 5.2 at $10/$30), so most workloads see a 3-4x cost reduction on the move. For workloads that were on GPT-5.2 for hard reasoning, GPT-5.5 is the upgrade path (and 5.5 is also cheaper than 5.2 on input: $5 vs $10).</p>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Which GPT-5 model should I use for a chat product?</strong></p>
+            <p>A: GPT-5.4 is the right default for most chat products in 2026. The price-quality gap between 5.4 and 5.5 is small (within 5-10% on most chat benchmarks), but the cost difference is 2x. Reserve 5.5 for the long-context requests (over 100K input tokens) where the model has a measurable advantage, and use Mini for the classification and routing calls.</p>
+            <p><strong>Q: Is GPT-5 cheaper than GPT-4o?</strong></p>
+            <p>A: Yes, on input. GPT-5.4 at $2.50/M is half the GPT-4o rate of $5/M, and Mini at $0.15/M is dramatically cheaper than GPT-4o-mini at $0.15/M (the same). For most workloads, migrating from GPT-4o to GPT-5.4 is a 2x cost reduction with comparable or better quality.</p>
+            <p><strong>Q: Can I mix models in the same workflow?</strong></p>
+            <p>A: Yes, and you should. The standard pattern is to use Mini for the long tail of simple completions (intent classification, routing, summarization, extraction), 5.4 for the bulk of user-facing completions, and 5.5 for the hardest tasks. The OpenAI Python SDK supports all three models with the same call shape, so the routing logic is in your application code.</p>
+            <p><strong>Q: How does the cached input discount work?</strong></p>
+            <p>A: When you send a request with a prefix that matches a cache entry (at least 1,024 tokens, last used within 5 minutes for the 5-minute tier or 1 hour for the 1-hour tier), OpenAI charges a discount on the cached portion. The 5-minute tier is automatic and gives 50% off. The 1-hour tier is opt-in (<code>prompt_cache_retention: "1h"</code>) and gives 25% off. Both apply transparently — you do not need to manage the cache yourself.</p>
+            <p><strong>Q: Is the Batch API worth the 24-hour wait?</strong></p>
+            <p>A: For evals, bulk content generation, and backfill jobs, yes — the 50% discount is significant at scale. For interactive workloads, no. The 24-hour SLA is incompatible with any user-facing product. Most teams add Batch as a separate code path for the async workloads and keep the Chat Completions API for the real-time path.</p>
+            <p><strong>Q: Can I use GPT-5 from China?</strong></p>
+            <p>A: OpenAI is not directly accessible from mainland China. The three paths are proxy/VPN (high latency, unreliable), <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> (China-direct OpenAI-compatible aggregator with the same prices), or Azure OpenAI Service through 21Vianet (separate billing, 3-7 day onboarding). For most Chinese teams, FreeModel is the cheapest drop-in.</p>
+            <p><strong>Q: Is there a free tier?</strong></p>
+            <p>A: OpenAI gives $5 in free credit to new accounts (valid for 3 months), but there is no permanent free tier for GPT-5. <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> has a permanent free tier for development use of GPT-5.4 and Mini (60 RPM, 100K tokens per day). For production, you need a paid account at OpenAI direct, FreeModel, or Azure.</p>
+            <p><strong>Q: What happened to GPT-5.2?</strong></p>
+            <p>A: Deprecated on June 5, 2026, with the Copilot retirement running through August 2026. Direct API access is expected to end Q4 2026. Most production workloads should migrate to 5.4 (cheaper, similar quality) or 5.5 (flagship, new) by Q3 2026.</p>
+
+            <h2>Conclusion</h2>
+            <p>The GPT-5 pricing in 2026 is structured around three tiers, and the right choice depends on the workload type, not the brand name. GPT-5.5 at $5/$15 per million tokens is the flagship for the hardest reasoning tasks. GPT-5.4 at $2.50/$10 is the workhorse for most production deployments — same quality on most tasks, half the cost. GPT-5 Mini at $0.15/$0.60 is the budget tier for high-volume agents and classification, and the right default for the long tail of simple completions.</p>
+            <p>The two compounding levers are Batch (50% off all rates, async only) and cached input (50% off on repeated prompts via the 5-minute tier, 25% off via the 1-hour tier). For workloads with long system prompts, RAG on stable corpora, or code review on a fixed repository, the cached input lever is the single biggest cost optimization available — and it is automatic, requiring no code change.</p>
+            <p>For most teams in 2026, the right architecture is a router: Mini for the simple calls, 5.4 for the bulk, 5.5 for the hard ones. <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> is the most pragmatic pick for China-direct OpenAI-compatible access (the same models, same prices, no proxy). OpenRouter is the alternative for multi-vendor flexibility. The Batch API is the optimization for any workload that can tolerate 24 hours of latency. And the cached input discount is the lever to turn on for any workload with a stable long prefix.</p>
+            <p>The pricing is not the whole story — model quality, latency, and feature support (function calling, vision, audio) all factor in. But for the cost-conscious team picking a model in 2026, the math is: start with 5.4 as the default, reach for 5.5 only when the eval says 5.4 is failing, and use Mini for anything that does not need 5.4's quality. Turn on cached input for any workload with a long prefix. Turn on Batch for any workload that can wait 24 hours. The combination is the cheapest path to production GPT-5 in 2026.</p>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>GPT-5.5 input:</strong> $5.00 / 1M tokens</li>
+                <li><strong>GPT-5.5 output:</strong> $15.00 / 1M tokens</li>
+                <li><strong>GPT-5.4 input:</strong> $2.50 / 1M tokens</li>
+                <li><strong>GPT-5.4 output:</strong> $10.00 / 1M tokens</li>
+                <li><strong>GPT-5 Mini input:</strong> $0.15 / 1M tokens</li>
+                <li><strong>GPT-5 Mini output:</strong> $0.60 / 1M tokens</li>
+                <li><strong>Batch API:</strong> 50% off (24h SLA)</li>
+                <li><strong>Cache 5-min:</strong> 50% off, automatic</li>
+                <li><strong>Cache 1-hour:</strong> 25% off, opt-in</li>
+                <li><strong>Default pick:</strong> GPT-5.4</li>
+              </ul>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/openai-gpt-4o-review/" class="text-blue-600 hover:underline">OpenAI GPT-4o Review</a></li>
+                <li><a href="/tutorials/openai-moderation-api-2026/" class="text-blue-600 hover:underline">OpenAI Moderation API 2026</a></li>
+                <li><a href="/tutorials/openai-compatible-api-2026/" class="text-blue-600 hover:underline">OpenAI-Compatible API 2026</a></li>
+                <li><a href="/tutorials/cheapest-llm-api-pricing-2026/" class="text-blue-600 hover:underline">Cheapest LLM API 2026</a></li>
+                <li><a href="/tutorials/ai-api-cost-control-tools-2026/" class="text-blue-600 hover:underline">AI API Cost Control 2026</a></li>
+                <li><a href="/tutorials/ai-api-speed-benchmarks-2026/" class="text-blue-600 hover:underline">AI API Speed Benchmarks 2026</a></li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Try FreeModel Free</h3>
+              <p class="text-sm text-gray-700 mb-3">China-direct OpenAI-compatible aggregator. Routes the GPT-5 lineup (5.5/4/Mini) from a domestic endpoint with the same prices. Free tier for 5.4 and Mini development.</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+            </div>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">Ad</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

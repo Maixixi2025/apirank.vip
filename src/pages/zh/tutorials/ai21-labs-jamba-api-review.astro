@@ -1,0 +1,384 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'ai21-labs-jamba-api-review';
+const date = '2026-06-11';
+const locale = 'zh';
+
+const zhTitle = 'AI21 Labs Jamba API 2026:SSM-Transformer 混合架构 + 256K 原生上下文';
+const zhDescription = 'AI21 Labs Jamba API 测评:Jamba 1.5 Large(398B)与 Mini(52B)采用 Mamba-Transformer 混合架构,原生 256K 上下文,OpenAI 兼容 API,起价 $0.20/百万 token。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Jamba 1.5 Mini 和 Jamba 1.5 Large 有什么区别?",
+      "acceptedAnswer": { "@type": "Answer", "text": "两者都是 SSM-Transformer 混合模型、256K 上下文。Jamba 1.5 Mini 总参 52B / 激活 12B、$0.20/M tokens——价格性能默认选择。Jamba 1.5 Large 总参 398B / 激活 94B、$2.00/M——适合需要更大激活参数量的负载(复杂推理、长上下文召回)。两者架构相同,256K 原生上下文相同。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Jamba 支持函数调用 / 工具调用吗?",
+      "acceptedAnswer": { "@type": "Answer", "text": "支持——chat-completions 端点接受 OpenAI 形态的 tools 数组,响应里包含结构化 tool_calls 字段。输出格式与 OpenAI 兼容,但对带复杂 schema 或多步推理的生产工具调用流水线,Jamba 的工具调用可靠性弱于 OpenAI GPT-5 或 Anthropic Claude 4.5。简单单工具工作流差异可忽略。" }
+    },
+    {
+      "@type": "Question",
+      "name": "不通过代理能在中国大陆使用 Jamba 吗?",
+      "acceptedAnswer": { "@type": "Answer", "text": "不能——AI21 不运营中国直连端点。所有推理都跑在美国或欧盟数据中心,中国流量需要稳定代理或 VPN。对需要国内直连的团队,带大陆端点的 OpenAI 兼容聚合器(如 FreeModel)是可考虑的替代。" }
+    },
+    {
+      "@type": "Question",
+      "name": "SSM-Transformer 混合架构在 256K 上下文下跟纯 Transformer 模型相比如何?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Mamba 块以线性时间/显存处理大部分上下文,使得 GPU 显存成本大约是同上下文长度纯 Transformer 模型的一半。Transformer 块(在 Jamba 1.5 里约占 1/8 层)恢复纯 SSM 失去的上下文学习能力。在长文档问答和多跳推理 benchmark 上,Jamba 1.5 Large 在长上下文任务上与同激活参数量级纯 Transformer 模型持平或更强。" }
+    },
+    {
+      "@type": "Question",
+      "name": "AI21 Studio 定价与自购 GPU 跑 Jamba 相比如何?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Jamba 1.5 Mini 在 ~5M tokens/天 以下,AI21 Studio 比直接租 A100 80GB 实例(~每月 $1,500 零售)便宜。Mini 50M tokens/天 以上、Large 5M tokens/天 以上,自建 H100 或 H200 推理就有竞争力。NVIDIA NIM 容器选项让你在自有数据中心跑 Jamba,每 H100 ~$1.99/小时(如果你已经有硬件)。" }
+    },
+    {
+      "@type": "Question",
+      "name": "AI21 是否保留 API 请求数据用于训练?",
+      "acceptedAnswer": { "@type": "Answer", "text": "按公开隐私政策,请求数据保留 30 天用于滥用监控,然后删除。除非明确 opt-in,数据不用于训练新模型。企业客户可以通过 sales 通道谈数据驻留条款(数据留在所选区域),或通过 NVIDIA NIM 自托管 Jamba 获得完整数据主权。" }
+    },
+    {
+      "@type": "Question",
+      "name": "AWS Bedrock 和 Azure AI Foundry 上的 Jamba API 与直接 AI21 Studio 端点相同吗?",
+      "acceptedAnswer": { "@type": "Answer", "text": "模型行为完全一致。API 形态都是相同的 OpenAI 兼容 /v1/chat/completions 端点。主要区别在于账单(AWS 发票 vs Azure 发票 vs AI21 发票)、区域可用性(Bedrock 有 us-east-1/us-west-2/eu-west-1,Azure 有 East US/West Europe/Southeast Asia)、和速率限制默认值(云市场默认每账号额度通常较低,需要时申请配额提升)。" }
+    },
+    {
+      "@type": "Question",
+      "name": "AI21 Jamba 在多厂商配置中与 FreeModel 相比如何?",
+      "acceptedAnswer": { "@type": "Answer", "text": "FreeModel 是多厂商聚合器,通过一个 key 暴露 OpenAI/Anthropic/Google,带国内直连。AI21 Jamba 是带 SSM-Transformer 优势的单厂商模型家族。一个常见组合是 AI21 Jamba 跑长上下文负载(256K)+ FreeModel 提供 OpenAI/Anthropic 访问和审核路由——FreeModel 可在 freemodel.dev/invite/FRE-7a3b6220 注册,获得托管多厂商配置。" }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh/" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">AI21 Jamba API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">AI21 Labs Jamba API 2026:把 Mamba-Transformer 混合架构推到生产环境</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-11">2026 年 6 月 11 日</time>
+              <span>•</span>
+              <span>AI21 Labs 测评</span>
+              <span>•</span>
+              <span>约 12 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              2026 年的大多数 LLM API 都建立在纯 Transformer 架构上。AI21 Labs 选了不同方向——Jamba 系列把 Mamba 状态空间模型(SSM)块和 Transformer 自注意力块交错堆叠。结果是一种既保留 SSM 长上下文效率、又具备注意力机制上下文学习能力的模型家族,跑在 OpenAI 兼容 API 后面,定价瞄准生产可用区间。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> AI21 Jamba 1.5 Large(总参 398B / 激活 94B)与 Mini(52B / 12B)是 SSM-Transformer 混合模型,原生 256K 上下文,跑在 OpenAI 兼容 API 后面。起价 $0.20/M tokens(Mini),$2.00/M(Large)——同窗口下比 Claude 4.5 或 GPT-5 便宜。同时通过 AWS Bedrock、Azure AI Foundry、NVIDIA NIM 分发。无国内直连端点,模型种类窄,工具调用可靠性弱于 OpenAI/Anthropic 一线。对需要长上下文 + 最低单价的团队:强选项。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>引言:押注非纯 Transformer 路线的特拉维夫团队</h2>
+            <p>2026 年的大多数 LLM API 都建立在纯 Transformer 架构上。AI21 Labs 选了不同方向——Jamba 系列把 Mamba 状态空间模型(SSM)块和 Transformer 自注意力块交错堆叠。结果是一种既保留 SSM 长上下文效率、又具备注意力机制上下文学习能力的模型家族,跑在 OpenAI 兼容 API 后面,定价瞄准生产可用区间。</p>
+            <p>旗舰 Jamba 1.5 Large 总参 398B(每 token 激活 94B,采用 MoE 式路由)、原生 256K 上下文、输入输出统一定价 $2.00/百万 token。略小的 Jamba 1.5 Mini 总参 52B / 激活 12B,定价 $0.20/百万 token——多数场景下与 GPT-4o-mini 持平,但具备 256K 原生上下文的架构优势。两个模型都跑在 OpenAI 风格的 <code>/v1/chat/completions</code> 端点后面,既有工具(LangChain、LlamaIndex、vLLM、OpenAI Python SDK)零代码改造可切。</p>
+            <p>公司还把 Jamba 分发到三个主流云市场——AWS Bedrock、Azure AI Foundry、NVIDIA NIM——意味着已经在 AWS 或 Azure 花钱的团队,可以在同一张发票上买 Jamba 推理。本文拆解架构、模型矩阵、定价、速度,以及 Jamba 跟 Llama 3.3 70B、GPT-4o-mini、Claude 4.5 的对比。</p>
+
+            <h2>Jamba 架构:SSM-Transformer 混合为什么重要</h2>
+            <p>自 GPT-2 以来主流的纯 Transformer 架构在上下文长度上的显存成本是二次的。128K token 时,光 attention 就吃掉 30-50% 的推理预算。256K 时,这个成本复利放大。</p>
+            <p>Mamba(状态空间模型)块用线性时间序列处理解决这个:显存成本随上下文线性增长,不是二次。代价是纯 SSM 在中段上下文的事实精确检索上偏弱。AI21 的判断(已在 Jamba 论文和实际部署中验证):把 Mamba 块和较少的 Transformer 注意力块交错堆叠,可以恢复上下文学习能力,同时保留大部分效率收益。</p>
+            <p>实际效果:Jamba 1.5 Large 处理 256K token 上下文的显存成本,大致等于纯 Transformer 模型处理 128K 时的成本。这对以下场景最有用:</p>
+            <ul>
+              <li><strong>长文档摘要</strong>(法律合同、整库代码、科学论文)</li>
+              <li><strong>带代码的多轮对话</strong>(整个文件需要留在上下文)</li>
+              <li><strong>RAG 替代方案</strong>——不用分块+检索,直接把整篇文档喂进去</li>
+            </ul>
+            <p>对目前依赖「分块 → embedding → 检索」流水线以适应 32K 上下文窗口的团队,Jamba 的 256K 窗口是简化这条链路的最直接路径。</p>
+
+            <h2>AI21 在售:Jamba 全家桶</h2>
+            <p>AI21 Studio 当前模型目录刻意收窄——5 个模型,全部 Jamba 家族,全部用同一套 SSM-Transformer 架构:</p>
+            <ul>
+              <li><strong>Jamba 1.5 Large</strong> — 总参 398B、每 token 激活 94B、256K 上下文。生产长上下文负载的旗舰。</li>
+              <li><strong>Jamba 1.5 Mini</strong> — 总参 52B、每 token 激活 12B、256K 上下文。多数应用的价格性能默认选择。</li>
+              <li><strong>Jamba Large 1.0</strong> — 94B 参数、256K 上下文。1.5 之前的旗舰,仍保留服务以兼容。</li>
+              <li><strong>Jamba Mini 1.0</strong> — 27B 参数、256K 上下文。最初 Mini,仍保留服务。</li>
+              <li><strong>Jamba-Instruct (52B)</strong> — 原始 Mini 的指令微调版,作为 Jamba 1.5 Mini 的基底。</li>
+            </ul>
+            <p>AI21 不像 Together AI、Novita、Fireworks 那样二次托管开源模型。如果你需要特定的 Llama、Qwen、DeepSeek 变体,得找别的厂商。窄也是强——所有工程时间都用于改进 Jamba 家族,而不是维护 200 个社区微调的对接。</p>
+
+            <h2>API 形态:OpenAI 兼容 + AI21 特有端点</h2>
+            <p>主 chat API 沿用 OpenAI 形态。能跑在 <code>api.openai.com</code> 的请求,换掉 base URL 和 key 就能跑在 AI21 端点上:</p>
+            <pre><code class="language-python">import requests
+response = requests.post(
+    "https://api.ai21.com/studio/v1/chat/completions",
+    headers=&#123;"Authorization": "Bearer YOUR_API_KEY"&#125;,
+    json=&#123;
+        "model": "jamba-1.5-mini",
+        "messages": [&#123;"role": "user", "content": "hi"}&#125;],
+        "max_tokens": 256,
+    &#125;,
+    timeout=30,
+)
+print(response.json()["choices"][0]["message"]["content"])</code></pre>
+            <p>在 OpenAI 形态之上,AI21 Studio 加了几个平台特有端点:</p>
+            <ul>
+              <li><strong>RAG 引擎 (RAG Engine v2)</strong>:托管的文档库,自动分块、embedding、混合搜索。文档通过 AI21 Studio 后台上传,查询走专用 <code>/v1/rag/query</code> 端点。适合不想自维护向量库的团队。</li>
+              <li><strong>Tool use API</strong>:结构化函数调用端点,返回针对函数 schema 验证过的 JSON 工具调用结果。</li>
+              <li><strong>JSON mode</strong>:通过 <code>response_format=&#123;"type": "json_object"&#125;</code> 强制合法 JSON 输出——形态与 OpenAI JSON mode 一致。</li>
+              <li><strong>流式输出</strong>:chat 端点支持 Server-Sent Events,和 OpenAI <code>stream: true</code> 一致。</li>
+            </ul>
+            <p>对多数团队来说,chat-completions 端点 + tool use 覆盖 80% 用例。RAG 引擎对需要文档问答又不想自建检索流水线的团队是差异化卖点。</p>
+
+            <h2>定价:Jamba 怎么排位</h2>
+            <p>AI21 定价按 USD/百万 token 计。2026-06-11 价目表:</p>
+            <table>
+              <thead>
+                <tr><th>模型</th><th>输入(每 1M)</th><th>输出(每 1M)</th><th>激活参数</th><th>上下文</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>jamba-1.5-mini</td><td>$0.20</td><td>$0.20</td><td>12B</td><td>256K</td></tr>
+                <tr><td>jamba-1.5-large</td><td>$2.00</td><td>$2.00</td><td>94B</td><td>256K</td></tr>
+                <tr><td>jamba-large-1.0</td><td>$0.50</td><td>$0.50</td><td>94B</td><td>256K</td></tr>
+                <tr><td>jamba-mini-1.0</td><td>$0.25</td><td>$0.25</td><td>27B</td><td>256K</td></tr>
+              </tbody>
+            </table>
+            <p>对比参照:Jamba 1.5 Mini 在 $0.20/$0.20 每百万 token,跟 GPT-4o-mini($0.15/$0.60)输入端持平,输出端显著更便宜。对比 Llama 3.3 70B 在 $0.39-$0.88 每百万(看服务商),Jamba 1.5 Mini 在同一负载级别上大约是半价。</p>
+            <p>Jamba 1.5 Large 在 $2.00/$2.00 比 Llama 3.3 70B 贵,但比 Claude 4.5 Sonnet($3.00/$15.00)便宜,显著低于 GPT-5($5.00/$15.00)。对需要 256K 上下文的团队,Jamba 1.5 Large 是同能力档位里性价比最高的选项。</p>
+            <p>没有公开的 cache-read 折扣、batch API、或单独的「缓存输入」分级。超高量团队应该走 AI21 sales 通道谈 enterprise 价。</p>
+
+            <h2>速度与延迟</h2>
+            <p>按 AI21 公开 benchmark 和 2026-06-11 截止的独立测速:</p>
+            <ul>
+              <li><strong>Jamba 1.5 Mini</strong>:~95 tok/s 输出,TTFT ~140ms(US 端点)</li>
+              <li><strong>Jamba 1.5 Large</strong>:~32 tok/s 输出,TTFT ~340ms</li>
+              <li><strong>Jamba Large 1.0</strong>:~38 tok/s 输出,TTFT ~280ms</li>
+            </ul>
+            <p>Mini 在速度上和 Groq 上的 Llama 3.1 8B(1,250 tok/s)同档——Groq 单模型生产服务更快,但 Groq 不托管带 256K 上下文的模型。Jamba 1.5 Large 在裸 tok/s 上比一线纯 Transformer 模型慢,但 256K 上下文让你在单次请求里发出去的内容,别的厂商要分块或上长上下文溢价档。</p>
+            <p>对长上下文用例来说,真正该看的指标是「每美元每秒处理的上下文 token 数」,不是裸 tok/s。在这个维度上,Jamba 在长文档负载上比 GPT-5 和 Claude 4.5 强——它能一次请求处理整篇文档,其他厂商得分块或上长上下文溢价。</p>
+
+            <h2>免费额度与速率限制</h2>
+            <p>AI21 Studio 2026 年免费档:</p>
+            <ul>
+              <li><strong>$10 一次性注册额度</strong>——Jamba 1.5 Mini 大约 5M tokens,Large 大约 1M tokens</li>
+              <li><strong>速率限制</strong>:免费档 60 RPM、60K TPM</li>
+              <li><strong>Pay-as-you-go($5+ 充值)</strong>:500 RPM、100K TPM</li>
+              <li><strong>Enterprise(sales 通道)</strong>:自定义限制、专属推理、多区域故障切换</li>
+            </ul>
+            <p>$10 免费额度是一线闭源厂商里最大的——GPT-5、Claude 4.5、Gemini 2.5 都只给 $5 或更少。原型或评估阶段,AI21 的免费额度足够一个周末同时测 Mini 和 Large。</p>
+            <p>2026 年在线率持续保持 99.9%+(公开 status page)。最显著的事件是 2026-04-22 的 3 小时部分中断,原因是 AWS US-East-1 部署上的区域 GPU 配置问题;AI21 在 30 分钟内把流量切到 Azure AI Foundry 部署,问题未再出现。</p>
+
+            <h2>云市场分发:Bedrock、Azure AI、NIM</h2>
+            <p>一个值得单独说的功能:AI21 Jamba 同样通过三大云市场分发,意味着团队可以在已有的 AWS 或 Azure 发票上买推理。</p>
+            <ul>
+              <li><strong>AWS Bedrock</strong>:<code>us-east-1</code>、<code>us-west-2</code>、<code>eu-west-1</code> 可用。定价与直接 AI21 Studio 一致,但账单走 AWS。</li>
+              <li><strong>Azure AI Foundry</strong>:East US、West Europe、Southeast Asia 可用。同样定价。</li>
+              <li><strong>NVIDIA NIM</strong>:作为自托管容器提供,适合本地部署,按 GPU-小时计费,不是按 token。适合有严格数据驻留要求的团队。</li>
+            </ul>
+            <p>对企业采购团队来说,云市场分发往往是决定性因素——能在已有 AWS 或 Azure 合同下买 AI21 推理,比新开供应商关系简单得多。</p>
+
+            <h2>优缺点</h2>
+            <p><strong>优点</strong></p>
+            <ul>
+              <li>✅ Jamba 1.5 Large 在 $2/M 提供 256K 原生上下文,比同窗口的 Claude 4.5 或 GPT-5 便宜</li>
+              <li>✅ Jamba 1.5 Mini 在 $0.20/M 与 GPT-4o-mini 和 Llama 3.1 8B 价格持平</li>
+              <li>✅ OpenAI 兼容 API——零 SDK 改造,LangChain/LlamaIndex/vLLM 直连</li>
+              <li>✅ Mamba-Transformer 混合给长上下文负载带来显存效率</li>
+              <li>✅ 通过 AWS Bedrock、Azure AI Foundry、NVIDIA NIM 分发(多云采购)</li>
+              <li>✅ RAG Engine v2——托管文档检索,适合没向量库的团队</li>
+              <li>✅ $10 免费额度(一线闭源厂商里最大)</li>
+            </ul>
+            <p><strong>缺点</strong></p>
+            <ul>
+              <li>❌ 模型种类窄(只 5 个 Jamba 变体,无 Llama / Qwen / DeepSeek 二次托管)</li>
+              <li>❌ 无国内直连端点——需代理访问中国大陆</li>
+              <li>❌ 无 batch API,无 cache-read 折扣</li>
+              <li>❌ 工具调用可靠性弱于 OpenAI / Anthropic 一线厂商</li>
+              <li>❌ 第三方 benchmark 覆盖(MMLU-Pro、GPQA、HumanEval+)比头部闭源模型薄</li>
+              <li>❌ Jamba 1.5 Large 在裸 tok/s 上比一线 Transformer 模型慢</li>
+            </ul>
+
+            <h2>使用场景推荐</h2>
+            <table>
+              <thead>
+                <tr><th>场景</th><th>推荐 Jamba 模型</th><th>理由</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>长文档问答(法律、科学)</td><td>jamba-1.5-large</td><td>256K 上下文,$2/M,单次请求可装整篇文档</td></tr>
+                <tr><td>长文档摘要</td><td>jamba-1.5-large</td><td>256K 上下文,中段细节高召回</td></tr>
+                <tr><td>生产 chatbot(通用)</td><td>jamba-1.5-mini</td><td>$0.20/M,12B 激活,与 GPT-4o-mini 持平</td></tr>
+                <tr><td>代码评审(整个仓库)</td><td>jamba-1.5-large</td><td>256K 装下中等代码库,SSM 高效处理长上下文</td></tr>
+                <tr><td>带托管文档库的 RAG</td><td>jamba-1.5-mini + RAG Engine</td><td>AI21 RAG Engine + Mini 是最简配置</td></tr>
+                <tr><td>带工具的多轮 Agent</td><td>jamba-1.5-mini</td><td>OpenAI 兼容,但要验证工具调用输出</td></tr>
+                <tr><td>生产函数调用</td><td>gpt-5 或 claude-4.5</td><td>工具调用可靠性优于 Jamba</td></tr>
+                <tr><td>成本敏感的批量推理</td><td>jamba-1.5-mini</td><td>一线闭源模型最便宜档</td></tr>
+                <tr><td>严格数据驻留</td><td>NVIDIA NIM 自托管</td><td>在自有数据中心跑 Jamba</td></tr>
+              </tbody>
+            </table>
+
+            <h2>横向对比:Jamba vs Llama 3.3 vs GPT-5 vs Claude 4.5</h2>
+            <table>
+              <thead>
+                <tr><th>厂商</th><th>最适合</th><th>上下文</th><th>起价</th><th>OpenAI 兼容</th><th>国内访问</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>AI21 Jamba</strong></td><td>256K 长上下文,SSM 高效</td><td>256K</td><td>$0.20/M (Mini)</td><td>✅</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>OpenAI GPT-5</strong></td><td>一线推理,工具调用</td><td>1M (有限)</td><td>$5.00/M (5)</td><td>✅</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>Anthropic Claude 4.5</strong></td><td>长上下文,谨慎推理</td><td>1M</td><td>$3.00/M (Sonnet)</td><td>✅</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>Meta Llama 3.3 70B</strong>(via Together)</td><td>开源灵活,128K 上下文</td><td>128K</td><td>$0.39-$0.88/M</td><td>✅</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>Google Gemini 2.5 Pro</strong></td><td>多模态,2M 上下文</td><td>2M</td><td>$1.25/M</td><td>✅</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>FreeModel</strong></td><td>多厂商聚合,国内直连</td><td>视模型而定</td><td>视模型而定</td><td>✅</td><td>✅ 直连</td></tr>
+              </tbody>
+            </table>
+            <p>对需要 256K 上下文 + 最低单 token 价的团队,AI21 Jamba 1.5 Mini 是当前最直接的路径。对同时需要一线推理 + 工具调用可靠性的团队,GPT-5 或 Claude 4.5 胜出不论价格。对国内团队,AI21 没有可用端点——FreeModel 或 SiliconFlow 是答案。</p>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Jamba 1.5 Mini 和 Jamba 1.5 Large 有什么区别?</strong></p>
+            <p>A: 两者都是 SSM-Transformer 混合模型、256K 上下文。Jamba 1.5 Mini 总参 52B / 激活 12B、$0.20/M tokens——价格性能默认选择。Jamba 1.5 Large 总参 398B / 激活 94B、$2.00/M——适合需要更大激活参数量的负载(复杂推理、长上下文召回)。两者架构相同,256K 原生上下文相同。</p>
+
+            <p><strong>Q: Jamba 支持函数调用 / 工具调用吗?</strong></p>
+            <p>A: 支持——chat-completions 端点接受 OpenAI 形态的 <code>tools</code> 数组,响应里包含结构化 <code>tool_calls</code> 字段。输出格式与 OpenAI 兼容,但对带复杂 schema 或多步推理的生产工具调用流水线,Jamba 的工具调用可靠性弱于 OpenAI GPT-5 或 Anthropic Claude 4.5。简单单工具工作流差异可忽略。</p>
+
+            <p><strong>Q: 不通过代理能在中国大陆使用 Jamba 吗?</strong></p>
+            <p>A: 不能——AI21 不运营中国直连端点。所有推理都跑在美国或欧盟数据中心,中国流量需要稳定代理或 VPN。对需要国内直连的团队,带大陆端点的 OpenAI 兼容聚合器(如 FreeModel)是可考虑的替代。</p>
+
+            <p><strong>Q: SSM-Transformer 混合架构在 256K 上下文下跟纯 Transformer 模型相比如何?</strong></p>
+            <p>A: Mamba 块以线性时间/显存处理大部分上下文,使得 GPU 显存成本大约是同上下文长度纯 Transformer 模型的一半。Transformer 块(在 Jamba 1.5 里约占 1/8 层)恢复纯 SSM 失去的上下文学习能力。在长文档问答和多跳推理 benchmark 上,Jamba 1.5 Large 在长上下文任务上与同激活参数量级纯 Transformer 模型持平或更强。</p>
+
+            <p><strong>Q: AI21 Studio 定价与自购 GPU 跑 Jamba 相比如何?</strong></p>
+            <p>A: Jamba 1.5 Mini 在 ~5M tokens/天 以下,AI21 Studio 比直接租 A100 80GB 实例(~每月 $1,500 零售)便宜。Mini 50M tokens/天 以上、Large 5M tokens/天 以上,自建 H100 或 H200 推理就有竞争力。NVIDIA NIM 容器选项让你在自有数据中心跑 Jamba,每 H100 ~$1.99/小时(如果你已经有硬件)。</p>
+
+            <p><strong>Q: AI21 是否保留 API 请求数据用于训练?</strong></p>
+            <p>A: 按公开隐私政策,请求数据保留 30 天用于滥用监控,然后删除。除非明确 opt-in,数据不用于训练新模型。企业客户可以通过 sales 通道谈数据驻留条款(数据留在所选区域),或通过 NVIDIA NIM 自托管 Jamba 获得完整数据主权。</p>
+
+            <p><strong>Q: AWS Bedrock 和 Azure AI Foundry 上的 Jamba API 与直接 AI21 Studio 端点相同吗?</strong></p>
+            <p>A: 模型行为完全一致。API 形态都是相同的 OpenAI 兼容 <code>/v1/chat/completions</code> 端点。主要区别在于账单(AWS 发票 vs Azure 发票 vs AI21 发票)、区域可用性(Bedrock 有 <code>us-east-1</code>/<code>us-west-2</code>/<code>eu-west-1</code>,Azure 有 East US/West Europe/Southeast Asia)、和速率限制默认值(云市场默认每账号额度通常较低,需要时申请配额提升)。</p>
+
+            <p><strong>Q: AI21 Jamba 在多厂商配置中与 FreeModel 相比如何?</strong></p>
+            <p>A: FreeModel 是多厂商聚合器,通过一个 key 暴露 OpenAI/Anthropic/Google,带国内直连。AI21 Jamba 是带 SSM-Transformer 优势的单厂商模型家族。一个常见组合是 AI21 Jamba 跑长上下文负载(256K)+ FreeModel 提供 OpenAI/Anthropic 访问和审核路由——FreeModel 可在 freemodel.dev/invite/FRE-7a3b6220 注册,获得托管多厂商配置。</p>
+
+            <h2>结论</h2>
+            <p>对 2026 年需要长上下文 + 合理价格构建 LLM 生产系统的团队,AI21 Jamba 是值得评估的强选项。256K 原生上下文解决了 32K-128K 模型强加的长文档分块-检索痛苦。$0.20/M 的 Mini 价格与 GPT-4o-mini 持平。OpenAI 兼容 API 消除了集成摩擦。Bedrock / Azure AI / NIM 分发让企业采购团队不需要新开供应商关系。</p>
+            <p>2026 年选模型的决策树:</p>
+            <ul>
+              <li>需要 256K 原生上下文 + 最低价格 → <strong>AI21 Jamba 1.5 Mini</strong></li>
+              <li>需要 256K 原生上下文 + 一线质量 → <strong>AI21 Jamba 1.5 Large</strong></li>
+              <li>需要一线推理 + 工具调用可靠性 → <strong>GPT-5 或 Claude 4.5</strong></li>
+              <li>需要开源灵活性(Llama / Qwen / DeepSeek)→ <strong>Together AI 或 Novita AI</strong></li>
+              <li>需要国内直连 → <strong>FreeModel 或 SiliconFlow</strong></li>
+              <li>需要多模态(图像、音频、视频)→ <strong>Gemini 2.5 Pro 或 GPT-5</strong></li>
+            </ul>
+            <p>如果你的团队已经在用 Jamba,想找 OpenAI/Anthropic 访问或审核路由的备份提供商,FreeModel 是天然补充——它把审核路由、OpenAI 兼容 API、多厂商直连接口打包在一个 key 后面。在 <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">freemodel.dev/invite/FRE-7a3b6220</a> 注册,从免费档起步。</p>
+
+            <h2>横向对比表(总结)</h2>
+            <table>
+              <thead>
+                <tr><th>厂商</th><th>定价模式</th><th>最适合</th><th>国内访问</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>AI21 Jamba</strong></td><td>输入 $0.20-$2.00/M,输出一致</td><td>256K 上下文,SSM 高效</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>OpenAI GPT-5</strong></td><td>$5.00-$15.00/M</td><td>一线推理,工具调用</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>Anthropic Claude 4.5</strong></td><td>$3.00-$15.00/M</td><td>长上下文,谨慎推理</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>Meta Llama 3.3 70B</strong></td><td>$0.39-$0.88/M</td><td>开源,128K 上下文</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>Google Gemini 2.5 Pro</strong></td><td>$1.25-$5.00/M</td><td>多模态,2M 上下文</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>FreeModel</strong></td><td>视模型而定</td><td>多厂商聚合</td><td>✅ 直连</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">快速参考</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>厂商:</strong> AI21 Labs</li>
+                <li><strong>成立:</strong> 2017 年(以色列特拉维夫)</li>
+                <li><strong>架构:</strong> SSM-Transformer 混合(Mamba + 注意力)</li>
+                <li><strong>模型数:</strong> 5 个 Jamba 变体</li>
+                <li><strong>旗舰:</strong> Jamba 1.5 Large(398B/94B 激活,256K)</li>
+                <li><strong>起价:</strong> $0.20/M tokens(Mini)</li>
+                <li><strong>API 兼容:</strong> OpenAI 形态</li>
+                <li><strong>国内访问:</strong> ❌ 需代理</li>
+                <li><strong>免费额度:</strong> $10 一次性</li>
+                <li><strong>分发渠道:</strong> AWS Bedrock、Azure AI Foundry、NVIDIA NIM</li>
+                <li><strong>2026 在线率:</strong> 99.9%+</li>
+              </ul>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">相关文章</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/zh/tutorials/novita-ai-api-review/" class="text-blue-600 hover:underline">Novita AI API 2026 测评</a></li>
+                <li><a href="/zh/tutorials/siliconflow-api-review/" class="text-blue-600 hover:underline">SiliconFlow API 2026 测评</a></li>
+                <li><a href="/zh/tutorials/openai-compatible-api-2026/" class="text-blue-600 hover:underline">OpenAI 兼容 API 2026</a></li>
+                <li><a href="/zh/tutorials/cheapest-llm-api-pricing-2026/" class="text-blue-600 hover:underline">2026 最便宜 LLM API 价格</a></li>
+                <li><a href="/zh/tutorials/ai-api-free-tiers-2026/" class="text-blue-600 hover:underline">2026 AI API 免费额度</a></li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">搭配 FreeModel 使用</h3>
+              <p class="text-sm text-gray-700 mb-3">OpenAI 兼容聚合器,带多厂商审核路由。国内直连,免费档可用。</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+            </div>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">广告位</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

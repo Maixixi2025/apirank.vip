@@ -1,0 +1,344 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'siliconflow-api-review';
+const date = '2026-06-08';
+const locale = 'zh';
+
+const zhTitle = 'SiliconFlow 硅基流动 API 测评 2026:100+ 模型,从 ¥0.4/百万 token 起';
+const zhDescription = 'SiliconFlow（硅基流动）API 完整测评：100+ 开源模型在线（Qwen3.5/DeepSeek-R1/GLM-4/Llama 3），OpenAI 兼容 API，国内直连，价格从 ¥0.4/百万 token 起。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "SiliconFlow 的 API 真的兼容 OpenAI 吗？包括 Function Calling？",
+      "acceptedAnswer": { "@type": "Answer", "text": "chat-completions 端点完全兼容——请求和响应格式与 OpenAI 一致。Function Calling 可用，但 tool-use 保证弱一些：长上下文场景下模型可能输出格式异常的 tool 调用。高风险工具调用建议加 schema parser 校验。" }
+    },
+    {
+      "@type": "Question",
+      "name": "SiliconFlow 和自建推理集群比起来价格如何？",
+      "acceptedAnswer": { "@type": "Answer", "text": "日调用量在 5M token 以下时，SiliconFlow 比一台 A100 80GB（国内零售价约 ¥7K/月）便宜。日调用量超过 50M token 时，H800/H100 专用推理才有成本竞争力。" }
+    },
+    {
+      "@type": "Question",
+      "name": "能在海外用 SiliconFlow 吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "能用，但要承受 300-500ms 额外延迟，且可能需要国内代理保持稳定访问。大部分海外团队只在必须调用 Qwen3.5 或 Nex-N2-Pro 时才用。" }
+    },
+    {
+      "@type": "Question",
+      "name": "SiliconFlow 的免费额度真的能用吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "当前注册活动给 ¥1-200 额度（视活动而定）。¥100 足够在 Qwen2.5-7B 上跑约 50M token，做原型够用，做生产不够。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Nex-N2-Pro 是什么？为什么值得关注？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Nex-N2-Pro 是基于 Qwen3.5 的 397B MoE 推理模型，2026-06-08 由 SiliconFlow 首发。目标是在代码和数学 benchmark 上达到 GPT-5.5 级别，但输入 token 价格只有 GPT-5.5 的 1/3。推理密集型负载值得评估。" }
+    },
+    {
+      "@type": "Question",
+      "name": "国内聚合场景下，SiliconFlow 和 FreeModel 怎么选？",
+      "acceptedAnswer": { "@type": "Answer", "text": "两者都是国内直连且 OpenAI 兼容，但 SiliconFlow 模型覆盖更深（Qwen3.5/DeepSeek/GLM 独家），FreeModel 主打多厂商聚合 + 内置内容审核路由。常见做法是 SiliconFlow 做主、FreeModel 做内容审核和多厂商聚合备份——FreeModel 可以在 freemodel.dev/invite/FRE-7a3b6220 注册，一个集成覆盖国内直连 + 海外模型。" }
+    },
+    {
+      "@type": "Question",
+      "name": "SiliconFlow 会用 API 请求数据训练新模型吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "根据公开隐私政策，请求数据保留 30 天用于风控后删除。除非用户明确同意，不会被用于训练新模型。" }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">SiliconFlow API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">SiliconFlow 硅基流动 API 2026：国内一站式 LLM 推理平台</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-08">2026 年 6 月 8 日</time>
+              <span>•</span>
+              <span>SiliconFlow 测评</span>
+              <span>•</span>
+              <span>约 10 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              2026 年 5 月 Qwen3.5 发布时附带 1M token 上下文窗口，对国内开发者来说，问题不是"能不能跑"，而是"怎么不花 OpenAI 的钱、不自建推理集群就能调用"。这个问题，正是 SiliconFlow（硅基流动）当年想要解决的。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR：</strong>SiliconFlow 在国内基础设施上托管 100+ 开源 LLM（Qwen3.5、DeepSeek-R1、GLM-4、Llama 3），大陆直连。OpenAI 兼容 API 意味着无需重写 SDK。入门价 ¥0.4/百万 token——同等体量比 OpenAI 便宜约 80%。没有 GPT/Claude 托管、tool-use 保证弱、海外延迟增加 300-500ms。国内团队：默认选择。海外团队：仅在确实需要 Qwen3.5 或 Nex-N2-Pro 时使用。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>引言：为什么国内开发者需要专门的聚合平台</h2>
+            <p>2026 年 5 月 Qwen3.5 发布时附带 1M token 上下文窗口，对国内开发者来说，问题不是"能不能跑"，而是"怎么不花 OpenAI 的钱、不自建推理集群就能调用"。这个问题，正是 SiliconFlow（硅基流动）当年想要解决的。</p>
+            <p>SiliconFlow 在 2022 年起步时是做 GPU 云，2023 年底转型专门做 LLM 推理。到 2026 年，平台托管超过 100 个开源模型——Qwen 全系、DeepSeek-R1、GLM-4.6、Llama 3.3 70B，以及刚发布的 Nex-N2-Pro 397B MoE 推理模型——全部走 OpenAI 兼容 REST API。国内访问无需代理，入门价 ¥0.4/百万 token，比 OpenAI 的 GPT-4o-mini 在同等体量下便宜约 80%。</p>
+            <p>这个平台不是 OpenAI/Anthropic 的完美替代品——这里没有 GPT-5 或 Claude 4.8，海外开发者会发现延迟比直接调用美国厂商高。但对于任何需要在国内生产环境调用 Qwen/DeepSeek/GLM 的团队来说，SiliconFlow 仍然是当下摩擦最小的选择。本文将梳理它的 API 接口、价格、速度基准，并和 FreeModel、OpenRouter 等同类对比。</p>
+
+            <h2>SiliconFlow 究竟托管了哪些模型</h2>
+            <p>模型目录相当大且增长很快。三大模型家族占据了首页：</p>
+            <ul>
+              <li><strong>Qwen 系列</strong>：Qwen3.5-Plus、Qwen2.5-72B-Instruct、Qwen2.5-Coder-32B-Instruct，以及更小的 Qwen2.5-7B/14B 变体（适合成本敏感场景）。</li>
+              <li><strong>DeepSeek 系列</strong>：DeepSeek-R1（满血 671B）、DeepSeek-V3-0324、DeepSeek-Coder-V2、DeepSeek-Chat。</li>
+              <li><strong>GLM 系列</strong>：GLM-4-Plus、GLM-4-9b-chat、GLM-4V（视觉），以及 GLM-Reasoning 推理系列。</li>
+            </ul>
+            <p>除了这三个家族，SiliconFlow 还托管 Meta-Llama 3.3 70B、Mistral、Mixtral、BAAI/Aquila，以及越来越多的社区微调版本。Nex-N2-Pro——基于 Qwen3.5 的 397B MoE 推理模型，声称在代码和数学 benchmark 上达到 GPT-5.5 水平——是 2026 年 6 月 SiliconFlow 独家首发。想要 API 调用它，目前只能来这里。</p>
+            <p>目录是经过精选而非完全开放：每个模型上线前都经过 SiliconFlow 内部跑分，未达准确率门槛的会被下架。所以模型数（100+）比 OpenRouter（300+）少——质量门控是真实存在的。</p>
+
+            <h2>API 接口：兼容 OpenAI，附加国内专属端点</h2>
+            <p>主 API 端点遵循 OpenAI 的 <code>/v1/chat/completions</code> 和 <code>/v1/embeddings</code> 规范。能在 <code>api.openai.com</code> 上跑的请求，换个 base URL 和 key 就能在 SiliconFlow 上跑：</p>
+            <pre><code class="language-python">import requests
+response = requests.post(
+    "https://api.siliconflow.cn/v1/chat/completions",
+    headers=&#123;"Authorization": "Bearer YOUR_API_KEY"&#125;,
+    json=&#123;
+        "model": "Qwen/Qwen2.5-72B-Instruct",
+        "messages": [&#123;"role": "user", "content": "你好"&#125;],
+    &#125;,
+    timeout=30,
+)
+print(response.json()["choices"][0]["message"]["content"])</code></pre>
+            <p>这种 OpenAI 兼容性意味着现有工具——LlamaIndex、LangChain、OpenAI 官方 Python SDK，甚至 AutoGen——都只需要改 base URL 就能对接 SiliconFlow。不用换 SDK。</p>
+            <p>在 OpenAI 规范之上，SiliconFlow 还提供了一些国内专属端点：</p>
+            <ul>
+              <li><strong>视频生成</strong>：<code>Kwai-Kolors/Kolors-V1</code> 和少量社区模型。</li>
+              <li><strong>语音识别</strong>：CosyVoice 和 Paraformer，适合语音助手场景。</li>
+              <li><strong>图像生成</strong>：Stable Diffusion 3、Kolors，以及 SDXL 变体。</li>
+              <li><strong>Reranker 端点</strong>：<code>BAAI/bge-reranker-v2-m3</code>，适合生产 RAG 链路。</li>
+            </ul>
+            <p>对大部分团队来说，chat-completions 端点是日常的主力。</p>
+
+            <h2>价格：对比数字</h2>
+            <p>SiliconFlow 用人民币计价，不是美元。2026-06-08 的热门模型价目表：</p>
+            <table>
+              <thead>
+                <tr><th>模型</th><th>输入（每百万 token）</th><th>输出（每百万 token）</th><th>备注</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Qwen2.5-7B-Instruct</td><td>¥0.4</td><td>¥0.4</td><td>最便宜一档，适合批量</td></tr>
+                <tr><td>Qwen2.5-Coder-32B-Instruct</td><td>¥1.0</td><td>¥1.0</td><td>编程任务</td></tr>
+                <tr><td>Qwen2.5-72B-Instruct</td><td>¥2.0</td><td>¥2.0</td><td>生产聊天默认选择</td></tr>
+                <tr><td>Qwen3.5-Plus</td><td>¥4.0</td><td>¥12.0</td><td>长上下文旗舰</td></tr>
+                <tr><td>DeepSeek-R1</td><td>¥4.0</td><td>¥16.0</td><td>满血 671B 推理</td></tr>
+                <tr><td>DeepSeek-V3</td><td>¥2.0</td><td>¥8.0</td><td>聊天主力</td></tr>
+                <tr><td>GLM-4-9b-chat</td><td>¥1.0</td><td>¥1.0</td><td>廉价中端</td></tr>
+                <tr><td>Meta-Llama-3.3-70B-Instruct</td><td>¥2.0</td><td>¥2.0</td><td>Llama 对标</td></tr>
+                <tr><td>Nex-N2-Pro</td><td>¥6.0</td><td>¥18.0</td><td>最新，独家</td></tr>
+              </tbody>
+            </table>
+            <p>对照来看，OpenAI 的 GPT-4o-mini 按 $0.15/$0.60 百万 token 算，按当前汇率约 ¥1.10/¥4.40。也就是说 Qwen2.5-72B 的 ¥2.00/¥2.00 与 GPT-4o-mini 价格接近——但对国内团队而言省去了国际支付摩擦。</p>
+            <p>SiliconFlow 还经常做充值赠送活动（新账号 ¥100-200 免费额度，充值送额外额度），中小流量用户实际价格能再低一些。</p>
+
+            <h2>速度基准</h2>
+            <p>延迟因模型和地区差异较大。基于 SiliconFlow 官方 benchmark 和独立测试：</p>
+            <ul>
+              <li><strong>Qwen2.5-7B</strong>：~85 tok/s，TTFT ~150ms（国内）</li>
+              <li><strong>Qwen2.5-72B</strong>：~38 tok/s，TTFT ~280ms</li>
+              <li><strong>DeepSeek-R1（671B）</strong>：~22 tok/s，TTFT ~1.2s</li>
+              <li><strong>Meta-Llama-3.3-70B</strong>：~42 tok/s，TTFT ~250ms</li>
+              <li><strong>Nex-N2-Pro（397B MoE）</strong>：~28 tok/s，TTFT ~800ms</li>
+            </ul>
+            <p>这些数字在小模型上和 Groq、SambaNova 有竞争力，大模型上明显慢于 Groq。取舍点是访问——对国内开发者来说，Groq 需要稳定代理，会增加 200-400ms 网络开销。SiliconFlow 在中/小模型上的国内延迟优势足以抵消这部分差距。</p>
+
+            <h2>稳定性与配额</h2>
+            <p>2026 年公开的速率限制相当激进：</p>
+            <ul>
+              <li><strong>免费版</strong>：100 RPM、10K TPM（每分钟）</li>
+              <li><strong>付费版（充值 ¥100+）</strong>：500 RPM、100K TPM</li>
+              <li><strong>企业版（销售通道）</strong>：定制上限，独立推理资源</li>
+            </ul>
+            <p>2026 年的可用性持续保持在 99.9% 以上，唯一一次重大事故是 2026-04-12 因上游 Kubernetes 升级导致的 6 小时部分中断。</p>
+
+            <h2>优点与缺点</h2>
+            <p><strong>优点</strong></p>
+            <ul>
+              <li>✅ 国内访问 Qwen3.5/DeepSeek-R1/GLM-4 摩擦最小</li>
+              <li>✅ OpenAI 兼容 API——无需重写 SDK</li>
+              <li>✅ ¥0.4/百万 token 入门价难以超越</li>
+              <li>✅ 100+ 精选模型，质量门控</li>
+              <li>✅ 免费额度（¥1-200 视活动）足够做原型</li>
+              <li>✅ 包含 Embeddings + Reranker + 图像 + 语音端点</li>
+            </ul>
+            <p><strong>缺点</strong></p>
+            <ul>
+              <li>❌ 没有 GPT-5、Claude 4.8、Gemini 2.5 托管（仅托管国内模型）</li>
+              <li>❌ 海外开发者要承受 300-500ms 额外延迟</li>
+              <li>❌ Function Calling 可用但缺少 OpenAI/Anthropic 的 tool-use 保证</li>
+              <li>❌ 新模型（Nex-N2-Pro）价格可能是基础档的 5-10 倍</li>
+              <li>❌ API 层没有公开路线图和 SOC2 认证</li>
+            </ul>
+
+            <h2>场景推荐</h2>
+            <table>
+              <thead>
+                <tr><th>场景</th><th>SiliconFlow 推荐模型</th><th>理由</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>国内用户聊天机器人</td><td>Qwen2.5-72B-Instruct</td><td>¥2/¥2，原生中文，72B 质量</td></tr>
+                <tr><td>中文文档 RAG</td><td>Qwen2.5-72B + bge-reranker-v2-m3</td><td>同平台更低延迟</td></tr>
+                <tr><td>中文代码生成</td><td>Qwen2.5-Coder-32B-Instruct</td><td>¥1/¥1，代码微调</td></tr>
+                <tr><td>长上下文摘要</td><td>Qwen3.5-Plus</td><td>1M token 上下文</td></tr>
+                <tr><td>推理 / 数学 / 逻辑</td><td>DeepSeek-R1 或 Nex-N2-Pro</td><td>满血 671B 或 397B MoE</td></tr>
+                <tr><td>视觉 / 图像理解</td><td>GLM-4V 或 Qwen-VL-Max</td><td>原生中文视觉</td></tr>
+                <tr><td>批量 Embeddings</td><td>BAAI/bge-m3</td><td>¥0.4/百万，SOTA 中文 embeddings</td></tr>
+                <tr><td>语音助手</td><td>CosyVoice + Paraformer</td><td>STT + TTS 一站式</td></tr>
+              </tbody>
+            </table>
+
+            <h2>SiliconFlow vs FreeModel vs OpenRouter 对比</h2>
+            <table>
+              <thead>
+                <tr><th>厂商</th><th>最适合</th><th>国内访问</th><th>入门价</th><th>模型数</th><th>OpenAI 兼容</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>SiliconFlow</strong></td><td>国内开源模型（Qwen/DeepSeek/GLM）</td><td>✅ 直连</td><td>¥0.4/百万</td><td>100+</td><td>✅</td></tr>
+                <tr><td><strong>FreeModel</strong></td><td>多厂商聚合，内置内容审核路由</td><td>✅ 直连</td><td>视模型而定</td><td>50+</td><td>✅</td></tr>
+                <tr><td><strong>OpenRouter</strong></td><td>美欧团队一站式调用所有模型</td><td>❌ 需代理</td><td>$0.50/百万</td><td>300+</td><td>✅</td></tr>
+                <tr><td><strong>DeepSeek 官方</strong></td><td>厂商直签 DeepSeek 价格</td><td>✅ 直连</td><td>¥1/百万</td><td>15+</td><td>✅</td></tr>
+                <tr><td><strong>Together AI</strong></td><td>美欧生产服务 200+ 开源</td><td>❌ 需代理</td><td>$0.18/百万</td><td>200+</td><td>✅</td></tr>
+              </tbody>
+            </table>
+            <p>对于需要 Qwen/DeepSeek/GLM 低延迟的国内团队，SiliconFlow 是默认选择。对于同时需要 GPT/Claude 并希望合并计费的团队，OpenRouter 是答案（需承受代理开销）。FreeModel 介于两者之间——同样是国内直连聚合，和 SiliconFlow 互补，适合作为 SiliconFlow 还没上线新模型时的内容审核和多模型聚合备用。</p>
+
+            <h2>FAQ</h2>
+            <p><strong>问：SiliconFlow 的 API 真的兼容 OpenAI 吗？包括 Function Calling？</strong></p>
+            <p>答：chat-completions 端点完全兼容——请求和响应格式与 OpenAI 一致。Function Calling 可用，但 tool-use 保证弱一些：长上下文场景下模型可能输出格式异常的 tool 调用。高风险工具调用建议加 schema parser 校验。</p>
+            <p><strong>问：SiliconFlow 和自建推理集群比起来价格如何？</strong></p>
+            <p>答：日调用量在 5M token 以下时，SiliconFlow 比一台 A100 80GB（国内零售价约 ¥7K/月）便宜。日调用量超过 50M token 时，H800/H100 专用推理才有成本竞争力。</p>
+            <p><strong>问：能在海外用 SiliconFlow 吗？</strong></p>
+            <p>答：能用，但要承受 300-500ms 额外延迟，且可能需要国内代理保持稳定访问。大部分海外团队只在必须调用 Qwen3.5 或 Nex-N2-Pro 时才用。</p>
+            <p><strong>问：SiliconFlow 的免费额度真的能用吗？</strong></p>
+            <p>答：当前注册活动给 ¥1-200 额度（视活动而定）。¥100 足够在 Qwen2.5-7B 上跑约 50M token，做原型够用，做生产不够。</p>
+            <p><strong>问：Nex-N2-Pro 是什么？为什么值得关注？</strong></p>
+            <p>答：Nex-N2-Pro 是基于 Qwen3.5 的 397B MoE 推理模型，2026-06-08 由 SiliconFlow 首发。目标是在代码和数学 benchmark 上达到 GPT-5.5 级别，但输入 token 价格只有 GPT-5.5 的 1/3。推理密集型负载值得评估。</p>
+            <p><strong>问：国内聚合场景下，SiliconFlow 和 FreeModel 怎么选？</strong></p>
+            <p>答：两者都是国内直连且 OpenAI 兼容，但 SiliconFlow 模型覆盖更深（Qwen3.5/DeepSeek/GLM 独家），FreeModel 主打多厂商聚合 + 内置内容审核路由。常见做法是 SiliconFlow 做主、FreeModel 做内容审核和多厂商聚合备份——FreeModel 可以在 <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">freemodel.dev/invite/FRE-7a3b6220</a> 注册，一个集成覆盖国内直连 + 海外模型。</p>
+            <p><strong>问：SiliconFlow 会用 API 请求数据训练新模型吗？</strong></p>
+            <p>答：根据公开隐私政策，请求数据保留 30 天用于风控后删除。除非用户明确同意，不会被用于训练新模型。</p>
+
+            <h2>结论</h2>
+            <p>对于在国内生产环境部署 Qwen/DeepSeek/GLM 的开发者，SiliconFlow 是最直接的路径。OpenAI 兼容 API 抹平了集成摩擦，¥0.4/百万 token 的入门价难以超越，模型目录足够覆盖大部分场景。缺点——没有 GPT/Claude 托管、tool-use 保证弱、400B+ 模型吞吐较低——是真实的，但对于目标场景（中文聊天机器人、中文文档 RAG、批量 Embeddings）并不是阻塞。</p>
+            <p>2026 年选择厂商的决策树：</p>
+            <ul>
+              <li>需要 Qwen3.5/DeepSeek-R1/GLM-4 国内低延迟 → <strong>SiliconFlow</strong></li>
+              <li>同时需要 GPT-5/Claude 4.8/Gemini 2.5、合并计费 → <strong>OpenRouter</strong></li>
+              <li>需要国内直连 + 内置内容审核路由 + 多厂商备份 → <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a></li>
+              <li>需要 Llama 3.3 70B 跑 2000+ tok/s、不需要中文 → <strong>Cerebras 或 Groq</strong></li>
+            </ul>
+            <p>如果你的团队已经在用 SiliconFlow，并希望备份一个能提供内容审核路由 + 国内直连 + 多厂商聚合的供应商，<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> 是天然搭档——同样国内直连、OpenAI 兼容，并且内置多厂商内容审核路由，一个集成同时覆盖国内直连和海外模型访问。</p>
+
+            <h2>对比表（结尾）</h2>
+            <table>
+              <thead>
+                <tr><th>厂商</th><th>价格模型</th><th>最适合</th><th>国内访问</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>SiliconFlow</strong></td><td>输入 ¥0.4-2/百万，输出 ¥0.4-2/百万</td><td>国内开源模型访问（Qwen/DeepSeek/GLM）</td><td>✅ 直连</td></tr>
+                <tr><td><strong>FreeModel</strong></td><td>视模型而定</td><td>多厂商聚合 + 内置内容审核路由</td><td>✅ 直连</td></tr>
+                <tr><td><strong>OpenRouter</strong></td><td>$0.50/百万（视模型）</td><td>美欧团队一站式调用所有模型</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>DeepSeek 官方</strong></td><td>输入 ¥1/百万，输出 ¥2/百万</td><td>DeepSeek 官方直签价</td><td>✅ 直连</td></tr>
+                <tr><td><strong>Together AI</strong></td><td>$0.18-0.88/百万</td><td>200+ 开源模型，美欧生产服务</td><td>❌ 需代理</td></tr>
+                <tr><td><strong>SambaNova</strong></td><td>$0.30-$3.00/百万</td><td>405B / R1 满血参数，dataflow 速度</td><td>❌ 需代理</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">快速参考</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>厂商：</strong>SiliconFlow（硅基流动）</li>
+                <li><strong>成立：</strong>2022（GPU 云），2023 转型 LLM</li>
+                <li><strong>模型数：</strong>100+ 开源</li>
+                <li><strong>入门价：</strong>¥0.4/百万 token</li>
+                <li><strong>API 兼容：</strong>OpenAI 形态</li>
+                <li><strong>国内访问：</strong>✅ 直连</li>
+                <li><strong>免费额度：</strong>¥1-200（活动）</li>
+                <li><strong>旗舰：</strong>Nex-N2-Pro（397B MoE，独家）</li>
+                <li><strong>速率限制：</strong>免费 100 RPM，付费 500 RPM</li>
+                <li><strong>2026 可用性：</strong>99.9%+</li>
+              </ul>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">相关文章</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/zh/tutorials/openai-compatible-api-2026/" class="text-blue-600 hover:underline">OpenAI 兼容 API 2026</a></li>
+                <li><a href="/zh/tutorials/ai-api-free-tiers-2026/" class="text-blue-600 hover:underline">AI API 免费额度 2026</a></li>
+                <li><a href="/zh/tutorials/ai-api-speed-benchmarks-2026/" class="text-blue-600 hover:underline">AI API 速度基准 2026</a></li>
+                <li><a href="/zh/tutorials/cheapest-llm-api-pricing-2026/" class="text-blue-600 hover:underline">2026 最便宜 LLM API</a></li>
+                <li><a href="/zh/tutorials/cloudflare-ai-gateway-review/" class="text-blue-600 hover:underline">Cloudflare AI Gateway 测评</a></li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">FreeModel 配合使用</h3>
+              <p class="text-sm text-gray-700 mb-3">OpenAI 兼容的多厂商聚合，内置内容审核路由。国内直连，免费档可用。</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+            </div>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">广告</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

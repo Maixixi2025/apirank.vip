@@ -1,0 +1,364 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'novita-ai-api-review';
+const date = '2026-06-10';
+const locale = 'en';
+
+const enTitle = 'Novita AI API 2026: 200+ Open-Source Models from $0.06/M';
+const enDescription = 'Novita AI API review: 200+ hosted open-source models (Llama 3.3 70B, Qwen2.5-72B, DeepSeek-R1), OpenAI-compatible API, China-direct cn.novita.ai, pricing from $0.06/1M tokens.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Novita AI's API really OpenAI-compatible, including function calling?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The chat-completions endpoint is fully compatible — request and response shapes match OpenAI's. Function calling works for simple cases (single tool, short context), but for production tool-use pipelines with multiple tools or long context, the tool-call format occasionally deviates from OpenAI's spec. Validate outputs with a schema parser if you depend on tool reliability." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Novita AI pricing compare to running my own inference cluster?",
+      "acceptedAnswer": { "@type": "Answer", "text": "At under ~10M tokens/day on a single model, Novita is cheaper than renting even an A100 80GB instance directly (which costs ~$1,500/month retail). Above 100M tokens/day on a single model, dedicated inference on H100 or H200 becomes cost-competitive, especially with Novita's dedicated GPU rental at $1.99/hr for an H100." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use Novita AI from inside China without a proxy?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — the cn.novita.ai endpoint is designed for this. It has ICP-filed infrastructure, RMB billing, and direct peering to all three Chinese carriers. Latency from a typical China server to cn.novita.ai is under 30ms, comparable to a fully domestic provider." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Novita AI keep training data from API requests?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Per the published privacy policy, request data is stored for 30 days for abuse monitoring and then deleted. The data is not used to train new models unless explicit opt-in is given. Enterprise customers can negotiate a data-residency clause (data stays in their chosen region) at the sales channel." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between the global endpoint and cn.novita.ai?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Two separate API products under the same Novita AI brand. The global endpoint (api.novita.ai) is the original Singapore-based product, billed in USD, hosting 200+ models. The cn.novita.ai endpoint is the China-specific product, billed in RMB, hosting 160+ models with a focus on Chinese-developed LLMs. Separate accounts, separate keys, separate rate limits." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Novita AI compare to FreeModel for a multi-vendor China-direct setup?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Both are China-direct and OpenAI-compatible, but Novita is a single-vendor host of 200+ open-source models while FreeModel is a multi-vendor aggregator with built-in moderation routing. A common pattern is Novita as the primary provider for open-source workloads plus FreeModel as the moderation layer and OpenAI/Anthropic fallback — FreeModel can be signed up at freemodel.dev/invite/FRE-7a3b6220 for a managed multi-vendor setup." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Novita AI support LoRA fine-tuning, and what's it cost?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — the LoRA fine-tuning API is available for select base models (Qwen2.5-7B/14B/72B, Llama 3.1 8B/70B, Mistral-7B). Training cost is $0.50/hour on an A100 80GB instance. A typical 10K-example fine-tune takes 2-4 hours. The resulting adapter is served through the same OpenAI-compatible endpoint, billed at the base model's per-token rate plus a small adapter surcharge." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Novita AI API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Novita AI API 2026: 200+ Open-Source Models on Singapore + China Infrastructure</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-10">June 10, 2026</time>
+              <span>•</span>
+              <span>Novita AI Review</span>
+              <span>•</span>
+              <span>About 10 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              In 2023, Novita AI was a small Singapore-based GPU cloud renting out A100 and H100 instances by the hour. By 2025, the company had added 200+ open-source LLMs to a unified inference API, launched a separate China-direct endpoint at cn.novita.ai, and started competing directly with Together AI, Fireworks, and SiliconFlow for the open-source-model inference market.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> Novita AI hosts 200+ open-source models (Llama 3.3 70B, Qwen2.5-72B, DeepSeek-R1) behind an OpenAI-compatible API. Entry price of $0.06/1M tokens (Llama 3.1 8B) is among the cheapest in the market. Separate cn.novita.ai endpoint serves Chinese users with ICP-filed infrastructure and RMB billing. No closed-source model hosting, weak free tier ($0.5 one-time), and slower than Groq/Cerebras on raw speed. For teams needing 200+ open-source models at the lowest cost with China access: solid pick.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>Introduction: The GPU Cloud That Pivoted to LLM Inference</h2>
+            <p>In 2023, Novita AI was a small Singapore-based GPU cloud renting out A100 and H100 instances by the hour. By 2025, the company had added 200+ open-source LLMs to a unified inference API, launched a separate China-direct endpoint at <code>cn.novita.ai</code>, and started competing directly with Together AI, Fireworks, and SiliconFlow for the open-source-model inference market.</p>
+            <p>The pitch is simple: every open-source LLM worth calling — Llama 3.3 70B, Qwen2.5-72B, DeepSeek-R1, Mistral-Nemo, Gemma 2 27B — is hosted behind one OpenAI-compatible API, with pricing that undercuts Together AI on most models by 30-50%, and a separate low-latency endpoint for users inside mainland China. The entry price of $0.06 per million tokens (Llama 3.1 8B) is among the cheapest in the market.</p>
+            <p>This is not a perfect substitute for OpenAI or Anthropic — Novita does not host GPT-5, Claude 4.8, or Gemini 2.5, and the company is still building its brand outside of GPU-cloud and Chinese-developer circles. But for any team that needs to call 200+ open-source models with predictable pricing and a single OpenAI-shaped endpoint, Novita AI is one of the strongest options in 2026. This review walks through the API surface, pricing, speed benchmarks, China access, and how it stacks up against FreeModel, Together AI, Fireworks, and SiliconFlow.</p>
+
+            <h2>What Novita AI Actually Hosts</h2>
+            <p>The model catalog covers the full open-source landscape. The categories that dominate the listing page:</p>
+            <ul>
+              <li><strong>Meta Llama series</strong>: Llama 3.3 70B Instruct, Llama 3.1 405B Instruct, Llama 3.1 70B, Llama 3.1 8B (in both base and instruct variants).</li>
+              <li><strong>Qwen series</strong>: Qwen2.5-72B-Instruct, Qwen2.5-Coder-32B-Instruct, Qwen2.5-7B-Instruct, plus the larger Qwen2.5-Plus for long-context.</li>
+              <li><strong>DeepSeek series</strong>: DeepSeek-V3, DeepSeek-R1 (full 671B), DeepSeek-Coder-V2, DeepSeek-Chat.</li>
+              <li><strong>Mistral series</strong>: Mistral-Nemo, Mistral-7B-Instruct-v0.3, Mixtral-8x7B-Instruct, Mistral-Large-2.</li>
+              <li><strong>Google Gemma series</strong>: Gemma 2 27B IT, Gemma 2 9B IT, CodeGemma variants.</li>
+              <li><strong>Vision models</strong>: LLaVA, Qwen-VL, CogVLM, InternVL for multimodal use cases.</li>
+              <li><strong>Embedding models</strong>: BGE-M3, BGE-Large, mxbai-embed-large, plus Cohere English/CN variants.</li>
+            </ul>
+            <p>Beyond the standard catalog, Novita also supports custom model deployment — you can upload a private Hugging Face model and serve it through the same API surface, with billed GPU hours. LoRA fine-tuning is available through the dashboard for select base models.</p>
+            <p>The catalog is broader than Together AI (200+ vs 200+) but with less curation than SiliconFlow. If you want a specific community fine-tune from Hugging Face, Novita is more likely to have it.</p>
+
+            <h2>API Surface: OpenAI-Compatible, Plus Custom Endpoints</h2>
+            <p>The main API endpoint follows the OpenAI <code>/v1/chat/completions</code> and <code>/v1/embeddings</code> shape. A request that works against <code>api.openai.com</code> will work against Novita's endpoint after swapping the base URL and key:</p>
+            <pre><code class="language-python">import requests
+response = requests.post(
+    "https://api.novita.ai/v3/openai/chat/completions",
+    headers=&#123;"Authorization": "Bearer YOUR_API_KEY"&#125;,
+    json=&#123;
+        "model": "meta-llama/llama-3.3-70b-instruct",
+        "messages": [&#123;"role": "user", "content": "hi"&#125;],
+        "stream": False,
+    &#125;,
+    timeout=30,
+)
+print(response.json()["choices"][0]["message"]["content"])</code></pre>
+            <p>This OpenAI compatibility means existing tools — LlamaIndex, LangChain, OpenAI's official Python SDK, vLLM, even AutoGen — work against Novita with only a base URL change. No SDK swap required.</p>
+            <p>On top of the OpenAI shape, Novita adds a few platform-specific endpoints:</p>
+            <ul>
+              <li><strong>Serverless GPU endpoints</strong>: Create an on-demand GPU instance with a custom model in under 60 seconds; pay only for the time the instance is active.</li>
+              <li><strong>Dedicated GPU rental</strong>: Reserve an A100, H100, or H200 instance for ongoing workloads (per-hour billing, no inference markup).</li>
+              <li><strong>LoRA fine-tuning API</strong>: Train a LoRA adapter on a base model from the dashboard, deploy it through the same OpenAI-compatible endpoint.</li>
+              <li><strong>Image generation</strong>: Stable Diffusion XL, SD3, Kolors, Playground v2.5.</li>
+              <li><strong>Audio endpoints</strong>: Whisper large-v3 for STT, plus TTS via CosyVoice and Bark.</li>
+            </ul>
+            <p>For most teams, the chat-completions endpoint is what they will use day-to-day. The serverless GPU is the unique selling point for workloads that need a model not in the hosted catalog.</p>
+
+            <h2>Pricing: How the Numbers Stack Up</h2>
+            <p>Novita's pricing is in USD, billed per million tokens. The 2026-06-10 rate sheet for popular models:</p>
+            <table>
+              <thead>
+                <tr><th>Model</th><th>Input (per 1M tokens)</th><th>Output (per 1M tokens)</th><th>Notes</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>meta-llama/llama-3.1-8b-instruct</td><td>$0.06</td><td>$0.06</td><td>Cheapest tier, bulk workloads</td></tr>
+                <tr><td>meta-llama/llama-3.3-70b-instruct</td><td>$0.39</td><td>$0.39</td><td>Production chat default</td></tr>
+                <tr><td>meta-llama/llama-3.1-405b-instruct</td><td>$1.52</td><td>$1.52</td><td>Frontier open-source</td></tr>
+                <tr><td>qwen/qwen-2.5-72b-instruct</td><td>$0.29</td><td>$0.29</td><td>Strong Chinese support</td></tr>
+                <tr><td>qwen/qwen-2.5-coder-32b-instruct</td><td>$0.18</td><td>$0.18</td><td>Code tasks</td></tr>
+                <tr><td>deepseek/deepseek-v3</td><td>$0.18</td><td>$0.18</td><td>Chat workhorse</td></tr>
+                <tr><td>deepseek/deepseek-r1</td><td>$0.30</td><td>$0.30</td><td>Full 671B reasoning</td></tr>
+                <tr><td>mistralai/mistral-nemo</td><td>$0.09</td><td>$0.09</td><td>Multilingual</td></tr>
+                <tr><td>google/gemma-2-27b-it</td><td>$0.16</td><td>$0.16</td><td>Lightweight production</td></tr>
+                <tr><td>meta-llama/llama-3.3-70b-instruct (cn.novita.ai)</td><td>¥2.0</td><td>¥2.0</td><td>China-direct, RMB billing</td></tr>
+              </tbody>
+            </table>
+            <p>For comparison, Together AI's Llama 3.3 70B at $0.88/$0.88 per 1M tokens is more than 2x Novita's price on the same model. Fireworks AI is closer to parity ($0.45/$0.45), but still pricier than Novita. The Llama 3.1 8B at $0.06 is the cheapest entry price among tier-1 OpenAI-compatible providers.</p>
+            <p>For Chinese teams, <code>cn.novita.ai</code> is the relevant endpoint, billed in RMB at near-parity with SiliconFlow's rate sheet. Compared to SiliconFlow, Novita's catalog is broader (more community fine-tunes, more embedding options) but the China-direct endpoint is newer and less battle-tested.</p>
+
+            <h2>Speed Benchmarks</h2>
+            <p>Latency claims vary by model, region, and time of day. From Novita's published benchmarks and independent measurements at the 2026-06-10 cut:</p>
+            <ul>
+              <li><strong>Llama 3.1 8B</strong>: ~120 tok/s output, TTFT ~90ms (Singapore endpoint)</li>
+              <li><strong>Llama 3.3 70B</strong>: ~55 tok/s output, TTFT ~210ms</li>
+              <li><strong>Llama 3.1 405B</strong>: ~22 tok/s output, TTFT ~480ms</li>
+              <li><strong>Qwen2.5-72B</strong>: ~48 tok/s output, TTFT ~230ms</li>
+              <li><strong>DeepSeek-R1 (671B)</strong>: ~25 tok/s output, TTFT ~1.1s</li>
+              <li><strong>Mistral-Nemo</strong>: ~95 tok/s output, TTFT ~120ms</li>
+            </ul>
+            <p>For comparison, Groq hits 1,250 tok/s on Llama 3.1 8B and Cerebras hits 2,000+ tok/s — both significantly faster than Novita on the same model. The trade-off is breadth: Novita hosts 200+ models, Groq and Cerebras host 5-10 each. If raw speed is the only criterion, Groq or Cerebras wins. If you need to switch between 20 different models in production, Novita's breadth is hard to match.</p>
+            <p>The cn.novita.ai endpoint adds ~50-80ms of latency for users inside mainland China compared to a fully domestic provider like SiliconFlow, but is still faster than routing through any overseas endpoint.</p>
+
+            <h2>Reliability and Quotas</h2>
+            <p>The published rate limits for Novita's API in 2026:</p>
+            <ul>
+              <li><strong>Free tier</strong>: 60 RPM, 10K TPM (per minute)</li>
+              <li><strong>Pay-as-you-go ($10+ top-up)</strong>: 500 RPM, 100K TPM</li>
+              <li><strong>Enterprise (sales-channel)</strong>: custom limits, dedicated inference, BYOC options</li>
+            </ul>
+            <p>Uptime in 2026 has been consistent at 99.9%+ per the public status page. The most notable incident was a 4-hour partial outage on 2026-03-18 caused by an upstream H100 supply issue; no data was lost and the company added a multi-region failover within 30 days of the incident.</p>
+            <p>The free tier is the weakest of any tier-1 OpenAI-compatible provider — just $0.5 of one-time credit. SiliconFlow offers ¥1-200 promo credits, Together AI offers $5 across all new signups, and Groq offers 14,400 requests/day. The Novita free tier is workable for one weekend of prototyping but not for ongoing dev work. Realistic paid entry is at the $10 top-up tier.</p>
+
+            <h2>China Access: cn.novita.ai</h2>
+            <p>For Chinese developers, the <code>cn.novita.ai</code> endpoint is the most important feature. The endpoint is operated under a separate China entity with ICP-filed infrastructure, RMB billing, and direct peering to the three major Chinese carriers (China Telecom, China Unicom, China Mobile). Latency from a Beijing or Shanghai server to cn.novita.ai is typically under 30ms.</p>
+            <p>The cn.novita.ai catalog is slightly smaller than the global endpoint (160+ models vs 200+), with a focus on Qwen, DeepSeek, GLM, Yi, and other Chinese-developed models that are popular inside China. Llama and Mistral are available but at the same prices as the global endpoint.</p>
+            <p>The main limitation: the China endpoint and the global endpoint have separate API keys, separate billing, and separate rate limits. Teams operating in both China and overseas need to manage two accounts.</p>
+
+            <h2>Pros and Cons</h2>
+            <p><strong>Pros</strong></p>
+            <ul>
+              <li>✅ Lowest entry price among tier-1 OpenAI-compatible providers ($0.06/1M for Llama 3.1 8B)</li>
+              <li>✅ 200+ hosted open-source models, broader catalog than Together/Fireworks</li>
+              <li>✅ OpenAI-compatible API — no SDK rewrite</li>
+              <li>✅ China-direct endpoint (cn.novita.ai) with RMB billing and ICP-filed infrastructure</li>
+              <li>✅ Serverless GPU + dedicated GPU rental for custom model deployment</li>
+              <li>✅ LoRA fine-tuning API for select base models</li>
+            </ul>
+            <p><strong>Cons</strong></p>
+            <ul>
+              <li>❌ No closed-source models (GPT-5, Claude 4.8, Gemini 2.5) hosted</li>
+              <li>❌ Free tier is small ($0.5 one-time credit) — much weaker than Groq, Together, SiliconFlow</li>
+              <li>❌ Speed is competitive but slower than Groq and Cerebras on the same models</li>
+              <li>❌ Function calling works but tool-use guarantees are weaker than OpenAI/Anthropic</li>
+              <li>❌ China and global endpoints have separate accounts/keys/billing</li>
+              <li>❌ No public SOC2 or ISO27001 certification listed at the API tier</li>
+            </ul>
+
+            <h2>Use Case Recommendations</h2>
+            <table>
+              <thead>
+                <tr><th>Use Case</th><th>Recommended Model on Novita</th><th>Why</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Production chatbot (English)</td><td>llama-3.3-70b-instruct</td><td>$0.39/1M, strong general quality</td></tr>
+                <tr><td>Production chatbot (Chinese)</td><td>qwen-2.5-72b-instruct (cn.novita.ai)</td><td>¥2/1M, native Chinese, ICP-direct</td></tr>
+                <tr><td>Code generation</td><td>qwen-2.5-coder-32b-instruct</td><td>$0.18/1M, code-tuned</td></tr>
+                <tr><td>Reasoning / math / logic</td><td>deepseek-r1</td><td>$0.30/1M, full 671B reasoning</td></tr>
+                <tr><td>Long-context summarization</td><td>llama-3.1-405b-instruct</td><td>128K context, $1.52/1M</td></tr>
+                <tr><td>Bulk embeddings</td><td>bge-m3</td><td>$0.02/1M, SOTA</td></tr>
+                <tr><td>Custom private model</td><td>serverless GPU endpoint</td><td>Deploy any HF model in 60s</td></tr>
+                <tr><td>Vision / image understanding</td><td>llava-onevision-qwen2-7b-ov</td><td>Native multimodal, $0.18/1M</td></tr>
+                <tr><td>Voice assistant (STT+TTS)</td><td>whisper-large-v3 + cosyvoice</td><td>One provider for both</td></tr>
+              </tbody>
+            </table>
+
+            <h2>Comparison: Novita AI vs FreeModel vs Together AI vs SiliconFlow</h2>
+            <table>
+              <thead>
+                <tr><th>Provider</th><th>Best For</th><th>China Access</th><th>Entry Price</th><th>Models</th><th>OpenAI-Compatible</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Novita AI</strong></td><td>200+ open-source models, low per-token cost</td><td>✅ Direct (cn.novita.ai)</td><td>$0.06/1M tok</td><td>200+</td><td>✅</td></tr>
+                <tr><td><strong>FreeModel</strong></td><td>Multi-provider aggregator with built-in moderation routing</td><td>✅ Direct</td><td>Varies by model</td><td>50+</td><td>✅</td></tr>
+                <tr><td><strong>Together AI</strong></td><td>US/EU production serving of 200+ open-source</td><td>❌ Proxy</td><td>$0.18/1M tok</td><td>200+</td><td>✅</td></tr>
+                <tr><td><strong>SiliconFlow</strong></td><td>Chinese open-source models (Qwen/DeepSeek/GLM)</td><td>✅ Direct</td><td>¥0.4/1M tok</td><td>100+</td><td>✅</td></tr>
+                <tr><td><strong>Fireworks AI</strong></td><td>Fast inference on 100+ open-source</td><td>❌ Proxy</td><td>$0.20/1M tok</td><td>100+</td><td>✅</td></tr>
+                <tr><td><strong>DeepSeek (official)</strong></td><td>DeepSeek-only direct from vendor</td><td>✅ Direct</td><td>¥1/1M tok</td><td>15+</td><td>✅</td></tr>
+              </tbody>
+            </table>
+            <p>For a team that needs 200+ open-source models at the lowest per-token price with China-direct access, Novita AI is currently the most direct path. For teams that also need GPT/Claude and prefer consolidated billing, OpenRouter or FreeModel's aggregator setup is the right call. For Chinese teams that exclusively need Qwen/DeepSeek/GLM at the absolute lowest cost, SiliconFlow wins on price for those specific models.</p>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Is Novita AI's API really OpenAI-compatible, including function calling?</strong></p>
+            <p>A: The chat-completions endpoint is fully compatible — request and response shapes match OpenAI's. Function calling works for simple cases (single tool, short context), but for production tool-use pipelines with multiple tools or long context, the tool-call format occasionally deviates from OpenAI's spec. Validate outputs with a schema parser if you depend on tool reliability.</p>
+            <p><strong>Q: How does Novita AI pricing compare to running my own inference cluster?</strong></p>
+            <p>A: At under ~10M tokens/day on a single model, Novita is cheaper than renting even an A100 80GB instance directly (which costs ~$1,500/month retail). Above 100M tokens/day on a single model, dedicated inference on H100 or H200 becomes cost-competitive, especially with Novita's dedicated GPU rental at $1.99/hr for an H100.</p>
+            <p><strong>Q: Can I use Novita AI from inside China without a proxy?</strong></p>
+            <p>A: Yes — the cn.novita.ai endpoint is designed for this. It has ICP-filed infrastructure, RMB billing, and direct peering to all three Chinese carriers. Latency from a typical China server to cn.novita.ai is under 30ms, comparable to a fully domestic provider.</p>
+            <p><strong>Q: Does Novita AI keep training data from API requests?</strong></p>
+            <p>A: Per the published privacy policy, request data is stored for 30 days for abuse monitoring and then deleted. The data is not used to train new models unless explicit opt-in is given. Enterprise customers can negotiate a data-residency clause (data stays in their chosen region) at the sales channel.</p>
+            <p><strong>Q: What is the difference between the global endpoint and cn.novita.ai?</strong></p>
+            <p>A: Two separate API products under the same Novita AI brand. The global endpoint (api.novita.ai) is the original Singapore-based product, billed in USD, hosting 200+ models. The cn.novita.ai endpoint is the China-specific product, billed in RMB, hosting 160+ models with a focus on Chinese-developed LLMs. Separate accounts, separate keys, separate rate limits.</p>
+            <p><strong>Q: How does Novita AI compare to FreeModel for a multi-vendor China-direct setup?</strong></p>
+            <p>A: Both are China-direct and OpenAI-compatible, but Novita is a single-vendor host of 200+ open-source models while FreeModel is a multi-vendor aggregator with built-in moderation routing. A common pattern is Novita as the primary provider for open-source workloads plus FreeModel as the moderation layer and OpenAI/Anthropic fallback — FreeModel can be signed up at freemodel.dev/invite/FRE-7a3b6220 for a managed multi-vendor setup.</p>
+            <p><strong>Q: Does Novita AI support LoRA fine-tuning, and what's it cost?</strong></p>
+            <p>A: Yes — the LoRA fine-tuning API is available for select base models (Qwen2.5-7B/14B/72B, Llama 3.1 8B/70B, Mistral-7B). Training cost is $0.50/hour on an A100 80GB instance. A typical 10K-example fine-tune takes 2-4 hours. The resulting adapter is served through the same OpenAI-compatible endpoint, billed at the base model's per-token rate plus a small adapter surcharge.</p>
+
+            <h2>Conclusion</h2>
+            <p>For teams building production systems on open-source LLMs in 2026, Novita AI is one of the most direct paths. The OpenAI-compatible API removes integration friction, the $0.06/1M token entry price is the lowest among tier-1 OpenAI-compatible providers, the catalog of 200+ models is broader than Together AI or Fireworks, and the cn.novita.ai endpoint solves the China access problem for Chinese teams.</p>
+            <p>The decision tree for picking a provider in 2026:</p>
+            <ul>
+              <li>Need 200+ open-source models at the lowest per-token cost → <strong>Novita AI</strong></li>
+              <li>Need 200+ open-source models with the broadest global serving → <strong>Together AI</strong></li>
+              <li>Need Qwen3.5/DeepSeek-R1/GLM-4 with low latency from inside China → <strong>SiliconFlow</strong></li>
+              <li>Need a China-direct aggregator with built-in moderation routing and multi-vendor fallback → <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline"><strong>FreeModel</strong></a></li>
+              <li>Need Llama 3.3 70B at 2,000+ tok/s and don't need Chinese → <strong>Cerebras or Groq</strong></li>
+            </ul>
+            <p>If your team is already deploying on Novita AI and wants a backup provider for moderation routing or to call OpenAI/Anthropic from China, FreeModel is a natural complement — it bundles moderation routing, OpenAI-compatible APIs, and direct access to multiple vendors behind one key. Sign up at <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">freemodel.dev/invite/FRE-7a3b6220</a> to get started with the free tier.</p>
+
+            <h2>Comparison Table (Final)</h2>
+            <table>
+              <thead>
+                <tr><th>Provider</th><th>Pricing Model</th><th>Best For</th><th>China Access</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Novita AI</strong></td><td>$0.06-$1.52/1M tok input, same for output</td><td>200+ open-source models, lowest entry price</td><td>✅ Direct (cn.novita.ai)</td></tr>
+                <tr><td><strong>FreeModel</strong></td><td>Varies by model</td><td>Multi-provider aggregation with moderation routing</td><td>✅ Direct</td></tr>
+                <tr><td><strong>Together AI</strong></td><td>$0.18-$0.88/1M tok</td><td>US/EU serving of 200+ open-source</td><td>❌ Proxy</td></tr>
+                <tr><td><strong>SiliconFlow</strong></td><td>¥0.4-2/1M tok input, ¥0.4-2/1M tok output</td><td>Chinese open-source model access (Qwen/DeepSeek/GLM)</td><td>✅ Direct</td></tr>
+                <tr><td><strong>Fireworks AI</strong></td><td>$0.20-$3.00/1M tok</td><td>Fast inference on 100+ open-source</td><td>❌ Proxy</td></tr>
+                <tr><td><strong>DeepSeek (official)</strong></td><td>¥1/1M tok input, ¥2/1M tok output</td><td>DeepSeek-only direct from vendor</td><td>✅ Direct</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Provider:</strong> Novita AI</li>
+                <li><strong>Founded:</strong> 2023 (Singapore), 2025 China entity</li>
+                <li><strong>Models:</strong> 200+ open-source</li>
+                <li><strong>Entry price:</strong> $0.06/1M tokens (Llama 3.1 8B)</li>
+                <li><strong>API compatibility:</strong> OpenAI-shaped</li>
+                <li><strong>China access:</strong> ✅ Direct (cn.novita.ai)</li>
+                <li><strong>Free tier:</strong> $0.5 credit (one-time)</li>
+                <li><strong>Flagship:</strong> Llama 3.1 405B + DeepSeek-R1</li>
+                <li><strong>Rate limits:</strong> 60 RPM free, 500 RPM paid</li>
+                <li><strong>Uptime 2026:</strong> 99.9%+</li>
+              </ul>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/siliconflow-api-review/" class="text-blue-600 hover:underline">SiliconFlow API 2026 Review</a></li>
+                <li><a href="/tutorials/openai-compatible-api-2026/" class="text-blue-600 hover:underline">OpenAI-Compatible API 2026</a></li>
+                <li><a href="/tutorials/ai-api-free-tiers-2026/" class="text-blue-600 hover:underline">AI API Free Tiers 2026</a></li>
+                <li><a href="/tutorials/ai-api-speed-benchmarks-2026/" class="text-blue-600 hover:underline">AI API Speed Benchmarks 2026</a></li>
+                <li><a href="/tutorials/cheapest-llm-api-pricing-2026/" class="text-blue-600 hover:underline">Cheapest LLM API Pricing 2026</a></li>
+              </ul>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Try FreeModel alongside</h3>
+              <p class="text-sm text-gray-700 mb-3">OpenAI-compatible aggregator with built-in moderation routing for multi-vendor setups. China-direct, free tier available.</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+            </div>
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">Advertisement</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

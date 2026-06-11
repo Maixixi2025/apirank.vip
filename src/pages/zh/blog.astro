@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const tutorialsPath = path.join(process.cwd(), 'src/data/zh-tutorials.json');
+let tutorials: Array<{slug: string; date: string; zhTitle: string; zhDescription: string; category: string}> = [];
+
+if (fs.existsSync(tutorialsPath)) {
+  tutorials = JSON.parse(fs.readFileSync(tutorialsPath, 'utf-8'));
+} else {
+  const modules = import.meta.glob('./zh/tutorials/*.astro', { eager: true });
+  for (const [path, mod] of Object.entries(modules)) {
+    const slug = path.replace('./zh/tutorials/', '').replace('.astro', '');
+    const date = (mod as any).date || '';
+    const zhTitle = (mod as any).zhTitle || slug;
+    const zhDescription = (mod as any).zhDescription || '';
+    const category = (mod as any).category || '测评';
+    if (date) {
+      tutorials.push({ slug, date, zhTitle, zhDescription, category });
+    }
+  }
+  tutorials.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+const topTutorials = tutorials.slice(0, 12);
+---
+
+<BaseLayout
+  title="AI API 教程与测评 2026 | APIRank 博客"
+  description="独立的 AI API 测评、价格对比和开发者教程。每周更新，覆盖 OpenAI、Anthropic、DeepSeek、Google Gemini 等 15+ 服务商。"
+  canonicalUrl="https://apirank.vip/zh/blog/"
+>
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">博客</span>
+      </nav>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <header class="mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">APIRank 博客</h1>
+      <p class="text-lg text-gray-600 max-w-3xl">
+        独立的 AI API 测评、价格对比和开发者教程。
+        每周更新。覆盖 15+ 服务商，包括 OpenAI、Anthropic、DeepSeek、Google Gemini 以及国产模型。
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {topTutorials.map(t => (
+        <article class="bg-white rounded-xl border border-gray-200 hover:border-blue-500 transition-colors overflow-hidden flex flex-col">
+          <a href={`/zh/tutorials/${t.slug}`} class="block p-6 flex-1 flex flex-col">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                {t.category}
+              </span>
+              <time class="text-xs text-gray-500" datetime={t.date}>
+                {new Date(t.date).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </time>
+            </div>
+            <h2 class="text-lg font-bold text-gray-900 mb-2 leading-tight">
+              {t.zhTitle}
+            </h2>
+            <p class="text-sm text-gray-600 mb-4 flex-1 line-clamp-3">
+              {t.zhDescription}
+            </p>
+            <span class="text-sm font-medium text-blue-600 hover:text-blue-700">
+              阅读测评 →
+            </span>
+          </a>
+        </article>
+      ))}
+    </div>
+
+    <div class="mt-12 text-center">
+      <a href="/zh/tutorials" class="inline-block bg-blue-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+        查看所有教程 →
+      </a>
+    </div>
+  </div>
+</BaseLayout>
