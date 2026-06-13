@@ -1,0 +1,355 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'nvidia-nim-api-review';
+const date = '2026-06-13';
+const locale = 'en';
+
+const enTitle = 'NVIDIA NIM API 2026: 50+ Models, OpenAI Compatible';
+const enDescription = 'NVIDIA NIM API review: Nemotron-3 550B, Llama Nemotron models, free tier. Compare pricing vs Groq, Together AI, DeepInfra. OpenAI-compatible API.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is NVIDIA NIM just self-hosted NIM containers, or is there a cloud API?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Both. NVIDIA offers two distinct products under the NIM brand: (1) downloadable NIM containers for self-hosted deployment (NVIDIA AI Enterprise license required), and (2) the cloud API at build.nvidia.com with free prototyping endpoints. This review covers the cloud API, which provides access to NVIDIA-hosted models through an OpenAI-compatible endpoint without managing any GPU infrastructure." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does NVIDIA NIM cloud API pricing work when the models are hosted by partners?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Pricing is set per-partner, not by NVIDIA. For example, running Nemotron-3 Ultra 550B costs $0.80/$2.60 per 1M tokens on Bitdeer AI, $0.50/$2.50 on Deep Infra, or $0.90/$1.70 on DigitalOcean. Each partner has its own signup, billing, and rate limits." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use NVIDIA NIM from inside China?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Unlikely without a proxy. build.nvidia.com is a US-based platform. NVIDIA's export control compliance means the service is not ICP-registered in China. All partner endpoints are also US- or EU-based. For China-direct alternatives, consider SiliconFlow or Novita AI." }
+    },
+    {
+      "@type": "Question",
+      "name": "What makes Nemotron-3 different from other open-source models?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Nemotron-3 uses a LatentMoE architecture that combines Mamba-2 state-space layers, Mixture-of-Experts, and standard attention within a single model. The Ultra 550B variant has 550B total parameters but only 55B active per token, making it more memory-efficient than a dense 550B model." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the NVIDIA NIM cloud API OpenAI-compatible?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. The endpoint at https://integrate.api.nvidia.com/v1 follows the OpenAI /v1/chat/completions spec. You can use the OpenAI Python SDK by changing base_url and passing an NVIDIA API key. Streaming, JSON mode, and function calling are all supported." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does NVIDIA NIM compare to FreeModel for multi-provider use?",
+      "acceptedAnswer": { "@type": "Answer", "text": "NVIDIA NIM is a single-provider catalog of 80+ models via partner endpoints. FreeModel at freemodel.dev/invite/FRE-7a3b6220 is a multi-provider aggregator that bundles OpenAI, Anthropic, DeepSeek behind one key with built-in moderation routing and China-direct access. For teams needing both, NIM for exclusive Nemotron models plus FreeModel for consolidated production routing is a common pattern." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">NVIDIA NIM API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">NVIDIA NIM API 2026: 80+ Models on the World's Most Optimized Inference Stack</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-13">June 13, 2026</time>
+              <span>•</span>
+              <span>NVIDIA NIM Review</span>
+              <span>•</span>
+              <span>About 10 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              NVIDIA NIM is not a typical AI API provider. It does not sell tokens directly. Instead, it offers two things: (1) a cloud API at build.nvidia.com where you can call NVIDIA's own Nemotron-3 models and 50+ third-party open-source models through partner endpoints, and (2) downloadable NIM containers you deploy on your own GPU infrastructure. This review covers the cloud API — what it means for a company best known for making GPUs to enter the model-inference-as-a-service market.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> NVIDIA NIM cloud API (build.nvidia.com) gives access to NVIDIA's exclusive Nemotron-3 series with the unique LatentMoE architecture, plus 50+ third-party models from Llama/Qwen/Mistral/DeepSeek/Kimi. The API is OpenAI-compatible with free prototyping endpoints and no credit card required. Pricing is partner-dependent — Nemotron-3 Ultra 550B ranges from $0.50-$0.90/M input across partners. No unified billing or China-direct access. Best for teams that want to experiment with NVIDIA's own model architecture before committing to self-hosted NIM deployment.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>Introduction: The Unusual Business Model</h2>
+            <p>NVIDIA enters the AI API market in a unique position: it makes the hardware that virtually every other provider depends on. The NIM (NVIDIA Inference Microservice) platform was originally launched in 2024 as a way to package optimized inference containers for enterprise deployment. The cloud API at <code>build.nvidia.com</code> arrived later as a try-before-you-buy path into the broader NVIDIA ecosystem.</p>
+            <p>What makes NVIDIA NIM structurally different from Groq, Together AI, or DeepInfra is the business model. NVIDIA does not run inference endpoints itself — it partners with existing providers (Bitdeer AI, Deep Infra, Together AI, DigitalOcean, GMI Cloud) who host the models on NVIDIA DGX infrastructure and set their own prices. Build.nvidia.com is the discovery and routing layer: you select a model, choose a partner endpoint, and get redirected to that partner for billing.</p>
+            <p>This approach means NVIDIA's model catalog is simultaneously broad (80+ models) and fragmented (each partner has different pricing, rate limits, and SLA commitments). For the AI engineering team evaluating inference options, the question is not "should I use NVIDIA NIM?" but "which of the partner endpoints that host NVIDIA-optimized models should I use, and is the Nemotron architecture worth the extra attention?"</p>
+
+            <h2>What NVIDIA NIM Actually Hosts</h2>
+            <p>The model catalog on build.nvidia.com falls into three tiers:</p>
+            <h3>1. NVIDIA's Own Nemotron-3 Series</h3>
+            <p>The Nemotron-3 family is NVIDIA's own model line, built on a novel LatentMoE architecture that combines three mechanisms within a single transformer:</p>
+            <ul>
+              <li><strong>Mamba-2 state-space layers</strong> for memory-efficient long-context processing</li>
+              <li><strong>Mixture-of-Experts routing</strong> for parameter efficiency</li>
+              <li><strong>Standard attention heads</strong> for quality on precision-critical tasks</li>
+            </ul>
+            <p>The lineup covers every tier:</p>
+            <table>
+              <thead>
+                <tr><th>Model</th><th>Total Params</th><th>Active Per Token</th><th>Best For</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Nemotron-3 Ultra 550B</strong></td><td>550B</td><td>55B</td><td>Frontier reasoning, coding, long-context</td></tr>
+                <tr><td><strong>Nemotron-3 Super 120B</strong></td><td>120B</td><td>12B</td><td>Production chat, enterprise summarization</td></tr>
+                <tr><td><strong>Nemotron-3 Nano 30B</strong></td><td>30B</td><td>3B</td><td>Lightweight classification, fast tasks</td></tr>
+                <tr><td><strong>Nemotron-Mini 4B</strong></td><td>4B</td><td>4B</td><td>Edge/embedded, low-cost bulk inference</td></tr>
+                <tr><td><strong>Llama-3.3-Nemotron-Super-49B v1.5</strong></td><td>49B</td><td>49B</td><td>NVIDIA-optimized Llama 3.3 70B derivative</td></tr>
+                <tr><td><strong>Llama-3.1-Nemotron-Ultra-253B v1</strong></td><td>253B</td><td>253B</td><td>NVIDIA-tuned Llama 3.1 405B derivative</td></tr>
+              </tbody>
+            </table>
+
+            <h3>2. Third-Party Open-Source Models</h3>
+            <p>Beyond NVIDIA's own models, the build.nvidia.com catalog includes 50+ third-party models hosted by partners:</p>
+            <ul>
+              <li><strong>Llama family</strong>: Llama 3.1 8B/70B/405B, Llama 3.2 1B/3B/11B/90B, Llama 3.3 70B, Llama 4 Maverick 17B</li>
+              <li><strong>Qwen family</strong>: Qwen2.5-Coder-32B, Qwen3-5-122B, Qwen3-Coder-480B, Qwen3-Next-80B, QwQ-32B, Qwen3.5-397B</li>
+              <li><strong>Mistral family</strong>: Mistral-Nemotron, Mixtral 8x7B/8x22B, Mistral Large 3, Mistral Medium 3.5, Ministral 14B</li>
+              <li><strong>DeepSeek</strong>: DeepSeek V4 Flash, DeepSeek V4 Pro</li>
+              <li><strong>Google Gemma</strong>: Gemma 2/3/4, CodeGemma, DiffusionGemma</li>
+              <li><strong>Microsoft Phi</strong>: Phi-4 Mini, Phi-4 Mini Flash Reasoning, Phi-4 Multimodal</li>
+              <li><strong>Chinese models</strong>: Kimi K2/K2.5/K2.6, Step 3.5/3.7 Flash, ByteDance Seed OSS, GLM4.7/GLM5.1, MiniMax M2.5/M2.7/M3</li>
+            </ul>
+
+            <h3>3. Embedding, Vision, and Specialized Models</h3>
+            <p>NVIDIA also hosts embedding models (NemoRetriever 300M/1B, NV-Embed, Llama-Nemotron-Embed-1B), reranking models, content safety models (NeMoGuard for jailbreak detection, topic control, PII detection), vision models (FLUX.1, SD3, SDXL), and healthcare models (Evo-2, AlphaFold2, ESMFold).</p>
+
+            <h2>API Surface: Standard OpenAI Shape, Partner Routing</h2>
+            <p>The cloud API is straightforward for an OpenAI-compatible endpoint. Base URL is <code>https://integrate.api.nvidia.com/v1</code>, and the <code>/v1/chat/completions</code> endpoint accepts the standard OpenAI request body. Streaming, JSON mode, and function calling are all supported.</p>
+            <pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://integrate.api.nvidia.com/v1",
+    api_key="nvapi-YOUR_API_KEY"
+)
+
+completion = client.chat.completions.create(
+    model="nvidia/nemotron-3-ultra-550b-a55b",
+    messages=[&#123;"role": "user", "content": "Explain LatentMoE in 3 sentences."&#125;],
+    max_tokens=512
+)
+
+print(completion.choices[0].message.content)</code></pre>
+            <p>The key difference from a standard OpenAI-compatible provider: model names use the full NVIDIA catalog path (e.g., <code>nvidia/nemotron-3-ultra-550b-a55b</code>).</p>
+
+            <h2>Pricing: Fragmented by Design</h2>
+            <p>The most unusual aspect of NVIDIA NIM is that pricing varies by partner endpoint for the same model. Taking Nemotron-3 Ultra 550B:</p>
+            <table>
+              <thead>
+                <tr><th>Partner Endpoint</th><th>Input (per 1M tokens)</th><th>Output (per 1M tokens)</th><th>Notes</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Deep Infra</strong></td><td>$0.50</td><td>$2.50</td><td>Dedicated GPU from $0.01/min</td></tr>
+                <tr><td><strong>Together AI</strong></td><td>$0.60</td><td>$3.60</td><td>Dedicated GPU from $0.80/min</td></tr>
+                <tr><td><strong>Bitdeer AI</strong></td><td>$0.80</td><td>$2.60</td><td>Standard endpoint</td></tr>
+                <tr><td><strong>DigitalOcean</strong></td><td>$0.90</td><td>$1.70</td><td>H100 inference, all-in-one platform</td></tr>
+                <tr><td><strong>GMI Cloud</strong></td><td>$0.80</td><td>$2.60</td><td>Standard endpoint</td></tr>
+              </tbody>
+            </table>
+            <p>For smaller models, pricing is naturally lower. Llama-3.3-Nemotron-Super-49B is typically $0.35-$0.60/M input across partners. The Nemotron-Mini 4B is available for under $0.05/M.</p>
+            <p>For comparison against providers that host open-source models with unified billing:</p>
+            <ul>
+              <li><strong>Together AI</strong> Llama 3.3 70B: $0.88/$0.88 per 1M tokens (unified billing)</li>
+              <li><strong>Deep Infra</strong> Llama 3.3 70B: $0.35/$0.50 per 1M tokens (unified billing)</li>
+              <li><strong>Groq</strong> Llama 3.3 70B: $0.59/$0.79 per 1M tokens (LPU-accelerated)</li>
+              <li><strong>Novita AI</strong> Llama 3.3 70B: $0.39/$0.39 per 1M tokens (China-direct)</li>
+            </ul>
+
+            <h2>Speed: Undisclosed but Confident</h2>
+            <p>NVIDIA does not publish per-model token-per-second benchmarks for its cloud API endpoints. What is known: the NIM inference stack runs on TensorRT-LLM, NVIDIA's own inference optimization library, which is widely recognized as one of the most performant GPU inference engines available. In practice, the partner endpoints use different GPU tiers (H100 vs A100 vs DGX systems), so speed will vary by partner.</p>
+
+            <h2>Pros and Cons</h2>
+            <p><strong>Pros</strong></p>
+            <ul>
+              <li>✅ Exclusive Nemotron-3 series with LatentMoE architecture</li>
+              <li>✅ Llama-Nemotron optimized models — NVIDIA-tuned Llama checkpoints</li>
+              <li>✅ OpenAI-compatible API, zero SDK rewrite, free prototyping without credit card</li>
+              <li>✅ 80+ model catalog covering Llama, Qwen, Mistral, DeepSeek, Kimi, GLM, Gemma, Phi</li>
+              <li>✅ Free tier gives real API access for development</li>
+              <li>✅ TensorRT-LLM inference engine is top-tier for GPU utilization efficiency</li>
+              <li>✅ Diverse catalog includes embeddings, rerankers, vision, safety, healthcare</li>
+            </ul>
+            <p><strong>Cons</strong></p>
+            <ul>
+              <li>❌ No unified billing — each partner endpoint requires separate account and payment</li>
+              <li>❌ China access requires stable proxy; no ICP-filed infrastructure or RMB billing</li>
+              <li>❌ Speed benchmarks not publicly published; latency depends on partner infra</li>
+              <li>❌ Third-party model catalog overlaps heavily with simpler-billing providers</li>
+              <li>❌ No dedicated SLAs at the free/prototyping tier</li>
+            </ul>
+
+            <h2>Use Case Recommendations</h2>
+            <table>
+              <thead>
+                <tr><th>Use Case</th><th>Recommended Model</th><th>Why</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Frontier reasoning / coding</td><td>Nemotron-3 Ultra 550B (Deep Infra)</td><td>$0.50/M input, exclusive quality</td></tr>
+                <tr><td>Production chat (English)</td><td>Llama-3.3-Nemotron-Super-49B</td><td>NVIDIA-tuned Llama, competitive price</td></tr>
+                <tr><td>Lightweight classification</td><td>Nemotron-3 Nano 30B</td><td>3B active params, cost-efficient</td></tr>
+                <tr><td>Bulk embedding</td><td>NemoRetriever-300M v2</td><td>NVIDIA's retrieval embedding</td></tr>
+                <tr><td>Content safety filtering</td><td>NeMoGuard Jailbreak Detect</td><td>NVIDIA safety-optimized model</td></tr>
+                <tr><td>Self-hosted production</td><td>Downloadable NIM container</td><td>Deploy on your own GPU stack</td></tr>
+              </tbody>
+            </table>
+
+            <h2>Comparison: NVIDIA NIM vs Key Competitors</h2>
+            <table>
+              <thead>
+                <tr><th>Provider</th><th>Best For</th><th>China Access</th><th>Billing</th><th>Models</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>NVIDIA NIM</strong></td><td>Exclusive Nemotron models + 80 open-source</td><td>❌ Proxy</td><td>Per-partner</td><td>80+</td></tr>
+                <tr><td><strong>Groq</strong></td><td>LPU speed on 7 models</td><td>❌ Proxy</td><td>Unified</td><td>7</td></tr>
+                <tr><td><strong>Together AI</strong></td><td>200+ open-source, US/EU serving</td><td>❌ Proxy</td><td>Unified</td><td>200+</td></tr>
+                <tr><td><strong>Deep Infra</strong></td><td>50+ open-source at lowest price</td><td>❌ Proxy</td><td>Unified</td><td>50+</td></tr>
+                <tr><td><strong>Novita AI</strong></td><td>200+ open-source, China-direct</td><td>✅ Direct</td><td>Unified</td><td>200+</td></tr>
+                <tr><td><strong>FreeModel</strong></td><td>Multi-provider aggregator with routing</td><td>✅ Direct</td><td>Unified</td><td>50+</td></tr>
+              </tbody>
+            </table>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Is NVIDIA NIM self-hosted containers or a cloud API?</strong></p>
+            <p>A: Both. NVIDIA offers (1) downloadable NIM containers for self-hosted deployment and (2) the cloud API at build.nvidia.com with free prototyping endpoints. This review covers the cloud API.</p>
+            <p><strong>Q: How does pricing work when models are hosted by partners?</strong></p>
+            <p>A: Pricing is set per-partner. Nemotron-3 Ultra 550B ranges from $0.50/$2.50 per 1M tokens on Deep Infra to $0.90/$1.70 on DigitalOcean. Each partner requires separate signup and billing.</p>
+            <p><strong>Q: Can I use NVIDIA NIM from inside China?</strong></p>
+            <p>A: Unlikely without a proxy. build.nvidia.com is US-based with export control restrictions. For China-direct alternatives: SiliconFlow or Novita AI.</p>
+            <p><strong>Q: What makes Nemotron-3 different?</strong></p>
+            <p>A: LatentMoE architecture combining Mamba-2 state-space layers, MoE routing, and standard attention. Ultra 550B has 550B total params but only 55B active per token.</p>
+            <p><strong>Q: Is the API OpenAI-compatible?</strong></p>
+            <p>A: Yes. Uses standard /v1/chat/completions. Use OpenAI Python SDK with base_url change. Streaming, JSON mode, and function calling all supported.</p>
+            <p><strong>Q: How does NVIDIA NIM compare to FreeModel?</strong></p>
+            <p>A: NVIDIA NIM is a single-provider catalog of 80+ models via partner endpoints. FreeModel at freemodel.dev/invite/FRE-7a3b6220 is a multi-provider aggregator bundling OpenAI, Anthropic, DeepSeek behind one key with moderation routing and China-direct access.</p>
+
+            <h2>Conclusion</h2>
+            <p>NVIDIA NIM occupies a unique position in the AI API market. It is not trying to beat Groq on speed, Together AI on model breadth, or Novita AI on China access. Instead, it is a gateway into the NVIDIA ecosystem — a way to try NVIDIA's exclusive Nemotron-3 models before committing to self-hosted NIM containers on your own GPU infrastructure.</p>
+            <p>The decision tree for picking a provider in 2026:</p>
+            <ul>
+              <li>Need NVIDIA's exclusive Nemotron-3 architecture for evaluation → <strong>NVIDIA NIM (free tier)</strong></li>
+              <li>Need the Nemotron-3 Ultra 550B at the cheapest rate → <strong>NVIDIA NIM via Deep Infra</strong></li>
+              <li>Need to evaluate before deploying self-hosted NIM → <strong>NVIDIA NIM cloud API</strong></li>
+              <li>Need 200+ open-source models with unified billing → <strong>Together AI or Novita AI</strong></li>
+              <li>Need China-direct multi-provider routing → <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline"><strong>FreeModel</strong></a></li>
+              <li>Need the fastest inference speed on a specific model → <strong>Groq or Cerebras</strong></li>
+            </ul>
+            <p>If your team is experimenting with NVIDIA's Nemotron models and wants a production fallback for multi-provider routing from China, FreeModel complements the setup — it bundles moderation routing, OpenAI/Anthropic access, and direct China connectivity behind one API key. Sign up at <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">freemodel.dev/invite/FRE-7a3b6220</a>.</p>
+
+            <h2>Comparison Table (Final)</h2>
+            <table>
+              <thead>
+                <tr><th>Provider</th><th>Pricing Model</th><th>Best For</th><th>China Access</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>NVIDIA NIM</strong></td><td>Partner-dependent pricing</td><td>Exclusive Nemotron models + open-source catalog</td><td>❌ Proxy</td></tr>
+                <tr><td><strong>Groq</strong></td><td>$0.59-$0.79/M for Llama 3.3 70B</td><td>LPU-optimized speed on 7 models</td><td>❌ Proxy</td></tr>
+                <tr><td><strong>Together AI</strong></td><td>$0.18-$0.88/M per model</td><td>200+ open-source, US/EU serving</td><td>❌ Proxy</td></tr>
+                <tr><td><strong>Deep Infra</strong></td><td>$0.04-$0.50/M for open-source</td><td>50+ models at lowest price</td><td>❌ Proxy</td></tr>
+                <tr><td><strong>Novita AI</strong></td><td>$0.06-$1.52/M for 200+ models</td><td>200+ open-source, China-direct</td><td>✅ Direct</td></tr>
+                <tr><td><strong>FreeModel</strong></td><td>Varies by model</td><td>Multi-provider aggregator</td><td>✅ Direct</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Provider:</strong> NVIDIA NIM</li>
+                <li><strong>Base URL:</strong> integrate.api.nvidia.com/v1</li>
+                <li><strong>Models:</strong> 80+ (Nemotron-3 + third-party)</li>
+                <li><strong>Free Tier:</strong> Yes (no credit card)</li>
+                <li><strong>Auth:</strong> nvapi- API Key</li>
+                <li><strong>China Access:</strong> Proxy required</li>
+              </ul>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Try FreeModel</h3>
+              <p class="text-sm text-gray-600 mb-3">Need a China-direct aggregator with multi-provider routing? FreeModel bundles OpenAI, Anthropic, DeepSeek and more behind one key.</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="block text-center bg-blue-600 text-white rounded-lg py-2 px-4 text-sm font-medium hover:bg-blue-700">Get Started</a>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Reviews</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/deepinfra-api-review" class="text-blue-600 hover:underline">Deep Infra API Review</a></li>
+                <li><a href="/tutorials/together-ai-api-review" class="text-blue-600 hover:underline">Together AI API Review</a></li>
+                <li><a href="/tutorials/groq-api-review" class="text-blue-600 hover:underline">Groq API Review</a></li>
+                <li><a href="/tutorials/novita-ai-api-review" class="text-blue-600 hover:underline">Novita AI API Review</a></li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Provider Details</h3>
+              <ul class="text-sm text-gray-600 space-y-1">
+                <li>Category: International</li>
+                <li>Type: Hybrid (Cloud API + Self-Hosted)</li>
+                <li>Pricing: Partner-dependent</li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center text-xs text-gray-400">
+              Ad Placeholder
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

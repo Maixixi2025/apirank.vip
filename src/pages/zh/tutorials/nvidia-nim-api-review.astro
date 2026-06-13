@@ -1,0 +1,312 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'nvidia-nim-api-review';
+const date = '2026-06-13';
+const locale = 'zh';
+
+const zhTitle = 'NVIDIA NIM API 测评 2026：50+ 模型，OpenAI 兼容';
+const zhDescription = 'NVIDIA NIM API 完整测评：Nemotron-3 Ultra 550B 混合架构、Llama-Nemotron 优化模型、免费开发端点。与 Groq、Together AI、DeepInfra 对比。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "NVIDIA NIM 是自部署容器还是云 API？",
+      "acceptedAnswer": { "@type": "Answer", "text": "两者都有。NVIDIA 提供两个产品：(1) 可下载的 NIM 容器用于自托管部署（需 NVIDIA AI Enterprise 授权），(2) build.nvidia.com 的云 API，免费原型开发端点。本文评测的是云 API。云 API 通过 OpenAI 兼容的端点访问 NVIDIA 托管的模型，无需自管 GPU 基础设施。" }
+    },
+    {
+      "@type": "Question",
+      "name": "NVIDIA NIM 云 API 的定价如何工作？",
+      "acceptedAnswer": { "@type": "Answer", "text": "定价由合作伙伴设定，而非 NVIDIA。以 Nemotron-3 Ultra 550B 为例：Deep Infra $0.50/$2.50 每百万 token、Bitdeer AI $0.80/$2.60、DigitalOcean $0.90/$1.70。每个合作伙伴需要单独注册和付款，没有统一的 NVIDIA API 密钥覆盖所有端点。" }
+    },
+    {
+      "@type": "Question",
+      "name": "国内可以使用 NVIDIA NIM 吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "大概率需要代理。build.nvidia.com 是美国平台，受出口管制限制，没有 ICP 备案。所有合作伙伴端点也在美国或欧盟。国内用户如需直接访问，建议使用 SiliconFlow 或 Novita AI。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Nemotron-3 与其他开源模型有什么不同？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Nemotron-3 采用 LatentMoE 混合架构，在一个模型中融合了 Mamba-2 状态空间层、MoE 路由和标准注意力机制。Ultra 550B 总参数量 550B，但每 token 仅激活 55B，显存效率远高于同参数的稠密模型。" }
+    },
+    {
+      "@type": "Question",
+      "name": "NVIDIA NIM 云 API 兼容 OpenAI 吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "完全兼容。端点 https://integrate.api.nvidia.com/v1 遵循 OpenAI /v1/chat/completions 规范。使用 OpenAI Python SDK 修改 base_url 和 API Key 即可。支持流式输出、JSON mode 和 Function Calling。" }
+    },
+    {
+      "@type": "Question",
+      "name": "NVIDIA NIM 和 FreeModel 比哪个更适合多厂商场景？",
+      "acceptedAnswer": { "@type": "Answer", "text": "定位不同。NVIDIA NIM 是单一厂商的 80+ 模型目录（通过合作伙伴端点访问）。FreeModel（freemodel.dev/invite/FRE-7a3b6220）是多厂商聚合器，将 OpenAI、Anthropic、DeepSeek 等整合在一个 API Key 下，自带内容审核路由和国内直连。需要两者配合的场景：NIM 用于 Nemotron 实验 + FreeModel 用于生产环境的多厂商路由。" }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">NVIDIA NIM API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">NVIDIA NIM API 2026 评测：80+ 模型，最优化推理引擎</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-13">2026年6月13日</time>
+              <span>•</span>
+              <span>NVIDIA NIM 评测</span>
+              <span>•</span>
+              <span>阅读约 10 分钟</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              NVIDIA NIM 不是典型的 AI API 提供商。它并不直接销售 token。相反，它提供两件事：(1) build.nvidia.com 上的云 API，通过合作伙伴端点调用 NVIDIA 自研的 Nemotron-3 模型和 50+ 第三方开源模型；(2) 可下载的 NIM 容器，可部署在自有的 GPU 基础设施上。本文评测的是云 API——看一个以生产 GPU 闻名的公司如何进入模型推理即服务市场。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>一句话总结：</strong>NVIDIA NIM 云 API（build.nvidia.com）提供 NVIDIA 独有的 Nemotron-3 系列（LatentMoE 混合架构），以及 50+ 第三方模型（Llama/Qwen/Mistral/DeepSeek/Kimi）。API 兼容 OpenAI，免费原型开发无需信用卡。定价由合作伙伴决定——Nemotron-3 Ultra 550B 输入价格在各合作伙伴间为 $0.50-$0.90/百万 token。无统一计费，无国内直连。适合想体验 NVIDIA 自有模型架构后再决定是否自部署 NIM 的团队。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>引言：独特的商业模式</h2>
+            <p>NVIDIA 以独特的方式进入 AI API 市场：它制造了几乎所有其他提供商都依赖的硬件。NIM（NVIDIA Inference Microservice）平台最初于 2024 年推出，旨在将优化推理容器打包给企业部署。云 API <code>build.nvidia.com</code> 后来推出，作为进入 NVIDIA 生态系统的试用路径。</p>
+            <p>NVIDIA NIM 与 Groq、Together AI 或 DeepInfra 的根本区别在于商业模式。NVIDIA 本身不运行推理端点——它与现有供应商（Bitdeer AI、Deep Infra、Together AI、DigitalOcean、GMI Cloud）合作，这些供应商在 NVIDIA DGX 基础设施上托管模型并自行定价。Build.nvidia.com 是发现和路由层：选择模型、选择合作伙伴端点、跳转到该合作伙伴处进行计费。</p>
+            <p>这意味着 NVIDIA 的模型目录在广度（80+ 模型）和碎片化（每个合作伙伴有不同的定价、速率限制和 SLA）之间并存。对于评估推理选择的 AI 工程团队来说，问题不是"我应该用 NVIDIA NIM 吗？"，而是"哪个托管 NVIDIA 优化模型的合作伙伴端点适合我？Nemotron 架构值得额外关注吗？"</p>
+
+            <h2>NVIDIA NIM 实际托管哪些模型</h2>
+            <p>build.nvidia.com 上的模型目录分为三个层级：</p>
+            <h3>1. NVIDIA 自研 Nemotron-3 系列</h3>
+            <p>Nemotron-3 家族是 NVIDIA 自有的模型线，基于新颖的 LatentMoE 架构，在一个 Transformer 中融合了三种机制：</p>
+            <ul>
+              <li><strong>Mamba-2 状态空间层</strong>，用于高内存效率的长上下文处理</li>
+              <li><strong>MoE 专家路由</strong>，实现参数效率——每个 token 只激活相关子网络</li>
+              <li><strong>标准注意力头</strong>，确保在精度敏感任务上的质量</li>
+            </ul>
+            <p>产品线覆盖所有层级：</p>
+            <table>
+              <thead>
+                <tr><th>模型</th><th>总参数</th><th>每 Token 激活</th><th>适用场景</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Nemotron-3 Ultra 550B</strong></td><td>550B</td><td>55B</td><td>前沿推理、编程、长上下文</td></tr>
+                <tr><td><strong>Nemotron-3 Super 120B</strong></td><td>120B</td><td>12B</td><td>生产聊天、企业摘要</td></tr>
+                <tr><td><strong>Nemotron-3 Nano 30B</strong></td><td>30B</td><td>3B</td><td>轻量分类、快速任务</td></tr>
+                <tr><td><strong>Nemotron-Mini 4B</strong></td><td>4B</td><td>4B</td><td>边缘/嵌入式、低成本批量推理</td></tr>
+                <tr><td><strong>Llama-3.3-Nemotron-Super-49B v1.5</strong></td><td>49B</td><td>49B</td><td>NVIDIA 优化的 Llama 3.3 衍生版</td></tr>
+                <tr><td><strong>Llama-3.1-Nemotron-Ultra-253B</strong></td><td>253B</td><td>253B</td><td>NVIDIA 调优的 Llama 3.1 衍生版</td></tr>
+              </tbody>
+            </table>
+
+            <h3>2. 第三方开源模型</h3>
+            <p>除了 NVIDIA 自研模型，build.nvidia.com 目录还包括 50+ 个由合作伙伴托管的第三方模型：Llama 系列（3.1/3.2/3.3/4）、Qwen 系列（2.5/3/3.5）、Mistral 系列、DeepSeek V4 Flash/Pro、Google Gemma 2/3/4、Microsoft Phi-4、以及 Kimi K2、Step 3.5/3.7、MiniMax M3 等中国模型。</p>
+
+            <h3>3. 嵌入、视觉和专业模型</h3>
+            <p>NVIDIA 还托管嵌入模型（NemoRetriever 300M/1B、NV-Embed）、重排序模型、内容安全模型（NeMoGuard 用于越狱检测、主题控制、PII 检测）、视觉模型（FLUX.1、SD3、SDXL）和医疗模型。</p>
+
+            <h2>API 接口：标准 OpenAI 格式+合作伙伴路由</h2>
+            <p>云 API 对 OpenAI 兼容端点来说非常直接。Base URL 是 <code>https://integrate.api.nvidia.com/v1</code>，<code>/v1/chat/completions</code> 端点接受标准的 OpenAI 请求体。支持流式、JSON mode 和 Function Calling。</p>
+            <pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://integrate.api.nvidia.com/v1",
+    api_key="nvapi-YOUR_API_KEY"
+)
+
+completion = client.chat.completions.create(
+    model="nvidia/nemotron-3-ultra-550b-a55b",
+    messages=[&#123;"role": "user", "content": "用三句话解释 LatentMoE 架构。"&#125;],
+    max_tokens=512
+)
+
+print(completion.choices[0].message.content)</code></pre>
+            <p>与标准 OpenAI 兼容提供商的关键区别：模型名使用完整的 NVIDIA 目录路径（如 <code>nvidia/nemotron-3-ultra-550b-a55b</code>）。免费 API 密钥可在 build.nvidia.com 生成，无需信用卡。</p>
+
+            <h2>定价：刻意碎片化</h2>
+            <p>NVIDIA NIM 最不寻常的方面是：同一模型的定价因合作伙伴端点而异。以 Nemotron-3 Ultra 550B 为例：</p>
+            <table>
+              <thead>
+                <tr><th>合作伙伴端点</th><th>输入（每百万 token）</th><th>输出（每百万 token）</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Deep Infra</strong></td><td>$0.50</td><td>$2.50</td></tr>
+                <tr><td><strong>Together AI</strong></td><td>$0.60</td><td>$3.60</td></tr>
+                <tr><td><strong>Bitdeer AI</strong></td><td>$0.80</td><td>$2.60</td></tr>
+                <tr><td><strong>DigitalOcean</strong></td><td>$0.90</td><td>$1.70</td></tr>
+                <tr><td><strong>GMI Cloud</strong></td><td>$0.80</td><td>$2.60</td></tr>
+              </tbody>
+            </table>
+            <p>Llama-3.3-Nemotron-Super-49B 通常在 $0.35-$0.60/M 范围。Nemotron-Mini 4B 在 $0.05/M 以下。</p>
+
+            <h2>速度：未公开但有信心</h2>
+            <p>NVIDIA 未发布云 API 端点的逐模型 token/秒基准测试。已知的是：NIM 推理栈运行在 TensorRT-LLM 上，这是 NVIDIA 自有的推理优化库，被广泛认为是最强大的 GPU 推理引擎之一。实际速度因合作伙伴使用的 GPU 层级（H100 vs A100 vs DGX 系统）而异。</p>
+
+            <h2>优缺点</h2>
+            <p><strong>优点</strong></p>
+            <ul>
+              <li>✅ 独有的 Nemotron-3 系列（LatentMoE 架构），其他平台无法体验</li>
+              <li>✅ Llama-Nemotron 优化模型——NVIDIA 调优的 Llama 检查点</li>
+              <li>✅ OpenAI 兼容 API，零 SDK 改造，免费原型开发无需信用卡</li>
+              <li>✅ 80+ 模型目录覆盖 Llama/Qwen/Mistral/DeepSeek/Kimi/GLM/Gemma/Phi</li>
+              <li>✅ TensorRT-LLM 推理引擎顶级 GPU 利用率</li>
+              <li>✅ 包含嵌入、重排序、视觉、安全、医疗等多类专门模型</li>
+            </ul>
+            <p><strong>缺点</strong></p>
+            <ul>
+              <li>❌ 无统一计费——每个合作伙伴端点需单独注册和付款</li>
+              <li>❌ 国内访问需代理；无 ICP 备案或人民币计费</li>
+              <li>❌ 公开的基准速度数据有限</li>
+              <li>❌ 第三方模型目录与其他提供商的计费更简单的平台重叠</li>
+              <li>❌ 免费/原型开发层无专用 SLA</li>
+            </ul>
+
+            <h2>场景推荐</h2>
+            <table>
+              <thead>
+                <tr><th>场景</th><th>推荐模型</th><th>原因</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>前沿推理/编程</td><td>Nemotron-3 Ultra 550B</td><td>$0.50/M 输入，独有模型质量</td></tr>
+                <tr><td>生产聊天</td><td>Llama-3.3-Nemotron-49B</td><td>NVIDIA 调优，价格合理</td></tr>
+                <tr><td>轻量分类</td><td>Nemotron-3 Nano 30B</td><td>仅 3B 激活参数，高效</td></tr>
+                <tr><td>批量嵌入</td><td>NemoRetriever-300M v2</td><td>NVIDIA 自研检索嵌入</td></tr>
+                <tr><td>自托管部署</td><td>可下载 NIM 容器</td><td>部署到自有 GPU 集群</td></tr>
+              </tbody>
+            </table>
+
+            <h2>对比：NVIDIA NIM vs 主要竞品</h2>
+            <table>
+              <thead>
+                <tr><th>提供商</th><th>最佳场景</th><th>国内访问</th><th>计费模式</th><th>模型数</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>NVIDIA NIM</strong></td><td>独有 Nemotron 模型+80 开源</td><td>❌ 需代理</td><td>按端点</td><td>80+</td></tr>
+                <tr><td><strong>Groq</strong></td><td>7 个模型的 LPU 加速推理</td><td>❌ 需代理</td><td>统一</td><td>7</td></tr>
+                <tr><td><strong>Together AI</strong></td><td>200+ 开源模型，全球服务</td><td>❌ 需代理</td><td>统一</td><td>200+</td></tr>
+                <tr><td><strong>Deep Infra</strong></td><td>最低价 50+ 开源模型</td><td>❌ 需代理</td><td>统一</td><td>50+</td></tr>
+                <tr><td><strong>Novita AI</strong></td><td>200+ 开源+国内直连</td><td>✅ 直连</td><td>统一</td><td>200+</td></tr>
+                <tr><td><strong>FreeModel</strong></td><td>多厂商聚合+内容审核路由</td><td>✅ 直连</td><td>统一</td><td>50+</td></tr>
+              </tbody>
+            </table>
+
+            <h2>常见问题</h2>
+            <p><strong>Q: NVIDIA NIM 是自部署容器还是云 API？</strong></p>
+            <p>A: 两者都有。可下载的 NIM 容器用于自托管部署，和 build.nvidia.com 上的云 API。本文评测的是云 API。</p>
+            <p><strong>Q: 合作伙伴托管模型时定价如何工作？</strong></p>
+            <p>A: 定价由合作伙伴设定。Nemotron-3 Ultra 550B 从 Deep Infra 的 $0.50/$2.50 到 DigitalOcean 的 $0.90/$1.70 不等。</p>
+            <p><strong>Q: 国内能用 NVIDIA NIM 吗？</strong></p>
+            <p>A: 需要代理。build.nvidia.com 是美国平台，受出口管制。国内替代方案：SiliconFlow 或 Novita AI。</p>
+            <p><strong>Q: Nemotron-3 有什么不同？</strong></p>
+            <p>A: LatentMoE 架构融合 Mamba-2、MoE 和标准注意力。Ultra 550B 仅 55B 激活参数。</p>
+            <p><strong>Q: API 兼容 OpenAI 吗？</strong></p>
+            <p>A: 完全兼容。使用 OpenAI Python SDK 修改 base_url 即可。</p>
+            <p><strong>Q: 和 FreeModel 比如何？</strong></p>
+            <p>A: NVIDIA NIM 是单一厂商 80+ 模型目录。FreeModel 是聚合器（freemodel.dev/invite/FRE-7a3b6220），将 OpenAI/Anthropic/DeepSeek 整合在一把 Key 下。两者可配合使用。</p>
+
+            <h2>结论</h2>
+            <p>NVIDIA NIM 在 AI API 市场中占据独特位置。它不与 Groq 比速度、与 Together AI 比广度、与 Novita AI 比国内直连。相反，它是进入 NVIDIA 生态系统的门户——一个在投入自托管 NIM 部署前体验 NVIDIA 独有 Nemotron-3 模型的途径。</p>
+            <p>2026 年选择提供商决策树：</p>
+            <ul>
+              <li>体验 NVIDIA 独有的 Nemotron-3 架构 → <strong>NVIDIA NIM（免费层）</strong></li>
+              <li>最低价跑 Nemotron-3 Ultra 550B → <strong>NVIDIA NIM via Deep Infra</strong></li>
+              <li>评估后自部署 NIM 到自有 GPU → <strong>NVIDIA NIM 云 API</strong></li>
+              <li>需要 200+ 开源模型+统一计费 → <strong>Together AI 或 Novita AI</strong></li>
+              <li>需要国内直连+多厂商路由 → <strong><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a></strong></li>
+              <li>需要最快推理速度 → <strong>Groq 或 Cerebras</strong></li>
+            </ul>
+            <p>如果团队正在 NVIDIA NIM 上实验 Nemotron 模型，并需要生产多厂商路由方案，FreeModel 可互补——它将内容审核路由、OpenAI/Anthropic 访问和国内直连整合在一个 API Key 下。注册地址：<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">freemodel.dev/invite/FRE-7a3b6220</a>。</p>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">快速参考</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>提供商：</strong>NVIDIA NIM</li>
+                <li><strong>API 端点：</strong>integrate.api.nvidia.com/v1</li>
+                <li><strong>模型数：</strong>80+（Nemotron-3 + 第三方）</li>
+                <li><strong>免费层：</strong>有（无需信用卡）</li>
+                <li><strong>国内访问：</strong>需代理</li>
+              </ul>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">试试 FreeModel</h3>
+              <p class="text-sm text-gray-600 mb-3">需要国内直连的多厂商聚合器？FreeModel 将 OpenAI、Anthropic、DeepSeek 整合在一个 Key 下。</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="block text-center bg-blue-600 text-white rounded-lg py-2 px-4 text-sm font-medium hover:bg-blue-700">立即注册</a>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">相关评测</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/zh/tutorials/deepinfra-api-review" class="text-blue-600 hover:underline">Deep Infra API 评测</a></li>
+                <li><a href="/zh/tutorials/together-ai-api-review" class="text-blue-600 hover:underline">Together AI API 评测</a></li>
+                <li><a href="/zh/tutorials/groq-api-review" class="text-blue-600 hover:underline">Groq API 评测</a></li>
+                <li><a href="/zh/tutorials/novita-ai-api-review" class="text-blue-600 hover:underline">Novita AI API 评测</a></li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center text-xs text-gray-400">
+              广告位
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
