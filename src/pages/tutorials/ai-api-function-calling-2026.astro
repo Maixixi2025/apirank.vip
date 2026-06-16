@@ -1,0 +1,369 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'ai-api-function-calling-2026';
+const date = '2026-06-16';
+const locale = 'en';
+
+const enTitle = 'AI API Function Calling 2026: 8 Providers Compared';
+const enDescription = 'Compare 8 LLM API providers on function calling: OpenAI, Anthropic, Google, DeepSeek, Together, Mistral, Groq, OpenRouter. Pricing, benchmarks, code.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is function calling in LLM APIs?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Function calling (also called tool use) lets LLMs request external function executions during a chat. Instead of generating plain text, the model outputs structured JSON arguments for functions you define — enabling it to query databases, call APIs, send emails, or do math. The developer executes the function and sends the result back." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which provider has the best function calling support?",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenAI has the most mature implementation with parallel function calling, structured outputs, and the broadest ecosystem support. Anthropic Claude offers equivalent quality for agentic workflows. Google Gemini pioneered native tool use with live API connections. DeepSeek and Together AI offer OpenAI-compatible function calling at lower prices." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is function calling compatible across providers?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Most providers use OpenAI-compatible function calling (same JSON schema format). Anthropic and Google use slightly different schemas. OpenRouter preserves each backend's native format. Aggregators like FreeModel or LiteLLM normalize function definitions across providers so you can use one schema for all." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is parallel function calling?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Parallel function calling lets the LLM request multiple function executions in a single response. For example, asking 'what is the weather in Tokyo and London?' can trigger two parallel weather API calls. OpenAI, Anthropic Claude 3.5+, Google Gemini, and Together AI support parallel calls." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does function calling cost more?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Function calling adds context tokens from function definitions (typically 200-500 tokens per function). At $0.15/MTok for GPT-4o-mini, that is under $0.001 per call. The output is also slightly longer (JSON instead of text). Overall, the cost impact is negligible for most use cases." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I switch providers without rewriting function calling code?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Use an OpenAI-compatible aggregator like FreeModel or LiteLLM. These tools normalize provider-specific function schemas into a single format. With FreeModel, you point to https://freemodel.dev/v1/chat/completions and use standard OpenAI function definitions — it routes to DeepSeek, Google, or Anthropic while keeping your code unchanged." }
+    }
+  ]
+};
+
+const enBody = `<header>
+  <h1 class="text-3xl font-bold text-gray-900 mb-4">AI API Function Calling 2026: 8 Providers Compared</h1>
+  <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+    <time datetime="2026-06-16">June 16, 2026</time>
+    <span>•</span>
+    <span>Function Calling Comparison</span>
+    <span>•</span>
+    <span>~8 min read</span>
+  </div>
+  <p class="text-lg text-gray-600 leading-relaxed">
+    Function calling has become the backbone of LLM-powered applications — from AI agents that book flights to coding assistants that run shell commands. But not all providers implement it the same way. This guide compares function calling support across 8 major LLM API providers: OpenAI, Anthropic Claude, Google Gemini, DeepSeek, Together AI, Mistral, Groq, and OpenRouter.
+  </p>
+</header>
+
+<div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+  <p class="text-blue-800 text-sm">
+    <strong>TL;DR:</strong> OpenAI leads with the most mature parallel function calling and structured outputs. Anthropic Claude is strongest for complex multi-step agentic workflows. Google Gemini offers native tool integration (Google Search, Maps). DeepSeek and Together AI offer OpenAI-compatible function calling at 5-10x lower cost. For multi-provider routing, FreeModel normalizes function schemas across all providers with one API key.
+  </p>
+</div>
+
+<div class="prose prose-lg max-w-none">
+
+<h2>What Is Function Calling and Why It Matters in 2026</h2>
+<p>Function calling (also called tool use, tool calling, or function invocation) is the mechanism that turns LLMs from text generators into action-taking agents. Instead of saying "I cannot do that," a model with function calling can output a structured JSON request like:</p>
+<pre><code class="language-json">{
+  "name": "get_weather",
+  "arguments": "{\\"city\\": \\"Tokyo\\", \\"unit\\": \\"celsius\\"}"
+}</code></pre>
+<p>Your application then executes the actual function and feeds the result back into the conversation. This pattern is the foundation of every AI agent, RAG pipeline, automation tool, and copilot built in 2026.</p>
+<p>In 2026, function calling quality is defined by five dimensions:</p>
+<ul>
+  <li><strong>Reliability:</strong> Does the model actually call the function when it should?</li>
+  <li><strong>Accuracy:</strong> Are the extracted arguments correct and well-typed?</li>
+  <li><strong>Parallelism:</strong> Can the model call multiple functions in one turn?</li>
+  <li><strong>Schema flexibility:</strong> Does it handle nested JSON, enums, optional fields?</li>
+  <li><strong>Cost:</strong> How many tokens do function definitions consume?</li>
+</ul>
+
+<h2>Provider-by-Provider Comparison</h2>
+
+<h3>1. OpenAI — The Gold Standard</h3>
+<p>OpenAI pioneered function calling in 2023 and has iterated aggressively. GPT-4o, GPT-4o-mini, and o3 all support parallel function calling (up to 128 functions in parallel). The April 2026 release added <strong>Structured Outputs</strong> — guaranteed valid JSON matching your schema, eliminating parsing failures. OpenAI also supports <code>required</code> fields, <code>anyOf</code>/<code>oneOf</code> unions, and nested object schemas.</p>
+<p><strong>Best For:</strong> Production applications where reliability and schema correctness are non-negotiable. The structured outputs feature alone saves hours of JSON validation code.</p>
+<p><strong>Cost:</strong> GPT-4o-mini at $0.15/$0.60/MTok (input/output) with ~0.3-0.5 cents per function call.</p>
+
+<h3>2. Anthropic Claude — Agent-Grade Tool Use</h3>
+<p>Anthropic Claude (Sonnet 4.8, Opus 4.8, Fable 5) uses a <strong>tool use</strong> API — functionally equivalent to function calling but with a different schema. Claude excels at <strong>multi-tool orchestration</strong>: it can chain tools, conditionally decide which tool to call based on previous results, and handle errors gracefully. Claude Opus 4.8 has the highest tool-use accuracy on the Berkeley Function Calling Leaderboard (BFCL).</p>
+<p><strong>Best For:</strong> Complex agentic workflows where a model needs to plan, execute, and re-plan across multiple tool calls. Think customer support bots that check order status, issue refunds, and update CRM data in sequence.</p>
+<p><strong>Cost:</strong> Claude Sonnet 4.8 at $3.00/$15.00/MTok. Higher quality but 10-20x the cost of GPT-4o-mini.</p>
+
+<h3>3. Google Gemini — Native Tool Integration</h3>
+<p>Google Gemini offers function calling through its <code>tools</code> parameter in the API. What sets Gemini apart is <strong>native Google tool integration</strong>: you can enable Google Search, Google Maps, and Gmail/Calendar as tools without writing any connector code. Gemini also supports <strong>declarative function calling</strong> where you define the function and the model decides when to call it based on the user's query.</p>
+<p><strong>Best For:</strong> Applications that need live data from Google services — search results in a chat, maps data in a travel planner, calendar integration in a scheduling assistant.</p>
+<p><strong>Cost:</strong> Gemini 2.0 Flash at $0.10/$0.40/MTok — the cheapest among frontier providers.</p>
+
+<h3>4. DeepSeek — Budget Function Calling</h3>
+<p>DeepSeek V3 and R1 support OpenAI-compatible function calling. The schema is identical to OpenAI's, so any code written for GPT works with DeepSeek by changing the base URL. Quality is solid for simple tool calls (single-function, clear intent). Complex nested schemas or multi-step chains occasionally produce hallucinated arguments.</p>
+<p><strong>Best For:</strong> Cost-sensitive applications where function calling is simple and well-defined. Batch document processing, offline RAG pipelines, scheduled automation tasks.</p>
+<p><strong>Cost:</strong> DeepSeek V3 at $0.14/$0.28/MTok (cache hit) — 80-90% cheaper than GPT-4o.</p>
+
+<h3>5. Together AI — OpenAI-Compatible at Scale</h3>
+<p>Together AI supports function calling through an OpenAI-compatible endpoint. Models like Qwen3.5 9B, Llama 3.3 70B, and DeepSeek V4 Pro all accept <code>tools</code> parameters identical to the OpenAI format. Together's key advantage is <strong>throughput</strong>: 250-300 tok/s on Llama 3.3 70B means function-calling responses stream back 2-3x faster than GPT-4o.</p>
+<p><strong>Best For:</strong> High-throughput function calling workloads where speed matters more than absolute accuracy. Good for internal tools, dashboard generators, and batch processing.</p>
+<p><strong>Cost:</strong> Llama 3.3 70B at $1.04/$1.04/MTok — competitive with GPT-4o-mini pricing.</p>
+
+<h3>6. Mistral — Lean and Fast</h3>
+<p>Mistral Large 2 and Mistral Small support function calling through an OpenAI-compatible API. Mistral's implementation is clean and minimal — it handles single and parallel function calls reliably, though complex nested schemas (3+ levels deep) sometimes produce incomplete outputs. Mistral models have the fastest TTFT among European providers at under 200ms.</p>
+<p><strong>Best For:</strong> GDPR-compliant function calling workloads (EU data residency). Simple tool use in low-latency applications. Mistral Small at $0.20/$0.60/MTok is excellent for high-volume simple function calling.</p>
+
+<h3>7. Groq — Blazing Fast, Limited Schema Support</h3>
+<p>Groq's LPU-powered inference is exceptionally fast (1,250+ tok/s on Llama 3.1 8B). Function calling works through the OpenAI-compatible API, supporting Llama 3.3 70B and Mixtral 8x22B. The limitation: Groq's function calling supports flat schemas well but struggles with deeply nested JSON or complex <code>anyOf</code> conditions. For simple query-to-API translation, it is the fastest option.</p>
+<p><strong>Best For:</strong> Real-time voice agents and chatbots that need sub-200ms function calling. Simple tool calls where speed outweighs schema complexity.</p>
+<p><strong>Cost:</strong> Llama 3.1 8B at $0.07/$0.07/MTok for cached — the cheapest per-call function execution available.</p>
+
+<h3>8. OpenRouter — Multi-Provider Routing</h3>
+<p>OpenRouter routes function calling requests to whichever backend you choose. Each provider's native format is preserved, so you can route the same function schema to OpenAI, Anthropic, or Together AI through a single API key. OpenRouter adds ~50ms of routing latency but gives you full provider flexibility.</p>
+<p><strong>Best For:</strong> A/B testing function calling quality across providers. Building fallback logic (if OpenAI fails, route to Anthropic). Using multiple providers with one API key and billing interface.</p>
+
+<h2>Function Calling Feature Comparison Table</h2>
+<table class="w-full text-sm">
+  <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Provider</th><th class="px-3 py-2 text-left">Parallel Calls</th><th class="px-3 py-2 text-left">Schema Format</th><th class="px-3 py-2 text-left">Nested JSON</th><th class="px-3 py-2 text-left">Structured Outputs</th><th class="px-3 py-2 text-left">BFCL Score</th></tr></thead>
+  <tbody>
+    <tr><td class="px-3 py-2 border-b"><strong>OpenAI</strong></td><td class="px-3 py-2 border-b">Up to 128</td><td class="px-3 py-2 border-b">OpenAI JSON Schema</td><td class="px-3 py-2 border-b">Full</td><td class="px-3 py-2 border-b">Guaranteed valid JSON</td><td class="px-3 py-2 border-b">92%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Anthropic</strong></td><td class="px-3 py-2 border-b">Up to 64</td><td class="px-3 py-2 border-b">Tool Use (own format)</td><td class="px-3 py-2 border-b">Full</td><td class="px-3 py-2 border-b">Tool response validation</td><td class="px-3 py-2 border-b">95%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Google Gemini</strong></td><td class="px-3 py-2 border-b">Yes</td><td class="px-3 py-2 border-b">Google FunctionDeclaration</td><td class="px-3 py-2 border-b">Full</td><td class="px-3 py-2 border-b">Schema validation</td><td class="px-3 py-2 border-b">88%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>DeepSeek</strong></td><td class="px-3 py-2 border-b">Yes (simple)</td><td class="px-3 py-2 border-b">OpenAI-compatible</td><td class="px-3 py-2 border-b">Partial</td><td class="px-3 py-2 border-b">No</td><td class="px-3 py-2 border-b">76%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Together AI</strong></td><td class="px-3 py-2 border-b">Yes (simple)</td><td class="px-3 py-2 border-b">OpenAI-compatible</td><td class="px-3 py-2 border-b">Partial</td><td class="px-3 py-2 border-b">No</td><td class="px-3 py-2 border-b">78%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Mistral</strong></td><td class="px-3 py-2 border-b">Yes</td><td class="px-3 py-2 border-b">OpenAI-compatible</td><td class="px-3 py-2 border-b">Limited</td><td class="px-3 py-2 border-b">No</td><td class="px-3 py-2 border-b">82%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Groq</strong></td><td class="px-3 py-2 border-b">Yes (flat)</td><td class="px-3 py-2 border-b">OpenAI-compatible</td><td class="px-3 py-2 border-b">Flat only</td><td class="px-3 py-2 border-b">No</td><td class="px-3 py-2 border-b">70%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>OpenRouter</strong></td><td class="px-3 py-2 border-b">Depends on backend</td><td class="px-3 py-2 border-b">Provider-native</td><td class="px-3 py-2 border-b">Depends</td><td class="px-3 py-2 border-b">Depends</td><td class="px-3 py-2 border-b">N/A</td></tr>
+  </tbody>
+</table>
+
+<h2>Function Calling Cost Comparison</h2>
+<p>Below is the true cost of a single function call with an 8KB system prompt and 2KB function definition (500 prompt tokens + 200 output tokens):</p>
+<table class="w-full text-sm">
+  <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Provider</th><th class="px-3 py-2 text-left">Model</th><th class="px-3 py-2 text-left">Cost per 1K Calls</th><th class="px-3 py-2 text-left">Latency (TTFT)</th></tr></thead>
+  <tbody>
+    <tr><td class="px-3 py-2 border-b"><strong>Groq</strong></td><td class="px-3 py-2 border-b">Llama 3.1 8B</td><td class="px-3 py-2 border-b">$0.14</td><td class="px-3 py-2 border-b">~200ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>DeepSeek</strong></td><td class="px-3 py-2 border-b">V3 (cache hit)</td><td class="px-3 py-2 border-b">$0.13</td><td class="px-3 py-2 border-b">~500ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>OpenAI</strong></td><td class="px-3 py-2 border-b">GPT-4o-mini</td><td class="px-3 py-2 border-b">$0.20</td><td class="px-3 py-2 border-b">~400ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Together AI</strong></td><td class="px-3 py-2 border-b">Llama 3.3 70B</td><td class="px-3 py-2 border-b">$0.31</td><td class="px-3 py-2 border-b">~300ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Mistral</strong></td><td class="px-3 py-2 border-b">Mistral Small</td><td class="px-3 py-2 border-b">$0.22</td><td class="px-3 py-2 border-b">~200ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Google</strong></td><td class="px-3 py-2 border-b">Gemini 2.0 Flash</td><td class="px-3 py-2 border-b">$0.12</td><td class="px-3 py-2 border-b">~350ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Anthropic</strong></td><td class="px-3 py-2 border-b">Claude Sonnet 4.8</td><td class="px-3 py-2 border-b">$2.10</td><td class="px-3 py-2 border-b">~600ms</td></tr>
+  </tbody>
+</table>
+
+<h2>Code Example: Multi-Provider Function Calling</h2>
+<p>Here is a real Python example showing how to define functions and call them across providers. The same schema works with OpenAI, Together AI, DeepSeek, and Groq:</p>
+<pre><code class="language-python">import json, os
+from openai import OpenAI
+
+# Define functions (OpenAI-compatible schema)
+tools = [
+  {
+    "type": "function",
+    "function": {
+      "name": "get_weather",
+      "description": "Get the weather for a city",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "city": { "type": "string", "description": "City name" },
+          "unit": { "type": "string", "enum": ["celsius", "fahrenheit"] }
+        },
+        "required": ["city", "unit"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "search_flights",
+      "description": "Search for flights between two cities",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "origin": { "type": "string", "description": "Departure airport code" },
+          "destination": { "type": "string", "description": "Arrival airport code" },
+          "date": { "type": "string", "description": "Flight date (YYYY-MM-DD)" }
+        },
+        "required": ["origin", "destination", "date"]
+      }
+    }
+  }
+]
+
+# Switch provider by changing base_url and api_key
+client = OpenAI(
+  base_url="https://freemodel.dev/v1",
+  api_key=os.environ["FREEMODEL_API_KEY"]
+)
+
+response = client.chat.completions.create(
+  model="gpt-4o-mini",
+  messages=[
+    {"role": "system", "content": "You are a travel assistant."},
+    {"role": "user", "content": "What is the weather in Tokyo? Also need flights from NYC to Tokyo on 2026-07-01."}
+  ],
+  tools=tools,
+  tool_choice="auto"  # Let the model decide
+)
+
+# Both functions may be called in parallel
+for tool_call in response.choices[0].message.tool_calls:
+  print(f"Function: {tool_call.function.name}")
+  print(f"Args: {tool_call.function.arguments}")</code></pre>
+
+<h2>Multi-Provider Strategy with FreeModel</h2>
+<p>One of the biggest challenges with function calling is <strong>provider lock-in</strong>. Each provider's function schema is slightly different. OpenAI uses the <code>tools</code> parameter. Anthropic uses <code>tools</code> with a different format (name + input_schema instead of function.parameters). Google uses <code>tools.functionDeclarations</code>.</p>
+<p><strong>FreeModel</strong> solves this by normalizing all provider schemas behind a single OpenAI-compatible endpoint. You write functions in the standard OpenAI format, and FreeModel handles the translation to DeepSeek, Together AI, Google Gemini, or Anthropic Claude under the hood. This means:</p>
+<ul>
+  <li>One function definition format for all 6+ backend providers</li>
+  <li>Fallback routing: if OpenAI is down, FreeModel routes to Together AI without code changes</li>
+  <li>Cost optimization: route simple function calls to Groq ($0.14/K calls) and complex ones to Anthropic ($2.10/K calls) using the same code</li>
+</ul>
+<p>For developers building multi-provider AI agents, FreeModel is the fastest path to production-grade function calling without managing 6 different API schemas.</p>
+
+<h2>Recommendations by Use Case</h2>
+<table class="w-full text-sm">
+  <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">Use Case</th><th class="px-3 py-2 text-left">Recommended Provider</th><th class="px-3 py-2 text-left">Why</th></tr></thead>
+  <tbody>
+    <tr><td class="px-3 py-2 border-b"><strong>Production AI Agents</strong></td><td class="px-3 py-2 border-b">OpenAI GPT-4o</td><td class="px-3 py-2 border-b">Structured outputs guarantee valid JSON — eliminates a whole class of production bugs.</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Multi-Step Agentic Workflows</strong></td><td class="px-3 py-2 border-b">Anthropic Claude Sonnet 4.8</td><td class="px-3 py-2 border-b">Best at chaining tools, handling errors, and re-planning based on tool results.</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Real-Time Voice / Chat</strong></td><td class="px-3 py-2 border-b">Groq (Llama 3.1 8B)</td><td class="px-3 py-2 border-b">200ms TTFT and $0.14/K calls — unmatched speed-to-cost ratio for simple tool use.</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Batch / Scheduled Tasks</strong></td><td class="px-3 py-2 border-b">DeepSeek V3</td><td class="px-3 py-2 border-b">$0.13/K calls with reasonable accuracy for well-defined, simple function schemas.</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Multi-Provider / Fallback</strong></td><td class="px-3 py-2 border-b">FreeModel + any provider</td><td class="px-3 py-2 border-b">Normalize function schemas across providers with one API key. No schema rewrites.</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Google Service Integration</strong></td><td class="px-3 py-2 border-b">Google Gemini</td><td class="px-3 py-2 border-b">Native Search/Maps/Calendar tools — zero connector code needed.</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>High-Throughput Internal Tools</strong></td><td class="px-3 py-2 border-b">Together AI (Llama 3.3 70B)</td><td class="px-3 py-2 border-b">250-300 tok/s throughput at $0.31/K calls — best balance of speed and cost.</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>EU Data Residency</strong></td><td class="px-3 py-2 border-b">Mistral Large 2</td><td class="px-3 py-2 border-b">GDPR-compliant data processing with competitive function calling accuracy (82% BFCL).</td></tr>
+  </tbody>
+</table>
+
+<h2>FAQ</h2>
+<p><strong>Q: What is function calling in LLM APIs?</strong><br>
+A: Function calling lets LLMs request external function executions during a chat. Instead of generating plain text, the model outputs structured JSON arguments for functions you define — enabling it to query databases, call APIs, send emails, or do math. The developer executes the function and sends the result back.</p>
+
+<p><strong>Q: Which provider has the best function calling support?</strong><br>
+A: OpenAI has the most mature implementation with parallel function calling, structured outputs, and the broadest ecosystem support. Anthropic Claude offers equivalent quality for agentic workflows. Google Gemini pioneered native tool use with live API connections. DeepSeek and Together AI offer OpenAI-compatible function calling at lower prices.</p>
+
+<p><strong>Q: Is function calling compatible across providers?</strong><br>
+A: Most providers use OpenAI-compatible function calling (same JSON schema format). Anthropic and Google use slightly different schemas. OpenRouter preserves each backend's native format. Aggregators like FreeModel or LiteLLM normalize function definitions across providers so you can use one schema for all.</p>
+
+<p><strong>Q: What is parallel function calling?</strong><br>
+A: Parallel function calling lets the LLM request multiple function executions in a single response. For example, asking 'what is the weather in Tokyo and London?' can trigger two parallel weather API calls. OpenAI, Anthropic Claude 3.5+, Google Gemini, and Together AI support parallel calls.</p>
+
+<p><strong>Q: Does function calling cost more?</strong><br>
+A: Function calling adds context tokens from function definitions (typically 200-500 tokens per function). At $0.15/MTok for GPT-4o-mini, that is under $0.001 per call. The output is also slightly longer (JSON instead of text). Overall, the cost impact is negligible for most use cases.</p>
+
+<p><strong>Q: How do I switch providers without rewriting function calling code?</strong><br>
+A: Use an OpenAI-compatible aggregator like <a href="https://freemodel.dev/invite/FRE-7a3b6220">FreeModel</a> or LiteLLM. These tools normalize provider-specific function schemas into a single format. With FreeModel, you point to https://freemodel.dev/v1/chat/completions and use standard OpenAI function definitions — it routes to DeepSeek, Google, or Anthropic while keeping your code unchanged.</p>
+
+<h2>Conclusion: Which Function Calling Provider Should You Pick?</h2>
+<p>In 2026, the function calling landscape has matured significantly. Every major provider offers reliable, production-grade function calling. The right choice depends on your specific requirements:</p>
+<ul>
+  <li><strong>Need guaranteed JSON validity?</strong> OpenAI with Structured Outputs is the safest choice for any production system.</li>
+  <li><strong>Building a multi-step agent?</strong> Anthropic Claude's tool-use model excels at chaining complex operations.</li>
+  <li><strong>Prioritizing cost?</strong> DeepSeek, Groq, and Together AI give you 80-95% of the functionality at 10-20% of the price.</li>
+  <li><strong>Want to avoid provider lock-in?</strong> FreeModel normalizes all schemas behind one API — write once, run across any provider.</li>
+</ul>
+<p>Start prototyping with GPT-4o-mini (best developer experience, lowest friction). Once your function definitions are stable, measure the accuracy-cost tradeoff and move budget-sensitive calls to cheaper providers. The multi-provider approach — using FreeModel as an aggregator — gives you the flexibility to optimize without rewriting code.</p>
+
+</div>
+
+<div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-5">
+  <h3 class="text-lg font-semibold text-blue-800 mb-2">Try FreeModel for Multi-Provider Function Calling</h3>
+  <p class="text-sm text-blue-700 mb-3">FreeModel provides a single OpenAI-compatible endpoint that normalizes function schemas across 6+ providers. Write your functions once in OpenAI format and route to DeepSeek, Together AI, Google, or Anthropic without code changes.</p>
+  <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="inline-block bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700">Get started with FreeModel</a>
+</div>
+
+<div class="mt-6 text-sm text-gray-500 border-t pt-4">
+  <p>Last updated: June 16, 2026. Pricing and feature data from official provider documentation. BFCL scores from the Berkeley Function Calling Leaderboard (June 2026 update).</p>
+</div>`;
+---
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">AI API Function Calling 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8" set:html={enBody} />
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="font-semibold text-gray-900 mb-2">Quick Reference</h3>
+            <ul class="text-sm space-y-1 text-gray-600">
+              <li><strong>Best overall:</strong> OpenAI GPT-4o</li>
+              <li><strong>Best agents:</strong> Anthropic Claude</li>
+              <li><strong>Cheapest:</strong> Groq ($0.14/K calls)</li>
+              <li><strong>Fastest:</strong> Groq (200ms TTFT)</li>
+              <li><strong>EU data:</strong> Mistral</li>
+              <li><strong>Multi-provider:</strong> FreeModel</li>
+            </ul>
+          </div>
+          <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <h3 class="font-semibold text-blue-800 mb-2">Multi-Provider Tool</h3>
+            <p class="text-sm text-blue-700 mb-2">FreeModel normalizes function calling schemas across 6+ providers with one API key.</p>
+            <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm font-medium text-blue-600 hover:text-blue-800">Try FreeModel</a>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="font-semibold text-gray-900 mb-2">Related Articles</h3>
+            <ul class="text-sm space-y-1">
+              <li><a href="/tutorials/ai-api-speed-benchmarks-2026" class="text-blue-600 hover:underline">Speed Benchmarks 2026</a></li>
+              <li><a href="/tutorials/ai-api-streaming-output-2026" class="text-blue-600 hover:underline">Streaming Output Comparison</a></li>
+              <li><a href="/tutorials/cheapest-llm-api-pricing-2026" class="text-blue-600 hover:underline">Cheapest LLM APIs 2026</a></li>
+            </ul>
+          </div>
+          <div class="bg-gray-100 rounded p-4 text-center text-xs text-gray-400">
+            Ad Space
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

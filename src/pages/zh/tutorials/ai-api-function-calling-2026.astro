@@ -1,0 +1,290 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'ai-api-function-calling-2026';
+const date = '2026-06-16';
+const locale = 'zh';
+
+const zhTitle = 'AI API 函数调用 2026 横评：8 家主流厂商对比';
+const zhDescription = '2026年8大主流AI API函数调用能力横评：OpenAI、Anthropic Claude、Google Gemini、DeepSeek、Together AI、Mistral、Groq、OpenRouter。含代码示例、定价对比和选型建议，助你快速选型。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "什么是 LLM API 的函数调用（Function Calling）？",
+      "acceptedAnswer": { "@type": "Answer", "text": "函数调用让 LLM 在对话中请求执行外部函数。模型不是生成纯文本，而是输出结构化 JSON 参数，开发者执行实际函数并返回结果。这是 AI Agent、RAG 流水线、自动化工具等应用的基础能力。" }
+    },
+    {
+      "@type": "Question",
+      "name": "哪家厂商的函数调用能力最强？",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenAI 的实现最成熟——支持并行函数调用、结构化输出、格式最灵活。Anthropic Claude 在复杂 Agent 工作流中表现最优。DeepSeek 和 Together AI 用 OpenAI 兼容格式提供低价方案。Groq 以 200ms 超低延迟适合实时场景。" }
+    },
+    {
+      "@type": "Question",
+      "name": "函数调用在不同厂商之间兼容吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "大部分厂商使用 OpenAI 兼容格式（相同的 JSON Schema 结构）。Anthropic 和 Google 使用不同的 Schema。聚合平台如 FreeModel 可以统一各大厂商的函数定义格式，让你用一种 Schema 调用所有后端。" }
+    },
+    {
+      "@type": "Question",
+      "name": "函数调用会增加 API 成本吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "函数定义会增加上下文 token（每个函数约 200-500 token）。以 GPT-4o-mini $0.15/MTok 计算，每次函数调用增加不到 $0.001 成本。输出略微变长（JSON 代替纯文本）。总体影响微乎其微。" }
+    },
+    {
+      "@type": "Question",
+      "name": "如何在不重写代码的情况下切换函数调用厂商？",
+      "acceptedAnswer": { "@type": "Answer", "text": "使用 OpenAI 兼容的聚合服务如 FreeModel。它将各大厂商的函数 Schema 统一为 OpenAI 格式，你只需写一遍函数定义，即可路由到 DeepSeek、Google、Anthropic 等不同后端，代码无需改动。" }
+    }
+  ]
+};
+
+const zhBody = `<header>
+  <h1 class="text-3xl font-bold text-gray-900 mb-4">AI API 函数调用 2026 横评：8 家主流厂商对比</h1>
+  <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+    <time datetime="2026-06-16">2026年6月16日</time>
+    <span>•</span>
+    <span>函数调用对比</span>
+    <span>•</span>
+    <span>阅读约 8 分钟</span>
+  </div>
+  <p class="text-lg text-gray-600 leading-relaxed">
+    函数调用（Function Calling / Tool Use）已成为 LLM 应用的基础能力——从订机票的 AI Agent 到执行 Shell 命令的编程助手，无一不需要它。但不同厂商的实现方式差异显著。本文从可靠性、并行能力、Schema 灵活性、延迟和成本五个维度，横向对比 8 家主流 AI API 厂商的函数调用能力。
+  </p>
+</header>
+
+<div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+  <p class="text-blue-800 text-sm">
+    <strong>一句话总结：</strong>OpenAI 函数调用最成熟（结构化输出保证 JSON 正确性）。Anthropic Claude 最适合复杂多步骤 Agent。Google Gemini 原生集成搜索/地图等工具。DeepSeek 和 Together AI 以低 5-10 倍的价格提供 OpenAI 兼容函数调用。Groq 以 200ms 延迟成为最快的选择。FreeModel 统一各大厂商的 Schema，一套代码切换所有后端。
+  </p>
+</div>
+
+<div class="prose prose-lg max-w-none">
+
+<h2>为什么函数调用在 2026 年如此重要</h2>
+<p>函数调用（Function Calling / Tool Use）是将 LLM 从文本生成器转变为行动执行器的关键机制。当用户问"帮我查东京天气并订酒店"时，模型不再说"我做不到"，而是输出结构化 JSON 请求来调用天气 API 和酒店搜索 API。</p>
+<p>2026 年，函数调用的质量由 5 个维度决定：</p>
+<ul>
+  <li><strong>可靠性：</strong>模型是否在应该调用函数时真的调用了？</li>
+  <li><strong>准确性：</strong>提取的参数是否正确、类型准确？</li>
+  <li><strong>并行能力：</strong>能否在同一轮回复中调用多个函数？</li>
+  <li><strong>Schema 灵活性：</strong>是否支持嵌套 JSON、枚举、可选字段？</li>
+  <li><strong>成本：</strong>函数定义消耗多少 token？每次调用费用多少？</li>
+</ul>
+
+<h2>八家厂商逐家对比</h2>
+
+<h3>1. OpenAI——行业标杆</h3>
+<p>OpenAI 自 2023 年率先推出函数调用以来持续迭代。GPT-4o、GPT-4o-mini、o3 均支持并行函数调用（最多 128 个并行函数）。2026 年 4 月发布的 <strong>Structured Outputs（结构化输出）</strong>功能确保模型始终返回符合 Schema 的有效 JSON，彻底消除了 JSON 解析失败的问题。OpenAI 还支持 required 字段、anyOf/oneOf 联合类型和嵌套对象 Schema。</p>
+<p><strong>适合：</strong>可靠性要求最高的生产环境。结构化输出一个功能就省去了大量 JSON 校验代码。</p>
+<p><strong>成本：</strong>GPT-4o-mini $0.15/$0.60/MTok（输入/输出），每次函数调用约 $0.0003。</p>
+
+<h3>2. Anthropic Claude——Agent 级工具使用</h3>
+<p>Anthropic Claude（Sonnet 4.8、Opus 4.8、Fable 5）使用 <strong>Tool Use</strong> API，功能等同于函数调用但 Schema 不同。Claude 在 <strong>多工具编排</strong> 方面表现最佳——能链式调用工具、根据前一步结果条件性地决定下一步调用、优雅处理错误。Claude Opus 4.8 在 Berkeley Function Calling Leaderboard（BFCL）上得分最高（95%）。</p>
+<p><strong>适合：</strong>需要规划-执行-再规划的复杂 Agent 工作流，如客服机器人：查询订单状态 + 发起退款 + 更新 CRM。</p>
+<p><strong>成本：</strong>Claude Sonnet 4.8 $3/$15/MTok，质量最高但比 GPT-4o-mini 贵 10-20 倍。</p>
+
+<h3>3. Google Gemini——原生工具集成</h3>
+<p>Google Gemini 通过 API 的 <code>tools</code> 参数提供函数调用。最大亮点是 <strong>原生 Google 工具集成</strong>：无需写连接代码即可启用 Google 搜索、Google Maps 和 Gmail/日历。Gemini 还支持 <strong>声明式函数调用</strong>——你只需定义函数，模型自动决定何时调用。</p>
+<p><strong>适合：</strong>需要 Google 实时数据的应用——聊天中的搜索结果、旅行规划中的地图数据、日程管理中的日历集成。</p>
+<p><strong>成本：</strong>Gemini 2.0 Flash $0.10/$0.40/MTok——前沿模型中价格最低。</p>
+
+<h3>4. DeepSeek——低价函数调用</h3>
+<p>DeepSeek V3 和 R1 支持 OpenAI 兼容的函数调用。Schema 与 OpenAI 完全相同，只需改 base URL 即可将 GPT 代码迁移过来。简单工具调用（单一函数、意图清晰）质量稳定，复杂嵌套或多步链偶尔出现参数错误。</p>
+<p><strong>适合：</strong>成本敏感的应用。批量文档处理、离线 RAG 流水线、定时自动化任务。</p>
+<p><strong>成本：</strong>DeepSeek V3 $0.14/$0.28/MTok（缓存命中），比 GPT-4o 便宜 80-90%。</p>
+
+<h3>5. Together AI——高速开源模型函数调用</h3>
+<p>Together AI 通过 OpenAI 兼容端点支持函数调用。Qwen3.5 9B、Llama 3.3 70B、DeepSeek V4 Pro 等模型都接受 OpenAI 格式的 tools 参数。Together 的核心优势是 <strong>高吞吐</strong>：Llama 3.3 70B 达到 250-300 tok/s，函数调用响应比 GPT-4o 快 2-3 倍。</p>
+<p><strong>适合：</strong>高吞吐函数调用场景。内部工具、仪表盘生成器、批量处理任务。</p>
+<p><strong>成本：</strong>Llama 3.3 70B $1.04/$1.04/MTok——与 GPT-4o-mini 价格相当但速度更快。</p>
+
+<h3>6. Mistral——精简高效</h3>
+<p>Mistral Large 2 和 Mistral Small 通过 OpenAI 兼容 API 支持函数调用。实现简洁可靠，单函数和并行调用质量稳定。3 层以上嵌套 Schema 偶尔输出不完整。Mistral 模型在欧洲厂商中 TTFT 最低（under 200ms）。</p>
+<p><strong>适合：</strong>需要 GDPR 合规的函数调用工作负载。低延迟应用中的简单工具调用。Mistral Small $0.20/$0.60/MTok 性价比优秀。</p>
+
+<h3>7. Groq——闪电速度，Schema 支持有限</h3>
+<p>Groq 的 LPU 推理引擎速度极快（Llama 3.1 8B 达到 1,250+ tok/s）。函数调用通过 OpenAI 兼容 API 支持，Llama 3.3 70B 和 Mixtral 8x22B 均可使用。限制：Groq 的平面 Schema 支持良好，但深层嵌套 JSON 或复杂 anyOf 条件效果不佳。</p>
+<p><strong>适合：</strong>实时语音助手和聊天机器人，需要 200ms 以下的函数调用延迟。简单工具调用场景。</p>
+<p><strong>成本：</strong>Llama 3.1 8B 缓存 $0.07/$0.07/MTok——单次函数调用成本最低。</p>
+
+<h3>8. OpenRouter——多厂商路由</h3>
+<p>OpenRouter 将函数调用请求路由到你选择的后端厂商。各厂商的原生格式被保留，因此你可以通过单一 API Key 将同一个函数 Schema 路由到 OpenAI、Anthropic 或 Together AI。OpenRouter 增加约 50ms 路由延迟，但提供了完全的厂商灵活性。</p>
+<p><strong>适合：</strong>跨厂商 A/B 测试函数调用质量。构建故障转移逻辑（OpenAI 失败则路由到 Anthropic）。用一套 API Key 使用多个厂商。</p>
+
+<h2>函数调用特性对比</h2>
+<table class="w-full text-sm">
+  <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">厂商</th><th class="px-3 py-2 text-left">并行调用</th><th class="px-3 py-2 text-left">Schema 格式</th><th class="px-3 py-2 text-left">嵌套 JSON</th><th class="px-3 py-2 text-left">结构化输出</th><th class="px-3 py-2 text-left">BFCL 得分</th></tr></thead>
+  <tbody>
+    <tr><td class="px-3 py-2 border-b"><strong>OpenAI</strong></td><td class="px-3 py-2 border-b">最多 128 个</td><td class="px-3 py-2 border-b">OpenAI JSON Schema</td><td class="px-3 py-2 border-b">完全支持</td><td class="px-3 py-2 border-b">保证有效 JSON</td><td class="px-3 py-2 border-b">92%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Anthropic</strong></td><td class="px-3 py-2 border-b">最多 64 个</td><td class="px-3 py-2 border-b">Tool Use（自有格式）</td><td class="px-3 py-2 border-b">完全支持</td><td class="px-3 py-2 border-b">工具响应校验</td><td class="px-3 py-2 border-b">95%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Google</strong></td><td class="px-3 py-2 border-b">支持</td><td class="px-3 py-2 border-b">FunctionDeclaration</td><td class="px-3 py-2 border-b">完全支持</td><td class="px-3 py-2 border-b">Schema 校验</td><td class="px-3 py-2 border-b">88%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>DeepSeek</strong></td><td class="px-3 py-2 border-b">支持（简单）</td><td class="px-3 py-2 border-b">OpenAI 兼容</td><td class="px-3 py-2 border-b">部分支持</td><td class="px-3 py-2 border-b">不支持</td><td class="px-3 py-2 border-b">76%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Together AI</strong></td><td class="px-3 py-2 border-b">支持（简单）</td><td class="px-3 py-2 border-b">OpenAI 兼容</td><td class="px-3 py-2 border-b">部分支持</td><td class="px-3 py-2 border-b">不支持</td><td class="px-3 py-2 border-b">78%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Mistral</strong></td><td class="px-3 py-2 border-b">支持</td><td class="px-3 py-2 border-b">OpenAI 兼容</td><td class="px-3 py-2 border-b">有限</td><td class="px-3 py-2 border-b">不支持</td><td class="px-3 py-2 border-b">82%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Groq</strong></td><td class="px-3 py-2 border-b">支持（平面）</td><td class="px-3 py-2 border-b">OpenAI 兼容</td><td class="px-3 py-2 border-b">仅平面</td><td class="px-3 py-2 border-b">不支持</td><td class="px-3 py-2 border-b">70%</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>OpenRouter</strong></td><td class="px-3 py-2 border-b">取决于后端</td><td class="px-3 py-2 border-b">厂商原生</td><td class="px-3 py-2 border-b">取决于后端</td><td class="px-3 py-2 border-b">取决于后端</td><td class="px-3 py-2 border-b">N/A</td></tr>
+  </tbody>
+</table>
+
+<h2>函数调用成本对比</h2>
+<p>以下是 8KB 系统提示 + 2KB 函数定义条件下（500 token 输入 + 200 token 输出）单次函数调用的真实成本：</p>
+<table class="w-full text-sm">
+  <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">厂商</th><th class="px-3 py-2 text-left">模型</th><th class="px-3 py-2 text-left">千次调用成本</th><th class="px-3 py-2 text-left">延迟（TTFT）</th></tr></thead>
+  <tbody>
+    <tr><td class="px-3 py-2 border-b"><strong>Groq</strong></td><td class="px-3 py-2 border-b">Llama 3.1 8B</td><td class="px-3 py-2 border-b">$0.14</td><td class="px-3 py-2 border-b">~200ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>DeepSeek</strong></td><td class="px-3 py-2 border-b">V3（缓存命中）</td><td class="px-3 py-2 border-b">$0.13</td><td class="px-3 py-2 border-b">~500ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>OpenAI</strong></td><td class="px-3 py-2 border-b">GPT-4o-mini</td><td class="px-3 py-2 border-b">$0.20</td><td class="px-3 py-2 border-b">~400ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Google</strong></td><td class="px-3 py-2 border-b">Gemini 2.0 Flash</td><td class="px-3 py-2 border-b">$0.12</td><td class="px-3 py-2 border-b">~350ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Together AI</strong></td><td class="px-3 py-2 border-b">Llama 3.3 70B</td><td class="px-3 py-2 border-b">$0.31</td><td class="px-3 py-2 border-b">~300ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Mistral</strong></td><td class="px-3 py-2 border-b">Mistral Small</td><td class="px-3 py-2 border-b">$0.22</td><td class="px-3 py-2 border-b">~200ms</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Anthropic</strong></td><td class="px-3 py-2 border-b">Claude Sonnet 4.8</td><td class="px-3 py-2 border-b">$2.10</td><td class="px-3 py-2 border-b">~600ms</td></tr>
+  </tbody>
+</table>
+
+<h2>多厂商策略：用 FreeModel 统一 Schema</h2>
+<p>函数调用最大的挑战之一是 <strong>厂商锁定</strong>。每家厂商的函数 Schema 略有不同——OpenAI 用 tools 参数，Anthropic 用不同的 tools 格式（name + input_schema 而非 function.parameters），Google 用 tools.functionDeclarations。</p>
+<p><strong>FreeModel 的解决方案：</strong>将所有厂商的 Schema 归一化为单一的 OpenAI 兼容端点。你只需用标准 OpenAI 格式定义函数，FreeModel 自动将其翻译为 DeepSeek、Together AI、Google Gemini 或 Anthropic Claude 的格式。这意味着：</p>
+<ul>
+  <li>一种函数定义格式，适配 6+ 个后端厂商</li>
+  <li>故障转移路由：OpenAI 不可用时自动切换到 Together AI，代码零改动</li>
+  <li>成本优化：简单函数调用路由到 Groq（$0.14/千次），复杂调用路由到 Anthropic（$2.10/千次），同一代码自动分流</li>
+</ul>
+
+<h2>按场景推荐</h2>
+<table class="w-full text-sm">
+  <thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">使用场景</th><th class="px-3 py-2 text-left">推荐厂商</th><th class="px-3 py-2 text-left">原因</th></tr></thead>
+  <tbody>
+    <tr><td class="px-3 py-2 border-b"><strong>生产级 AI Agent</strong></td><td class="px-3 py-2 border-b">OpenAI GPT-4o</td><td class="px-3 py-2 border-b">结构化输出保证 JSON 正确性，消灭解析失败</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>多步骤 Agent 工作流</strong></td><td class="px-3 py-2 border-b">Anthropic Claude Sonnet 4.8</td><td class="px-3 py-2 border-b">链式调用、错误处理、重新规划能力最强</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>实时语音/聊天</strong></td><td class="px-3 py-2 border-b">Groq（Llama 3.1 8B）</td><td class="px-3 py-2 border-b">200ms TTFT + $0.14/千次，速度与成本最佳平衡</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>批量/定时任务</strong></td><td class="px-3 py-2 border-b">DeepSeek V3</td><td class="px-3 py-2 border-b">$0.13/千次，简单 Schema 场景精度足够</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>多厂商/故障转移</strong></td><td class="px-3 py-2 border-b">FreeModel + 任意厂商</td><td class="px-3 py-2 border-b">统一 Schema，一套 API Key，零代码迁移</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>Google 服务集成</strong></td><td class="px-3 py-2 border-b">Google Gemini</td><td class="px-3 py-2 border-b">原生搜索/地图/日历工具，零连接代码</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>高吞吐内部工具</strong></td><td class="px-3 py-2 border-b">Together AI（Llama 3.3 70B）</td><td class="px-3 py-2 border-b">250-300 tok/s 吞吐 + $0.31/千次，速度与成本兼顾</td></tr>
+    <tr><td class="px-3 py-2 border-b"><strong>欧盟数据合规</strong></td><td class="px-3 py-2 border-b">Mistral Large 2</td><td class="px-3 py-2 border-b">GDPR 合规数据处理，函数调用 BFCL 82% 准确率</td></tr>
+  </tbody>
+</table>
+
+<h2>常见问题</h2>
+<p><strong>Q: 什么是 LLM API 的函数调用？</strong><br>
+A: 函数调用让 LLM 在对话中请求执行外部函数。模型输出结构化 JSON 参数（函数名 + 参数），开发者调用实际函数并返回结果。这是 AI Agent、RAG 流水线、自动化工具的基础能力。</p>
+
+<p><strong>Q: 哪家厂商的函数调用能力最强？</strong><br>
+A: OpenAI 最成熟——支持并行调用、结构化输出、格式最灵活。Anthropic Claude 在复杂 Agent 工作流中表现最优（BFCL 得分 95%）。DeepSeek 和 Together AI 以更低价格提供 OpenAI 兼容方案。</p>
+
+<p><strong>Q: 函数调用在不同厂商之间兼容吗？</strong><br>
+A: 大部分厂商使用 OpenAI 兼容格式。Anthropic 和 Google 使用不同 Schema。聚合平台如 <a href="https://freemodel.dev/invite/FRE-7a3b6220">FreeModel</a> 可以统一各家的函数定义格式。</p>
+
+<p><strong>Q: 如何在不重写代码的情况下切换函数调用厂商？</strong><br>
+A: 使用 FreeModel 作为聚合层。写一次 OpenAI 格式的函数定义，FreeModel 自动适配 DeepSeek、Google、Anthropic 等不同后端。切换厂商只需改 model 名称，代码无需改动。</p>
+
+<h2>总结：如何选择函数调用厂商</h2>
+<p>2026 年，每家主流厂商都提供可靠的生产级函数调用。正确的选择取决于你的具体需求：</p>
+<ul>
+  <li><strong>需要保证 JSON 正确性？</strong>OpenAI 的结构化输出是生产系统最安全的选择。</li>
+  <li><strong>构建多步骤 Agent？</strong>Anthropic Claude 的工具使用模型在链式操作中表现最佳。</li>
+  <li><strong>优先考虑成本？</strong>DeepSeek、Groq、Together AI 以 10-20% 的价格提供 80-95% 的功能。</li>
+  <li><strong>想避免厂商锁定？</strong>FreeModel 将所有 Schema 归一化到一套 API 后面——写一次，跨厂商运行。</li>
+</ul>
+<p>先用 GPT-4o-mini 快速原型（最好的开发体验）。函数定义稳定后评估准确率-成本权衡，将成本敏感调用迁移到低价厂商。多厂商策略——以 FreeModel 作为聚合层——让你在不重写代码的前提下灵活优化。</p>
+
+</div>
+
+<div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-5">
+  <h3 class="text-lg font-semibold text-blue-800 mb-2">开始使用 FreeModel</h3>
+  <p class="text-sm text-blue-700 mb-3">FreeModel 提供统一的 OpenAI 兼容端点，将函数 Schema 归一化到 6+ 个后端厂商。一套函数定义，路由到 DeepSeek、Together AI、Google 或 Anthropic，代码零改动。</p>
+  <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="inline-block bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700">免费注册 FreeModel</a>
+</div>
+
+<div class="mt-6 text-sm text-gray-500 border-t pt-4">
+  <p>更新日期：2026年6月16日。定价和功能数据来自官方文档。BFCL 得分来自 Berkeley Function Calling Leaderboard（2026年6月更新）。</p>
+</div>`;
+---
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">AI API 函数调用 2026 横评</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8" set:html={zhBody} />
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="font-semibold text-gray-900 mb-2">快速参考</h3>
+            <ul class="text-sm space-y-1 text-gray-600">
+              <li><strong>综合最优：</strong>OpenAI GPT-4o</li>
+              <li><strong>Agent 最优：</strong>Anthropic Claude</li>
+              <li><strong>价格最低：</strong>Groq ($0.14/千次)</li>
+              <li><strong>延迟最低：</strong>Groq (200ms TTFT)</li>
+              <li><strong>欧盟合规：</strong>Mistral</li>
+              <li><strong>多厂商统一：</strong>FreeModel</li>
+            </ul>
+          </div>
+          <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+            <h3 class="font-semibold text-blue-800 mb-2">多厂商工具</h3>
+            <p class="text-sm text-blue-700 mb-2">FreeModel 用单一 API Key 统一 6+ 厂商的函数调用 Schema。</p>
+            <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm font-medium text-blue-600 hover:text-blue-800">了解 FreeModel</a>
+          </div>
+          <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="font-semibold text-gray-900 mb-2">相关文章</h3>
+            <ul class="text-sm space-y-1">
+              <li><a href="/zh/tutorials/ai-api-speed-benchmarks-2026" class="text-blue-600 hover:underline">速度基准测试 2026</a></li>
+              <li><a href="/zh/tutorials/cheapest-llm-api-pricing-2026" class="text-blue-600 hover:underline">最便宜的 LLM API 2026</a></li>
+            </ul>
+          </div>
+          <div class="bg-gray-100 rounded p-4 text-center text-xs text-gray-400">
+            广告位
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
