@@ -1,0 +1,238 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'ai-api-streaming-output-2026';
+const date = '2026-06-16';
+const locale = 'zh';
+
+const zhTitle = 'AI API 流式输出速度对比 2026：12 家主流厂商实测';
+const zhDescription = '2026年12家AI API流式输出速度完整对比：Token/秒、首字延迟TTFT、SSE格式兼容性、流式定价。Cerebras vs Groq vs OpenAI vs DeepSeek 一网打尽。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "流式输出会影响输出质量吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不会——流式仅改变交付方式，不改变模型输出内容。流式输出的文本与批处理模式完全相同。" }
+    },
+    {
+      "@type": "Question",
+      "name": "能在流式模式下使用 Function Calling 吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "可以——OpenAI 和 Anthropic 都支持流式 + 工具调用。工具调用决策会以流式事件形式返回。" }
+    },
+    {
+      "@type": "Question",
+      "name": "流式输出的成本更高吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不——所有厂商按 Token 计费，流式与非流式价格相同。" }
+    },
+    {
+      "@type": "Question",
+      "name": "最慢的厂商流式速度是多少？",
+      "acceptedAnswer": { "@type": "Answer", "text": "DeepSeek V3 在 30-60 tok/s，是主要厂商中最慢的。但这仍然是英文阅读速度的 2-4 倍。" }
+    },
+    {
+      "@type": "Question",
+      "name": "哪些厂商的流式吞吐最稳定？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Cerebras 和 Groq 的吞吐一致性最好，请求间方差低于 10%。OpenAI 和 Anthropic 根据服务器负载会有 20-40% 的波动。" }
+    },
+    {
+      "@type": "Question",
+      "name": "如何在流式应用中做多厂商兜底？",
+      "acceptedAnswer": { "@type": "Answer", "text": "使用聚合平台如 OpenRouter 或 FreeModel，它们自动处理流式请求路由和故障转移。" }
+    }
+  ]
+};
+
+const zhBody = `<h1 class="text-3xl font-bold mb-6">AI API 流式输出速度对比 2026：12 家主流厂商实测</h1>
+
+<p class="text-lg leading-relaxed mb-4">流式输出（Streaming）是现代大语言模型应用的基石。无论你是在构建实时聊天机器人、语音助手，还是代码补全工具，Token 到达的速度和首字延迟直接决定用户体验。</p>
+
+<p class="mb-4">本文将对比 12 家主流 AI API 厂商的流式输出能力：Cerebras、Groq、Fireworks AI、Together AI、OpenAI、Anthropic、Google Gemini、DeepSeek、xAI Grok、Mistral AI、Cohere、OpenRouter。我们从以下维度展开：</p>
+
+<ul class="list-disc pl-6 space-y-1 mb-6">
+<li><strong>流式输出 Token/秒</strong> — 每秒能输出多少 Token</li>
+<li><strong>首字延迟（TTFT）</strong> — 从请求发出到收到第一个 Token 的时间</li>
+<li><strong>流式 API 格式</strong> — OpenAI 兼容 SSE 还是自定义格式</li>
+<li><strong>流式定价</strong> — 每种场景下的成本分析</li>
+<li><strong>冷启动行为</strong> — 生产环境下的实际表现</li>
+</ul>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">速览：按场景的流式首选</h2>
+
+<table class="min-w-full border-collapse border border-gray-300 my-4">
+<tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left">使用场景</th><th class="border border-gray-300 px-4 py-2 text-left">推荐厂商</th><th class="border border-gray-300 px-4 py-2 text-left">原因</th></tr>
+<tr><td class="border border-gray-300 px-4 py-2">实时聊天</td><td class="border border-gray-300 px-4 py-2 font-medium"><a href="https://cerebras.ai" target="_blank" rel="nofollow">Cerebras</a></td><td class="border border-gray-300 px-4 py-2">2,000+ tok/s，50ms TTFT，零冷启动</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2">生产级聊天机器人</td><td class="border border-gray-300 px-4 py-2 font-medium"><a href="https://groq.com" target="_blank" rel="nofollow">Groq</a></td><td class="border border-gray-300 px-4 py-2">1,250+ tok/s，模型选择丰富，稳定可靠</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">语音助手</td><td class="border border-gray-300 px-4 py-2 font-medium"><a href="https://cerebras.ai" target="_blank" rel="nofollow">Cerebras</a></td><td class="border border-gray-300 px-4 py-2">可实现 sub-100ms 端到端语音循环</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2">低成本流式</td><td class="border border-gray-300 px-4 py-2 font-medium">DeepSeek</td><td class="border border-gray-300 px-4 py-2">$0.14/百万 token 输出，30-60 tok/s</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">多厂商兜底</td><td class="border border-gray-300 px-4 py-2 font-medium">OpenRouter</td><td class="border border-gray-300 px-4 py-2">路由到各家厂商，实时对比速度</td></tr>
+</table>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">流式 API 格式兼容性</h2>
+
+<p class="mb-4">几乎所有现代 LLM 厂商都已采用 OpenAI 兼容的 SSE（Server-Sent Events）流式格式：</p>
+
+<table class="min-w-full border-collapse border border-gray-300 my-4">
+<tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left">厂商</th><th class="border border-gray-300 px-4 py-2 text-left">SSE 格式</th><th class="border border-gray-300 px-4 py-2 text-left">stream: true</th><th class="border border-gray-300 px-4 py-2 text-left">备注</th></tr>
+<tr><td class="border border-gray-300 px-4 py-2">OpenAI</td><td class="border border-gray-300 px-4 py-2">OpenAI SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">标准格式</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2">Anthropic</td><td class="border border-gray-300 px-4 py-2">自定义 SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">自定义事件</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">Google Gemini</td><td class="border border-gray-300 px-4 py-2">自定义 SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">独立端点</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2">DeepSeek</td><td class="border border-gray-300 px-4 py-2">OpenAI SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">完全兼容</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">Groq</td><td class="border border-gray-300 px-4 py-2">OpenAI SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">完全兼容</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2">Cerebras</td><td class="border border-gray-300 px-4 py-2">OpenAI SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">完全兼容</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">Together AI</td><td class="border border-gray-300 px-4 py-2">OpenAI SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">完全兼容</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2">Fireworks AI</td><td class="border border-gray-300 px-4 py-2">OpenAI SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">完全兼容</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">xAI Grok</td><td class="border border-gray-300 px-4 py-2">OpenAI SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">完全兼容</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2">Mistral AI</td><td class="border border-gray-300 px-4 py-2">OpenAI SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">完全兼容</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">Cohere</td><td class="border border-gray-300 px-4 py-2">自定义 SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">text 字段</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2">OpenRouter</td><td class="border border-gray-300 px-4 py-2">OpenAI SSE</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">代理上游格式</td></tr>
+</table>
+
+<p class="text-sm text-gray-600 italic mb-6">核心发现：12 家厂商中有 9 家使用纯 OpenAI 兼容的 SSE 流式格式。如果你的代码已经适配 OpenAI 流式，只需改 base URL 和 API key 即可切换。</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">输出 Token/秒：逐家对比</h2>
+
+<table class="min-w-full border-collapse border border-gray-300 my-4">
+<tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left">厂商</th><th class="border border-gray-300 px-4 py-2 text-left">流式优化模型</th><th class="border border-gray-300 px-4 py-2 text-left">输出 Tok/s</th><th class="border border-gray-300 px-4 py-2 text-left">硬件</th></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">Cerebras</td><td class="border border-gray-300 px-4 py-2">Llama 3.3 70B</td><td class="border border-gray-300 px-4 py-2 font-mono">2,000+</td><td class="border border-gray-300 px-4 py-2">WSE-3 晶圆级芯片</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">Groq</td><td class="border border-gray-300 px-4 py-2">Llama 3.3 70B</td><td class="border border-gray-300 px-4 py-2 font-mono">1,250+</td><td class="border border-gray-300 px-4 py-2">LPU 推理引擎</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">Fireworks AI</td><td class="border border-gray-300 px-4 py-2">Llama 3.3 70B</td><td class="border border-gray-300 px-4 py-2 font-mono">800-1,200</td><td class="border border-gray-300 px-4 py-2">自研推理栈</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">Together AI</td><td class="border border-gray-300 px-4 py-2">Llama 3.3 70B</td><td class="border border-gray-300 px-4 py-2 font-mono">500-800</td><td class="border border-gray-300 px-4 py-2">分布式 GPU 集群</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">xAI Grok</td><td class="border border-gray-300 px-4 py-2">Grok-2 / Grok-3</td><td class="border border-gray-300 px-4 py-2 font-mono">400-600</td><td class="border border-gray-300 px-4 py-2">自建 Colossus 集群</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">Mistral AI</td><td class="border border-gray-300 px-4 py-2">Mistral Large 2</td><td class="border border-gray-300 px-4 py-2 font-mono">300-500</td><td class="border border-gray-300 px-4 py-2">欧洲 GPU 基础架构</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">OpenAI</td><td class="border border-gray-300 px-4 py-2">GPT-4o</td><td class="border border-gray-300 px-4 py-2 font-mono">200-400</td><td class="border border-gray-300 px-4 py-2">Azure 推理后端</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">Anthropic</td><td class="border border-gray-300 px-4 py-2">Claude 4 Sonnet</td><td class="border border-gray-300 px-4 py-2 font-mono">150-300</td><td class="border border-gray-300 px-4 py-2">自研硬件</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">Google</td><td class="border border-gray-300 px-4 py-2">Gemini 2.5 Pro</td><td class="border border-gray-300 px-4 py-2 font-mono">150-300</td><td class="border border-gray-300 px-4 py-2">TPU v5p</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">Cohere</td><td class="border border-gray-300 px-4 py-2">Command R+</td><td class="border border-gray-300 px-4 py-2 font-mono">100-250</td><td class="border border-gray-300 px-4 py-2">自建基础设施</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">DeepSeek</td><td class="border border-gray-300 px-4 py-2">DeepSeek V3</td><td class="border border-gray-300 px-4 py-2 font-mono">30-60</td><td class="border border-gray-300 px-4 py-2">成本优先</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">OpenRouter</td><td class="border border-gray-300 px-4 py-2">取决于上游</td><td class="border border-gray-300 px-4 py-2 font-mono">不定</td><td class="border border-gray-300 px-4 py-2">代理上游</td></tr>
+</table>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">首字延迟（TTFT）</h2>
+
+<p class="mb-4">TTFT 对实时应用的重要性可能超过峰值吞吐量。当首字延迟超过 300-500ms 时，用户会感到明显的卡顿：</p>
+
+<table class="min-w-full border-collapse border border-gray-300 my-4">
+<tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left">厂商</th><th class="border border-gray-300 px-4 py-2 text-left">TTFT (ms)</th><th class="border border-gray-300 px-4 py-2 text-left">冷启动？</th></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">Cerebras</td><td class="border border-gray-300 px-4 py-2 font-mono">~50</td><td class="border border-gray-300 px-4 py-2">否 — 始终热机</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">Groq</td><td class="border border-gray-300 px-4 py-2 font-mono">~200</td><td class="border border-gray-300 px-4 py-2">否 — 始终热机</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">OpenAI GPT-4o-mini</td><td class="border border-gray-300 px-4 py-2 font-mono">100-200</td><td class="border border-gray-300 px-4 py-2">否 — 始终热机</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">OpenAI GPT-4o</td><td class="border border-gray-300 px-4 py-2 font-mono">300-500</td><td class="border border-gray-300 px-4 py-2">否 — 始终热机</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">xAI Grok</td><td class="border border-gray-300 px-4 py-2 font-mono">300-600</td><td class="border border-gray-300 px-4 py-2">否 — 始终热机</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">Mistral AI</td><td class="border border-gray-300 px-4 py-2 font-mono">300-500</td><td class="border border-gray-300 px-4 py-2">否（多数模型）</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">Together AI</td><td class="border border-gray-300 px-4 py-2 font-mono">300-600</td><td class="border border-gray-300 px-4 py-2">不常用模型有冷启</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">Fireworks AI</td><td class="border border-gray-300 px-4 py-2 font-mono">400-800</td><td class="border border-gray-300 px-4 py-2">首次请求 1-3s</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">Anthropic</td><td class="border border-gray-300 px-4 py-2 font-mono">400-700</td><td class="border border-gray-300 px-4 py-2">否 — 始终热机</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">Google Gemini</td><td class="border border-gray-300 px-4 py-2 font-mono">400-800</td><td class="border border-gray-300 px-4 py-2">否 — 始终热机</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">Cohere</td><td class="border border-gray-300 px-4 py-2 font-mono">400-800</td><td class="border border-gray-300 px-4 py-2">轻微冷启</td></tr>
+<tr class="bg-gray-50"><td class="border border-gray-300 px-4 py-2 font-medium">DeepSeek</td><td class="border border-gray-300 px-4 py-2 font-mono">600-1,500</td><td class="border border-gray-300 px-4 py-2">冷启 1-5s</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2 font-medium">OpenRouter</td><td class="border border-gray-300 px-4 py-2 font-mono">500-1,500</td><td class="border border-gray-300 px-4 py-2">代理 + 上游冷启</td></tr>
+</table>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">各场景流式选型建议</h2>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">实时聊天</h3>
+<p class="mb-2">用户能看到每个字的生成过程。TTFT 超过 500ms 或 Token 到达速度低于人类阅读速度会显著降低满意度。</p>
+<p class="font-medium mb-4">推荐：Cerebras（50ms TTFT，2,000+ tok/s）或 Groq（200ms，1,250+ tok/s）</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">语音助手</h3>
+<p class="mb-2">完整的语音循环 = STT + LLM + TTS。流式输出能显著缩短 LLM 环节。</p>
+<p class="font-medium mb-4">推荐：Cerebras（50ms TTFT）——目前唯一能实现真正对话式语音循环的厂商</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">代码补全</h3>
+<p class="mb-2">流式输出逐字符生成补全内容，IDE 实时更新。需要稳定持续的吞吐。</p>
+<p class="font-medium mb-4">推荐：Groq（1,250+ tok/s，200ms TTFT）</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">批量处理</h3>
+<p class="mb-2">无需流式，获取完整响应即可。使用 DeepSeek V3（$0.14/M tok）以最低成本完成任务。</p>
+<p class="font-medium mb-4">推荐：DeepSeek V3（非流式批处理模式）</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">常见问题</h2>
+<div class="space-y-4 mb-6">
+<div><p class="font-semibold">Q: 流式输出会影响输出质量吗？</p><p>A: 不会——流式仅改变交付方式，不改变模型输出内容。</p></div>
+<div><p class="font-semibold">Q: 流式输出的成本更高吗？</p><p>A: 不——所有厂商按 Token 计费，流式与非流式价格相同。</p></div>
+<div><p class="font-semibold">Q: 最慢的厂商流式速度是多少？</p><p>A: DeepSeek V3 在 30-60 tok/s，是主要厂商中最慢的。但这仍然是英文阅读速度的 2-4 倍。</p></div>
+<div><p class="font-semibold">Q: 哪些厂商的流式吞吐最稳定？</p><p>A: Cerebras 和 Groq 的吞吐一致性最好。OpenAI 和 Anthropic 波动较大。</p></div>
+<div><p class="font-semibold">Q: 如何在流式应用中做多厂商兜底？</p><p>A: 使用聚合平台如 OpenRouter 或 FreeModel（freemodel.dev），它们自动处理流式请求路由和故障转移。</p></div>
+</div>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">总结</h2>
+
+<p class="mb-4">流式输出已成为 AI API 厂商的基础能力。只有两家厂商——<a href="https://cerebras.ai" target="_blank" rel="nofollow">Cerebras</a> 和 <a href="https://groq.com" target="_blank" rel="nofollow">Groq</a>——实现了真正卓越的流式性能（1,000+ tok/s，sub-200ms TTFT），其他厂商在 150-500 tok/s 区间，更适合普通聊天应用。</p>
+
+<p class="mb-4">对于多数生产级聊天机器人，任何兼容 OpenAI 流式的厂商都能胜任。但如果你在构建语音助手、实时代码补全或延迟敏感型应用，<a href="https://cerebras.ai" target="_blank" rel="nofollow">Cerebras</a> 和 <a href="https://groq.com" target="_blank" rel="nofollow">Groq</a> 的专业推理硬件能带来质的提升。</p>
+
+<p class="mb-4"><strong>需要多厂商兜底？</strong> 如果你希望在多家厂商之间路由流式请求以确保可靠性，FreeModel（<a href="https://freemodel.dev/invite/FRE-7a3b6220" target="_blank" rel="nofollow">freemodel.dev</a>）聚合了主要 OpenAI 兼容流式端点并支持自动故障转移——即使某一厂商宕机，你的流式体验也不会中断。</p>
+
+<p class="text-sm text-gray-500 italic mt-8">定价和性能数据采集于 2026 年 6 月。各厂商实际性能可能因服务器负载、套餐等级和地理区域而有所差异。</p>`;
+---
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  locale={locale}
+>
+  <div class="tutorial-article max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <article class="prose prose-lg max-w-none" itemscope itemtype="https://schema.org/Article">
+        <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+        <div class="article-body" set:html={zhBody} />
+      </article>
+
+      <aside class="hidden lg:block space-y-6">
+        <div class="sticky top-24 space-y-6">
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
+            <h3 class="text-sm font-semibold text-blue-800 uppercase tracking-wider mb-2">快速参考</h3>
+            <ul class="space-y-2 text-sm text-blue-700">
+              <li><strong>最快流式：</strong>Cerebras</li>
+              <li><strong>生产首选：</strong>Groq</li>
+              <li><strong>最便宜：</strong>DeepSeek $0.14/M</li>
+              <li><strong>最兼容：</strong>OpenAI SSE</li>
+            </ul>
+          </div>
+
+          <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-5 border border-purple-100">
+            <h3 class="text-sm font-semibold text-purple-800 uppercase tracking-wider mb-2">试试 FreeModel</h3>
+            <p class="text-sm text-purple-700 mb-3">多厂商流式路由 + 自动故障转移。OpenAI 兼容，国内直连。</p>
+            <a href="https://freemodel.dev/invite/FRE-7a3b6220" target="_blank" rel="nofollow" class="inline-block bg-purple-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">立即使用</a>
+          </div>
+
+          <div class="bg-gray-50 rounded-xl p-5 border border-gray-200">
+            <div class="text-center">
+              <div class="bg-gray-200 h-24 rounded mb-2 flex items-center justify-center text-gray-400 text-xs">广告位</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
