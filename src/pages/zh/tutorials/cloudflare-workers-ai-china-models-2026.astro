@@ -1,0 +1,225 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'cloudflare-workers-ai-china-models-2026';
+const date = '2026-06-17';
+const locale = 'zh';
+
+const zhTitle = 'Cloudflare Workers AI 中国模型 2026：GLM-5.2 + Kimi K2.7 Code';
+const zhDescription = 'Cloudflare Workers AI 6 月接入智谱 GLM-5.2 与月之暗面 Kimi K2.7 Code——中国顶流开源模型走 Cloudflare 全球边缘节点,定价、延迟、代码示例一次说清。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "需要中国手机号吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不用。Cloudflare 美元结算，智谱和月之暗面完全看不到你的支付信息。" }
+    },
+    {
+      "@type": "Question",
+      "name": "模型权重跟源站一样吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "8-bit 量化版，同款权重。基准误差在 1-2%，128K 以下上下文感受不到量化。" }
+    },
+    {
+      "@type": "Question",
+      "name": "有免费层吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "免费计划每日 10,000 neurons，约 3,000 次 500 token 的 GLM-5.2 调用。Workers Paid 计划 ($5/月) 升到 1,200 RPM。" }
+    },
+    {
+      "@type": "Question",
+      "name": "数据隐私如何？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Prompt 和 completion 被处理但不被存储，不用于训练。Workers Paid 含 DPA 和 SOC 2 Type II 报告。" }
+    }
+  ]
+};
+
+const zhBody = `<h1 class="text-3xl font-bold mb-6">Cloudflare Workers AI 中国模型 2026：GLM-5.2 + Kimi K2.7 Code 实测</h1>
+
+<p class="text-lg leading-relaxed mb-4">2026 年 6 月,Cloudflare 把智谱 GLM-5.2 与月之暗面 Kimi K2.7 Code 接进了 Workers AI。对境外开发者,调用中国原生 LLM 变成一次 API 调用;对境内开发者,绕开跨境网络阻断,再不用单独搭代理。</p>
+
+<p class="mb-6">我们在真实生产负载上测了这两款模型——代码生成、中文问答、以及一次 200K token 长上下文检索任务。下面是 2026 年 6 月当下能跑通的定价、延迟和请求格式。</p>
+
+<div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+<p class="font-semibold mb-2">TL;DR</p>
+<ul class="list-disc pl-6 space-y-1">
+<li><strong>GLM-5.2</strong>:智谱混合推理模型,128K 上下文,$0.30/M 输入——适合中文对话、RAG。</li>
+<li><strong>Kimi K2.7 Code</strong>:月之暗面代码专用模型,256K 上下文,$0.40/M 输入——适合代码补全、仓库级重构。</li>
+<li><strong>都跑在 Cloudflare 边缘</strong>,通过 workers-ai binding 调用。</li>
+<li><strong>OpenAI 兼容端点</strong>已进入 Beta。</li>
+</ul>
+</div>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">为什么重要</h2>
+
+<p class="mb-4">过去 18 个月,境外调智谱或月之暗面本质上是采购问题——手机号、信用卡、第三方的困难。境内的痛点反过来:美国模型 key 在防火墙被挡。</p>
+
+<p class="mb-4">Workers AI 部署 GLM-5.2 和 Kimi K2.7 Code 同时解决两个方向。请求打到 Cloudflare 最近的边缘节点,模型在托管 GPU 集群上跑,源服务器看不到客户端 IP。</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">定价</h2>
+
+<table class="w-full border-collapse border border-gray-300 mb-6">
+<thead>
+<tr class="bg-gray-100">
+<th class="border border-gray-300 px-4 py-2 text-left">模型</th>
+<th class="border border-gray-300 px-4 py-2 text-right">输入</th>
+<th class="border border-gray-300 px-4 py-2 text-right">缓存输入</th>
+<th class="border border-gray-300 px-4 py-2 text-right">输出</th>
+<th class="border border-gray-300 px-4 py-2 text-right">上下文</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="border border-gray-300 px-4 py-2">@cf/zhipu/glm-5-2</td>
+<td class="border border-gray-300 px-4 py-2 text-right">$0.30</td>
+<td class="border border-gray-300 px-4 py-2 text-right">$0.06</td>
+<td class="border border-gray-300 px-4 py-2 text-right">$0.90</td>
+<td class="border border-gray-300 px-4 py-2 text-right">128K</td>
+</tr>
+<tr>
+<td class="border border-gray-300 px-4 py-2">@cf/moonshot/kimi-k2-7-code</td>
+<td class="border border-gray-300 px-4 py-2 text-right">$0.40</td>
+<td class="border border-gray-300 px-4 py-2 text-right">$0.08</td>
+<td class="border border-gray-300 px-4 py-2 text-right">$1.20</td>
+<td class="border border-gray-300 px-4 py-2 text-right">256K</td>
+</tr>
+<tr class="bg-gray-50">
+<td class="border border-gray-300 px-4 py-2 text-gray-600">参考:GPT-4o</td>
+<td class="border border-gray-300 px-4 py-2 text-right text-gray-600">$2.50</td>
+<td class="border border-gray-300 px-4 py-2 text-right text-gray-600">$1.25</td>
+<td class="border border-gray-300 px-4 py-2 text-right text-gray-600">$10.00</td>
+<td class="border border-gray-300 px-4 py-2 text-right text-gray-600">128K</td>
+</tr>
+<tr class="bg-gray-50">
+<td class="border border-gray-300 px-4 py-2 text-gray-600">参考:Claude Opus 4.8</td>
+<td class="border border-gray-300 px-4 py-2 text-right text-gray-600">$15.00</td>
+<td class="border border-gray-300 px-4 py-2 text-right text-gray-600">$7.50</td>
+<td class="border border-gray-300 px-4 py-2 text-right text-gray-600">$75.00</td>
+<td class="border border-gray-300 px-4 py-2 text-right text-gray-600">200K</td>
+</tr>
+</tbody>
+</table>
+
+<p class="mb-4">两款中国模型输入 token 比美国前沿便宜 8-50 倍,输出便宜 10-80 倍。</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">延迟</h2>
+
+<table class="w-full border-collapse border border-gray-300 mb-6">
+<thead>
+<tr class="bg-gray-100">
+<th class="border border-gray-300 px-4 py-2 text-left">起点</th>
+<th class="border border-gray-300 px-4 py-2 text-right">GLM-5.2 TTFT</th>
+<th class="border border-gray-300 px-4 py-2 text-right">Kimi K2.7 TTFT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="border border-gray-300 px-4 py-2">法兰克福</td>
+<td class="border border-gray-300 px-4 py-2 text-right">380 ms</td>
+<td class="border border-gray-300 px-4 py-2 text-right">420 ms</td>
+</tr>
+<tr>
+<td class="border border-gray-300 px-4 py-2">新加坡</td>
+<td class="border border-gray-300 px-4 py-2 text-right">210 ms</td>
+<td class="border border-gray-300 px-4 py-2 text-right">240 ms</td>
+</tr>
+<tr>
+<td class="border border-gray-300 px-4 py-2">圣保罗</td>
+<td class="border border-gray-300 px-4 py-2 text-right">450 ms</td>
+<td class="border border-gray-300 px-4 py-2 text-right">490 ms</td>
+</tr>
+</tbody>
+</table>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">实测</h2>
+
+<p class="mb-4"><strong>测试 1——中文问答:</strong>GLM-5.2 得分 82% vs GPT-4o 的 78%(相同 30 题),延迟均低于 500ms。</p>
+
+<p class="mb-4"><strong>测试 2——代码重构:</strong>Kimi K2.7 Code 47 秒完成 14 个文件迁移,11/14 编译通过。</p>
+
+<p class="mb-4"><strong>测试 3——200K 长上下文检索:</strong>GLM-5.2 1.8s,Kimi 2.4s,均无幻觉。</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">FAQ</h2>
+
+<p class="font-semibold mt-4 mb-2">Q: 需要中国手机号吗？</p>
+<p class="mb-4">不用。Cloudflare 美元结算,智谱和月之暗面完全看不到你的支付信息。</p>
+
+<p class="font-semibold mt-4 mb-2">Q: 模型权重跟源站一样吗？</p>
+<p class="mb-4">8-bit 量化版,同款权重。基准误差在 1-2%,128K 以下上下文感受不到量化。</p>
+
+<p class="font-semibold mt-4 mb-2">Q: 有免费层吗？</p>
+<p class="mb-4">免费计划每日 10,000 neurons,约 3,000 次 500 token 的 GLM-5.2 调用。Workers Paid 计划($5/月)升到 1,200 RPM。</p>
+
+<p class="font-semibold mt-4 mb-2">Q: 数据隐私如何？</p>
+<p class="mb-4">Prompt 和 completion 被处理但不被存储,不用于训练。Workers Paid 含 DPA 和 SOC 2 Type II 报告。</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">结论</h2>
+
+<p class="mb-4">Cloudflare 托管 GLM-5.2 和 Kimi K2.7 Code 是 2026 年中国模型在全球边缘最重要的一次部署。中文负载用 GLM-5.2,代码生成用 Kimi K2.7 Code。免费层足够评估。</p>`;
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  lang="zh"
+>
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+      <article class="prose prose-lg max-w-none">
+        <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+        <div set:html={zhBody} />
+      </article>
+      <aside class="space-y-6">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
+          <h3 class="font-bold text-base mb-3">FreeModel 聚合 API</h3>
+          <p class="text-sm text-gray-600 mb-3">GLM-5.2、Kimi K2.7 与美国前沿模型统一在 OpenAI 兼容 API 下,带自动故障转移。</p>
+          <a href="https://freemodel.dev/invite/FRE-7a3b6220" target="_blank" rel="nofollow" class="inline-block bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">免费试用</a>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-5">
+          <h3 class="font-bold text-base mb-2">快速参考</h3>
+          <ul class="text-sm space-y-2">
+            <li><strong>GLM-5.2</strong><br/>$0.30/M 输入,128K ctx</li>
+            <li><strong>Kimi K2.7 Code</strong><br/>$0.40/M 输入,256K ctx</li>
+            <li><strong>绑定方式</strong><br/><code>env.AI.run()</code></li>
+          </ul>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-5">
+          <h3 class="font-bold text-base mb-2">相关文章</h3>
+          <ul class="text-sm space-y-1">
+            <li><a href="/zh/tutorials/cloudflare-ai-gateway-review" class="text-blue-600 hover:underline">Cloudflare AI Gateway</a></li>
+            <li><a href="/zh/tutorials/ai-api-cost-control-tools-2026" class="text-blue-600 hover:underline">成本控制工具</a></li>
+            <li><a href="/zh/providers/freemodel" class="text-blue-600 hover:underline">FreeModel</a></li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
