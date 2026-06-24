@@ -1,0 +1,375 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'openrouter-data-residency-2026';
+const locale = 'zh';
+const date = '2026-06-24';
+const zhTitle = 'OpenRouter 数据驻留 2026：欧盟区域路由 + ZDR 完全指南';
+const zhDescription = 'OpenRouter Sovereign AI 全栈解读：per-request provider 对象、ZDR 开关、企业版 eu.openrouter.ai 端点。GDPR vs PIPL 真实覆盖范围。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: zhTitle,
+  description: zhDescription,
+  datePublished: date,
+  dateModified: date,
+  author: { '@type': 'Organization', name: 'APIRank' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'APIRank',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://apirank.vip/logo.png',
+      width: 600,
+      height: 60,
+    },
+  },
+  url: canonicalUrl,
+  inLanguage: 'zh-CN',
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh/' },
+    { '@type': 'ListItem', position: 2, name: 'Providers', item: 'https://apirank.vip/zh/providers/' },
+    { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl },
+  ],
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'eu.openrouter.ai 端点会增加延迟吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '端点本身不会。你的请求从 EU 基础设施解密并路由，上游 provider 也是区域内调用。端到端延迟和主端点上的同模型相当。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '能针对同一模型钉选特定上游（比如 Azure Sweden vs AWS 法兰克福）吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "间接可以，通过 provider.order 加 allow_fallbacks: false。Azure 的 provider slug 通常是 'azure'，AWS Bedrock 是 'amazon-bedrock'；OpenRouter 按 order 指定的顺序路由。Provider 内的直接区域钉选（比如强制 AWS 法兰克福而不是 AWS 都柏林）OpenRouter 没暴露——那必须在 provider 侧配置。",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'EU 端点有免费层吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'EU 端点企业门控。没有公开免费 SKU；你需要联系销售获取访问。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'ZDR 覆盖微调数据吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "不覆盖。ZDR 只覆盖推理。微调是独立工作流，使用 provider 专用端点，目前不通过 OpenRouter 的驻留控制暴露。",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'OpenRouter 怎么处理新的欧盟 AI Act 要求？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Sovereign AI 文档明文点名欧盟 AI Act 合规。data_collection: "deny"、ZDR 和 eu.openrouter.ai 端点的组合被定位为运营原语。风险分级和合格评定仍是部署者在第 17 条下的责任。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'ZDR 和 data_collection: "deny" 有什么区别？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'ZDR 指 provider 不在静态存储中保留 prompt 或 response。data_collection: "deny" 指 provider 不把数据用于训练未来模型。一个 provider 可以满足一个而不满足另一个。最严格的保证是两个都开。',
+      },
+    },
+  ],
+};
+
+const zhBody = `
+<p>2026 年 6 月 22 日，OpenRouter 发布了博客《<em>How to Enforce AI Data Residency Without Building Local Infrastructure</em>》。这篇博客把已有工具包打包成新品牌"**Sovereign AI**"，并新增一个运营原语：企业版专属 <code>eu.openrouter.ai</code> 基础 URL，把解密和处理硬锁定在欧盟境内。</p>
+
+<p>本文拆解整个堆栈——从任何账户都能用的 per-request <code>provider</code> 对象，到企业版 EU 端点目前承载的 26 个模型。你会看到真实代码、6 月 24 日实测的模型清单，以及与 Cloudflare AI Gateway、LiteLLM、Portkey 的对比。</p>
+
+<p>简短结论：四款方案里，**OpenRouter 是唯一提供单一托管区域 URL 的**。其他三家都需要你自己在 provider 层做区域钉选。</p>
+
+<h2>"Sovereign AI" 的真实含义</h2>
+<p>OpenRouter 并没有发布单一命名的功能。2026 年 6 月这套组合拳把三个已有原语挂在新品牌名下：</p>
+<ol>
+  <li>**Per-request <code>provider</code> 对象**——在请求体里过滤并钉选上游 provider</li>
+  <li>**Zero Data Retention（ZDR）开关**——账户级、按模型组、按 API key 三层 guardrail</li>
+  <li>**<code>eu.openrouter.ai</code> 基础 URL**——企业版专属，欧盟境内硬管辖（解密 + 处理）</li>
+</ol>
+<p>前两层任何账户都能用。第三层需要企业合同（销售联系，无 SKU）。三者组合可以覆盖 GDPR、欧盟 AI Act 执法、Deloitte 调查中的"country of origin"采购偏好——但**不覆盖中国 PIPL/DSL 数据本地化**。没有中国区，EU 端点没有中国 provider，也没有公开的 CN 端点。</p>
+<p>运行机制：OpenRouter 的驻留控制在**路由层**执行。它决定调哪个上游 provider，然后调用该 provider 的现有端点。所以这些控制对任何有区域端点的 provider 都生效——Anthropic、OpenAI、Google、Amazon Bedrock 以及 20+ 其他。</p>
+
+<h2><code>provider</code> 对象：per-request 路由 DSL</h2>
+<p>最实用的控制也是最简单的。任何 OpenRouter 账户都能在 chat completions 请求体里加 <code>provider</code> 对象来过滤和钉选上游路由。</p>
+<pre><code class="language-bash">curl https://openrouter.ai/api/v1/chat/completions \\
+  -H "Authorization: Bearer *** \\
+  -H "Content-Type: application/json" \\
+  -d '&#123;
+    "model": "anthropic/claude-sonnet-4.6",
+    "messages": [&#123;"role": "user", "content": "总结这份合规报告。"&#125;],
+    "provider": &#123;
+      "order": ["anthropic", "amazon-bedrock"],
+      "allow_fallbacks": false,
+      "data_collection": "deny",
+      "zdr": true
+    &#125;
+  &#125;'</code></pre>
+<p>对驻留场景最重要的四个字段：</p>
+<table>
+<thead><tr><th>字段</th><th>类型</th><th>默认值</th><th>驻留效果</th></tr></thead>
+<tbody>
+<tr><td><code>order</code></td><td>string[]</td><td>–</td><td>按这个优先级顺序尝试 provider</td></tr>
+<tr><td><code>only</code></td><td>string[]</td><td>–</td><td>只允许这些 provider slug（硬限制）</td></tr>
+<tr><td><code>data_collection</code></td><td>"allow" / "deny"</td><td>"allow"</td><td>"deny" 排除存储或训练输入的 provider</td></tr>
+<tr><td><code>zdr</code></td><td>boolean</td><td>–</td><td>仅使用 Zero-Data-Retention 端点</td></tr>
+</tbody>
+</table>
+<p>另外两个字段对合规审计有用：<code>allow_fallbacks: false</code> 在指定 provider 不可用时直接报错，而不是悄悄 fallback 到非 EU 端点；响应头里的 **Router Metadata** 记录了实际处理请求的 provider，这是 SOC 2 / ISO 27001 控制评审里的关键证据。</p>
+<p>常见模式：钉到法兰克福 Bedrock 托管的模型，满足 EU 合规：</p>
+<pre><code class="language-python">import os
+import requests
+
+response = requests.post(
+    "https://openrouter.ai/api/v1/chat/completions",
+    headers=&#123;
+        "Authorization": f"Bearer &#123;os.environ['OPENROUTER_API_KEY']&#125;",
+        "Content-Type": "application/json",
+    &#125;,
+    json=&#123;
+        "model": "anthropic/claude-sonnet-4.6",
+        "messages": [&#123;"role": "user", "content": "从这个合同里提取供应商名称。"&#125;],
+        "provider": &#123;
+            "order": ["amazon-bedrock"],
+            "only": ["amazon-bedrock"],
+            "data_collection": "deny",
+            "zdr": True,
+            "allow_fallbacks": False,
+        &#125;,
+    &#125;,
+    timeout=30,
+)
+data = response.json()
+# 审计追踪：这个请求实际由哪个 provider 处理？
+provider_used = response.headers.get("x-openrouter-provider")
+print(f"Provider: &#123;provider_used&#125;")</code></pre>
+<p><code>only</code> + <code>allow_fallbacks: false</code> 组合最安全。没有它，Bedrock 一次短暂的故障会悄悄 fallback 到非 EU provider。</p>
+
+<h2>ZDR：按模型组和按 key</h2>
+<p>ZDR 是第二层。它是 <code>/settings/privacy</code> 里的**按模型组**开关：</p>
+<ul>
+  <li>**Anthropic**——直连端点被移除；Amazon Bedrock 和 Google Vertex 保留</li>
+  <li>**OpenAI**——直连端点被移除；Azure 保留</li>
+  <li>**Google**——AI Studio 被移除；Vertex 保留</li>
+  <li>**Non-frontier**——不归入以上桶的 provider</li>
+</ul>
+<p>行为一致：当某组开启 ZDR，OpenRouter 会过滤掉该组中所有保留数据的 provider。对合规采购方来说很直接——为你可能用的每个模型组都开 ZDR，就把最严重的备选 pool 全部剔除了。</p>
+<p>团队级强制靠 OpenRouter 的 **guardrails**——按 API key 的对象，可以按组强制 ZDR：</p>
+<pre><code class="language-typescript">const openRouter = new OpenRouter(&#123;
+  apiKey: process.env.OPENROUTER_API_KEY!,
+&#125;);
+
+await openRouter.guardrails.create(&#123;
+  api_key_id: '<KEY_ID>',
+  enforce_zdr_anthropic: true,
+  enforce_zdr_openai: true,
+  enforce_zdr_google: true,
+  enforce_zdr_other: true,
+&#125;);</code></pre>
+<p>它们和 per-request 标志是**或**关系——你只能加强，不能削弱。这是正确的语义：如果 key 被锁死，开发者不可能把合规工作负载意外路由到非 ZDR provider。</p>
+
+<h2><code>eu.openrouter.ai</code> 基础 URL：硬欧盟管辖</h2>
+<p>这是新东西。企业账户可以把基础 URL 从 <code>https://openrouter.ai/api/v1</code> 切到 <code>https://eu.openrouter.ai/api/v1</code>，请求在 EU 境内解密、处理，再转发到 EU 区域上游 provider。</p>
+<p>集成上 SDK 改一行：</p>
+<pre><code class="language-typescript">import &#123; OpenRouter &#125; from '@openrouter/sdk';
+
+const openRouter = new OpenRouter(&#123;
+  apiKey: '<OPENROUTER_API_KEY>',
+  serverURL: 'https://eu.openrouter.ai/api/v1',  // <-- 唯一改动
+&#125;);
+
+const completion = await openRouter.chat.send(&#123;
+  model: 'meta-llama/llama-3.3-70b-instruct',
+  messages: [&#123; role: 'user', content: 'Hello' &#125;],
+  stream: false,
+&#125;);</code></pre>
+<p>或者原生 <code>fetch</code>：</p>
+<pre><code class="language-typescript">const res = await fetch('https://eu.openrouter.ai/api/v1/chat/completions', &#123;
+  method: 'POST',
+  headers: &#123;
+    'Authorization': 'Bearer <OPENROUTER_API_KEY>',
+    'Content-Type': 'application/json',
+  &#125;,
+  body: JSON.stringify(&#123;
+    model: 'anthropic/claude-sonnet-4.6',
+    messages: [&#123; role: 'user', content: 'GDPR 审计摘要' &#125;],
+  &#125;),
+&#125;);</code></pre>
+<p>想看 EU 端点服务哪些模型，直接调它的模型列表：</p>
+<pre><code class="language-bash">curl https://eu.openrouter.ai/api/v1/models | jq '.data | length'
+# 26 (截至 2026-06-24)</code></pre>
+<p>26 个模型大致分布：8 个 Anthropic（Claude Opus 4.5–4.8、Sonnet 4–4.6、Haiku 4.5），11 个 OpenAI（GPT-4o-mini、GPT-4.1 系列、GPT-5 系列、GPT-5.5、GPT-OSS 20B/120B），3 个 Google（Gemini 2.5 Pro/Flash/Flash-Lite），4 个 Amazon（Nova Micro/Lite/Pro 和 Nova 2 Lite）。这 26 个是 OpenRouter 主目录 338 个模型里，能通过 EU 区域上游 provider 路由的子集。</p>
+<p>一个值得指出的细节：OpenRouter 博客把 **Mistral** 框定成可以用 <code>provider.only: ["mistralai"]</code> 钉选的"EU 管辖锚点"。这在主端点上是真的——Mistral 在主目录里有 20+ 模型。但 Mistral **不在** <code>eu.openrouter.ai</code> 端点列表上。如果你要硬 EU 管辖保证，单靠 Mistral 不够——你需要你用的模型走 EU 区域上游（比如通过法兰克福 Bedrock 的 Anthropic，或通过 Azure Sweden 的 OpenAI）。</p>
+
+<h2>定价：0% 标价加价，5.5% 平台费</h2>
+<p>公开材料里没有驻留附加费。定价模型和标准 OpenRouter 一样：</p>
+<ul>
+  <li>**0% 标价加价**（在 provider 价基础上）</li>
+  <li>**5.5% 平台费**（在充值上），**最低 $0.80**</li>
+  <li>**5%** 通过 **BYOK（Bring Your Own Key）**</li>
+  <li>**每月前 100 万次请求免费**（BYOK）</li>
+  <li>**失败请求不计费**</li>
+  <li>**20+ 免费模型**用于评估</li>
+</ul>
+<p>EU 区域端点本身被企业销售联系门控（<code>https://openrouter.ai/enterprise/form</code>），无 SKU。对严肃的合规采购方，准备好谈企业合同，而不是按需充信用。</p>
+<p>对比一下：典型 EU 钉选工作负载，BYOK 模式下每月 100 万请求大约是上游 provider 标价之上的 5%。"无加价 + 5% 平台费"框架相比直接对接有竞争力——直接对接 Anthropic、OpenAI、Google 都要按标价付，但你需要接三个独立账户、三套独立 SSO 集成、三套独立供应商风险评审。</p>
+
+<h2>替代方案横评</h2>
+<p>合规团队通常评估的四种方案：</p>
+<table>
+<thead><tr><th>方案</th><th>驻留机制</th><th>配置方式</th><th>定价</th><th>注意事项</th></tr></thead>
+<tbody>
+<tr><td>**OpenRouter <code>provider</code> 对象**</td><td>按数据策略 / ZDR 过滤 provider</td><td>请求体里 <code>provider.only</code>、<code>provider.zdr</code>、<code>provider.data_collection</code></td><td>包含在 5.5% 平台费里</td><td>"区域"= provider 总部所在国；不是硬管辖</td></tr>
+<tr><td>**OpenRouter <code>eu.openrouter.ai</code>**</td><td>硬欧盟管辖</td><td>基础 URL 切到 <code>https://eu.openrouter.ai/api/v1</code></td><td>企业版，联系销售</td><td>仅 EU；26 个模型；Mistral 不在 EU 列表</td></tr>
+<tr><td>**Cloudflare AI Gateway**</td><td>无原生区域路由</td><td>仅缓存、限速、重试/fallback</td><td>免费层 + Workers 付费套餐</td><td>网关本身无驻留原语</td></tr>
+<tr><td>**LiteLLM（自托管）**</td><td>你的网络、你的管辖</td><td><code>model_list</code> 上游用 <code>openrouter/...</code> 或直连 provider key</td><td>免费开源；基础设施 ~$200–$500/月</td><td>OSS 版无 SOC 2 / ISO 27001 / HIPAA 认证</td></tr>
+<tr><td>**Portkey**</td><td>在你的 provider key 上做控制平面</td><td>BYOK + guardrails + PII 脱敏</td><td>$49/月 Production；HIPAA 走 Enterprise</td><td>2026 年被 Palo Alto Networks 收购；Enterprise 提供 HIPAA + BAA</td></tr>
+<tr><td>**Provider 区域钉选端点**</td><td>Provider 自有区域端点</td><td>Vertex 的 <code>region: eu</code>、Azure EU 区域、AWS Bedrock <code>eu-central-1</code></td><td>Provider 标价</td><td>每个 provider 对"区域"定义不同</td></tr>
+</tbody>
+</table>
+<p>关键结论：**四款托管方案里 OpenRouter 是唯一暴露单一托管 EU 端点的**。Cloudflare AI Gateway（OpenRouter 底层基础设施）截至 2026-04-20 文档更新，**没有**把驻留作为一级控制——只有缓存、限速、重试/fallback。LiteLLM 因为自托管给你完整主权，但你需要自己拿 SOC 2 / ISO 27001 / HIPAA 认证。Portkey 在 Enterprise 提供 HIPAA + BAA，但没有托管 EU 端点。</p>
+<p>需要医疗 BAA，答案是 Portkey Enterprise 加上你自己的 provider BAA（Azure OpenAI、带 BAA 的 AWS Bedrock）。需要托管 EU 端点但不需要 HIPAA，OpenRouter 是最干净的答案。</p>
+
+<h2>合规场景映射</h2>
+<table>
+<thead><tr><th>法规</th><th>OpenRouter 能做到的</th><th>缺失的</th></tr></thead>
+<tbody>
+<tr><td>**GDPR（第 44–50 条跨境传输）**</td><td><code>data_collection: "deny"</code> + <code>zdr: true</code> 做 Schrems-II 式数据最小化；<code>eu.openrouter.ai</code> 满足硬 EU 管辖</td><td>第 30 条处理记录必须在控制者层级，不在 API 层</td></tr>
+<tr><td>**欧盟 AI Act（2026 执法）**</td><td>同样原语；Sovereign AI 文档明文点名</td><td>风险分级文档是部署者责任（第 17 条）</td></tr>
+<tr><td>**Deloitte "country of origin" 采购**</td><td>77% 受访领导者（3235 人）把供应商原产国纳入评估</td><td>供应商风险问卷仍需逐 provider 填写</td></tr>
+<tr><td>**金融服务（PCI-DSS、FINRA、OCC）**</td><td>按模型组 ZDR 开关、按 API key guardrail 职责分离、Router Metadata 头做审计追踪</td><td>SOC 2 Type 2 报告在 <code>https://trust.openrouter.ai</code> 对多数第三方风险团队够用，但非全部</td></tr>
+<tr><td>**医疗（HIPAA——美国侧）**</td><td>部分：ZDR + <code>data_collection: "deny"</code> + EU/US 端点</td><td>OpenRouter **没有** HIPAA 认证；BAA 必须在 provider 层（Azure OpenAI、带 BAA 的 AWS Bedrock）</td></tr>
+<tr><td>**中国数据本地化（PIPL、DSL）**</td><td>**无覆盖**</td><td>无中国区、EU 列表无中国 provider、无公开 CN 端点。这是真实的缺口。</td></tr>
+<tr><td>**国防 / 气隙环境**</td><td>不是正确答案</td><td>"基础设施框架适合政府、国防承包商和气隙环境"——这种场景下只有自托管 LiteLLM 可选。</td></tr>
+</tbody>
+</table>
+<p>中国数据本地化缺口要重复一遍。如果你服务中国用户群且需要 PIPL 合规，OpenRouter 不是答案。你需要中国区域上游（阿里通义千问、DeepSeek、智谱 GLM、月之暗面 Kimi 等），加上你自己的数据本地化控制。这是 OpenRouter 现有能力覆盖不到的范围。</p>
+
+<h2>30 行落地实现</h2>
+<p>汇总一个典型 EU 合规工作负载的完整实现：</p>
+<pre><code class="language-python"># requirements: requests, python-dotenv
+import os
+import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# 1. 如果合同包含 EU 端点，使用 EU 端点
+# 2. 钉选单一 EU 区域上游
+# 3. 强制 ZDR + data_collection: deny
+# 4. 关闭 fallback，这样短暂故障会直接报错
+# 5. 抓取 router metadata 进审计日志
+
+def compliance_chat(prompt: str, model: str = "anthropic/claude-sonnet-4.6") -> dict:
+    base = os.environ.get("OPENROUTER_BASE", "https://openrouter.ai/api/v1")
+    # 切到 EU 端点获得硬管辖（仅企业版）
+    if os.environ.get("EU_RESIDENCY") == "true":
+        base = "https://eu.openrouter.ai/api/v1"
+
+    response = requests.post(
+        f"&#123;base&#125;/chat/completions",
+        headers=&#123;
+            "Authorization": f"Bearer &#123;os.environ['OPENROUTER_API_KEY']&#125;",
+            "Content-Type": "application/json",
+        &#125;,
+        json=&#123;
+            "model": model,
+            "messages": [&#123;"role": "user", "content": prompt&#125;],
+            "provider": &#123;
+                "order": ["amazon-bedrock"],
+                "only": ["amazon-bedrock"],
+                "data_collection": "deny",
+                "zdr": True,
+                "allow_fallbacks": False,
+            &#125;,
+        &#125;,
+        timeout=30,
+    )
+    response.raise_for_status()
+
+    # 审计追踪
+    return &#123;
+        "provider": response.headers.get("x-openrouter-provider"),
+        "content": response.json()["choices"][0]["message"]["content"],
+    &#125;
+
+
+if __name__ == "__main__":
+    result = compliance_chat("把这份供应商风险报告总结成 3 点。")
+    print(f"由以下 provider 处理: &#123;result['provider']&#125;")
+    print(result["content"])</code></pre>
+<p>两个值得记住的模式：<code>EU_RESIDENCY=true</code> 环境变量模式让你在主端点和 EU 端点之间切换不动代码；per-request <code>provider</code> 对象和账户级 ZDR 设置是或关系——最严格的保证需要两者都开。</p>
+
+<h2>FAQ</h2>
+<p>**Q：<code>eu.openrouter.ai</code> 端点会增加延迟吗？**</p>
+<p>A：端点本身不会。你的请求从 EU 基础设施解密并路由，上游 provider 也是区域内调用。端到端延迟和主端点上的同模型相当。</p>
+
+<p>**Q：能针对同一模型钉选特定上游（比如 Azure Sweden vs AWS 法兰克福）吗？**</p>
+<p>A：间接可以，通过 <code>provider.order</code> 加 <code>allow_fallbacks: false</code>。Azure 的 provider slug 通常是 <code>azure</code>，AWS Bedrock 是 <code>amazon-bedrock</code>；OpenRouter 按 order 指定的顺序路由。Provider 内的直接区域钉选（比如强制 AWS 法兰克福而不是 AWS 都柏林）OpenRouter 没暴露——那必须在 provider 侧配置。</p>
+
+<p>**Q：EU 端点有免费层吗？**</p>
+<p>A：EU 端点企业门控。没有公开免费 SKU；你需要联系销售获取访问。</p>
+
+<p>**Q：ZDR 覆盖微调数据吗？**</p>
+<p>A：不覆盖。ZDR 只覆盖推理。微调是独立工作流，使用 provider 专用端点，目前不通过 OpenRouter 的驻留控制暴露。</p>
+
+<p>**Q：OpenRouter 怎么处理新的欧盟 AI Act 要求？**</p>
+<p>A：Sovereign AI 文档明文点名欧盟 AI Act 合规。<code>data_collection: "deny"</code>、ZDR 和 <code>eu.openrouter.ai</code> 端点的组合被定位为运营原语。风险分级和合格评定仍是部署者在第 17 条下的责任。</p>
+
+<p>**Q：ZDR 和 <code>data_collection: "deny"</code> 有什么区别？**</p>
+<p>A：ZDR 指 provider 不在静态存储中保留 prompt 或 response。<code>data_collection: "deny"</code> 指 provider 不把数据用于训练未来模型。一个 provider 可以满足一个而不满足另一个——比如一个 provider 可能保留日志 30 天（违反 ZDR）但永远不在输入上训练（满足 <code>data_collection: "deny"</code>）。最严格的保证是两个都开。</p>
+
+<h2>结论</h2>
+<p>OpenRouter 2026 年 6 月这套组合拳最好这样理解：**一篇博客（数据驻留叙事）+ 一个新的企业版 EU 端点，把已有工具包硬化**。工具包本身是成熟的——<code>provider</code> 对象、ZDR 开关、guardrails 几个月前就在那里。变化的是你现在可以指向一个托管 URL，告诉合规团队"所有推理都在 EU 发生"。</p>
+<p>如果你做 EU 产品且不需要 BAA，OpenRouter 是今天最干净的托管选项。需要 HIPAA，Portkey Enterprise 加上 provider BAA。需要 PIPL 数据本地化，需要中国区 provider 栈——OpenRouter 覆盖不到。需要完整主权，唯一路径是自托管 LiteLLM。</p>
+<p>有一件事不要做：把 OpenRouter 的"Sovereign AI"品牌名当作合规工件。它是营销标签。真正的控制是 <code>provider</code> 对象、ZDR 开关和 <code>eu.openrouter.ai</code> 端点——你需要把三者都正确配置，才能给你审计师承诺的保证。</p>
+
+<hr>
+<p><em>如果你想把多 provider 流量（OpenAI、Anthropic、Google）通过一个 OpenAI 兼容端点整合，自带 ZDR 和 provider 路由，<a href="https://freemodel.dev/invite/FRE-7a3b6220"><strong>FreeModel</strong></a> 是一个中国直连聚合器，复制了 OpenRouter 模式，底层跑 DeepSeek、Qwen、GLM、Kimi。它的企业版用同样的 <code>provider</code> 对象形状，是需要同时接入 EU/美/中国路由的团队最接近的国内等价方案。</em></p>
+`;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  pageType="article"
+  date={date}
+  locale="zh"
+>
+  <link rel="alternate" hreflang="zh" href={canonicalUrl} />
+  <link rel="alternate" hreflang="en" href={enCanonicalUrl} />
+  <link rel="canonical" href={canonicalUrl} />
+
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <article class="tutorial-article">
+    <div set:html={zhBody} />
+  </article>
+</BaseLayout>
