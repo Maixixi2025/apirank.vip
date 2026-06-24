@@ -1,0 +1,438 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'aleph-alpha-api-review';
+const date = '2026-06-24';
+const locale = 'en';
+
+const enTitle = 'Aleph Alpha 2026: European Sovereign AI API Review';
+const enDescription = 'Aleph Alpha API review: Pharia-1-LLM-7B-control, on-prem PhariaAI stack, OpenAI Responses compatible, GDPR + EU AI Act. April 2026 Cohere merger.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/og-default.png", "width": 1200, "height": 630 } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Aleph Alpha's API OpenAI-compatible?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, partially. The PhariaAI Responses API is a full implementation of OpenAI's Responses API specification at the /v1/responses endpoint — point the OpenAI Python SDK at a PhariaAI deployment by overriding base_url. The legacy aleph-alpha-client SDK exposes additional Aleph Alpha-specific request types (EmbeddingRequest, SemanticEmbeddingRequest, RerankRequest, ExplanationRequest, EvaluationRequest, ChatRequest). There is no Anthropic-compatible endpoint." }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does Aleph Alpha cost in 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "There is no public per-token price. Aleph Alpha sells enterprise contracts only — both the hosted PhariaAI endpoint and on-prem PhariaAI deployments are priced per customer. Self-serve signup gives you an API token to exercise the API, but production deployment requires a 4-8 week sales cycle." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can Aleph Alpha's models run on my own hardware?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. PhariaAI is sold as a full on-prem stack — Pharia-1-LLM-7B-control weights, PhariaOS inference runtime, PhariaStudio developer tools. The Hugging Face model card includes vLLM and SGLang deploy snippets for self-hosted inference. On-prem deployments have no rate limits (the hardware is the limit)." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Aleph Alpha train on my prompts?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Per the Pharia-1 model card: No prompt data is stored when using our systems; we do not log user inputs to the models; we do not train on user data. This is contractually backed in enterprise agreements." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use Aleph Alpha from China?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Aleph Alpha is a German sovereign-AI vendor subject to EU export controls, and does not offer mainland China service. For China-accessible LLM APIs see Aliyun Bailian, Baidu ERNIE, Kimi, Zhipu GLM, Tencent Hunyuan, or ByteDance Doubao." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Pharia-1-LLM-7B-control-aligned?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The same 7B base model as Pharia-1-LLM-7B-control with additional safety alignment training. Aleph Alpha recommends this variant for chat-related use cases. Both ship under the Open Aleph license for research and education; PhariaAI hosted and on-prem deployments have separate commercial terms." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the Cohere merger and when does it close?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Announced April 24, 2026. Cohere and Aleph Alpha are combining at a $20 billion valuation; Schwarz Group is investing $600 million in Cohere's Series E. As of June 2026 the deal has not closed; the Aleph Alpha docs site and API are still operated under the Aleph Alpha brand. The merger is the single biggest variable for 2026 adoption decisions — write your code against the OpenAI Responses API contract so you can migrate to Cohere Command R+ hosted endpoints if needed." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Aleph Alpha support image or multimodal models?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Not in the current Pharia-1 line. Pharia-1-LLM is text-only. PhariaAI does serve third-party multimodal models (e.g. Qwen-VL) via the vLLM-hosted stack, but these are not Aleph Alpha-developed models." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Aleph Alpha API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Aleph Alpha 2026: European Sovereign AI API Review</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-24">June 24, 2026</time>
+              <span>•</span>
+              <span>Aleph Alpha Review</span>
+              <span>•</span>
+              <span>About 12 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Aleph Alpha is the European answer to a question US AI labs don't ask: what does an AI provider look like when the buyer is a government ministry, a defense agency, or a regulated bank that legally cannot send a prompt to a US-hosted endpoint? Founded in 2019 in Heidelberg, Germany by Jonas Andrulis (formerly at Apple), Aleph Alpha spent six years building what is now sold as PhariaAI — a fully on-prem-deployable LLM stack. The current production model is Pharia-1-LLM-7B-control, a 7-billion-parameter multilingual LLM natively trained on DE/EN/FR/ES/IT/PT/NL. This review covers the Aleph Alpha API from the perspective of an engineer evaluating European sovereign AI providers in mid-2026.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> Aleph Alpha is the only major EU sovereign AI vendor offering a full on-prem stack (PhariaAI: model + PhariaOS + PhariaStudio) plus OpenAI Responses API compatibility. The Pharia-1-LLM-7B-control model is a 7B multilingual LLM with native DE/EN/FR/ES/IT/PT/NL training. No public per-token pricing — enterprise quote only, 4-8 week sales cycle. Mid-merger with Cohere ($20B combined valuation, Schwarz Group $600M investment, April 2026 announcement, deal not yet closed as of June 2026). Best for: EU government, defense, BFSI under BaFin/MaRisk, regulated industries needing GDPR + EU AI Act compliance and on-prem deployment. Not a GPT-4o competitor.
+            </p>
+          </div>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Why Aleph Alpha Matters in 2026</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              Then on April 24, 2026, Cohere announced a merger with Aleph Alpha that values the combined company at $20 billion, with Schwarz Group (Lidl/Kaufland parent) investing $600 million in Cohere's Series E. As of June 2026 the deal has not closed; the Aleph Alpha docs site is still live under its own brand, the API still routes to Aleph Alpha's endpoints, and the PhariaAI product is still sold by Aleph Alpha GmbH. But the writing is on the wall: the company that wanted to be "Europe's Palantir" is joining the company that wants to be "the OpenAI of the enterprise."
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              The honest frame for Aleph Alpha: this is not a GPT-4o competitor. Pharia-1-LLM-7B-control is a 7B model — orders of magnitude smaller than frontier US models on parameter count, pretraining compute, and benchmark scores. Aleph Alpha's bet is that for a meaningful slice of the European enterprise market, sovereignty, data residency, regulatory compliance, and source transparency matter more than a 5-point lift on MMLU. For that slice — German government, defense, BFSI in regulated EU jurisdictions, healthcare under GDPR — Aleph Alpha is the only vendor that checks every box.
+            </p>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">The Pharia-1 Model Lineup</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              Aleph Alpha's current production line is the Pharia-1 family, released August 2024. The legacy Luminous family (Supreme / Extended / Base / Chat) is fully deprecated — the PhariaAI v1.260600.0 release notes from June 9, 2026 explicitly state "Deprecated the luminous worker," the Hugging Face model cards for Luminous models return 404, and the inference stack has been migrated to vLLM 0.21.0. If you're evaluating Aleph Alpha in 2026, you evaluate Pharia-1.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              The flagship is Pharia-1-LLM-7B-control — exactly 7,041,544,704 parameters, 8,192-token context window, grouped-query attention, rotary base 1,000,000, and a 128k-vocab Unigram tokenizer trained across seven European languages. It ships under the Open Aleph license for research and education. For chat-related use cases Aleph Alpha recommends Pharia-1-LLM-7B-control-aligned — the same 7B base with additional safety alignment training. Both are available as Hugging Face safetensors (Pharia-1-LLM-7B-control-hf has 1.45k likes as of June 2026) and can be served via vLLM or SGLang for self-hosted inference.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              For retrieval workloads, Pharia-1-Embedding-4608-control is a 7B-parameter embedding model that outputs 4,608-dimensional vectors. It supports instruction tuning at inference time — the same representational-instruction-tuning trick that powers GritLM — so the same model can be repurposed for asymmetric search, classification, or clustering by changing the instruction prefix. A 256-dimensional control-256 variant is available for cost-sensitive deployments.
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+              Beyond the core Pharia-1 line, the hosted PhariaAI stack now also serves third-party models via vLLM — for example qwen3-32b-tool is referenced in the PhariaAI Responses API documentation. This is a meaningful strategic shift: Aleph Alpha is moving from "we sell our own 7B model" to "we sell a European-sovereign runtime that can host any open-weight model with EU data residency."
+            </p>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">The Cohere Merger: What It Means for Adoption</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              On April 24, 2026, Cohere announced a strategic combination with Aleph Alpha. The combined company is valued at $20 billion; Schwarz Group is investing $600 million in Cohere's Series E in parallel. The pitch is a "transatlantic AI powerhouse" — Cohere's enterprise commercial scale (Toronto + San Francisco + London) combined with Aleph Alpha's EU regulatory positioning and on-prem deployment stack (Heidelberg + Berlin + Bayreuth + München). Berlin has publicly backed the deal.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              For prospective Aleph Alpha customers in mid-2026, three practical questions follow:
+            </p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-2 mb-4">
+              <li><strong>Will Aleph Alpha's data residency and on-prem story survive the merger?</strong> Cohere's enterprise products today are hosted (north-america, eu, and asia regions on Cohere's managed cloud). If PhariaAI's on-prem stack gets folded into Cohere's hosted-only model, the strongest single Aleph Alpha differentiator weakens significantly. As of June 2026, the PhariaAI product page still leads with on-prem deployment, so the position is intact for now.</li>
+              <li><strong>Will pricing open up?</strong> Aleph Alpha's enterprise-quote-only pricing posture is the single biggest friction point for developer adoption. Cohere publishes per-token pricing for Command R+, Aya, and Embed. There's a plausible path to Aleph Alpha publishing tier pricing post-merger — but nothing is confirmed.</li>
+              <li><strong>Will the Pharia-1 model roadmap continue?</strong> Cohere's research direction is north-American enterprise — Command R+, Aya multilingual, and enterprise retrieval. Aleph Alpha's research direction is European sovereign AI — Pharia, TFree-HAT, and the Intelligence Layer SDK. The merged company's model roadmap is the single biggest open question.</li>
+            </ul>
+            <p class="text-gray-700 leading-relaxed">
+              The pragmatic recommendation: if you're evaluating Aleph Alpha in 2026, write your code against the OpenAI Responses API endpoint (see API section below) so you can swap in Cohere's Command R+ hosted endpoint or any other OpenAI-compatible model without rewriting your application. Treat Aleph Alpha as an API contract, not a vendor relationship, until the merger closes.
+            </p>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Pricing: Enterprise Quote-Only, No Public List</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              Aleph Alpha does not publish per-token pricing on either the marketing site or the API documentation. There is no self-serve signup that drops you into a pay-as-you-go console the way OpenAI, Anthropic, Mistral, or Cohere do. The signup flow creates an account, and you generate an API token, but the next step is "contact sales" — Aleph Alpha "cater[s] to enterprises and governmental agencies only" (Wikipedia, citing Aleph Alpha's own positioning).
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              The hosted PhariaAI endpoint's pricing is contract-based. The on-prem PhariaAI deployment is per-deployment custom-priced — typically a license fee plus an annual support contract sized to the customer's hardware footprint and inference volume.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              For comparison purposes, Aleph Alpha's effective pricing is almost certainly higher than the cheapest US-hosted frontier models on a per-token basis, but the bundle includes compliance, on-prem deployment rights, and contractual commitments on prompt data handling that you cannot get from OpenAI or Anthropic. The trade is dollars for sovereignty, not dollars for raw capability.
+            </p>
+            <div class="overflow-x-auto mb-4">
+              <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900">Deployment</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900">Pricing model</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900">Public list price</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                  <tr><td class="px-4 py-3">Hosted PhariaAI (managed cloud, EU region)</td><td class="px-4 py-3">Enterprise contract</td><td class="px-4 py-3">None published</td></tr>
+                  <tr><td class="px-4 py-3">On-prem PhariaAI (your hardware)</td><td class="px-4 py-3">License + annual support</td><td class="px-4 py-3">Per-deployment quote</td></tr>
+                  <tr><td class="px-4 py-3">Embedding API (Pharia-1-Embedding-4608-control)</td><td class="px-4 py-3">Same as hosted PhariaAI</td><td class="px-4 py-3">None published</td></tr>
+                  <tr><td class="px-4 py-3">Third-party models on PhariaAI (Qwen etc.)</td><td class="px-4 py-3">Same as hosted PhariaAI</td><td class="px-4 py-3">None published</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-gray-700 leading-relaxed">
+              If you're a developer evaluating Aleph Alpha, the practical advice is: use the self-serve signup to get a token and exercise the API, but budget 4-8 weeks of sales-cycle time for any production deployment.
+            </p>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">API Surface: OpenAI Responses Compatible + Legacy Aleph Alpha Client</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              The biggest developer-facing story for Aleph Alpha in 2026 is the PhariaAI Responses API — a full implementation of OpenAI's Responses API specification. The endpoint is /v1/responses on your PhariaAI deployment URL (which the customer controls for on-prem, or which Aleph Alpha provisions for hosted). You can point the OpenAI Python SDK at a PhariaAI deployment by overriding the base_url:
+            </p>
+            <div class="bg-gray-900 text-gray-100 rounded-lg p-4 mb-4 overflow-x-auto">
+              <pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://your-deployment.aleph-alpha.com/v1",  # PhariaAI on-prem
+    api_key="YOUR_AA_TOKEN",
+)
+
+response = client.responses.create(
+    model="pharia-1-llm-7b-control-aligned",
+    input="Write a polite German-language refusal for a customer asking for their data to be deleted.",
+    instructions="You are a German customer service agent. Respond in German.",
+)
+
+print(response.output_text)</code></pre>
+            </div>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              This works because PhariaAI's Responses API implements the OpenAI Responses spec: SSE streaming, tool calling, async jobs, soft/hard delete, and LlamaGuard integration for guardrails. You can also use PydanticAI, LangGraph (via langchain-openai), or curl directly.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              For customers who need the older, richer Aleph Alpha feature set, the aleph-alpha-client Python SDK (v11.5.1, MIT, pip install aleph-alpha-client) exposes Client(token, host).complete(request, model="pharia-1-llm-7b-control"), AsyncClient, and a richer set of request types — EmbeddingRequest, SemanticEmbeddingRequest, RerankRequest, ExplanationRequest, EvaluationRequest, ChatRequest — that go beyond what the Responses API exposes. The ExplanationRequest API in particular is uniquely Aleph Alpha: it asks the model to highlight which input tokens contributed to each output token, a source-transparency feature for explainability-required applications.
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+              Authentication is a Bearer token in the Authorization: Bearer &lt;token&gt; header, with tokens created in the user profile and stored in AA_TOKEN / TEST_TOKEN environment variables. Rate limits are not publicly documented — they appear to be per-account rather than per-IP, and on-prem deployments have no rate limits at all (the hardware is the limit).
+            </p>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">EU Sovereignty, GDPR, and Data Residency</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              This is the section that matters most for the buying decision. Aleph Alpha's posture is:
+            </p>
+            <ul class="list-disc pl-6 text-gray-700 space-y-2 mb-4">
+              <li><strong>No prompt data storage.</strong> The Pharia-1 model card explicitly states: "No prompt data is stored when using our systems. We do not log user inputs to the models. We do not train on user data."</li>
+              <li><strong>GDPR-compliant training data.</strong> Per Aleph Alpha's public statements, Pharia-1 was "trained on carefully curated data in compliance with applicable EU and national regulations, including copyright and data privacy laws."</li>
+              <li><strong>EU AI Act alignment.</strong> Aleph Alpha signed the EU General-Purpose AI Code of Practice in February 2026 and positions the Pharia-1 family for EU AI Act compliance.</li>
+              <li><strong>On-prem deployment.</strong> PhariaAI can run entirely on the customer's hardware — model weights, inference runtime, all data stays within the customer's infrastructure. This is the strongest possible data-residency posture: nothing leaves the customer's jurisdiction, ever.</li>
+              <li><strong>No training on user inputs.</strong> Even hosted PhariaAI does not use customer prompts or outputs for model training.</li>
+            </ul>
+            <p class="text-gray-700 leading-relaxed">
+              For customers in scope of GDPR, the EU AI Act, sector-specific regulation (Banking: MaRisk, BaFin; Insurance: Solvency II; Healthcare: MDR; Defense: NATO export controls), or public-sector procurement rules that mandate EU-jurisdiction processing, Aleph Alpha is one of very few commercial options. The other is Mistral AI, but Mistral's deployment posture is hybrid — hosted EU region available, on-prem available only via the open-weight self-hosted route with no commercial support contract for the stack.
+            </p>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Aleph Alpha vs Mistral AI</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              The most natural comparison for Aleph Alpha in the European sovereign-AI space is Mistral AI. Both are EU-based; both pitch data residency and GDPR compliance; both sell to enterprise. The differences are structural:
+            </p>
+            <div class="overflow-x-auto mb-4">
+              <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900">Dimension</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900">Aleph Alpha</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900">Mistral AI</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                  <tr><td class="px-4 py-3">HQ</td><td class="px-4 py-3">Heidelberg, Germany</td><td class="px-4 py-3">Paris, France</td></tr>
+                  <tr><td class="px-4 py-3">Founded</td><td class="px-4 py-3">2019</td><td class="px-4 py-3">2023</td></tr>
+                  <tr><td class="px-4 py-3">Model size (flagship)</td><td class="px-4 py-3">7B (Pharia-1-LLM)</td><td class="px-4 py-3">12B-123B (Mistral Large 2, Mixtral, Codestral)</td></tr>
+                  <tr><td class="px-4 py-3">Frontier capability</td><td class="px-4 py-3">No (7B only)</td><td class="px-4 py-3">Yes (Mistral Large 2 competitive with GPT-4o on most benchmarks)</td></tr>
+                  <tr><td class="px-4 py-3">On-prem stack</td><td class="px-4 py-3">Yes (PhariaAI)</td><td class="px-4 py-3">Open-weight only, no commercial stack</td></tr>
+                  <tr><td class="px-4 py-3">Hosted cloud</td><td class="px-4 py-3">Yes (EU region)</td><td class="px-4 py-3">Yes (EU region, multi-region)</td></tr>
+                  <tr><td class="px-4 py-3">Pricing</td><td class="px-4 py-3">Enterprise quote only</td><td class="px-4 py-3">Per-token, published</td></tr>
+                  <tr><td class="px-4 py-3">Self-serve signup</td><td class="px-4 py-3">Yes (but pay-walled)</td><td class="px-4 py-3">Yes (full self-serve)</td></tr>
+                  <tr><td class="px-4 py-3">OpenAI compatibility</td><td class="px-4 py-3">Yes (Responses API)</td><td class="px-4 py-3">Yes (chat completions)</td></tr>
+                  <tr><td class="px-4 py-3">Sovereignty framing</td><td class="px-4 py-3">Palantir (deployment + transparency)</td><td class="px-4 py-3">OpenAI (frontier model + global distribution)</td></tr>
+                  <tr><td class="px-4 py-3">2026 trajectory</td><td class="px-4 py-3">Merging with Cohere</td><td class="px-4 py-3">Independent, Series B+ scale</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-gray-700 leading-relaxed">
+              The framing question is which story you believe. If you believe sovereign AI is a deployment + compliance story (and capability is secondary), Aleph Alpha's posture is purer. If you believe sovereign AI is a model-capability story (and compliance is a bonus), Mistral's posture is stronger. After the Cohere merger closes, Aleph Alpha gains Mistral's biggest weakness (no public pricing) potentially solved; Mistral gains Aleph Alpha's biggest weakness (no on-prem commercial stack) potentially solved if the merged entity offers Cohere Command R+ on PhariaAI on-prem.
+            </p>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Pros and Cons</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div class="bg-green-50 border-l-4 border-green-400 p-4 rounded-r">
+                <h3 class="font-bold text-green-900 mb-2">Pros</h3>
+                <ul class="list-disc pl-5 text-sm text-green-900 space-y-1">
+                  <li>True EU sovereign AI posture</li>
+                  <li>On-prem PhariaAI stack (weights + runtime + OS + Studio)</li>
+                  <li>OpenAI Responses API compatible</li>
+                  <li>Strong DE/EN/FR/ES/IT/PT/NL multilingual coverage</li>
+                  <li>ExplanationRequest API for source transparency</li>
+                  <li>No prompt storage, no training on user data — contractually backed</li>
+                  <li>EU AI Act Code of Practice signatory (Feb 2026)</li>
+                  <li>Cohere merger brings enterprise scale and potentially public pricing</li>
+                </ul>
+              </div>
+              <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r">
+                <h3 class="font-bold text-red-900 mb-2">Cons</h3>
+                <ul class="list-disc pl-5 text-sm text-red-900 space-y-1">
+                  <li>7B model — significant capability gap vs frontier</li>
+                  <li>No public pricing — enterprise quote only</li>
+                  <li>Cohere merger not yet closed — roadmap uncertainty</li>
+                  <li>No mainland China service</li>
+                  <li>Developer docs oriented to enterprise buyers</li>
+                  <li>Smaller community than OpenAI/Anthropic/Mistral</li>
+                  <li>No Chat Completions endpoint (Responses API only)</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Use Case Recommendations</h2>
+            <div class="overflow-x-auto mb-4">
+              <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900">Use case</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900">Fit</th>
+                    <th class="px-4 py-3 text-left font-semibold text-gray-900">Why</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                  <tr><td class="px-4 py-3">German government / public sector</td><td class="px-4 py-3"><strong>Excellent</strong></td><td class="px-4 py-3">Heidelberg HQ, on-prem PhariaAI, GDPR + EU AI Act alignment</td></tr>
+                  <tr><td class="px-4 py-3">EU defense / NATO contractor</td><td class="px-4 py-3"><strong>Excellent</strong></td><td class="px-4 py-3">EU export control posture, on-prem, no US CLOUD Act exposure</td></tr>
+                  <tr><td class="px-4 py-3">EU BFSI under BaFin/MaRisk</td><td class="px-4 py-3"><strong>Excellent</strong></td><td class="px-4 py-3">Source transparency, contractually backed no-training, on-prem</td></tr>
+                  <tr><td class="px-4 py-3">Multilingual EU customer service (DE/FR/ES/IT)</td><td class="px-4 py-3">Good</td><td class="px-4 py-3">Native training on all major EU languages</td></tr>
+                  <tr><td class="px-4 py-3">General chatbot / RAG</td><td class="px-4 py-3">Poor</td><td class="px-4 py-3">7B model is capability-limited vs GPT-4o/Mistral Large</td></tr>
+                  <tr><td class="px-4 py-3">Code generation</td><td class="px-4 py-3">Poor</td><td class="px-4 py-3">Not a coding-specialized model, no Codestral equivalent</td></tr>
+                  <tr><td class="px-4 py-3">Image / multimodal</td><td class="px-4 py-3">Poor</td><td class="px-4 py-3">Pharia-1 is text-only</td></tr>
+                  <tr><td class="px-4 py-3">China-market consumer apps</td><td class="px-4 py-3">Not applicable</td><td class="px-4 py-3">EU export controls, no CN service</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
+            <div class="space-y-4">
+              <div>
+                <h3 class="font-bold text-gray-900 mb-2">Is Aleph Alpha's API OpenAI-compatible?</h3>
+                <p class="text-gray-700 leading-relaxed">Yes, partially. The PhariaAI Responses API is a full implementation of OpenAI's Responses API specification at the /v1/responses endpoint — you can point the OpenAI Python SDK at a PhariaAI deployment by overriding base_url. The legacy aleph-alpha-client SDK exposes additional Aleph Alpha-specific request types (EmbeddingRequest, SemanticEmbeddingRequest, RerankRequest, ExplanationRequest, EvaluationRequest, ChatRequest) that go beyond what the Responses API covers. There is no Anthropic-compatible endpoint.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-900 mb-2">How much does Aleph Alpha cost in 2026?</h3>
+                <p class="text-gray-700 leading-relaxed">There is no public per-token price. Aleph Alpha sells enterprise contracts only — both the hosted PhariaAI endpoint and on-prem PhariaAI deployments are priced per customer. Self-serve signup gives you an API token to exercise the API, but production deployment requires a 4-8 week sales cycle. This is closer to enterprise database procurement than to spinning up an LLM API.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-900 mb-2">Can Aleph Alpha's models run on my own hardware?</h3>
+                <p class="text-gray-700 leading-relaxed">Yes. PhariaAI is sold as a full on-prem stack — Pharia-1-LLM-7B-control weights, PhariaOS inference runtime, PhariaStudio developer tools. The Hugging Face model card includes vLLM and SGLang deploy snippets for self-hosted inference. On-prem deployments have no rate limits (the hardware is the limit).</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-900 mb-2">Does Aleph Alpha train on my prompts?</h3>
+                <p class="text-gray-700 leading-relaxed">No. Per the Pharia-1 model card: "No prompt data is stored when using our systems; we do not log user inputs to the models; we do not train on user data." This is contractually backed in enterprise agreements.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-900 mb-2">Can I use Aleph Alpha from China?</h3>
+                <p class="text-gray-700 leading-relaxed">No. Aleph Alpha is a German sovereign-AI vendor subject to EU export controls, and does not offer mainland China service. For China-accessible LLM APIs see Aliyun Bailian, Baidu ERNIE, Kimi, Zhipu GLM, Tencent Hunyuan, or ByteDance Doubao.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-900 mb-2">What is Pharia-1-LLM-7B-control-aligned?</h3>
+                <p class="text-gray-700 leading-relaxed">The same 7B base model as Pharia-1-LLM-7B-control with additional safety alignment training. Aleph Alpha recommends this variant for chat-related use cases. Both ship under the Open Aleph license for research and education; PhariaAI hosted and on-prem deployments have separate commercial terms.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-900 mb-2">What is the Cohere merger and when does it close?</h3>
+                <p class="text-gray-700 leading-relaxed">Announced April 24, 2026. Cohere and Aleph Alpha are combining at a $20 billion valuation; Schwarz Group is investing $600 million in Cohere's Series E. As of June 2026 the deal has not closed; the Aleph Alpha docs site and API are still operated under the Aleph Alpha brand. The merger is the single biggest variable for 2026 adoption decisions — write your code against the OpenAI Responses API contract so you can migrate to Cohere Command R+ hosted endpoints if needed.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-gray-900 mb-2">Does Aleph Alpha support image or multimodal models?</h3>
+                <p class="text-gray-700 leading-relaxed">Not in the current Pharia-1 line. Pharia-1-LLM is text-only. PhariaAI does serve third-party multimodal models (e.g. Qwen-VL) via the vLLM-hosted stack, but these are not Aleph Alpha-developed models.</p>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Conclusion</h2>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              Aleph Alpha is a defensible choice for a specific but meaningful slice of the European enterprise market: any organization whose data classification rules require EU-jurisdiction processing, on-prem deployment, or EU AI Act compliance. The 7B Pharia-1 model is capability-limited vs US frontier models, but for the buyer whose primary constraint is sovereignty rather than benchmark scores, Aleph Alpha is the cleanest answer in the European market today.
+            </p>
+            <p class="text-gray-700 leading-relaxed mb-4">
+              The Cohere merger is the single biggest 2026 variable. Until the deal closes, the prudent engineering choice is to write your application code against the OpenAI Responses API contract that PhariaAI implements — this gives you a clean migration path to Cohere Command R+ hosted endpoints, or to any other OpenAI-compatible model, without rewriting your application if the merged entity's product direction shifts.
+            </p>
+            <p class="text-gray-700 leading-relaxed">
+              The closest natural pairing is Aleph Alpha as the EU-sovereign endpoint behind OpenRouter's EU data-residency routing — when a prompt's data classification demands German jurisdiction, route to Aleph Alpha on-prem; for everything else, route to OpenAI/Anthropic/Mistral. This is the architecture we're seeing from EU public-sector and BFSI customers in mid-2026.
+            </p>
+          </section>
+
+        </div>
+
+        <aside class="space-y-6">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+            <h3 class="font-bold text-blue-900 mb-3">Try Multi-Provider AI</h3>
+            <p class="text-sm text-blue-800 mb-3">Need OpenAI-compatible AI with EU-jurisdiction routing? FreeModel bundles OpenAI, Anthropic, Mistral, Cohere, and DeepSeek behind a single API with built-in data-residency routing for China and overseas.</p>
+            <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="inline-block bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-blue-700">Try FreeModel →</a>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+            <ul class="text-sm space-y-2">
+              <li><a href="/tutorials/openrouter-data-residency-2026" class="text-blue-600 hover:underline">OpenRouter Data Residency 2026</a></li>
+              <li><a href="/tutorials/cheapest-llm-api-pricing-2026" class="text-blue-600 hover:underline">Cheapest LLM API Pricing 2026</a></li>
+              <li><a href="/tutorials/openai-compatible-api-2026" class="text-blue-600 hover:underline">OpenAI-Compatible API 2026</a></li>
+              <li><a href="/tutorials/ai-api-function-calling-2026" class="text-blue-600 hover:underline">AI API Function Calling 2026</a></li>
+            </ul>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="font-bold text-gray-900 mb-3">Provider Categories</h3>
+            <ul class="text-sm space-y-2">
+              <li><a href="/providers/?category=international" class="text-blue-600 hover:underline">International Providers</a></li>
+              <li><a href="/providers/?category=aggregator" class="text-blue-600 hover:underline">Aggregators</a></li>
+              <li><a href="/providers/?category=domestic" class="text-blue-600 hover:underline">China-Direct Providers</a></li>
+            </ul>
+          </div>
+
+          <div class="bg-gray-100 border border-gray-200 rounded-lg p-5 text-center">
+            <p class="text-xs text-gray-500 mb-2">Advertisement</p>
+            <div class="bg-gray-200 h-32 rounded flex items-center justify-center text-gray-400 text-sm">Ad slot</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
