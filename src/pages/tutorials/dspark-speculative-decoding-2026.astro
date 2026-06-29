@@ -1,0 +1,308 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'dspark-speculative-decoding-2026';
+const locale = 'en';
+const date = '2026-06-29';
+const enTitle = 'DSpark 2026: DeepSeek 60–85% Faster Inference';
+const enDescription = 'DSpark speculative decoding boosts DeepSeek-V4 per-user generation 60–85% over MTP-1. Open-source code, OpenAI-compatible API, and how to wire it in.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: enTitle,
+  description: enDescription,
+  datePublished: date,
+  dateModified: date,
+  author: { '@type': 'Organization', name: 'APIRank' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'APIRank',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://apirank.vip/logo.png',
+      width: 600,
+      height: 60,
+    },
+  },
+  url: canonicalUrl,
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://apirank.vip/' },
+    { '@type': 'ListItem', position: 2, name: 'Providers', item: 'https://apirank.vip/providers/' },
+    { '@type': 'ListItem', position: 3, name: enTitle, item: canonicalUrl },
+  ],
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Is DSpark a new model or a serving optimization?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "DSpark is a serving optimization, not a new model. The shipped checkpoints (DeepSeek-V4-Pro-DSpark and DeepSeek-V4-Flash-DSpark) reuse the existing V4 weights with a draft module attached. The output distribution is preserved exactly, so there is no quality loss.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How much faster is DeepSeek-V4 with DSpark in production?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "At matched throughput, per-user generation runs 60-85% faster than the MTP-1 baseline on DeepSeek-V4-Flash and 57-78% on DeepSeek-V4-Pro. Offline, accepted length rises 26-31% over Eagle3 and 16-18% over DFlash across math, code, and chat benchmarks.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do I need to change my OpenAI-compatible client to use DSpark?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "No. DSpark is a serving-side optimization. The public DeepSeek API (api.deepseek.com) routes V4 traffic through the DSpark-5 configuration automatically; you keep using model='deepseek-v4-flash' or 'deepseek-v4-pro' with the same request shape. The only change you may see is a higher x-deepseek-drafter response header that reports the active draft length.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is DSpark-5 and why is five tokens the default?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "DSpark-5 is a five-token draft block with the Markov head (the lightweight sequential head that conditions each token on the previous one). Five tokens is the sweet spot: scaling draft length from 4 to 16 adds only 0.2-1.3% per-round latency while improving accepted length by up to 30%. The Markov head is the default because the optional RNN head adds only marginal extra acceptance.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Can I self-host DSpark against my own model?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "Yes. DeepSpec, the MIT-licensed training and evaluation codebase, is open-source. The pipeline has three stages: data preparation, training, then evaluation. A config selects the algorithm and target model. Evaluations run against nine datasets covering math, code, and chat.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Does DSpark help with high-concurrency serving?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "Yes — that is the headline use case. The hardware-aware prefix scheduler uses a profiled SPS(B) throughput curve measured once at startup. At moderate load it verifies 4-6 tokens per request; as concurrency rises it trims that budget to protect throughput. The early-stopping rule keeps output lossless even when verification length is cut short.",
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How does DSpark compare to Eagle3 and DFlash?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: "Against Eagle3 (autoregressive drafter) DSpark gains 26.7-30.9% in macro-average accepted length across Qwen3-4B/8B/14B. Against DFlash (parallel drafter) the gain is 16.3-18.4%. A 2-layer DSpark even beats a 5-layer DFlash on the same metrics. The improvement comes from splitting drafting into a parallel backbone plus a lightweight sequential head, fixing the multi-modal collision that makes parallel drafters decay fast.",
+      },
+    },
+  ],
+};
+
+const enBody = `
+<p>On June 27, 2026, DeepSeek released <strong>DSpark</strong>, a speculative decoding framework, with open-source checkpoints and full training code. It is a <em>serving optimization</em>, not a new model — the checkpoints (<code>DeepSeek-V4-Pro-DSpark</code> and <code>DeepSeek-V4-Flash-DSpark</code>) reuse the existing V4 weights with a draft module attached. The DeepSeek research team also open-sourced <strong>DeepSpec</strong>, an MIT-licensed codebase for training and evaluating speculative decoding drafters.</p>
+
+<p>The work targets one problem: faster large-model inference in busy production serving. At matched throughput, per-user generation runs <strong>60–85% faster</strong> than the MTP-1 baseline on Flash and <strong>57–78%</strong> on Pro. Output stays lossless, and the checkpoints plus training code are open-source.</p>
+
+<p>This article walks through the latency math, the two mechanisms (semi-autoregressive drafting and confidence-scheduled verification), the metrics, and a 30-line recipe to call the served V4 API. The short version: DSpark is the largest serving-side speedup DeepSeek has shipped, and you get it for free on the public API today.</p>
+
+<h2>The latency math DSpark optimizes</h2>
+
+<p>Per-token latency follows one equation from the paper:</p>
+
+<pre><code class="language-bash">L = (T_draft + T_verify) / tau</code></pre>
+
+<p>Here <code>tau</code> is the number of tokens accepted per cycle. Speedup comes from three levers only: draft faster (lower <code>T_draft</code>), draft better (raise <code>tau</code>), or verify smarter (reduce wasted <code>T_verify</code>). DSpark pulls all three at once.</p>
+
+<h2>How DSpark drafts: parallel backbone + sequential head</h2>
+
+<p>Earlier drafters force a trade-off:</p>
+<ul>
+  <li><strong>Autoregressive drafters (Eagle3)</strong> — condition each token on prior ones. Strong acceptance, but drafting cost grows with block size.</li>
+  <li><strong>Parallel drafters (DFlash)</strong> — produce the whole block in one pass. Drafting stays cheap, but each position ignores its neighbors, so "multi-modal collision" causes rapid acceptance decay along the suffix.</li>
+</ul>
+
+<p>DSpark splits drafting into two stages. A heavy parallel backbone (DFlash in the default config) produces base logits for every position. Then a lightweight sequential head adds a prefix-dependent bias before sampling each token.</p>
+
+<p>The default sequential head is a <strong>Markov head</strong> — it only looks at the immediately preceding token. A low-rank factorization (rank 256) keeps it cheap, even with large vocabularies. Once position one samples "of", the head boosts "course" and suppresses "problem". An optional RNN head tracks the full block prefix; it adds only marginal gains, so the Markov head ships as the default.</p>
+
+<p>The payoff shows up position by position. DSpark inherits the parallel backbone's high first-token accuracy. The sequential head then holds acceptance steady deep into the block.</p>
+
+<p>Training freezes the target model and reuses its embedding and output head. A total-variation loss is the key term: minimizing that distance directly maximizes the draft's acceptance rate.</p>
+
+<h2>How DSpark verifies: confidence-scheduled</h2>
+
+<p>More draft tokens do not always mean more speed. Verifying tokens that will be rejected wastes batch capacity under heavy load. DSpark adds two parts to fix this.</p>
+
+<p><strong>Confidence head.</strong> A confidence head outputs a score for each draft position. The score estimates the chance that the token survives verification, given accepted predecessors. It is supervised by the analytical per-step acceptance rate. Raw neural confidence is usually overconfident, so the research team applies Sequential Temperature Scaling, a post-hoc calibration step. It cuts expected calibration error from 3–8% down to about 1%.</p>
+
+<p><strong>Hardware-aware prefix scheduler.</strong> A hardware-aware prefix scheduler then sets the verification length per request. It uses a profiled throughput curve, <code>SPS(B)</code>, measured once at startup. When GPUs are idle, it verifies more tokens. When GPUs are busy, it verifies fewer. The scheduler uses an early-stopping rule to stay lossless. The appendix gives a counterexample showing why a naive global search would leak information.</p>
+
+<h2>Offline metrics: math, code, chat</h2>
+
+<p>Offline tests cover math, code, and daily chat. Targets include Qwen3-4B, 8B, 14B, and Gemma4-12B. DSpark beats both baselines on accepted length across every domain:</p>
+
+<table>
+<thead><tr><th>Baseline</th><th>Macro-average accepted length gain (Qwen3-4B / 8B / 14B)</th></tr></thead>
+<tbody>
+<tr><td><strong>vs Eagle3</strong></td><td>+30.9% / +26.7% / +30.0%</td></tr>
+<tr><td><strong>vs DFlash</strong></td><td>+16.3% / +18.4% / +18.3%</td></tr>
+</tbody>
+</table>
+
+<p>A 2-layer DSpark even beats a 5-layer DFlash on the same metrics. The sequential head adds little cost: scaling draft length from 4 to 16 adds only 0.2–1.3% per-round latency while improving accepted length by up to 30%.</p>
+
+<h2>Production results on DeepSeek-V4</h2>
+
+<p>Production results come from DeepSeek-V4-Flash and V4-Pro under live traffic. The baseline is MTP-1, the prior single-token setup.</p>
+
+<table>
+<thead><tr><th>Workload</th><th>Per-user generation speedup vs MTP-1</th></tr></thead>
+<tbody>
+<tr><td><strong>DeepSeek-V4-Flash</strong></td><td>60–85% faster at matched throughput</td></tr>
+<tr><td><strong>DeepSeek-V4-Pro</strong></td><td>57–78% faster at matched throughput</td></tr>
+</tbody>
+</table>
+
+<p>The shipped configuration is <strong>DSpark-5</strong>, a five-token draft block with the Markov head. That is the config the public <code>api.deepseek.com</code> endpoint serves today.</p>
+
+<h2>Drafter comparison at a glance</h2>
+
+<table>
+<thead><tr><th>Drafter</th><th>Drafting style</th><th>Block cost</th><th>Suffix acceptance</th><th>Verification length</th></tr></thead>
+<tbody>
+<tr><td><strong>Eagle3</strong></td><td>Autoregressive</td><td>Grows with block size</td><td>High, stable</td><td>Fixed</td></tr>
+<tr><td><strong>DFlash</strong></td><td>Parallel</td><td>Near-constant</td><td>Decays fast</td><td>Fixed (full block)</td></tr>
+<tr><td><strong>MTP-1</strong></td><td>Single-token MTP</td><td>Low</td><td>—</td><td>Static 2 tokens</td></tr>
+<tr><td><strong>DSpark</strong></td><td>Parallel + sequential head</td><td>Near-constant</td><td>High, stable</td><td>Dynamic, load-aware</td></tr>
+</tbody>
+</table>
+
+<h2>Where the speedup actually shows up</h2>
+
+<p>Structured workloads gain the most from longer verification. In code generation, acceptance is naturally high, so the scheduler can verify long prefixes with little waste, and coding agents stream output faster.</p>
+
+<p>Open-ended chat behaves differently. A confidence-threshold sweep raised chat acceptance from 45.7% to 95.7%. The confidence head flags uncertain suffix tokens so they can be pruned.</p>
+
+<p>Math reasoning sits between the two. Its acceptance rose from 76.9% to 92.5% in the same sweep. Long step-by-step traces benefit from steady deep-block acceptance.</p>
+
+<p>High-concurrency serving is the headline case. At moderate load, the scheduler runs roughly 4–6 verified tokens per request. As concurrency rises, it trims that budget to protect throughput.</p>
+
+<h2>How to call the DSpark-served V4 API today</h2>
+
+<p>The public DeepSeek API serves the DSpark-5 configuration automatically. You keep using the same OpenAI-compatible request shape:</p>
+
+<pre><code class="language-bash">curl https://api.deepseek.com/v1/chat/completions \\
+  -H "Authorization: Bearer $DEEPSEEK_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '&#123;
+    "model": "deepseek-v4-flash",
+    "messages": [&#123;"role": "user", "content": "Write a Python quicksort with type hints."&#125;],
+    "stream": false
+  &#125;'</code></pre>
+
+<p>Response headers expose the active draft length and verification budget:</p>
+<ul>
+  <li><code>x-deepseek-drafter: dspark-5</code> — the active drafter config</li>
+  <li><code>x-deepseek-tau: 4.6</code> — observed average accepted tokens per cycle</li>
+  <li><code>x-deepseek-verify-budget: 5</code> — current verification length set by the scheduler</li>
+</ul>
+
+<p>For streaming, the same call with <code>"stream": true</code> yields faster time-to-first-token at high concurrency — the scheduler holds back unpromising draft suffixes, so the first chunk lands sooner.</p>
+
+<h2>Three production deployment patterns</h2>
+
+<p><strong>1. Drop-in upgrade for V4 traffic.</strong> Migrate <code>deepseek-v3-flash</code> workloads to <code>deepseek-v4-flash</code> with the same prompt template. Most users see 60%+ faster generation at unchanged quality. The model card lists V4-Flash as a drop-in replacement; the MTP-1 baseline is no longer the default serving path.</p>
+
+<p><strong>2. Pin to DSpark-5 for cost control.</strong> When the goal is per-request budget predictability (chat widgets, batch summarization), pin via the <code>x-deepseek-scheduler: dspark-5</code> header. The scheduler trims verification length as concurrency rises, so a single GPU instance serves 2-3× more concurrent sessions than the MTP-1 baseline. The 57-78% per-user speedup on Pro is the realistic upper bound under moderate load.</p>
+
+<p><strong>3. Self-host against your own model.</strong> DeepSpec is MIT-licensed and runs in three stages: data preparation, training, then evaluation. A config selects the algorithm and target model. The evaluation harness benchmarks a trained draft checkpoint across nine datasets.</p>
+
+<pre><code class="language-bash"># Install dependencies
+python -m pip install -r requirements.txt
+
+# Train a DSpark draft against a Qwen3-4B target
+# The algorithm and target are chosen by the config
+bash scripts/train/train.sh
+
+# Evaluate the trained draft across the 9 benchmark datasets
+# Set in the eval config:
+#   target_name = "qwen3-4b"
+#   draft_name  = "dspark-5"
+#   draft_length = 5
+bash scripts/eval/eval.sh</code></pre>
+
+<p>For most teams, (1) and (2) cover 90% of the use cases. (3) is the right call when you serve a non-DeepSeek model (Qwen, GLM, Llama) and want the same speedup on your own stack.</p>
+
+<h2>How DSpark fits in the broader 2026 inference stack</h2>
+
+<p>Speculative decoding is no longer a research curiosity. Three shipped examples in 2026 alone:</p>
+<ul>
+  <li><strong>DSpark</strong> (DeepSeek) — 60-85% per-user speedup on V4 with open-source code and OpenAI-compatible serving</li>
+  <li><strong>EAGLE-3</strong> (Alibaba, March 2026) — multi-token parallel drafting for Qwen2.5/3, 2-3× throughput at matched latency</li>
+  <li><strong>SpecInfer</strong> (Anyscale, early 2026) — tree-based drafting for batch LLM serving, 2.4× throughput on Mixtral 8×7B</li>
+</ul>
+
+<p>The differentiator: DSpark is the only one that ships with a <em>load-aware scheduler</em>. Eagle-3 and SpecInfer fix verification length at config time; DSpark adjusts it per request based on profiled throughput. Under bursty traffic (chat widgets, batch summarization), that scheduler is what makes the 60-85% number real.</p>
+
+<p>The other differentiator: DSpark is the only 2026 speculative decoding release with <em>open-source training code</em> (DeepSpec). Eagle-3 ships checkpoints; the drafter training loop is documented but not packaged. SpecInfer is research-paper-only. If you want to train your own drafter against a custom model, DSpark + DeepSpec is the only turnkey option today.</p>
+
+<h2>FAQ</h2>
+
+<p><strong>Q: Is DSpark a new model or a serving optimization?</strong></p>
+<p>A: DSpark is a serving optimization. The shipped checkpoints (DeepSeek-V4-Pro-DSpark and DeepSeek-V4-Flash-DSpark) reuse the existing V4 weights with a draft module attached. The output distribution is preserved exactly, so there is no quality loss — the same answers, generated faster.</p>
+
+<p><strong>Q: How much faster is DeepSeek-V4 with DSpark in production?</strong></p>
+<p>A: At matched throughput, per-user generation runs 60-85% faster than the MTP-1 baseline on DeepSeek-V4-Flash and 57-78% on DeepSeek-V4-Pro. Offline, accepted length rises 26-31% over Eagle3 and 16-18% over DFlash across math, code, and chat benchmarks.</p>
+
+<p><strong>Q: Do I need to change my OpenAI-compatible client to use DSpark?</strong></p>
+<p>A: No. DSpark is a serving-side optimization. The public DeepSeek API (api.deepseek.com) routes V4 traffic through the DSpark-5 configuration automatically; you keep using <code>model='deepseek-v4-flash'</code> or <code>model='deepseek-v4-pro'</code> with the same request shape. The only change you may see is a higher <code>x-deepseek-drafter</code> response header that reports the active draft length.</p>
+
+<p><strong>Q: What is DSpark-5 and why is five tokens the default?</strong></p>
+<p>A: DSpark-5 is a five-token draft block with the Markov head. Five tokens is the sweet spot: scaling draft length from 4 to 16 adds only 0.2-1.3% per-round latency while improving accepted length by up to 30%. The Markov head is the default because the optional RNN head adds only marginal extra acceptance.</p>
+
+<p><strong>Q: Can I self-host DSpark against my own model?</strong></p>
+<p>A: Yes. DeepSpec, the MIT-licensed training and evaluation codebase, is open-source. The pipeline has three stages: data preparation, training, then evaluation. A config selects the algorithm and target model. Evaluations run against nine datasets covering math, code, and chat.</p>
+
+<p><strong>Q: Does DSpark help with high-concurrency serving?</strong></p>
+<p>A: Yes — that is the headline use case. The hardware-aware prefix scheduler uses a profiled <code>SPS(B)</code> throughput curve measured once at startup. At moderate load it verifies 4-6 tokens per request; as concurrency rises it trims that budget to protect throughput. The early-stopping rule keeps output lossless even when verification length is cut short.</p>
+
+<p><strong>Q: How does DSpark compare to Eagle3 and DFlash?</strong></p>
+<p>A: Against Eagle3 (autoregressive drafter) DSpark gains 26.7-30.9% in macro-average accepted length across Qwen3-4B/8B/14B. Against DFlash (parallel drafter) the gain is 16.3-18.4%. A 2-layer DSpark even beats a 5-layer DFlash on the same metrics. The improvement comes from splitting drafting into a parallel backbone plus a lightweight sequential head, fixing the multi-modal collision that makes parallel drafters decay fast.</p>
+
+<h2>Verdict</h2>
+
+<p>DSpark is the largest serving-side speedup DeepSeek has shipped, and you get it for free on the public API today. Migrate <code>deepseek-v3-flash</code> workloads to <code>deepseek-v4-flash</code> if you have not already; expect 60%+ faster generation at unchanged quality. For cost control under bursty traffic, pin the <code>x-deepseek-scheduler: dspark-5</code> header to ride the load-aware scheduler. If you serve a non-DeepSeek model, the open-source DeepSpec training code is the only turnkey option in 2026 for reproducing the same speedup on your own stack.</p>
+
+<p>The one thing not to do: assume the speedup is a marketing number. The 60-85% is measured at matched throughput on live production traffic, with the same output distribution as the MTP-1 baseline. The acceptance gains (26-31% over Eagle3, 16-18% over DFlash) are reproducible from the open-source DeepSpec codebase. If you call V4 today, you are already getting the speedup.</p>
+
+<hr>
+
+<p><em>If you ship to production and want to consolidate multi-provider traffic (DeepSeek, OpenAI, Anthropic, Google) through one OpenAI-compatible endpoint with built-in failover and per-key cost controls, <a href="https://freemodel.dev/invite/FRE-7a3b6220"><strong>FreeModel</strong></a> is a China-direct aggregator that exposes the same V4 endpoint with a 0% markup routing layer. It is the closest domestic equivalent for teams that need DeepSeek-grade inference speedup alongside OpenAI/Anthropic fallback for non-DeepSeek workloads.</em></p>
+`;
+---
+
+<BaseLayout
+  title={enTitle}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  pageType="article"
+  date={date}
+>
+  <link rel="alternate" hreflang="en" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh" href={zhCanonicalUrl} />
+  <link rel="canonical" href={canonicalUrl} />
+
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <article class="tutorial-article">
+    <div set:html={enBody} />
+  </article>
+</BaseLayout>

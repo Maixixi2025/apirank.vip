@@ -1,0 +1,309 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'dspark-speculative-decoding-2026';
+const locale = 'zh';
+const date = '2026-06-29';
+const zhTitle = 'DSpark 2026：DeepSeek 推理加速 60-85% 实测';
+const zhDescription = 'DSpark 投机解码让 DeepSeek-V4 单用户生成提速 60-85%，开源训练代码 + OpenAI 兼容 API，3 个生产部署模式实测。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: zhTitle,
+  description: zhDescription,
+  datePublished: date,
+  dateModified: date,
+  author: { '@type': 'Organization', name: 'APIRank' },
+  publisher: {
+    '@type': 'Organization',
+    name: 'APIRank',
+    logo: {
+      '@type': 'ImageObject',
+      url: 'https://apirank.vip/logo.png',
+      width: 600,
+      height: 60,
+    },
+  },
+  url: canonicalUrl,
+  inLanguage: 'zh-CN',
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh/' },
+    { '@type': 'ListItem', position: 2, name: 'Providers', item: 'https://apirank.vip/zh/providers/' },
+    { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl },
+  ],
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'DSpark 是新模型还是服务端优化？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'DSpark 是服务端优化，不是新模型。发布的 checkpoint（DeepSeek-V4-Pro-DSpark 和 DeepSeek-V4-Flash-DSpark）复用现有 V4 权重，在前面挂一个 draft 模块。输出分布完全保留，所以无质量损失。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'DeepSeek-V4 接入 DSpark 后生产环境快多少？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '在相同吞吐量下，DeepSeek-V4-Flash 单用户生成比 MTP-1 baseline 快 60-85%，DeepSeek-V4-Pro 快 57-78%。离线测试中，accept 长度比 Eagle3 高 26-31%、比 DFlash 高 16-18%，覆盖数学、代码、对话三类任务。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '用 DSpark 需要改 OpenAI 兼容客户端吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '不需要。DSpark 是服务端优化。公开的 DeepSeek API（api.deepseek.com）自动用 DSpark-5 配置服务 V4 流量，你继续用 model="deepseek-v4-flash" 或 "deepseek-v4-pro" 同样的请求结构。唯一能看到的变化是 x-deepseek-drafter 响应头会报告当前 draft 长度。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'DSpark-5 是什么？为什么默认是 5 个 token？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'DSpark-5 是 5-token draft block 配 Markov 头。5 是甜点位：draft 长度从 4 扩到 16，单轮延迟只增加 0.2-1.3%，accept 长度最多能涨 30%。Markov 头是默认因为可选的 RNN 头只多带一点额外 accept。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '能针对自有模型自部署 DSpark 吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '可以。DeepSpec 是 MIT 协议开源的训练 + 评估代码库。流程三步：数据准备、训练、评估。config 选定算法和目标模型。评估跑 9 个数据集，覆盖数学、代码、对话。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'DSpark 对高并发服务有帮助吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '有，这是它的核心场景。硬件感知的 prefix scheduler 用启动时 profile 的 SPS(B) 吞吐曲线。负载中等时每个请求 verify 4-6 个 token，并发上升时裁剪预算保吞吐。Early-stopping 规则保证 verify 长度被裁时输出仍然 lossless。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'DSpark 对比 Eagle3 和 DFlash 怎么样？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '对比 Eagle3（自回归 drafter），DSpark 在 Qwen3-4B/8B/14B 上的宏平均 accept 长度提升 26.7-30.9%；对比 DFlash（并行 drafter）提升 16.3-18.4%。2 层 DSpark 还能打赢 5 层 DFlash。提升来自把 drafting 拆成并行骨干 + 轻量 sequential head，修复了并行 drafter 的 multi-modal collision 问题。',
+      },
+    },
+  ],
+};
+
+const zhBody = `
+<p>2026 年 6 月 27 日，DeepSeek 开源发布 <strong>DSpark</strong> 投机解码框架，同步开源 checkpoint 和完整训练代码。这是一个<em>服务端优化</em>，不是新模型——checkpoint（<code>DeepSeek-V4-Pro-DSpark</code> 和 <code>DeepSeek-V4-Flash-DSpark</code>）复用现有 V4 权重，前置挂一个 draft 模块。DeepSeek 研究团队同时开源了 <strong>DeepSpec</strong>，MIT 协议的训练 + 评估代码库。</p>
+
+<p>这个工作要解决一个问题：高并发生产服务下大模型推理太慢。在相同吞吐量下，V4-Flash 单用户生成比 MTP-1 baseline 快 <strong>60–85%</strong>，V4-Pro 快 <strong>57–78%</strong>。输出 lossless，checkpoint 加训练代码全部开源。</p>
+
+<p>本文拆解延迟数学、两大机制（半自回归 drafting + 置信度调度 verify）、实测指标、再给一个 30 行调用 V4 API 的 recipe。简短版本：DSpark 是 DeepSeek 迄今最大的服务端速度提升，公开 API 今天直接吃到。</p>
+
+<h2>DSpark 优化的延迟公式</h2>
+
+<p>单 token 延迟遵循论文里一条公式：</p>
+
+<pre><code class="language-bash">L = (T_draft + T_verify) / tau</code></pre>
+
+<p>这里 <code>tau</code> 是每个 cycle 接受的 token 数。提速只能从三个杠杆来：draft 更快（降 <code>T_draft</code>），draft 更好（升 <code>tau</code>），或者 verify 更聪明（少浪费 <code>T_verify</code>）。DSpark 三个一起拉。</p>
+
+<h2>DSpark 怎么 draft：并行骨干 + sequential 头</h2>
+
+<p>早期的 drafter 强制二选一：</p>
+<ul>
+  <li><strong>自回归 drafter（Eagle3）</strong>——每个 token 依赖前面。接受率高，但 drafting 成本随 block 增长。</li>
+  <li><strong>并行 drafter（DFlash）</strong>——一个 pass 出整 block。Drafting 便宜，但每个位置看不到邻居，suffix 上"multi-modal collision"导致接受率快速衰减。</li>
+</ul>
+
+<p>DSpark 把 drafting 拆成两段。一个重型并行骨干（默认配置里是 DFlash）给每个位置产 base logits，然后一个轻量 sequential 头在采样前加 prefix 相关的偏置。</p>
+
+<p>默认的 sequential 头是 <strong>Markov 头</strong>——只看前一个 token。低秩分解（rank 256）让它在大词表下也很便宜。位置 1 采到 "of" 之后，sequential 头会让 "course" 概率上升、"problem" 概率下降。可选的 RNN 头看完整 block prefix，提升边际，所以 Markov 头作为默认发布。</p>
+
+<p>收益位置一个一个体现。DSpark 继承并行骨干的位置 1 高精度，sequential 头把 accept 率稳稳维持在 block 深位置。</p>
+
+<p>训练冻结 target model，复用其 embedding 和 output head。核心 loss 是 total-variation：把这个距离最小化就直接最大化 draft 的接受率。</p>
+
+<h2>DSpark 怎么 verify：置信度调度</h2>
+
+<p>Draft token 多不一定更快。Verify 那些会被 reject 的 token 是在高负载下浪费 batch 容量。DSpark 用两个部件解决。</p>
+
+<p><strong>置信度头。</strong>置信度头给每个 draft 位置输出一个分，估计该 token 在前驱被接受的前提下能通过 verify 的概率。它由解析的单步接受率监督。原始神经置信度通常过自信，研究团队套了一个 Sequential Temperature Scaling 后校准步骤，把 expected calibration error 从 3-8% 压到 1% 左右。</p>
+
+<p><strong>硬件感知的 prefix scheduler。</strong>硬件感知的 prefix scheduler 给每个请求设定 verify 长度。它用启动时 profile 的吞吐曲线 <code>SPS(B)</code>。GPU 闲时多 verify 几个 token，GPU 忙时少 verify。Scheduler 用 early-stopping 规则保 lossless。论文附录给了一个反例，说明朴素的全局搜索会泄露信息。</p>
+
+<h2>离线指标：数学、代码、对话</h2>
+
+<p>离线测试覆盖数学、代码、日常对话。目标模型包含 Qwen3-4B、8B、14B 和 Gemma4-12B。DSpark 在每个领域都赢了两个 baseline 的接受长度：</p>
+
+<table>
+<thead><tr><th>Baseline</th><th>宏平均 accept 长度提升（Qwen3-4B / 8B / 14B）</th></tr></thead>
+<tbody>
+<tr><td><strong>vs Eagle3</strong></td><td>+30.9% / +26.7% / +30.0%</td></tr>
+<tr><td><strong>vs DFlash</strong></td><td>+16.3% / +18.4% / +18.3%</td></tr>
+</tbody>
+</table>
+
+<p>2 层 DSpark 还能赢 5 层 DFlash。Sequential 头成本极低：draft 长度从 4 扩到 16，单轮延迟只增加 0.2-1.3%，accept 长度最多涨 30%。</p>
+
+<h2>V4 生产环境结果</h2>
+
+<p>生产数据来自 V4-Flash 和 V4-Pro 的线上流量。Baseline 是 MTP-1（之前的单 token 配置）。</p>
+
+<table>
+<thead><tr><th>负载</th><th>单用户生成速度提升 vs MTP-1</th></tr></thead>
+<tbody>
+<tr><td><strong>DeepSeek-V4-Flash</strong></td><td>相同吞吐量下快 60-85%</td></tr>
+<tr><td><strong>DeepSeek-V4-Pro</strong></td><td>相同吞吐量下快 57-78%</td></tr>
+</tbody>
+</table>
+
+<p>发布的配置是 <strong>DSpark-5</strong>，5-token draft block 配 Markov 头。公开的 <code>api.deepseek.com</code> 端点今天就在跑这个配置。</p>
+
+<h2>Drafter 一图对比</h2>
+
+<table>
+<thead><tr><th>Drafter</th><th>Drafting 方式</th><th>Block 成本</th><th>Suffix 接受率</th><th>Verify 长度</th></tr></thead>
+<tbody>
+<tr><td><strong>Eagle3</strong></td><td>自回归</td><td>随 block 增长</td><td>高且稳</td><td>固定</td></tr>
+<tr><td><strong>DFlash</strong></td><td>并行</td><td>近常数</td><td>衰减快</td><td>固定（整 block）</td></tr>
+<tr><td><strong>MTP-1</strong></td><td>单 token MTP</td><td>低</td><td>—</td><td>静态 2 token</td></tr>
+<tr><td><strong>DSpark</strong></td><td>并行 + sequential 头</td><td>近常数</td><td>高且稳</td><td>动态，感知负载</td></tr>
+</tbody>
+</table>
+
+<h2>提速在哪类负载上最明显</h2>
+
+<p>结构化负载从长 verify 受益最大。代码生成接受率天然高，scheduler 可以放心 verify 长 prefix，coding agent 吐 token 更流畅。</p>
+
+<p>开放式对话行为不同。一次置信度阈值扫描把对话接受率从 45.7% 拉到 95.7%。置信度头标出没把握的 suffix token 让 scheduler 裁掉。</p>
+
+<p>数学推理在中间。同一次扫描把数学接受率从 76.9% 拉到 92.5%。长 step-by-step 推理链受益于深 block 稳定 accept。</p>
+
+<p>高并发是核心场景。中等负载下 scheduler 大约每个请求 verify 4-6 个 token，并发上升时裁剪预算保吞吐。</p>
+
+<h2>今天怎么调 DSpark 服务化的 V4 API</h2>
+
+<p>公开 DeepSeek API 自动用 DSpark-5 配置。继续用同样的 OpenAI 兼容请求：</p>
+
+<pre><code class="language-bash">curl https://api.deepseek.com/v1/chat/completions \\
+  -H "Authorization: Bearer $DEEPS...EY" \\
+  -H "Content-Type: application/json" \\
+  -d '&#123;
+    "model": "deepseek-v4-flash",
+    "messages": [&#123;"role": "user", "content": "写一个带类型提示的 Python 快排。"&#125;],
+    "stream": false
+  &#125;'</code></pre>
+
+<p>响应头暴露当前 draft 长度和 verify 预算：</p>
+<ul>
+  <li><code>x-deepseek-drafter: dspark-5</code>——当前 drafter 配置</li>
+  <li><code>x-deepseek-tau: 4.6</code>——观察到的平均每 cycle 接受 token 数</li>
+  <li><code>x-deepseek-verify-budget: 5</code>——scheduler 当前设定的 verify 长度</li>
+</ul>
+
+<p>流式同理，<code>"stream": true</code> 时高并发下首 token 时间更快——scheduler 把没把握的 draft suffix 砍掉，首 chunk 落地更早。</p>
+
+<h2>三个生产部署模式</h2>
+
+<p><strong>1. V4 流量的无痛升级。</strong>把 <code>deepseek-v3-flash</code> 工作负载迁到 <code>deepseek-v4-flash</code>，prompt 模板不变。大部分用户得到 60%+ 的速度提升，质量不变。Model card 把 V4-Flash 标为 drop-in 替代，MTP-1 baseline 已经不是默认服务路径了。</p>
+
+<p><strong>2. 用 DSpark-5 做成本控制。</strong>目标如果是单请求预算可预测（聊天 widget、批量摘要），加 <code>x-deepseek-scheduler: dspark-5</code> 头钉死。Scheduler 在并发上升时裁 verify 长度，单卡实例能比 MTP-1 baseline 多服务 2-3 倍并发会话。Pro 上的 57-78% 单用户加速是中等负载下的现实上限。</p>
+
+<p><strong>3. 自有模型自部署 DSpark。</strong>DeepSpec MIT 协议，三步：数据准备、训练、评估。Config 选算法和目标模型。评估 harness 跑 9 个数据集。</p>
+
+<pre><code class="language-bash"># 装依赖
+python -m pip install -r requirements.txt
+
+# 训练一个 DSpark draft，目标 Qwen3-4B
+# 算法和目标由 config 决定
+bash scripts/train/train.sh
+
+# 跑 9 个 benchmark 评估训练好的 draft
+# eval config 设定：
+#   target_name = "qwen3-4b"
+#   draft_name  = "dspark-5"
+#   draft_length = 5
+bash scripts/eval/eval.sh</code></pre>
+
+<p>多数团队 (1) 和 (2) 就覆盖 90% 场景。(3) 适合服务非 DeepSeek 模型（Qwen、GLM、Llama）并要在自己栈上复刻同样加速的情况。</p>
+
+<h2>DSpark 在 2026 推理栈里的位置</h2>
+
+<p>投机解码不再是研究玩具。2026 年三个已发布的例子：</p>
+<ul>
+  <li><strong>DSpark</strong>（DeepSeek）——V4 上 60-85% 单用户加速，开源 + OpenAI 兼容服务</li>
+  <li><strong>EAGLE-3</strong>（阿里，2026 年 3 月）——Qwen2.5/3 多 token 并行 drafting，相同延迟下 2-3 倍吞吐</li>
+  <li><strong>SpecInfer</strong>（Anyscale，2026 年初）——基于树的 drafting 给批量 LLM 服务，Mixtral 8×7B 上 2.4 倍吞吐</li>
+</ul>
+
+<p>差异点：DSpark 是唯一带<em>负载感知 scheduler</em> 的。Eagle-3 和 SpecInfer 把 verify 长度定死在 config 里；DSpark 每个请求根据 profile 后的吞吐动态调。突发流量（聊天 widget、批量摘要）下，scheduler 是 60-85% 数字真实落地的关键。</p>
+
+<p>另一个差异点：DSpark 是 2026 唯一带<em>开源训练代码</em>（DeepSpec）的投机解码发布。Eagle-3 给 checkpoint，drafter 训练 loop 有文档但没打包。SpecInfer 只有论文。要自己训 drafter 给自定义模型，DSpark + DeepSpec 是今天唯一的 turnkey 选项。</p>
+
+<h2>常见问题</h2>
+
+<p><strong>Q：DSpark 是新模型还是服务端优化？</strong></p>
+<p>A：服务端优化。发布的 checkpoint（DeepSeek-V4-Pro-DSpark 和 DeepSeek-V4-Flash-DSpark）复用现有 V4 权重，前置挂一个 draft 模块。输出分布完全保留，所以无质量损失——同样的答案，更快的生成。</p>
+
+<p><strong>Q：DeepSeek-V4 接入 DSpark 后生产环境快多少？</strong></p>
+<p>A：相同吞吐量下，V4-Flash 单用户生成比 MTP-1 baseline 快 60-85%，V4-Pro 快 57-78%。离线测试中，accept 长度比 Eagle3 高 26-31%、比 DFlash 高 16-18%，覆盖数学、代码、对话三类任务。</p>
+
+<p><strong>Q：用 DSpark 需要改 OpenAI 兼容客户端吗？</strong></p>
+<p>A：不需要。DSpark 是服务端优化。公开 DeepSeek API（api.deepseek.com）自动用 DSpark-5 配置服务 V4 流量，你继续用 model="deepseek-v4-flash" 或 "deepseek-v4-pro" 同样的请求结构。唯一能看到的变化是 x-deepseek-drafter 响应头会报告当前 draft 长度。</p>
+
+<p><strong>Q：DSpark-5 是什么？为什么默认是 5 个 token？</strong></p>
+<p>A：DSpark-5 是 5-token draft block 配 Markov 头。5 是甜点位：draft 长度从 4 扩到 16，单轮延迟只增加 0.2-1.3%，accept 长度最多能涨 30%。Markov 头是默认因为可选的 RNN 头只多带一点额外 accept。</p>
+
+<p><strong>Q：能针对自有模型自部署 DSpark 吗？</strong></p>
+<p>A：可以。DeepSpec 是 MIT 协议开源的训练 + 评估代码库。流程三步：数据准备、训练、评估。config 选定算法和目标模型。评估跑 9 个数据集，覆盖数学、代码、对话。</p>
+
+<p><strong>Q：DSpark 对高并发服务有帮助吗？</strong></p>
+<p>A：有，这是它的核心场景。硬件感知的 prefix scheduler 用启动时 profile 的 SPS(B) 吞吐曲线。负载中等时每个请求 verify 4-6 个 token，并发上升时裁剪预算保吞吐。Early-stopping 规则保证 verify 长度被裁时输出仍然 lossless。</p>
+
+<p><strong>Q：DSpark 对比 Eagle3 和 DFlash 怎么样？</strong></p>
+<p>A：对比 Eagle3（自回归 drafter），DSpark 在 Qwen3-4B/8B/14B 上的宏平均 accept 长度提升 26.7-30.9%；对比 DFlash（并行 drafter）提升 16.3-18.4%。2 层 DSpark 还能赢 5 层 DFlash。提升来自把 drafting 拆成并行骨干 + 轻量 sequential head，修复了并行 drafter 的 multi-modal collision 问题。</p>
+
+<h2>结论</h2>
+
+<p>DSpark 是 DeepSeek 迄今最大的服务端速度提升，公开 API 今天直接吃到。把 <code>deepseek-v3-flash</code> 工作负载迁到 <code>deepseek-v4-flash</code>，质量不变、生成快 60%+。突发流量下做成本控制，加 <code>x-deepseek-scheduler: dspark-5</code> 头让 scheduler 帮你调度。如果服务非 DeepSeek 模型，开源 DeepSpec 训练代码是 2026 年唯一能复刻同样加速的 turnkey 方案。</p>
+
+<p>一个不要踩的坑：别把这个加速当营销数字。60-85% 是线上生产流量在相同吞吐量下测出来的，输出分布和 MTP-1 baseline 一致。Accept 提升（比 Eagle3 高 26-31%、比 DFlash 高 16-18%）可以从开源 DeepSpec 复现。今天调 V4，你已经在吃这个加速了。</p>
+
+<hr>
+
+<p><em>如果上生产想把多 provider 流量（DeepSeek、OpenAI、Anthropic、Google）合并到一个 OpenAI 兼容端点里带内置 failover 和按 key 成本控制，<a href="https://freemodel.dev/invite/FRE-7a3b6220"><strong>FreeModel</strong></a> 是国内直连的聚合服务，0% 抽水路由层直接暴露同样的 V4 端点。是国内团队在需要 DeepSeek 级推理速度同时还想接 OpenAI/Anthropic 兜底时最贴近的等价物。</em></p>
+`;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={enCanonicalUrl}
+  pageType="article"
+  date={date}
+>
+  <link rel="alternate" hreflang="zh" href={canonicalUrl} />
+  <link rel="alternate" hreflang="en" href={enCanonicalUrl} />
+  <link rel="canonical" href={canonicalUrl} />
+
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <article class="tutorial-article">
+    <div set:html={zhBody} />
+  </article>
+</BaseLayout>
