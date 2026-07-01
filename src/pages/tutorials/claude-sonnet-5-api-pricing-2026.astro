@@ -1,0 +1,323 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'claude-sonnet-5-api-pricing-2026';
+const date = '2026-07-01';
+const locale = 'en';
+
+const enTitle = 'Claude Sonnet 5 API: $2 Intro Pricing vs Opus 4.8';
+const enDescription = 'Claude Sonnet 5 launches June 30, 2026 at $2/$10 per M tokens (intro through Aug 31). Benchmarks vs Sonnet 4.6, Opus 4.8, and how to switch.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "When did Claude Sonnet 5 launch?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Claude Sonnet 5 launched on June 30, 2026. The model is available immediately across all Claude plans (Free, Pro, Max, Team, Enterprise) and via the Claude API with the model string claude-sonnet-5."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does Claude Sonnet 5 cost?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Claude Sonnet 5 costs $2 per million input tokens and $10 per million output tokens during the introductory pricing window (June 30 through August 31, 2026). After August 31, 2026, the price reverts to $3/M input and $15/M output, the same as Sonnet 4.5 and Sonnet 4.6."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Claude Sonnet 5 better than Opus 4.8?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "On Anthropic's agentic search (BrowseComp) and computer use (OSWorld-Verified) evaluations, Sonnet 5 narrows the gap to Opus 4.8 at medium-to-high effort levels and matches Opus 4.8 on some tasks at high effort. Opus 4.8 still wins on the hardest reasoning workloads and multimodal tasks."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Claude Sonnet 5 cheaper than Sonnet 4.5?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, during the introductory pricing window through August 31, 2026. Sonnet 5 intro is $2/$10 vs Sonnet 4.5 at $3/$15, a 33% saving on both input and output tokens. After August 31, Sonnet 5 settles at the same $3/$15 price point as Sonnet 4.5/4.6. The structural difference post-intro is capability, not price."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use Claude Sonnet 5 from inside China?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Claude Sonnet 5 is hosted on Anthropic's API, which is not directly accessible from mainland China without a proxy. For a multi-model agent that needs fallback across providers without a proxy, FreeModel gives you DeepSeek, Qwen, and Llama models with stable China-direct routing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Claude Sonnet 5 support tool use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Sonnet 5 supports the same tool-use surface as Sonnet 4.5/4.6: function definitions via the tools array, tool choice modes (auto, any, tool), and structured output via tool calls. Anthropic explicitly positions Sonnet 5 as the most agentic Sonnet model yet."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the context window for Claude Sonnet 5?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Claude Sonnet 5 supports up to 200,000 tokens of context, the same as Sonnet 4.5/4.6. This is significantly larger than GPT-5.5's 128K context but smaller than Gemini 2.5 Pro's 1M+ token window. For workloads that need more than 200K context, Gemini 2.5 Pro or Claude Opus 4.8 are the alternatives."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Sonnet 5 replace Sonnet 4.5?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For agentic coding and tool-use workloads, yes. Sonnet 5 is positioned as a strict improvement on Sonnet 4.6 across Anthropic's published benchmarks, and the intro pricing makes the migration cost-neutral for the next 8 weeks. For non-agentic workloads, Sonnet 4.5 remains a capable choice. Anthropic has not announced an end-of-life date for Sonnet 4.5/4.6."
+      }
+    }
+  ]
+};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Claude Sonnet 5 API: Anthropic's $2 Agentic Push Is the Most Important Claude Release Since 3.5</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">On June 30, 2026, Anthropic shipped <strong>Claude Sonnet 5</strong> — the first Sonnet-tier model that Anthropic explicitly positions as a credible alternative to its own Opus-class flagship for agentic workflows. The release combines three structural moves into a single announcement: an introductory price of <strong>$2 per million input tokens and $10 per million output tokens</strong> through August 31, 2026, a default-model promotion to all Claude plans (Free, Pro, Max, Team, Enterprise), and benchmark numbers that put Sonnet 5 within striking distance of Opus 4.8 on agentic search and computer-use evaluations.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This article walks through the announcement with the lens an API developer cares about most: the pricing curve, the model positioning vs Sonnet 4.6 and Opus 4.8, the benchmark movement on agentic evaluations (BrowseComp and OSWorld-Verified), the API surface changes, the safety assessment, and the four practical migration paths you actually have today — stay on Anthropic, switch to OpenAI GPT-5.x, route through Google Gemini 2.5, or push traffic to aggregators like OpenRouter and FreeModel.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Claude Sonnet 5 and why it matters</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Sonnet 5 is Anthropic's new mid-tier model. The release framing matters: Anthropic explicitly says the agentic AI era "began with Sonnet-class models" — pointing back to Claude 3.5, 3.6, and 3.7 — and that the clearest gains in agentic capabilities since then have come from Opus-class models. Sonnet 5 is the model that closes that gap.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Three concrete moves ship with this release:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>Agentic positioning narrows the gap to Opus 4.8.</strong> On Anthropic's own agentic search evaluation (BrowseComp) and computer-use evaluation (OSWorld-Verified), Sonnet 5 traces a cost-performance curve that covers "a much wider range of cost-performance options than Opus 4.8" while remaining "a strict improvement over Sonnet 4.6." At medium effort levels, Sonnet 5 is materially cheaper for equivalent capability; at higher effort levels, it matches Opus 4.8 on some tasks.</li></ul>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>Intro pricing is 33% below Sonnet 4.6.</strong> $2/M input and $10/M output through Aug 31, 2026; $3/M input and $15/M output thereafter. Sonnet 4.5 has been priced at $3/$15 since the Sonnet 4.5 release in late 2025 — the intro price is a temporary cut, not a permanent reduction.</li></ul>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>Default model across all plans.</strong> Sonnet 5 is the default Claude model for Free and Pro users, and is available immediately to Max, Team, and Enterprise. This is Anthropic's clearest signal yet that the Sonnet-class line is the volume path, not the Opus line.</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For API developers, this is a meaningful release: the cost-per-task of agentic workflows on a mid-tier model drops to within 30% of Opus 4.8 on agentic search, and the default-model promotion means consumer-tier Claude usage will be running on Sonnet 5 by default within days.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Claude Sonnet 5 pricing: how the intro rate works in practice</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The introductory price is the headline number. Here is the full pricing curve for the Claude family as of July 1, 2026, all per million tokens (1M tokens ≈ 750,000 words).</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Model</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Input $/M</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Output $/M</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Best for</th></tr></thead><tbody class="divide-y divide-gray-200 bg-white"><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Sonnet 5 (intro)</strong></td><td class="px-4 py-3 text-sm text-gray-700"><strong>$2.00</strong></td><td class="px-4 py-3 text-sm text-gray-700"><strong>$10.00</strong></td><td class="px-4 py-3 text-sm text-gray-700">Through Aug 31, 2026</td><td class="px-4 py-3 text-sm text-gray-700">Agentic coding, tool use, agent search</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Sonnet 5 (after Aug 31)</strong></td><td class="px-4 py-3 text-sm text-gray-700">$3.00</td><td class="px-4 py-3 text-sm text-gray-700">$15.00</td><td class="px-4 py-3 text-sm text-gray-700">Standard</td><td class="px-4 py-3 text-sm text-gray-700">Same workloads at steady-state</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Sonnet 4.6</strong></td><td class="px-4 py-3 text-sm text-gray-700">$3.00</td><td class="px-4 py-3 text-sm text-gray-700">$15.00</td><td class="px-4 py-3 text-sm text-gray-700">Legacy</td><td class="px-4 py-3 text-sm text-gray-700">Pre-Sonnet 5 production workloads</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Sonnet 4.5</strong></td><td class="px-4 py-3 text-sm text-gray-700">$3.00</td><td class="px-4 py-3 text-sm text-gray-700">$15.00</td><td class="px-4 py-3 text-sm text-gray-700">Available</td><td class="px-4 py-3 text-sm text-gray-700">Production fallback</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Opus 4.8</strong></td><td class="px-4 py-3 text-sm text-gray-700">~$15.00</td><td class="px-4 py-3 text-sm text-gray-700">~$75.00</td><td class="px-4 py-3 text-sm text-gray-700">Available</td><td class="px-4 py-3 text-sm text-gray-700">Hard reasoning, multimodal flagship</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Haiku 4.5</strong></td><td class="px-4 py-3 text-sm text-gray-700">$0.80</td><td class="px-4 py-3 text-sm text-gray-700">$4.00</td><td class="px-4 py-3 text-sm text-gray-700">Available</td><td class="px-4 py-3 text-sm text-gray-700">High-volume, low-latency tasks</td></tr></tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The intro price is real cash savings, not a marketing trick. For a developer running a Sonnet 4.5 workload at $3/$15 today, switching to Sonnet 5 for 8 weeks saves ~33% on input tokens and ~33% on output tokens. For a high-volume workflow spending $10,000/month on Sonnet 4.5, that is roughly $2,400/month saved during the intro window — enough to fund a meaningful agentic experiment budget.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">After Aug 31, 2026, Sonnet 5 settles at the same $3/$15 price point as Sonnet 4.6 and Sonnet 4.5. The structural question becomes: is Sonnet 5 worth a 33% premium over Haiku 4.5 ($0.80/$4.00) for the workload you actually run?</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Cost per dollar (output tokens)</h3>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>Sonnet 5 (intro):</strong> 100,000 output tokens per $1</li><li><strong>Sonnet 5 (after Aug 31):</strong> 66,667 output tokens per $1</li><li><strong>Sonnet 4.5 / 4.6:</strong> 66,667 output tokens per $1</li><li><strong>Haiku 4.5:</strong> 250,000 output tokens per $1</li><li><strong>Opus 4.8:</strong> ~13,333 output tokens per $1</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Sonnet 5 at intro pricing is roughly 3.75x cheaper per output token than Opus 4.8, and ~50% more expensive than Haiku 4.5. The interesting trade is the Sonnet 5 vs Haiku 4.5 comparison: Haiku wins on price, Sonnet 5 wins on capability. For workloads where the extra capability translates to fewer retries, fewer tool-use errors, and shorter agent loops, Sonnet 5 at intro pricing is the right call.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The benchmark movement: where Sonnet 5 actually beats Sonnet 4.6 and Opus 4.8</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The most useful framing of Sonnet 5's capability is the cost-performance curve Anthropic published in the launch post. On <strong>BrowseComp</strong> (agentic search evaluation) and <strong>OSWorld-Verified</strong> (computer use evaluation), Sonnet 5 traces a curve that is "a strict improvement over Sonnet 4.6" and "covers a much wider range of cost-performance options than Opus 4.8." The previous Sonnet 4.6 fell well short of Opus 4.8 on these benchmarks; Sonnet 5 closes that gap meaningfully.</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Benchmark</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Sonnet 4.6</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Sonnet 5</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Opus 4.8</th></tr></thead><tbody class="divide-y divide-gray-200 bg-white"><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>BrowseComp (agentic search)</strong></td><td class="px-4 py-3 text-sm text-gray-700">Fell short of Opus</td><td class="px-4 py-3 text-sm text-gray-700">Closes the gap at medium-high effort</td><td class="px-4 py-3 text-sm text-gray-700">Reference model</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>OSWorld-Verified (computer use)</strong></td><td class="px-4 py-3 text-sm text-gray-700">Fell short of Opus</td><td class="px-4 py-3 text-sm text-gray-700">Wider cost-perf range than Opus</td><td class="px-4 py-3 text-sm text-gray-700">Reference model</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Cybersecurity ability</strong></td><td class="px-4 py-3 text-sm text-gray-700">Higher than Opus</td><td class="px-4 py-3 text-sm text-gray-700">Much lower than Opus (safer for agents)</td><td class="px-4 py-3 text-sm text-gray-700">Higher (more capable, more risk)</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Undesirable behavior rate</strong></td><td class="px-4 py-3 text-sm text-gray-700">Baseline</td><td class="px-4 py-3 text-sm text-gray-700">Lower than 4.6</td><td class="px-4 py-3 text-sm text-gray-700">Lower than 4.6</td></tr></tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The most interesting row for production workloads is the cybersecurity row. Sonnet 5 has "a much lower ability to perform cybersecurity tasks than our current Opus models" — Anthropic is explicitly positioning Sonnet 5 as the safer-by-default agentic model. For an enterprise deploying Claude as the agent layer in a customer-facing workflow, this is a meaningful differentiator: the agent gets the tool-use and coding capability of a near-flagship model, but with a smaller blast radius if the agent is jailbroken or goes off-script.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For pure capability, the "matches Opus 4.8 on some tasks at high effort" framing is the most useful. If your Sonnet 5 workflow runs at the high effort level (more tokens, more deliberation), you will see Opus-class capability on the workloads where Sonnet 5 matches it (BrowseComp agentic search in particular). For workloads where Opus 4.8 still pulls ahead, you should keep Opus 4.8 in your routing logic rather than collapsing all traffic to Sonnet 5.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Sonnet 5 vs the four alternatives developers actually use</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">You are not choosing between Sonnet 5 and Sonnet 4.6 in a vacuum. You are choosing between Claude, OpenAI GPT-5.x, Google Gemini 2.5/3.x, and aggregators. Here is the honest comparison for the workloads API developers care about.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs OpenAI GPT-5.5 / GPT-5.6.</strong> OpenAI's mid-tier pricing has been the structural pressure on Anthropic since 2025. GPT-5.5 Instant is widely cited at roughly $0.15-$0.60/M (input/output) for the mini tier; the flagship GPT-5.5 sits around $2.50/$10. The Sonnet 5 intro price of $2/$10 lines up with GPT-5.5 flagship pricing, not the mini tier. The capability story is closer than the pricing: on coding benchmarks (SWE-bench Verified, Multi-SWE-bench), Sonnet 5 and GPT-5.5 are within a few percentage points, with the lead flipping between them as both ship updates. Where Sonnet 5 wins: agentic tool use safety, longer context (200K vs GPT-5.5's 128K), refusal calibration. Where GPT-5.5 wins: multimodal input maturity, voice-mode latency, ecosystem depth (function calling, structured outputs, vision).</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs Google Gemini 2.5 Pro / Flash.</strong> Gemini 2.5 Flash is the cost-efficient Google tier ($0.15-$0.60/M input/output). Gemini 2.5 Pro is the flagship ($1.25-$5/M input, $5-$10/M output for short context, scaling up to $10/$40 for long context). Gemini 2.5 Pro has the largest context window in production (1M+ tokens) and the most mature native multimodal (text + image + audio + video in the same call). Where Gemini wins: raw cost per token on Flash, 1M+ context window, multimodal voice, Google Search Grounding for real-time info. Where Sonnet 5 wins: agentic tool use safety, calibrated refusals, structured output quality, mature enterprise tier.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs DeepSeek-V3 / R1.</strong> DeepSeek remains the cheapest credible model for English and Chinese workloads. DeepSeek-V3 is roughly $0.02/M input and $0.04/M output — about 100x cheaper than Sonnet 5 at intro pricing, 250x cheaper than Opus 4.8. The trade is well known: English-language quality gap on nuanced tasks, China-direct availability (DeepSeek is hosted in China and accessible without a proxy from inside mainland China), rate-limit instability for non-enterprise accounts. For cost-sensitive workloads where DeepSeek's quality is acceptable, DeepSeek is still the right call. For workloads where agentic tool-use safety and refusal calibration matter (customer-facing agents, regulated industries), Sonnet 5 is the better choice.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs aggregators (OpenRouter, FreeModel).</strong> Aggregators route you to the same underlying models — including Sonnet 5 once the aggregator updates its model catalog — with two structural advantages:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>OpenRouter</strong> has 300+ models behind one API key with built-in fallback and auto-routing. If your Sonnet 5 traffic hits a rate limit, OpenRouter can fall back to GPT-5.5 or Gemini 2.5 Flash without code changes. OpenRouter also publishes per-model uptime, latency, and pricing in a unified dashboard.</li></ul>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong><a href="https://freemodel.dev/invite/FRE-7a3b6220" target="_blank" rel="nofollow">FreeModel</a></strong> is the China-direct aggregator with DeepSeek, Qwen, and Llama models. Useful when you need OpenAI-comparable reasoning at DeepSeek-class prices with a stable connection from inside mainland China. For a multi-model agent that needs fallback across providers without a proxy, FreeModel's CN-routing is the path of least resistance.</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Sonnet 5 will land on OpenRouter within hours of the Anthropic announcement (the OpenRouter team is fast on Anthropic model additions). For FreeModel, Sonnet 5 is not yet on the catalog — FreeModel is positioned as the China-direct aggregator, and Anthropic's terms of service restrict certain routing patterns in mainland China.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How to make your first Sonnet 5 API call</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The API surface is the standard Anthropic Messages API. The model string is <code class="bg-gray-100 px-1 rounded text-sm">claude-sonnet-5</code>. The intro pricing applies automatically — no special header or flag is needed; the rate is detected by Anthropic based on the date the call lands.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">A minimal curl call:</p>
+
+<pre><code class="language-bash">curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '&#123;
+    "model": "claude-sonnet-5",
+    "max_tokens": 1024,
+    "messages": [
+      &#123;"role": "user", "content": "Summarize the agentic search evaluation BrowseComp in 3 sentences."&#125;
+    ]
+  &#125;'
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The Python equivalent using the Anthropic SDK:</p>
+
+<pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+message = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=1024,
+    messages=[
+        &#123;"role": "user", "content": "Summarize BrowseComp in 3 sentences."&#125;
+    ],
+)
+
+print(message.content[0].text)
+print(f"Input tokens: &#123;message.usage.input_tokens&#125;")
+print(f"Output tokens: &#123;message.usage.output_tokens&#125;")
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">For a tool-use call (the workload Sonnet 5 is most explicitly positioned for), the structure is the same as Sonnet 4.5 — pass a <code class="bg-gray-100 px-1 rounded text-sm">tools</code> array with the function definitions, then loop over <code class="bg-gray-100 px-1 rounded text-sm">message.stop_reason</code> and tool calls.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Migration paths: what to do with your existing Sonnet 4.5 / 4.6 workloads</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Three migration paths are realistic for the next 8 weeks. The right choice depends on the workload and on whether you are optimizing for cost, capability, or risk.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Path 1: Switch to Sonnet 5 for cost savings through Aug 31.</strong> If your Sonnet 4.5/4.6 workload runs at a quality bar Sonnet 5 can meet (the agentic search / coding / tool-use workloads are the strongest fits), switch to Sonnet 5 immediately to capture the 33% savings. The migration is a one-line model string change. Test your eval suite against Sonnet 5 before fully switching — the model is positioned as a strict improvement, but "strict improvement" is a claim about benchmarks, not about your specific workload.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Path 2: Hold Sonnet 4.5/4.6 and route Sonnet 5 only to new agentic experiments.</strong> If your Sonnet 4.5/4.6 workloads are in steady-state production and you do not want to absorb any quality variance from a model change, keep them on the legacy model and only route Sonnet 5 to new agentic workflows where the tool-use safety positioning matters. After Aug 31, evaluate whether Sonnet 5's standard pricing ($3/$15) is worth a model change vs the steady-state quality you already have.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Path 3: Multi-model routing via OpenRouter or FreeModel.</strong> If you have heterogeneous workloads (some agentic, some bulk summarization, some coding), route them through an aggregator. Sonnet 5 handles the agentic tier; Haiku 4.5 handles the bulk summarization tier; DeepSeek (via FreeModel) handles the cost-sensitive Chinese tier. The aggregator's per-model routing logic replaces your single-provider decision with a per-workload decision.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The wrong move is to assume "Sonnet 5 is cheaper so I should switch everything." Sonnet 5's intro price is temporary. After Aug 31, the price reverts to $3/$15 — same as Sonnet 4.5/4.6. The structural win from Sonnet 5 is the capability uplift (agentic tool use, cybersecurity safety), not the intro price.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Safety and deployment: what the System Card changes</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic ships a System Card with each major model release. The Sonnet 5 System Card reports a "broader set of evaluations in detail" beyond the launch post — worth reading if you are deploying Claude in a regulated industry. Two points from the launch post are worth highlighting here:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>Lower rate of undesirable behaviors than Sonnet 4.6.</strong> Anthropic's safety assessment found Sonnet 5 is "generally safer to use in agentic contexts." For an enterprise deploying Claude as the agent layer, this is the meaningful safety win. Refusal calibration is the right word: Sonnet 5 refuses when it should, complies when it should, and the gap between those two modes is narrower than Sonnet 4.6.</li></ul>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>Much lower cybersecurity ability than Opus.</strong> This is positioned as a safety feature: Sonnet 5 is "safer to use in agentic contexts" partly because it cannot do as much offensive cybersecurity work. For an enterprise worried about prompt injection leading to data exfiltration, the lower ceiling on Sonnet 5's cybersecurity ability is a feature.</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For most production workloads, the safety assessment does not change your deployment. For regulated industries (finance, healthcare, government) where the safety assessment feeds into vendor risk reviews, the System Card is the document your compliance team needs.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The catch: intro pricing ends Aug 31, 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The most important number on the launch page is the date: <strong>August 31, 2026</strong>. After that, Sonnet 5 is $3/M input and $15/M output — same as Sonnet 4.5/4.6 today. The intro window is a marketing push to drive early adoption and benchmark capture, not a permanent price cut.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are planning a 12-month agentic workload budget, plan on the steady-state $3/$15 rate. If you are running an experiment or evaluation workload that you can complete in the next 8 weeks, the intro rate is real cash savings.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic has not announced a permanent price cut to the Sonnet family. The structural question — "is Sonnet 5 worth $3/$15 vs Haiku 4.5 at $0.80/$4.00 for my workload" — is the right question to answer once the intro window closes. Until then, the intro pricing makes Sonnet 5 the cost-optimal choice for any agentic workload Sonnet 5 can handle.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>When did Claude Sonnet 5 launch?</strong> Claude Sonnet 5 launched on June 30, 2026. Anthropic's announcement post went live at anthropic.com/news/claude-sonnet-5, and the model is available immediately across all Claude plans (Free, Pro, Max, Team, Enterprise) and via the Claude API.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How much does Claude Sonnet 5 cost?</strong> Claude Sonnet 5 costs $2 per million input tokens and $10 per million output tokens during the introductory pricing window (June 30 through August 31, 2026). After August 31, 2026, the price reverts to $3/M input and $15/M output, the same as Sonnet 4.5 and Sonnet 4.6. The model is invoked via the standard Anthropic Messages API with the model string <code class="bg-gray-100 px-1 rounded text-sm">claude-sonnet-5</code>.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Is Claude Sonnet 5 better than Opus 4.8?</strong> On Anthropic's agentic search (BrowseComp) and computer use (OSWorld-Verified) evaluations, Sonnet 5 narrows the gap to Opus 4.8 at medium-to-high effort levels and matches Opus 4.8 on some tasks at high effort. Opus 4.8 still wins on the hardest reasoning workloads and multimodal tasks. For most agentic coding and tool-use workloads, Sonnet 5 at $2/$10 (intro) is the cost-optimal choice; for the workloads where Opus 4.8 still pulls ahead, keep Opus 4.8 in your routing logic.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Is Claude Sonnet 5 cheaper than Sonnet 4.5?</strong> Yes, during the introductory pricing window through August 31, 2026. Sonnet 5 intro is $2/$10 vs Sonnet 4.5 at $3/$15 — a 33% saving on both input and output tokens. After August 31, Sonnet 5 settles at the same $3/$15 price point as Sonnet 4.5/4.6. The structural difference post-intro is capability (Sonnet 5 is a strict improvement on agentic benchmarks), not price.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Can I use Claude Sonnet 5 from inside China?</strong> Claude Sonnet 5 is hosted on Anthropic's API, which is not directly accessible from mainland China without a proxy. For a multi-model agent that needs fallback across providers without a proxy, FreeModel gives you DeepSeek, Qwen, and Llama models with stable China-direct routing. For Sonnet 5 specifically from inside China, the recommended pattern is to use a Cloudflare Worker or a Tencent Cloud edge function as a proxy, which brings the latency down to 50-100ms and avoids the need for client-side proxy configuration.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Does Claude Sonnet 5 support tool use?</strong> Yes. Sonnet 5 supports the same tool-use surface as Sonnet 4.5/4.6 — function definitions via the <code class="bg-gray-100 px-1 rounded text-sm">tools</code> array, tool choice modes (auto, any, tool), and structured output via tool calls. Anthropic explicitly positions Sonnet 5 as "the most agentic Sonnet model yet" — the model is built for tool use as the primary workload.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>What is the context window for Claude Sonnet 5?</strong> Claude Sonnet 5 supports up to 200,000 tokens of context, the same as Sonnet 4.5/4.6. This is significantly larger than GPT-5.5's 128K context but smaller than Gemini 2.5 Pro's 1M+ token window. For workloads that need >200K context (long document analysis, multi-file code review, multi-turn agent traces), Sonnet 5 hits the ceiling at 200K — Gemini 2.5 Pro or Claude Opus 4.8 are the alternatives.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Does Sonnet 5 replace Sonnet 4.5?</strong> For agentic coding and tool-use workloads, yes — Sonnet 5 is positioned as a strict improvement on Sonnet 4.6 across the benchmarks Anthropic published, and the intro pricing makes the migration cost-neutral for the next 8 weeks. For non-agentic workloads (long-form writing, content generation, summarization), Sonnet 4.5 remains a capable choice and the model string change is not urgent. Anthropic has not announced an end-of-life date for Sonnet 4.5/4.6.</p>
+
+<hr class="my-8 border-gray-200" />
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Reviewed against</strong>: Anthropic's official Claude Sonnet 5 announcement (anthropic.com/news/claude-sonnet-5, June 30, 2026), Sonnet 5 System Card, current Anthropic API pricing documentation, BrowseComp and OSWorld-Verified benchmarks, and Anthropic's Sonnet 4.5/4.6 and Opus 4.8 documentation.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Disclosure</strong>: This article contains affiliate links. If you sign up through these links, we may earn a commission at no extra cost to you. Our reviews remain independent.</p>`;
+
+const affiliateSidebar = {
+  title: 'Try Claude Sonnet 5 at Intro Pricing',
+  description: 'Claude Sonnet 5 at $2/$10 per M tokens through Aug 31, 2026. The most agentic Sonnet yet — BrowseComp, OSWorld-Verified, 200K context.',
+  url: 'https://console.anthropic.com',
+  cta: 'Get Anthropic API Key'
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} rel="nofollow sponsored"
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Reference</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Sonnet 5:</strong> Released June 30, 2026</li>
+            <li><strong>Intro pricing:</strong> $2/M in, $10/M out (thru Aug 31)</li>
+            <li><strong>Standard:</strong> $3/M in, $15/M out after Aug 31</li>
+            <li><strong>Endpoint:</strong> <code>https://api.anthropic.com/v1/messages</code></li>
+            <li><strong>Model string:</strong> <code>claude-sonnet-5</code></li>
+            <li><strong>Context:</strong> 200K tokens</li>
+            <li><strong>Best for:</strong> Agentic coding, tool use, agent search</li>
+            <li><strong>Alternative:</strong> OpenRouter for multi-model routing</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

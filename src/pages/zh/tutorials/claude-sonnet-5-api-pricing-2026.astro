@@ -1,0 +1,310 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'claude-sonnet-5-api-pricing-2026';
+const date = '2026-07-01';
+
+const zhTitle = 'Claude Sonnet 5 API 2026：$2/$10 限时价对比 Opus 4.8';
+const zhDescription = 'Claude Sonnet 5 2026-06-30 发布，限时 $2/M 输入、$10/M 输出（至 8-31）。基准对比 Sonnet 4.6、Opus 4.8，及迁移路径。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl },
+  "inLanguage": "zh-CN"
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Claude Sonnet 5 什么时候发布？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Claude Sonnet 5 于 2026 年 6 月 30 日发布。Anthropic 官方公告在 anthropic.com/news/claude-sonnet-5 上线，所有 Claude 套餐（Free、Pro、Max、Team、Enterprise）和 Claude API 同步可用。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude Sonnet 5 多少钱？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Claude Sonnet 5 在限时价窗口内（2026 年 6 月 30 日至 8 月 31 日）价格为 $2/百万输入 tokens 和 $10/百万输出 tokens。8 月 31 日之后，价格回到 $3/百万输入和 $15/百万输出，与 Sonnet 4.5/4.6 持平。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude Sonnet 5 比 Opus 4.8 强吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "在 Anthropic 的 agentic search（BrowseComp）和 computer use（OSWorld-Verified）评测上，Sonnet 5 在中-高 effort 水平下缩小了与 Opus 4.8 的差距，高 effort 下在某些任务上与 Opus 4.8 持平。Opus 4.8 仍然在最难推理任务和多模态上领先。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude Sonnet 5 比 Sonnet 4.5 便宜吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "限时价窗口内（至 2026-08-31）便宜。Sonnet 5 限时价 $2/$10 vs Sonnet 4.5 的 $3/$15，input 和 output tokens 都省 33%。8 月 31 日后，Sonnet 5 回到与 Sonnet 4.5/4.6 同样的 $3/$15 价位，区别在于能力而非价格。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "中国大陆能用 Claude Sonnet 5 吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Claude Sonnet 5 跑在 Anthropic API 上，国内无法直连 api.anthropic.com（需要代理）。需要国内直连多模型路由的话，FreeModel 提供 DeepSeek、Qwen、Llama 等模型的国内直连（注册入口 freemodel.dev/invite/FRE-7a3b6220）。若必须用 Sonnet 5，建议通过 Cloudflare Worker 或腾讯云边缘函数做代理，延迟可压到 50-100ms。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude Sonnet 5 支持工具调用吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "支持。Sonnet 5 支持与 Sonnet 4.5/4.6 同样的工具调用接口：通过 tools 数组传入函数定义、tool_choice 模式（auto、any、tool）、通过 tool call 输出结构化结果。Anthropic 把 Sonnet 5 明确定位为「最 agentic 的 Sonnet」，工具调用是首要场景。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude Sonnet 5 的上下文窗口多大？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Claude Sonnet 5 支持 200,000 tokens 上下文，与 Sonnet 4.5/4.6 持平。这个窗口显著大于 GPT-5.5 的 128K，但小于 Gemini 2.5 Pro 的 1M+ tokens 窗口。如果需要超过 200K 上下文（如长文档分析、多文件 code review、多轮 agent trace），可选 Gemini 2.5 Pro 或 Claude Opus 4.8。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude Sonnet 5 会替代 Sonnet 4.5 吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Agentic 编程和工具调用场景下，会。Sonnet 5 在 Anthropic 公开基准上是 Sonnet 4.6 的严格升级，限时价让接下来 8 周的迁移零成本。非 agentic 场景（长文写作、内容生成、摘要）下，Sonnet 4.5 仍然是好选择。Anthropic 暂未公布 Sonnet 4.5/4.6 的 EOL 日期。"
+      }
+    }
+  ]
+};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mb-4">Claude Sonnet 5 API 2026：Anthropic $2 agentic 反击，发布以来最重要的 Claude 升级</h1>
+
+<div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r my-6">
+  <p class="text-blue-800 text-sm">
+    <strong>TL;DR：</strong>2026-06-30 Anthropic 发布 Claude Sonnet 5，限时价 <strong>$2/M 输入、$10/M 输出</strong>（至 2026-08-31）。在 BrowseComp（agentic search）和 OSWorld-Verified（computer use）评测上接近 Opus 4.8，且 cybersecurity 能力被刻意压低（更安全的 agent 默认）。Free/Pro/Max/Team/Enterprise 全套餐默认模型同步切到 Sonnet 5。8 月 31 日后回到 $3/$15，与 Sonnet 4.5/4.6 持平。建议：agentic 编程和工具调用负载立刻切吃限时价；稳态生产负载保留 Sonnet 4.5/4.6，限时窗口关闭后再评估。中国大陆访问需代理；多模型 fallback 推荐 FreeModel（<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">freemodel.dev/invite/FRE-7a3b6220</a>）。
+  </p>
+</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Claude Sonnet 5 是什么，为什么重要</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 6 月 30 日，Anthropic 发布 <strong>Claude Sonnet 5</strong> —— 这是 Anthropic 首次明确把 Sonnet 级模型定位为「可替代 Opus 级旗舰」用于 agentic 场景的版本。发布三件大事：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>限时价 $2/M 输入 + $10/M 输出</strong>（至 2026 年 8 月 31 日），比 Sonnet 4.6 便宜 33%</li><li><strong>全套餐默认模型</strong>：Free、Pro、Max、Team、Enterprise 都把 Sonnet 5 设为默认</li><li><strong>agentic 基准接近 Opus 4.8</strong>：BrowseComp（agentic search）和 OSWorld-Verified（computer use）两个评测上 Sonnet 5 明显缩小与 Opus 4.8 的差距</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">对 API 开发者来说，Sonnet 5 是一次有实质意义的发布：agentic 任务的每任务成本在 Sonnet 级模型上压到了接近 Opus 4.8 30% 以内的水平，且默认模型升级意味着消费级 Claude 用户几天内就会切到 Sonnet 5。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Sonnet 5 限时定价详解</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">限时价是这次发布的核心数字。下面是 Claude 系列 2026 年 7 月 1 日的完整价格曲线（每百万 tokens）：</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">模型</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">输入 $/M</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">输出 $/M</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">状态</th></tr></thead><tbody class="divide-y divide-gray-200 bg-white"><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Sonnet 5（限时）</strong></td><td class="px-4 py-3 text-sm text-gray-700"><strong>$2.00</strong></td><td class="px-4 py-3 text-sm text-gray-700"><strong>$10.00</strong></td><td class="px-4 py-3 text-sm text-gray-700">至 2026-08-31</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Sonnet 5（8-31 后）</strong></td><td class="px-4 py-3 text-sm text-gray-700">$3.00</td><td class="px-4 py-3 text-sm text-gray-700">$15.00</td><td class="px-4 py-3 text-sm text-gray-700">标准价</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Sonnet 4.6</strong></td><td class="px-4 py-3 text-sm text-gray-700">$3.00</td><td class="px-4 py-3 text-sm text-gray-700">$15.00</td><td class="px-4 py-3 text-sm text-gray-700">老型号</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Opus 4.8</strong></td><td class="px-4 py-3 text-sm text-gray-700">~$15.00</td><td class="px-4 py-3 text-sm text-gray-700">~$75.00</td><td class="px-4 py-3 text-sm text-gray-700">旗舰</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700"><strong>Haiku 4.5</strong></td><td class="px-4 py-3 text-sm text-gray-700">$0.80</td><td class="px-4 py-3 text-sm text-gray-700">$4.00</td><td class="px-4 py-3 text-sm text-gray-700">高量低延迟</td></tr></tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">限时价是真金白银的优惠，不是营销噱头。原来跑 Sonnet 4.5 的工作负载（$3/$15），切到 Sonnet 5 8 周就能在 input 和 output tokens 上都省 33%。月支出 $10,000 的工作负载，能省大约 $2,400/月，足够支撑一波 agentic 实验预算。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">8 月 31 日之后，Sonnet 5 会回到与 Sonnet 4.5/4.6 同样的 $3/$15。届时真正要回答的问题是：「我的工作负载，Sonnet 5 比 Haiku 4.5（$0.80/$4.00）贵 50% 这个差价值不值？」</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">基准对比：Sonnet 5 在哪打赢 Sonnet 4.6 和 Opus 4.8</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Sonnet 5 能力最直观的描述是 Anthropic 发布页上的 cost-performance curve：在 <strong>BrowseComp</strong>（agentic search）和 <strong>OSWorld-Verified</strong>（computer use）上，Sonnet 5 是 Sonnet 4.6 的「严格升级」，且覆盖「比 Opus 4.8 更宽的成本-性能区间」。原来的 Sonnet 4.6 与 Opus 4.8 有明显差距，Sonnet 5 把这个差距实质性缩小了。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">生产最关注的一行是 cybersecurity 这一行：Sonnet 5 「明显低于 Opus 的网络安全能力」 —— Anthropic 明确定位 Sonnet 5 为「更安全的 agentic 默认」。把 Claude 部署为客户面向 agent 层的企业，这是不错的差异化卖点：agent 拿到接近旗舰的工具调用与代码能力，但 prompt injection 越狱后的爆炸半径被压得更小。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">纯能力维度，「高 effort 下在某些任务上与 Opus 4.8 持平」是最有用的描述。如果你的 Sonnet 5 工作负载跑高 effort（更多 tokens、更多 deliberation），在 Sonnet 5 能追平的任务上（尤其是 BrowseComp agentic search）会拿到 Opus 级能力。Opus 4.8 仍然领先的负载，建议保留在 routing 逻辑里，不要把所有流量都压到 Sonnet 5。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Sonnet 5 vs 开发者真正在用的四个替代方案</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs OpenAI GPT-5.5 / GPT-5.6。</strong>OpenAI 中端价位一直是 2025 年以来压在 Anthropic 头上的结构性力量。GPT-5.5 Instant mini 大约 $0.15-$0.60/M；旗舰 GPT-5.5 大约 $2.50/$10。Sonnet 5 限时 $2/$10 与 GPT-5.5 旗舰同价位，不是 mini 价位。能力上 Sonnet 5 与 GPT-5.5 在编程基准（SWE-bench Verified、Multi-SWE-bench）只差几个百分点，轮流领先。Sonnet 5 优势：agentic 工具调用安全、200K 上下文（vs GPT-5.5 的 128K）、refusal 校准。GPT-5.5 优势：多模态输入成熟度、语音模式延迟、生态深度。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs Google Gemini 2.5 Pro / Flash。</strong>Gemini 2.5 Flash 是 Google 的性价比档（$0.15-$0.60/M 输入/输出）。Gemini 2.5 Pro 是旗舰（$1.25-$5/M 输入，短上下文 $5-$10/M 输出，长上下文 $10/$40）。Gemini 2.5 Pro 拥有业界最大的生产上下文窗口（1M+ tokens）和最成熟的原生多模态（文本 + 图像 + 音频 + 视频同 call）。Gemini 优势：Flash 上原始每 token 成本、1M+ 上下文、原生多模态语音、Google Search Grounding 实时信息。Sonnet 5 优势：agentic 工具调用安全、refusal 校准、结构化输出质量、成熟的企业 tier。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs DeepSeek-V3 / R1。</strong>DeepSeek 仍是英文+中文负载最便宜的可靠模型。DeepSeek-V3 大约 $0.02/M 输入、$0.04/M 输出，比 Sonnet 5 限时价便宜约 100 倍，比 Opus 4.8 便宜约 250 倍。取舍已经被反复讲清楚：英文负载的细腻任务有质量差距、国内直连（非企业账户 rate-limit 不稳）。成本敏感 + DeepSeek 质量可接受的负载，DeepSeek 还是首选；agentic 工具调用安全和 refusal 校准重要的负载（客户面向 agent、监管行业），Sonnet 5 是更优选。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs 聚合器（OpenRouter、FreeModel）。</strong>聚合器把同样的底层模型（含 Sonnet 5 上线后）放在一个 API key 后面，有两个结构性优势：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>OpenRouter</strong> 300+ 模型、一个 key、built-in fallback 和 auto-routing。Sonnet 5 流量撞到 rate limit，OpenRouter 自动 fallback 到 GPT-5.5 或 Gemini 2.5 Flash，不用改代码。OpenRouter 还提供统一的每模型 uptime、延迟、定价面板。</li><li><strong><a href="https://freemodel.dev/invite/FRE-7a3b6220" target="_blank" rel="nofollow">FreeModel</a></strong> 是国内直连的聚合器，DeepSeek、Qwen、Llama 一把抓。需要国内直连多模型 fallback（不要代理），FreeModel 是阻力最小的路径。</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Sonnet 5 会在 Anthropic 发布后几小时内上架 OpenRouter（OpenRouter 团队对 Anthropic 模型响应很快）。FreeModel 这边 Sonnet 5 暂时还没上 —— FreeModel 定位是国内直连聚合器，Anthropic 的服务条款对国内某些路由模式有限制。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">API 调用：第一次 Sonnet 5 请求</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">API 接口是标准 Anthropic Messages API。模型字符串是 <code class="bg-gray-100 px-1 rounded text-sm">claude-sonnet-5</code>。限时价自动生效 —— 不需要特殊 header 或 flag，Anthropic 根据 call 落地的日期自动判断费率。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">最小 curl 调用：</p>
+
+<pre><code class="language-bash">curl https://api.anthropic.com/v1/messages \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '&#123;
+    "model": "claude-sonnet-5",
+    "max_tokens": 1024,
+    "messages": [
+      &#123;"role": "user", "content": "用 3 句话总结 BrowseComp 这个评测。"&#125;
+    ]
+  &#125;'
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Python 等价（Anthropic SDK）：</p>
+
+<pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+
+message = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=1024,
+    messages=[
+        &#123;"role": "user", "content": "用 3 句话总结 BrowseComp。"&#125;
+    ],
+)
+
+print(message.content[0].text)
+print(f"Input tokens: &#123;message.usage.input_tokens&#125;")
+print(f"Output tokens: &#123;message.usage.output_tokens&#125;")
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">工具调用（Sonnet 5 的首要定位场景）和 Sonnet 4.5 一样的接口：通过 <code class="bg-gray-100 px-1 rounded text-sm">tools</code> 数组传入函数定义，loop <code class="bg-gray-100 px-1 rounded text-sm">stop_reason</code> 处理 tool call 即可。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">迁移路径：Sonnet 4.5/4.6 工作负载怎么切</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">未来 8 周有三条现实迁移路径。选哪条取决于负载性质和你优化的是成本、能力还是风险。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>路径一：切到 Sonnet 5 吃限时价。</strong>Sonnet 4.5/4.6 工作负载如果 Sonnet 5 能打到你现在的质量（agentic search、编程、工具调用是最强匹配），立刻切，吃 33% 节省。改动是一行 model string。切之前用你的 eval suite 跑一遍 Sonnet 5 —— 「严格升级」是基准描述，不是「你的特定负载」的承诺。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>路径二：保留 Sonnet 4.5/4.6，只把 Sonnet 5 路由到新 agentic 实验。</strong>已经在生产稳态的 Sonnet 4.5/4.6 负载，不想承担模型切换的质量方差，就保留老型号，把 Sonnet 5 只用在 agentic 新实验（工具调用安全定位最有用的场景）。8 月 31 日之后，再评估 Sonnet 5 标准价（$3/$15）是否值得做模型切换。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>路径三：OpenRouter 或 FreeModel 多模型路由。</strong>负载异构（agentic + 批量摘要 + 编程 + 成本敏感）时，走聚合器。Sonnet 5 跑 agentic 档，Haiku 4.5 跑批量摘要档，DeepSeek（经 FreeModel）跑国内成本敏感档。聚合器的 per-model routing 把「单 provider 决策」换成「per-workload 决策」。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">错误路径是「Sonnet 5 更便宜所以我全切」。Sonnet 5 的限时价是临时的，8 月 31 日之后回到 $3/$15，与 Sonnet 4.5/4.6 持平。Sonnet 5 的结构性收益是能力升级（agentic 工具调用、网络安全安全），不是限时价本身。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">System Card 与安全：发布里变了什么</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 每次大模型发布都配 System Card。Sonnet 5 System Card 比发布页有更详细的评测 —— 监管行业部署建议完整阅读。两个发布页直接说的事值得高亮：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>Sonnet 5 出现不当行为的概率低于 Sonnet 4.6。</strong>把 Claude 部署为 agent 层的企业，这是关键安全收益。refusal 校准 —— 该拒的拒、该答的答，两个模式之间的缝隙比 Sonnet 4.6 更窄。</li><li><strong>网络安全能力远低于 Opus。</strong>这是被定位为安全特性的：Sonnet 5 越狱后做不了那么多攻击性网络安全工作。担心 prompt injection 导致数据外泄的企业，Sonnet 5 的能力上限更低是 feature。</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">绝大多数生产负载，安全评估不影响部署方案。监管行业（金融、医疗、政府）需要这份 System Card 过 vendor risk review。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">关键提醒：限时价 8 月 31 日结束</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">发布页上最重要的数字其实是日期：<strong>2026 年 8 月 31 日</strong>。之后 Sonnet 5 是 $3/M 输入 + $15/M 输出，与 Sonnet 4.5/4.6 持平。限时窗口是推广早期采用和基准捕获的市场动作，不是永久降价。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你在做 12 个月的 agentic 工作负载预算，按稳态 $3/$15 算。如果在 8 周内能跑完实验或评测负载，限时价是真金白银的省钱。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 没有宣布 Sonnet 系列的永久降价。限时窗口关闭后真正要回答的问题 ——「Sonnet 5（$3/$15）vs Haiku 4.5（$0.80/$4.00），对我这个负载值不值」—— 等限时窗口关闭后再做。在那之前，限时价让 Sonnet 5 成为「任何 Sonnet 5 能处理的 agentic 负载」的成本最优解。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Claude Sonnet 5 什么时候发布？</strong>Claude Sonnet 5 于 2026 年 6 月 30 日发布。Anthropic 官方公告在 anthropic.com/news/claude-sonnet-5 上线，所有 Claude 套餐（Free、Pro、Max、Team、Enterprise）和 Claude API 同步可用。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Claude Sonnet 5 多少钱？</strong>Claude Sonnet 5 在限时价窗口内（2026 年 6 月 30 日至 8 月 31 日）价格为 $2/百万输入 tokens 和 $10/百万输出 tokens。8 月 31 日之后，价格回到 $3/百万输入和 $15/百万输出，与 Sonnet 4.5/4.6 持平。模型通过标准 Anthropic Messages API 调用，模型字符串 <code class="bg-gray-100 px-1 rounded text-sm">claude-sonnet-5</code>。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Claude Sonnet 5 比 Opus 4.8 强吗？</strong>在 Anthropic 的 agentic search（BrowseComp）和 computer use（OSWorld-Verified）评测上，Sonnet 5 在中-高 effort 水平下缩小了与 Opus 4.8 的差距，高 effort 下在某些任务上与 Opus 4.8 持平。Opus 4.8 仍然在最难推理任务和多模态上领先。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Claude Sonnet 5 比 Sonnet 4.5 便宜吗？</strong>限时价窗口内（至 2026-08-31）便宜。Sonnet 5 限时价 $2/$10 vs Sonnet 4.5 的 $3/$15，input 和 output tokens 都省 33%。8 月 31 日后，Sonnet 5 回到与 Sonnet 4.5/4.6 同样的 $3/$15 价位，区别在于能力而非价格。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>中国大陆能用 Claude Sonnet 5 吗？</strong>Claude Sonnet 5 跑在 Anthropic API 上，国内无法直连 api.anthropic.com（需要代理）。需要国内直连多模型路由的话，FreeModel 提供 DeepSeek、Qwen、Llama 等模型的国内直连。若必须用 Sonnet 5，建议通过 Cloudflare Worker 或腾讯云边缘函数做代理，延迟可压到 50-100ms。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Claude Sonnet 5 支持工具调用吗？</strong>支持。Sonnet 5 支持与 Sonnet 4.5/4.6 同样的工具调用接口：通过 <code class="bg-gray-100 px-1 rounded text-sm">tools</code> 数组传入函数定义、tool_choice 模式（auto、any、tool）、通过 tool call 输出结构化结果。Anthropic 把 Sonnet 5 明确定位为「最 agentic 的 Sonnet」，工具调用是首要场景。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Claude Sonnet 5 的上下文窗口多大？</strong>Claude Sonnet 5 支持 200,000 tokens 上下文，与 Sonnet 4.5/4.6 持平。这个窗口显著大于 GPT-5.5 的 128K，但小于 Gemini 2.5 Pro 的 1M+ tokens 窗口。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Claude Sonnet 5 会替代 Sonnet 4.5 吗？</strong>Agentic 编程和工具调用场景下，会。Sonnet 5 在 Anthropic 公开基准上是 Sonnet 4.6 的严格升级，限时价让接下来 8 周的迁移零成本。非 agentic 场景下，Sonnet 4.5 仍然是好选择。Anthropic 暂未公布 Sonnet 4.5/4.6 的 EOL 日期。</p>
+
+<hr class="my-8 border-gray-200" />
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>评测参考</strong>：Anthropic 官方 Claude Sonnet 5 公告（anthropic.com/news/claude-sonnet-5，2026-06-30）、Sonnet 5 System Card、Anthropic 当前 API 定价文档、BrowseComp 与 OSWorld-Verified 基准、Anthropic Sonnet 4.5/4.6 与 Opus 4.8 文档。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>披露</strong>：本文含联盟链接。若通过这些链接注册，我们可能获得佣金，与你支付的费用无关。评测保持独立。</p>`;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Claude Sonnet 5 API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+          <div set:html={zhBody} />
+        </div>
+        <aside class="space-y-6 mt-8 lg:mt-0">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 class="text-lg font-bold text-blue-900 mb-2">Sonnet 5 限时价体验</h3>
+            <p class="text-sm text-blue-800 mb-4">Claude Sonnet 5 限时 $2/$10 每 M tokens（至 2026-08-31）。Anthropic 最 agentic 的 Sonnet —— BrowseComp、OSWorld-Verified，200K 上下文。</p>
+            <a href="https://console.anthropic.com" rel="nofollow sponsored"
+               class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+              获取 Anthropic API Key
+            </a>
+          </div>
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <h3 class="font-semibold text-gray-900 mb-2">快速参考</h3>
+            <ul class="text-sm text-gray-700 space-y-1">
+              <li><strong>Sonnet 5：</strong>2026-06-30 发布</li>
+              <li><strong>限时价：</strong>$2/M 输入、$10/M 输出（至 8-31）</li>
+              <li><strong>标准价：</strong>$3/M 输入、$15/M 输出（8-31 后）</li>
+              <li><strong>端点：</strong><code>https://api.anthropic.com/v1/messages</code></li>
+              <li><strong>模型字符串：</strong><code>claude-sonnet-5</code></li>
+              <li><strong>上下文：</strong>200K tokens</li>
+              <li><strong>适用场景：</strong>Agentic 编程、工具调用、Agent 搜索</li>
+              <li><strong>替代方案：</strong>OpenRouter 多模型路由</li>
+            </ul>
+          </div>
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+               data-ad-slot="xxxxxxxxxx"
+               data-ad-format="auto"></ins>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
