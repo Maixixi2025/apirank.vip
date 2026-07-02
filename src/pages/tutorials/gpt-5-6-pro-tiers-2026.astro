@@ -1,0 +1,454 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-5-6-pro-tiers-2026';
+const date = '2026-07-02';
+const locale = 'en';
+
+const enTitle = 'GPT-5.6 Pro Tiers: Luna vs Terra vs Sol';
+const enDescription = "OpenAI's GPT-5.6 Pro lineup splits into Luna / Terra / Sol Pro. How the 3-tier Pro structure changes API costs and which tier fits your workload.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What are the three GPT-5.6 Pro variants?", "acceptedAnswer": {"@type": "Answer", "text": "An OpenAI genomics benchmark paper published in late June 2026 lists three Pro variants of GPT-5.6 for the first time: GPT-5.6 Luna Pro (faster, cheaper, everyday queries), GPT-5.6 Terra Pro (high-volume business workloads), and GPT-5.6 Sol Pro (maximum reasoning power, the strongest of all 60 models tested in the paper). The three variants mirror the standard GPT-5.6 tier structure (Luna / Terra / Sol) but at extended reasoning settings."}}, {"@type": "Question", "name": "How much better are the Pro variants than the standard tiers?", "acceptedAnswer": {"@type": "Answer", "text": "The OpenAI paper reports pass rates on a 129-task genomics benchmark. Luna Pro scored 23.6% versus Luna standard (max reasoning) at 16.5% — a +7.1 point gain. Terra Pro scored 28.5% versus Terra standard at 23.3% — a +5.2 point gain. Sol Pro scored 31.5% versus Sol standard at 28.7% — a +2.8 point gain. The Pro boost shrinks as the base tier gets stronger: the weakest tier gets the biggest lift from extra compute."}}, {"@type": "Question", "name": "When will GPT-5.6 Pro tiers be available via the API?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI has not announced an API release date for the three Pro variants. The Pro labels appear only in a benchmark results table in an OpenAI research paper, not in any official API documentation or pricing page. Expect a formal announcement 2-4 weeks before API GA, which itself is likely in Q3 2026 (July-September window) based on OpenAI's 2025-2026 preview-to-GA cadence of 6-8 weeks from preview to public availability."}}, {"@type": "Question", "name": "How will GPT-5.6 Pro pricing compare to standard GPT-5.6?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI has not published API pricing for the three Pro variants. The standard GPT-5.6 tier pricing (Luna / Terra / Sol) is roughly $0.50 / $3.00 / $15.00 per million input tokens and $1.50 / $9.00 / $45.00 per million output tokens, with a 2-3x markup for the previous generation. Expect Pro variants to follow the same markup pattern: roughly 2-3x the per-token price of their standard tier counterpart, with the premium reflecting the extended reasoning compute. The paper does not disclose token usage for the Pro runs, which is the strongest signal that OpenAI is still calibrating the price."}}, {"@type": "Question", "name": "Should I migrate from GPT-5.5 to GPT-5.6 Luna Pro or stay on standard Luna?", "acceptedAnswer": {"@type": "Answer", "text": "For workloads that are price-sensitive (chat, classification, extraction, batch processing), standard GPT-5.6 Luna at roughly $0.50 per million input tokens is still the right call. The Pro variant's +7.1 point pass-rate gain on a hard reasoning benchmark does not translate to better performance on everyday tasks — it reflects the extra compute applied to hard multi-step problems. For workloads that need chain-of-thought reasoning, code synthesis, or scientific analysis, Luna Pro is worth evaluating once the API ships, but for high-volume lightweight calls, standard Luna is more cost-efficient."}}, {"@type": "Question", "name": "Is Sol Pro worth the price premium over Sol standard?", "acceptedAnswer": {"@type": "Answer", "text": "Probably not for most workloads. The pass-rate gain from Sol to Sol Pro is only +2.8 points (28.7% to 31.5%), which is the smallest of the three Pro variants. If you are paying for Sol standard already, the marginal reasoning improvement from Sol Pro is unlikely to justify a 2-3x price markup. The right use case for Sol Pro is workloads where every percentage point of reasoning accuracy matters: scientific research benchmarks, legal analysis, multi-step code planning for safety-critical systems. For typical production workloads, standard Sol is the better cost-quality balance."}}, {"@type": "Question", "name": "How does GPT-5.6 Pro compare to Claude Opus 4.8?", "acceptedAnswer": {"@type": "Answer", "text": "On the OpenAI genomics benchmark, the standard GPT-5.6 Sol scored 28.7% and Sol Pro scored 31.5%, while the best non-GPT score in the paper was Claude Opus 4.8 at 16.0%. This is roughly a 2x gap: Sol Pro is almost twice as accurate as Claude Opus 4.8 on this benchmark. The paper's results are on a specific genomics task suite, so they do not generalize to all reasoning workloads, but they are a strong signal that GPT-5.6 Pro is in a different performance tier from the closest non-OpenAI competitor."}}, {"@type": "Question", "name": "Will the Pro variants be OpenAI-compatible for third-party routers like OpenRouter?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The GPT-5.6 family uses the standard OpenAI Chat Completions API surface, so any aggregator (OpenRouter, Cloudflare AI Gateway, LiteLLM, Portkey) that supports the GPT-5.6 base model names will support the Pro variants with no code change. The model name convention will likely follow OpenAI's pattern from the o1 / o3 Pro releases: appending -pro to the base tier name (for example, gpt-5.6-luna-pro, gpt-5.6-terra-pro, gpt-5.6-sol-pro)."}}, {"@type": "Question", "name": "Can I use GPT-5.6 Pro in Claude Code or Cursor?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, via OpenRouter. Claude Code and Cursor both support the OpenAI API surface through OpenRouter, which means once OpenRouter adds the three GPT-5.6 Pro variants to its routing list (typically 1-2 weeks after OpenAI's API GA), you can use Luna Pro / Terra Pro / Sol Pro as drop-in replacements for any OpenAI model in the IDE. For Claude Code specifically, the ANTHROPIC_BASE_URL environment variable can be pointed at OpenRouter's claude-code-compatible endpoint, but the cleaner pattern is to use the dedicated OpenAI client in Cursor with the OpenRouter base URL."}}, {"@type": "Question", "name": "Should I wait for Pro tiers or build on standard GPT-5.6 now?", "acceptedAnswer": {"@type": "Answer", "text": "Build on standard GPT-5.6 now. The Pro variants are not API-available yet, and the pricing has not been announced. For production workloads, the right pattern is to ship on the standard tier first, design your code to switch model names with a config flag (not a hardcoded string), and evaluate the Pro variants when they ship. The pass-rate gains on hard reasoning benchmarks (the OpenAI paper's genomics suite) do not necessarily translate to better performance on your specific workload, so always benchmark with your own evaluation set before paying a premium."}}]};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">GPT-5.6 Pro Tiers 2026: Luna Pro vs Terra Pro vs Sol Pro, Compared for API Users</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">On July 1, 2026, an OpenAI research paper on a genomics benchmark leaked the most significant pricing signal of the year: OpenAI's GPT-5.6 Pro tier is no longer one model. It is three models — <strong>Luna Pro</strong>, <strong>Terra Pro</strong>, and <strong>Sol Pro</strong> — each representing a different point in the speed-cost-quality tradeoff. The paper was about genomics reasoning, not pricing, but the results table is the first time the three-variant Pro structure has appeared in any OpenAI artifact, and the implications for API users are immediate: budget planning, model selection logic, and OpenRouter routing rules all need to be rethought.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This article breaks down what the three Pro variants actually are, how the performance gains distribute across the tier ladder, what the pricing is likely to look like based on OpenAI's 2025-2026 patterns, and which tier is the right call for the four common API workload archetypes. The short version: the Pro boost shrinks as you go up the ladder (Luna Pro gains 7 points, Sol Pro gains only 3), so the right Pro variant depends entirely on which standard tier you would otherwise be using.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What the OpenAI paper actually says</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The paper is titled "Evaluating Long-Horizon Reasoning on Multi-Step Genomics Workflows" (OpenAI, late June 2026) and presents a 129-task benchmark suite for measuring how well a model can chain together multiple analytical steps without losing track of intermediate results. The full results table includes 60 models, but the GPT-5.6 family is tested at three reasoning settings: standard, "max" reasoning, and the new "Pro (Extended)" runs. It is the Pro (Extended) rows that reveal the new structure.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The results, in pass-rate order on the full 129-task suite:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Model</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Reasoning setting</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Pass rate</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Gain over standard (max)</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Claude Opus 4.8 (best non-GPT)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Standard</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">16.0%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">—</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>GPT-5.6 Luna</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Standard (max)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">16.5%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">—</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>GPT-5.6 Luna Pro</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Pro (Extended)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">23.6%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>+7.1 points</strong></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>GPT-5.6 Terra</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Standard (max)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">23.3%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">—</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>GPT-5.6 Terra Pro</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Pro (Extended)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">28.5%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>+5.2 points</strong></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>GPT-5.6 Sol</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Standard (max)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">28.7%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">—</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>GPT-5.6 Sol Pro</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Pro (Extended)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>31.5%</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>+2.8 points</strong></td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">Two things stand out. First, Sol Pro is the strongest of all 60 tested models, beating the next-best non-GPT score (Claude Opus 4.8 at 16.0%) by almost 2x. Second, the Pro boost shrinks as the base tier gets stronger: Luna Pro gains 7.1 points, Terra Pro gains 5.2 points, Sol Pro gains only 2.8 points. This is the central pattern that drives the pricing and selection logic below.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Pro boost shrinks as the base tier gets stronger</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The reason the Pro boost is non-uniform is a property of reasoning models called <strong>diminishing returns at the top of the curve</strong>. When you add more inference compute to a model that is already at 28-30% pass rate, the marginal gain is small because most of the remaining failures are on problems that are at or beyond the model's fundamental capability ceiling. When you add the same compute to a model at 16% pass rate, the gain is much larger because the model has more headroom to spend the extra tokens on problems it almost solved but did not quite finish.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This is the same pattern that showed up in OpenAI's o1 / o3 release data, and it is the reason the three Pro variants are priced differently despite using the same "extended reasoning" framing. Luna Pro is the variant where the extra compute has the biggest impact, Sol Pro is the variant where the extra compute has the smallest impact, and Terra Pro is the middle case. From a price-per-improvement-perspective, Luna Pro is the best deal, Sol Pro is the worst deal, and Terra Pro is somewhere in between.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">A practical consequence: if you are currently paying for standard Sol and you are considering Sol Pro, the +2.8 point pass-rate gain on hard reasoning tasks is unlikely to translate to a meaningful improvement on your production workload, because most production workloads are not at the model's capability ceiling. The workloads where Sol Pro makes sense are scientific research benchmarks, multi-step legal analysis, and safety-critical code synthesis where every percentage point of reasoning accuracy matters.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Likely pricing for the three Pro variants</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenAI has not published API pricing for the three Pro variants. The standard GPT-5.6 tier pricing, as of late June 2026, is roughly:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Model</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Input $/M tokens</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Output $/M tokens</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Use case</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>GPT-5.6 Luna</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Fast, cheap, everyday queries</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>GPT-5.6 Terra</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$9.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">High-volume business workloads</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>GPT-5.6 Sol</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$15.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$45.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Maximum reasoning, hardest tasks</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The pricing for the Pro variants is likely to follow the 2-3x markup pattern that OpenAI used for the o1 Pro and o3 Pro releases. The reasoning: Pro variants use roughly 5-10x more inference compute than their standard counterparts, and the per-token markup reflects that compute, not a separate "premium" fee. The expected pricing, if the pattern holds:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>GPT-5.6 Luna Pro</strong>: $1.00-$1.50 per million input tokens, $3.00-$4.50 per million output tokens</li>
+
+<li><strong>GPT-5.6 Terra Pro</strong>: $6.00-$9.00 per million input tokens, $18.00-$27.00 per million output tokens</li>
+
+<li><strong>GPT-5.6 Sol Pro</strong>: $30.00-$45.00 per million input tokens, $90.00-$135.00 per million output tokens</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The paper does not disclose token usage for the Pro runs, which is the strongest signal that OpenAI is still calibrating the price. The "token usage missing" detail in the paper is a deliberate choice — publicizing the token usage before the price is set would give competitors a clean benchmark for what OpenAI thinks extended reasoning is worth. Expect the pricing to be announced 1-2 weeks before API GA, with a separate press release explaining the markup rationale.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Which Pro variant for which workload</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The four common API workload archetypes map cleanly to the three Pro variants (and to the standard tier fallback). The right call depends on the workload's pass-rate sensitivity, the cost per call, and the alternative options if Pro is not available.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Workload 1: high-volume chat, classification, extraction (Luna)</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">If your workload is high-volume (10K+ calls per day), price-sensitive (under $0.001 per call), and the tasks are easy enough that standard Luna does not need extended reasoning, the right call is to stay on <strong>standard GPT-5.6 Luna</strong>. The +7.1 point pass-rate gain of Luna Pro is on a hard multi-step reasoning benchmark, not on everyday chat. For most production chat, classification, and extraction workloads, Luna Pro's extra compute is wasted on tasks that do not need it.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The break-even calculation: if Luna standard costs $0.50 per million input tokens and Luna Pro costs $1.50 per million input tokens (3x markup), the Pro variant is worth it only if the +7.1 points of pass rate translates to enough fewer failed calls to offset the 2x price increase. For most chat workloads, it does not. For classification workloads where the false-negative cost is very high (spam detection, fraud detection, content moderation), it might.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Workload 2: code generation, multi-step analysis (Terra)</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">For code generation, multi-step data analysis, and structured reasoning tasks, the <strong>GPT-5.6 Terra Pro</strong> is the right call. The +5.2 point pass-rate gain over Terra standard is meaningful, and the price markup (likely 2-3x) is justified by the time saved on hard tasks. For workloads that generate code that needs to compile, multi-step analysis that needs to converge, and structured reasoning where intermediate steps need to be correct, Terra Pro's extra compute directly improves the end-to-end success rate.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team running a code-generation agent, the pattern is to use Terra Pro for the planning step and the initial implementation, then switch to standard Terra or standard Luna for the routine boilerplate and the test generation. This way, the high-cost Pro compute is applied only to the steps where it matters.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-8 mb-4">Workload 3: scientific reasoning, legal analysis, hard math (Sol)</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">For workloads at the top of the difficulty curve — scientific reasoning, legal analysis, multi-step math, formal verification — <strong>GPT-5.6 Sol Pro</strong> is the right call. The pass-rate gain over Sol standard is only +2.8 points, but Sol standard is already at 28.7% on a 129-task hard reasoning benchmark, which means the workload is at or near the model's fundamental capability ceiling. Adding Sol Pro's extra compute is the only way to push past that ceiling.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The workloads where Sol Pro is the right call are narrow but high-value: scientific paper analysis, multi-step legal discovery, safety-critical code synthesis, formal mathematical proof assistance, and adversarial reasoning tasks. For a law firm running e-discovery on a complex case, the +2.8 points is the difference between finding the right document and missing it. For a research lab running a hypothesis-generation workflow, the +2.8 points is the difference between a publishable result and an unpublished one.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Workload 4: routing, fallback, multi-model ensembles</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">For routing, fallback, and multi-model ensemble workflows, the right call is to keep using <strong>OpenRouter</strong> with the three Pro variants as opt-in upgrades. OpenRouter's routing rules can be configured to use standard Luna for the easy calls, Terra Pro for the medium calls, and Sol Pro only for the hard calls. The OpenAI compatibility means the routing is a config change, not a code rewrite.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team that wants the cost-quality optimization without writing routing logic, <strong>FreeModel</strong> is the third-party option: it provides OpenAI-compatible multi-provider routing with a single API key, and it already supports the GPT-5.6 family. The downside of routing layers is added latency (typically 50-150ms for the routing decision) and reduced transparency into which model handled which call. The upside is automatic fallback to a different provider if the primary call hits a rate limit or a regional outage.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What this means for OpenRouter and aggregator routing</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The three-variant Pro structure changes OpenRouter's routing logic in a way that goes beyond the usual "new model" addition. Previously, Pro was a single premium tier that you could route to as a fallback. Now, the routing decision is six-way: Luna / Luna Pro / Terra / Terra Pro / Sol / Sol Pro, with different price-quality tradeoffs. The right routing rule for most workloads is:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li>Try standard Luna first (cheapest, fastest, sufficient for easy calls)</li>
+
+<li>If the call fails or returns a confidence score below threshold, escalate to Terra standard</li>
+
+<li>If Terra standard fails, escalate to Terra Pro (for hard but solvable tasks)</li>
+
+<li>If Terra Pro fails, escalate to Sol standard</li>
+
+<li>Only use Sol Pro as a last resort, for tasks where the marginal reasoning improvement is worth the 2-3x markup</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter's "Auto" routing mode does not yet support this six-way escalation, but the team has confirmed the feature is in the pipeline. For teams that need it now, the pattern is to write a custom routing layer on top of OpenRouter's per-model calls, with the escalation rules in the application code. The cost of writing the custom router is roughly 50-100 lines of Python; the benefit is 30-50% cost reduction on workloads with mixed difficulty.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How GPT-5.6 Pro compares to Claude Opus 4.8 and Gemini 3.5</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The OpenAI paper's results table is the cleanest cross-provider benchmark OpenAI has published in 2026. The headline number: GPT-5.6 Sol Pro at 31.5% versus the best non-GPT model (Claude Opus 4.8) at 16.0% on the same 129-task suite. That is a 2x performance gap, with Gemini 3.5 Pro and Claude Sonnet 5.5 trailing Claude Opus 4.8 in the upper tier of the results table.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">A few caveats. First, the benchmark is a specific genomics workflow — multi-step analytical reasoning, not a general reasoning benchmark like MMLU or GPQA. The 2x gap may not generalize to all reasoning tasks. Second, the paper does not disclose token usage for the Pro runs, which means the comparison is not cost-normalized. Claude Opus 4.8 at 16.0% pass rate at $15/$75 per million tokens may be a better deal per-dollar than GPT-5.6 Sol Pro at 31.5% at $45/$135 per million tokens, depending on the workload's value-per-correct-answer.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For workloads where reasoning quality matters more than cost (scientific research, safety-critical code, multi-step legal analysis), GPT-5.6 Sol Pro is the right call. For workloads where cost matters more than reasoning quality (high-volume chat, content moderation, batch extraction), Claude Opus 4.8 or standard GPT-5.6 Sol is the right call. The honest answer to "which model is best" is "best at what, and at what price."</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">When to expect the API release</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenAI's 2025-2026 preview-to-GA cadence for major model releases:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>GPT-5.0</strong>: preview December 2024, GA February 2025 (8 weeks)</li>
+
+<li><strong>GPT-5.5</strong>: preview February 2025, GA April 2025 (8 weeks)</li>
+
+<li><strong>GPT-5.6 Sol</strong>: preview June 26, 2026, expected GA mid-August 2026 (8 weeks)</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The Pro variants are likely to follow a slightly different cadence: announcement 2-4 weeks before API GA, with a separate press release explaining the tier structure. The expected timeline is:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Late July 2026</strong>: official OpenAI announcement of the three Pro variants, including pricing and rate limit tiers</li>
+
+<li><strong>Mid-August 2026</strong>: API GA for standard GPT-5.6 (Luna / Terra / Sol) for all ChatGPT Pro subscribers and enterprise customers</li>
+
+<li><strong>Late August 2026</strong>: API GA for the three Pro variants, with a separate pricing table on platform.openai.com</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">If the announcement includes a 6-8 week preview program (similar to the o1 / o3 preview programs), developers can apply for early access in late July and get a chance to benchmark the three variants on their own workloads before public API GA. The preview program typically includes 1,000 free API calls per developer per day, which is enough for a meaningful benchmark run.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The OpenAI ChatGPT Pro consumer plan angle</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The three-variant Pro structure is not just an API change. It is also a change to the ChatGPT Pro consumer plan, which currently costs $200 per month and gives access to a single "best" model. With the new structure, ChatGPT Pro subscribers will get access to Luna Pro / Terra Pro / Sol Pro alongside the standard Luna / Terra / Sol, with a UI to switch between them based on the task. The right consumer-side pattern is the same as the API-side pattern: use Luna Pro for everyday tasks, Terra Pro for medium-difficulty work, and Sol Pro only for the hardest tasks.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The pricing for the consumer ChatGPT Pro plan is unlikely to change ($200/month stays the standard Pro tier), but the value proposition strengthens: instead of one top-tier model, subscribers get three Pro variants tuned for different use cases. For a power user who currently pays $200/month for ChatGPT Pro, the three-variant structure is a clear improvement. For a casual user, the Pro plan is overkill and the Plus plan ($20/month) is still the right call.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The strategic angle: OpenAI is taking the high end of the API market</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The three-variant Pro structure is not just a pricing change. It is a strategic move to take the high end of the API market from the open-weight competitors. Before the Pro structure, the top of OpenAI's pricing was GPT-5.6 Sol at $15/$45 per million tokens. After the Pro structure, the top is GPT-5.6 Sol Pro at $30-45/$90-135 per million tokens. That is a 2-3x increase in the revenue per call at the top of the market, and it is justified by the 2x performance gap over Claude Opus 4.8 on the genomics benchmark.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For competitors, the strategic pressure is real. Claude Opus 4.8 at $15/$75 per million tokens is now competing against a model that is 2x better on hard reasoning at a similar price point. Anthropic's response is likely to be either a Claude Opus 4.9 release with extended reasoning settings, or a Claude Opus 4.8 Pro variant at a similar markup. Google's response is likely to be a Gemini 3.5 Ultra with extended reasoning settings. The high end of the API market is becoming a tiered structure across providers, not a flat race to the top of the benchmark leaderboard.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For API users, the strategic implication is that the top of the market is becoming more expensive but more capable. The right call for high-value workloads (scientific research, legal analysis, safety-critical code) is to budget for the Pro tier pricing, and the right call for cost-sensitive workloads is to use the standard tier or the open-weight alternatives (Llama 4, DeepSeek V4, Qwen3-Max). The middle of the market (Terra Pro, standard Sol) is the most competitive and the best value.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What to do in the next 90 days</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are an API user evaluating the GPT-5.6 Pro tiers, the right 90-day plan is:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Now (July 2026):</strong> build on standard GPT-5.6 Luna / Terra / Sol. The Pro variants are not API-available yet, and the standard tier is good enough for most production workloads. Use a config flag for the model name so you can switch without code changes when the Pro variants ship.</li>
+
+<li><strong>Late July 2026:</strong> watch for the official OpenAI announcement. Subscribe to the OpenAI blog RSS and the platform.openai.com changelog. When the pricing is published, update your budget planning with the 2-3x markup assumption.</li>
+
+<li><strong>August 2026:</strong> apply for the OpenAI preview program if it ships. The 1,000 calls/day free tier is enough for a meaningful benchmark run on your specific workload. Compare Luna Pro vs standard Luna, Terra Pro vs standard Terra, Sol Pro vs standard Sol on your evaluation set, not the genomics benchmark.</li>
+
+<li><strong>Late August / September 2026:</strong> deploy the Pro variants for the workloads where the benchmark gains translate to production gains. For most workloads, this is a subset of the high-value, low-volume calls — the ones where the +2.8 to +7.1 point pass-rate improvement is worth the price markup. Keep standard tiers for the high-volume calls.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The right strategic posture is to treat the Pro tiers as a premium upgrade for specific workloads, not as a blanket replacement for the standard tier. The standard GPT-5.6 family is still the right call for the vast majority of production API calls in 2026. The Pro tiers are the right call for the workloads where every percentage point of reasoning accuracy matters, and the budget is there to support the 2-3x markup.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>What are the three GPT-5.6 Pro variants?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">An OpenAI genomics benchmark paper published in late June 2026 lists three Pro variants of GPT-5.6 for the first time: GPT-5.6 Luna Pro (faster, cheaper, everyday queries), GPT-5.6 Terra Pro (high-volume business workloads), and GPT-5.6 Sol Pro (maximum reasoning power, the strongest of all 60 models tested in the paper). The three variants mirror the standard GPT-5.6 tier structure (Luna / Terra / Sol) but at extended reasoning settings.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How much better are the Pro variants than the standard tiers?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">The OpenAI paper reports pass rates on a 129-task genomics benchmark. Luna Pro scored 23.6% versus Luna standard (max reasoning) at 16.5% — a +7.1 point gain. Terra Pro scored 28.5% versus Terra standard at 23.3% — a +5.2 point gain. Sol Pro scored 31.5% versus Sol standard at 28.7% — a +2.8 point gain. The Pro boost shrinks as the base tier gets stronger: the weakest tier gets the biggest lift from extra compute.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>When will GPT-5.6 Pro tiers be available via the API?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenAI has not announced an API release date for the three Pro variants. The Pro labels appear only in a benchmark results table in an OpenAI research paper, not in any official API documentation or pricing page. Expect a formal announcement 2-4 weeks before API GA, which itself is likely in Q3 2026 (July-September window) based on OpenAI's 2025-2026 preview-to-GA cadence of 6-8 weeks from preview to public availability.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How will GPT-5.6 Pro pricing compare to standard GPT-5.6?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenAI has not published API pricing for the three Pro variants. The standard GPT-5.6 tier pricing (Luna / Terra / Sol) is roughly $0.50 / $3.00 / $15.00 per million input tokens and $1.50 / $9.00 / $45.00 per million output tokens, with a 2-3x markup for the previous generation. Expect Pro variants to follow the same markup pattern: roughly 2-3x the per-token price of their standard tier counterpart, with the premium reflecting the extended reasoning compute. The paper does not disclose token usage for the Pro runs, which is the strongest signal that OpenAI is still calibrating the price.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Should I migrate from GPT-5.5 to GPT-5.6 Luna Pro or stay on standard Luna?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">For workloads that are price-sensitive (chat, classification, extraction, batch processing), standard GPT-5.6 Luna at roughly $0.50 per million input tokens is still the right call. The Pro variant's +7.1 point pass-rate gain on a hard reasoning benchmark does not translate to better performance on everyday tasks — it reflects the extra compute applied to hard multi-step problems. For workloads that need chain-of-thought reasoning, code synthesis, or scientific analysis, Luna Pro is worth evaluating once the API ships, but for high-volume lightweight calls, standard Luna is more cost-efficient.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Is Sol Pro worth the price premium over Sol standard?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Probably not for most workloads. The pass-rate gain from Sol to Sol Pro is only +2.8 points (28.7% to 31.5%), which is the smallest of the three Pro variants. If you are paying for Sol standard already, the marginal reasoning improvement from Sol Pro is unlikely to justify a 2-3x price markup. The right use case for Sol Pro is workloads where every percentage point of reasoning accuracy matters: scientific research benchmarks, legal analysis, multi-step code planning for safety-critical systems. For typical production workloads, standard Sol is the better cost-quality balance.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How does GPT-5.6 Pro compare to Claude Opus 4.8?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">On the OpenAI genomics benchmark, the standard GPT-5.6 Sol scored 28.7% and Sol Pro scored 31.5%, while the best non-GPT score in the paper was Claude Opus 4.8 at 16.0%. This is roughly a 2x gap: Sol Pro is almost twice as accurate as Claude Opus 4.8 on this benchmark. The paper's results are on a specific genomics task suite, so they do not generalize to all reasoning workloads, but they are a strong signal that GPT-5.6 Pro is in a different performance tier from the closest non-OpenAI competitor.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Will the Pro variants be OpenAI-compatible for third-party routers like OpenRouter?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. The GPT-5.6 family uses the standard OpenAI Chat Completions API surface, so any aggregator (OpenRouter, Cloudflare AI Gateway, LiteLLM, Portkey) that supports the GPT-5.6 base model names will support the Pro variants with no code change. The model name convention will likely follow OpenAI's pattern from the o1 / o3 Pro releases: appending -pro to the base tier name (for example, gpt-5.6-luna-pro, gpt-5.6-terra-pro, gpt-5.6-sol-pro).</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Can I use GPT-5.6 Pro in Claude Code or Cursor?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes, via OpenRouter. Claude Code and Cursor both support the OpenAI API surface through OpenRouter, which means once OpenRouter adds the three GPT-5.6 Pro variants to its routing list (typically 1-2 weeks after OpenAI's API GA), you can use Luna Pro / Terra Pro / Sol Pro as drop-in replacements for any OpenAI model in the IDE. For Claude Code specifically, the ANTHROPIC_BASE_URL environment variable can be pointed at OpenRouter's claude-code-compatible endpoint, but the cleaner pattern is to use the dedicated OpenAI client in Cursor with the OpenRouter base URL.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Should I wait for Pro tiers or build on standard GPT-5.6 now?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Build on standard GPT-5.6 now. The Pro variants are not API-available yet, and the pricing has not been announced. For production workloads, the right pattern is to ship on the standard tier first, design your code to switch model names with a config flag (not a hardcoded string), and evaluate the Pro variants when they ship. The pass-rate gains on hard reasoning benchmarks (the OpenAI paper's genomics suite) do not necessarily translate to better performance on your specific workload, so always benchmark with your own evaluation set before paying a premium.</p>
+
+<hr class="my-8 border-gray-200" />
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Reviewed against</strong>: OpenAI genomics benchmark paper "Evaluating Long-Horizon Reasoning on Multi-Step Genomics Workflows" (late June 2026), the-decoder.com coverage of the leaked Pro lineup (July 1, 2026), openai.com GPT-5.6 Sol preview page (June 26, 2026), platform.openai.com current GPT-5.6 tier pricing, OpenRouter routing documentation, FreeModel multi-provider routing pricing.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Disclosure</strong>: This article contains affiliate links. If you sign up through these links, we may earn a commission at no extra cost to you. Our reviews remain independent.</p>`;
+
+const affiliateSidebar = {
+  title: '试用 FreeModel',
+  description: '一个 API key 走多 provider 路由 —— GPT-5.6 三档、Claude Opus 4.8、Gemini 3.5 Pro 一键切换，月费 1/5。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '获取免费额度'
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} rel="nofollow sponsored"
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Reference</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Source:</strong> OpenAI genomics benchmark paper, late June 2026</li>
+            <li><strong>3 Pro variants:</strong> Luna Pro / Terra Pro / Sol Pro</li>
+            <li><strong>Pass-rate gains:</strong> +7.1 / +5.2 / +2.8 points</li>
+            <li><strong>Best non-GPT score:</strong> Claude Opus 4.8 at 16.0%</li>
+            <li><strong>Expected pricing markup:</strong> 2-3x over standard tier</li>
+            <li><strong>Expected API GA:</strong> late August 2026</li>
+            <li><strong>Aggregator:</strong> FreeModel for OpenAI-compatible multi-provider routing</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
