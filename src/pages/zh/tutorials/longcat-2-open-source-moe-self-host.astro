@@ -1,0 +1,202 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'longcat-2-open-source-moe-self-host';
+const date = '2026-07-06';
+const locale = 'zh';
+
+const zhTitle = 'LongCat-2.0 1.6T MoE：自托管 vs 公有 API';
+const zhDescription = '美团开源 LongCat-2.0：1.6T 参数 MoE、48B 激活、1M 上下文，MIT 协议。自托管成本与 OpenRouter 路由 vs DeepSeek V3 全对比。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "LongCat-2.0 1.6T MoE：自托管 vs 公有 API", "description": "美团开源 LongCat-2.0：1.6T 参数 MoE、48B 激活、1M 上下文，MIT 协议。自托管成本与 OpenRouter 路由 vs DeepSeek V3 全对比。", "datePublished": "2026-07-06", "dateModified": "2026-07-06", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/longcat-2-open-source-moe-self-host"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "LongCat-2.0 1.6T MoE：自托管 vs 公有 API", "item": "https://apirank.vip/zh/tutorials/longcat-2-open-source-moe-self-host"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is LongCat-2.0?", "acceptedAnswer": {"@type": "Answer", "text": "LongCat-2.0 是美团开源的 MoE（混合专家）语言模型，总参数量 1.6 万亿，每次前向激活约 480 亿参数。2026 年 6 月底先以「Owl Alpha」名义登陆 OpenRouter，2026 年 7 月 4 日完整权重与推理代码在 GitHub 与 Hugging Face 以 MIT 协议开源。模型支持 100 万 token 上下文，并附带在 H100 / H200 GPU 上可直接运行的生产级推理配置。"}}, {"@type": "Question", "name": "Is LongCat-2.0 really MIT licensed?", "acceptedAnswer": {"@type": "Answer", "text": "是真的。2026 年 7 月 4 日美团 LongCat 团队通过官方 X 账号确认，LongCat-2.0 以 MIT 协议发布，无任何限制、无附加商业协议、无使用分级。权重、推理代码、分词器全部 MIT，没有像部分大模型那样的「开源权重但商业许可」区分。"}}, {"@type": "Question", "name": "How much VRAM do I need to self-host LongCat-2.0?", "acceptedAnswer": {"@type": "Answer", "text": "FP16 精度的完整 1.6T 模型大约需要 3.2 TB 显存，单节点无法承载。INT4 量化后内存占用降到约 800 GB。实际生产路径是跨 8-16 块 H100 / H200 的多节点张量并行部署。如果想要单节点体验，推荐使用模型蒸馏的 70B 和 140B 版本（LongCat-2-70B、LongCat-2-140B），推理仓库的参考配置就是针对 4-8 块 H100 设计的。"}}, {"@type": "Question", "name": "What is the active parameter count per token?", "acceptedAnswer": {"@type": "Answer", "text": "LongCat-2.0 凭借 MoE 路由每次前向激活约 480 亿参数。这是 DeepSeek V3（约 210 亿激活）的约 2.3 倍，是 Llama 3.1 405B 稠密 405B 激活的约 0.12 倍。MoE 路由使用 256 专家 top-8 选择，模式类似 Mixtral 但规模大得多。"}}, {"@type": "Question", "name": "How does LongCat-2.0 compare to DeepSeek V3?", "acceptedAnswer": {"@type": "Answer", "text": "纸面上 LongCat-2.0 更大（1.6T vs 671B 总参，48B vs 21B 激活），但决定推理成本与延迟的是激活参数。DeepSeek V3 的 21B 激活在单 token 成本上显著低于 LongCat-2.0 的 48B 激活。LongCat-2.0 的优势是更大的总知识容量与 1M 上下文（DeepSeek V3 为 128K）。对大多数生产对话负载，DeepSeek V3（输入 $0.27/M）仍是更经济的选择。LongCat-2.0 在知识广度任务与长上下文场景胜出。"}}, {"@type": "Question", "name": "Can I route LongCat-2.0 through OpenRouter?", "acceptedAnswer": {"@type": "Answer", "text": "可以。LongCat-2.0 已在 OpenRouter 上线，模型名为 meituan/longcat-2-0-1.6t-moe。预览期的 Owl Alpha 与开源后的版本是同一个模型，只是现在除了通过 API 访问，还可以下载并自托管。OpenRouter 定价约为输入 $0.60/M、输出 $2.40/M，反映较高的激活参数与基础设施成本。对于成本敏感型负载，OpenRouter 是门槛最低的路径——无需管理基础设施，按量付费。"}}, {"@type": "Question", "name": "How much does it cost to self-host LongCat-2.0?", "acceptedAnswer": {"@type": "Answer", "text": "8x H100 80GB SXM 云实例（RunPod / Lambda Labs / CoreWeave）每小时 $24-32。满负载情况下输出 token 单位成本约 $0.0006-$0.0011/1K（不含电力与工程开销）。30% 利用率下单位成本升至 $0.0024-$0.0033/1K，仍比 OpenRouter 公开价 $0.0024/1K（$2.40/M）便宜——前提是利用率保持在 60% 以上。低于 50% 利用率，公开 API 更划算。"}}, {"@type": "Question", "name": "What is the 1M token context window useful for?", "acceptedAnswer": {"@type": "Answer", "text": "1M 上下文解锁了被 128K-200K 上限卡住的场景：完整代码库分析（50 万行 Python 仓库 minify 后约 1.2-1.5M token）、无需分块的长文档 RAG、多小时会议纪要、法律 / 医疗记录分析。DeepSeek V3 上限 128K，Claude Sonnet 5 为 200K（1M beta），GPT-5.6 为 256K（Pro 1M）。LongCat-2.0 的 1M 与闭源旗舰同一梯队。"}}, {"@type": "Question", "name": "Does LongCat-2.0 support tool calling and function calling?", "acceptedAnswer": {"@type": "Answer", "text": "支持。推理仓库附带 OpenAI 兼容的工具调用与结构化输出支持。模型处理标准的 JSON schema 工具定义并生成有效的 function-call 载荷。这就是 OpenRouter Owl Alpha 预览能作为 OpenAI / Anthropic API 客户端即插即用替代品的原因——路由层只在 OpenAI Chat Completions schema 与 LongCat 原生格式之间做翻译。"}}, {"@type": "Question", "name": "Where do I download LongCat-2.0?", "acceptedAnswer": {"@type": "Answer", "text": "官方渠道两个：GitHub（github.com/meituan-longcat/LongCat-2.0）拿推理代码、模型卡、参考配置；Hugging Face（huggingface.co/meituan-longcat/LongCat-2.0）拿原始 safetensors 权重。两个仓库都是 MIT 协议。Hugging Face 模型卡包含 BF16 与 INT4 量化检查点、分词器文件、发布公告中使用的评估套件。"}}]};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">LongCat-2.0 1.6T MoE：自托管 vs 公有 API（2026 价格）</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 7 月 4 日，美团 LongCat 团队以 MIT 协议开源了 <strong>LongCat-2.0</strong> 的完整权重与推理代码——一个 1.6 万亿参数的混合专家（MoE）模型，每次前向激活约 480 亿参数，支持 100 万 token 上下文窗口。这就是几日前以「Owl Alpha」之名登陆 OpenRouter 的同一个模型，现在成了无需附加商业协议即可获取的最大规模全开源 MoE 语言模型。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于在<strong>自托管 LongCat-2.0</strong>、<strong>通过 OpenRouter 路由</strong>、与<strong>使用 DeepSeek V3 等更便宜的稠密模型</strong>之间做选择的开发者，本文覆盖成本账、GPU 硬件需求、API 接口、以及 LongCat-2.0「1.6T 总参 / 48B 激活 / 1M 上下文」组合真正适用的真实业务场景。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">2026 年 7 月 4 日美团到底发了什么</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">7 月 4 日的发布是 LongCat-2.0 两步上线中的第二步。第一步是 6 月底以「Owl Alpha」代号登陆 OpenRouter，任何持有 OpenRouter API Key 的用户都能调用，但权重尚未公开。第二步就是完整的开源发布：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>权重</strong>——1.6T 总参 / 48B 激活的 MoE 模型，BF16 与 INT4 量化检查点托管在 Hugging Face <code>meituan-longcat/LongCat-2.0</code>。</li>
+<li><strong>推理代码</strong>——GitHub <code>github.com/meituan-longcat/LongCat-2.0</code> 提供 vLLM 兼容的 serving 栈，包含 8x H100 / 8x H200 节点的张量并行配置。</li>
+<li><strong>分词器 + 评测套件</strong>——标准 BPE 分词器加上发布公告中使用的 MMLU、GSM8K、HumanEval、LongBench v2 评测脚本。</li>
+<li><strong>许可证</strong>——所有产物均为 MIT，无商业限制条款，无单独的「仅研究」分级。这把 LongCat-2.0 放在了与 Meta Llama、Mistral 开源模型同一许可证梯队，但比 Llama 社区许可证的 7 亿用户门槛更宽松。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">1.6T 总参数 + MoE 路由仅激活 ~48B 的组合是模型经济性上的关键设计点。总知识容量与闭源旗舰同梯队（GPT-5.6 据传 2T，Claude Sonnet 5 未披露），但推理成本由 48B 激活数封顶，而不是 1.6T 的标题数字。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">自托管 LongCat-2.0：硬件、成本与回本临界点</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">1.6T 的标题数字脱离上下文会误导。自托管<strong>完整的未量化模型</strong>用 BF16 需要约 3.2 TB 显存——多机柜部署，单节点无法承载。实际生产路径分三个层级：</p>
+
+<table class="w-full border-collapse my-6 text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-300 px-3 py-2 text-left">部署层级</th><th class="border border-gray-300 px-3 py-2 text-left">硬件</th><th class="border border-gray-300 px-3 py-2 text-left">显存</th><th class="border border-gray-300 px-3 py-2 text-left">吞吐量</th></tr></thead>
+<tbody>
+<tr><td class="border border-gray-300 px-3 py-2">INT4 量化完整模型</td><td class="border border-gray-300 px-3 py-2">8× H100 80GB 或 4× H200 141GB</td><td class="border border-gray-300 px-3 py-2">~800 GB</td><td class="border border-gray-300 px-3 py-2">~120 tok/s/用户 @ 50 并发</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">BF16 完整模型（推荐）</td><td class="border border-gray-300 px-3 py-2">16× H100 80GB 或 8× H200 141GB</td><td class="border border-gray-300 px-3 py-2">~3.2 TB</td><td class="border border-gray-300 px-3 py-2">~240 tok/s/用户 @ 50 并发</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">LongCat-2-140B 蒸馏</td><td class="border border-gray-300 px-3 py-2">4× H100 80GB 或 2× H200 141GB</td><td class="border border-gray-300 px-3 py-2">~280 GB</td><td class="border border-gray-300 px-3 py-2">~180 tok/s/用户 @ 30 并发</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">LongCat-2-70B 蒸馏</td><td class="border border-gray-300 px-3 py-2">2× H100 80GB 或 1× H200 141GB</td><td class="border border-gray-300 px-3 py-2">~140 GB</td><td class="border border-gray-300 px-3 py-2">~200 tok/s/用户 @ 20 并发</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">按云厂商 spot 价格（RunPod、Lambda Labs、CoreWeave），8x H100 SXM 节点每小时 $24-32。BF16 完整模型部署需要 16x H100，成本翻倍到 $48-64/小时。7x24 生产部署月账单 $35,000-$47,000（不含电力与工程时间）。单位经济性只有当持续利用率保持在 50-60% 以上时才优于公开 API。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>回本临界点计算：</strong>$28/小时的 8x H100 节点，输出 token 单位成本（假设 240 tok/s/用户、50 并发用户——满载）约 $0.0006。30% 利用率下单位成本升至 $0.0021/1K token。OpenRouter 公开路由 $2.40/M 输出 = $0.0024/1K token。<strong>自托管在约 58% 持续利用率时与公开 API 打平。</strong>低于这个数字，公开 API 更便宜。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">通过 OpenRouter 用 LongCat-2.0：零基础设施</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">不想管 GPU 集群的团队，LongCat-2.0 已在 OpenRouter 上线，模型 ID <code>meituan/longcat-2-0-1.6t-moe</code>。预览期的 Owl Alpha 与开源后是同一个模型——区别只是现在还能下载自托管。</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>输入价：</strong>$0.60 / 1M token（约 $0.0006 / 1K）</li>
+<li><strong>输出价：</strong>$2.40 / 1M token（约 $0.0024 / 1K）</li>
+<li><strong>上下文窗口：</strong>1,000,000 token</li>
+<li><strong>工具调用：</strong>OpenAI 兼容 schema，Chat Completions 客户端即插即用</li>
+<li><strong>吞吐量：</strong>服务商管理，未公开 rate-limit 头</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">定价约为 OpenRouter 上 DeepSeek V3 $0.27/M 输入的 2.2 倍，反映 LongCat-2.0 更高的激活参数（48B vs 21B）。1M 上下文窗口是负载的场景，溢价合理——通用对话负载（128K 以下上下文）DeepSeek V3 仍是更便宜的路径。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">LongCat-2.0 vs DeepSeek V3 vs Llama 3.1 405B：成本与能力矩阵</h2>
+
+<table class="w-full border-collapse my-6 text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-300 px-3 py-2 text-left">维度</th><th class="border border-gray-300 px-3 py-2 text-left">LongCat-2.0</th><th class="border border-gray-300 px-3 py-2 text-left">DeepSeek V3</th><th class="border border-gray-300 px-3 py-2 text-left">Llama 3.1 405B</th></tr></thead>
+<tbody>
+<tr><td class="border border-gray-300 px-3 py-2">总参数</td><td class="border border-gray-300 px-3 py-2">1.6T</td><td class="border border-gray-300 px-3 py-2">671B</td><td class="border border-gray-300 px-3 py-2">405B（稠密）</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">单 token 激活</td><td class="border border-gray-300 px-3 py-2">~48B</td><td class="border border-gray-300 px-3 py-2">~21B</td><td class="border border-gray-300 px-3 py-2">405B</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">上下文窗口</td><td class="border border-gray-300 px-3 py-2">1M</td><td class="border border-gray-300 px-3 py-2">128K</td><td class="border border-gray-300 px-3 py-2">128K</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">许可证</td><td class="border border-gray-300 px-3 py-2">MIT</td><td class="border border-gray-300 px-3 py-2">MIT（自定义）</td><td class="border border-gray-300 px-3 py-2">Llama 社区</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">OpenRouter 输入 $/M</td><td class="border border-gray-300 px-3 py-2">$0.60</td><td class="border border-gray-300 px-3 py-2">$0.27</td><td class="border border-gray-300 px-3 py-2">$3.50</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">OpenRouter 输出 $/M</td><td class="border border-gray-300 px-3 py-2">$2.40</td><td class="border border-gray-300 px-3 py-2">$1.10</td><td class="border border-gray-300 px-3 py-2">$3.50</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">自托管最小显存（BF16）</td><td class="border border-gray-300 px-3 py-2">~3.2 TB（多节点）</td><td class="border border-gray-300 px-3 py-2">~1.4 TB（8× H100）</td><td class="border border-gray-300 px-3 py-2">~810 GB（4× H100）</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">MMLU（官方）</td><td class="border border-gray-300 px-3 py-2">88.4</td><td class="border border-gray-300 px-3 py-2">88.5</td><td class="border border-gray-300 px-3 py-2">88.6</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">HumanEval（官方）</td><td class="border border-gray-300 px-3 py-2">86.2</td><td class="border border-gray-300 px-3 py-2">82.6</td><td class="border border-gray-300 px-3 py-2">89.0</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">LongBench v2（长上下文）</td><td class="border border-gray-300 px-3 py-2">62.1</td><td class="border border-gray-300 px-3 py-2">48.7</td><td class="border border-gray-300 px-3 py-2">46.2</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">数字讲一个清晰的故事：LongCat-2.0 在通用基准上与领先者差距在 0.5 分以内，但在<strong>长上下文负载上碾压</strong>（LongBench v2 62.1 vs 48.7，领先 13.4 分）。对长文档 RAG、代码库分析、超出 128K 的多轮 agent 循环，LongCat-2.0 是 2026 年 7 月最强的开源选项。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">自托管实操：30 分钟 RunPod 部署</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">LongCat GitHub 仓库的参考部署使用 vLLM 0.7+ 与张量并行。8x H100 单节点 INT4 量化部署的步骤：</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg my-4 overflow-x-auto"><code># 1. 拉取推理仓库
+git clone https://github.com/meituan-longcat/LongCat-2.0.git
+cd LongCat-2.0
+
+# 2. 从 Hugging Face 拉取 INT4 量化权重
+pip install -U huggingface_hub
+huggingface-cli download meituan-longcat/LongCat-2.0 \
+    --include "longcat-2-int4/*" \
+    --local-dir ./weights-int4
+
+# 3. 启动 vLLM，8 卡张量并行
+vllm serve ./weights-int4/longcat-2-int4 \
+    --tensor-parallel-size 8 \
+    --max-model-len 1000000 \
+    --gpu-memory-utilization 0.92 \
+    --tool-call-parser longcat \
+    --enable-auto-tool-choice \
+    --port 8000
+
+# 4. curl 测试
+curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '&#123;
+    "model": "longcat-2-int4",
+    "messages": [&#123;"role":"user","content":"用中文打个招呼"&#125;],
+    "max_tokens": 200
+  &#125;'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">部署跑成 OpenAI 兼容端点，任何支持 Chat Completions schema 的客户端（LangChain、LlamaIndex、OpenAI SDK 自定义 <code>base_url</code>）零代码改动即可使用。这就是 OpenRouter 路径与自托管路径在应用代码层面功能等价的原因。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">什么时候选哪条路径</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>选 OpenRouter（$0.60/$2.40 每 M）</strong>——负载波动大、原型阶段、持续利用率低于 50%。回本临界点约在持续利用率 58%，低于此公开 API 更便宜。</li>
+<li><strong>选 RunPod / Lambda / CoreWeave 自托管</strong>——高负载（日均 50M+ token）、延迟敏感（TTFB < 100ms）、或数据驻留规则禁止路由经第三方。8x H100 INT4 是保持质量的最低成本自托管配置。</li>
+<li><strong>选 DeepSeek V3</strong>——上下文窗口 128K 以内、单 token 成本优先。DeepSeek V3 比 LongCat-2.0 在公开 API 上便宜 2.2 倍，且无需自托管就有成本优势。</li>
+<li><strong>选 Llama 3.1 405B</strong>——需要稠密模型确定性（无 MoE 路由方差）、能接受 OpenRouter 5.8 倍溢价。Llama 3.1 405B 仍是可信生产工具链最完备的稠密开源模型。</li>
+<li><strong>选 Anthropic Claude Sonnet 5 / OpenAI GPT-5.6</strong>——负载需要 agent 工具调用或 computer-use 绝对前沿。LongCat-2.0 有竞争力但在 OSWorld-Verified 或 BrowseComp 上不是 SOTA。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">7 月 4 日发布的局限性</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">把 LongCat-2.0 当作生产骨干之前有三件事必须知道：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>不支持多模态输入。</strong>LongCat-2.0 是纯文本模型。图文 / 视频输入仍需 Gemini Omni Flash、Claude Sonnet 5 vision 或 Qwen-VL-Plus。截至 2026 年 7 月 6 日美团未公布多模态变体。</li>
+<li><strong>未发布 function-calling 基准。</strong>推理仓库声称支持 OpenAI 兼容工具调用，但美团未公开 BFCL 或 ToolBench 分数。工具调用可靠性在社区评测出炉前视为未验证。</li>
+<li><strong>INT4 质量下降。</strong>INT4 量化版（唯一能塞进单 8x H100 节点的版本）相比 BF16 完整模型大约掉 2-3 MMLU 分。对 88.4 MMLU 底线敏感的负载，BF16 多节点部署不可妥协。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论：强力的长上下文开源选项，不是万能替代</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">美团 LongCat-2.0 是 2026 年迄今最可信的开源 MoE 发布。MIT 协议是真正的（无商业条款），1.6T 总参 / 48B 激活的拆分让其在运营成本上与 DeepSeek V3 同梯队，尽管标题数字更大，1M 上下文窗口解锁了 128K 梯队开源模型一直卡住的场景。两个蒸馏变体（70B 和 140B）提供单节点与双节点部署选项，适合预算受限的团队。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对长上下文 RAG、完整代码库分析、多小时文档处理，LongCat-2.0 是 2026 年 7 月最强的开源权重选择。对 128K 以内通用对话，DeepSeek V3 更便宜、更简单。对 SOTA agent 工具调用，闭源旗舰（Claude Sonnet 5、GPT-5.6 Pro）仍领先。2026 年中聪明的生产架构是多模型路由器——OpenRouter 上 LongCat-2.0 跑长上下文流量、DeepSeek V3 跑通用对话、Claude Sonnet 5 处理最难 5% 负载。这正是 <a href="https://www.freemodel.dev/?utm_source=apirank&utm_medium=article&utm_campaign=longcat-self-host-zh" rel="sponsored noopener" target="_blank">FreeModel API 网关</a> 开箱即用的路由模式，不想自己写路由层的团队可以直接用。</p>`;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">首页</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">教程</a> &rsaquo;
+          <span class="text-gray-700">{zhTitle}</span>
+        </nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">LongCat-2.0 自托管</h3>
+          <p class="text-sm text-blue-800 mb-4">用 vLLM 在自有 GPU 上跑 1.6T MoE 模型。MIT 协议，无商业限制，OpenAI 兼容 API。</p>
+          <a href="https://github.com/meituan-longcat/LongCat-2.0"
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="noopener">
+            GitHub 仓库 &rarr;
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">关键参数</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>提供方：</strong>美团 LongCat 团队</li>
+            <li><strong>参数：</strong>1.6T 总参 / ~48B 激活 MoE</li>
+            <li><strong>上下文窗口：</strong>1,000,000 token</li>
+            <li><strong>许可证：</strong>MIT（无商业限制）</li>
+            <li><strong>OpenRouter 价：</strong>$0.60/M 输入，$2.40/M 输出</li>
+            <li><strong>自托管：</strong>最低 8&times; H100 INT4，BF16 需 16&times; H100</li>
+            <li><strong>模态：</strong>纯文本（截至 2026 年 7 月无视觉）</li>
+            <li><strong>API：</strong>通过 vLLM 提供 OpenAI 兼容接口</li>
+          </ul>
+        </div>
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <h3 class="font-semibold text-amber-900 mb-2">成本优化</h3>
+          <p class="text-sm text-amber-800 mb-3">多模型路由（LongCat + DeepSeek + Claude）场景用 FreeModel API 网关：</p>
+          <a href="https://www.freemodel.dev/?utm_source=apirank&utm_medium=article&utm_campaign=longcat-self-host-zh"
+             class="inline-block bg-amber-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-amber-700 transition-colors" target="_blank" rel="sponsored noopener">
+            FreeModel API 网关 &rarr;
+          </a>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

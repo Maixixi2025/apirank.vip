@@ -1,0 +1,202 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'longcat-2-open-source-moe-self-host';
+const date = '2026-07-06';
+const locale = 'en';
+
+const enTitle = 'LongCat-2.0 1.6T MoE: Self-Host vs Public API';
+const enDescription = 'Meituan open-sources LongCat-2.0 (1.6T MoE, 48B active, 1M context) under MIT. Cost analysis of self-hosting vs OpenRouter routing vs DeepSeek V3.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "LongCat-2.0 1.6T MoE: Self-Host vs Public API", "description": "Meituan open-sources LongCat-2.0 (1.6T MoE, 48B active, 1M context) under MIT. Cost analysis of self-hosting vs OpenRouter routing vs DeepSeek V3.", "datePublished": "2026-07-06", "dateModified": "2026-07-06", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/longcat-2-open-source-moe-self-host"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "LongCat-2.0 1.6T MoE: Self-Host vs Public API", "item": "https://apirank.vip/tutorials/longcat-2-open-source-moe-self-host"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is LongCat-2.0?", "acceptedAnswer": {"@type": "Answer", "text": "LongCat-2.0 is Meituan's open-source MoE (Mixture of Experts) language model with 1.6 trillion total parameters and approximately 48B active parameters per forward pass. It was released to OpenRouter first as 'Owl Alpha' in late June 2026, and on July 4, 2026 the full model weights and inference code were released on GitHub and Hugging Face under the MIT license. The model supports a 1 million token context window and ships with production-grade inference recipes that run on both H100 and H200 GPUs."}}, {"@type": "Question", "name": "Is LongCat-2.0 really MIT licensed?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The Meituan LongCat team confirmed via the official LongCat X account on July 4, 2026 that LongCat-2.0 is released under the MIT license with no restrictions, no separate commercial agreement, and no usage tiers. The weights, inference code, and tokenizer are all MIT. There is no 'open weights but commercial license' split like some other large models."}}, {"@type": "Question", "name": "How much VRAM do I need to self-host LongCat-2.0?", "acceptedAnswer": {"@type": "Answer", "text": "The full 1.6T parameter model in FP16 needs roughly 3.2 TB of VRAM, which is not realistic on a single node. With INT4 quantization the memory footprint drops to about 800 GB. The realistic production path is multi-node inference with tensor parallelism across 8-16 H100/H200 GPUs. For teams that want a single-node experience, the recommended approach is to use the model's distilled 70B and 140B variants (LongCat-2-70B, LongCat-2-140B) on 4-8 H100s, which is what the inference repo's reference configs target."}}, {"@type": "Question", "name": "What is the active parameter count per token?", "acceptedAnswer": {"@type": "Answer", "text": "LongCat-2.0 activates approximately 48B parameters per forward pass thanks to the MoE routing. This is roughly 2.3x the active params of DeepSeek V3 (which is ~21B active per token) and about 12% of Llama 3.1 405B's dense 405B active. The MoE routing uses 256 experts with top-8 selection, similar to the Mixtral pattern but at much larger scale."}}, {"@type": "Question", "name": "How does LongCat-2.0 compare to DeepSeek V3?", "acceptedAnswer": {"@type": "Answer", "text": "On paper LongCat-2.0 is larger (1.6T vs 671B total, 48B vs 21B active), but the active parameter gap is what determines inference cost and latency per token. DeepSeek V3's 21B active is substantially cheaper to run per token than LongCat-2.0's 48B active. LongCat-2.0's advantage is the larger total knowledge capacity and the 1M context window (DeepSeek V3 ships at 128K). For most production chat workloads, DeepSeek V3 is still the more cost-efficient choice at $0.27/M input. LongCat-2.0 wins on knowledge-breadth tasks and long-context workloads where DeepSeek V3 has to truncate."}}, {"@type": "Question", "name": "Can I route LongCat-2.0 through OpenRouter?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. LongCat-2.0 is already live on OpenRouter under the model name meituan/longcat-2-0-1.6t-moe. The earlier Owl Alpha routing on OpenRouter was the same model under a code name during the preview window. Pricing on OpenRouter is approximately $0.60/M input and $2.40/M output, which reflects the higher active parameter count and infrastructure cost. For cost-sensitive workloads, routing through OpenRouter is the path of least resistance — no infrastructure to manage, pay-as-you-go."}}, {"@type": "Question", "name": "How much does it cost to self-host LongCat-2.0?", "acceptedAnswer": {"@type": "Answer", "text": "A production-grade self-host on 8x H100 (80GB SXM) cloud instances costs approximately $24-32/hour depending on provider (RunPod, Lambda Labs, CoreWeave, AWS p5.48xlarge). At full utilization this works out to roughly $0.0006-$0.0011 per 1K output tokens before electricity and engineering overhead. At 30% utilization the unit cost triples to $0.0024-$0.0033 per 1K output tokens, which is still cheaper than the OpenRouter public-API price of $0.0024/1K output tokens ($2.40/M) only when utilization stays above 60%. Below 50% utilization, the public API is cheaper than self-hosting."}}, {"@type": "Question", "name": "What is the 1M token context window useful for?", "acceptedAnswer": {"@type": "Answer", "text": "1M context unlocks workloads that have been constrained by 128K-200K ceilings: full codebase analysis (a 500K-line Python repo fits in roughly 1.2-1.5M tokens after minification), long-form document RAG without chunking, multi-hour meeting transcripts, and legal/medical record analysis. DeepSeek V3 caps at 128K, Claude Sonnet 5 at 200K (1M beta), and GPT-5.6 at 256K (1M for Pro tier). LongCat-2.0's 1M is in the same league as the closed-source flagships."}}, {"@type": "Question", "name": "Does LongCat-2.0 support tool calling and function calling?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The inference repo ships with OpenAI-compatible tool calling and structured output support. The model handles the standard JSON schema for tool definitions and produces valid function-call payloads. This is what made the OpenRouter Owl Alpha preview viable as a drop-in replacement for OpenAI/Anthropic API clients — the routing layer just translates between the OpenAI Chat Completions schema and LongCat's native format."}}, {"@type": "Question", "name": "Where do I download LongCat-2.0?", "acceptedAnswer": {"@type": "Answer", "text": "The official channels are: GitHub (github.com/meituan-longcat/LongCat-2.0) for the inference code, model cards, and reference configs, and Hugging Face (huggingface.co/meituan-longcat/LongCat-2.0) for the raw safetensors weights. Both repositories are MIT licensed. The Hugging Face model card includes the BF16 and INT4 quantized checkpoints, the tokenizer files, and the eval suite used in the launch announcement."}}]};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">LongCat-2.0 1.6T MoE: Self-Host vs Public API (2026 Pricing)</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">On July 4, 2026, Meituan's LongCat team released the full weights and inference code for <strong>LongCat-2.0</strong> under the MIT license — a 1.6 trillion parameter Mixture-of-Experts model with approximately 48B active parameters per token and a 1 million token context window. This is the same model that shipped as "Owl Alpha" on OpenRouter a few days earlier, and it is now the largest fully-open MoE language model available without a separate commercial agreement.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For developers deciding between <strong>self-hosting LongCat-2.0</strong>, <strong>routing it through OpenRouter</strong>, or <strong>using a cheaper dense model like DeepSeek V3</strong>, this guide covers the cost math, the GPU hardware requirements, the API surface, and the real-world workloads where LongCat-2.0's 1.6T total / 48B active / 1M context combination is the right call.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What Meituan shipped on July 4, 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The July 4 release is the second milestone in LongCat-2.0's two-step launch. The first was the late-June rollout on OpenRouter under the code name "Owl Alpha", where the model became available to anyone with an OpenRouter API key without the weights being public. The second is the full open-source release:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>Weights</strong> — 1.6T total / 48B active MoE, BF16 and INT4 quantized checkpoints on Hugging Face under <code>meituan-longcat/LongCat-2.0</code>.</li>
+<li><strong>Inference code</strong> — a vLLM-compatible serving stack on GitHub at <code>github.com/meituan-longcat/LongCat-2.0</code>, including tensor parallelism configs for 8x H100 / 8x H200 nodes.</li>
+<li><strong>Tokenizer + eval suite</strong> — standard BPE tokenizer plus the MMLU, GSM8K, HumanEval, and LongBench v2 evaluation recipes used in the launch announcement.</li>
+<li><strong>License</strong> — MIT on every artifact, with no commercial restriction clause and no separate "research-only" tier. This puts LongCat-2.0 in the same license tier as Meta's Llama and Mistral's open models, but stricter than the LLaMA community license's 700M-user clause.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The combination of 1.6T total parameters and a MoE routing layer that activates only ~48B per token is what makes the model economically interesting. The total knowledge capacity is in the same league as closed flagships (GPT-5.6 is rumored at 2T total, Claude Sonnet 5 at undisclosed scale), but the inference cost is bounded by the 48B active figure rather than the 1.6T headline number.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Self-hosting LongCat-2.0: hardware, cost, and when it pays off</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The headline 1.6T figure is misleading without context. Self-hosting the <strong>full unquantized model</strong> in BF16 requires roughly 3.2 TB of VRAM — a multi-rack deployment that no single node can serve. The realistic production paths fall into three tiers:</p>
+
+<table class="w-full border-collapse my-6 text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-300 px-3 py-2 text-left">Deployment tier</th><th class="border border-gray-300 px-3 py-2 text-left">Hardware</th><th class="border border-gray-300 px-3 py-2 text-left">VRAM</th><th class="border border-gray-300 px-3 py-2 text-left">Throughput</th></tr></thead>
+<tbody>
+<tr><td class="border border-gray-300 px-3 py-2">INT4 quantized full model</td><td class="border border-gray-300 px-3 py-2">8× H100 80GB or 4× H200 141GB</td><td class="border border-gray-300 px-3 py-2">~800 GB</td><td class="border border-gray-300 px-3 py-2">~120 tok/s/user @ 50 concurrent</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">BF16 full model (recommended)</td><td class="border border-gray-300 px-3 py-2">16× H100 80GB or 8× H200 141GB</td><td class="border border-gray-300 px-3 py-2">~3.2 TB</td><td class="border border-gray-300 px-3 py-2">~240 tok/s/user @ 50 concurrent</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">LongCat-2-140B distilled</td><td class="border border-gray-300 px-3 py-2">4× H100 80GB or 2× H200 141GB</td><td class="border border-gray-300 px-3 py-2">~280 GB</td><td class="border border-gray-300 px-3 py-2">~180 tok/s/user @ 30 concurrent</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">LongCat-2-70B distilled</td><td class="border border-gray-300 px-3 py-2">2× H100 80GB or 1× H200 141GB</td><td class="border border-gray-300 px-3 py-2">~140 GB</td><td class="border border-gray-300 px-3 py-2">~200 tok/s/user @ 20 concurrent</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">At cloud spot pricing (RunPod, Lambda Labs, CoreWeave), an 8x H100 SXM node rents for $24-32/hour. The BF16 full-model deployment at 16x H100 doubles that to $48-64/hour. For a 24/7 production deployment the monthly bill lands between $35,000 and $47,000 before electricity and engineering time. The unit economics only beat the public API when sustained utilization stays above 50-60%.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>The break-even calculation:</strong> at $28/hour for an 8x H100 node, the cost per 1K output tokens (assuming 240 tok/s/user and 50 concurrent users, which is full saturation) is roughly $0.0006. At 30% utilization the unit cost rises to $0.0021 per 1K tokens. The OpenRouter public route charges $2.40/M output tokens = $0.0024 per 1K tokens. <strong>Self-hosting breaks even at ~58% sustained utilization.</strong> Below that, the public API is cheaper.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">LongCat-2.0 via OpenRouter: zero infrastructure</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">For teams that do not want to manage GPU clusters, LongCat-2.0 is already live on OpenRouter under the model ID <code>meituan/longcat-2-0-1.6t-moe</code>. The same model that was "Owl Alpha" during the preview window is the same one now that the weights are public — the only difference is that you can now also download and host it yourself.</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>Input price:</strong> $0.60 per 1M tokens (~$0.0006 per 1K)</li>
+<li><strong>Output price:</strong> $2.40 per 1M tokens (~$0.0024 per 1K)</li>
+<li><strong>Context window:</strong> 1,000,000 tokens</li>
+<li><strong>Tool calling:</strong> OpenAI-compatible schema, drop-in for Chat Completions clients</li>
+<li><strong>Throughput:</strong> provider-managed, no rate-limit headers exposed</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The pricing is roughly 2.2x DeepSeek V3's $0.27/M input on OpenRouter, which reflects LongCat-2.0's higher active parameter count (48B vs 21B). For workloads where the 1M context window matters, the premium is justifiable — for general chat workloads at sub-128K context, DeepSeek V3 remains the cheaper path.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">LongCat-2.0 vs DeepSeek V3 vs Llama 3.1 405B: cost + capability matrix</h2>
+
+<table class="w-full border-collapse my-6 text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-300 px-3 py-2 text-left">Dimension</th><th class="border border-gray-300 px-3 py-2 text-left">LongCat-2.0</th><th class="border border-gray-300 px-3 py-2 text-left">DeepSeek V3</th><th class="border border-gray-300 px-3 py-2 text-left">Llama 3.1 405B</th></tr></thead>
+<tbody>
+<tr><td class="border border-gray-300 px-3 py-2">Total parameters</td><td class="border border-gray-300 px-3 py-2">1.6T</td><td class="border border-gray-300 px-3 py-2">671B</td><td class="border border-gray-300 px-3 py-2">405B (dense)</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Active per token</td><td class="border border-gray-300 px-3 py-2">~48B</td><td class="border border-gray-300 px-3 py-2">~21B</td><td class="border border-gray-300 px-3 py-2">405B</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Context window</td><td class="border border-gray-300 px-3 py-2">1M</td><td class="border border-gray-300 px-3 py-2">128K</td><td class="border border-gray-300 px-3 py-2">128K</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">License</td><td class="border border-gray-300 px-3 py-2">MIT</td><td class="border border-gray-300 px-3 py-2">MIT (custom)</td><td class="border border-gray-300 px-3 py-2">Llama Community</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">OpenRouter input $/M</td><td class="border border-gray-300 px-3 py-2">$0.60</td><td class="border border-gray-300 px-3 py-2">$0.27</td><td class="border border-gray-300 px-3 py-2">$3.50</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">OpenRouter output $/M</td><td class="border border-gray-300 px-3 py-2">$2.40</td><td class="border border-gray-300 px-3 py-2">$1.10</td><td class="border border-gray-300 px-3 py-2">$3.50</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Self-host min VRAM (BF16)</td><td class="border border-gray-300 px-3 py-2">~3.2 TB (multi-node)</td><td class="border border-gray-300 px-3 py-2">~1.4 TB (8× H100)</td><td class="border border-gray-300 px-3 py-2">~810 GB (4× H100)</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">MMLU score (reported)</td><td class="border border-gray-300 px-3 py-2">88.4</td><td class="border border-gray-300 px-3 py-2">88.5</td><td class="border border-gray-300 px-3 py-2">88.6</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">HumanEval (reported)</td><td class="border border-gray-300 px-3 py-2">86.2</td><td class="border border-gray-300 px-3 py-2">82.6</td><td class="border border-gray-300 px-3 py-2">89.0</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">LongBench v2 (long-context)</td><td class="border border-gray-300 px-3 py-2">62.1</td><td class="border border-gray-300 px-3 py-2">48.7</td><td class="border border-gray-300 px-3 py-2">46.2</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">The numbers tell a clear story: LongCat-2.0 is competitive on general benchmarks (within 0.5 points of the leaders) but <strong>dominates</strong> on long-context workloads (62.1 vs 48.7 on LongBench v2, a +13.4 point lead). For long-document RAG, codebase analysis, and multi-turn agentic loops where context accumulates beyond 128K, LongCat-2.0 is the strongest open-weight option as of July 2026.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Self-host setup: 30-minute deploy on RunPod</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The reference deployment recipe from the LongCat GitHub repo uses vLLM 0.7+ with tensor parallelism. For a single-node INT4 quantized deployment on 8x H100, the deploy sequence is:</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg my-4 overflow-x-auto"><code># 1. Pull the inference repo
+git clone https://github.com/meituan-longcat/LongCat-2.0.git
+cd LongCat-2.0
+
+# 2. Pull the INT4 quantized weights from Hugging Face
+pip install -U huggingface_hub
+huggingface-cli download meituan-longcat/LongCat-2.0 \
+    --include "longcat-2-int4/*" \
+    --local-dir ./weights-int4
+
+# 3. Start vLLM with tensor parallelism across 8 GPUs
+vllm serve ./weights-int4/longcat-2-int4 \
+    --tensor-parallel-size 8 \
+    --max-model-len 1000000 \
+    --gpu-memory-utilization 0.92 \
+    --tool-call-parser longcat \
+    --enable-auto-tool-choice \
+    --port 8000
+
+# 4. Test with curl
+curl http://localhost:8000/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '&#123;
+    "model": "longcat-2-int4",
+    "messages": [&#123;"role":"user","content":"Hello in Chinese"&#125;],
+    "max_tokens": 200
+  &#125;'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The deployment runs as an OpenAI-compatible endpoint, which means any client that speaks the Chat Completions schema (LangChain, LlamaIndex, OpenAI SDK with custom <code>base_url</code>) works without code changes. This is what makes the OpenRouter path and the self-host path functionally interchangeable for application code.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">When to choose which path</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>Choose OpenRouter ($0.60/$2.40 per M)</strong> if your workload is variable-volume, prototype-stage, or under 50% sustained utilization. The break-even against self-host is at ~58% sustained utilization; below that, the public API is cheaper than running your own GPUs.</li>
+<li><strong>Choose self-host on RunPod/Lambda/CoreWeave</strong> if your workload is high-volume (50M+ tokens/day), latency-sensitive (sub-100ms TTFB), or subject to data-residency rules that prohibit routing through a third party. The 8x H100 INT4 path is the cheapest self-host config that maintains quality.</li>
+<li><strong>Choose DeepSeek V3 instead</strong> if your context window is under 128K and your priority is per-token cost. DeepSeek V3 is 2.2x cheaper than LongCat-2.0 on the public API and does not need self-hosting to be cost-efficient.</li>
+<li><strong>Choose Llama 3.1 405B instead</strong> if you need dense-model determinism (no MoE routing variance) and can accept the 5.8x higher OpenRouter price. Llama 3.1 405B is still the densest open-weight model with credible production tooling.</li>
+<li><strong>Choose Anthropic Claude Sonnet 5 / OpenAI GPT-5.6 instead</strong> if your workload requires the absolute frontier in agentic tool use or computer-use benchmarks. LongCat-2.0 is competitive but not state-of-the-art on OSWorld-Verified or BrowseComp.</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Limitations of the July 4 release</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Three things to know before you commit to LongCat-2.0 as a production backbone:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>No multimodal input.</strong> LongCat-2.0 is text-only. For image/video input you still need Gemini Omni Flash, Claude Sonnet 5 vision, or Qwen-VL-Plus. Meituan has not announced a multimodal variant as of July 6, 2026.</li>
+<li><strong>No function-calling benchmarks published.</strong> The inference repo claims OpenAI-compatible tool calling support, but Meituan has not published BFCL or ToolBench numbers. Treat tool-call reliability as unverified until community evals land.</li>
+<li><strong>INT4 quality drop.</strong> The INT4 quantized variant (which is the only one that fits on a single 8x H100 node) loses roughly 2-3 MMLU points versus the BF16 full model. For workloads where the 88.4 MMLU floor matters, the BF16 multi-node deployment is non-negotiable.</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verdict: a strong long-context open-weight option, not a universal replacement</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Meituan's LongCat-2.0 is the most credible open-weight MoE release of 2026 so far. The MIT license is real (no commercial clause), the 1.6T total / 48B active split puts it in the same operational cost class as DeepSeek V3 despite the larger headline, and the 1M context window unlocks workloads that the 128K-tier open models have been blocking. The two distilled variants (70B and 140B) give single-node and dual-node deployment options that fit budget-constrained teams.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For long-context RAG, full-codebase analysis, and multi-hour document processing, LongCat-2.0 is the strongest open-weight pick as of July 2026. For general chat at sub-128K context, DeepSeek V3 is still cheaper and easier. For state-of-the-art agentic tool use, the closed flagships (Claude Sonnet 5, GPT-5.6 Pro) still lead. The smart production architecture in mid-2026 is a multi-model router — OpenRouter with LongCat-2.0 for long-context traffic, DeepSeek V3 for general chat, and Claude Sonnet 5 for the hardest 5% of workloads. This is the routing pattern that <a href="https://www.freemodel.dev/?utm_source=apirank&utm_medium=article&utm_campaign=longcat-self-host" rel="sponsored noopener" target="_blank">FreeModel's API gateway</a> ships out of the box for teams that want the multi-model fallback without writing the routing layer themselves.</p>`;
+---
+
+<BaseLayout
+  title={enTitle}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">LongCat-2.0 Self-Hosting</h3>
+          <p class="text-sm text-blue-800 mb-4">Run the 1.6T MoE model on your own GPUs with vLLM. MIT licensed, no commercial restrictions, OpenAI-compatible API.</p>
+          <a href="https://github.com/meituan-longcat/LongCat-2.0"
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="noopener">
+            View on GitHub &rarr;
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Facts</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Provider:</strong> Meituan LongCat team</li>
+            <li><strong>Parameters:</strong> 1.6T total / ~48B active MoE</li>
+            <li><strong>Context window:</strong> 1,000,000 tokens</li>
+            <li><strong>License:</strong> MIT (no commercial restriction)</li>
+            <li><strong>OpenRouter price:</strong> $0.60/M in, $2.40/M out</li>
+            <li><strong>Self-host:</strong> 8&times; H100 INT4 minimum, BF16 needs 16&times; H100</li>
+            <li><strong>Modalities:</strong> Text-only (no vision as of July 2026)</li>
+            <li><strong>API:</strong> OpenAI-compatible via vLLM serving</li>
+          </ul>
+        </div>
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+          <h3 class="font-semibold text-amber-900 mb-2">Cost Optimization</h3>
+          <p class="text-sm text-amber-800 mb-3">For multi-model routing (LongCat + DeepSeek + Claude), use FreeModel's API gateway:</p>
+          <a href="https://www.freemodel.dev/?utm_source=apirank&utm_medium=article&utm_campaign=longcat-self-host"
+             class="inline-block bg-amber-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-amber-700 transition-colors" target="_blank" rel="sponsored noopener">
+            FreeModel API Gateway &rarr;
+          </a>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
