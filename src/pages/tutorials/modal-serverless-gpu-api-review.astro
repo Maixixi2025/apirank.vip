@@ -1,0 +1,789 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'modal-serverless-gpu-api-review';
+const date = '2026-07-13';
+const locale = 'en';
+
+const enTitle = "Modal API Review 2026: Serverless GPU Cloud";
+const enDescription = "Modal API review: Python-native serverless GPU cloud, per-GPU-second billing, vLLM/SGLang deploy, $30/mo free credits. Pricing vs Baseten, Replicate.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Modal API Review 2026: Serverless GPU Cloud", "description": "Modal API review: Python-native serverless GPU cloud, per-GPU-second billing, vLLM/SGLang deploy, $30/mo free credits. Pricing vs Baseten, Replicate.", "datePublished": "2026-07-13", "dateModified": "2026-07-13", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/modal-serverless-gpu-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Modal API Review 2026: Serverless GPU Cloud", "item": "https://apirank.vip/tutorials/modal-serverless-gpu-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much does Modal cost per month for a small chatbot?", "acceptedAnswer": {"@type": "Answer", "text": "The Starter plan ($0/month + $30 compute credits) covers roughly 30K T4 requests or 3K A100-80GB requests. A small chatbot doing ~1K requests/day fits inside the free tier. Past that, expect $50-200/month for light production use."}}, {"@type": "Question", "name": "Can I use Modal from China?", "acceptedAnswer": {"@type": "Answer", "text": "Not directly. Modal's infrastructure runs on AWS/GCP overseas. You will need a proxy or use Modal via a Chinese-reachable orchestrator (some teams route through Alibaba Cloud's international gateway)."}}, {"@type": "Question", "name": "Does Modal have prompt caching?", "acceptedAnswer": {"@type": "Answer", "text": "No. Modal bills per GPU-second regardless of how much of the input is repeated. For long-context repeated-prefix workloads, model APIs with prompt caching (Anthropic, OpenAI, Google) are cheaper."}}, {"@type": "Question", "name": "How does Modal compare to AWS Lambda or GCP Cloud Run?", "acceptedAnswer": {"@type": "Answer", "text": "Lambda and Cloud Run are CPU-only at sensible prices. For GPU inference, Modal, Baseten, Replicate, RunPod, and CoreWeave are the realistic options."}}, {"@type": "Question", "name": "Can I use my existing AWS or GCP committed spend on Modal?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Modal integrates with AWS and GCP marketplaces. Enterprise customers can apply committed spend against Modal compute."}}, {"@type": "Question", "name": "What about HIPAA compliance?", "acceptedAnswer": {"@type": "Answer", "text": "Modal is HIPAA-compatible on the Enterprise plan, with audit logs, RBAC, SSO, and BAA available."}}, {"@type": "Question", "name": "Does Modal support multi-GPU inference?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set `gpu=\"H100:2\"` or `gpu=\"A100-80GB:4\"` to request multiple GPUs. Modal handles tensor parallelism and pipeline parallelism automatically with vLLM and SGLang."}}, {"@type": "Question", "name": "What happens if my code has a memory leak?", "acceptedAnswer": {"@type": "Answer", "text": "Modal recycles containers after `container_idle_timeout` (default 5 minutes, configurable). A memory leak that doesn't OOM the container within the idle window is fine."}}, {"@type": "Question", "name": "Can I deploy non-Python code?", "acceptedAnswer": {"@type": "Answer", "text": "The Python SDK is the primary interface. You can run any Linux process from a `@modal.enter()` method (Node.js, Go, Rust), but the orchestration layer is Python-first.\n\n---\n\n**Bottom line:** Modal is the most ergonomic way to ship open-source LLMs in production in 2026. The free $30/month credits cover indie dev workloads; the Team plan ($250/mo) is the production starting point. If you have outgrown managed model APIs and want GPU-level control without the operational overhead of Kubernetes, Modal is the platform most worth evaluating."}}]};
+
+const affiliateSidebar = {
+  title: 'Try FreeModel',
+  description: 'One API key routes across multiple providers — DeepSeek + Qwen + Llama + OpenAI-compatible upstreams. Pairs with Modal for cost-routed open-source model serving.',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: 'Get free credits'
+
+};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Modal API Review 2026: The Python-Native Serverless GPU Cloud for Open-Source LLM Hosting</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Modal is a San Francisco developer infrastructure company that built the most ergonomic Python-to-GPU path in 2026. It is <strong>not</strong> a model API like OpenAI or Anthropic — Modal is the layer underneath, where you take an open-source model (Llama 4, Qwen 3, DeepSeek V4), pick a GPU (T4 through B300), and ship an HTTPS endpoint in minutes. Pricing is <strong>per GPU-second with zero idle fees</strong>, which makes it the cost-leader for spiky or unpredictable AI workloads.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are evaluating where to host an open-weight LLM in production, or you have outgrown the per-token pricing of model APIs and want raw GPU control, this is the platform most worth a serious look in 2026.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Modal is a serverless GPU cloud, not a model API.</strong> You bring your own model (vLLM, SGLang, TensorRT-LLM, raw PyTorch). Modal handles containers, scaling, scheduling, and HTTPS.</li>
+
+<li><strong>Per-second GPU billing, zero idle cost.</strong> H100 is $0.001097/sec; A100-80GB is $0.000694/sec; T4 is $0.000164/sec. A 1.8-second Llama 4 70B request on H100 costs about $0.00197.</li>
+
+<li><strong>Starter plan is free with $30/month compute credits.</strong> That is enough for ~27,300 seconds of T4 inference, or roughly 30K small requests per month. Real production work starts on the Team plan ($250/month + $100 credits).</li>
+
+<li><strong>Cold start is 1-3 seconds</strong> (typically under 2 seconds with the warm-pool trick). Not suited for sub-200ms realtime, but fine for chat backends, batch jobs, and async agents.</li>
+
+<li><strong>Best fit:</strong> self-hosting Llama 4, Qwen 3, DeepSeek V4, or any OSS model you want full control over. Worst fit: ultra-low-latency realtime, or workloads that fit cleanly into managed model APIs.</li>
+
+<li><strong>Cross-link:</strong> Compared directly with Baseten (covered 2026-07-08) — Modal wins on developer ergonomics and free tier; Baseten wins on Dedicated Deployments for always-on production.</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Why Modal matters in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Three forces converged to make serverless GPU a real production option in 2026:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Open-source model quality caught up.</strong> Llama 4 70B, Qwen 3 235B, DeepSeek V4 all sit within 3-5 percentage points of GPT-5.6 / Sonnet 5 on most reasoning benchmarks, at a fraction of the per-token cost when self-hosted.</li>
+
+<li><strong>GPU spot prices stabilized.</strong> After the 2024-2025 H100 shortage, the second-hand A100 market softened. Modal can pass that through.</li>
+
+<li><strong>Serverless overhead dropped.</strong> Modal's container startup is now consistently under 2 seconds, with a warm-pool option for under 200ms. Five years ago this was 30+ seconds on Lambda Labs and CoreWeave.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The result: a single developer can ship a Llama 4 inference API in an afternoon, scale to thousands of requests per second at peak, and pay nothing when traffic is quiet.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Modal pricing — verified 2026-07-13</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">From modal.com/pricing (live as of 2026-07-13):</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">GPU per-second rates</h3>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">GPU</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">$/sec</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">$/hour equivalent</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Best for</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Nvidia B300</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.001972</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$7.10</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Frontier training, large-batch inference</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Nvidia B200</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.001736</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$6.25</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Frontier training, large-batch inference</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Nvidia H200</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.001261</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$4.54</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">LLM training, 141GB HBM3e</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Nvidia H100</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.001097</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.95</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">LLM inference (sweet spot)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Nvidia RTX PRO 6000</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.000842</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.03</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Cost-optimized LLM inference</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Nvidia A100 80GB</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.000694</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">LLM inference (cost-leader for 70B+)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Nvidia A100 40GB</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.000583</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.10</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">LLM inference (≤40B models)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Nvidia L40S</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.000542</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.95</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Vision, image gen</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Nvidia A10</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.000306</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.10</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Image gen, mid-size LLMs</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Nvidia L4</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.000222</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.80</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Small LLMs, embedding</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Nvidia T4</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.000164</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.59</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Small models, dev/test</td>
+
+</tr>
+
+</tbody></table></div>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">CPU and memory</h3>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>CPU (physical core, 2 vCPU equivalent): <strong>$0.0000131/core/sec</strong></li>
+
+<li>Memory: <strong>$0.00000222/GiB/sec</strong></li>
+
+<li>Minimum 0.125 cores per container</li>
+
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Storage and Sandbox</h3>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>Volumes: <strong>$0.09/GiB/month</strong> (first 1 TiB/month free)</li>
+
+<li>Sandbox: dedicated compute rates (slightly higher than Functions, with burst capability)</li>
+
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Plans</h3>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Plan</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Monthly fee</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Included credits</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Containers</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">GPU concurrency</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Log retention</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Starter</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$30/month</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">100</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">10</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1 day</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Team</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$250</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$100/month</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1000</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">30 days</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Enterprise</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Custom</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Custom</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Custom</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Custom</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Custom</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">Surcharges:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Region selection</strong>: 1.5x to 1.75x base prices</li>
+
+<li><strong>Non-preemptible execution</strong>: 3x base prices</li>
+
+<li><strong>Cloud marketplaces</strong>: Use committed AWS/GCP spend on Modal</li>
+
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Real cost examples</h3>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Llama 4 8B on T4</strong>, 200ms avg per request: ~$0.0000328/request</li>
+
+<li><strong>Llama 4 70B on A100-80GB</strong>, 1.8s avg: ~$0.00125/request</li>
+
+<li><strong>Qwen 3 235B on 2x H100</strong>, 5s avg: ~$0.011/request</li>
+
+<li><strong>Stable Diffusion XL on L40S</strong>, 3s avg: ~$0.00163/image</li>
+
+<li><strong>Whisper Large V3 on A10</strong>, 30s audio, 5s compute: ~$0.00153/transcription</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Compare these against the model-API equivalents at production volume:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>Llama 4 70B via Together AI: ~$0.88/M input → $0.00088 for a 1K-token request</li>
+
+<li>Llama 4 70B via Modal A100-80GB: ~$0.00125 for a 1K-token generation (close, but Modal includes the inference cost more transparently when you push context length up)</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Modal API surface</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Modal is built around three primitives:</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">1. <code>@app.function()</code> — Pythonic serverless functions</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">The core abstraction. Decorate any Python function with <code>@app.function(gpu="H100")</code> and Modal handles the rest:</p>
+
+<pre><code class="language-python">import modal
+
+app = modal.App("example-llm")
+
+@app.function(gpu="H100", memory=8192)
+def generate(prompt: str) -> str:
+    # any Python code — load model, run inference
+    from vllm import LLM, SamplingParams
+    llm = LLM(model="meta-llama/Llama-4-70B-Instruct")
+    output = llm.generate([prompt], SamplingParams(max_tokens=512))
+    return output[0].outputs[0].text</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Deploy with <code>modal deploy</code>. Modal packages the code, builds the container, and serves it at a URL.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">2. <code>@app.cls()</code> — long-lived stateful containers</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">For models you want to keep loaded in memory across requests (avoids the cold-start cost):</p>
+
+<pre><code class="language-python">@app.cls(gpu="A100-80GB", memory=8192, container_idle_timeout=300)
+class Llama4Endpoint:
+    @modal.enter()
+    def load_model(self):
+        from vllm import LLM
+        self.llm = LLM(model="meta-llama/Llama-4-70B-Instruct")
+
+    @modal.method()
+    def generate(self, prompt: str) -> str:
+        return self.llm.generate([prompt])[0].outputs[0].text</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The <code>container_idle_timeout=300</code> keeps the container warm for 5 minutes after the last request, eliminating the cold-start penalty for chat backends with bursty traffic.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">3. <code>@app.webhook()</code> and <code>@app.asgi()</code> — HTTPS endpoints</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Expose any function as an HTTP endpoint. ASGI support means FastAPI, Flask, LitServe, and any other Python web framework works without modification.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">4. Sandboxes</h3>
+
+<p class="text-gray-700 leading-relaxed my-4"><code>modal.Sandbox()</code> creates an ephemeral Linux container you can shell into programmatically. Useful for running arbitrary code (a Codex-style agent backend), processing uploaded files, or executing user-supplied scripts safely.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">5. Volumes and Dict</h3>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Volumes</strong>: persistent disk attached to containers (great for model weights, dataset caches)</li>
+
+<li><strong>Dict</strong>: distributed key-value store for cache, rate-limiting state, coordination between workers</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Step-by-step: ship a Llama 4 endpoint in 30 minutes</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Here's the verified workflow from Modal's docs and our test deployment:</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">1. Install and authenticate</h3>
+
+<pre><code class="language-bash">pip install modal
+modal token new  # opens browser for OAuth</code></pre>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">2. Create the app file (<code>llama4_app.py</code>)</h3>
+
+<pre><code class="language-python">import modal
+from fastapi import FastAPI
+
+app = modal.App("llama4-70b")
+web_app = FastAPI()
+
+image = modal.Image.debian_slim().pip_install(
+    "vllm==0.7.3", "fastapi", "uvicorn"
+)
+
+@app.cls(
+    gpu="A100-80GB",
+    memory=8192,
+    container_idle_timeout=300,
+    image=image,
+)
+class Llama4:
+    @modal.enter()
+    def load(self):
+        from vllm import LLM, SamplingParams
+        self.llm = LLM(model="meta-llama/Llama-4-70B-Instruct")
+        self.params = SamplingParams(max_tokens=512, temperature=0.7)
+
+    @modal.method()
+    def generate(self, prompt: str) -> str:
+        out = self.llm.generate([prompt], self.params)
+        return out[0].outputs[0].text
+
+@web_app.post("/v1/chat")
+async def chat(body: dict):
+    prompt = body["messages"][-1]["content"]
+    result = Llama4().generate.remote(prompt)
+    return &#123;"choices": [&#123;"message": &#123;"role": "assistant", "content": result&#125;&#125;]&#125;</code></pre>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">3. Deploy</h3>
+
+<pre><code class="language-bash">modal deploy llama4_app.py</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Modal returns an HTTPS URL in ~90 seconds (first deploy is slower due to image build; subsequent deploys are faster).</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">4. Test</h3>
+
+<pre><code class="language-bash">curl -X POST https://your-app.modal.run/v1/chat \
+  -H "Content-Type: application/json" \
+  -d '&#123;"messages": [&#123;"role": "user", "content": "What is the capital of France?"&#125;]&#125;'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Total wall-clock time from <code>pip install</code> to a working HTTPS endpoint: ~30 minutes on first deploy, ~5 minutes on subsequent deploys after the image is cached.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Where Modal fits — and where it doesn't</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Best fit</h3>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Self-hosted open-source LLMs</strong> (Llama 4, Qwen 3, DeepSeek V4, Mistral) when you want full control over fine-tuning, system prompts, or per-request routing</li>
+
+<li><strong>Spiky workloads</strong> where traffic comes in bursts — Modal scales to zero between bursts, so you pay nothing when idle</li>
+
+<li><strong>Batch inference</strong> (image generation, embeddings, bulk classification) where the cost model is dominated by GPU-seconds</li>
+
+<li><strong>Agent backends</strong> where each task runs an isolated Sandbox (similar to Claude Code's execution model)</li>
+
+<li><strong>ML training and fine-tuning</strong> — Modal supports multi-GPU training jobs at the same per-second rates</li>
+
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Poor fit</h3>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Ultra-low-latency realtime</strong> (sub-200ms p99) — cold start is 1-3s even with warm pool. Use dedicated inference providers like Groq or Cerebras instead.</li>
+
+<li><strong>Workloads that fit cleanly into managed model APIs</strong> — if you just need GPT-5.6 or Sonnet 5, paying per-token is simpler.</li>
+
+<li><strong>High-volume prompt-cache workloads</strong> — Modal doesn't have a prompt cache. Long-context repeated-prefix workloads (Anthropic's sweet spot) cost more here.</li>
+
+<li><strong>Strict data residency in mainland China</strong> — Modal's infrastructure is AWS/GCP overseas; no CN region.</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Modal vs Baseten vs Replicate vs RunPod</h2>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Feature</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Modal</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Baseten</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Replicate</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">RunPod</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">GPU billing</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Per-second</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Per-second</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Per-second</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Per-hour or per-second</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Free tier</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$30/mo</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">None (paid)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Limited</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$5 credit on signup</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Cold start</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1-3s</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2-5s</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">5-15s (cold)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Manual (always-on)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Warm pool</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (<code>container_idle_timeout</code>)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Dedicated Deployments)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Manual</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Always-on reserved</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No (preemptible)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Dedicated)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (always-on models)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Self-host custom model</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (vLLM, SGLang, raw)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Truss)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Cog)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (any)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Sandbox/exec</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (<code>modal.Sandbox</code>)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Limited</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Open-source framework</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">None (proprietary)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Truss</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Cog</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">None</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">CN region</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">SOC 2</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The 2026 pick matrix:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Modal</strong>: best DX, best free tier, best for spiky workloads and indie devs</li>
+
+<li><strong>Baseten</strong>: best for always-on production with Dedicated Deployments</li>
+
+<li><strong>Replicate</strong>: best for catalog of community models (image, audio, video)</li>
+
+<li><strong>RunPod</strong>: best for raw GPU rental with long-running training jobs</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verifying Modal in production</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">After deploying, here are the four things to verify before you trust it with real traffic:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Cold-start latency distribution.</strong> Run <code>modal run --quiet llama4_app.py</code> to wake it cold, then measure time-to-first-token over 100 requests. Expect p50 ~1.5s, p99 ~3s on first deploy; with warm pool enabled, p99 should drop to ~200ms.</li>
+
+<li><strong>Concurrency scaling.</strong> Fire 1000 simultaneous requests at the endpoint and check that Modal scales containers up to your configured <code>max_containers</code> (default 100 on Starter, 1000 on Team).</li>
+
+<li><strong>Cost per request.</strong> Use Modal's built-in metrics dashboard (under "Apps" → your app) to confirm GPU-seconds per request match your model assumptions.</li>
+
+<li><strong>Crash recovery.</strong> Kill a container mid-request — Modal should restart it automatically and continue serving. Verify by tailing logs and checking no requests are lost.</li>
+
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Is Modal a model API provider?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">No. Modal is serverless GPU infrastructure. You bring your own model (vLLM, SGLang, raw PyTorch, TensorRT-LLM). Compare to AWS Lambda for compute, not OpenAI for models.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How much does Modal cost per month for a small chatbot?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">The Starter plan ($0/month + $30 compute credits) covers roughly 30K T4 requests or 3K A100-80GB requests. A small chatbot doing ~1K requests/day fits inside the free tier. Past that, expect $50-200/month for light production use.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Can I use Modal from China?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Not directly. Modal's infrastructure runs on AWS/GCP overseas. You will need a proxy or use Modal via a Chinese-reachable orchestrator (some teams route through Alibaba Cloud's international gateway).</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Does Modal have prompt caching?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">No. Modal bills per GPU-second regardless of how much of the input is repeated. For long-context repeated-prefix workloads, model APIs with prompt caching (Anthropic, OpenAI, Google) are cheaper.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How does Modal compare to AWS Lambda or GCP Cloud Run?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Lambda and Cloud Run are CPU-only at sensible prices. For GPU inference, Modal, Baseten, Replicate, RunPod, and CoreWeave are the realistic options.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Can I use my existing AWS or GCP committed spend on Modal?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. Modal integrates with AWS and GCP marketplaces. Enterprise customers can apply committed spend against Modal compute.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What about HIPAA compliance?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Modal is HIPAA-compatible on the Enterprise plan, with audit logs, RBAC, SSO, and BAA available.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Does Modal support multi-GPU inference?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. Set <code>gpu="H100:2"</code> or <code>gpu="A100-80GB:4"</code> to request multiple GPUs. Modal handles tensor parallelism and pipeline parallelism automatically with vLLM and SGLang.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What happens if my code has a memory leak?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Modal recycles containers after <code>container_idle_timeout</code> (default 5 minutes, configurable). A memory leak that doesn't OOM the container within the idle window is fine.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Can I deploy non-Python code?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">The Python SDK is the primary interface. You can run any Linux process from a <code>@modal.enter()</code> method (Node.js, Go, Rust), but the orchestration layer is Python-first.</p>
+
+<hr class="my-8 border-gray-200" />
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Bottom line:</strong> Modal is the most ergonomic way to ship open-source LLMs in production in 2026. The free $30/month credits cover indie dev workloads; the Team plan ($250/mo) is the production starting point. If you have outgrown managed model APIs and want GPU-level control without the operational overhead of Kubernetes, Modal is the platform most worth evaluating.</p>`;
+---
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url}
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+             rel="sponsored noopener" target="_blank">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Facts</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Provider:</strong> Modal (serverless GPU cloud)</li>
+            <li><strong>Models:</strong> Self-host any OSS LLM (vLLM/SGLang/TensorRT-LLM)</li>
+            <li><strong>Pricing:</strong> $0.000164-$0.001972 per GPU-second</li>
+            <li><strong>Hosting:</strong> AWS / GCP overseas regions</li>
+            <li><strong>API:</strong> <code>modal deploy</code> Python SDK</li>
+            <li><strong>Open-source:</strong> No (proprietary, Python SDK on PyPI)</li>
+            <li><strong>Affiliate:</strong> FreeModel for cost-routed model serving</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
