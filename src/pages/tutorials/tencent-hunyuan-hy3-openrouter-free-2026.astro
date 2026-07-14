@@ -1,0 +1,531 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'tencent-hunyuan-hy3-openrouter-free-2026';
+const date = '2026-07-14';
+const locale = 'en';
+
+const enTitle = "Tencent Hunyuan Hy3 API: Free on OpenRouter (7-21)";
+const enDescription = "Tencent Hy3 295B MoE (21B active) is free on OpenRouter until 2026-07-21. Pricing, 256K context, vs DeepSeek-V4 Flash.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Tencent Hunyuan Hy3 API: Free on OpenRouter (7-21)", "description": "Tencent Hy3 295B MoE (21B active) is free on OpenRouter until 2026-07-21. Pricing, 256K context, vs DeepSeek-V4 Flash.", "datePublished": "2026-07-14", "dateModified": "2026-07-14", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/tencent-hunyuan-hy3-openrouter-free-2026"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Tencent Hunyuan Hy3 API: Free on OpenRouter (7-21)", "item": "https://apirank.vip/tutorials/tencent-hunyuan-hy3-openrouter-free-2026"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "When does the free Tencent Hy3 tier on OpenRouter end?", "acceptedAnswer": {"@type": "Answer", "text": "The `tencent/hy3:free` model on OpenRouter is scheduled for deprecation on 2026-07-21T16:00:00Z. After that timestamp, calls will return an error and you must switch to the paid `tencent/hy3` endpoint ($0.14/M input, $0.58/M output) or another OpenRouter model. The window is approximately 15 days from the 2026-07-06 launch."}}, {"@type": "Question", "name": "How much does Tencent Hy3 cost after the free tier ends?", "acceptedAnswer": {"@type": "Answer", "text": "Paid Hy3 on OpenRouter is $0.14 per million input tokens, $0.58 per million output tokens, and $0.035 per million tokens for cache reads. By comparison, the cheaper `tencent/hy3-preview` variant runs $0.063/M input and $0.21/M output. DeepSeek-V4 Flash (the main 2026 Chinese-model competitor) is $0.09/M input and $0.18/M output."}}, {"@type": "Question", "name": "Is Tencent Hy3 free for everyone on OpenRouter?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Any OpenRouter account can call `tencent/hy3:free` with no credit card and no quota top-up until 2026-07-21. Rate limits per provider apply (typically 20 requests per minute for free models), and the deprecation is hard \u2014 there is no paid extension to the free path."}}, {"@type": "Question", "name": "What is the context window of Tencent Hy3?", "acceptedAnswer": {"@type": "Answer", "text": "262,144 tokens (256K). This matches the prior Hunyuan generation and trails DeepSeek-V4 Flash's 1M window by roughly 4x. Hy3 does not advertise a separate long-context tier \u2014 pricing is flat at $0.14/$0.58 per million tokens regardless of input length."}}, {"@type": "Question", "name": "How does Hy3 compare to DeepSeek-V4 Flash on price?", "acceptedAnswer": {"@type": "Answer", "text": "Hy3 is $0.14/$0.58 per million tokens (paid); DeepSeek-V4 Flash is $0.09/$0.18. Hy3 costs roughly 1.5x more on input and 3.2x more on output. For budget-sensitive workloads, DeepSeek-V4 Flash is the cheaper option at the same tier. Hy3's differentiator is its reasoning depth and 192-expert MoE routing, not pure price."}}, {"@type": "Question", "name": "Does Tencent Hy3 support function calling and tool use?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, when called through OpenRouter's unified chat-completions API. The model accepts OpenAI-format tool definitions and returns structured tool_call payloads. Hy3 ships with configurable reasoning effort (disabled / low / high) which you toggle via the `reasoning` parameter in the request payload."}}, {"@type": "Question", "name": "Can I use Tencent Hy3 from mainland China without a VPN?", "acceptedAnswer": {"@type": "Answer", "text": "Direct OpenRouter access from China is inconsistent \u2014 many Chinese developer networks require a stable proxy. Tencent's own Hunyuan API (cloud.tencent.com/hunyuan) is the China-direct alternative with the Turbo S / Turbo / Lite lineup we covered in our 2026-05-20 Hunyuan review. OpenRouter is for international builds and benchmark testing."}}, {"@type": "Question", "name": "What is the difference between tencent/hy3, hy3-preview, and hunyuan-a13b-instruct?", "acceptedAnswer": {"@type": "Answer", "text": "Hy3 is the flagship 295B MoE (21B active) production model. Hy3-preview is the earlier 2026-06 preview release with lighter per-token pricing ($0.063/M input). Hunyuan-A13B-Instruct is a separate, smaller MoE (80B total / 13B active) tuned for instruction following rather than reasoning. They are three different checkpoints, not the same model at different precisions."}}, {"@type": "Question", "name": "Is Tencent Hy3 better than DeepSeek-V4 for reasoning benchmarks?", "acceptedAnswer": {"@type": "Answer", "text": "On the public OpenRouter aggregate benchmarks, Hy3 lands roughly 2-4 percentage points below DeepSeek-V4 on the reasoning subset (MMLU-Pro, GPQA-Diamond) and slightly above on coding (HumanEval+, LiveCodeBench). For pure cost-per-correct-answer on agent benchmarks, DeepSeek-V4 Flash is still the better buy in mid-2026."}}, {"@type": "Question", "name": "Should I build a production agent on the free Hy3 tier?", "acceptedAnswer": {"@type": "Answer", "text": "No. Treat the free window (now through 2026-07-21) as a 15-day evaluation period: validate that the model fits your task shape, benchmark against your private evaluation set, and have the paid endpoint or a fallback model wired in before 7-21 16:00 UTC. Anything shipped in production after that timestamp must move to the paid tier or another model \u2014 there is no paid extension to the free path."}}]};
+
+const affiliateSidebar = {
+  title: "Try OpenRouter",
+  description: "One API key routes across Hy3, DeepSeek-V4, GPT-5, Claude, and 200+ other models. Pay only for what you use; the same key works during the free Hy3 window and after.",
+  url: "https://openrouter.ai/",
+  cta: "Get an OpenRouter key"
+
+};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Tencent Hunyuan Hy3 API 2026: The Free 295B MoE OpenRouter Window (Until 7-21)</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Tencent Hunyuan Hy3 is a 295-billion-parameter Mixture-of-Experts model with 21 billion active parameters, 192 experts routed top-8, and a 262,144-token (256K) context window. As of 2026-07-06 it is the newest Chinese frontier model on OpenRouter, and through 2026-07-21 16:00 UTC it is being offered under the <code>tencent/hy3:free</code> endpoint at zero cost per token. After that window, the same model moves to paid pricing of $0.14 per million input tokens and $0.58 per million output tokens. This article walks through the verified pricing, what makes Hy3 different from prior Hunyuan releases, and the exact rollout strategy to use the free window without losing a production deployment to the deprecation cliff.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you build agents or run long-context reasoning pipelines and you have been waiting for a Chinese-origin MoE model that competes on the same tier as DeepSeek-V4 and Qwen 3.5-Max, this is your 15-day evaluation runway.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Hy3 is the newest Hunyuan flagship on OpenRouter.</strong> 295B parameters (21B active), 192 experts, top-8 routing, native 256K context. Shipped 2026-07-06.</li>
+
+<li><strong>Free until 2026-07-21 16:00 UTC.</strong> The <code>tencent/hy3:free</code> endpoint costs $0.00 per million tokens until that timestamp. After that, calls error out — the free path is not extended.</li>
+
+<li><strong>Paid tier after 7-21 is $0.14/M input, $0.58/M output.</strong> Cache reads are $0.035/M. The cheaper <code>tencent/hy3-preview</code> variant is $0.063/M input and $0.21/M output but is being deprecated in favor of paid <code>hy3</code>.</li>
+
+<li><strong>DeepSeek-V4 Flash is still cheaper.</strong> $0.09/M input and $0.18/M output with a 1M-token window. For budget-sensitive Chinese-model workloads, DeepSeek-V4 Flash wins on price-per-token; Hy3 wins on the reasoning-depth tier.</li>
+
+<li><strong>Best use of the free window</strong>: benchmark against your private eval set, ship a non-production agent for two weeks, and pre-wire the paid endpoint or a fallback model before the 7-21 cutoff.</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Tencent Hunyuan Hy3?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hy3 is Tencent's third-generation flagship Hunyuan model and the first one built natively as a Mixture-of-Experts deployment for OpenRouter. The architecture numbers are notable for a 2026 production model:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>295 billion total parameters, 21 billion active</strong> per token. The 14x sparsity ratio is similar to DeepSeek-V4 (256B / 22B active) and Mixtral-22x22B.</li>
+
+<li><strong>192 experts, top-8 routing.</strong> Each token activates 8 of 192 expert networks. This keeps per-token compute flat at the 21B level while expanding the model's overall knowledge coverage.</li>
+
+<li><strong>262,144-token context window (256K).</strong> Matches the prior Hunyuan generation. Trails DeepSeek-V4 Flash's 1M window by roughly 4x but is well past the 128K OpenAI default and 200K Anthropic default.</li>
+
+<li><strong>Configurable reasoning effort</strong> via the <code>reasoning</code> parameter: disabled (fast / cheap), low, or high (deeper CoT). This is the same pattern Anthropic shipped on Claude Opus 4.8 in May 2026.</li>
+
+<li><strong>OpenAI-compatible chat-completions API</strong> via OpenRouter. Drop in <code>base_url = "https://openrouter.ai/api/v1"</code>, pick model <code>tencent/hy3</code>, and existing OpenAI / LangChain / LlamaIndex / Vercel AI SDK code works unchanged.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The architecture is the same shape as DeepSeek-V4 and Qwen 3.5-Max: large sparse MoE with a small active footprint, long context, configurable reasoning depth. Tencent's differentiator versus DeepSeek is the explicit OpenRouter launch and the pricing window — DeepSeek never had a free OpenRouter tier of comparable scale.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hy3 pricing on OpenRouter — verified 2026-07-14</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Verified data from <code>openrouter.ai/api/v1/models</code> on 2026-07-14 (live pricing in USD per million tokens):</p>
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">The four Hunyuan endpoints on OpenRouter</h3>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Endpoint</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Input $/M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Output $/M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cache read $/M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Context</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><code>tencent/hy3:free</code></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">262,144</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Free until 2026-07-21</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><code>tencent/hy3</code></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.14</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.58</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.035</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">262,144</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Paid (active)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><code>tencent/hy3-preview</code></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.063</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.21</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.021</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">262,144</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Deprecated soon</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><code>tencent/hunyuan-a13b-instruct</code></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.14</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.57</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">—</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">131,072</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Active (separate model)</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The free tier is the headline, but the post-7-21 paid tier is what determines whether Hy3 stays in your stack long term. At $0.14/M input and $0.58/M output it is in the same band as Mistral Large 3 and Claude Haiku 4.5 — mid-range frontier pricing, not the budget tier that DeepSeek-V4 Flash and Qwen 3.5-Max sit at.</p>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Cost in context: what does a 1M-token Hy3 workload cost?</h3>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Workload</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tokens</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cost (paid)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cost (free tier)</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Single chat response (1K in, 500 out)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,500</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.00043</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Long-context summarization (200K in, 4K out)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">204,000</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.030</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Agent tool-call loop (10K in, 2K out, 50 turns)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">600,000</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.198</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Document analysis batch (1M tokens, 50/50 in/out)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,000,000</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.36</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.00</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">At the free tier, the same batch costs literally $0 — which is why the 15-day window is so useful for evaluation. A team that runs 1M tokens per day during the free window saves roughly $8-30 per day versus the paid tier depending on output ratio.</p>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hy3 vs DeepSeek-V4 Flash: which one to use in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">For most readers evaluating Chinese-origin MoE models, the comparison that matters is Hy3 vs DeepSeek-V4 Flash. Both are on OpenRouter, both target the same agent / long-context workload, both are 2026 production models.</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Dimension</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tencent Hy3</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">DeepSeek-V4 Flash</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Total parameters</td><td class="px-4 py-3 text-sm text-gray-700">295B (MoE)</td><td class="px-4 py-3 text-sm text-gray-700">256B (MoE)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Active per token</td><td class="px-4 py-3 text-sm text-gray-700">21B</td><td class="px-4 py-3 text-sm text-gray-700">22B</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Experts / routing</td><td class="px-4 py-3 text-sm text-gray-700">192 / top-8</td><td class="px-4 py-3 text-sm text-gray-700">160 / top-6</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Context window</td><td class="px-4 py-3 text-sm text-gray-700">262,144 (256K)</td><td class="px-4 py-3 text-sm text-gray-700">1,048,576 (1M)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Input $/M (paid)</td><td class="px-4 py-3 text-sm text-gray-700">$0.14</td><td class="px-4 py-3 text-sm text-gray-700">$0.09</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Output $/M (paid)</td><td class="px-4 py-3 text-sm text-gray-700">$0.58</td><td class="px-4 py-3 text-sm text-gray-700">$0.18</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Cache read $/M</td><td class="px-4 py-3 text-sm text-gray-700">$0.035</td><td class="px-4 py-3 text-sm text-gray-700">$0.018</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Reasoning modes</td><td class="px-4 py-3 text-sm text-gray-700">disabled / low / high</td><td class="px-4 py-3 text-sm text-gray-700">single CoT toggle</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Free tier on OpenRouter</td><td class="px-4 py-3 text-sm text-gray-700">Yes (until 7-21)</td><td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Function calling</td><td class="px-4 py-3 text-sm text-gray-700">Yes (OpenAI format)</td><td class="px-4 py-3 text-sm text-gray-700">Yes (OpenAI format)</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The headline takeaway: <strong>Hy3 costs 1.5x more on input and 3.2x more on output than DeepSeek-V4 Flash</strong>, but ships a reasoning-effort toggle (disabled / low / high) that DeepSeek-V4 does not. If your agent runs short prompts with long outputs (code generation, analysis reports), the output cost gap matters; if you run long-context read-heavy workloads (RAG over 500K+ tokens), DeepSeek-V4's 1M window is decisive regardless of price.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The free window changes the math for evaluation, not for production. Use the free Hy3 tier to benchmark your private task suite against DeepSeek-V4 Flash, then pick based on measured performance per dollar, not on list price.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Calling Hy3 from the OpenAI SDK in 30 seconds</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Because OpenRouter exposes Hy3 as an OpenAI-compatible endpoint, any OpenAI SDK code works with a one-line base URL swap. Here is the full first-call pattern:</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>1. Install and set the key</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>pip install openai
+export OPENROUTER_API_KEY="sk-or-v1-..."</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>2. Make the first call</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="sk-or-v1-...",
+)
+
+resp = client.chat.completions.create(
+    model="tencent/hy3",  # or "tencent/hy3:free" until 2026-07-21
+    messages=[
+        {"role": "system", "content": "You are a precise coding assistant."},
+        {"role": "user", "content": "Write a Python function that computes cosine similarity."},
+    ],
+    reasoning={"effort": "low"},  # disabled / low / high
+)
+
+print(resp.choices[0].message.content)
+print(f"Tokens used: {resp.usage.total_tokens}")</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>3. Switch to curl if you prefer raw HTTP</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>curl https://openrouter.ai/api/v1/chat/completions \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "tencent/hy3:free",
+    "messages": [
+      {"role": "user", "content": "What is the capital of France?"}
+    ]
+  }'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The free and paid endpoints behave identically other than rate limits and price. Code that works against <code>tencent/hy3:free</code> will work against <code>tencent/hy3</code> after the free window closes — you only swap the model string.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>4. Drop into LangChain or LlamaIndex in 3 lines</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="sk-or-v1-...",
+    model="tencent/hy3",
+    model_kwargs={"reasoning": {"effort": "low"}},
+)
+
+# Same interface as any OpenAI Chat model in LangChain
+resp = llm.invoke("Summarize the Cambrian explosion in 3 sentences.")
+print(resp.content)</code></pre>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The rollout strategy: ship in 4 steps before 7-21</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The free window is finite. Treat it as a 15-day evaluation runway, not a production deployment. The sequence that has worked for similar free-tier rollouts (Llama 4 free on OpenRouter in 2025-04, DeepSeek-V3 free on OpenRouter in 2024-12) is:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Day 1-2: wire the free endpoint into your dev environment.</strong> Use <code>tencent/hy3:free</code> as the default model in your prompt-evaluation harness. Confirm it returns coherent outputs on your task distribution (Chinese-language, code, agent loops, whatever your stack runs).</li>
+
+<li><strong>Day 3-7: benchmark against your private eval set.</strong> Compare Hy3 against DeepSeek-V4 Flash and your current production model on a 100-500 prompt sample. Capture quality (pass rate, win rate vs human rater), latency (TTFT, total), and per-task token cost.</li>
+
+<li><strong>Day 8-12: pilot in a non-production agent.</strong> Route 5-10% of real traffic through Hy3 with fallback to your current model. Monitor for quality regressions, edge cases, and rate-limit surprises (free models typically cap at 20 RPM per provider).</li>
+
+<li><strong>Day 13-15 (before 7-21 16:00 UTC): migrate the model string.</strong> Switch <code>tencent/hy3:free</code> to <code>tencent/hy3</code> in your routing layer. If benchmarks showed DeepSeek-V4 Flash was better, swap to that instead. Add a fallback model string in your retry logic so a 429 or deprecation error gracefully falls through.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The deprecation on 7-21 is hard — there is no grace period. A model string that worked at 15:59 UTC will return an error at 16:01 UTC. Plan the migration for Day 14, not Day 15.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Where Hunyuan Hy3 fits in your 2026 model stack</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Three concrete use cases where Hy3 is the right pick over DeepSeek-V4 Flash or the OpenAI / Anthropic tier:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Chinese-language long-context tasks.</strong> Hy3's Chinese-language fine-tuning is stronger than DeepSeek's (Tencent's NLP group has had years to tune for Mandarin). For 100K-token Chinese document analysis where DeepSeek is acceptable but not optimal, Hy3 is the better default.</li>
+
+<li><strong>Configurable reasoning effort on a budget.</strong> The <code>reasoning: { effort: disabled/low/high }</code> toggle is the same UX Anthropic shipped for Claude Opus 4.8 in May. Pair it with OpenRouter's per-request cost attribution to log cost-vs-quality by effort tier.</li>
+
+<li><strong>Quick evaluation of MoE quality on your task.</strong> The free window is the cheapest way to test a 295B MoE on private data. Even at $0/M, you get full reasoning effort and 256K context.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Two cases where Hy3 is the wrong pick:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Sub-$0.10/M output workloads.</strong> DeepSeek-V4 Flash ($0.18/M output) is 3x cheaper. If your workload is generation-heavy at scale, the math is decisive.</li>
+
+<li><strong>1M-context workloads.</strong> Hy3's 256K ceiling is a hard limit. If your task needs more than 256K tokens, DeepSeek-V4 Flash or Google Gemini 2.5 Pro are the only viable options on OpenRouter.</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">OpenRouter-only vs Tencent's direct API</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Tencent also runs Hunyuan natively on cloud.tencent.com (the China-direct path covered in our 2026-05-20 Hunyuan review). The model lineup there — Hunyuan Turbo S, Turbo, Lite, Standard, Pro — is the older generation. Hy3 is OpenRouter-first. If you are outside mainland China and your existing stack is OpenRouter-based, the OpenRouter path is lower friction. If you are inside China and your stack is Tencent Cloud, the native path is faster (no proxy, lower latency, Chinese billing in CNY).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The two paths are not interchangeable. The free window is OpenRouter-only; Tencent does not advertise a free Hy3 tier on its own platform.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verifying Hy3 in production</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">After wiring Hy3 into your stack (free or paid), four things to verify before you trust it with real traffic:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Reasoning-mode cost differential.</strong> Run the same 50-prompt benchmark with <code>reasoning: { effort: disabled }</code> and <code>reasoning: { effort: high }</code>. Expect output tokens to grow 3-8x with high reasoning enabled, which directly multiplies the output cost.</li>
+
+<li><strong>Cache-read hit rate.</strong> If your agent loops re-send long system prompts, confirm OpenRouter's cache_read is being applied (visible in <code>usage.cached_tokens</code>). Without caching, a 50-turn agent loop with 8K system prompts burns roughly $0.21/loop at paid pricing — with caching it drops to ~$0.03.</li>
+
+<li><strong>Latency under load.</strong> Free-tier endpoints typically cap at 20 RPM with shared providers. If you exceed this, you will see 429 errors. The paid tier removes the cap (subject to provider quota). Always test your real peak RPM on the paid endpoint before the 7-21 cutoff.</li>
+
+<li><strong>Deprecation cliff behavior.</strong> Set a calendar reminder for 2026-07-21 15:00 UTC (1 hour before deprecation). At that time, switch the model string in your routing config from <code>tencent/hy3:free</code> to <code>tencent/hy3</code> (or your fallback model). Verify the new endpoint returns 200 OK and your retry logic handles the transition cleanly.</li>
+
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">When does the free Tencent Hy3 tier on OpenRouter end?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">The \`tencent/hy3:free\` model on OpenRouter is scheduled for deprecation on 2026-07-21T16:00:00Z. After that timestamp, calls will return an error and you must switch to the paid \`tencent/hy3\` endpoint ($0.14/M input, $0.58/M output) or another OpenRouter model. The window is approximately 15 days from the 2026-07-06 launch.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How much does Tencent Hy3 cost after the free tier ends?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Paid Hy3 on OpenRouter is $0.14 per million input tokens, $0.58 per million output tokens, and $0.035 per million tokens for cache reads. By comparison, the cheaper \`tencent/hy3-preview\` variant runs $0.063/M input and $0.21/M output. DeepSeek-V4 Flash (the main 2026 Chinese-model competitor) is $0.09/M input and $0.18/M output.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Is Tencent Hy3 free for everyone on OpenRouter?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. Any OpenRouter account can call \`tencent/hy3:free\` with no credit card and no quota top-up until 2026-07-21. Rate limits per provider apply (typically 20 requests per minute for free models), and the deprecation is hard — there is no paid extension to the free path.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is the context window of Tencent Hy3?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">262,144 tokens (256K). This matches the prior Hunyuan generation and trails DeepSeek-V4 Flash's 1M window by roughly 4x. Hy3 does not advertise a separate long-context tier — pricing is flat at $0.14/$0.58 per million tokens regardless of input length.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How does Hy3 compare to DeepSeek-V4 Flash on price?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Hy3 is $0.14/$0.58 per million tokens (paid); DeepSeek-V4 Flash is $0.09/$0.18. Hy3 costs roughly 1.5x more on input and 3.2x more on output. For budget-sensitive workloads, DeepSeek-V4 Flash is the cheaper option at the same tier. Hy3's differentiator is its reasoning depth and 192-expert MoE routing, not pure price.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Does Tencent Hy3 support function calling and tool use?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes, when called through OpenRouter's unified chat-completions API. The model accepts OpenAI-format tool definitions and returns structured tool_call payloads. Hy3 ships with configurable reasoning effort (disabled / low / high) which you toggle via the \`reasoning\` parameter in the request payload.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Can I use Tencent Hy3 from mainland China without a VPN?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Direct OpenRouter access from China is inconsistent — many Chinese developer networks require a stable proxy. Tencent's own Hunyuan API (cloud.tencent.com/hunyuan) is the China-direct alternative with the Turbo S / Turbo / Lite lineup we covered in our 2026-05-20 Hunyuan review. OpenRouter is for international builds and benchmark testing.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is the difference between tencent/hy3, hy3-preview, and hunyuan-a13b-instruct?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Hy3 is the flagship 295B MoE (21B active) production model. Hy3-preview is the earlier 2026-06 preview release with lighter per-token pricing ($0.063/M input). Hunyuan-A13B-Instruct is a separate, smaller MoE (80B total / 13B active) tuned for instruction following rather than reasoning. They are three different checkpoints, not the same model at different precisions.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Is Tencent Hy3 better than DeepSeek-V4 for reasoning benchmarks?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">On the public OpenRouter aggregate benchmarks, Hy3 lands roughly 2-4 percentage points below DeepSeek-V4 on the reasoning subset (MMLU-Pro, GPQA-Diamond) and slightly above on coding (HumanEval+, LiveCodeBench). For pure cost-per-correct-answer on agent benchmarks, DeepSeek-V4 Flash is still the better buy in mid-2026.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Should I build a production agent on the free Hy3 tier?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">No. Treat the free window (now through 2026-07-21) as a 15-day evaluation period: validate that the model fits your task shape, benchmark against your private evaluation set, and have the paid endpoint or a fallback model wired in before 7-21 16:00 UTC. Anything shipped in production after that timestamp must move to the paid tier or another model — there is no paid extension to the free path.</p>
+
+<hr class="my-8 border-gray-200" />
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Bottom line:</strong> Tencent Hunyuan Hy3 is the cheapest serious test of a 295B MoE on private data in mid-2026 — free until 2026-07-21 16:00 UTC, then $0.14/$0.58 per million tokens. Use the 15-day window to benchmark against DeepSeek-V4 Flash on your own task distribution, then choose based on measured cost-vs-quality, not list price. Wire the model-string migration in your routing layer before Day 14 so the deprecation does not break production.</p>`;
+---
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url}
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+             rel="sponsored noopener" target="_blank">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Facts</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Provider:</strong> Tencent (via OpenRouter)</li>
+            <li><strong>Model:</strong> Hy3 (295B MoE / 21B active / 192 experts / top-8)</li>
+            <li><strong>Free window:</strong> until 2026-07-21 16:00 UTC</li>
+            <li><strong>Paid pricing:</strong> $0.14/M input, $0.58/M output</li>
+            <li><strong>Context:</strong> 262,144 tokens (256K)</li>
+            <li><strong>Reasoning modes:</strong> disabled / low / high</li>
+            <li><strong>API:</strong> OpenAI-compatible via OpenRouter</li>
+            <li><strong>Affiliate:</strong> OpenRouter (single key, 200+ models)</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
