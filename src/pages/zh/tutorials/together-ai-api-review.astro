@@ -2,372 +2,1013 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 const slug = 'together-ai-api-review';
+const date = '2026-07-14';
 const locale = 'zh';
-const date = '2026-05-23';
 
-const zhTitle = 'Together AI API 测评 2026：一站式调用 Llama、Qwen、FLUX.1';
-const zhDescription = '全面测评 Together AI API：汇聚 Llama 3.3、Qwen 2.5、DeepSeek-V3、FLUX.1 等顶级开源模型。与 OpenAI、OpenRouter 对比，价格、免费额度、中国使用指南。';
+const zhTitle = 'Together AI API 评测 2026：200+ 开源模型 $0.03/M';
+const zhDescription = 'Together AI 完整评测：200+ 开源模型、FlashAttention-4 推理引擎、OpenAI 兼容 API、$0.03/M 起步价。对比 Fireworks、DeepInfra、Replicate、Baseten、Modal。';
 const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
 const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
 
-const articleJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": zhTitle,
-  "description": zhDescription,
-  "datePublished": date,
-  "dateModified": date,
-  "author": {
-    "@type": "Organization",
-    "name": "APIRank",
-    "url": "https://apirank.vip"
-  },
-  "publisher": {
-    "@type": "Organization",
-    "name": "APIRank",
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://apirank.vip/favicon.svg"
-    }
-  },
-  "mainEntityOfPage": {
-    "@type": "WebPage",
-    "@id": `https://apirank.vip/zh/tutorials/${slug}`
-  }
-};
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Together AI API 评测 2026：200+ 开源模型 $0.03/M", "description": "Together AI 完整评测：200+ 开源模型、FlashAttention-4 推理引擎、OpenAI 兼容 API、$0.03/M 起步价。对比 Fireworks、DeepInfra、Replicate、Baseten、Modal。", "datePublished": "2026-07-14", "dateModified": "2026-07-14", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/together-ai-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "测评中心", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Together AI API 评测 2026：200+ 开源模型 $0.03/M", "item": "https://apirank.vip/zh/tutorials/together-ai-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Together AI 比 OpenAI 便宜吗？", "acceptedAnswer": {"@type": "Answer", "text": "对于开源模型（Llama 4、DeepSeek V4、Qwen），Together 在等价工作负载上比 GPT-5.6 便宜 5-15 倍。随着上下文长度增加，价格差距扩大（Together 按上下文长度统一收费，部分提供商对长上下文加价）。"}}, {"@type": "Question", "name": "Together AI 价格这么低，怎么赚钱？", "acceptedAnswer": {"@type": "Answer", "text": "Together 自营 GPU 集群（H100、B200），联合开发 FlashAttention-4 提升推理效率，并向 NVIDIA 大宗采购。这组合让他们在同价位上比小型转售商有 30-50% 利润空间。"}}, {"@type": "Question", "name": "Together AI 的 API 兼容 OpenAI 吗？", "acceptedAnswer": {"@type": "Answer", "text": "完全兼容。你可以使用 OpenAI Python SDK、Node SDK 或任何支持 OpenAI API 接口的框架（LangChain、LlamaIndex、Vercel AI SDK、AutoGen、CrewAI），只需把 `base_url` 改为 `https://api.together.xyz/v1`。所有模型 ID 使用 HuggingFace 格式（如 `meta-llama/Llama-4-Maverick-17B-128E-Instruct`）。"}}, {"@type": "Question", "name": "可以从中国使用 Together AI 吗？", "acceptedAnswer": {"@type": "Answer", "text": "不能直接使用。Together 的基础设施在美国，没有 CN 区域。中国开发者应通过代理使用 Together，或使用国内替代方案：DeepSeek（官方 API）、阿里云百炼、腾讯混元以获得类似的模型访问。"}}, {"@type": "Question", "name": "Together AI 的速率限制是多少？", "acceptedAnswer": {"@type": "Answer", "text": "Serverless 默认速率限制：新账号每分钟 60 次请求、500K token/分钟。限制随使用历史动态扩展——高用量账号在持续付费使用 30-60 天后获得更高的 RPM/TPM。Dedicated 层用户获得配置的自定义限制。"}}, {"@type": "Question", "name": "Together AI 支持微调吗？", "acceptedAnswer": {"@type": "Answer", "text": "支持。Together 在 Llama 4、Qwen 3.5/3.6、Mistral 等多个 OSS 模型上支持 LoRA 和全量微调。定价起步 $1.50/M 训练 token。微调模型作为私有端点部署在 Together 基础设施上。"}}, {"@type": "Question", "name": "什么是 FlashAttention-4？", "acceptedAnswer": {"@type": "Answer", "text": "FlashAttention-4 是 FlashAttention 研究团队（包括 Together AI 联合创始人 Ce Zhang）开发的第四代注意力算法。它针对 H100/B200 硬件优化，让 Together 在等价硬件上比基于 TensorRT-LLM 的推理栈有可量化的 tokens/$ 优势。"}}, {"@type": "Question", "name": "Together AI 和 Fireworks AI 怎么比？", "acceptedAnswer": {"@type": "Answer", "text": "Together 模型覆盖更广（200+ vs 100+），Qwen 3.5/3.6 每 token 价格更低。Fireworks 在较小的一组前沿 OSS 模型上（尤其是 Llama 3 和 Mixtral）有更快推理。对于大多数工作负载，Together 胜在价格/覆盖；对特定模型的延迟关键工作负载，Fireworks 可能略胜。"}}, {"@type": "Question", "name": "Together AI 有企业版吗？", "acceptedAnswer": {"@type": "Answer", "text": "有。企业版提供自定义 SLA（99.9%+）、Dedicated GPU 集群、本地部署选项、HIPAA/PCI 合规、SSO、RBAC 和自定义合同。通过 `enterprise@together.ai` 联系销售。"}}, {"@type": "Question", "name": "我可以在 Together AI 上部署自己的自定义模型吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。Bring-Your-Own-Model（BYOM）程序支持 HuggingFace 格式模型，最大 700B 参数。定价按 Dedicated 硬件的 GPU 秒计算。自定义模型获得私有 HTTPS 端点和完全的 Together API 兼容性（OpenAI SDK 可用）。"}}, {"@type": "Question", "name": "Together AI 上我的数据会怎样？", "acceptedAnswer": {"@type": "Answer", "text": "Together 的默认策略是**不基于客户数据训练**——你的 prompt 和补全不会用于改进任何模型。数据保留 30 天用于滥用监控，之后删除。企业客户可以申请零保留合同和本地部署。"}}, {"@type": "Question", "name": "Together AI 支持视觉模型吗？", "acceptedAnswer": {"@type": "Answer", "text": "支持。Llama 4 Maverick、Qwen 3.6 VL 和 Pixtral 都带视觉能力托管。在 OpenAI 格式的 messages 数组中传入 base64 或 URL 图片。Together 还通过单独端点托管 FLUX、Imagen 和 Seedream 用于图像生成。"}}]};
 
-const breadcrumbJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
-    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
-    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
-  ]
-};
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Together AI API 评测 2026：200+ 开源模型 $0.03/M Token 起</h1>
 
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "中国可以直接访问 Together AI 吗？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "部分可用。平台本身可访问，但各模型可用性不同。建议先通过代理测试具体模型，再用于生产环境。"
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Together AI 和自托管相比有什么优劣？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Together AI 将 GPU 基础设施成本降低 10-100 倍。但自托管提供完整数据隐私和无限推理能力。有隐私要求的线上产品，自托管可能仍是必要选择。"
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "FLUX.1 在其他平台也能用吗？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "FLUX.1 在多个平台均有提供，但 Together AI 的 schnell（快速）版本价格为 $0.055/张，为市面最优水平之一。"
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Together AI 和 OpenRouter 相比有什么优势？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Together AI 在新开源模型上线速度上通常更快，且提供 FLUX.1 图片生成。OpenRouter 模型覆盖更广。如优先使用开源聊天模型，Together AI 往往是更快的选择。"
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Together AI 有速率限制吗？",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "有。免费套餐限速 10 次/分钟。付费套餐可扩展至 1000 次/分钟以上，具体取决于订阅级别。"
-      }
-    }
-  ]
+<p class="text-gray-700 leading-relaxed my-4">Together AI 是 2026 年最大的<strong>独立开源模型 AI 服务平台</strong>。平台托管 <strong>200+ 模型</strong>，覆盖 Llama 4、DeepSeek V4、Qwen 3.5/3.6/3.7、Mistral、Kimi K2.7、NVIDIA Nemotron、GLM-5，以及图像/视频/音频模型，配合完全兼容 OpenAI 的 API，已成为追求前沿 OSS 质量、又不想自建 GPU 集群的团队的默认选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的杀手锏是<strong>开源模型价格领导力</strong>：Together 上的 DeepSeek V4 Pro 仅 $0.30/M 输入 token，Qwen 3.5 9B 低至 $0.03/M，Llama 4 Maverick $0.27/M，Kimi K2.7 Code $0.72/M。对于 token 量大的工作负载（长上下文 RAG、代码分析、批量摘要），Together 比闭源 API 便宜 30-70%，而质量差距仅约 3 个百分点。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你正在评估生产环境下的开源模型托管，或想出于成本原因从 OpenAI/Anthropic 迁移、又不想重写 SDK，Together AI 是 2026 年中值得认真考察的平台。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>200+ 开源和商业模型</strong>，包括 Llama 4、DeepSeek V4、Qwen 3.5/3.6/3.7、Mistral、Kimi K2.7、GLM-5.2、NVIDIA Nemotron，外加图像（FLUX、Imagen、Seedream）和音频模型。含嵌入模型。</li>
+
+<li><strong>开源模型价格领导力。</strong> Qwen 3.5 9B 仅 $0.03/M 输入；DeepSeek V4 Pro $0.30/M 输入；Llama 4 Maverick $0.27/M 输入。Batch API 五折；支持模型缓存输入折扣。</li>
+
+<li><strong>完全 OpenAI 兼容 API。</strong> 直接替换：把 <code>base_url</code> 改为 <code>https://api.together.xyz/v1</code>，保留 OpenAI SDK 即可调用任何开源模型。</li>
+
+<li><strong>FlashAttention-4 推理引擎。</strong> Together 研究团队自研 FA4 并在平台全量部署。内部基准显示比 TensorRT-LLM 多 31% tokens/sec。</li>
+
+<li><strong>两种部署模式。</strong> Serverless（按 token 计费，零闲置成本）和 Dedicated（H100/B200/B200 预留 GPU 集群，常驻生产）。</li>
+
+<li><strong>最佳适用场景：</strong> token 量大的 OSS 工作负载（RAG、批处理、代码分析）、需要按任务混用模型的多模型 Agent 系统、想降本从 OpenAI 迁移的团队。不适合：超低延迟实时场景、严格中国大陆数据驻留要求。</li>
+
+<li><strong>交叉链接：</strong> 与 Baseten（2026-07-08 评测）、Modal（2026-07-13）、Fireworks AI、DeepInfra、Replicate 直接对比——Together 胜在模型广度和价格；Baseten 胜在 Dedicated 常驻；Modal 胜在开发者体验。</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么 Together AI 在 2026 年很重要</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">三个力量汇聚，使 Together AI 成为 2026 年开源模型托管的顶级选择：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>开源质量追上闭源 API。</strong> Llama 4 Maverick、DeepSeek V4 Pro、Qwen 3.6-Max、Kimi K2.7 Code 在大多数推理基准上与 GPT-5.6 / Sonnet 5 相差仅 2-5 个百分点，价格却仅为闭源的 30-70%。</li>
+
+<li><strong>GPU 经济松动。</strong> 2024-2025 年的 H100 短缺在 2025 年中结束。Together 与 NVIDIA 的大宗采购协议让他们能比小型转售商传递更低的单秒 GPU 成本。</li>
+
+<li><strong>推理引擎突破持续叠加。</strong> Together 的研究团队联合发表了 FlashAttention（FA1 至 FA4）。在 H100/B200 上跑 FA4 比基于 TensorRT-LLM 的栈有可量化的 TPS/$ 优势。</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">结果是：单个开发者就能以 $0.30/M 输入 token 调用 DeepSeek V4 Pro，以 $0.27/M 调用 Llama 4 Maverick 处理视觉任务，回退到 $0.03/M 的 Qwen 3.5 9B 做廉价分类——全部走同一个 OpenAI 兼容端点。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Together AI 定价 — 2026-07-14 已验证</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Together 在 Serverless 层按 token 计费，在 Dedicated 层按 GPU 秒计费。Serverless 是大多数工作负载的默认层。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">精选 Serverless 模型价格</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">所有价格均为每百万 token。基于 OpenRouter 镜像交叉验证（Together 在 OpenRouter 上以同价托管相同 SKU）。</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">模型</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">输入 $/M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">输出 $/M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">上下文</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">备注</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Qwen 3.5 9B</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.03</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.12</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">32K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Together 上最便宜的 OSS 模型</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Qwen 3.5 70B</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.18</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.72</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">中端，Agent 甜点</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Qwen 3.6 27B</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.29</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.96</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen 3.6 中端</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Qwen 3.6-Max Preview</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.04</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$6.24</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">前沿 Qwen 质量</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Qwen 3.7-Plus</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.32</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.28</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">生产级 Qwen 3.7</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Qwen 3.7-Max</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.25</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.75</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">顶级 Qwen</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>DeepSeek V4 Pro</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.30</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.20</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">DeepSeek 旗舰</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Llama 4 Maverick</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.27</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.85</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Meta 前沿 OSS</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Llama 4 Scout</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.11</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.34</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">10M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">长上下文 OSS 领跑</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Llama 3.3 70B Turbo</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.18</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.72</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">久经验证的主力</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Mistral Medium 3.5</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.15</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.75</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Mistral 旗舰</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Kimi K2.7 Code</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.72</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.49</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">编程专家</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>GLM-5.1（智谱）</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.30</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">GLM 旗舰 OSS</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>NVIDIA Nemotron 3 Ultra 550B</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.95</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">NVIDIA 前沿 OSS</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">对比 2026 年 7 月的闭源 API 等价物：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>GPT-5.6</strong>：$3.50/M 输入，$14/M 输出</li>
+
+<li><strong>Claude Sonnet 5</strong>：$3/M 输入，$15/M 输出</li>
+
+<li><strong>Gemini 2.5 Pro</strong>：$1.25/M 输入，$5/M 输出</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Together 上的 Llama 4 Maverick $0.27/$0.85 比 GPT-5.6 在输入上便宜约 <strong>13 倍</strong>、输出上便宜约 <strong>16 倍</strong>，而大多数推理基准上仅落后 3-5 个百分点。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">免费层和额度</h3>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>$1 初始额度</strong>（注册时赠送），需要绑定支付方式（无真正的免费层）。</li>
+
+<li><strong>Batch API</strong>：异步工作负载（24h SLA）享五折。</li>
+
+<li><strong>缓存输入</strong>：支持模型 $0.06-$0.26/M（Qwen、Llama 4、DeepSeek V4 Pro）。</li>
+
+<li><strong>预留容量</strong>：月度承诺合同可享 Serverless 价格的 30-50% 折扣。</li>
+
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Dedicated 层（GPU 集群）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">对于大规模常驻生产，Dedicated 提供预留的 H100/B200/B300 容量：</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">GPU</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">$/小时（Dedicated）</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">$/小时等价（Serverless）</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">备注</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">NVIDIA H100 80GB</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.89</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.10（spot） / $6.30（reserved）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">生产主力</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">NVIDIA H200 141GB</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.45</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.65（spot） / $7.95（reserved）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">HBM3e，大批量推理</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">NVIDIA B200</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.49</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.85（spot） / $11.55（reserved）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">前沿训练+推理</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">NVIDIA B300</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.95</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$4.30（spot） / $12.90（reserved）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">前沿训练+推理</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">NVIDIA A100 80GB</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.29</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.40（spot） / $4.20（reserved）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">≤70B 推理成本领跑</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">NVIDIA L40S</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.10</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.20（spot） / $3.60（reserved）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">视觉、图像生成</td>
+
+</tr>
+
+</tbody></table></div>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">存储和嵌入定价</h3>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>卷存储</strong>：$0.09/GiB/月（每月前 1 TiB 免费）</li>
+
+<li><strong>嵌入模型</strong>：根据模型 $0.03-$0.08/M token（BGE、E5、mxbai-rerank）</li>
+
+<li><strong>微调</strong>：Llama 70B 起步 $1.50/M 训练 token；支持 LoRA</li>
+
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">实际成本样例</h3>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>样例 1：Llama 4 Maverick 1M token RAG 查询</strong></p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>800K 输入 + 200K 输出</li>
+
+<li>输入成本：0.8 × $0.27 = <strong>$0.216</strong></li>
+
+<li>输出成本：0.2 × $0.85 = <strong>$0.17</strong></li>
+
+<li><strong>总计：$0.386/查询</strong></li>
+
+<li>同一查询在 GPT-5.6 上：0.8 × $3.50 + 0.2 × $14 = $2.80 + $2.80 = <strong>$5.60</strong></li>
+
+<li><strong>该工作负载 Together 节省 14.5 倍</strong></li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>样例 2：Qwen 3.5 9B 上每天 10M token 分类</strong></p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>7M 输入 + 3M 输出</li>
+
+<li>输入：7 × $0.03 = $0.21</li>
+
+<li>输出：3 × $0.12 = $0.36</li>
+
+<li><strong>每天成本：$0.57，月度约 $17</strong></li>
+
+<li>同一工作负载在 GPT-4o-mini 上：7 × $0.15 + 3 × $0.60 = $1.05 + $1.80 = $2.85/天，<strong>月约 $86</strong></li>
+
+<li><strong>Together 在分类工作负载上节省 5 倍</strong></li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>样例 3：Kimi K2.7 Code 代码审查</strong></p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>每次审查 100K 输入 + 50K 输出</li>
+
+<li>输入：0.1 × $0.72 = $0.072</li>
+
+<li>输出：0.05 × $3.49 = $0.175</li>
+
+<li><strong>每次审查成本：$0.247</strong></li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Together AI API 接口</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Together 提供三个主要 API 接口，全部 OpenAI 兼容。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">1. Chat Completions（<code>/v1/chat/completions</code>）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">默认端点。OpenAI SDK 直接替换：</p>
+
+<pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(
+    api_key="TOGETHER_API_KEY",
+    base_url="https://api.together.xyz/v1"
+)
+
+response = client.chat.completions.create(
+    model="meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+    messages=[
+        &#123;"role": "system", "content": "你是一位资深后端工程师。"&#125;,
+        &#123;"role": "user", "content": "为一个多租户 API 设计速率限制器。"&#125;
+    ],
+    temperature=0.7,
+    max_tokens=2048,
+)
+
+print(response.choices[0].message.content)</code></pre>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">2. Completions（<code>/v1/completions</code>）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">旧式文本补全端点，用于基础模型（无 chat 格式化）。适用于微调模型或补全式工作流。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">3. Embeddings（<code>/v1/embeddings</code>）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">标准 OpenAI 兼容嵌入端点。支持模型包括 <code>togethercomputer/m2-bert-80M</code>、<code>BAAI/bge-base-en-v1.5</code>、<code>intfloat/e5-large-v2</code> 和 <code>mixedbread-ai/mxbai-rerank-large-v2</code>。</p>
+
+<pre><code class="language-python">response = client.embeddings.create(
+    model="BAAI/bge-base-en-v1.5",
+    input=["什么是 Together AI？", "最便宜的开源模型 API？"]
+)
+print([d.embedding[:5] for d in response.data])</code></pre>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">4. 图像生成（<code>/v1/images/generations</code>）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.1、FLUX.2、Imagen 4.0 和 Seedream 4.0 通过 images 端点暴露。每张图定价 $0.005-$0.05（取决于分辨率）。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">5. 音频（<code>/v1/audio/*</code>）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Whisper 风格转录，外加 Together 自研音频模型（MusicGen、AudioCraft）。同一 base URL 可用。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">函数调用和 JSON 模式</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Together 上所有主要 chat 模型支持：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>工具/函数调用</strong>（OpenAI 兼容的 <code>tools</code> 参数）</li>
+
+<li><strong>JSON 模式</strong>（<code>response_format={"type": "json_object"}</code>）</li>
+
+<li><strong>结构化输出</strong>（Pydantic、Zod、JSON Schema）</li>
+
+<li><strong>流式输出</strong>（<code>stream=True</code>）</li>
+
+<li><strong>视觉</strong>（Llama 4 Maverick、Qwen 3.6 VL、Pixtral）</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">这就是为什么从 OpenAI 迁移的团队除了 <code>base_url</code> 和模型 ID 外几乎不需要改动任何代码。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">逐步教程：15 分钟上线 Llama 4 RAG 端点</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">以下是调用 Llama 4 Maverick 做 RAG 工作流的完整流程。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">1. 注册并获取 API Key</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">访问 <code>https://api.together.xyz</code>，创建账号并添加支付方式。获得 $1 初始额度。在控制台生成 API Key。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">2. 安装 SDK 或直接使用 HTTP</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">官方 Python SDK 是 <code>together</code>：</p>
+
+<pre><code class="language-bash">pip install together</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">或直接使用 OpenAI SDK（推荐用于 OpenAI 兼容代码）：</p>
+
+<pre><code class="language-bash">pip install openai</code></pre>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">3. 首次调用</h3>
+
+<pre><code class="language-python">import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ["TOGETHER_API_KEY"],
+    base_url="https://api.together.xyz/v1"
+)
+
+response = client.chat.completions.create(
+    model="meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+    messages=[
+        &#123;"role": "user", "content": "一句话解释什么是 Together AI？"&#125;
+    ],
+    max_tokens=100
+)
+
+print(response.choices[0].message.content)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">预期输出类似："Together AI 是一个用于运行和微调开源大语言模型的云平台。"</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">4. 添加 RAG 上下文</h3>
+
+<pre><code class="language-python">def rag_query(question: str, context_docs: list[str]) -> str:
+    context = "\n\n".join(f"[文档 &#123;i+1&#125;] &#123;doc&#125;" for i, doc in enumerate(context_docs))
+    prompt = f"""基于以下上下文回答问题。如果答案不在上下文中，请说明。
+
+上下文：
+&#123;context&#125;
+
+问题：&#123;question&#125;
+答案："""
+    
+    response = client.chat.completions.create(
+        model="meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+        messages=[&#123;"role": "user", "content": prompt&#125;],
+        max_tokens=500,
+        temperature=0.1
+    )
+    return response.choices[0].message.content
+
+# 示例
+docs = [
+    "Together AI 由 Vipul Ved Prakash 和 Ce Zhang 于 2022 年创立。",
+    "公司总部位于加利福尼亚州旧金山。",
+    "Together AI 在 2024 年完成由 Salesforce Ventures 领投的 1.02 亿美元 A 轮融资。"
+]
+
+print(rag_query("谁创立了 Together AI？", docs))</code></pre>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">5. 为重复前缀添加缓存</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Together 的缓存输入折扣会在你的 prompt 有共同前缀（通常是长 system prompt 或大上下文）时自动应用。启用方式：</p>
+
+<pre><code class="language-python">response = client.chat.completions.create(
+    model="meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+    messages=[...],
+    extra_body=&#123;
+        "cache": True  # Together 特定标志
+    &#125;
+)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">缓存输入按 $0.06-$0.26/M 计费（vs Llama 4 Maverick 新输入 $0.27/M）——<strong>缓存部分成本降低 4.5 倍</strong>。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">6. 生产部署</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">对于生产环境，使用 Dedicated 层或通过 Together 的 GPU 集群自托管。大多数团队在 Serverless 上跑到 100M+ token/月后切到 Dedicated，此时 Dedicated 便宜约 30%。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Together AI 适用场景 — 以及不适用场景</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Together 最佳适用</h3>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>开源模型工作负载</strong>（Llama 4、DeepSeek V4、Qwen、Mistral、Kimi），比闭源 API 节省 30-70% 成本</li>
+
+<li><strong>Token 量大的批处理</strong>（RAG 导入、文档摘要、日志分析），Qwen 3.5 9B $0.03/M 占绝对优势</li>
+
+<li><strong>多模型 Agent 系统</strong>，不同任务路由到不同模型（廉价分类、中端聊天、前沿推理）</li>
+
+<li><strong>OpenAI SDK 迁移</strong>，只需换 <code>base_url</code>，其余代码保持不变</li>
+
+<li><strong>微调工作流</strong>（LoRA、全量微调）支持 Llama 70B、Qwen 70B、Mistral 7B</li>
+
+<li><strong>100M+ token/月成本敏感生产</strong>，此时 Dedicated 定价生效</li>
+
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Together 不适合</h3>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>超低延迟实时</strong>（200ms 内 TTFT）——Serverless 冷启动 1-3 秒。需要 Dedicated 或 Groq 这样的专业提供商。</li>
+
+<li><strong>闭源前沿质量</strong>，必须用 GPT-5.6 / Claude Sonnet 5 / Gemini 2.5 Pro——Together 托管的 OSS 模型在硬推理基准上落后 2-5 个百分点。</li>
+
+<li><strong>严格中国大陆数据驻留</strong>——Together 基础设施在美国 GPU 集群上；无 CN 区域。</li>
+
+<li><strong>以图像/视频生成为主要用途</strong>——Replicate 和 fal.ai 在视觉工作负载上有更大的目录和更优化的单图定价。</li>
+
+<li><strong>语音/音频优先产品</strong>——ElevenLabs 和 Cartesia 更适合低延迟语音；Together 的音频侧重转录。</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Together AI vs Fireworks AI vs DeepInfra vs Replicate vs Baseten vs Modal</h2>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">特性</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Together AI</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Fireworks AI</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">DeepInfra</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Replicate</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Baseten</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Modal</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>模型数量</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">200+ OSS</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">100+ OSS</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">50+ OSS</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">50K+（社区）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">自定义 + OSS</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">自带模型</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>定价模式</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">按 token</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">按 token</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">按 token</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">按 GPU 秒</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">按 GPU 秒</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">按 GPU 秒</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>最便宜 OSS</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen 3.5 9B $0.03/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Llama 3.3 70B $0.20/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen 2.5 7B $0.05/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">不定</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">不定</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.16/秒 T4</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>免费层</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1 额度</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1 额度</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.50 额度</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">有限</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">无</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$30/月</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>OpenAI 兼容</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">否（Python SDK）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>冷启动</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1-2 秒</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1-3 秒</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2-5 秒</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">5-15 秒</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2-5 秒</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1-3 秒</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>微调</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（LoRA + 全量）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（LoRA）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">有限</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">否</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（任何框架）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Dedicated GPU</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（H100/B200）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（H100/A100）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（H100/A100）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">否（serverless）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（Dedicated）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">否</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>图像生成侧重</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">中</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">低</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">低</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">最高</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">低</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">自带模型</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>最佳适用</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">OSS 广度 + 价格</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">前沿速度</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">廉价 OSS</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">社区模型</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">常驻生产</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Python DX</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年选型矩阵：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Together AI</strong>：OSS 模型广度最佳，Qwen/Llama/DeepSeek 每 token 价格最低</li>
+
+<li><strong>Fireworks AI</strong>：前沿 OSS 速度最佳（Mixtral、Llama 3），支持微调</li>
+
+<li><strong>DeepInfra</strong>：超廉价 OSS 推理最佳（Qwen 2.5 7B $0.05/M）</li>
+
+<li><strong>Replicate</strong>：社区模型目录最佳（图像、音频、小众 OSS）</li>
+
+<li><strong>Baseten</strong>：常驻生产最佳，配合 Dedicated Deployments</li>
+
+<li><strong>Modal</strong>：自定义模型自托管最佳，Python 优先 DX</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">生产环境验证 Together AI</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">在把 Together 用于真实流量前，验证以下四件事：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>延迟分布。</strong> 对 Llama 4 Maverick 发 100 个请求，测量首 token 时间。预期 p50 ~600ms（热），p99 ~2.5 秒（冷）。亚 200ms 延迟需切到 Dedicated 或更快提供商。</li>
+
+<li><strong>每次请求成本。</strong> 使用 Together 内置用量仪表板（<code>https://api.together.xyz/settings/billing</code>）确认每个模型的实际开销与预期一致。设置硬上限防止失控成本。</li>
+
+<li><strong>缓存输入行为。</strong> 跑同一个长前缀 prompt 10 次——Together 应对首次请求按全价收费，后续请求按缓存输入价计费。在仪表板中验证。</li>
+
+<li><strong>故障切换行为。</strong> Together API 对 Serverless 提供 99.9% SLA。要更高可用性，使用 Dedicated 层或通过 OpenRouter 智能路由设置到第二家提供商（Fireworks、DeepInfra）的回退。</li>
+
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Together AI 比 OpenAI 便宜吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">对于开源模型（Llama 4、DeepSeek V4、Qwen），Together 在等价工作负载上比 GPT-5.6 便宜 5-15 倍。随着上下文长度增加，价格差距扩大（Together 按上下文长度统一收费，部分提供商对长上下文加价）。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Together AI 价格这么低，怎么赚钱？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Together 自营 GPU 集群（H100、B200），联合开发 FlashAttention-4 提升推理效率，并向 NVIDIA 大宗采购。这组合让他们在同价位上比小型转售商有 30-50% 利润空间。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Together AI 的 API 兼容 OpenAI 吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">完全兼容。你可以使用 OpenAI Python SDK、Node SDK 或任何支持 OpenAI API 接口的框架（LangChain、LlamaIndex、Vercel AI SDK、AutoGen、CrewAI），只需把 <code>base_url</code> 改为 <code>https://api.together.xyz/v1</code>。所有模型 ID 使用 HuggingFace 格式（如 <code>meta-llama/Llama-4-Maverick-17B-128E-Instruct</code>）。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">可以从中国使用 Together AI 吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">不能直接使用。Together 的基础设施在美国，没有 CN 区域。中国开发者应通过代理使用 Together，或使用国内替代方案：DeepSeek（官方 API）、阿里云百炼、腾讯混元以获得类似的模型访问。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Together AI 的速率限制是多少？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Serverless 默认速率限制：新账号每分钟 60 次请求、500K token/分钟。限制随使用历史动态扩展——高用量账号在持续付费使用 30-60 天后获得更高的 RPM/TPM。Dedicated 层用户获得配置的自定义限制。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Together AI 支持微调吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">支持。Together 在 Llama 4、Qwen 3.5/3.6、Mistral 等多个 OSS 模型上支持 LoRA 和全量微调。定价起步 $1.50/M 训练 token。微调模型作为私有端点部署在 Together 基础设施上。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">什么是 FlashAttention-4？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">FlashAttention-4 是 FlashAttention 研究团队（包括 Together AI 联合创始人 Ce Zhang）开发的第四代注意力算法。它针对 H100/B200 硬件优化，让 Together 在等价硬件上比基于 TensorRT-LLM 的推理栈有可量化的 tokens/$ 优势。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Together AI 和 Fireworks AI 怎么比？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Together 模型覆盖更广（200+ vs 100+），Qwen 3.5/3.6 每 token 价格更低。Fireworks 在较小的一组前沿 OSS 模型上（尤其是 Llama 3 和 Mixtral）有更快推理。对于大多数工作负载，Together 胜在价格/覆盖；对特定模型的延迟关键工作负载，Fireworks 可能略胜。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Together AI 有企业版吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">有。企业版提供自定义 SLA（99.9%+）、Dedicated GPU 集群、本地部署选项、HIPAA/PCI 合规、SSO、RBAC 和自定义合同。通过 <code>enterprise@together.ai</code> 联系销售。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">我可以在 Together AI 上部署自己的自定义模型吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">可以。Bring-Your-Own-Model（BYOM）程序支持 HuggingFace 格式模型，最大 700B 参数。定价按 Dedicated 硬件的 GPU 秒计算。自定义模型获得私有 HTTPS 端点和完全的 Together API 兼容性（OpenAI SDK 可用）。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Together AI 上我的数据会怎样？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Together 的默认策略是<strong>不基于客户数据训练</strong>——你的 prompt 和补全不会用于改进任何模型。数据保留 30 天用于滥用监控，之后删除。企业客户可以申请零保留合同和本地部署。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Together AI 支持视觉模型吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">支持。Llama 4 Maverick、Qwen 3.6 VL 和 Pixtral 都带视觉能力托管。在 OpenAI 格式的 messages 数组中传入 base64 或 URL 图片。Together 还通过单独端点托管 FLUX、Imagen 和 Seedream 用于图像生成。</p>
+
+<hr class="my-8 border-gray-200" />
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>结论：</strong> Together AI 是 2026 年最大且最具成本效益的开源模型 API 平台。200+ 模型、$0.03-$1.25/M 输入 token、OpenAI 兼容 API、FlashAttention-4 推理，加上持续推动领域前进的研究团队，是生产环境运行开源权重模型的默认选择。如果你正在以 GPT-5.6 / Sonnet 5 的价格支付 Llama 4 Maverick 或 DeepSeek V4 Pro 就能处理的工作负载（成本仅 1/10），Together 是首选评估平台。</p>`;
+
+const affiliateSidebar = {
+  name: 'FreeModel',
+  description: '需要聚合多 Provider 的 API？FreeModel 一个 Key 调用 GPT-4o、Claude、Gemini、DeepSeek 等 50+ 模型——国内直连，无需翻墙。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '免费试用 FreeModel →',
 };
 ---
-
 <BaseLayout
-  title=`${zhTitle} | APIRank`
+  title={zhTitle}
   description={zhDescription}
   canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
   type="article"
 >
-  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
-  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)}></script>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)}></script>
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)}></script>
 
-  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
-  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
-  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Main content -->
+      <article class="flex-1 min-w-0">
+        <div set:html={zhBody} />
+      </article>
 
-  <div class="bg-gray-50 border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-      <nav class="flex items-center gap-2 text-sm text-gray-500">
-        <a href="/zh" class="hover:text-blue-600">首页</a>
-        <span>›</span>
-        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
-        <span>›</span>
-        <span class="text-gray-900 font-medium">Together AI API 测评</span>
-      </nav>
-    </div>
-  </div>
-
-  <article class="py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-8">
-
-          <header>
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">Together AI API 测评 2026：一站式调用全球顶级开源模型</h1>
-            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
-              <time datetime="2026-05-23">2026年5月23日</time>
-              <span>•</span>
-              <span>API 测评</span>
-              <span>•</span>
-              <span>约 8 分钟</span>
-            </div>
-            <p class="text-lg text-gray-600 leading-relaxed">
-              全面测评 Together AI API：汇聚 Llama 3.3、Qwen 2.5、DeepSeek-V3、FLUX.1 等顶级开源模型。与 OpenAI、OpenRouter 对比，价格、免费额度、中国使用指南。
-            </p>
-          </header>
-
-          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
-            <p class="text-blue-800 text-sm">
-              <strong>摘要：</strong> Together AI 聚合 100+ 开源模型（Llama、Qwen、Mistral、FLUX.1）于统一 API。适合追求灵活性和开源成本优势的开发者。<strong>中国访问部分受限，建议先用代理测试。</strong>
-            </p>
-          </div>
-
-          <section>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">引言：Together AI 为什么值得关注</h2>
-            <p class="text-gray-600 leading-relaxed mb-4">2025-2026 年，AI API 聚合平台赛道竞争激烈，Together AI 以独特的"模型市场"模式脱颖而出。与传统 AI 提供商自研模型不同，Together AI 做的是"模型聚合"——将 Meta Qwen、Mistral、Stability AI 等顶级开源模型通过统一 API 接口对外提供。</p>
-            <p class="text-gray-600 leading-relaxed mb-4">这种模式对开发者极为友好：无需管理多个 API 密钥，一个端点即可调用 Llama 3.3 做聊天、Qwen 2.5 做多语言处理、FLUX.1 做图片生成。Together AI 负责底层基础设施，开发者专注业务逻辑。</p>
-            <p class="text-gray-600 leading-relaxed">2026 年 Together AI 最大的竞争优势在于**模型上线速度**。DeepSeek-V3 发布后数天，Together AI 即开放调用；Meta Llama 3.3 发布时，Together AI 比大多数竞品平台更早上线。这种敏捷性配合有竞争力的按 token 计费模式，使 Together AI 成为追求灵活性、不想被单一供应商锁定的开发者的首选。</p>
-          </section>
-
-          <section>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">Together AI API 定价详解</h2>
-            <p class="text-gray-600 leading-relaxed mb-4">Together AI 按模型分层定价，从高性价比的指令微调模型到旗舰级大规模模型均有覆盖。</p>
-            <div class="overflow-x-auto mb-4">
-              <table class="min-w-full border border-gray-200 rounded-lg text-sm">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">模型</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">输入 (每1M tokens)</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">输出 (每1M tokens)</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">上下文窗口</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">类型</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                  <tr><td class="px-4 py-2">Meta-Llama-3.3-70B-Instruct</td><td class="px-4 py-2">$0.24</td><td class="px-4 py-2">$0.24</td><td>128K</td><td>聊天</td></tr>
-                  <tr><td class="px-4 py-2">Qwen-2.5-72B-Instruct</td><td class="px-4 py-2">$0.90</td><td class="px-4 py-2">$0.90</td><td>128K</td><td>聊天</td></tr>
-                  <tr><td class="px-4 py-2">Mistral-7B-Instruct-v0.3</td><td class="px-4 py-2">$0.20</td><td class="px-4 py-2">$0.20</td><td>128K</td><td>聊天</td></tr>
-                  <tr><td class="px-4 py-2">DeepSeek-V3</td><td class="px-4 py-2">$0.50</td><td class="px-4 py-2">$0.50</td><td>64K</td><td>聊天</td></tr>
-                  <tr><td class="px-4 py-2">Meta-Llama-3.1-405B-Instruct</td><td class="px-4 py-2">$2.00</td><td class="px-4 py-2">$2.00</td><td>128K</td><td>聊天</td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">FLUX.1 图片生成定价</h3>
-            <p class="text-gray-600 mb-2">FLUX.1 按图计费（非 token 计费）：</p>
-            <div class="overflow-x-auto mb-4">
-              <table class="min-w-full border border-gray-200 rounded-lg text-sm">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">模型</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">分辨率</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">单张价格</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                  <tr><td class="px-4 py-2">FLUX.1-schnell</td><td>1024x1024</td><td>$0.055</td></tr>
-                  <tr><td class="px-4 py-2">FLUX.1-dev</td><td>1024x1024</td><td>$0.165</td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">免费额度</h3>
-            <ul class="list-disc list-inside text-gray-600 space-y-1 mb-4">
-              <li><strong>新用户赠送</strong>：注册即送 $5 免费额度</li>
-              <li>无需信用卡即可开始</li>
-              <li>免费套餐限速：10 次/分钟</li>
-              <li>足够完成原型验证和小规模测试</li>
-            </ul>
-
-            <h3 class="text-lg font-semibold text-gray-900 mb-2">$100 能用多少？</h3>
-            <div class="overflow-x-auto">
-              <table class="min-w-full border border-gray-200 rounded-lg text-sm">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">模型</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">总 Tokens</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                  <tr><td class="px-4 py-2">Llama 3.3 70B</td><td>约 4.17 亿 tokens</td></tr>
-                  <tr><td class="px-4 py-2">Mistral 7B</td><td>约 5 亿 tokens</td></tr>
-                  <tr><td class="px-4 py-2">DeepSeek-V3</td><td>约 2 亿 tokens</td></tr>
-                  <tr><td class="px-4 py-2">Qwen 2.5 72B</td><td>约 1.11 亿 tokens</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <section>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">Together AI vs OpenAI vs OpenRouter</h2>
-            <p class="text-gray-600 leading-relaxed mb-4">Together AI 的核心优势在于以极低成本调用开源模型。以下是与闭源模型和其他聚合平台的核心差异：</p>
-            <div class="overflow-x-auto">
-              <table class="min-w-full border border-gray-200 rounded-lg text-sm">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">功能</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">Together AI</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">OpenAI</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">OpenRouter</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                  <tr><td class="px-4 py-2">模型数量</td><td>100+</td><td>10+</td><td>100+</td></tr>
-                  <tr><td class="px-4 py-2">开源模型</td><td>✅ 完整访问</td><td>❌ 无</td><td>✅ 丰富</td></tr>
-                  <tr><td class="px-4 py-2">图片生成</td><td>✅ FLUX.1</td><td>✅ DALL-E 3</td><td>✅ 多种</td></tr>
-                  <tr><td class="px-4 py-2">起价</td><td>$0.08/1M</td><td>$2.50/1M (GPT-4o)</td><td>$0.03/1M</td></tr>
-                  <tr><td class="px-4 py-2">中国访问</td><td>⚠️ 部分可用</td><td>⚠️ 部分可用</td><td>✅ 可用</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <section>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">核心优势</h2>
-            <ul class="space-y-2">
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✅</span><span class="text-gray-600"><strong>一个 API，数百个模型</strong>：统一端点，切换模型无需更换供应商</span></li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✅</span><span class="text-gray-600"><strong>最快模型上线</strong>：新开源模型发布速度业内领先</span></li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✅</span><span class="text-gray-600"><strong>FLUX.1 独家支持</strong>：FLUX.1 图片生成，价格极具竞争力</span></li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✅</span><span class="text-gray-600"><strong>成本优势</strong>：开源模型成本是 GPT-4o 的 1/10~1/50</span></li>
-              <li class="flex items-start gap-2"><span class="text-green-500 mt-1">✅</span><span class="text-gray-600"><strong>无锁定风险</strong>：模型可秒级切换，不被单一供应商生态绑定</span></li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">局限性</h2>
-            <ul class="space-y-2">
-              <li class="flex items-start gap-2"><span class="text-red-400 mt-1">⚠️</span><span class="text-gray-600"><strong>中国访问不稳定</strong>：部分模型需代理才能从大陆访问</span></li>
-              <li class="flex items-start gap-2"><span class="text-red-400 mt-1">⚠️</span><span class="text-gray-600"><strong>非自托管</strong>：如需完全数据隐私，仍需自托管</span></li>
-              <li class="flex items-start gap-2"><span class="text-red-400 mt-1">⚠️</span><span class="text-gray-600"><strong>超配费用</strong>：按分钟计费，高流量时段可能超出预期</span></li>
-              <li class="flex items-start gap-2"><span class="text-red-400 mt-1">⚠️</span><span class="text-gray-600"><strong>客服响应</strong>：作为聚合平台，响应速度可能慢于单一模型供应商</span></li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">适用场景推荐</h2>
-            <div class="overflow-x-auto">
-              <table class="min-w-full border border-gray-200 rounded-lg text-sm">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">场景</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">推荐模型</th>
-                    <th class="px-4 py-2 text-left font-medium text-gray-700">原因</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100">
-                  <tr><td class="px-4 py-2">多语言聊天应用</td><td>Qwen 2.5 72B</td><td>多语言性能最佳，成本适中</td></tr>
-                  <tr><td class="px-4 py-2">图片生成</td><td>FLUX.1-schnell</td><td>快速、高质量、价格优</td></tr>
-                  <tr><td class="px-4 py-2">代码生成</td><td>Llama 3.3 70B</td><td>代码基准测试表现强，开源可定制</td></tr>
-                  <tr><td class="px-4 py-2">低成本原型</td><td>Mistral 7B</td><td>成本最低，简单任务质量足够</td></tr>
-                  <tr><td class="px-4 py-2">大规模推理</td><td>Llama 3.1 405B</td><td>最高质量开源模型</td></tr>
-                  <tr><td class="px-4 py-2">中文场景</td><td>Qwen 2.5 72B</td><td>中文优化表现最佳</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-
-          <section>
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">结论</h2>
-            <p class="text-gray-600 leading-relaxed mb-4">Together AI 已成为开发者一站式调用全球顶级开源 AI 模型的首选平台。FLUX.1 图片生成、极快的模型上线速度、有竞争力的按 token 定价，使其成为 OpenAI 等闭源模型和 OpenRouter 等聚合平台的强有力替代方案。</p>
-            <p class="text-gray-600 leading-relaxed mb-4">对于构建多语言应用（Qwen）、图片生成功能（FLUX.1）或对成本敏感的应用（开源模型成本为 GPT-4o 的 1/10~1/50），Together AI 尤为值得推荐。</p>
-            <p class="text-gray-600 leading-relaxed mb-4">中国开发者使用时需注意部分模型访问受限——使用前务必测试具体场景。对于国际化应用或有代理基础设施的开发者，Together AI 是 2026 年最强大的平台之一。</p>
-            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-              <p class="text-sm text-gray-600"><strong>提供商</strong>：<a href="https://together.ai" class="text-blue-600 hover:underline">Together AI</a> | <strong>类别</strong>：聚合平台 | <strong>发布日期</strong>：2026-05-23</p>
-            </div>
-          </section>
-
-          <section class="border-t border-gray-200 pt-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-4">相关测评</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <a href="/zh/tutorials/mistral-ai-api-review/" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition">
-                <p class="font-medium text-gray-900">Mistral AI API 测评</p>
-                <p class="text-sm text-gray-500">欧洲开源 AI，Mixtral 系列</p>
-              </a>
-              <a href="/zh/tutorials/openai-gpt-4o-review/" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition">
-                <p class="font-medium text-gray-900">OpenAI GPT-4o 测评</p>
-                <p class="text-sm text-gray-500">行业领导者，完整生态</p>
-              </a>
-              <a href="/zh/tutorials/deepseek-api-review/" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition">
-                <p class="font-medium text-gray-900">DeepSeek API 测评</p>
-                <p class="text-sm text-gray-500">最高性价比，中国直连</p>
-              </a>
-              <a href="/zh/tutorials/cohere-ai-api-review/" class="block p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition">
-                <p class="font-medium text-gray-900">Cohere AI API 测评</p>
-                <p class="text-sm text-gray-500">企业级搜索和文本 AI</p>
-              </a>
-            </div>
-          </section>
-
+      <!-- Sidebar -->
+      <aside class="lg:w-80 flex-shrink-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <h3 class="font-semibold text-blue-900 mb-2">{affiliateSidebar.name}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url}
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+             rel="sponsored noopener" target="_blank">
+            {affiliateSidebar.cta}
+          </a>
         </div>
-
-        <aside class="lg:col-span-1">
-          <div class="sticky top-8 space-y-6">
-            <div class="bg-white border border-gray-200 rounded-lg p-4">
-              <h3 class="font-semibold text-gray-900 mb-3">快速信息</h3>
-              <dl class="space-y-2 text-sm">
-                <div class="flex justify-between">
-                  <dt class="text-gray-500">提供商</dt>
-                  <dd class="text-gray-900 font-medium">Together AI</dd>
-                </div>
-                <div class="flex justify-between">
-                  <dt class="text-gray-500">类别</dt>
-                  <dd class="text-gray-900">聚合平台</dd>
-                </div>
-                <div class="flex justify-between">
-                  <dt class="text-gray-500">起价</dt>
-                  <dd class="text-gray-900">$0.20/1M</dd>
-                </div>
-                <div class="flex justify-between">
-                  <dt class="text-gray-500">免费额度</dt>
-                  <dd class="text-gray-900">$5 体验金</dd>
-                </div>
-                <div class="flex justify-between">
-                  <dt class="text-gray-500">中国访问</dt>
-                  <dd class="text-amber-600">⚠️ 部分可用</dd>
-                </div>
-              </dl>
-            </div>
-
-            <div class="bg-white border border-gray-200 rounded-lg p-4">
-              <h3 class="font-semibold text-gray-900 mb-3">热门模型</h3>
-              <ul class="space-y-1 text-sm text-gray-600">
-                <li>• Llama 3.3 70B (128K)</li>
-                <li>• Qwen 2.5 72B (128K)</li>
-                <li>• DeepSeek-V3 (64K)</li>
-                <li>• FLUX.1-schnell (图片)</li>
-              </ul>
-            </div>
-
-            <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
-              <h3 class="font-semibold text-amber-800 mb-2">⚠️ 中国访问</h3>
-              <p class="text-sm text-amber-700">Together AI 中国部分可用，部分模型需代理。从大陆直连可考虑 <a href="/zh/tutorials/deepseek-api-review/" class="underline">DeepSeek</a> 或 <a href="/zh/providers/openrouter/" class="underline">OpenRouter</a>。</p>
-            </div>
-          </div>
-        </aside>
-      </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">快速概览</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>提供商：</strong> Together AI</li>
+            <li><strong>模型数量：</strong> 200+ 开源模型（Llama 4、DeepSeek V4、Qwen、Mistral、Kimi）</li>
+            <li><strong>最便宜：</strong> Qwen 3.5 9B $0.03/M 输入</li>
+            <li><strong>API：</strong> <code>https://api.together.xyz/v1</code></li>
+            <li><strong>兼容性：</strong> 完全 OpenAI 兼容</li>
+            <li><strong>特性：</strong> FlashAttention-4、函数调用、JSON 模式、视觉、嵌入、微调</li>
+            <li><strong>免费层：</strong> $1 初始额度（需绑定支付方式）</li>
+            <li><strong>联盟：</strong> FreeModel 用于跨 Provider 聚合</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
     </div>
-  </article>
+  </main>
 </BaseLayout>
