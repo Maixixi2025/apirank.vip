@@ -1,0 +1,764 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'claude-tokenizer-cost-increase-2026';
+const date = '2026-07-15';
+const locale = 'zh';
+
+const zhTitle = "Claude Tokenizer 2026：真实账单计算";
+const zhDescription = "Anthropic 新分词器让同一文件多产出 1.36–1.73× tokens。标价仍是 $5/$25，但 Opus 4.8 实际成本 = $7.50/$37.50。GPT-5.6 Sol 同价对照。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Claude 分词器变更等于涨价吗？", "acceptedAnswer": {"@type": "Answer", "text": "实际效果是涨价，典型英文编程场景的 input 账单上升约 32%。标价本身没变，但因为按 token 计费，Sonnet 5 / Opus 4.8 / Fable 5 的 new tokenizer 让实际 input 单价变为 ~1.32× 标价。发票上并没有单独一行说明这一点。"}}, {"@type": "Question", "name": "哪些 Claude 模型使用了新分词器？", "acceptedAnswer": {"@type": "Answer", "text": "已确认使用新分词器的有 Sonnet 5、Opus 4.8 和 Fable 5。Opus 4.7 与 Opus 4.8 标价同为 $5/$25，几乎可以肯定使用同一新分词器（暂无独立测量数据，但相同的标价、相同的 cache 价格已足以推断）。Sonnet 4.6 与 Opus 4.6 使用较旧的 tokenizer。"}}, {"@type": "Question", "name": "我应该把 Opus 4.8 换成 GPT-5.6 Sol 吗？", "acceptedAnswer": {"@type": "Answer", "text": "如果只算成本，对于典型英文编程工作负载答案是肯定的：Opus 4.8 实际 input 价格 $7.50/MTok，GPT-5.6 Sol 为 $5.00/MTok；Ploy 的生产迁移公开数据是 token 总量减少 35%。如果工作依赖 Claude 在长上下文推理或工具调用上的特定质量，节省的成本未必值得迁移。如果成本是首要决策因素，公开数据指向 GPT-5.6 Sol。"}}, {"@type": "Question", "name": "Sonnet 5 的 $2/$10 优惠价会持续吗？", "acceptedAnswer": {"@type": "Answer", "text": "不会。Anthropic 定价页明确标注优惠价到 2026年8月31日 截止，9月1日起恢复 $3/$15 标准价。优惠结束后同一段代码会比 Sonnet 4.6 同期贵大约三分之一 —— 因为 32% 的分词器开销仍然存在，标价折扣消失。"}}, {"@type": "Question", "name": "如何计算我自己的真实成本？", "acceptedAnswer": {"@type": "Answer", "text": "两个实操方法：(1) 取一段你真实 prompt 的代表性样本，分别跑 Anthropic 的 count_tokens 接口和 OpenAI 的 tiktoken 包，算出你自己的加权倍数；(2) 给每个候选模型发同一组真实 prompt，从每个响应的 usage.input_tokens 字段读取实际账单 token 数，用发票金额除以 token 数，得到已经包含 verbose 输出、thinking 和 cache 的 effective $/MTok。"}}, {"@type": "Question", "name": "Gemini 3 Flash 真的比所有 Claude 和 GPT 选项都便宜吗？", "acceptedAnswer": {"@type": "Answer", "text": "是的，以 effective 单价计算：Gemini 3 Flash 的 effective input 价格 $0.55/MTok、output $3.27/MTok，是 2026 年最便宜的选项，差距悬殊。但代价是质量：Gemini 3 Flash 在速度和成本上有优势，弱在推理质量，因此适用于模型质量不是瓶颈的高吞吐批处理流水线。"}}]};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Claude Tokenizer 2026: Real Bill Math</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">On July 13, 2026, Playcode published a measurement of all major production LLM tokenizers that quietly reframes how the "$5 per million input tokens" line item on Anthropic's pricing page should be read. <strong>The number is no longer comparable across vendors</strong>, and one Anthropic model change in particular — the new tokenizer shipped with <strong>Sonnet 5, Opus 4.8 (and likely Opus 4.7)</strong>, plus the unreleased <strong>Fable 5</strong> — raises the real input bill by <strong>about 32%</strong> on a typical English coding request while the published list price is identical.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This article walks through the underlying measurements, the cross-vendor table, the multiplier-corrected "effective price" view, and what it changes about migration decisions in the second half of 2026.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Why "$/Mtok" is no longer a comparable price</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The formula behind every LLM invoice is:</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>cost = (tokens your content becomes) × (price per token)</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">The pricing page shows the second number and treats the first as a constant. It is not. Each vendor's tokenizer cuts the same bytes into a different number of pieces, and you pay per piece. Two models with identical "input $5/MTok" can produce meaningfully different bills for the same paragraph, because one turns that paragraph into more tokens.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Playcode ran <strong>16 real fixtures</strong> (English prose, HTML, JavaScript, Python, TypeScript, Rust, JSON tool schemas and tool results, Chinese chat, Chinese prose, symbol-heavy text, and a 42,661-character agent system prompt) through every frontier tokenizer using each vendor's own counting endpoint, then <strong>double-checked the counts against real paid requests</strong> with <code>max_tokens: 1</code>. The OpenAI counts were confirmed against live <code>usage.input_tokens</code> for GPT-5.1, GPT-5.5, and GPT-5.6 Sol. Anthropic counts came from the official <code>count_tokens</code> endpoint. Gemini and Grok counts came from their providers' own count endpoints.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>DeepSeek and GLM were left out</strong> because no production tokenizer counts are publicly available — only rough characters-divided-by-four estimates. Anyone claiming comparable numbers for those two is working from a different (and weaker) methodology.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What Anthropic actually changed</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Opus 4.6 and Opus 4.8 list the same <code>$5.00 / $25.00</code> per million input/output tokens. <strong>The list price is unchanged.</strong> The tokenizer is different. Sonnet 4.6 and Opus 4.6 use the old tokenizer; <strong>Sonnet 5, Opus 4.8, Fable 5</strong>, and almost certainly Opus 4.7 use the new one.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Counting identical bytes through Anthropic's own <code>count_tokens</code> endpoint shows the impact:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Content</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Old tokenizer</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">New tokenizer</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Change</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">English prose (2,115 chars)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">476</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">636</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">+34%</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">HTML page (3,195 chars)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,131</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,302</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">+15%</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">JavaScript (1,933 chars)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">659</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">794</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">+20%</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Python (2,251 chars)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">831</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,022</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">+23%</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">TypeScript (2,888 chars)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">898</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,178</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">+31%</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Rust (2,924 chars)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,019</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,312</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">+29%</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">JSON tool schema (9,948 chars)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2,631</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">3,306</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">+26%</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Our agent system prompt (42,661 chars)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">10,761</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">14,953</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>+39%</strong></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Chinese prose (379 chars)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">435</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">433</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~0%</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">Weighted the way a real agent request is composed — mostly English system prompt, tool schemas, code, and JSON — the <strong>new tokenizer comes out around +32% per request</strong>. Chinese barely moved, so the inflation is concentrated on English and code.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The whole verification across both tokenizers cost about $0.08 in real API calls.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The cross-vendor tokenization gap</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The most cited result from the Playcode measurements is the cross-vendor table, with <strong>GPT-5.x's <code>o200k</code> as the 1.00x reference</strong> (it has been frozen and publicly documented for over two years, while Claude's tokenizer is the one that changed):</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Content</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Claude (new)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Claude (old)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Gemini 3 Flash</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Grok 4.5</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">TypeScript</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>1.73×</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.32×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.16×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.05×</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Rust</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.58×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.22×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.19×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.05×</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">JavaScript</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.52×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.26×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.23×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.11×</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Python</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.50×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.22×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.20×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.09×</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">HTML page</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.36×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.18×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.08×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.04×</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">English prose</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.40×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.05×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.01×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.00×</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Chinese prose</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.44×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.45×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">0.85×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">0.86×</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Chinese chat</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.53×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.55×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">0.91×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">0.92×</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Code sits well above prose.</strong> TypeScript is the worst case at 1.73×, followed by Rust (1.58×), JavaScript (1.52×), Python (1.50×). English prose is "only" 1.40×, but a coding agent processes code more often than prose, so for that workload the 1.50–1.73× band is what matters.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Why is TypeScript the worst case? Because <strong><code>o200k</code> is unusually efficient on it</strong> — about 4.24 characters per token, which looks like the result of training on a lot of web JavaScript and TypeScript where camelCase identifiers and JSX patterns compress into single tokens. On Rust its efficiency drops to about 3.51 characters per token. Claude's tokenizer is roughly equally dense on both languages, so the gap is widest exactly where GPT is strongest.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Chinese behavior is a long-standing property of the Claude family (the old tokenizer already ran 1.45× above GPT on Chinese prose), not something the new tokenizer introduced. Gemini is actually <strong>more efficient than GPT</strong> on Chinese (0.85×), which matters if your workload is CJK-heavy.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Effective price per million tokens (the real comparison)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Multiplying list price by the measured divergence gives an effective price for the same work. The "divergence" column is the blended multiplier for a typical English coding request, normalized to GPT's <code>o200k</code>:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Model</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">List in/out ($/MTok)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Divergence</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Effective in/out ($/MTok)</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>GPT-5.6 Sol</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$5.00 / $30.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.00× (verified)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$5.00 / $30.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">GPT-5.5</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$5.00 / $30.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.00×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$5.00 / $30.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">GPT-5.1</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.25 / $10.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.00×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.25 / $10.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Grok 4.5</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.00 / $6.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.03×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.06 / $6.18</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Gemini 3 Flash</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.50 / $3.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.09×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.55 / $3.27</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Claude Sonnet 4.6</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.00 / $15.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.14× (old tokenizer)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.42 / $17.10</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Claude Sonnet 5 (intro, through Aug 31, 2026)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.00 / $10.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.50× (new tokenizer)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.00 / $15.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Claude Sonnet 5 (standard, from Sep 1, 2026)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.00 / $15.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.50×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$4.50 / $22.50</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Claude Opus 4.6</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$5.00 / $25.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.14× (old tokenizer)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$5.70 / $28.50</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Claude Opus 4.8</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$5.00 / $25.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.50× (new tokenizer)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>$7.50 / $37.50</strong></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Claude Opus 4.7</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$5.00 / $25.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">(likely 1.50×, same tokenizer as 4.8)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$7.50 / $37.50</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Claude Fable 5</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$10.00 / $50.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.50×</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$15.00 / $75.00</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">A few rows deserve a second look:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Opus 4.6 and Opus 4.8 share a list price</strong> but differ by about <strong>32%</strong> in effective price. Going from 4.6 to 4.8 looks free on a rate card; it is a one-third price hike hidden in the tokenizer.</li>
+
+<li><strong>GPT-5.5 and GPT-5.6 Sol share the tokenizer</strong> (verified against live API calls on all three). Their identical list prices really are identical in effect, and either one is a fair swap.</li>
+
+<li><strong>Gemini 3 Flash runs a slightly heavier tokenizer than GPT</strong> but still remains the cheapest option by a wide margin — effective $0.55/$3.27 versus Opus 4.8's $7.50/$37.50 on input, a <strong>13.6×</strong> effective gap.</li>
+
+<li><strong>Sonnet 5's $2/$10 intro window</strong> (through August 31, 2026) roughly cancels the new tokenizer's overhead, making it actually competitive against Sonnet 4.6 for the same code. From September 1, 2026 the price reverts to $3/$15 with the same extra tokens — the same work will cost <strong>about a third more</strong> than it did on Sonnet 4.6 at the same list price.</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cache traffic amplifies the gap</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Everything above measures one thing: how many input tokens identical bytes become. A full agent task adds more variables on top, and they are big ones.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Cache traffic is billed per token.</strong> Prompt caching writes at the writer rate and reads at the reader rate, both on a per-token basis. A tokenizer that produces <strong>32% more tokens</strong> makes every cache write and every cache read <strong>about 32% more expensive</strong>, and on long agent sessions cache reads are most of the bill. Anthropic's published caching prices — write $6.25/MTok, read $0.50/MTok for Opus 4.8 — apply before the tokenizer step. The effective cache read price for Opus 4.8 on a typical coding agent is closer to $0.75/MTok, not the headline $0.50.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For reference, here are the live prompt-cache prices on the Anthropic pricing page as of July 15, 2026:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Model</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cache write</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cache read</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Sonnet 4.6</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.75/MTok</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.30/MTok</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Sonnet 5 (intro)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.50/MTok</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.20/MTok</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Sonnet 5 (standard from Sep 1)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.75/MTok</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.30/MTok</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Opus 4.6</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$6.25/MTok</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.50/MTok</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Opus 4.8</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$6.25/MTok</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.50/MTok</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Opus 4.7</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$6.25/MTok</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.50/MTok</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Haiku 4.5</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.25/MTok</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.10/MTok</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">Same trend: Opus 4.6 and 4.8 share the cache pricing too. The new tokenizer raises the cache line item in proportion to token count.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Whole-task costs can diverge much further</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The Playcode measurements capped at 1.73× because the methodology focused on input tokenization only. Real workloads add three more variables on top:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Output verbosity</strong> — how many tokens the model spends to reach the same result.</li>
+
+<li><strong>Thinking</strong> — some models now emit visible or invisible thinking tokens that add to the output bill without changing the user's response.</li>
+
+<li><strong>Subagent and tool-call depth</strong> — how many round-trips the harness makes, and how much context each brings along.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">When people report that one model "uses 2–4× the tokens" of another on agent work, that can be true for their setup even though the pure input tokenization gap never exceeded 1.73×. The two numbers measure different layers.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Independent data point from Ploy.ai's production migration (published June 26, 2026)</strong>: when Ploy switched from Opus 4.8 to GPT-5.6 Sol as the default agent model, they measured <strong>1.70M input tokens against Claude Opus 4.8's 2.60M</strong> for the same builds — <strong>about 35% fewer</strong> before any other change. That is a whole-task measurement rather than a tokenizer probe, so it folds in verbosity and cache structure, but it points the same direction: GPT-5.6 Sol is meaningfully cheaper per build than Opus 4.8 on the same workload.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How to compare model prices in practice</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Three rules emerged from the measurements:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Compare on your own content.</strong> Your language and file types set the multiplier, so run a representative sample — at least one English prose file, one HTML file, one Python file, one TypeScript file, one JSON tool schema — through each tokenizer before trusting a rate card. Anthropic's <code>count_tokens</code> endpoint is free and returns the same number they bill against. OpenAI ships <code>o200k_base</code> via the <code>tiktoken</code> package, which matched live billed counts exactly on GPT-5.1, 5.5, and 5.6 Sol.</li>
+
+<li><strong>Treat a tokenizer change as a price change.</strong> When a vendor ships a new model at the same list price, check whether the tokenizer moved. <strong>Opus 4.6 → Opus 4.8 is a ~32% increase with no line item on any invoice.</strong> Announcements rarely call this out; the discount works only if you compare at the token level.</li>
+
+<li><strong>Measure dollars per completed task, not dollars per token.</strong> That single number folds in tokenization, verbosity, thinking, and caching at once, and the provider's <code>usage</code> field gives you the ground truth to compute it.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">A useful heuristic while the vendors continue to use $/MTok: <strong>multiply every Claude list price on Sonnet 5 / Opus 4.8 / Opus 4.7 / Fable 5 by 1.32 to roughly reflect the new tokenizer's overhead</strong> on a typical coding-agent workload. It will not be exact for every fixture, but it is a more honest starting point than the raw list price.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What this changes about migration decisions</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are evaluating Opus 4.8 against GPT-5.6 Sol today:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Opus 4.8's effective input price is $7.50/MTok, GPT-5.6 Sol's is $5.00/MTok.</strong> The effective spread is 1.5× on input, 1.25× on output. On a mixed input/output coding workload the headline "Opus is the same price as GPT-5.6" stops being true the moment the new tokenizer is factored in.</li>
+
+<li><strong>Sonnet 5 stays attractive only inside the intro window.</strong> Through August 31, 2026, $2/$10 effective $3/$15 lands the new tokenizer in line with Sonnet 4.6 for typical code. After that, the same work costs about a third more than Sonnet 4.6 at the same list price — not catastrophic, but worth planning a backfill review for.</li>
+
+<li><strong>Gemini 3 Flash keeps its cost crown.</strong> A slightly heavier tokenizer than GPT-5.x still leaves Gemini's effective input at $0.55/MTok, the cheapest available in 2026. For batch pipelines that can accept its quality, it dominates every other option on a per-token basis.</li>
+
+<li><strong>Ploy's whole-task cost</strong> (1.70M vs 2.60M input tokens, −35%) is the most practical data point for a coding-agent team deciding between Opus 4.8 and GPT-5.6 Sol today.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">None of this makes one model universally right. GPT-5.x is the token-lean choice on English and code; Gemini 3 Flash is remarkably cheap in effect; and Claude models earn their place on quality even when they cost more tokens to run. Just make sure the price you compare is the one you actually pay, after the tokenizer.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verification methodology (for the skeptical)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The Playcode measurements are reproducible:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Anthropic</strong>: <code>count_tokens</code> endpoint on the Messages API is free and returns the same count Anthropic bills against. Verified against real billed <code>usage.input_tokens</code> on Opus 4.6 (2,541 input tokens predicted vs billed) and Opus 4.8 (3,191 predicted vs billed; Fable 5 also 3,191 — same tokenizer, no hidden markup).</li>
+
+<li><strong>OpenAI</strong>: <code>o200k_base</code> via the documented <code>tiktoken</code> Python package, double-checked against live <code>usage.input_tokens</code> on GPT-5.1, GPT-5.5, and GPT-5.6 Sol. All three matched the local count exactly using a long-minus-short delta that cancels request framing.</li>
+
+<li><strong>Gemini and Grok</strong>: providers' own count endpoints.</li>
+
+<li><strong>DeepSeek and GLM</strong>: excluded — only rough characters-divided-by-four estimates are available, not real tokenizer counts.</li>
+
+<li><strong>Fixtures</strong>: 16 byte-for-byte matched samples (English prose, HTML, JavaScript, Python, TypeScript, Rust, two JSON tool types, Chinese chat, Chinese prose, agent system prompt, etc.).</li>
+
+<li><strong>Verification cost</strong>: about $0.08 in real API calls.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic, OpenAI, Google Gemini, and xAI pricing pages were live-confirmed against the published rate card as of July 15, 2026.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Frequently asked questions</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Is the Claude tokenizer change a price increase?</strong> Effectively yes — about 32% on a typical English coding workload. The list price is unchanged, but since you pay per token, the new tokenizer multiplies your input bill by ~1.32× on Sonnet 5 / Opus 4.8 / Fable 5. There is no line item on the invoice that explains this; the discount works only at the token level.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Which Claude models use the new tokenizer?</strong> Sonnet 5, Opus 4.8, and Fable 5 are confirmed. Opus 4.7, listed at the same $5/$25 as Opus 4.8, almost certainly uses the same new tokenizer (no separate measurement exists yet, but the identical list price + identical cache pricing makes this the safe assumption).</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Should I switch from Claude Opus 4.8 to GPT-5.6 Sol?</strong> On a pure cost basis the answer is yes for a typical English coding workload: Opus 4.8's effective input is $7.50/MTok versus GPT-5.6 Sol's $5.00/MTok, and Ploy's production migration published a 35% reduction in real-world token counts. If your workload depends on Claude's specific quality on long-form reasoning or its tool-use conventions, the cost savings may not be worth the switch; if cost is the primary decision driver, the data say GPT-5.6 Sol wins.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Will Sonnet 5's intro pricing ($2/$10) last?</strong> No. Anthropic's pricing page states the intro price is valid through August 31, 2026; the standard rate is $3/$15 from September 1, 2026. After the intro ends the same code will cost about a third more than it did on Sonnet 4.6, because the 32% tokenizer overhead remains and the rate-card discount disappears.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How can I measure my own real cost?</strong> Two practical recipes. (1) Run a representative mix of your real prompts through <code>count_tokens</code> on Anthropic and <code>tiktoken</code> on OpenAI to compute your own weighted multiplier. (2) Send a fixed set of representative prompts to each candidate model, read the <code>usage.input_tokens</code> field from each response, and divide the actual invoice line by your token count to get an effective $/MTok that already folds in verbosity, thinking, and caching. The latter is the only number that fully reflects what you pay.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Is Gemini 3 Flash really cheaper than every Claude and GPT option?</strong> Yes, on the effective price table. Gemini 3 Flash's effective input lands at $0.55/MTok and effective output at $3.27/MTok, making it the cheapest option in 2026 by a wide margin. The catch is output quality: Gemini 3 Flash is optimized for speed and cost over reasoning quality, so use it for high-throughput batch pipelines where model quality is not the bottleneck.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Sources</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>Playcode — <em>The Same TypeScript Costs 73% More on Claude Than on GPT</em> (Ruslan Ianberdin, July 13, 2026; updated July 14, 2026). <a href="https://playcode.io/blog/real-price-of-frontier-models" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">playcode.io/blog/real-price-of-frontier-models</a></li>
+
+<li>Anthropic — <em>API Pricing</em> (live rate card, confirmed July 15, 2026). <a href="https://www.anthropic.com/pricing" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">anthropic.com/pricing</a></li>
+
+<li>OpenAI — <em>API Pricing</em> (live rate card, confirmed July 15, 2026). <a href="https://platform.openai.com/docs/pricing" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">platform.openai.com/docs/pricing</a></li>
+
+<li>Google Gemini — <em>Gemini API Pricing</em> (effective prices confirmed against the published rate card, July 15, 2026). <a href="https://ai.google.dev" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">ai.google.dev</a></li>
+
+<li>xAI — <em>API Pricing</em> (effective prices confirmed against the published rate card, July 15, 2026). <a href="https://docs.x.ai" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">docs.x.ai</a></li>
+
+<li>Ploy.ai — <em>Migration Notes: Claude Opus 4.8 to GPT-5.6 Sol</em> (June 26, 2026).</li>
+
+</ul>`;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+    <div class="mb-8">
+      <a href="/zh/tutorials" class="text-blue-600 hover:underline text-sm">← 返回教程列表</a>
+    </div>
+
+    <div class="flex items-center gap-3 mb-4">
+      <span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded">新闻分析</span>
+      <time datetime={date} class="text-sm text-gray-500">2026年7月15日</time>
+    </div>
+
+    <div set:html={enBody} />
+
+    <hr class="my-12 border-gray-200" />
+
+    <section class="bg-yellow-50 border border-yellow-100 rounded-lg p-6 mt-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-3">相关阅读</h2>
+      <ul class="list-disc list-inside text-gray-700 my-3 space-y-1">
+        <li><a href="/zh/tutorials/gpt-5-6-sol-vs-claude-opus-4-8-production-migration" class="text-blue-600 hover:underline">GPT-5.6 Sol 对比 Opus 4.8：生产迁移实操</a></li>
+        <li><a href="/zh/tutorials/ai-api-cost-control-tools-2026" class="text-blue-600 hover:underline">AI API 成本控制工具横评 2026</a></li>
+        <li><a href="/zh/tutorials/ai-api-free-tiers-2026" class="text-blue-600 hover:underline">AI API 免费额度 2026</a></li>
+      </ul>
+    </section>
+
+    <hr class="my-12 border-gray-200" />
+
+    <section class="mt-8">
+      <p class="text-sm text-gray-500 mb-2"><strong>数据来源</strong></p>
+      <p class="text-sm text-gray-500">本评测主要方法来自 <a href="https://playcode.io/blog/real-price-of-frontier-models" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">Playcode — Real Price of Frontier Models</a>（Ruslan Ianberdin，2026年7月13日）。Token 计数通过 Anthropic <code>count_tokens</code>、OpenAI <code>tiktoken</code> <code>o200k_base</code>、以及 GPT-5.1/5.5/5.6 Sol 的真实计费 <code>usage.input_tokens</code> 交叉验证。各家定价页面在 2026年7月15日 重新核对。</p>
+      <p class="text-sm text-gray-500 mt-3"><strong>免责声明：</strong>APIRank 文中提及的合作伙伴链接可能产生联盟佣金。我们的编辑选择独立于商业关系；详见联盟披露政策。</p>
+    </section>
+
+  </article>
+</BaseLayout>
