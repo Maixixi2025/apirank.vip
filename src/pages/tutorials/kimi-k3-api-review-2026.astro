@@ -1,0 +1,394 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'kimi-k3-api-review-2026';
+const date = '2026-07-17';
+const locale = 'en';
+const enTitle = "Kimi K3 API Review 2026: 1M Context & Pricing";
+const enDescription = "Kimi K3 pricing: ¥2/M cached, ¥20/M uncached, ¥100/M output; 1M context, vision, tools, caching, and K2 alternatives.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Kimi K3 API Review 2026: 1M Context & Pricing", "description": "Kimi K3 pricing: ¥2/M cached, ¥20/M uncached, ¥100/M output; 1M context, vision, tools, caching, and K2 alternatives.", "datePublished": "2026-07-17", "dateModified": "2026-07-17", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/kimi-k3-api-review-2026"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Kimi K3 API Review 2026: 1M Context & Pricing", "item": "https://apirank.vip/tutorials/kimi-k3-api-review-2026"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much does Kimi K3 cost?", "acceptedAnswer": {"@type": "Answer", "text": "According to Moonshot AI's official pricing table, Kimi K3 costs ¥2 per million cached input tokens, ¥20 per million uncached input tokens, and ¥100 per million output tokens."}}, {"@type": "Question", "name": "Does Kimi K3 really support 1M tokens?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The official Kimi K3 model guide and pricing page list a 1,048,576-token context window. A large maximum still requires sensible retrieval and prompt management."}}, {"@type": "Question", "name": "Can I use Kimi K3 with the OpenAI Python SDK?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Set the client base_url to https://api.moonshot.cn/v1, provide a Kimi API key, and use the documented model ID. Validate feature-specific parameters separately."}}, {"@type": "Question", "name": "Does Kimi K3 support image and video input?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The current guide says K3 supports text, image, and video input. For images, use base64 or a Kimi file reference and send content as an array of parts."}}, {"@type": "Question", "name": "Can the ¥15 new-user coupon be used for K3?", "acceptedAnswer": {"@type": "Answer", "text": "No. Moonshot AI's K3 quickstart explicitly says the new-user coupon cannot be used to experience K3; a recharge is required."}}, {"@type": "Question", "name": "Should I choose Kimi K2.7 Code instead?", "acceptedAnswer": {"@type": "Answer", "text": "Choose K2.7 Code when 256K context is sufficient and coding cost matters. Its official table lists ¥6.50/M uncached input and ¥27/M output, far below K3's output price."}}, {"@type": "Question", "name": "Is Kimi K3 web search ready for production?", "acceptedAnswer": {"@type": "Answer", "text": "The current official documentation warns that web search is being upgraded and is not recommended for production workflows. Treat it as a moving feature until Moonshot updates the guidance."}}]};
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Kimi K3 API Review 2026: The 1M-Context Chinese Model</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi K3 is Moonshot AI's new flagship API model, released into a very specific market gap: long-running coding agents and knowledge-work systems that need a huge context window, native vision, tool calls, and Chinese-language strength in one endpoint. The official model documentation lists 2.8 trillion total parameters, a 1,048,576-token context window, native image and video understanding, automatic context caching, JSON mode, structured output, and tool-choice controls.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">That headline context number is real, but it is not a free-tier shortcut. Kimi K3 is billed separately for cache-hit input, cache-miss input, and output. The current official table lists ¥2 per million cached input tokens, ¥20 per million uncached input tokens, and ¥100 per million output tokens. A new-user ¥15 coupon does not apply to K3, so budget planning matters from the first production test.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This review focuses on the API a developer can use today: pricing, model selection, OpenAI-compatible code, multimodal input, agent controls, limitations, and the cases where Kimi K2.7 Code or K2.6 is the more rational choice.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Kimi K3 at a Glance</h2>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Item</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Verified Kimi K3 detail</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">API model ID</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><code>kimi-k3</code></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Context window</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,048,576 tokens (1M)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Input pricing</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥2/M cached; ¥20/M cache miss</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Output pricing</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥100/M tokens</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Reasoning</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Always enabled; <code>reasoning_effort</code> currently supports <code>max</code></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Modalities</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Text, image, and video input</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Structured output</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">JSON mode and JSON Schema response format</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Tools</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Tool calls, <code>tool_choice</code>, dynamic tool loading</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">API style</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">OpenAI-compatible Chat Completions</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Availability</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Kimi API Open Platform; Mainland China direct access is the intended path</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The model ID is short and practical, but do not assume that every OpenAI parameter is portable. K3 has its own parameter contract, and the official documentation marks several sampling settings as fixed values.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Official Kimi K3 Pricing: Cache Hits Change the Math</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi's pricing page separates input into cache-hit and cache-miss categories. That is important for long prompts, repository instructions, policy documents, and repeated agent turns. The official values are:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Model</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cached input / 1M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Uncached input / 1M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Output / 1M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Context</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Kimi K3</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥2.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥20.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥100.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,048,576</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Kimi K2.7 Code</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥1.30</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥6.50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥27.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">262,144</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Kimi K2.7 Code HighSpeed</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥2.60</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥13.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥54.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">262,144</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Kimi K2.6</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥1.10</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥6.50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥27.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">262,144</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">A simple 100,000-token request illustrates the difference. If the input is a cache miss and the model returns 10,000 tokens, the K3 token bill is approximately ¥2 + ¥1 = ¥3. If the same 100,000-token prefix is a cache hit, the input portion falls to ¥0.20, for an approximate total of ¥1.20. This excludes any product-specific fees and assumes the displayed token counts are the billable counts.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The lesson is not “K3 is cheap.” Output is expensive at ¥100/M, and cache misses cost ten times more than cache hits. The lesson is that K3 can be predictable for a stable long-context workflow if you keep the prefix stable, reuse the same system and tool definitions, and inspect usage fields in every response.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Moonshot is also running a time-limited recharge coupon campaign from July 16 through August 12, 2026. The official promotion describes one eligible first recharge transaction per organization during the campaign: 10% for ¥99–¥499, 20% for ¥500–¥1,999, 25% for ¥2,000–¥4,999, and 30% at ¥5,000 or more. Treat this as a platform coupon, not a permanent API price cut; confirm the campaign terms before relying on it in a forecast.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What Kimi K3 Actually Adds</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">K3 is not just K2 with a larger context field. Moonshot describes a 2.8-trillion-parameter model built with Kimi Delta Attention and Attention Residuals, with a sparse mixture-of-experts design. Its public documentation emphasizes long-horizon programming, end-to-end knowledge work, and agent workflows rather than a single short-answer benchmark.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For API developers, the practical additions are more useful than the parameter headline:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>1M context and automatic caching.</strong> The platform says ordinary requests can attempt automatic prefix caching without a user-managed cache ID or TTL.</li>
+
+<li><strong>Native vision.</strong> K3 accepts text, images, and video. Images should be sent as base64 or a Kimi file reference rather than a public image URL.</li>
+
+<li><strong>Always-on reasoning.</strong> K3 always reasons; the current <code>reasoning_effort</code> option is <code>max</code>. Do not copy the K2.x thinking parameter contract without checking the K3 guide.</li>
+
+<li><strong>Tool control.</strong> K3 supports tool calls, <code>tool_choice</code>, and dynamic tool loading. The latter is useful when an agent has a large tool catalog but only needs to expose a small subset per turn.</li>
+
+<li><strong>Structured output.</strong> JSON mode and JSON Schema support make K3 more appropriate for extraction and workflow state than a plain conversational endpoint.</li>
+
+<li><strong>Long-running coding.</strong> Moonshot positions K3 for repository-scale code work, terminal coordination, and visual feedback loops such as front-end or CAD tasks.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">These are platform capabilities, not a guarantee that every task will improve when the context window grows. A 1M window can increase latency, prompt complexity, and debugging cost if your application sends the whole workspace on every turn.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">First API Call with curl</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi exposes an OpenAI-compatible endpoint. Keep the API key in an environment variable and start with the smallest useful request:</p>
+
+<pre><code class="language-bash">export KIMI_API_KEY="YOUR_KIMI_API_KEY"
+curl https://api.moonshot.cn/v1/chat/completions \
+  --header "Authorization: Bearer YOUR_KIMI_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '&#123;
+    "model": "kimi-k3",
+    "messages": [&#123;"role": "user", "content": "Summarize the trade-offs of a 1M-token context window."&#125;]
+  &#125;'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The endpoint is compatible enough for standard Chat Completions tooling, but use the Kimi model guide when adding reasoning, vision, tool, or structured-output fields. Never paste a real key into source control, logs, or a public issue.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Python with the OpenAI SDK</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The official quickstart uses the OpenAI Python SDK with a Kimi base URL. This makes a migration test easy:</p>
+
+<pre><code class="language-python">import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ["MOONSHOT_API_KEY"],
+    base_url="https://api.moonshot.cn/v1",
+)
+
+response = client.chat.completions.create(
+    model="kimi-k3",
+    messages=[
+        &#123;"role": "system", "content": "You are a precise software engineering assistant."&#125;,
+        &#123;"role": "user", "content": "List three risks of sending an entire repository in every agent turn."&#125;,
+    ],
+)
+
+print(response.choices[0].message.content)
+print(response.usage)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Log <code>response.usage</code> in a cost dashboard. For K3, usage observability is not optional: the difference between a cache hit and a cache miss is large, and output tokens cost five times as much as uncached input tokens.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Vision, JSON, and Agent Workflows</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">For vision, Kimi's documentation requires <code>message.content</code> to be an array of content parts. Do not serialize that array into a string. A minimal image request looks like this conceptually:</p>
+
+<pre><code class="language-python">message = &#123;
+    "role": "user",
+    "content": [
+        &#123;"type": "image_url", "image_url": &#123;"url": "data:image/png;base64,..."&#125;&#125;,
+        &#123;"type": "text", "text": "Describe the layout and list the visible UI defects."&#125;,
+    ],
+&#125;</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">K3 also supports JSON mode and JSON Schema response formats. Use them for extraction, but keep the schema small and validate the returned object on your side. In agent systems, combine structured output with <code>tool_choice</code> so the model cannot silently switch between answering and mutating an external system.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Dynamic tool loading is especially interesting for long-context agents. Instead of sending every tool definition in every turn, expose a short tool set for the current phase, then load more definitions when the model reaches a step that needs them. This can reduce prompt bloat and improve the chance of a stable cache prefix.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Kimi K3 vs K2.7 Code vs K2.6</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">K3 is the right default when context size and multimodal long-horizon work dominate. It is not the default for every coding task.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Choose <strong>Kimi K3</strong> when you need repository-scale context, long documents, visual feedback, persistent tool workflows, or a single model for Chinese and English knowledge work. Budget for expensive output and test cache behavior.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Choose <strong>Kimi K2.7 Code</strong> when the job is primarily software engineering and 256K is enough. Its uncached input is ¥6.50/M and output is ¥27/M, a much lower ceiling than K3. The HighSpeed variant is documented at about 180 tokens/second, with short-context cases reaching about 260 tokens/second, but it doubles the regular K2.7 Code prices.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Choose <strong>Kimi K2.6</strong> for a general-purpose multimodal model with 256K context, thinking and non-thinking modes, and the same ¥27/M output price as regular K2.7 Code. It is a more economical option for visual understanding, agent tasks, and ordinary conversation when 1M context is unnecessary.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are migrating from OpenAI, run the same eval suite against all three. Compare tool-call validity, JSON adherence, cache-hit ratio, time-to-first-token, total output tokens, and human correction time. “OpenAI-compatible” describes the wire format; it does not make behavior identical.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Limitations and Production Risks</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">K3 has several constraints that should be in your launch checklist:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>The ¥15 new-user coupon does not unlock K3.</strong> The official K3 guide says the coupon cannot be used for K3 after the model launch; plan to recharge for testing.</li>
+
+<li><strong>Reasoning is always on.</strong> The current K3 contract supports <code>reasoning_effort=max</code>, not a full range of effort levels. This can increase output and latency on simple tasks.</li>
+
+<li><strong>Public image URLs are not the safe path.</strong> Use base64 or Kimi file references for vision input, and keep the content field as an array.</li>
+
+<li><strong>Web search is under upgrade.</strong> The pricing/model docs currently warn that the web-search feature is being updated and should not be used in production workflows until the documentation catches up.</li>
+
+<li><strong>The weights are not yet the API.</strong> Moonshot says full K3 weights are planned by July 27, 2026. A future open release may change hosting economics, but it does not change today's managed API bill.</li>
+
+<li><strong>Regional access is part of TCO.</strong> The Kimi API Open Platform is designed for direct Mainland China access. Teams elsewhere should verify network reachability, data routing, and support expectations before committing.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">For an external multi-provider control plane, you can also test Kimi alongside other endpoints through <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">FreeModel API access</a>. Use that as an evaluation and routing option, not as a reason to ignore the upstream provider's model IDs, usage accounting, or regional terms.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Best Use Cases</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi K3 is compelling for four concrete workloads:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Repository-scale coding agents:</strong> keep architecture notes, code, tests, and tool results in one working context, while controlling tools by phase.</li>
+
+<li><strong>Chinese knowledge work:</strong> analyze long policy, legal, product, or research collections without aggressively chunking every document.</li>
+
+<li><strong>Visual software workflows:</strong> inspect screenshots, UI states, diagrams, or video snippets as part of an iterative coding task.</li>
+
+<li><strong>Structured operations:</strong> use JSON Schema for extraction and tool calls for controlled actions, with validation and approval gates around side effects.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">It is a weaker fit for short single-turn chat, tiny JSON extraction, or workloads where output dominates cost. In those cases, a smaller K2.6 or another low-output-price endpoint can be the better engineering decision.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verdict: Buy the Context, Not the Hype</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi K3 is a serious API release: 1M context, vision, tools, structured output, automatic caching, and an OpenAI-compatible surface. The official feature set makes it relevant to coding agents and long-document workflows immediately.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The pricing is the catch. At ¥20/M uncached input and ¥100/M output, K3 is not a cheap general chatbot. Its economics become more attractive when you reuse a stable prefix and keep outputs disciplined; they become painful when every agent turn misses the cache and produces long reasoning traces.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Our recommendation is to pilot K3 against K2.7 Code and K2.6 with a production-shaped eval set. If K3's longer context reduces chunking bugs, tool retries, and human review enough to offset its output price, it can be the best Kimi model for your workflow. If not, the K2 family gives you most of the compatibility and multimodal surface at a much lower token cost.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Frequently Asked Questions</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How much does Kimi K3 cost?</strong> K3 costs ¥2 per million cached input tokens, ¥20 per million uncached input tokens, and ¥100 per million output tokens according to the official pricing table.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Does Kimi K3 really support 1M tokens?</strong> Yes. The official model guide and pricing page list a 1,048,576-token context window. Your application still needs sensible retrieval and prompt management; a large maximum does not mean every request should fill it.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Can I use Kimi K3 with the OpenAI Python SDK?</strong> Yes. Set the client <code>base_url</code> to <code>https://api.moonshot.cn/v1</code>, provide a Kimi API key, and use the documented Kimi model ID. Validate feature-specific parameters separately.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Does Kimi K3 support image and video input?</strong> Yes. The current guide says K3 supports text, image, and video input. For images, use base64 or a Kimi file reference and send <code>content</code> as an array of parts.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Can the ¥15 new-user coupon be used for K3?</strong> No. Moonshot's K3 quickstart explicitly says the new-user coupon cannot be used to experience K3; a recharge is required.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Should I choose Kimi K2.7 Code instead?</strong> Choose K2.7 Code when 256K context is sufficient and coding cost matters. Its official table lists ¥6.50/M uncached input and ¥27/M output, far below K3's output price.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Is Kimi K3's web search ready for production?</strong> The current official documentation warns that web search is being upgraded and is not recommended for production workflows. Treat it as a moving feature until Moonshot updates the guidance.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Sources</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/guide/kimi-k3-quickstart" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">Kimi K3 model guide</a></li>
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/pricing/chat-k3" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">Kimi K3 pricing</a></li>
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/pricing/chat-k27-code" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">Kimi K2.7 Code pricing</a></li>
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/pricing/chat-k26" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">Kimi K2.6 pricing</a></li>
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/pricing/promotion" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">Kimi K3 recharge promotion</a></li>
+
+<li>Moonshot AI, <a href="https://www.kimi.com/blog/kimi-k3" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">Kimi K3 technical blog</a></li>
+
+</ul>`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={zhCanonicalUrl} type="article">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div class="mb-8"><a href="/tutorials" class="text-blue-600 hover:underline text-sm">← Back to Tutorials</a></div>
+    <div class="flex items-center gap-3 mb-4"><span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded">Provider Review</span><time datetime={date} class="text-sm text-gray-500">July 17, 2026</time></div>
+    <div set:html={enBody} />
+    <hr class="my-12 border-gray-200" />
+    <section class="mt-8"><p class="text-sm text-gray-500 mb-2"><strong>Disclosure</strong></p><p class="text-sm text-gray-500">APIRank may earn affiliate commission from partner links in this article. Editorial judgments remain independent.</p></section>
+  </article>
+</BaseLayout>
