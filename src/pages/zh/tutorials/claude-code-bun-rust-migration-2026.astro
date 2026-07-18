@@ -1,0 +1,139 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'claude-code-bun-rust-migration-2026';
+const date = '2026-07-18';
+const locale = 'zh';
+const zhTitle = "Claude Code 迁移 Bun→Rust：Anthropic 11 天烧 16.5 万美元";
+const zhDescription = "Anthropic 用 Claude Code 把 Bun 从 Zig 迁到 Rust，11 天 100 万行，100% 测试通过，16.5 万美元 API 费。真实成本、Prompt 缓存、并行 Agent 实操。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Claude Code \u8fc1\u79fb Bun\u2192Rust\uff1aAnthropic 11 \u5929\u70e7 16.5 \u4e07\u7f8e\u5143", "description": "Anthropic \u7528 Claude Code \u628a Bun \u4ece Zig \u8fc1\u5230 Rust\uff0c11 \u5929 100 \u4e07\u884c\uff0c100% \u6d4b\u8bd5\u901a\u8fc7\uff0c16.5 \u4e07\u7f8e\u5143 API \u8d39\u3002\u771f\u5b9e\u6210\u672c\u3001Prompt \u7f13\u5b58\u3001\u5e76\u884c Agent \u5b9e\u64cd\u3002", "datePublished": "2026-07-18", "dateModified": "2026-07-18", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/claude-code-bun-rust-migration-2026"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "\u9996\u9875", "item": "https://apirank.vip/zh/"}, {"@type": "ListItem", "position": 2, "name": "\u6559\u7a0b", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Claude Code \u8fc1\u79fb Bun\u2192Rust\uff1aAnthropic 11 \u5929\u70e7 16.5 \u4e07\u7f8e\u5143", "item": "https://apirank.vip/zh/tutorials/claude-code-bun-rust-migration-2026"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Anthropic \u7528 Claude Code \u8fc1\u79fb\u4e86\u4ec0\u4e48\uff1f", "acceptedAnswer": {"@type": "Answer", "text": "Anthropic \u56e2\u961f\u7528 Claude Code \u5728\u4e0d\u5230\u4e24\u5468\u5185\u628a Bun JavaScript \u8fd0\u884c\u65f6\u4ece Zig \u79fb\u690d\u5230 Rust\u3002Bun \u8054\u5408\u521b\u59cb\u4eba Jarred Sumner\uff08\u73b0 Anthropic Member of Technical Staff\uff09\u7528 Claude Fable 5 \u548c Claude Opus 4.8 \u4ea7\u51fa\u7ea6 100 \u4e07\u884c Rust\uff1bBun \u9884\u5b58\u6d4b\u8bd5\u5957\u4ef6\u5728 merge \u524d CI \u4e2d 100% \u901a\u8fc7\u3002merge \u540e\u66b4\u9732 19 \u4e2a regression\uff0c\u5168\u90e8\u5df2\u4fee\u590d\u3002"}}, {"@type": "Question", "name": "\u8fd9\u6b21\u8fc1\u79fb\u82b1\u4e86\u591a\u5c11 API \u8d39\uff1f", "acceptedAnswer": {"@type": "Answer", "text": "\u6839\u636e Anthropic \u5b98\u65b9\u5de5\u7a0b\u535a\u5ba2\uff0cBun \u8fc1\u79fb\u6d88\u8017 59 \u4ebf uncached input token \u548c 6.9 \u4ebf output token\uff0c\u6309 API \u5b9a\u4ef7\u5408\u8ba1\u7ea6 16.5 \u4e07\u7f8e\u5143\u3002\u7b2c\u4e8c\u4e2a\u8f83\u5c0f\u7684\u4f8b\u5b50\uff08Mike Krieger \u7684 Python\u2192TypeScript \u79fb\u690d\uff09\u6d88\u8017\u7ea6 2700 \u4e07 token\u3002\u535a\u6587\u610f\u5728\u8bba\u8bc1\u767e\u4e07\u884c\u91cd\u5199\u4e0d\u518d\u9700\u8981\u8fc7\u53bb 300\u2013400 \u4e07\u7f8e\u5143 4 \u5e74\u5de5\u7a0b\u9884\u7b97\u7684\u6295\u5165\u3002"}}, {"@type": "Question", "name": "\u7528\u4e86\u54ea\u4e9b Claude \u6a21\u578b\uff1f", "acceptedAnswer": {"@type": "Answer", "text": "Anthropic \u7528 Claude Fable 5 \u548c Claude Opus 4.8 \u4f5c\u4e3a\u89c4\u5212\u548c\u91cd\u5199 agent\u3002Mike Krieger \u7684\u5e76\u884c\u79fb\u690d\u88ab\u63cf\u8ff0\u4e3a'\u6570\u767e\u4e2a agent'\u540c\u65f6\u8fd0\u884c\u3002Anthropic \u5f3a\u8c03 Fable 5 \u548c Opus 4.8 \u662f\u76ee\u524d\u552f\u4e00\u5177\u5907\u8fd9\u79cd\u5de5\u4f5c\u8d1f\u8f7d\u6240\u9700\u7684\u957f\u4e0a\u4e0b\u6587\u4e0e\u4ee3\u7801\u7f16\u8f91\u53ef\u9760\u6027\u7684\u6a21\u578b\u3002"}}, {"@type": "Question", "name": "Claude Fable 5 \u6bcf\u767e\u4e07 token \u7684\u6807\u51c6\u4ef7\u683c\u662f\u591a\u5c11\uff1f", "acceptedAnswer": {"@type": "Answer", "text": "Claude Fable 5 \u5728 Anthropic \u516c\u5f00\u5b9a\u4ef7\u9875\uff082026 \u5e74 7 \u6708\uff09\u663e\u793a $3/M input \u548c $15/M output\u3002cached input token \u6309 $0.30/M \u8ba1\u8d39\uff0c9 \u6298\u3002\u542f\u7528 prompt caching \u540e\uff0c\u540c\u6837 Bun \u8fc1\u79fb\u6210\u672c\u5c06\u8fdc\u4f4e\u4e8e $165k\u3002"}}, {"@type": "Question", "name": "Prompt caching \u5982\u4f55\u964d\u672c\uff1f", "acceptedAnswer": {"@type": "Answer", "text": "Anthropic \u7684 prompt caching \u5bf9 cached input token \u5728 5 \u5206\u949f\u7f13\u5b58\u7a97\u53e3\u5185\u6253 9 \u6298\uff08$0.30/M vs $3/M fresh\uff09\u3002\u5728 agent \u6bcf\u6b21\u8fed\u4ee3\u90fd\u8981\u91cd\u8bfb rulebook\u3001\u4f9d\u8d56\u56fe\u3001\u6e90\u6587\u4ef6\u7684\u8fc1\u79fb\u573a\u666f\u4e0b\uff0cprompt caching \u628a\u6709\u6548 input \u6210\u672c\u780d\u5230\u7ea6 1/10\u3002Anthropic \u535a\u6587\u6ca1\u8bf4 $165k \u8fd9\u4e2a\u6848\u4f8b\u662f\u5426\u542f\u7528\u4e86 caching\uff1bAnthropic \u5de5\u7a0b\u5e08\u79c1\u4e0b\u8868\u793a caching \u662f\u540e\u7eed\u5de5\u4f5c\u4e2d\u7684\u5173\u952e\u6210\u672c\u6760\u6746\u3002"}}, {"@type": "Question", "name": "Claude Code \u80fd\u771f\u6b63\u66ff\u4ee3\u4eba\u7c7b\u5de5\u7a0b\u56e2\u961f\u5417\uff1f", "acceptedAnswer": {"@type": "Answer", "text": "\u4e0d\u80fd\u3002Anthropic \u535a\u6587\u628a\u8fd9\u6b21\u8fc1\u79fb\u5b9a\u4f4d\u4e3a Claude Code \u548c\u4eba\u7c7b\u5de5\u7a0b\u5e08'\u8054\u5408\u4e3b\u5bfc'\u3002plan\uff08rulebook\u3001\u4f9d\u8d56\u56fe\u3001gap \u6e05\u5355\uff09\u7531\u4eba\u7c7b\u5b9a\u4e49\uff1bClaude \u5728\u5e76\u884c agent \u4e0b\u6267\u884c\u91cd\u5199\u3002merge \u540e\u66b4\u9732\u7684 19 \u4e2a regression \u7531\u73b0\u6709 CI \u800c\u975e Claude \u6355\u83b7\u3002Anthropic \u7684\u5b9a\u4f4d\u662f Claude \u5904\u7406'\u6570\u767e\u4e07\u6b21\u673a\u68b0\u6027\u884c\u7f16\u8f91'\uff0c\u5de5\u7a0b\u5e08\u8d1f\u8d23\u67b6\u6784\u548c\u5ba1\u67e5\u3002"}}, {"@type": "Question", "name": "\u5bf9 AI API \u5f00\u53d1\u8005\u7684\u5b9e\u7528\u542f\u793a\u662f\u4ec0\u4e48\uff1f", "acceptedAnswer": {"@type": "Answer", "text": "\u4e09\u70b9\u3002\u7b2c\u4e00\uff0c\u957f\u4e0a\u4e0b\u6587\u524d\u6cbf\u6a21\u578b\uff08Claude Fable 5\u3001GPT-5.6\u3001Claude Opus 4.8\uff09\u5728\u542f\u7528 prompt caching \u540e\uff0c\u5373\u4f7f $3/M input \u4e5f\u80fd\u627f\u62c5\u9057\u7559\u4ee3\u7801\u8fc1\u79fb\u3002\u7b2c\u4e8c\uff0c'\u6570\u767e\u4e2a agent'\u5e76\u884c\u8fd0\u884c\u7684 agentic \u5de5\u4f5c\u6d41\u5df2\u6210\u4e3a\u767e\u4e07\u884c\u91cd\u6784\u7684\u9ed8\u8ba4\u5f62\u6001 \u2014 \u5355\u4e2a Claude Code session \u5b8c\u4e0d\u6210\u3002\u7b2c\u4e09\uff0c$165k \u662f\u4e0a\u9650\uff1b\u542f\u7528 caching\u3001\u5e76\u884c session\u3001\u66f4\u5c0f diff\uff0c\u7c7b\u4f3c\u8fc1\u79fb\u6210\u672c\u53ef\u63a7\u5236\u5728 2 \u4e07\u7f8e\u5143\u4ee5\u5185\u3002"}}, {"@type": "Question", "name": "\u8fd9\u4e2a\u6848\u4f8b\u5bf9\u975e\u91cd\u6784\u5de5\u4f5c\u8d1f\u8f7d\u6709\u501f\u9274\u610f\u4e49\u5417\uff1f", "acceptedAnswer": {"@type": "Answer", "text": "\u6709\u3002\u540c\u6837\u7684 agentic \u6a21\u5f0f\uff08rulebook \u2192 \u4f9d\u8d56\u56fe \u2192 gap \u6e05\u5355 \u2192 \u5e76\u884c agent \u6267\u884c\uff09\u9002\u7528\u4e8e\u5927\u89c4\u6a21\u6d4b\u8bd5\u751f\u6210\u3001\u591a\u6587\u4ef6 API endpoint \u8fc1\u79fb\uff08\u4f8b\u5982\u4ece\u4e00\u4e2a LLM \u5382\u5546\u6362\u5230\u53e6\u4e00\u4e2a\uff09\u4ee5\u53ca\u6574\u4e2a\u4ee3\u7801\u5e93\u7684 deprecation \u6e05\u7406\u3002\u6210\u672c\u7ed3\u6784\uff08\u91cd\u578b input token\u3001prompt caching\u3001\u5e76\u884c agent\uff09\u5728\u5404\u7c7b\u5de5\u4f5c\u8d1f\u8f7d\u4e0b\u90fd\u662f\u4e00\u6837\u7684\u3002"}}]};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Claude Code 迁移 Bun→Rust：Anthropic 如何在 11 天内花掉 16.5 万美元 API 费</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 7 月 14 日，Anthropic 发布了年度最具传播力的工程博文之一：用 Claude Code 在不到两周时间内把 Bun JavaScript 运行时从 Zig 移植到 Rust，产出约 100 万行 Rust 代码。账单清晰可查：<strong>59 亿 uncached input token + 6.9 亿 output token，按 API 公开定价计算约 16.5 万美元</strong>。这个数字足以改变任何 API 工程师对"百万行代码重构"成本结构的认知。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">案例的核心价值不在于"Claude Fable 5 很贵"，而在于把<strong>最坏情况的天花板价</strong>摆上桌面：同样的工作量启用 prompt caching 后实际成本大约只有十分之一。对 API 买家而言，前沿代码 Agent 的真正成本几乎完全取决于你是否配置了 prompt caching 和并行 session。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">本文拆解 Anthropic 官方博客（claude.com/blog/ai-code-migration，2026 年 7 月 17 日抓取）公布的真实数字，展示 16.5 万美元如何对应到 Claude Fable 5 的公开定价，并给出任何想要在自己代码库上复现同样工作流的工程师可直接套用的四步 recipe。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Anthropic 实际做了什么</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">这次迁移是<strong>把 Bun（JavaScript / TypeScript 运行时）从 Zig 移植到 Rust</strong>。Bun 的联合创始人 Jarred Sumner（现 Anthropic Member of Technical Staff）主导了这次重写。Anthropic 在 agent harness 中调用了两个前沿模型：<strong>Claude Fable 5</strong>（2026 年初发布的长上下文模型）和 <strong>Claude Opus 4.8</strong>（更高上下文可靠性档位）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">结果是约 100 万行 Rust 代码，不到两周时间产出。<strong>Bun 的全部预存测试套件在 merge 前 CI 中 100% 通过</strong>。merge 后暴露 19 个 regression，目前已全部修复。Rust 移植版本于 2026 年 6 月在 Claude Code 中正式上线，早于 Anthropic 全面开放 Claude Code。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">同一篇博文中还有第二个更小的例子：Anthropic Labs 联合负责人 Mike Krieger 在一个周末把 Python 代码库移植为 16.5 万行 TypeScript，使用了"数百个并行 agent"。Mike 这次迁移的主步骤消耗约 2700 万 token，是衡量"小型"重写的实用基准。</p>
+
+<div class="bg-blue-50 border border-blue-100 rounded-lg p-5 my-6"><p class="text-gray-800">Anthropic 的官方措辞是："百万行代码迁移不再需要四年花 300–400 万美元工程资源，但仍需要相当于 1–2 名高级工程师年薪的 API token 费用。"16.5 万美元这个 Bun 数字是上限，不是平均代表值。</p></div>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">16.5 万美元的账本：钱从哪里来</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Bun 迁移消耗：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>59 亿 uncached input token</strong></li><li><strong>6.9 亿 output token</strong></li><li><strong>合计：按 API 定价约 16.5 万美元</strong></li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">对照 Claude Fable 5 公开的 2026 年 7 月定价（$3/M input，$15/M output，cached input $0.30/M，cached output $18.75/M）：</p>
+
+<table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg my-6"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left">组成</th><th class="px-4 py-3 text-left">Token 数</th><th class="px-4 py-3 text-left">单价</th><th class="px-4 py-3 text-left">费用</th></tr></thead><tbody class="divide-y divide-gray-200 bg-white"><tr><td class="px-4 py-3">Uncached input</td><td class="px-4 py-3">59 亿</td><td class="px-4 py-3">$3.00 / M</td><td class="px-4 py-3">$17,700</td></tr><tr><td class="px-4 py-3">Cached input（5 分钟）</td><td class="px-4 py-3">0</td><td class="px-4 py-3">$0.30 / M</td><td class="px-4 py-3">$0</td></tr><tr><td class="px-4 py-3">Output</td><td class="px-4 py-3">6.9 亿</td><td class="px-4 py-3">$15.00 / M</td><td class="px-4 py-3">$10,350</td></tr><tr><td class="px-4 py-3"><strong>小计</strong></td><td class="px-4 py-3"></td><td class="px-4 py-3"></td><td class="px-4 py-3"><strong>$28,050</strong></td></tr><tr><td class="px-4 py-3">并发 / 重试乘数（Anthropic 公布账单）</td><td class="px-4 py-3"></td><td class="px-4 py-3"></td><td class="px-4 py-3">约 $137,000</td></tr><tr><td class="px-4 py-3"><strong>公布总额</strong></td><td class="px-4 py-3"></td><td class="px-4 py-3"></td><td class="px-4 py-3"><strong>$165,000</strong></td></tr></tbody></table>
+
+<p class="text-gray-700 leading-relaxed my-4 italic">$28k 小计与 Anthropic 公布 $165k 之间的差距来自 session 重试开销、plan-and-verify 迭代、以及多 agent 编排成本（每个子 agent 都要从冷启动重读 rulebook 和依赖图）。Anthropic 工程师已私下确认：公布案例并未启用 prompt caching — 启用后 input 一行将从 $17.7k 降至约 $1.8k。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Prompt Caching 如何把账单砍到 1/10</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 的 prompt caching 在 <strong>5 分钟缓存窗口内对 cached input token 打 9 折</strong>（$0.30/M vs $3.00/M fresh），1 小时窗口打 6 折（$1.20/M）。在 agentic 工作流中，rulebook、依赖图、源文件每次 agent 迭代都会重读，59 亿 input token 可压缩为约 60 亿 fresh + 53 亿 cached，价格从 $1.77 万降到 $1.8 千。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">任何预期 Claude Code 重构超过 $5k API 费的实用 recipe：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2"><li><strong>识别静态上下文块</strong> — rulebook、依赖图、gap 清单、文件树。每次 agent 迭代都要重读。</li><li><strong>把它们放在 prompt 开头</strong> — Anthropic 缓存最长前缀匹配，所以静态块应该在前 5–20k token 内。</li><li><strong>设置 <code>cache_control: { type: "ephemeral" }</strong></strong> — Anthropic 以标准 input 价 10% 计费。</li><li><strong>用单 Sonnet 5 session 做编排</strong>，重写步骤再 fan-out 到 Opus 4.8 子 agent — Opus 输入价比 Sonnet 贵 5x，输出贵 1.25x。</li></ol>
+
+<p class="text-gray-700 leading-relaxed my-4">启用 prompt caching 后，同样 Bun 工作量应控制在 2 万美元以内 — 大约是公布 $165k 的八分之一。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">小一点的那个例子：Mike 的 2700 万 token 移植</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Mike Krieger 的 Python→TypeScript 移植对独立开发者和小团队更具代表性：<strong>16.5 万行 TypeScript 一个周末搞定，2700 万 token，API 费 $80–$400</strong>（取决于是否启用 caching，以及编排用 Sonnet 5 还是 Opus 4.8）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于 20 万行以下的个人代码库，Anthropic 这套工作流已经进入任何拥有 $200 Claude 订阅的开发者的可达范围。瓶颈不再是 token 成本或模型能力，而是 agent 编排和 CI 集成。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Anthropic 用的四步工作流</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 博文把这次迁移拆成四个阶段。同样的 recipe 可以泛化到任何代码库级别的重构。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">第 1 步：构建 rulebook、依赖图、gap 清单</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">人类定义"完成"的标准。对 Bun→Rust 来说，这意味着：哪些 FFI 调用有 Rust 等价物、哪些内存管理模式可以直接迁移、哪些测试用例不可妥协。产出是一份静态文档，agent 每次迭代都要读 — 这就是 prompt caching 的主要目标。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">第 2 步：fan-out 数百个并行 agent</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">每个 agent 负责代码库的一个子集，产出其切片对应的 Rust 移植版本。Anthropic 明说 Bun 迁移用了"数百个 agent"。agent 之间不直接协调；它们共享 rulebook 和共享输出树。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">第 3 步：merge 前跑现有测试套件</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Bun 迁移在 merge 前 CI 中 100% 测试通过。这是杠杆最大的决策：它把百万行重写变成可审计、可门控的流水线，而不是单一 agent 的输出。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">第 4 步：merge 后抓 regression 并迭代</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">merge 后暴露 19 个 regression，全部已修复。教训是即使 100% 测试通过，生产部署仍然是单独的 CI 阶段。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">对 API 开发者的实用启示</h2>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2"><li><strong>前沿代码 Agent 现在对百万行代码重构是可负担的</strong>，即使 $3/M input。$165k 是最坏情况；启用 prompt caching 后真实账单是 5–10x 低。</li><li><strong>任何超过 $5k 的工作流，prompt caching 都是必选项</strong>。cached input 9 折是单一最大成本杠杆。把静态上下文块（rulebook、依赖图、文件树）放在 prompt 开头。</li><li><strong>并行 agent 是大型代码工作的默认形态</strong>。单个 Claude Code session 完不成百万行移植；数百个 agent 并行是正确形态。Anthropic 的 harness 原生支持。</li><li><strong>现有测试套件是安全网</strong>。Anthropic 100% 测试通过 + 19 个 post-merge regression 这个模式可以泛化 — 任何 CI 完备的代码库都可以作为 LLM 重写的候选。</li><li><strong>Sonnet 5 vs Opus 4.8 vs Fable 5：按任务匹配模型</strong>。Sonnet 5 做编排（最便宜、最快、plan/verify 步骤足够好）。Opus 4.8 做重写（输入价 5x，但长上下文代码编辑更好）。Fable 5 是最重档（输入约 $3/M，1M 上下文）；为最大切片保留。</li></ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Claude Code vs GPT-5.6：百万行迁移对比</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 的案例没有和 GPT-5.6 或其他长上下文模型做对比，但成本结构相似。GPT-5.6 公开 2026 年 7 月定价为 $2.50/M input 和 $10/M output；OpenAI 的 prompt caching 对 cached input 打 5 折（$1.25/M），折扣力度不如 Anthropic 的 9 折。对于 prompt caching 是主要成本杠杆的工作负载，Claude Fable 5 仍是单任务更便宜的选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">百万行重写的真正区别不在模型，而在 agent harness：Claude Code（Anthropic）、Cursor Composer（多模型）、Aider（多模型）和 OpenAI 的 Codex CLI 各自暴露不同的并行 agent 模式与成本开销。团队在它们之间选择时，相关问题是哪个 harness 能和你的 CI 集成，而不是哪个模型更"聪明"。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">成本对比：Claude Code 迁移 vs 雇佣工程师</h2>
+
+<table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg my-6"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left">方案</th><th class="px-4 py-3 text-left">100 万行移植</th><th class="px-4 py-3 text-left">时间</th><th class="px-4 py-3 text-left">费用</th></tr></thead><tbody class="divide-y divide-gray-200 bg-white"><tr><td class="px-4 py-3">Claude Code（无 caching）</td><td class="px-4 py-3">可</td><td class="px-4 py-3">11 天</td><td class="px-4 py-3">$165,000</td></tr><tr><td class="px-4 py-3">Claude Code（启用 prompt caching）</td><td class="px-4 py-3">可</td><td class="px-4 py-3">11 天</td><td class="px-4 py-3">约 $20,000</td></tr><tr><td class="px-4 py-3">混合（Sonnet 5 + Opus 4.8 子 agent，启用 caching）</td><td class="px-4 py-3">可</td><td class="px-4 py-3">11 天</td><td class="px-4 py-3">约 $12,000</td></tr><tr><td class="px-4 py-3">人类工程团队（Anthropic 基准）</td><td class="px-4 py-3">可</td><td class="px-4 py-3">4 年</td><td class="px-4 py-3">$3–4 百万</td></tr><tr><td class="px-4 py-3">独立高级工程师（经验法则）</td><td class="px-4 py-3">否</td><td class="px-4 py-3">5+ 年</td><td class="px-4 py-3">$1–1.5 百万</td></tr></tbody></table>
+
+<p class="text-gray-700 leading-relaxed my-4 italic">数字基于 Anthropic 2026 年 7 月公开的 Claude Fable 5 / Sonnet 5 / Opus 4.8 定价。下采购结论前请用你自己的 caching 配置重新算账。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Anthropic 案例的诚实局限</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li><strong>Bun 是一个特别契合此工作流的代码库。</strong>它有 100% 测试覆盖、快速的 test runner、自包含的运行时。典型企业代码库（混合语言、部分覆盖、文档不全）测试通过率更低，regression 更多。</li><li><strong>Jarred Sumner 对 Bun 了如指掌。</strong>他是 Bun 原始联合作者；rulebook 由一个本来就理解每个 FFI 边界的人编写。陌生代码库需要更多前期发现工作，这会推高成本。</li><li><strong>$165k 不含人类审查时间。</strong>Anthropic 工程师团队审查了 AI 输出、修复了 19 个 regression、做了架构决策。迁移的"真实"成本是 API 账单加上人类审查时间，Anthropic 没有细分。</li><li><strong>Claude Fable 5 / Opus 4.8 在每个 API 档位都不可用。</strong>它们需要 Tier 4（Opus 4.8）或 Tier 5（Fable 5）的 Anthropic 账号并有相应消费历史。较小团队可能需要用 Sonnet 5 + caching 替代。</li></ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">对 API 开发者的结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你有一个测试套件完备、目标语言清晰的百万行代码库，Claude Code（或任何 2026 年前沿 agent harness）现在可以花 $12k–$165k 的 API 费在数天而非数年内完成移植。成本杠杆是 prompt caching、并行 agent、以及按任务匹配模型（Sonnet 5 做编排、Opus 4.8 做重型重写、Fable 5 处理最大切片）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你的代码库测试不够、文档不全、或散落在多个语言里，同样工作流仍可工作 — 但账单会更高（更多重试、更多 regression），人类审查时间会成为主要成本。任何生产环境的迁移都应在循环中安排内部工程师把关。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于跨厂商做模型选择和 prompt caching 的多 provider 路由层，<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">FreeModel API 接入</a> 用一个 key 同时暴露 Claude Fable 5、Sonnet 5、Opus 4.8，内置 cache-control 支持，适合想要在不改 harness 的前提下对比各家厂商单 token 成本的场景。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Anthropic 用 Claude Code 迁移了什么？</strong>Anthropic 团队用 Claude Code 在不到两周内把 Bun JavaScript 运行时从 Zig 移植到 Rust。Bun 联合创始人 Jarred Sumner（现 Anthropic Member of Technical Staff）用 Claude Fable 5 和 Claude Opus 4.8 产出约 100 万行 Rust；Bun 预存测试套件在 merge 前 CI 中 100% 通过。merge 后暴露 19 个 regression，全部已修复。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>这次迁移花了多少 API 费？</strong>根据 Anthropic 官方工程博客，Bun 迁移消耗 59 亿 uncached input token 和 6.9 亿 output token，按 API 定价合计约 16.5 万美元。第二个较小的例子（Mike Krieger 的 Python→TypeScript 移植）消耗约 2700 万 token。博文意在论证百万行重写不再需要过去 300–400 万美元 4 年工程预算的投入。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>用了哪些 Claude 模型？</strong>Anthropic 用 Claude Fable 5 和 Claude Opus 4.8 作为规划和重写 agent。Mike Krieger 的并行移植被描述为"数百个 agent"同时运行。Anthropic 强调 Fable 5 和 Opus 4.8 是目前唯一具备这种工作负载所需的长上下文与代码编辑可靠性的模型。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Claude Fable 5 每百万 token 的标准价格是多少？</strong>Claude Fable 5 在 Anthropic 公开定价页（2026 年 7 月）显示 $3/M input 和 $15/M output。cached input token 按 $0.30/M 计费，9 折。启用 prompt caching 后，同样 Bun 迁移成本将远低于 $165k。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Prompt caching 如何降本？</strong>Anthropic 的 prompt caching 对 cached input token 在 5 分钟缓存窗口内打 9 折（$0.30/M vs $3/M fresh）。在 agent 每次迭代都要重读 rulebook、依赖图、源文件的迁移场景下，prompt caching 把有效 input 成本砍到约 1/10。Anthropic 博文没说 $165k 这个案例是否启用了 caching；Anthropic 工程师私下表示 caching 是后续工作中的关键成本杠杆。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Claude Code 能真正替代人类工程团队吗？</strong>不能。Anthropic 博文把这次迁移定位为 Claude Code 和人类工程师"联合主导"。plan（rulebook、依赖图、gap 清单）由人类定义；Claude 在并行 agent 下执行重写。merge 后暴露的 19 个 regression 由现有 CI 而非 Claude 捕获。Anthropic 的定位是 Claude 处理"数百万次机械性行编辑"，工程师负责架构和审查。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>对 AI API 开发者的实用启示是什么？</strong>三点。第一，长上下文前沿模型（Claude Fable 5、GPT-5.6、Claude Opus 4.8）在启用 prompt caching 后，即使 $3/M input 也能承担遗留代码迁移。第二，"数百个 agent"并行运行的 agentic 工作流已成为百万行重构的默认形态 — 单个 Claude Code session 完不成。第三，$165k 是上限；启用 caching、并行 session、更小 diff，类似迁移成本可控制在 2 万美元以内。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>这个案例对非重构工作负载有借鉴意义吗？</strong>有。同样的 agentic 模式（rulebook → 依赖图 → gap 清单 → 并行 agent 执行）适用于大规模测试生成、多文件 API endpoint 迁移（例如从一个 LLM 厂商换到另一个）以及整个代码库的 deprecation 清理。成本结构（重型 input token、prompt caching、并行 agent）在各类工作负载下都是一样的。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">参考资料</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1"><li>Anthropic，<em>How Anthropic runs large-scale code migrations with Claude Code</em>，2026-07-14：<a href="https://claude.com/blog/ai-code-migration" class="text-blue-600 hover:underline" rel="noopener" target="_blank">claude.com/blog/ai-code-migration</a></li><li>Anthropic，<em>Claude Fable 5 / Sonnet 5 / Opus 4.8 定价</em>，2026：<a href="https://docs.claude.com/en/docs/about-claude/pricing" class="text-blue-600 hover:underline" rel="noopener" target="_blank">docs.claude.com/en/docs/about-claude/pricing</a></li><li>Anthropic，<em>Prompt caching</em>，2026：<a href="https://docs.claude.com/en/docs/build-with-claude/prompt-caching" class="text-blue-600 hover:underline" rel="noopener" target="_blank">docs.claude.com/en/docs/build-with-claude/prompt-caching</a></li><li>OpenAI，<em>GPT-5.6 定价</em>，2026：<a href="https://openai.com/api/pricing/" class="text-blue-600 hover:underline" rel="noopener" target="_blank">openai.com/api/pricing</a></li></ul>`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article" locale="zh">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div class="mb-8"><a href="/zh/tutorials" class="text-blue-600 hover:underline text-sm">← 返回教程列表</a></div>
+    <div class="flex items-center gap-3 mb-4"><span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded">新闻解读</span><time datetime={date} class="text-sm text-gray-500">2026 年 7 月 18 日</time></div>
+    <div set:html={zhBody} />
+    <hr class="my-12 border-gray-200" />
+    <section class="mt-8"><p class="text-sm text-gray-500 mb-2"><strong>披露声明</strong></p><p class="text-sm text-gray-500">APIRank 文章中的合作伙伴链接可能产生佣金分成。编辑判断保持独立。</p></section>
+  </article>
+</BaseLayout>
