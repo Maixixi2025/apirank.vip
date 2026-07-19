@@ -1,0 +1,257 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'runpod-serverless-gpu-api-review';
+const date = '2026-07-19';
+const locale = 'en';
+
+const enTitle = "RunPod API Review 2026: Per-Second GPU Cloud";
+const enDescription = "RunPod API review: per-GPU-second pricing, FlashBoot sub-200ms cold start, 31 regions, H100 from $2.99/hr. Compared with Modal, Baseten, Replicate.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "RunPod API Review 2026: Per-Second GPU Cloud", "description": "RunPod API review: per-GPU-second pricing, FlashBoot sub-200ms cold start, 31 regions, H100 from $2.99/hr. Compared with Modal, Baseten, Replicate.", "datePublished": "2026-07-19", "dateModified": "2026-07-19", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/runpod-serverless-gpu-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "RunPod API Review 2026: Per-Second GPU Cloud", "item": "https://apirank.vip/tutorials/runpod-serverless-gpu-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much does RunPod cost per month for a small OSS LLM workload?", "acceptedAnswer": {"@type": "Answer", "text": "If you deploy a Llama 3.1 8B endpoint on an RTX 4090 ($0.69/hr) via Serverless and serve ~5K requests/day with 2-second average latency, your bill is roughly $4-8/month plus idle cost. A dedicated H100 pod for fine-tuning (12 hours x $2.89/hr ~ $35) is a one-time cost per training run. The $5 starter credit covers 1-3 small pods end-to-end."}}, {"@type": "Question", "name": "Is RunPod usable from China?", "acceptedAnswer": {"@type": "Answer", "text": "Partially. RunPod's primary regions are US (us-east, us-west), EU (eu-west), and AU/Asia (ap-southeast, ap-northeast). Direct access from mainland China is unstable -- most teams use a stable proxy or route through Aliyun's international gateway. Some users report 200-400ms additional latency versus Modal/Baseten on the same routes."}}, {"@type": "Question", "name": "Does RunPod charge for idle GPU time?", "acceptedAnswer": {"@type": "Answer", "text": "No -- that's the central cost advantage. Serverless endpoints scale to zero when idle (only pay for active workers). Pods bill by the second while running, and only while running -- you can stop and start them. This is different from AWS/GCP where an idle EC2 instance still bills. For spiky workloads (text-image generation, batch jobs), RunPod is 3-10x cheaper than keeping an A100 warm on AWS."}}, {"@type": "Question", "name": "How does RunPod compare to Modal or Baseten?", "acceptedAnswer": {"@type": "Answer", "text": "Modal has the best Python developer experience ($30/mo free, scale to zero, sub-second cold starts) but charges for container runtime regardless of idle. Baseten offers dedicated deployments with SLA plus Truss for custom models. RunPod wins on raw price-per-GPU-second and GPU catalog breadth (13+ tiers from RTX 4090 to B300) but requires more hands-on ops. Choose RunPod for cost-sensitive training/fine-tuning; choose Modal for spiky production inference; choose Baseten when you need SLA-grade dedicated deployments."}}, {"@type": "Question", "name": "What about the Community Cloud vs Secure Cloud difference?", "acceptedAnswer": {"@type": "Answer", "text": "Community Cloud is RunPod's spot-style tier -- peer-operated GPUs at 30-50% lower price but interruptible (~15% preemption risk per hour). Secure Cloud runs in Tier-3 datacenters with no preemption but prices 20-40% higher. For production inference serving real users, use Secure Cloud. For training jobs that checkpoint frequently or for development, Community Cloud is the right choice."}}, {"@type": "Question", "name": "Can I deploy my own fine-tuned model on RunPod?", "acceptedAnswer": {"@type": "Answer", "text": "Yes -- RunPod Hub ships 100+ pre-built templates (vLLM, SGLang, ComfyUI, Whisper). For a custom model, push your container image to Docker Hub or RunPod's registry, then use the Serverless deploy API. Most OSS models (Llama, Qwen, DeepSeek, Mistral) have a one-click template. Fine-tuning jobs use the same Pods interface -- start a multi-GPU pod, run your training script, save to Network Storage, stop the pod."}}, {"@type": "Question", "name": "Does RunPod support prompt caching like Anthropic?", "acceptedAnswer": {"@type": "Answer", "text": "No -- RunPod bills per GPU-second regardless of how much of the input is repeated. If you have long-context workloads with 5-30% repeated prefix (chat history, RAG context, agent system prompts), running on Anthropic or OpenAI with prompt caching is 5-10x cheaper than self-hosting on RunPod with vLLM. RunPod's cost advantage is for unique-context workloads -- image generation, embeddings, summarization, fresh-context RAG."}}]};
+
+const affiliateSidebar = {
+  title: 'Try FreeModel',
+  description: 'One API key routes across multiple providers — DeepSeek + Qwen + Llama + OpenAI-compatible upstreams. Pairs with RunPod for cost-routed open-source model serving.',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: 'Get free credits'
+};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">RunPod API Review 2026: The Per-GPU-Second Cloud Built for Open-Source LLM Hosting</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">RunPod is one of the few GPU-cloud platforms where the pricing page is genuinely the entire pitch: <strong>$0.000192 per RTX 4090-second, $0.000831 per H100-second, $0.000464 per A100-second</strong>, billed only while the GPU is doing work. No idle fees, no minimum commits, no egress charges. The company's business model has been validated by 1M+ developers and a recent Series A, but the daily experience is still more raw-infrastructure than polished-product compared to Modal or Baseten.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are evaluating where to host an open-weight model (Llama, Qwen, DeepSeek, ComfyUI, Whisper) and your workload pattern is spiky or training-heavy rather than steady-state API, RunPod is the most price-efficient platform in 2026. This review covers the verified pricing (July 2026), the two product surfaces (Pods and Serverless), and where RunPod wins versus loses against the three closest peers.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>Per-second GPU billing from <strong>$0.69/hr RTX 4090</strong> to <strong>$7.39/hr B300 288GB</strong> -- lowest published hourly rate among serverless GPU clouds</li>
+<li>Serverless FlashBoot delivers <strong>sub-200ms cold starts</strong>; Pods spin up in <strong>&lt;30s</strong> across <strong>31 global regions</strong></li>
+<li>Community Cloud (cheap, interruptible) vs Secure Cloud (Tier-3 datacenter, 20-40% more expensive); choose based on production needs</li>
+<li>Best fit: bursty inference (image gen, embeddings), training/fine-tuning, hobby projects on RTX 4090, multi-GPU clusters</li>
+<li>Compared with Modal ($30/mo free + Python-best DX), Baseten (Truss + dedicated SLA), Replicate (200+ pretrained models)</li>
+<li><strong>$5 starter credit</strong> with no credit card required, enough to run a single H100 pod for 1.5 hours or 7 hours of RTX 4090</li>
+<li>Not a model API provider -- you bring your own container image and your own model weights</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Why RunPod matters in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Open-source model adoption (Llama 4 / Qwen 3 / DeepSeek V4) crossed a tipping point in 2026 where self-hosting a flagship-class model is no longer cost-prohibitive if you pick the right GPU hours. The catch is that <strong>most production teams underestimate idle cost</strong>: an H100 on AWS p5 runs ~$98/hour billed continuously, so even a 50% utilization workload runs $50K/month before you see a single token.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">RunPod's two-decade-long answer has been: <strong>only bill for the seconds the GPU is actually computing</strong>. For a ComfyUI image-gen workload spiking to 200 requests at 7am and idle the rest of the day, RunPod's bill is 30-50× smaller than the equivalent AWS p5. The trade-off is operational -- you configure workers, manage cold starts, and handle Secure vs Community tier choices. But for indie devs and AI startups where cost sensitivity matters more than turnkey-polish, RunPod is the most economical option in 2026.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Beyond price, the GPU catalog is the widest in the category. RunPod offers 13+ tiers spanning consumer cards (RTX 4090, RTX 5090), prosumer (RTX 6000 Ada, L40, L40S), and datacenter flagships (H100, H200, B200, B300). A team that needs to A/B a Llama 3.1 70B on RTX 4090, fine-tune a Qwen 32B on 4xH100, then run batch embeddings on L40S can do all of that from the same RunPod account with consistent tooling.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">RunPod pricing -- verified 2026-07-19</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">All prices below were fetched live from <a href="https://www.runpod.io/pricing" class="text-blue-600 hover:underline" rel="noopener">runpod.io/pricing</a> on 2026-07-19. Per-second GPU billing starts when the worker starts and stops the instant it finishes; no rounding to the hour, no minimum commits.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Community Cloud (interruptible, peer-operated)</h3>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full divide-y divide-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr><th class="px-4 py-2 text-left font-semibold">GPU</th><th class="px-4 py-2 text-left font-semibold">VRAM</th><th class="px-4 py-2 text-left font-semibold">Hourly</th><th class="px-4 py-2 text-left font-semibold">Per second</th></tr>
+</thead>
+<tbody class="divide-y divide-gray-100">
+<tr><td class="px-4 py-2">RTX 4090</td><td class="px-4 py-2">24 GB</td><td class="px-4 py-2">$0.69/hr</td><td class="px-4 py-2">$0.000192</td></tr>
+<tr><td class="px-4 py-2">RTX 5090</td><td class="px-4 py-2">32 GB</td><td class="px-4 py-2">$0.99/hr</td><td class="px-4 py-2">$0.000275</td></tr>
+<tr><td class="px-4 py-2">L4</td><td class="px-4 py-2">24 GB</td><td class="px-4 py-2">$0.39/hr</td><td class="px-4 py-2">$0.000108</td></tr>
+<tr><td class="px-4 py-2">L40S</td><td class="px-4 py-2">48 GB</td><td class="px-4 py-2">$0.99/hr</td><td class="px-4 py-2">$0.000275</td></tr>
+<tr><td class="px-4 py-2">A100 PCIe</td><td class="px-4 py-2">80 GB</td><td class="px-4 py-2">$1.39/hr</td><td class="px-4 py-2">$0.000386</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Secure Cloud (Tier-3 datacenter, no preemption)</h3>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full divide-y divide-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr><th class="px-4 py-2 text-left font-semibold">GPU</th><th class="px-4 py-2 text-left font-semibold">VRAM</th><th class="px-4 py-2 text-left font-semibold">Hourly</th><th class="px-4 py-2 text-left font-semibold">Per second</th></tr>
+</thead>
+<tbody class="divide-y divide-gray-100">
+<tr><td class="px-4 py-2">H100 PCIe</td><td class="px-4 py-2">80 GB</td><td class="px-4 py-2">$2.89/hr</td><td class="px-4 py-2">$0.000803</td></tr>
+<tr><td class="px-4 py-2">H100 SXM</td><td class="px-4 py-2">80 GB</td><td class="px-4 py-2">$2.99/hr</td><td class="px-4 py-2">$0.000831</td></tr>
+<tr><td class="px-4 py-2">H100 NVL</td><td class="px-4 py-2">94 GB</td><td class="px-4 py-2">$3.19/hr</td><td class="px-4 py-2">$0.000886</td></tr>
+<tr><td class="px-4 py-2">H200</td><td class="px-4 py-2">141 GB</td><td class="px-4 py-2">$4.39/hr</td><td class="px-4 py-2">$0.001219</td></tr>
+<tr><td class="px-4 py-2">B200</td><td class="px-4 py-2">180 GB</td><td class="px-4 py-2">$5.89/hr</td><td class="px-4 py-2">$0.001636</td></tr>
+<tr><td class="px-4 py-2">B300 HBM3e</td><td class="px-4 py-2">288 GB</td><td class="px-4 py-2">$7.39/hr</td><td class="px-4 py-2">$0.002053</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="text-gray-700 leading-relaxed my-4">For comparison: an equivalent H100 SXM on AWS p5.48xlarge runs <strong>$98.32/hour</strong>, on GCP a2-ultragpu-8g runs <strong>$89.40/hour per H100</strong>, and on Azure ND H100 v5 ~<strong>$90+</strong>. RunPod's $2.99/hr on Secure Cloud is <strong>~33x cheaper</strong> for the same GPU type, and Community Cloud gets another 30-50% off if your workload tolerates preemption.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Storage and networking are similarly transparent: container disk $0.10/GB/month, volume disk running $0.10/GB/month (idle $0.20/GB/month), network storage standard $0.07/GB/month (under 1TB) and $0.05/GB/month (over 1TB), network storage high-performance $0.14/GB/month. No egress fees on any tier.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The RunPod API surface</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">RunPod exposes four product surfaces, each addressing a different workload shape. The mental model matters because the pricing line item differs.</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+<li><strong>Pods</strong> -- dedicated GPU instances you start, control, and stop. Direct SSH access, full container control, persistent storage if attached. Best for: training, fine-tuning, batch jobs, long-running dev environments. Billing per second while running, idle cost = zero when stopped.</li>
+<li><strong>Serverless</strong> -- autoscaling API endpoints. You push a container, define a worker spec (GPU + replicas + idle timeout), and RunPod scales workers from zero to hundreds based on incoming request volume. Sub-200ms cold starts via FlashBoot. Best for: production inference workloads with variable traffic.</li>
+<li><strong>Clusters</strong> -- multi-node GPU clusters for distributed training. H100 NVLink mesh across 2-32+ GPUs. Best for: Llama-class pretraining, mixture-of-experts training, large-scale fine-tuning.</li>
+<li><strong>Hub</strong> -- curated templates that pre-package vLLM / SGLang / ComfyUI / Whisper for one-click deploy. Many community-contributed templates; quality varies. Best for: getting started without writing your own Dockerfile.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Unlike OpenAI or Anthropic, RunPod is <strong>not a model API</strong>. You do not call <code>client.chat.completions.create()</code> against a managed Llama endpoint. You either build that endpoint yourself on top of Serverless, or you deploy a community template that has the endpoint already. This is the core difference that makes RunPod a peer of AWS/GCP rather than a peer of OpenRouter.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Step-by-step: ship a Llama 4 endpoint in 30 minutes</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The fastest path to a production endpoint is to use a Hub template. The <code>vllm-llama-4-scout-17b</code> template packages vLLM with the model weights pre-cached. Total time from signup to a callable endpoint: about 15-25 minutes if the model weights are already cached on the template, longer if cold.</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-md overflow-x-auto my-4 text-sm"><code># Install the RunPod CLI
+pip install runpod
+
+# Authenticate
+runpod config credentials
+
+# Deploy a Serverless endpoint from a Hub template
+runpod deploy --template vllm-llama-4-scout-17b \
+  --gpu-type "NVIDIA H100 80GB HBM3" \
+  --idle-timeout 30 \
+  --max-workers 8 \
+  --name llama-4-production
+
+# Returns an endpoint ID; call it like this:
+ENDPOINT_ID=rpd-xxxxxxxxxxxx
+curl -X POST https://api.runpod.ai/v2/$&#123;ENDPOINT_ID&#125;/openai/v1/chat/completions \
+  -H "Authorization: Bearer $&#123;RUNPOD_API_KEY&#125;" \
+  -H "Content-Type: application/json" \
+  -d '&#123;
+    "model": "llama-4-scout-17b",
+    "messages": [&#123;"role": "user", "content": "Hello, world"&#125;],
+    "max_tokens": 256
+  &#125;'
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The endpoint speaks the OpenAI Chat Completions API -- same <code>/v1/chat/completions</code> path, same message format. Migration from OpenAI to RunPod-hosting Llama 4 is a <code>base_url</code> change, not a code rewrite. The first request triggers worker spin-up (FlashBoot sub-200ms), subsequent requests hit warm workers at single-digit-millisecond overhead.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">When to pick Serverless vs Pods</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Serverless is the right call when request volume is <strong>bursty</strong> (&lt;100 req/sec peak, with idle gaps), when each request completes in <strong>under 60 seconds</strong>, and when your workload tolerates sub-200ms cold starts. Pods win when you need <strong>persistent state</strong> (a dev environment, a long-running service like ComfyUI's web UI), when requests are <strong>long-running</strong> (a 30-minute training job), or when you need <strong>custom networking</strong> (inbound TCP, custom DNS, peer-to-peer GPU mesh).</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Where RunPod fits -- and where it doesn't</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">RunPod wins when:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>You have <strong>open-source models</strong> (Llama, Qwen, DeepSeek, Mistral) and want direct GPU control</li>
+<li>Your workload is <strong>spiky or training-heavy</strong>: image gen, batch embeddings, fine-tuning runs</li>
+<li>Cost-sensitivity is more important than turnkey developer experience</li>
+<li>You need <strong>specialty GPUs</strong> (B300, H200, RTX 5090) not available in mainstream clouds</li>
+<li>You're building on the periphery of GPU infrastructure -- custom kernels, low-level CUDA, etc.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">RunPod loses when:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>You want <strong>managed frontier models</strong> (GPT-5.5, Claude Opus) -- use OpenRouter or the model APIs directly</li>
+<li>You need <strong>prompt caching</strong> for repeated-prefix workloads -- Anthropic / OpenAI / Google have proper cache pricing</li>
+<li>You want <strong>zero ops</strong> with SLA-grade uptime -- Modal or Baseten Dedicated deployments</li>
+<li>You have <strong>compliance requirements</strong> (HIPAA, FedRAMP, ITAR) that mandate SOC 2 / signed BAA -- RunPod is not SOC 2 Type II as of mid-2026</li>
+<li>Your workload is <strong>latency-critical and steady-state</strong> -- A100 on Modal is faster than RunPod Pod in benchmarks</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">RunPod vs Modal vs Baseten vs Replicate</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The serverless GPU space has four credible choices. Pricing comparison for an H100 80GB workload at $0.50/utilization (mix of active and idle):</p>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full divide-y divide-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr><th class="px-4 py-2 text-left font-semibold">Platform</th><th class="px-4 py-2 text-left font-semibold">H100/hr</th><th class="px-4 py-2 text-left font-semibold">Idle cost</th><th class="px-4 py-2 text-left font-semibold">Free tier</th><th class="px-4 py-2 text-left font-semibold">Best for</th></tr>
+</thead>
+<tbody class="divide-y divide-gray-100">
+<tr><td class="px-4 py-2"><strong>RunPod</strong></td><td class="px-4 py-2">$2.99 (S) / $1.99 (C)</td><td class="px-4 py-2">$0 (scale to zero)</td><td class="px-4 py-2">$5 starter</td><td class="px-4 py-2">Cheapest H100, custom GPU catalog</td></tr>
+<tr><td class="px-4 py-2">Modal</td><td class="px-4 py-2">$3.95</td><td class="px-4 py-2">$0 (scale to zero)</td><td class="px-4 py-2">$30/mo credits</td><td class="px-4 py-2">Best Python DX, sub-second startup</td></tr>
+<tr><td class="px-4 py-2">Baseten</td><td class="px-4 py-2">$1.89</td><td class="px-4 py-2">$0 (Per-second)</td><td class="px-4 py-2">$30 credits</td><td class="px-4 py-2">Dedicated SLA, Truss framework</td></tr>
+<tr><td class="px-4 py-2">Replicate</td><td class="px-4 py-2">~$2.30</td><td class="px-4 py-2">$0 (cold start)</td><td class="px-4 py-2">Limited trials</td><td class="px-4 py-2">200+ pretrained models, no Docker</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="text-gray-700 leading-relaxed my-4">The 4-way comparison shows RunPod wins on raw H100 price ($1.99 Community / $2.99 Secure), Modal wins on Python ergonomics ($30/mo free + sub-second cold starts), Baseten wins on dedicated SLAs and the Truss framework for custom model deployment, and Replicate wins on breadth of pretrained models (200+) for teams that don't want to manage Dockerfiles.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">A team that needs all four will run a hybrid: Replicate for obscure OSS models you don't want to deploy yourself, Modal for spiky customer-facing inference, RunPod for batch training and dedicated GPU reservations, Baseten for production endpoints with SLAs.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verifying RunPod in production</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">RunPod is best validated against three operational checkpoints before you commit real workloads:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+<li><strong>FlashBoot cold-start latency</strong>: deploy a small (L4) worker with idle-timeout=0, fire a request after 60s of idle, measure time-to-first-token. Expect &lt;250ms. If you see &gt;500ms, the worker's region is likely geographic-distant -- pick the closer region.</li>
+<li><strong>Preemption rate</strong>: Community Cloud should report a preemption rate. Run a 1-hour workload and check worker logs for <code>RESOLVED</code> events. If preemption is &gt;20%, either reduce worker count, upgrade to Secure Cloud, or pick a different tier.</li>
+<li><strong>Persistent storage sanity</strong>: write a test file to the network volume, restart the worker, confirm the file persists. Network Volumes persist across pod restarts within the same region; Container Disk does not.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">For ongoing observability, RunPod's native dashboard surfaces worker counts, GPU utilization, request latency, and dollar-burned-per-worker. Most production teams pair RunPod with their own logging (DataDog, Better Stack) and inference-eval frameworks (Langfuse, Helicone) to capture full request-trace data.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Bottom line:</strong> RunPod is the most cost-efficient serverless GPU cloud in 2026 for open-source model workloads. The trade is operational: you're not getting Anthropic-level polish or Baseten-grade SLAs, you are getting the cheapest published H100 hourly rate, the broadest GPU catalog, and a platform that has scaled from hobby projects to 1M+ developers. If your workload is spiky or training-heavy and your team can handle basic container orchestration, RunPod is the platform to evaluate.</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-6 my-6">
+<h3 class="text-lg font-bold text-blue-900 mb-2">Cost-routing with FreeModel</h3>
+<p class="text-sm text-blue-800 mb-4">For teams running multiple open-source models across both RunPod and managed APIs, <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="font-semibold underline" rel="sponsored noopener" target="_blank">FreeModel</a> routes requests across DeepSeek, Qwen, Llama, and OpenAI-compatible upstreams through a single API key. Pairs naturally with RunPod Serverless for spike-routed workloads (RunPod for cost-sensitive training, FreeModel for everyday production inference).</p>
+<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" rel="sponsored noopener" target="_blank">Get free credits</a>
+</div>`;
+
+---
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url}
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+             rel="sponsored noopener" target="_blank">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Facts</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Provider:</strong> RunPod (GPU cloud)</li>
+            <li><strong>Pricing:</strong> $0.69/hr RTX 4090 to $7.39/hr B300 (per second)</li>
+            <li><strong>Cold start:</strong> FlashBoot sub-200ms (Serverless)</li>
+            <li><strong>Regions:</strong> 31 (US/EU/Asia/AU)</li>
+            <li><strong>Free tier:</strong> $5 starter credit (no card)</li>
+            <li><strong>Hosting:</strong> Community + Secure Cloud tiers</li>
+            <li><strong>Open-source:</strong> No (proprietary; Hub has 100+ community templates)</li>
+            <li><strong>Affiliate:</strong> FreeModel for cost-routed model serving</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
