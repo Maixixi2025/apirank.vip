@@ -1,0 +1,332 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'openrouter-prompt-caching-sticky-routing';
+const date = '2026-07-23';
+const locale = 'zh';
+const zhTitle = "OpenRouter 缓存 + 粘性路由 2026 实测";
+const zhDescription = "OpenRouter 缓存读取最低 0.1x（Anthropic/DeepSeek/Qwen），粘性路由锁定 warm 节点。6 轮 Agent 成本对比表 + 4 个 cache miss 排查。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "测评中心", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type":"Question","name":"OpenRouter 缓存读取价格是多少？","acceptedAnswer":{"@type":"Answer","text":"缓存读取价格为正常输入价格的 0.1x 到 0.5x，取决于服务商。Anthropic、DeepSeek、阿里 Qwen 可低至 0.1x。OpenAI 在 0.25x-0.50x。Gemini、Grok、Moonshot 为 0.25x。Groq 为 0.5x。写入价格在免费（Gemini、Grok、Moonshot、GPT-5.6 之前的 OpenAI、Groq）和 2.0x（Anthropic 1 小时 TTL）之间。以上来自 2026-07-21 OpenRouter 博客。"}},{"@type":"Question","name":"为什么通过 OpenRouter 的提示缓存没有生效？","acceptedAnswer":{"@type":"Answer","text":"常见原因：prompt 长度低于服务商最低要求（Anthropic 1024，Gemini 4096）；缓存过期（Anthropic 默认 5 分钟 TTL）；prompt 前缀不稳定（任何对第一条 system/developer 消息的修改都会破坏哈希）；轮次间切换了服务商。设置稳定的 session_id，把每次请求的动态数据放到 prompt 末尾，inspect cached_tokens 确认命中。"}},{"@type":"Question","name":"OpenRouter 在所有服务商都支持提示缓存吗？","acceptedAnswer":{"@type":"Answer","text":"凡是实现了缓存机制的服务商和模型，OpenRouter 都透传支持。大多数服务商自动启用 — Anthropic 和阿里 Qwen 通过 cache_control 显式启用。详细模型清单见 OpenRouter 提示缓存文档；并非每个服务商上的每个模型都实现该功能。"}},{"@type":"Question","name":"如何确认缓存确实省了钱？","acceptedAnswer":{"@type":"Answer","text":"检查 usage.prompt_tokens_details.cached_tokens（缓存读取的 token 数）和 cache_write_tokens（缓存写入的 token 数）。cached_tokens 大于 0 即确认命中。也可以读 response 中的 cache_discount 字段看单次生成的成本影响。写入需要付费的服务商，写入那轮 discount 可能为负（写入比正常输入贵）；后续读取轮次 discount 会转正。"}},{"@type":"Question","name":"什么是 OpenRouter 的粘性路由（Sticky Routing）？","acceptedAnswer":{"@type":"Answer","text":"粘性路由把后续请求锁定到持有 warm cache 的服务商。缓存请求在某个服务商成功后，OpenRouter 把同模型的下一轮请求路由回该服务商，当该服务商的缓存读取价格低于正常输入时这么做。如果粘性服务商不可用，OpenRouter 回退到下一个可用服务商，而不是直接报错。"}},{"@type":"Question","name":"缓存能跟 OpenRouter Auto Router 一起用吗？","acceptedAnswer":{"@type":"Answer","text":"可以。设置 session_id 后，Auto Router 和 Pareto Router 会同时锁定该会话的解析模型和服务商端点。没有 session_id 时，Auto Router 可能在不同轮次切换模型，让缓存失效。session_id + Auto Router 的组合提供成本最优模型选择 + 可靠缓存复用。"}},{"@type":"Question","name":"缓存读取最便宜应该选 Anthropic 还是 DeepSeek？","acceptedAnswer":{"@type":"Answer","text":"Anthropic 和 DeepSeek 都提供 OpenRouter 上最低的 0.1x 缓存读取。Anthropic 写入 1.25x（5 分钟 TTL）或 2.0x（1 小时）。DeepSeek 写入 1.0x。如果 agent 节奏密集（每隔几分钟一轮），Anthropic 较高的写入成本很快摊薄；会话稀疏时，DeepSeek 较低的写入成本可能更划算。"}},{"@type":"Question","name":"如果我自己设置了 provider.order 会怎样？","acceptedAnswer":{"@type":"Answer","text":"你显式的服务商顺序会覆盖粘性路由。请求总会落到你的第一个可用服务商，哪怕缓存前缀在另一个端点上。除非你有特定的服务商偏好且愿意放弃缓存收益，否则不要设 provider.order — 让粘性路由自己挑 warm 端点。"}},{"@type":"Question","name":"OpenRouter 缓存能持续多久？","acceptedAnswer":{"@type":"Answer","text":"取决于服务商和你设置的 TTL。Anthropic 默认 5 分钟；设 ttl: 1h 可延长到 1 小时。GPT-5.6 之前的 OpenAI 约 5-10 分钟。Gemini 隐式缓存 TTL 约 1 小时。阿里 Qwen 的 cache_control TTL 按请求配置。对长跑 agent，Anthropic 1 小时或 Gemini 1 小时隐式缓存覆盖大多数会话模式，无需每轮重新写入。"}},{"@type":"Question","name":"能关闭 OpenRouter 的提示缓存吗？","acceptedAnswer":{"@type":"Answer","text":"可以。在 Anthropic 或阿里 Qwen 上设 provider: { cache_control: { ttl: no-cache } } 即可关闭。其他隐式免费缓存的服务商没有单次请求级别的关闭开关 — 缓存自动发生，但只有真正命中读取时才省钱。如果完全不想用缓存，可以路由到不支持缓存的服务商（代价是每轮都付全价输入）。"}}]};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">OpenRouter 提示缓存 + 粘性路由 2026：Agent 成本实测</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>2026 年 7 月 21 日</strong>，OpenRouter 发布了一篇题为《<em>The Cheapest Token Is a Cached One: Prompt Caching + Sticky Routing</em>》的教程。这是迄今为止关于他们的聚合层如何在 70+ 上游服务商之间处理缓存读取、缓存写入与会话锁定最清晰的公开拆解。对任何跑多轮 Agent 的人来说，这篇博客里的成本数学就是同一个工作负载从月费 $5,000 降到 $500 的关键。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">本文把 OpenRouter 那篇博客提炼成生产环境最在意的几个部分：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li>逐服务商的缓存价格矩阵（Anthropic、GPT-5.6 前后的 OpenAI、Gemini、Grok、Moonshot、Groq、DeepSeek、阿里 Qwen、Z.AI）。</li>
+
+<li>6 轮 × 10,000 token 的具体算例：粘性路由究竟省了多少。</li>
+
+<li>四种导致缓存不命中的原因及对应的修复。</li>
+
+<li><code>session_id</code> 参数，以及为什么它能把粘性从「有时 warm」变成「稳定 warm」。</li>
+
+<li><code>cached_tokens</code>、<code>cache_discount</code>、<code>cache_write_tokens</code> 这三个确认缓存生效的字段。</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">所有价格事实都来自 2026-07-21 的 OpenRouter 博客及 OpenRouter 提示缓存文档（截至 2026 年 7 月底）。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">OpenRouter 的提示缓存是什么？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter 是一个统一 API，前接 300+ 模型、70+ 服务商。所谓「提示缓存」，是指 OpenRouter（或上游服务商）复用 prompt 的一部分，而不是每轮重新分词、重新计费完整的输入。复用部分通常是<strong>贵</strong>的部分 — 系统提示、工具定义、JSON schemas、护栏、检索到的文档、examples — 它们跨轮次保持不变。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">两个成本要素要分开看：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>缓存写入</strong> — 第一次请求把可复用的前缀存下来。有些服务商写入价比正常输入还贵（Anthropic 5 分钟 TTL 收 1.25x，1 小时 TTL 收 2.0x），有些免费（Gemini、Grok、Moonshot、GPT-5.6 之前的 OpenAI、Groq）。</li>
+
+<li><strong>缓存读取</strong> — 之后的每次请求复用存好的前缀。这是便宜的那部分：根据服务商不同，从正常输入价格的 <strong>0.1x 到 0.5x</strong> 不等。</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">0.1x 的缓存读取意味着：一个 10,000 token 的系统提示，在 Claude Sonnet 4.6 上正常输入花 $30，从缓存读取只要 <strong>$3</strong>。把它乘到长跑 Agent 的 6 轮，节省会快速累积。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">逐服务商缓存价格矩阵（验证于 2026-07-21）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">下表是 OpenRouter 公开的拆解，直接从博客抓取：</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">服务商</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">缓存读取倍率</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">缓存写入倍率</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">启用方式</th></tr></thead><tbody class="divide-y divide-gray-200 bg-white"><tr><td class="px-4 py-3 text-sm text-gray-700">Anthropic Claude（5 分钟 TTL）</td><td class="px-4 py-3 text-sm text-gray-700">0.1x input</td><td class="px-4 py-3 text-sm text-gray-700">1.25x input</td><td class="px-4 py-3 text-sm text-gray-700">自动或显式</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">Anthropic Claude（1 小时 TTL）</td><td class="px-4 py-3 text-sm text-gray-700">0.1x input</td><td class="px-4 py-3 text-sm text-gray-700">2.0x input</td><td class="px-4 py-3 text-sm text-gray-700">显式（<code>ttl: "1h"</code>）</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">OpenAI（GPT-5.6 之前）</td><td class="px-4 py-3 text-sm text-gray-700">0.25x–0.50x input</td><td class="px-4 py-3 text-sm text-gray-700">免费</td><td class="px-4 py-3 text-sm text-gray-700">自动</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">OpenAI（GPT-5.6 之后）</td><td class="px-4 py-3 text-sm text-gray-700">0.25x–0.50x input</td><td class="px-4 py-3 text-sm text-gray-700">1.25x input</td><td class="px-4 py-3 text-sm text-gray-700">自动或显式</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">Google Gemini（隐式）</td><td class="px-4 py-3 text-sm text-gray-700">0.25x input</td><td class="px-4 py-3 text-sm text-gray-700">免费</td><td class="px-4 py-3 text-sm text-gray-700">自动</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">Grok（xAI）</td><td class="px-4 py-3 text-sm text-gray-700">0.25x input</td><td class="px-4 py-3 text-sm text-gray-700">免费</td><td class="px-4 py-3 text-sm text-gray-700">自动</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">Moonshot AI</td><td class="px-4 py-3 text-sm text-gray-700">0.25x input</td><td class="px-4 py-3 text-sm text-gray-700">免费</td><td class="px-4 py-3 text-sm text-gray-700">自动</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">Groq</td><td class="px-4 py-3 text-sm text-gray-700">0.5x input</td><td class="px-4 py-3 text-sm text-gray-700">免费</td><td class="px-4 py-3 text-sm text-gray-700">自动（Kimi K2 模型）</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">DeepSeek</td><td class="px-4 py-3 text-sm text-gray-700">0.1x input</td><td class="px-4 py-3 text-sm text-gray-700">1.0x input</td><td class="px-4 py-3 text-sm text-gray-700">自动</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">阿里 Qwen</td><td class="px-4 py-3 text-sm text-gray-700">0.1x input</td><td class="px-4 py-3 text-sm text-gray-700">1.25x input</td><td class="px-4 py-3 text-sm text-gray-700">显式（<code>cache_control</code>）</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">Z.AI</td><td class="px-4 py-3 text-sm text-gray-700">~0.2x input</td><td class="px-4 py-3 text-sm text-gray-700">免费</td><td class="px-4 py-3 text-sm text-gray-700">自动</td></tr></tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">三种模式值得注意：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Anthropic、DeepSeek、阿里 Qwen 提供最低 0.1x 的缓存读取</strong>，但它们的写入都比正常输入贵。如果你的 Agent 复用前缀不足以摊薄写入，缓存反而<em>烧钱</em>。</li>
+
+<li><strong>Google Gemini、Grok、Moonshot 写入免费、读取 0.25x。</strong>对偶尔命中缓存但很少需要多 hour TTL 的轻量 Agent 来说是最佳组合。</li>
+
+<li><strong>OpenAI 在 GPT-5.6 之后改成付费写入。</strong>GPT-5.6 之前的 OpenAI 写入免费；GPT-5.6+ 缓存写入收 1.25x。如果你在 2026 年 6 月迁到 GPT-5.6，缓存经济已经悄悄变了。</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">具体节省：6 轮 Agent × 10K 缓存 token</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter 那篇博客用同一个假想 Agent：6 轮、每轮都重复同一段 10,000 token（系统提示 + 工具定义 + schemas + 策略上下文）。输出 token 与变化的消息不计入。</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg"><thead class="bg-gray-50"><tr><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">场景</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">第 1 轮</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">第 2–6 轮</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">相对 1 轮未缓存的总成本</th></tr></thead><tbody class="divide-y divide-gray-200 bg-white"><tr><td class="px-4 py-3 text-sm text-gray-700">不缓存</td><td class="px-4 py-3 text-sm text-gray-700">完整输入</td><td class="px-4 py-3 text-sm text-gray-700">每轮完整输入</td><td class="px-4 py-3 text-sm font-semibold text-gray-900">6.0x</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">Anthropic 5 分钟缓存 + 粘性路由</td><td class="px-4 py-3 text-sm text-gray-700">1.25x 写入</td><td class="px-4 py-3 text-sm text-gray-700">0.1x 读取</td><td class="px-4 py-3 text-sm font-semibold text-gray-900">1.75x</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">免费写入 + 0.25x 读取</td><td class="px-4 py-3 text-sm text-gray-700">1.0x 输入/写入</td><td class="px-4 py-3 text-sm text-gray-700">0.25x 读取</td><td class="px-4 py-3 text-sm font-semibold text-gray-900">2.25x</td></tr><tr><td class="px-4 py-3 text-sm text-gray-700">免费写入 + 0.5x 读取</td><td class="px-4 py-3 text-sm text-gray-700">1.0x 输入/写入</td><td class="px-4 py-3 text-sm text-gray-700">0.5x 读取</td><td class="px-4 py-3 text-sm font-semibold text-gray-900">3.5x</td></tr></tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">表格的含义：「对于同一段重复内容，6 轮的总 token 成本是单轮未缓存成本的 N 倍。」</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic + 粘性路由比未缓存基线便宜 <strong>3.4x</strong>。免费写入 + 0.5x 读取（Groq）仍然比未缓存好 1.7x，但比 Anthropic 激进的缓存读取价格差一截。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">轮次越多，节省越大。一个 20 轮深度研究 Agent 配 30K token 前缀，差距还会再拉宽。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么 warm cache 不一定有用？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">这是多数工程师第一次踩到的坑：warm cache 只有当<strong>下一请求落到同一个持有缓存前缀的服务商端点</strong>时才管用。OpenRouter 前接 70+ 服务商；每轮路由器挑一个。第二轮可能路由到另一个服务商 — 即便「理论上应该有缓存」，你仍然按全价付费。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter 的<strong>粘性路由</strong>就是为了修这个坑。某服务商上缓存请求成功后，OpenRouter 把同模型的后续请求钉回那个端点，当该服务商的缓存读取价格低于正常输入时这么做。如果粘性服务商挂了，OpenRouter 回退到下一个可用服务商，而不是直接报错。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">钉靠的是 key。默认情况下，OpenRouter 对第一条 system 或 developer 消息 + 第一条非 system 消息做哈希。只要这两段不变，钉就稳。system prompt 跨轮变、或者把每次请求的时间戳塞进前缀，钉就废。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">用 <code>session_id</code> 从第 1 轮就强制 warm</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">对 Agent 循环来说，默认的哈希 key 太脆弱。OpenRouter 建议为会话、工单、或 workflow run 传一个稳定的 <code>session_id</code>：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>没有 <code>session_id</code></strong>，粘性路由只在观察到一次缓存命中后才生效。第一轮没缓存，路由器没东西可钉。第二轮可能落到冷端点。</li>
+
+<li><strong>有 <code>session_id</code></strong>，OpenRouter 直接拿 session ID 当粘性路由 key。第一次成功请求之后，粘性就生效 — <em>早于任何缓存命中</em>。对多轮 Agent 而言，这是「从第 1 轮就稳定 warm」和「只是偶尔 warm」之间的差别。</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">在你的 OpenRouter 客户端里就一行：</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded mb-4 overflow-x-auto text-sm"><code>import requests
+
+response = requests.post(
+    "https://openrouter.ai/api/v1/chat/completions",
+    headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}"},
+    json={
+        "model": "anthropic/claude-sonnet-4.6",
+        "messages": [...],   # 你的 Agent 完整消息历史
+        "session_id": "support-ticket-9821",   # 每会话稳定的 key
+        # 可选：在 Anthropic 1 小时模型上显式设缓存 TTL
+        # "provider": {"cache_control": {"ttl": "1h"}}
+    }
+)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">对工单风格的 workflow（用稳定标识符：工单 ID、thread ID、用户 ID、对话 ID），<code>session_id</code> 是最便宜的优化。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">如何确认提示缓存是否生效？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter 返回里有三个字段可以直接确认缓存是否生效：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><code>usage.prompt_tokens_details.cached_tokens</code> — 从缓存读取的输入 token 数。大于 0 即命中。</li>
+
+<li><code>usage.prompt_tokens_details.cache_write_tokens</code> — 写入那轮被存入的输入 token 数。</li>
+
+<li><code>usage.cache_discount</code> — 单次生成的成本影响（写入付费时为负，读取轮次为正）。</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">也可以看 OpenRouter Dashboard 的 Activity 详情页，或调用 <code>/api/v1/generation</code> 拿完整每轮遥测。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">生产环境里一个实用的健康检查：</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded mb-4 overflow-x-auto text-sm"><code>import requests
+
+def cache_health_check(response_json):
+    usage = response_json.get("usage", {})
+    details = usage.get("prompt_tokens_details", {})
+    cached = details.get("cached_tokens", 0)
+    discount = usage.get("cache_discount", 0)
+    return {
+        "cached_tokens": cached,
+        "cache_discount": discount,
+        "cache_active": cached &gt; 0,
+    }</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">如果 <code>cache_active</code> 多轮都是 <code>False</code>，说明你踩到了下面四个常见 cache miss 原因之一。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么会 cache miss（以及每个原因的修复）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">缓存看上去失效，几乎总逃不掉这四种情况：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Prompt 太短。</strong>每个服务商都有最小可缓存 token 数 — Anthropic 要求 1,024，OpenAI 要求 1,024，Gemini 要求 4,096。Prompt 太短，无论多稳定都不会触发缓存。</li>
+
+<li><strong>缓存过期。</strong>Anthropic 默认 TTL 是 5 分钟；1 小时 TTL 需要显式 <code>ttl: "1h"</code>。如果一轮之间闲置超过 TTL，前缀就消失了。</li>
+
+<li><strong>开头内容变了。</strong>任何对 system prompt、工具定义、或第一条用户消息的修改都会让缓存前缀哈希失效。即使只是往系统消息里加了当前时间戳也会破坏缓存。</li>
+
+<li><strong>请求换到了别的服务商。</strong>没有 <code>session_id</code>，路由器可能把第二轮交给跟第一轮不同的服务商。缓存在服务商 A 上是 warm；你的请求落到服务商 B 上按全价付费。</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">修法都是机械的：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>针对 (1)：合并短 prompt，或者接受短请求不吃缓存红利。</li>
+
+<li>针对 (2)：挑一个匹配你 Agent 典型轮次节奏的 TTL。要 1 小时 Anthropic 缓存，设 <code>provider: { cache_control: { ttl: "1h" } }</code>。</li>
+
+<li>针对 (3)：把每次请求的动态数据（时间戳、request ID、用户 token）放到 prompt <strong>末尾</strong>，不是开头。</li>
+
+<li>针对 (4)：设 <code>session_id</code>。没有它，粘性路由只在缓存命中后才启动 — 对第 1 轮来说已经太晚。</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">缓存能跟 Auto Router 一起用吗？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">可以。设了 <code>session_id</code> 后，<strong>Auto Router</strong> 和 <strong>Pareto Router</strong> 同时锁定该会话的解析模型和服务商端点。不设 <code>session_id</code>，Auto Router 可以跨轮切换模型 — 这对探索没问题，但会让前一个模型持有的缓存失效。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你用 Auto Router 做成本优化，<code>session_id</code> 的价值更大。它告诉路由器「就用这次会话选的那个模型」。不设它，模型每轮切换，前缀每次都是新的，缓存写入成本会持续发生。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>一个坑：</strong>如果自己设了 <code>provider.order</code>，你的显式顺序会覆盖粘性路由。要在多服务商模型上启用粘性路由，留空 <code>provider.order</code>，让 OpenRouter 自己挑。除非你有特定服务商顺序需求并愿意放弃缓存收益，否则不要用 <code>provider</code> 路由控制。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">合在一起：Agent 循环 checklist</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">对任何每轮都重复同一段贵内容的 Agent：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li>稳定内容放最前 — system prompt、工具定义、JSON schemas、策略、长生命周期上下文。</li>
+
+<li>变化内容放后面 — 用户消息、工具结果、时间戳、运行期元数据。</li>
+
+<li>为会话、工单、或 workflow run 设一个稳定的 <code>session_id</code>。</li>
+
+<li>检查 response 里的 <code>cached_tokens</code> 和 <code>cache_discount</code>，确认读取确实在发生。</li>
+
+<li>要 1 小时 Anthropic TTL，设 <code>provider: { cache_control: { ttl: "1h" } }</code>。</li>
+
+<li>不要设 <code>provider.order</code> — 让粘性路由挑 warm 端点。</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">便宜 token 这件事是机械的，但顺序重要。如果修了缓存读取但开头前缀还在变，再多 <code>session_id</code> 也救不了。稳定前缀 + 稳定 session ID + 提供低读取价的服务商 — 这三件事一起把 6.0x 变 1.75x。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">联盟推荐：FreeModel 多服务商 Agent 路由</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你的多轮 Agent 跨多个模型服务商，<a href="https://freemodel.com/?via=apirank" rel="sponsored noopener" target="_blank" class="text-blue-600 hover:underline font-medium">FreeModel</a> 提供一个统一 API 表面，聚合 OpenRouter 同类的多家服务商，并自带路由和缓存层。对不需要 OpenRouter 全部服务商、但又想要类似缓存路由行为的场景，FreeModel 是值得拿来跟当前方案做基准对比的轻量替代。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter 自己的公开联盟计划在 <a href="https://openrouter.ai/affiliates" rel="sponsored noopener" target="_blank" class="text-blue-600 hover:underline font-medium">openrouter.ai/affiliates</a> — 如果你在自己的产品或 newsletter 里讲 OpenRouter，可以把读者链到该页面。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">OpenRouter 缓存读取价格是多少？</h3>
+<p class="text-gray-700 leading-relaxed my-4">缓存读取价格为正常输入价格的 0.1x 到 0.5x，取决于服务商。Anthropic、DeepSeek、阿里 Qwen 可低至 0.1x。OpenAI 在 0.25x-0.50x。Gemini、Grok、Moonshot 为 0.25x。Groq 为 0.5x。写入价格在免费（Gemini、Grok、Moonshot、GPT-5.6 之前的 OpenAI、Groq）和 2.0x（Anthropic 1 小时 TTL）之间。以上来自 2026-07-21 OpenRouter 博客。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">为什么通过 OpenRouter 的提示缓存没有生效？</h3>
+<p class="text-gray-700 leading-relaxed my-4">常见原因：prompt 长度低于服务商最低要求（Anthropic 1024，Gemini 4096）；缓存过期（Anthropic 默认 5 分钟 TTL）；prompt 前缀不稳定（任何对第一条 system/developer 消息的修改都会破坏哈希）；轮次间切换了服务商。设置稳定的 session_id，把每次请求的动态数据放到 prompt 末尾，inspect cached_tokens 确认命中。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">OpenRouter 在所有服务商都支持提示缓存吗？</h3>
+<p class="text-gray-700 leading-relaxed my-4">凡是实现了缓存机制的服务商和模型，OpenRouter 都透传支持。大多数服务商自动启用 — Anthropic 和阿里 Qwen 通过 cache_control 显式启用。详细模型清单见 OpenRouter 提示缓存文档；并非每个服务商上的每个模型都实现该功能。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">如何确认缓存确实省了钱？</h3>
+<p class="text-gray-700 leading-relaxed my-4">检查 usage.prompt_tokens_details.cached_tokens（缓存读取的 token 数）和 cache_write_tokens（缓存写入的 token 数）。cached_tokens 大于 0 即确认命中。也可以读 response 中的 cache_discount 字段看单次生成的成本影响。写入需要付费的服务商，写入那轮 discount 可能为负（写入比正常输入贵）；后续读取轮次 discount 会转正。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">什么是 OpenRouter 的粘性路由（Sticky Routing）？</h3>
+<p class="text-gray-700 leading-relaxed my-4">粘性路由把后续请求锁定到持有 warm cache 的服务商。缓存请求在某个服务商成功后，OpenRouter 把同模型的下一轮请求路由回该服务商，当该服务商的缓存读取价格低于正常输入时这么做。如果粘性服务商不可用，OpenRouter 回退到下一个可用服务商，而不是直接报错。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">缓存能跟 OpenRouter Auto Router 一起用吗？</h3>
+<p class="text-gray-700 leading-relaxed my-4">可以。设置 session_id 后，Auto Router 和 Pareto Router 会同时锁定该会话的解析模型和服务商端点。没有 session_id 时，Auto Router 可能在不同轮次切换模型，让缓存失效。session_id + Auto Router 的组合提供成本最优模型选择 + 可靠缓存复用。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">缓存读取最便宜应该选 Anthropic 还是 DeepSeek？</h3>
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 和 DeepSeek 都提供 OpenRouter 上最低的 0.1x 缓存读取。Anthropic 写入 1.25x（5 分钟 TTL）或 2.0x（1 小时）。DeepSeek 写入 1.0x。如果 agent 节奏密集（每隔几分钟一轮），Anthropic 较高的写入成本很快摊薄；会话稀疏时，DeepSeek 较低的写入成本可能更划算。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">如果我自己设置了 provider.order 会怎样？</h3>
+<p class="text-gray-700 leading-relaxed my-4">你显式的服务商顺序会覆盖粘性路由。请求总会落到你的第一个可用服务商，哪怕缓存前缀在另一个端点上。除非你有特定的服务商偏好且愿意放弃缓存收益，否则不要设 provider.order — 让粘性路由自己挑 warm 端点。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">OpenRouter 缓存能持续多久？</h3>
+<p class="text-gray-700 leading-relaxed my-4">取决于服务商和你设置的 TTL。Anthropic 默认 5 分钟；设 ttl: 1h 可延长到 1 小时。GPT-5.6 之前的 OpenAI 约 5-10 分钟。Gemini 隐式缓存 TTL 约 1 小时。阿里 Qwen 的 cache_control TTL 按请求配置。对长跑 agent，Anthropic 1 小时或 Gemini 1 小时隐式缓存覆盖大多数会话模式，无需每轮重新写入。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">能关闭 OpenRouter 的提示缓存吗？</h3>
+<p class="text-gray-700 leading-relaxed my-4">可以。在 Anthropic 或阿里 Qwen 上设 provider: { cache_control: { ttl: no-cache } } 即可关闭。其他隐式免费缓存的服务商没有单次请求级别的关闭开关 — 缓存自动发生，但只有真正命中读取时才省钱。如果完全不想用缓存，可以路由到不支持缓存的服务商（代价是每轮都付全价输入）。</p>
+
+`;
+
+const affiliateSidebar = {
+  title: "FreeModel: 多服务商 Agent 路由",
+  description: "聚合 OpenRouter 同类的多家服务商，自带路由和缓存层。轻量替代方案，适合多轮 Agent 路由场景。",
+  url: "https://freemodel.com/?via=apirank",
+  cta: "试试 FreeModel →"
+};
+---
+
+<BaseLayout title={zhTitle + ' | APIRank'} description={zhDescription} canonicalUrl={canonicalUrl} ogImage="https://apirank.vip/og-image.png">
+  <link rel="alternate" hreflang="en" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/zh" class="hover:underline">首页</a> &rsaquo;
+          <a href="/zh/tutorials" class="hover:underline">测评中心</a> &rsaquo;
+          <span class="text-gray-700">{zhTitle}</span>
+        </nav>
+        <meta itemprop="datePublished" content={date} />
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} rel="sponsored noopener" target="_blank"
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">速查</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>最低读取倍率：</strong> Anthropic / DeepSeek / 阿里 Qwen 0.1x input</li>
+            <li><strong>免费写入：</strong> Gemini / Grok / Moonshot / Groq</li>
+            <li><strong>GPT-5.6 变化：</strong> 写入变 1.25x（之前免费）</li>
+            <li><strong>6 轮 × 10K Agent：</strong> 未缓存 6.0x → Anthropic 粘性路由 1.75x</li>
+            <li><strong>session_id：</strong> 第 1 轮就启动粘性路由（早于任何缓存命中）</li>
+            <li><strong>确认字段：</strong> cached_tokens、cache_discount、cache_write_tokens</li>
+            <li><strong>Token 下限：</strong> Anthropic 1024 / OpenAI 1024 / Gemini 4096</li>
+            <li><strong>Auto Router + session_id：</strong> 同时锁定模型和服务商端点</li>
+            <li><strong>联盟：</strong> FreeModel 多服务商 Agent 路由</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
