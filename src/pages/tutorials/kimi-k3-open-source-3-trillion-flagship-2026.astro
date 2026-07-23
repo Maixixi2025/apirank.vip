@@ -1,0 +1,592 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'kimi-k3-open-source-3-trillion-flagship-2026';
+const date = '2026-07-23';
+const locale = 'en';
+const enTitle = "Kimi K3: Moonshot AI Open-Source 3T Flagship Guide";
+const enDescription = "Kimi K3 is Moonshot AI 2.8T open-source model with 1M context, native vision, Claude Code integration. Weights drop July 27. Pricing, API, benchmarks.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Kimi K3: Moonshot AI Open-Source 3T Flagship Guide", "description": "Kimi K3 is Moonshot AI 2.8T open-source model with 1M context, native vision, Claude Code integration. Weights drop July 27. Pricing, API, benchmarks.", "datePublished": "2026-07-23", "dateModified": "2026-07-23", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/kimi-k3-open-source-3-trillion-flagship-2026"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Kimi K3: Moonshot AI Open-Source 3T Flagship Guide", "item": "https://apirank.vip/tutorials/kimi-k3-open-source-3-trillion-flagship-2026"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is Kimi K3 really open-source, and when exactly do the weights drop?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The official Kimi K3 quickstart states that the complete model weights will be published before July 27, 2026. Moonshot describes K3 as the first 3-trillion-parameter open-source model. The technical report and architecture details will accompany the weights."}}, {"@type": "Question", "name": "How much does Kimi K3 cost per million tokens?", "acceptedAnswer": {"@type": "Answer", "text": "According to the official K3 pricing page, the rates are ¥2 per million cached input tokens, ¥20 per million uncached input tokens, and ¥100 per million output tokens. The new-user ¥15 signup coupon cannot be used for K3; a recharge is required."}}, {"@type": "Question", "name": "Can I run Kimi K3 inside Claude Code today?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Moonshot has published an official Claude Code + Kimi K3 setup guide that walks through environment variables, base URL configuration, and which K3-specific parameters (such as reasoning_effort) carry over cleanly."}}, {"@type": "Question", "name": "Does Kimi K3 support image and video input?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. K3 accepts text, image, and video input. Images must be sent as base64 or via a Kimi ms://<file-id> reference; public image URLs are not supported, and content must be an array of message parts, not a serialized string."}}, {"@type": "Question", "name": "What is reasoning_effort and which value should I use?", "acceptedAnswer": {"@type": "Answer", "text": "reasoning_effort is a top-level request parameter that controls how deeply Kimi K3 reasons before answering. It accepts low, high, and max, with max as the default. K3 always reasons, so you cannot disable it entirely, but you can use low for cheap classification or routing steps and reserve max for the final synthesis."}}, {"@type": "Question", "name": "How does Kimi K3 compare to GPT-5 and Claude Sonnet 4.5 on coding?", "acceptedAnswer": {"@type": "Answer", "text": "Independent benchmarks will firm up once the open weights land. From an economic perspective, K3's cached input price is the cheapest among the three (¥2 vs. $0.30 for Claude Sonnet 4.5 and $0.125 for GPT-5), and its uncached input and output prices sit roughly in line with Claude Sonnet 4.5 after FX normalization. The differentiator is the ecosystem: K3 ships first-party guides for Claude Code, Codex CLI, OpenCode, and Hermes Agent."}}, {"@type": "Question", "name": "Is the new-user ¥15 coupon usable for Kimi K3?", "acceptedAnswer": {"@type": "Answer", "text": "No. The official quickstart explicitly states that the ¥15 signup coupon cannot be used to experience K3; you must complete a recharge (minimum ¥10) before any K3 call will succeed."}}]};
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Kimi K3: Moonshot&#39;s Open-Source 3-Trillion-Parameter Flagship Explained (2026)</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi K3 has dominated Chinese AI developer channels this week for a single, simple reason: Moonshot AI&#39;s flagship model is about to become <strong>the world&#39;s first open-source 3-trillion-parameter model</strong>. According to the official Kimi K3 quickstart, the full model weights will be published before <strong>July 27, 2026</strong>. Combine that with a 1M-token context window, native vision, tool calling, and a public <code>reasoning_effort</code> knob, and you have the most consequential open-weight release of the year.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This news-driven guide explains the <strong>Kimi K3 architecture</strong> (KDA + Attention Residuals + 896-expert MoE), breaks down the <strong>Kimi K3 API pricing</strong> (¥2/M cached, ¥20/M uncached, ¥100/M output), and walks through Claude Code, Codex CLI, OpenCode, and Hermes Agent integrations that you can use today. We also flag a critical correction to the older Kimi K3 API review: <strong><code>reasoning_effort</code> now supports <code>low</code>, <code>high</code>, and <code>max</code></strong> — the API has moved on since launch.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you want a side-by-side benchmark, our <a href="/tutorials/qwen3-8-vs-kimi-k3-open-source-2t-models-api-2026" class="text-blue-600 hover:underline">Qwen3.8 vs Kimi K3 comparison</a> covers coding, vision, and pricing math against Alibaba&#39;s open-weights flagship. For pure API mechanics, the original <a href="/tutorials/kimi-k3-api-review-2026" class="text-blue-600 hover:underline">Kimi K3 API review</a> still applies.</p>
+
+<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 my-6"><p class="text-sm text-gray-800"><strong>Verified 2026-07-23:</strong> Pricing, capabilities, and ecosystem pages on <a href="https://platform.kimi.com" class="text-blue-600 hover:underline" rel="noopener" target="_blank">platform.kimi.com</a>. Open-source weights release date and architecture claims sourced from the <a href="https://platform.kimi.com/docs/guide/kimi-k3-quickstart" class="text-blue-600 hover:underline" rel="noopener" target="_blank">official Kimi K3 quickstart</a>.</p></div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Why Kimi K3 Is Suddenly the Hottest Open-Source Story of 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Moonshot AI&#39;s announcement landed with three signals that developers usually only see from labs with ten times the funding:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700">
+<li><strong>Scale:</strong> 2.8 trillion total parameters in a sparse mixture-of-experts layout — the largest open-weights model ever released.</li>
+<li><strong>Release window:</strong> full weights drop <strong>before July 27, 2026</strong>, less than two weeks from announcement.</li>
+<li><strong>Ecosystem readiness:</strong> official Kimi K3 integration guides for Claude Code, Codex CLI, OpenCode, Hermes Agent, OpenClaw, and Kimi Code CLI already published on day one.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For a Chinese lab, that ecosystem coverage is unusual. Moonshot is not just shipping a checkpoint — they are positioning Kimi K3 as the default Chinese-reasoning engine for Western coding agents that have struggled with Simplified Chinese workflows.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you track the open-source model ladder, Kimi has held the size crown for nine of the last twelve months. K3 extends that streak by 40 percent over the previous generation and ships with a structural argument about why bigger sparse models beat dense ones at long-horizon work.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The 2.8T Architecture: KDA, Attention Residuals, and 896-Expert MoE</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi K3 is built on two new architectural pieces that the Moonshot team is documenting for the first time:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700">
+<li><strong>Kimi Delta Attention (KDA)</strong> — a hybrid linear attention variant designed to keep information flowing across longer sequences without the quadratic cost of full attention.</li>
+<li><strong>Attention Residuals (AttnRes)</strong> — a residual pathway that lets deeper stacks of KDA layers stay trainable as the network grows.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Combined with an expanded Mixture-of-Experts design — <strong>896 experts with 16 active per token</strong>, stabilized by Moonshot&#39;s Stable LatentMoE framework — K3 reportedly reaches about <strong>2.5× the training-compute efficiency of K2</strong>. The technical report due alongside the weights should publish concrete numbers, but the qualitative claim is that K3 gets substantially more capability per FLOP than its predecessor.</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Component</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Kimi K2</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Kimi K3</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Total parameters</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~1T</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2.8T</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Attention mechanism</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Standard + MoBA sparse</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">KDA + Attention Residuals</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">MoE experts</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">384</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">896 (16 active per token)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Context window</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,048,576 (1M)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Native vision</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Selected models</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Text + image + video</td>
+
+</tr>
+
+</tbody>
+
+</table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">For a deeper dive on Moonshot&#39;s previous-generation <strong>MoBA hybrid block attention</strong>, see their <a href="https://platform.kimi.com/docs/changelog/changelog/moba.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">MoBA technical changelog</a> — the paper that informed KDA.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Kimi K3 Coding: Why It Matters for Long-Horizon Agents</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">K3 is positioned for two specific workloads: long-running coding sessions and end-to-end knowledge work. The official quickstart says K3 can "sustain extended engineering tasks with minimal human supervision, understand and manipulate large codebases, and coordinate terminal tools." That is a different sales pitch than a chatbot — it is the pitch Moonshot needs to land to compete with Claude Code, Codex CLI, and Gemini CLI.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Three concrete additions make that pitch plausible:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700">
+<li><strong>Visual feedback loops.</strong> K3 accepts screenshots and video, so it can drive front-end, game-dev, and CAD loops where the verifier is a rendered frame, not a unit test.</li>
+<li><strong>Tool-call discipline.</strong> K3 ships <code>tool_choice</code> (force-call controls), <strong>dynamic tool loading</strong> (declarative tool subsets injected via a content-less <code>system</code> message), and the standard tool-call / tool-result contract.</li>
+<li><strong>Stable reasoning.</strong> K3 always reasons, with a configurable <code>reasoning_effort</code> — so an agent can drop from <code>max</code> to <code>low</code> for cheap exploration steps without losing the chain-of-thought guarantee.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are evaluating K3 against <a href="/providers/anthropic/" class="text-blue-600 hover:underline">Claude Sonnet 4.5</a> or <a href="/providers/openai/" class="text-blue-600 hover:underline">GPT-5</a> on long-horizon coding, remember that K3 has the cheapest cache-hit input price in its class (¥2/M) — so prompts that reuse a system prompt or a tool catalog benefit disproportionately. We compare concrete economics in the pricing section below.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">1M Token Context, Native Vision, and Tool Calling</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi K3&#39;s <strong>1,048,576-token context window</strong> is the same ceiling advertised since launch, but the ecosystem around it has matured. Three capabilities now work together that previously had to be patched individually:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Capability</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Kimi K3 detail</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Practical note</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Context window</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,048,576 tokens</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Same as launch; cache threshold is now documented</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Automatic context caching</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Enabled for requests with prompt &gt; 256 tokens</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Reuse a long system prompt to hit cache; no cache ID or TTL needed</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Vision (images)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Base64 or <code>ms://&lt;file-id&gt;</code></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Public image URLs are <strong>not</strong> supported; send content as an array of parts</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Video input</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Supported</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Upload via Files API with <code>file-extract</code> purpose; cite via <code>ms://</code></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Tool calls</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Standard + <code>tool_choice</code></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">First-turn <code>tool_choice: "required"</code> forces at least one call</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Dynamic tool loading</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Inject via content-less <code>system</code> message</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Server does not persist the declaration; replay it every request</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Structured output</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><code>json_schema</code> + <code>strict: true</code></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Parse <code>message.content</code> only, not <code>reasoning_content</code></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Web search</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Disabled / upgrading</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Official docs flag it as not production-ready</td>
+
+</tr>
+
+</tbody>
+
+</table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The <strong>cache threshold</strong> detail is worth highlighting: only prompts with <strong>more than 256 tokens</strong> become eligible for prefix caching. Smaller prompts are silently dropped from the cache, so a stream of short agent calls will not benefit. For long-context workflows (knowledge base Q&amp;A, repository-scale refactors, multi-document summarization) the cache is automatic and free to use.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">reasoning_effort: The API Change Worth Re-Reading</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">An earlier Kimi K3 review on this site described <code>reasoning_effort</code> as supporting only <code>max</code>. <strong>That is no longer accurate.</strong> The current quickstart lists three discrete values:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700">
+<li><strong><code>low</code></strong> — minimal reasoning; cheapest and fastest</li>
+<li><strong><code>high</code></strong> — balanced reasoning</li>
+<li><strong><code>max</code></strong> — default; deepest reasoning chain</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi K3 always reasons, so you cannot disable thinking entirely — but you can dial it down for cheap classification, routing, or summarization passes, then crank it up for the final synthesis step. Other important sampling defaults are fixed at <code>temperature=1.0</code>, <code>top_p=0.95</code>, <code>n=1</code>, and zero penalties; the official guide recommends not passing them explicitly.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The streaming response carries two deltas — <code>reasoning_content</code> and <code>content</code> — and you can render them on separate UI tracks. Always replay the full assistant message (including <code>reasoning_content</code>) on the next turn, otherwise multi-turn coherence breaks.</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded mb-4 overflow-x-auto text-sm"><code>from openai import OpenAI
+import os
+
+client = OpenAI(
+    api_key=os.environ[&quot;MOONSHOT_API_KEY&quot;],
+    base_url=&quot;https://api.moonshot.cn/v1&quot;,
+)
+
+# Cheaper reasoning for a routing step
+cheap = client.chat.completions.create(
+    model=&quot;kimi-k3&quot;,
+    reasoning_effort=&quot;low&quot;,
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Classify this ticket: 退货 物流慢&quot;}],
+)
+
+# Deep reasoning for the final synthesis
+final = client.chat.completions.create(
+    model=&quot;kimi-k3&quot;,
+    reasoning_effort=&quot;max&quot;,
+    messages=[
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: f&quot;Draft a response: {cheap.choices[0].message.content}&quot;},
+    ],
+)
+print(final.choices[0].message.content)</code></pre>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Kimi K3 Pricing and the July 16–August 12 Promotion</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The <a href="https://platform.kimi.com/docs/pricing/chat-k3" class="text-blue-600 hover:underline" rel="noopener" target="_blank">official K3 pricing table</a> shows three line items per million tokens, billed in CNY:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Item</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Price (per 1M tokens)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">USD equivalent (¥7.20)</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Cached input</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥2.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.28</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Uncached input</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥20.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$2.78</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Output</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥100.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$13.89</td>
+
+</tr>
+
+</tbody>
+
+</table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">USD figures use the snapshot rate of ¥7.20 = $1 and will drift with FX. Treat the CNY values as the source of truth.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The big budget trap is that <strong>output is five times more expensive than uncached input</strong>. A coding agent that emits 30,000 tokens of code and reasoning for every 100,000 tokens of cached prefix will bill roughly 60 percent on output. Cache aggressively, shorten tool-result echoes, and avoid printing entire file contents back to the model.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The <strong>Kimi K3 release recharge promotion</strong> runs from <strong>2026-07-16 00:00 to 2026-08-12 23:59 (UTC+8)</strong>. Each organization can claim one bonus voucher based on their highest first-day recharge:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Recharge amount (CNY)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Bonus voucher</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Effective discount</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥99 – ¥499</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">10%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">9.1% off</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥500 – ¥1,999</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">20%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">16.7% off</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥2,000 – ¥4,999</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">25%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">20% off</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">≥ ¥5,000</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">30%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">23.1% off</td>
+
+</tr>
+
+</tbody>
+
+</table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">Vouchers are good for 90 days, capped at ¥20,000 per voucher, and consume before your cash balance. The promotion excludes Kimi consumer products and Kimi Code — it applies only to the API platform. And as always, the new-user ¥15 signup coupon is <strong>not eligible</strong> for K3; a top-up is required before any K3 call.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Ecosystem Integrations: Claude Code, Codex, OpenCode, Hermes Agent</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The unusual part of the K3 launch is the integration surface area. Moonshot has shipped first-party guides for six major agent frameworks within days of release:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700">
+<li><strong><a href="https://platform.kimi.com/docs/guide/claude-code-kimi.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Claude Code</a></strong> — use Anthropic&#39;s Claude Code CLI with Kimi K3 as the model backend. Just the kind of cross-vendor setup this guide is built for.</li>
+<li><strong><a href="https://platform.kimi.com/docs/guide/codex-kimi.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Codex CLI</a></strong> — official setup for OpenAI&#39;s Codex CLI pointing at <code>api.moonshot.cn</code>.</li>
+<li><strong><a href="https://platform.kimi.com/docs/guide/open-code.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">OpenCode</a></strong> — built-in China-region authentication flow for Kimi K3 and its reasoning-effort levels.</li>
+<li><strong><a href="https://platform.kimi.com/docs/guide/use-kimi-in-hermes-agent.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Hermes Agent</a></strong> — full text, image, and video understanding in the Hermes Agent runtime.</li>
+<li><strong>OpenClaw</strong> and <strong>Kimi Code CLI</strong> — additional reference integrations for cross-platform agent and IDE-style workflows.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The takeaway is that Kimi K3 is no longer a Chinese-only API with a model card. It is now a drop-in backend for the most-used coding agents on the planet, with native support for the three reasoning-effort tiers and the same K3 tool-calling semantics you would use against the API directly.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Kimi K3 vs Claude, GPT, and Qwen3: How It Stacks Up</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Open-weights models rarely compete head-to-head with closed frontier models on benchmarks, so most comparisons come down to cost-adjusted reasoning quality. The next table is a developer-side comparison using publicly documented pricing; benchmark numbers will firm up once the open weights land and the community can run independent evaluations.</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Model</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Params</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Context</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cached input / 1M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Uncached input / 1M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Output / 1M</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Kimi K3</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2.8T (MoE)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥2.00 (~$0.28)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥20.00 (~$2.78)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥100.00 (~$13.89)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Claude Sonnet 4.5</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Closed</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.30</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$15.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">GPT-5</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Closed</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">400K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.125</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.25</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$10.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.8-Max-Preview</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Open weights</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥1.50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥8.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥32.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">DeepSeek V3</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~670B (MoE)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥0.50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥2.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥8.00</td>
+
+</tr>
+
+</tbody>
+
+</table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">K3&#39;s cache-hit price is the lowest in its tier, which matters disproportionately for long-running coding agents that re-emit the same tool catalog and system prompt every turn. Its <strong>uncached input</strong> and <strong>output</strong> prices sit roughly in line with Claude Sonnet 4.5 once you normalize to USD — premium-tier pricing for a premium-tier model. For raw tokens-per-dollar, DeepSeek V3 is still the cheapest in the table by a wide margin, but its 128K context and lack of vision limit its agent use cases.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a head-to-head with Alibaba&#39;s open-weights flagship, see our <a href="/tutorials/qwen3-8-vs-kimi-k3-open-source-2t-models-api-2026" class="text-blue-600 hover:underline">Qwen3.8 vs Kimi K3 comparison</a>.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What Developers Should Do This Week (5-Step Action Plan)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are wondering whether to spend engineering time on Kimi K3 before the open weights land, here is a five-step plan that maximizes signal and minimizes commitment.</p>
+
+<ol class="list-decimal pl-6 my-4 space-y-3 text-gray-700">
+<li><strong>Verify the open-source drop yourself on July 27.</strong> Bookmark <a href="https://platform.kimi.com/docs/guide/kimi-k3-quickstart" class="text-blue-600 hover:underline" rel="noopener" target="_blank">the official K3 quickstart</a> and check the changelog on release day. Moonshot has been consistent about putting weights on Hugging Face, so watch both that page and the changelog feed.</li>
+
+<li><strong>Run a smoke test on the API today.</strong> The cheapest way to understand K3&#39;s tool-calling behavior is a one-shot curl. Set <code>reasoning_effort: "low"</code> first to keep costs bounded, then re-run the same prompt with <code>"max"</code> to see whether the deeper reasoning changes the answer you care about.</li>
+
+<li><strong>Wire K3 into Claude Code or Codex CLI.</strong> Both agents now have official Kimi K3 guides. Adding a Kimi profile takes about ten minutes and lets you A/B test K3 against Claude Sonnet or GPT-5 on real coding work.</li>
+
+<li><strong>Audit your prompts for cache hit rate.</strong> K3&#39;s biggest economic lever is automatic caching for prompts over 256 tokens. Audit your agent&#39;s system prompt and tool catalog for stability; even a small reorder can break cache hits for a session.</li>
+
+<li><strong>Plan the 30 percent voucher.</strong> If you can commit ¥5,000 before August 12, the promotion voucher (30 percent, valid 90 days) is effectively a 23 percent discount on K3 spend. Schedule the recharge for the largest single transaction you can justify, since only the highest first-day top-up counts.</li>
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Frequently Asked Questions About Kimi K3</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Below are the seven questions developers are asking most often about Kimi K3, with answers cross-checked against the official quickstart and pricing pages.</p>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">Is Kimi K3 really open-source, and when exactly do the weights drop?</summary><p class="mt-2 text-gray-700 leading-relaxed">Yes. The <a href="https://platform.kimi.com/docs/guide/kimi-k3-quickstart" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Kimi K3 quickstart</a> states that the complete model weights will be published before July 27, 2026. Moonshot describes K3 as the first 3-trillion-parameter open-source model. The technical report and architecture details will accompany the weights.</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">How much does Kimi K3 cost per million tokens?</summary><p class="mt-2 text-gray-700 leading-relaxed">According to the <a href="https://platform.kimi.com/docs/pricing/chat-k3" class="text-blue-600 hover:underline" rel="noopener" target="_blank">official K3 pricing page</a>, the rates are ¥2 per million cached input tokens, ¥20 per million uncached input tokens, and ¥100 per million output tokens. The new-user ¥15 signup coupon cannot be used for K3; a recharge is required.</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">Can I run Kimi K3 inside Claude Code today?</summary><p class="mt-2 text-gray-700 leading-relaxed">Yes. Moonshot has published an official <a href="https://platform.kimi.com/docs/guide/claude-code-kimi.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Claude Code + Kimi K3 setup guide</a> that walks through environment variables, base URL configuration, and which K3-specific parameters (such as <code>reasoning_effort</code>) carry over cleanly.</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">Does Kimi K3 support image and video input?</summary><p class="mt-2 text-gray-700 leading-relaxed">Yes. K3 accepts text, image, and video input. Images must be sent as base64 or via a Kimi <code>ms://&lt;file-id&gt;</code> reference; public image URLs are not supported, and <code>content</code> must be an array of message parts, not a serialized string.</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">What is <code>reasoning_effort</code> and which value should I use?</summary><p class="mt-2 text-gray-700 leading-relaxed"><code>reasoning_effort</code> is a top-level request parameter that controls how deeply Kimi K3 reasons before answering. It accepts <code>low</code>, <code>high</code>, and <code>max</code>, with <code>max</code> as the default. K3 always reasons, so you cannot disable it entirely, but you can use <code>low</code> for cheap classification or routing steps and reserve <code>max</code> for the final synthesis.</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">How does Kimi K3 compare to GPT-5 and Claude Sonnet 4.5 on coding?</summary><p class="mt-2 text-gray-700 leading-relaxed">Independent benchmarks will firm up once the open weights land. From an economic perspective, K3&#39;s cached input price is the cheapest among the three (¥2 vs. $0.30 for Claude Sonnet 4.5 and $0.125 for GPT-5), and its uncached input and output prices sit roughly in line with Claude Sonnet 4.5 after FX normalization. The differentiator is the ecosystem: K3 ships first-party guides for Claude Code, Codex CLI, OpenCode, and Hermes Agent.</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">Is the new-user ¥15 coupon usable for Kimi K3?</summary><p class="mt-2 text-gray-700 leading-relaxed">No. The official quickstart explicitly states that the ¥15 signup coupon cannot be used to experience K3; you must complete a recharge (minimum ¥10) before any K3 call will succeed.</p></details>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">References</h2>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700 text-sm">
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/guide/kimi-k3-quickstart" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Kimi K3 quickstart</a> — verified 2026-07-23</li>
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/pricing/chat-k3" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Kimi K3 pricing</a> — verified 2026-07-23</li>
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/pricing/promotion" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Kimi K3 release recharge promotion (July 16 – August 12, 2026)</a></li>
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/models" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Kimi API model list</a></li>
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/guide/claude-code-kimi.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Claude Code + Kimi K3 setup guide</a></li>
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/guide/codex-kimi.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Codex CLI + Kimi K3 setup guide</a></li>
+
+<li>Moonshot AI, <a href="https://platform.kimi.com/docs/changelog/changelog/moba.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">MoBA: hybrid block attention for long-context LLMs</a></li>
+
+<li>APIRank, <a href="/tutorials/kimi-k3-api-review-2026" class="text-blue-600 hover:underline">Kimi K3 API Review 2026</a></li>
+
+<li>APIRank, <a href="/tutorials/qwen3-8-vs-kimi-k3-open-source-2t-models-api-2026" class="text-blue-600 hover:underline">Qwen3.8 vs Kimi K3: 2T+ Open Models API 2026</a></li>
+
+</ul>`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={zhCanonicalUrl} type="article">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div class="mb-8"><a href="/tutorials" class="text-blue-600 hover:underline text-sm">← Back to Tutorials</a></div>
+    <div class="flex items-center gap-3 mb-4"><span class="text-xs font-semibold bg-blue-100 text-blue-700 px-2.5 py-1 rounded">News Analysis</span><time datetime={date} class="text-sm text-gray-500">July 23, 2026</time></div>
+    <div set:html={enBody} />
+    <hr class="my-12 border-gray-200" />
+    <section class="mt-8"><p class="text-sm text-gray-500 mb-2"><strong>Disclosure</strong></p><p class="text-sm text-gray-500">APIRank may earn affiliate commission from partner links in this article. Editorial judgments remain independent.</p></section>
+  </article>
+</BaseLayout>

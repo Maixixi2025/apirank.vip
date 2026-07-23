@@ -1,0 +1,590 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'kimi-k3-open-source-3-trillion-flagship-2026';
+const date = '2026-07-23';
+const locale = 'zh';
+const zhTitle = "Kimi K3 全面解读：月之暗面 3 万亿级开源旗舰（2026）";
+const zhDescription = "月之暗面 K3 深度解读：2.8 万亿参数、1M 上下文、原生视觉、Claude Code 集成，权重 7 月 27 日前开源。价格、架构、API、生态集成全梳理。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Kimi K3 全面解读：月之暗面 3 万亿级开源旗舰（2026）", "description": "月之暗面 K3 深度解读：2.8 万亿参数、1M 上下文、原生视觉、Claude Code 集成，权重 7 月 27 日前开源。价格、架构、API、生态集成全梳理。", "datePublished": "2026-07-23", "dateModified": "2026-07-23", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/kimi-k3-open-source-3-trillion-flagship-2026"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh/"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Kimi K3 全面解读：月之暗面 3 万亿级开源旗舰（2026）", "item": "https://apirank.vip/zh/tutorials/kimi-k3-open-source-3-trillion-flagship-2026"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Kimi K3 真的开源吗？权重具体哪天发布？", "acceptedAnswer": {"@type": "Answer", "text": "开源。Kimi K3 quickstart 明确写到完整模型权重将在 2026 年 7 月 27 日前发布。Moonshot 把 K3 描述为首个 3 万亿参数开源模型。技术报告和架构细节将随权重一起发布。"}}, {"@type": "Question", "name": "Kimi K3 每百万 token 多少钱？", "acceptedAnswer": {"@type": "Answer", "text": "官方 K3 定价页 列出的费率是缓存命中输入 ¥2/百万 tokens、缓存未命中输入 ¥20/百万 tokens、输出 ¥100/百万 tokens。新用户 ¥15 注册代金券不能用于 K3，需先完成充值。"}}, {"@type": "Question", "name": "今天就能在 Claude Code 里用 Kimi K3 吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。Moonshot 已经发布了官方的 Claude Code + Kimi K3 配置指南，包含环境变量、base URL 配置，以及哪些 K3 专属参数（如 reasoning_effort）能干净迁移。"}}, {"@type": "Question", "name": "Kimi K3 支持图像和视频输入吗？", "acceptedAnswer": {"@type": "Answer", "text": "支持。K3 接受文本、图像、视频输入。图片必须以 base64 或 Kimi 的 ms://<file-id> 引用发送；公网图片 URL 不支持，且 content 必须是消息 part 数组，不是序列化字符串。"}}, {"@type": "Question", "name": "reasoning_effort 是什么？应该用哪个值？", "acceptedAnswer": {"@type": "Answer", "text": "reasoning_effort 是顶层请求参数，控制 Kimi K3 回答前推理多深。接受 low、high、max，默认 max。K3 始终开启推理，不能完全关闭，但便宜的分类/路由步骤可以用 low，最终综合再用 max。"}}, {"@type": "Question", "name": "Kimi K3 与 GPT-5、Claude Sonnet 4.5 在编程上对比如何？", "acceptedAnswer": {"@type": "Answer", "text": "独立 benchmark 数字要等开源权重落地才会稳定。从经济性看，K3 缓存命中输入价是三者最低（¥2 vs Claude Sonnet 4.5 的 $0.30、GPT-5 的 $0.125），未命中输入和输出价换算美元后大致与 Claude Sonnet 4.5 持平。差异化在于生态：K3 自带 Claude Code、Codex CLI、OpenCode、Hermes Agent 一手接入。"}}, {"@type": "Question", "name": "新用户 ¥15 代金券能用于 Kimi K3 吗？", "acceptedAnswer": {"@type": "Answer", "text": "不能。官方 quickstart 明确写到 ¥15 注册代金券不能用于体验 K3；必须先完成充值（最低 ¥10），K3 调用才会成功。"}}]};
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Kimi K3 全面解读：月之暗面 3 万亿级开源旗舰（2026）</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi K3 这一周在国内 AI 开发者圈被反复讨论，核心原因只有一个：<strong>Moonshot AI 的旗舰模型即将成为全球首个开源的 3 万亿参数模型</strong>。官方 Kimi K3 quickstart 明确写到，完整模型权重将于 <strong>2026 年 7 月 27 日前</strong> 发布。叠加 1M token 上下文、原生视觉、工具调用、可配置的 <code>reasoning_effort</code>，这是 2026 年最重要的开源权重发布事件，没有之一。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">本文按新闻解读角度拆解 <strong>Kimi K3 架构</strong>（KDA + Attention Residuals + 896 专家 MoE）、<strong>Kimi K3 API 定价</strong>（缓存命中 ¥2/M、未命中 ¥20/M、输出 ¥100/M）、Claude Code / Codex CLI / OpenCode / Hermes Agent 集成，以及一个重要勘误 — 之前的 Kimi K3 API 评测写 <code>reasoning_effort</code> 只支持 <code>max</code>，<strong>现在已扩展为 <code>low</code> / <code>high</code> / <code>max</code> 三档</strong>，API 已经更新。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">需要逐项 benchmark 对比，可以看 <a href="/zh/tutorials/qwen3-8-vs-kimi-k3-open-source-2t-models-api-2026" class="text-blue-600 hover:underline">Qwen3.8 vs Kimi K3 对比文</a>；只看 API 用法细节，看 <a href="/zh/tutorials/kimi-k3-api-review-2026" class="text-blue-600 hover:underline">Kimi K3 API 完整评测</a>。</p>
+
+<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 my-6"><p class="text-sm text-gray-800"><strong>2026-07-23 实查:</strong> 价格、能力、生态集成页面均来自 <a href="https://platform.kimi.com" class="text-blue-600 hover:underline" rel="noopener" target="_blank">platform.kimi.com</a>。开源权重发布日期与架构描述来自 <a href="https://platform.kimi.com/docs/guide/kimi-k3-quickstart" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Kimi K3 官方 quickstart</a>。</p></div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么 Kimi K3 突然成为 2026 年最火的开源故事</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Moonshot 的这次发布释放了三个只有十倍预算的实验室才会同时给出的信号:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700">
+<li><strong>规模:</strong> 2.8 万亿总参数的稀疏 MoE 架构 — 有史以来最大的开源权重模型。</li>
+<li><strong>发布窗口:</strong> 完整权重在 <strong>2026 年 7 月 27 日前</strong> 开源，距离公告不到两周。</li>
+<li><strong>生态就绪:</strong> 首日就同步上线 Claude Code、Codex CLI、OpenCode、Hermes Agent、OpenClaw、Kimi Code CLI 六大框架的官方集成指南。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">对一家中国 AI 公司来说，这种生态覆盖密度非常罕见。Moonshot 卖的不是一份 checkpoint，而是把 Kimi K3 定位为"中文推理默认引擎"——专门给那些在简体中文场景下水土不服的西方编程 Agent 用。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果追踪开源模型尺寸榜，Kimi 在过去 12 个月里有 9 个月占据尺寸上限。K3 把这一纪录再往上推了 40%，并附带了关于"为什么稀疏大模型在长程任务上胜过稠密模型"的架构论证。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">2.8T 架构: KDA、Attention Residuals、896 专家 MoE</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi K3 基于 Moonshot 团队首次完整披露的两项架构创新:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700">
+<li><strong>Kimi Delta Attention (KDA)</strong> — 混合线性注意力变体，在不付出二次方注意力代价的前提下，让信息在更长序列中持续流动。</li>
+<li><strong>Attention Residuals (AttnRes)</strong> — 一条残差通道，让更深的 KDA 层堆叠在网络变深时仍然可训练。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">叠加扩展后的 Mixture-of-Experts 设计 — <strong>896 个专家、每 token 激活 16 个</strong>，由 Moonshot 自家的 Stable LatentMoE 框架稳定训练。官方称 K3 相比 K2 的<strong>训练算力效率提升约 2.5 倍</strong>。具体数字要等技术报告随权重一起发布，但定性结论是 K3 在每个 FLOP 上能换到明显更多的能力。</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">组件</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Kimi K2</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Kimi K3</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">总参数量</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">约 1T</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2.8T</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">注意力机制</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">标准 + MoBA 稀疏</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">KDA + Attention Residuals</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">MoE 专家数</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">384</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">896 (每 token 激活 16 个)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">上下文窗口</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,048,576 (1M)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">原生视觉</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">部分模型支持</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">文本 + 图像 + 视频</td>
+
+</tr>
+
+</tbody>
+
+</table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">想了解 Moonshot 上一代 <strong>MoBA 混合块注意力</strong> 的更多技术细节，可以看官方 <a href="https://platform.kimi.com/docs/changelog/changelog/moba.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">MoBA 技术 changelog</a> — KDA 的前置工作就来自这篇论文。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Kimi K3 编程: 为什么它是真正的长程 Agent 模型</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">K3 主打两类工作: 长程编程会话和端到端知识工作。官方 quickstart 写得很明确: K3 可以在极少人工监督下持续完成长时间工程任务，理解和操作大型代码库，并协调使用终端工具。这不是聊天机器人的定位 — 这是为了与 Claude Code、Codex CLI、Gemini CLI 直接竞争。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">三个具体能力让这个定位立得住:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700">
+<li><strong>视觉反馈回路。</strong> K3 接受截图和视频输入，所以它能驱动前端、游戏开发、CAD 等"验证器是渲染画面"的开发流程。</li>
+<li><strong>工具调用纪律。</strong> K3 完整支持 <code>tool_choice</code>（强制调用控制）、<strong>动态加载工具</strong>（通过空 content 的 <code>system</code> 消息声明工具子集），以及标准 tool_call / tool_result 协议。</li>
+<li><strong>稳定的推理。</strong> K3 始终开启思考，但 <code>reasoning_effort</code> 可调 — Agent 可以在便宜的探索步骤用 <code>low</code>，最终综合步骤再切回 <code>max</code>，不丢思维链保证。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你正把 K3 与 <a href="/providers/anthropic/" class="text-blue-600 hover:underline">Claude Sonnet 4.5</a> 或 <a href="/providers/openai/" class="text-blue-600 hover:underline">GPT-5</a> 在长程编程上做对比，记得 K3 的缓存命中输入价是同档最低的（¥2/M），所以系统提示和工具目录每轮重复的 Agent 受益最明显。具体经济性后面定价章节有详细测算。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">1M 上下文、原生视觉、工具调用栈</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi K3 的<strong>1,048,576 token 上下文窗口</strong>是发布时就亮出的数字，但围绕它的生态已经成熟。三类能力现在能协同工作，而过去需要分别打补丁:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">能力</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Kimi K3 详情</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">实际使用注意</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">上下文窗口</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,048,576 tokens</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">与发布时一致；缓存阈值现已明确文档化</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">自动上下文缓存</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">prompt &gt; 256 tokens 时启用</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">重复发送长 system prompt 即可命中；无需 cache ID 或 TTL</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">视觉 (图像)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">base64 或 <code>ms://&lt;file-id&gt;</code></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">公网图片 URL <strong>不支持</strong>；content 必须是对象数组</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">视频输入</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">支持</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">通过 Files API 以 <code>file-extract</code> 用途上传；用 <code>ms://</code> 引用</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">工具调用</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">标准 + <code>tool_choice</code></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">首轮 <code>tool_choice: "required"</code> 强制至少调用一次</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">动态加载工具</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">通过空 content 的 <code>system</code> 消息注入</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">服务端不持久化声明；每次请求都要重发</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">结构化输出</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><code>json_schema</code> + <code>strict: true</code></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">只解析 <code>message.content</code>，不要解析 <code>reasoning_content</code></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">联网搜索</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">暂停 / 升级中</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">官方文档明确不建议生产使用</td>
+
+</tr>
+
+</tbody>
+
+</table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">特别要说一下<strong>缓存阈值</strong>: 只有 prompt 超过 <strong>256 tokens</strong> 时，新请求才能命中前缀缓存。低于 256 tokens 的请求不会被缓存（直接丢弃），所以一连串短 Agent 调用享受不到缓存红利。知识库问答、仓库级重构、多文档摘要这类长上下文工作流，自动缓存就是白嫖的省钱工具。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">reasoning_effort: 这条 API 变更值得重新读一遍</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">本站之前的 Kimi K3 API 评测把 <code>reasoning_effort</code> 描述为"只支持 <code>max</code>"。<strong>这已经不准了</strong>。当前 quickstart 列出了三个独立档位:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700">
+<li><strong><code>low</code></strong> — 最小化推理；最便宜、最快</li>
+<li><strong><code>high</code></strong> — 均衡推理</li>
+<li><strong><code>max</code></strong> — 默认；最深的推理链</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Kimi K3 始终思考，所以不能彻底关闭 — 但便宜的分类、路由、摘要步骤可以用 <code>low</code>，最终综合再用 <code>max</code>。其他几个关键采样默认值已固定: <code>temperature=1.0</code>、<code>top_p=0.95</code>、<code>n=1</code>、penalty 全为 0；官方建议不要显式传入。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">流式响应携带两个 delta — <code>reasoning_content</code> 和 <code>content</code>，可以分别渲染到不同 UI 轨道上。多轮对话时必须原样回传完整 assistant message（包括 <code>reasoning_content</code>），否则上下文连贯性会断。</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded mb-4 overflow-x-auto text-sm"><code>from openai import OpenAI
+import os
+
+client = OpenAI(
+    api_key=os.environ[&quot;MOONSHOT_API_KEY&quot;],
+    base_url=&quot;https://api.moonshot.cn/v1&quot;,
+)
+
+# 便宜的推理用于路由步骤
+cheap = client.chat.completions.create(
+    model=&quot;kimi-k3&quot;,
+    reasoning_effort=&quot;low&quot;,
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;给这个工单分类: 退货 物流慢&quot;}],
+)
+
+# 最深推理用于最终综合
+final = client.chat.completions.create(
+    model=&quot;kimi-k3&quot;,
+    reasoning_effort=&quot;max&quot;,
+    messages=[
+        {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: f&quot;起草一份回复: {cheap.choices[0].message.content}&quot;},
+    ],
+)
+print(final.choices[0].message.content)</code></pre>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Kimi K3 定价 + 7 月 16 日 — 8 月 12 日限时充值活动</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><a href="https://platform.kimi.com/docs/pricing/chat-k3" class="text-blue-600 hover:underline" rel="noopener" target="_blank">官方 K3 定价表</a> 列出了三档 CNY 计费项（每 1M tokens）:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">项目</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">价格（每 1M tokens）</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">美元等价（¥7.20）</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">缓存命中输入</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥2.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.28</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">缓存未命中输入</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥20.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$2.78</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">输出</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥100.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$13.89</td>
+
+</tr>
+
+</tbody>
+
+</table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">美元按 ¥7.20 = $1 的快照汇率换算，会随汇率波动。以 CNY 数字为准。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">最大的预算陷阱: <strong>输出价是未命中输入的 5 倍</strong>。一个编程 Agent 每 100K 缓存前缀产生 30K tokens 代码 + 推理，账单里大约 60% 来自输出。缓存前缀、缩短工具结果回显、别把整个文件回传给模型。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Kimi K3 发布限时充值活动</strong>时间是 <strong>2026-07-16 00:00 至 2026-08-12 23:59 (UTC+8)</strong>。每个组织可以领取一张赠券，按活动期内首日最高单笔充值金额阶梯:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">充值金额 (CNY)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">赠送代金券</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">实际折扣</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥99 – ¥499</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">10%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">9.1 折</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥500 – ¥1,999</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">20%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">8.3 折</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥2,000 – ¥4,999</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">25%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">8 折</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">≥ ¥5,000</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">30%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">7.7 折</td>
+
+</tr>
+
+</tbody>
+
+</table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">代金券有效期 90 天，单张上限 ¥20,000，消费时优先扣除。本活动仅限 API 开放平台，不含 Kimi 客户端和 Kimi Code。新用户 ¥15 注册代金券 <strong>不能用于 K3</strong>，首次调用 K3 前必须先完成充值（最低 ¥10）。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">生态集成: Claude Code、Codex、OpenCode、Hermes Agent</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">K3 这次发布最不寻常的是集成覆盖面。Moonshot 在发布后几天内就为六大主流 Agent 框架提供了一手接入指南:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700">
+<li><strong><a href="https://platform.kimi.com/docs/guide/claude-code-kimi.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Claude Code</a></strong> — Anthropic 的 Claude Code CLI 直接接入 Kimi K3 作为模型后端。</li>
+<li><strong><a href="https://platform.kimi.com/docs/guide/codex-kimi.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Codex CLI</a></strong> — OpenAI Codex CLI 官方接入 <code>api.moonshot.cn</code> 的配置指南。</li>
+<li><strong><a href="https://platform.kimi.com/docs/guide/open-code.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">OpenCode</a></strong> — 中国区 Kimi 平台内置认证流程，K3 全部 reasoning 档位可用。</li>
+<li><strong><a href="https://platform.kimi.com/docs/guide/use-kimi-in-hermes-agent.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Hermes Agent</a></strong> — Hermes Agent 运行时内启用 K3 的文本、图像、视频理解。</li>
+<li><strong>OpenClaw</strong> 与 <strong>Kimi Code CLI</strong> — 跨平台 Agent 与 IDE 风格工作流的额外参考集成。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">结论: Kimi K3 不再是"一张中文模型卡"。它已经成了全球最主流编程 Agent 的可插拔后端，原生支持三档 reasoning 档位，以及和直接调用 API 时完全一致的 K3 工具调用语义。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Kimi K3 vs Claude / GPT / Qwen3: 同档对比</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">开源权重模型很少在 benchmark 上正面击败闭源前沿模型，所以大多数对比最终落到"按成本调整后的推理质量"。下一张表是开发者侧比较，使用官方公开定价；具体 benchmark 数字要等开源权重落地后由社区独立评测。</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">模型</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">参数</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">上下文</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">缓存命中输入 / 1M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">未命中输入 / 1M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">输出 / 1M</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Kimi K3</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2.8T (MoE)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥2.00 (~$0.28)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥20.00 (~$2.78)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥100.00 (~$13.89)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Claude Sonnet 4.5</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">闭源</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.30</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$15.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">GPT-5</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">闭源</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">400K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.125</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.25</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$10.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.8-Max-Preview</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">开源权重</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥1.50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥8.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥32.00</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">DeepSeek V3</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">约 670B (MoE)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥0.50</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥2.00</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">¥8.00</td>
+
+</tr>
+
+</tbody>
+
+</table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">K3 的缓存命中价是同档最低，对每轮重复发送同一系统提示 + 工具目录的长程 Agent 来说尤其划算。<strong>未命中输入</strong>和<strong>输出</strong>价换算成美元后大致与 Claude Sonnet 4.5 持平 — 高端模型对应高端定价。论"每美元 token 数"，DeepSeek V3 仍然遥遥领先，但它的 128K 上下文和不支持视觉限制了 Agent 场景。K3 vs Qwen3.8 的对比详见 <a href="/zh/tutorials/qwen3-8-vs-kimi-k3-open-source-2t-models-api-2026" class="text-blue-600 hover:underline">Qwen3.8 vs Kimi K3 对比文</a>。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">本周开发者 5 步行动清单</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你还在纠结要不要在 7 月 27 日开源权重落地前把工程时间投给 Kimi K3，下面这个 5 步清单能最大化信号、最小化承诺。</p>
+
+<ol class="list-decimal pl-6 my-4 space-y-3 text-gray-700">
+<li><strong>7 月 27 日自己验证开源权重。</strong> 收藏 <a href="https://platform.kimi.com/docs/guide/kimi-k3-quickstart" class="text-blue-600 hover:underline" rel="noopener" target="_blank">官方 K3 quickstart</a>，发布日当天去翻 changelog。Moonshot 一贯把权重放到 Hugging Face，所以同时盯 Hugging Face 主页和 changelog 订阅。</li>
+
+<li><strong>今天先用 API 跑一次冒烟测试。</strong> 理解 K3 工具调用行为最便宜的方式就是一发 curl。先把 <code>reasoning_effort</code> 设成 <code>low</code> 控制成本，再用 <code>max</code> 重跑同一个 prompt，看更深的推理是否真的改变了你在意的那个答案。</li>
+
+<li><strong>把 K3 接进 Claude Code 或 Codex CLI。</strong> 这两个 Agent 现在都有官方 Kimi K3 指南。增加一个 Kimi profile 大约 10 分钟，然后你就可以在真实编程工作里 A/B 对比 K3 vs Claude Sonnet / GPT-5。</li>
+
+<li><strong>审计你的 prompt 缓存命中率。</strong> K3 最大的经济杠杆是 prompt &gt; 256 tokens 时的自动缓存。审计你 Agent 的系统提示和工具目录的稳定性 — 哪怕重新排个序也可能让整个 session 的缓存命中全断。</li>
+
+<li><strong>规划 30% 代金券。</strong> 如果你能在 8 月 12 日之前充值 ¥5,000，赠送代金券（30%，90 天有效）等同于 K3 消费 7.7 折。把充值安排成你能一次承受的最大单笔 — 因为只有首日最高那笔算数。</li>
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">关于 Kimi K3 的常见问题</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">以下是开发者最常问的 7 个问题，答案均已与官方 quickstart 和定价页交叉核对。</p>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">Kimi K3 真的开源吗？权重具体哪天发布？</summary><p class="mt-2 text-gray-700 leading-relaxed">开源。<a href="https://platform.kimi.com/docs/guide/kimi-k3-quickstart" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Kimi K3 quickstart</a> 明确写到完整模型权重将在 2026 年 7 月 27 日前发布。Moonshot 把 K3 描述为首个 3 万亿参数开源模型。技术报告和架构细节将随权重一起发布。</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">Kimi K3 每百万 token 多少钱？</summary><p class="mt-2 text-gray-700 leading-relaxed"><a href="https://platform.kimi.com/docs/pricing/chat-k3" class="text-blue-600 hover:underline" rel="noopener" target="_blank">官方 K3 定价页</a> 列出的费率是缓存命中输入 ¥2/百万 tokens、缓存未命中输入 ¥20/百万 tokens、输出 ¥100/百万 tokens。新用户 ¥15 注册代金券不能用于 K3，需先完成充值。</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">今天就能在 Claude Code 里用 Kimi K3 吗？</summary><p class="mt-2 text-gray-700 leading-relaxed">可以。Moonshot 已经发布了官方的 <a href="https://platform.kimi.com/docs/guide/claude-code-kimi.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Claude Code + Kimi K3 配置指南</a>，包含环境变量、base URL 配置，以及哪些 K3 专属参数（如 <code>reasoning_effort</code>）能干净迁移。</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">Kimi K3 支持图像和视频输入吗？</summary><p class="mt-2 text-gray-700 leading-relaxed">支持。K3 接受文本、图像、视频输入。图片必须以 base64 或 Kimi 的 <code>ms://&lt;file-id&gt;</code> 引用发送；公网图片 URL 不支持，且 <code>content</code> 必须是消息 part 数组，不是序列化字符串。</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900"><code>reasoning_effort</code> 是什么？应该用哪个值？</summary><p class="mt-2 text-gray-700 leading-relaxed"><code>reasoning_effort</code> 是顶层请求参数，控制 Kimi K3 回答前推理多深。接受 <code>low</code>、<code>high</code>、<code>max</code>，默认 <code>max</code>。K3 始终开启推理，不能完全关闭，但便宜的分类/路由步骤可以用 <code>low</code>，最终综合再用 <code>max</code>。</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">Kimi K3 与 GPT-5、Claude Sonnet 4.5 在编程上对比如何？</summary><p class="mt-2 text-gray-700 leading-relaxed">独立 benchmark 数字要等开源权重落地才会稳定。从经济性看，K3 缓存命中输入价是三者最低（¥2 vs Claude Sonnet 4.5 的 $0.30、GPT-5 的 $0.125），未命中输入和输出价换算美元后大致与 Claude Sonnet 4.5 持平。差异化在于生态：K3 自带 Claude Code、Codex CLI、OpenCode、Hermes Agent 一手接入。</p></details>
+
+<details class="border border-gray-200 rounded-lg p-4 mb-3 bg-white"><summary class="cursor-pointer font-semibold text-gray-900">新用户 ¥15 代金券能用于 Kimi K3 吗？</summary><p class="mt-2 text-gray-700 leading-relaxed">不能。官方 quickstart 明确写到 ¥15 注册代金券不能用于体验 K3；必须先完成充值（最低 ¥10），K3 调用才会成功。</p></details>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">参考资料</h2>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700 text-sm">
+
+<li>Moonshot AI，<a href="https://platform.kimi.com/docs/guide/kimi-k3-quickstart" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Kimi K3 quickstart</a> — 2026-07-23 实查</li>
+
+<li>Moonshot AI，<a href="https://platform.kimi.com/docs/pricing/chat-k3" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Kimi K3 定价</a> — 2026-07-23 实查</li>
+
+<li>Moonshot AI，<a href="https://platform.kimi.com/docs/pricing/promotion" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Kimi K3 发布限时充值活动（2026-07-16 至 2026-08-12）</a></li>
+
+<li>Moonshot AI，<a href="https://platform.kimi.com/docs/models" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Kimi API 模型列表</a></li>
+
+<li>Moonshot AI，<a href="https://platform.kimi.com/docs/guide/claude-code-kimi.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Claude Code + Kimi K3 接入指南</a></li>
+
+<li>Moonshot AI，<a href="https://platform.kimi.com/docs/guide/codex-kimi.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Codex CLI + Kimi K3 接入指南</a></li>
+
+<li>Moonshot AI，<a href="https://platform.kimi.com/docs/changelog/changelog/moba.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">MoBA: 面向长文本大模型的混合块注意力机制</a></li>
+
+<li>APIRank，<a href="/zh/tutorials/kimi-k3-api-review-2026" class="text-blue-600 hover:underline">Kimi K3 API 完整评测 2026</a></li>
+
+<li>APIRank，<a href="/zh/tutorials/qwen3-8-vs-kimi-k3-open-source-2t-models-api-2026" class="text-blue-600 hover:underline">Qwen3.8 vs Kimi K3: 2T+ 开源模型 API 2026</a></li>
+
+</ul>`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div class="mb-8"><a href="/zh/tutorials" class="text-blue-600 hover:underline text-sm">← 返回教程</a></div>
+    <div class="flex items-center gap-3 mb-4"><span class="text-xs font-semibold bg-blue-100 text-blue-700 px-2.5 py-1 rounded">新闻解读</span><time datetime={date} class="text-sm text-gray-500">2026 年 7 月 23 日</time></div>
+    <div set:html={zhBody} />
+    <hr class="my-12 border-gray-200" />
+    <section class="mt-8"><p class="text-sm text-gray-500 mb-2"><strong>免责声明</strong></p><p class="text-sm text-gray-500">APIRank 可能从本文合作伙伴链接中获得代琈佣金，但编辑判断保持独立。</p></section>
+  </article>
+</BaseLayout>
