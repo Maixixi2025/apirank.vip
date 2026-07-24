@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-5-vs-claude-4-vs-gemini-2026-pricing';
+const date = '2026-07-24';
+const locale = 'zh';
+const enTitle = 'GPT-5 vs Claude 4 vs Gemini 2026：三大 API 价格对比';
+const enDescription = 'GPT-5 vs Claude 4 vs Gemini 2026 价格对比：GPT-5 从 $2.50/M 起，Claude 4 从 $3/M 起，Gemini 从 $0.15/M 起。200K 上下文、降价 30-50%、迁移指南。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "GPT-5 vs Claude 4 vs Gemini 2026：三大 API 价格对比", "description": "GPT-5 vs Claude 4 vs Gemini 2026 价格对比：GPT-5 从 $2.50/M 起，Claude 4 从 $3/M 起，Gemini 从 $0.15/M 起。200K 上下文、降价 30-50%、迁移指南。", "datePublished": "2026-07-24", "dateModified": "2026-07-24", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/gpt-5-vs-claude-4-vs-gemini-2026-pricing"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh/"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "GPT-5 vs Claude 4 vs Gemini 2026：三大 API 价格对比", "item": "https://apirank.vip/zh/tutorials/gpt-5-vs-claude-4-vs-gemini-2026-pricing"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+{"@type": "Question", "name": "2026 年最便宜的 AI API 是哪家？", "acceptedAnswer": {"@type": "Answer", "text": "Google Gemini 是最便宜的。Gemini 2.5 Flash 输入仅 $0.15/M、输出 $0.60/M（降价 30% 后）。GPT-5.4 Mini 也是 $0.15/M 输入、$0.60/M 输出，两者在入门级持平。旗舰模型层面，Gemini 2.5 Pro 的 $1.05/M 输入远低于 GPT-5.5 的 $5/M 和 Claude 4 Sonnet 的 $3/M。不过便宜只有在模型质量满足需求时才有意义——Gemini 在多模态和结构化数据方面最强。"}},
+{"@type": "Question", "name": "GPT-5 支持像 Claude 4 那样的 200K 上下文吗？", "acceptedAnswer": {"@type": "Answer", "text": "GPT-5.5 支持 256K tokens，略高于 Claude 4 的 200K。GPT-5.4 支持 128K（与 GPT-4o 相同）。Claude 4 Opus 达到 200K 且单次输出上限更高（16K vs GPT-5.5 的 8K）。对于长文档分析，三者都够用，但 Gemini 仍然以 1M-2M 上下文领先。"}},
+{"@type": "Question", "name": "从 OpenAI 切换到 Claude 或 Gemini 需要重写代码吗？", "acceptedAnswer": {"@type": "Answer", "text": "部分需要。Gemini 现已原生支持 OpenAI Chat Completions 消息格式，只需更换 URL 即可。Claude 4 仍使用 Anthropic Messages API 格式，结构不同。LiteLLM 和 FreeModel 等工具可以抽象这种差异——你按 OpenAI 格式写一次，它们帮你翻译到任意厂商。"}},
+{"@type": "Question", "name": "2026 年哪家 API 的速率限制最好？", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI 的默认速率限制最高：Tier 5 账户的 GPT-5.5 可达 10,000 RPM，还新增了弹性速率层。Claude 4 起步 2,000 RPM，Gemini 起步 4,000 RPM 可突发到 8,000 RPM。对吞吐量敏感的应用来说，OpenAI 仍是最安全的选择。"}},
+{"@type": "Question", "name": "三大模型厂商有免费 API 层吗？", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI 为新账户赠送 $5 额度（3 个月有效）。Gemini 有免费层（Gemini 2.5 Flash 60 RPM，无需信用卡）——是最慷慨的。Claude 4 没有免费层。如果促销额度用完后还需要长期免费使用，Gemini 是唯一选择。FreeModel 也提供兼容 OpenAI 接口的免费开发层。"}},
+{"@type": "Question", "name": "2026 年做 Agent 开发应该选哪个厂商？", "acceptedAnswer": {"@type": "Answer", "text": "工具调用型 Agent：OpenAI 的函数调用最成熟（并行工具分发、原生代码解释器）。Claude 4 擅长长时间 Agent 任务（200K 上下文 + Computer Use）。Gemini 最适合多模态 Agent（原生视频、音频）。建议按 OpenAI 格式开发并加上翻译层，以便按任务灵活切换。"}}
+]};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">GPT-5 vs Claude 4 vs Gemini 2026：三大 API 价格对比</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 7 月是 AI API 定价的分水岭。三周内，三大前沿模型厂商——OpenAI、Anthropic 和 Google——同时更新了 API 产品线，大幅降价、扩展上下文窗口、增加兼容性功能。无论你目前在哪个平台上开发，这份价格对比指南都能帮你做出更明智的选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>三件大事的时间线：</strong></p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>OpenAI GPT-5 正式发布</strong>（2026 年 6 月底）：全产品线降价 50%，新增弹性速率限制（低流量时段自动突发），支持 JSON Schema 2025-12 方言。GPT-5.5 旗舰 $5/M 输入，GPT-5.4 主力 $2.50/M，GPT-5.4 Mini 仅 $0.15/M。</li>
+<li><strong>Anthropic Claude 4 上线</strong>（2026 年 7 月初）：Opus 支持 200K token 上下文，新增 Constitutional AI API 安全检查接口。Claude 4 Sonnet 定价 $3/M 输入，Opus $15/M。</li>
+<li><strong>Google Gemini API 降价 30%</strong>（2026 年 7 月中）：新增原生 OpenAI 消息格式兼容。Gemini 2.5 Flash 仅 $0.15/M 输入，2.5 Pro $1.05/M。突发配额功能支持短时升至 8,000 RPM。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">本文从价格、上下文窗口、多模态能力、速率限制、迁移兼容性等维度对三者进行全面对比。所有价格均于 2026-07-24 从各厂商官网核实。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">价格对比：GPT-5 vs Claude 4 vs Gemini</h2>
+
+<table class="w-full border-collapse border border-gray-300 my-6">
+<thead>
+<tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">厂商</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">旗舰型号</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">输入 / M</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">输出 / M</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">入门型号</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">最低输入</th></tr>
+</thead>
+<tbody>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">OpenAI GPT-5</td><td class="border border-gray-300 px-4 py-2">GPT-5.5</td><td class="border border-gray-300 px-4 py-2">$5.00</td><td class="border border-gray-300 px-4 py-2">$20.00</td><td class="border border-gray-300 px-4 py-2">GPT-5.4 Mini</td><td class="border border-gray-300 px-4 py-2">$0.15</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Anthropic Claude 4</td><td class="border border-gray-300 px-4 py-2">Claude 4 Opus</td><td class="border border-gray-300 px-4 py-2">$15.00</td><td class="border border-gray-300 px-4 py-2">$75.00</td><td class="border border-gray-300 px-4 py-2">Claude 4 Sonnet</td><td class="border border-gray-300 px-4 py-2">$3.00</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Google Gemini</td><td class="border border-gray-300 px-4 py-2">Gemini 2.5 Pro</td><td class="border border-gray-300 px-4 py-2">$1.05</td><td class="border border-gray-300 px-4 py-2">$4.20</td><td class="border border-gray-300 px-4 py-2">Gemini 2.5 Flash</td><td class="border border-gray-300 px-4 py-2">$0.15</td></tr>
+</tbody>
+</table>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">上下文窗口与输出限制</h2>
+
+<table class="w-full border-collapse border border-gray-300 my-6">
+<thead>
+<tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">指标</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">GPT-5.5</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Claude 4 Opus</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Gemini 2.5 Pro</th></tr>
+</thead>
+<tbody>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">最大上下文</td><td class="border border-gray-300 px-4 py-2">256K</td><td class="border border-gray-300 px-4 py-2">200K</td><td class="border border-gray-300 px-4 py-2">1M（2M 实验）</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">单次最大输出</td><td class="border border-gray-300 px-4 py-2">8,192 tok</td><td class="border border-gray-300 px-4 py-2">16,384 tok</td><td class="border border-gray-300 px-4 py-2">8,192 tok</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">缓存输入折扣</td><td class="border border-gray-300 px-4 py-2">50% 自动</td><td class="border border-gray-300 px-4 py-2">50% 选择加入</td><td class="border border-gray-300 px-4 py-2">50% 自动</td></tr>
+</tbody>
+</table>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">功能对比</h2>
+
+<table class="w-full border-collapse border border-gray-300 my-6">
+<thead>
+<tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">功能</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">GPT-5</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Claude 4</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Gemini</th></tr>
+</thead>
+<tbody>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">函数调用</td><td class="border border-gray-300 px-4 py-2">并行</td><td class="border border-gray-300 px-4 py-2">并行</td><td class="border border-gray-300 px-4 py-2">并行</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Computer Use</td><td class="border border-gray-300 px-4 py-2">不支持</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">不支持</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">结构化输出</td><td class="border border-gray-300 px-4 py-2">JSON Schema</td><td class="border border-gray-300 px-4 py-2">JSON Schema</td><td class="border border-gray-300 px-4 py-2">JSON 模式</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">图像输入</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">支持</td><td class="border border-gray-300 px-4 py-2">原生</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">音频输入/输出</td><td class="border border-gray-300 px-4 py-2">Realtime API</td><td class="border border-gray-300 px-4 py-2">不支持</td><td class="border border-gray-300 px-4 py-2">原生</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">视频理解</td><td class="border border-gray-300 px-4 py-2">不支持</td><td class="border border-gray-300 px-4 py-2">不支持</td><td class="border border-gray-300 px-4 py-2">原生</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">批量折扣</td><td class="border border-gray-300 px-4 py-2">50%, 24h</td><td class="border border-gray-300 px-4 py-2">40%, 24h</td><td class="border border-gray-300 px-4 py-2">50%</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">OpenAI 格式</td><td class="border border-gray-300 px-4 py-2">原生</td><td class="border border-gray-300 px-4 py-2">Anthropic</td><td class="border border-gray-300 px-4 py-2">原生</td></tr>
+</tbody>
+</table>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">迁移建议：按场景选型</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>客服 / 对话场景：</strong>GPT-5.4 是最安全的选择——函数调用最成熟、速率限制最高、批量 API 可享 50% 折扣。每月 10M 输入 tokens 估算：GPT-5.4 $25 vs Claude 4 Sonnet $30 vs Gemini 2.5 Pro $10.50。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>代码生成与 Agent：</strong>Claude 4 Opus 的 Computer Use 能力使其在多步骤 GUI 交互任务中无可替代。200K 上下文可以完整处理整个代码库。纯代码生成场景下 GPT-5.5 和 Gemini 2.5 Pro 也很有竞争力。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>多模态应用：</strong>Gemini 是唯一选择——原生视频理解、音频输入输出和图像理解在同一个 API 调用中完成，无需组合多个模型。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>批量离线处理：</strong>三家都提供 40-50% 的批量折扣。OpenAI 的工具链最成熟。Gemini 大规模最便宜：Gemini 2.5 Flash 上 1B tokens 批量输入 = $150，而 GPT-5.4 Mini 需要 $750。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>中国开发者：</strong>三大厂商均无法从中国大陆直接访问。FreeModel 提供国内直连的 OpenAI 兼容端点，价格有竞争力。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论：多元化，不押注单一厂商</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 7 月的这轮 API 定价调整带来三个变化：第一，没有一家厂商在所有场景下胜出；第二，切换成本大幅降低——Gemini 兼容 OpenAI 格式后，30 分钟即可完成集成；第三，聚合层工具（如 FreeModel、LiteLLM）的价值更高，它们能自动优化成本并实现故障转移。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">推荐的生产架构：<strong>GPT-5.4 为主力 + Gemini 2.5 Flash 为预算溢出 + Claude 4 Opus 处理长上下文 Agent 任务</strong>，通过翻译层统一接口。这种三厂商策略既优化了成本，又不绑定任何单一厂商的路线图。</p>
+
+<div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6 my-8">
+<p class="text-gray-800 font-semibold text-lg mb-2">需要一个高性价比的接入方案？</p>
+<p class="text-gray-700 mb-4"><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-indigo-600 font-semibold hover:underline">FreeModel</a> 提供 GPT-5、Claude 4、Gemini 等 50+ 模型的统一 API 接入，支持 OpenAI 兼容格式，国内直连，免费开发层，生产级定价。</p>
+<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="inline-block bg-indigo-600 text-white px-6 py-2 rounded font-semibold hover:bg-indigo-700">免费试用 FreeModel</a>
+</div>`;
+
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl}>
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="mb-8">
+      <a href="/zh/tutorials" class="text-indigo-600 hover:underline">&larr; 返回教程</a>
+    </div>
+    <article itemscope itemtype="https://schema.org/Article" class="prose prose-gray max-w-none">
+      <meta itemprop="datePublished" content="2026-07-24">
+      <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+      <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+      <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+      {enBody}
+    </article>
+  </div>
+</BaseLayout>

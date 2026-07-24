@@ -1,0 +1,148 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-5-vs-claude-4-vs-gemini-2026-pricing';
+const date = '2026-07-24';
+const locale = 'en';
+const enTitle = 'GPT-5 vs Claude 4 vs Gemini 2026: Price Showdown';
+const enDescription = 'GPT-5 vs Claude 4 vs Gemini 2026: pricing comparison. GPT-5 from $2.50/M, Claude 4 at $3/M, Gemini from $0.15/M. 200K context, 30-50% cut, migration guide.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "GPT-5 vs Claude 4 vs Gemini 2026: Price Showdown", "description": "GPT-5 vs Claude 4 vs Gemini 2026: pricing comparison. GPT-5 from $2.50/M, Claude 4 at $3/M, Gemini from $0.15/M. 200K context, 30-50% cut, migration guide.", "datePublished": "2026-07-24", "dateModified": "2026-07-24", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/gpt-5-vs-claude-4-vs-gemini-2026-pricing"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip/"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "GPT-5 vs Claude 4 vs Gemini 2026: Price Showdown", "item": "https://apirank.vip/tutorials/gpt-5-vs-claude-4-vs-gemini-2026-pricing"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+{"@type": "Question", "name": "Which is the cheapest major AI API in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "Google Gemini is the cheapest. Gemini 2.5 Flash costs $0.15/M input and $0.60/M output (after the 30% cut). GPT-5.4 Mini is $0.15/M input and $0.60/M output &mdash; a tie on Mini tiers. On flagship models, Gemini 2.5 Pro at $1.05/M input beats GPT-5.5 at $5/M and Claude 4 Sonnet at $3/M by a wide margin. Cheap only matters if model quality meets your use case &mdash; Gemini is strongest on multimodal and structured data."}},
+{"@type": "Question", "name": "Does GPT-5 support 200K context like Claude 4?", "acceptedAnswer": {"@type": "Answer", "text": "GPT-5.5 supports 256K tokens, slightly above Claude 4 at 200K. GPT-5.4 supports 128K (same as GPT-4o). Claude 4 Opus goes up to 200K with higher output limit (16K tokens per response vs GPT-5.5 8K). For long document analysis, all three are adequate, but Gemini still holds the lead at 1M to 2M tokens depending on model variant."}},
+{"@type": "Question", "name": "Can I switch from OpenAI to Claude or Gemini without rewriting code?", "acceptedAnswer": {"@type": "Answer", "text": "Partially. Gemini now natively supports the OpenAI Chat Completions message format, so a simple URL swap works for basic completions. Claude 4 requires the Anthropic Messages API format, which uses a different structure. Tools like LiteLLM and FreeModel abstract this difference &mdash; you write once against the OpenAI format and they translate to any provider."}},
+{"@type": "Question", "name": "Which API has the best rate limits in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI offers the highest default rate limits: 10,000 RPM on GPT-5.5 for Tier 5 accounts, with elastic rate tiers that auto-burst. Claude 4 starts at 2,000 RPM and Gemini at 4,000 RPM with burst quota up to 8,000 RPM. For throughput-critical applications, OpenAI remains the safest choice."}},
+{"@type": "Question", "name": "Do any of the Big Three offer a free API tier?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI offers $5 in free credit to new accounts for 3 months. Gemini has a free tier (60 RPM on Gemini 2.5 Flash, no credit card) &mdash; the most generous. Claude 4 has no free tier. For persistent free usage beyond promotional credits, Gemini is the only option. FreeModel also provides free tiers for development with OpenAI-compatible endpoints."}},
+{"@type": "Question", "name": "Which provider should I use for agent development in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "For tool-calling agents: OpenAI has the most mature function calling (parallel tool dispatch, native code interpreter). Claude 4 excels on long-duration agent tasks with 200K context and Computer Use. Gemini is best for multimodal agents (native video, audio). Build on the OpenAI format and add a translation layer to swap providers per task."}}
+]};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">GPT-5 vs Claude 4 vs Gemini 2026: Price Showdown</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">July 2026 is a watershed month for AI API pricing. Within the span of three weeks, all three of the leading frontier model providers &mdash; OpenAI, Anthropic, and Google &mdash; refreshed their API lineups with significant price cuts, expanded context windows, and new compatibility features. If you are building on any of the Big Three APIs in 2026, this is the reference guide for picking the right provider for your workload without leaving money on the table.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>The headline events, in order:</strong></p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>OpenAI GPT-5 officially released</strong> (late June 2026) with 50% price cuts across all tiers, new elastic rate limits that auto-burst during low-traffic windows, and JSON Schema 2025-12 dialect support. GPT-5.5 is the flagship at $5/M input; GPT-5.4 at $2.50/M is the workhorse; GPT-5.4 Mini at $0.15/M is the budget option.</li>
+<li><strong>Anthropic Claude 4 launched</strong> (early July 2026) with 200K token context on Opus, a Constitutional AI API check interface for safety-sensitive applications, and a new mass-feedback distillation feature. Claude 4 Sonnet is priced at $3/M input, Opus at $15/M.</li>
+<li><strong>Google Gemini API cut prices 30%</strong> (mid-July 2026) and added native OpenAI message format compatibility. Gemini 2.5 Flash now starts at $0.15/M input, 2.5 Pro at $1.05/M. The burst quota feature allows short spikes to 8,000 RPM without pre-approval.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">This article compares all three on pricing per model tier, context window size, multimodal capability, rate limits, compatibility for migration, and the most common production use cases. All prices verified from provider API pricing pages on 2026-07-24.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Head-to-Head Pricing: GPT-5 vs Claude 4 vs Gemini</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The pricing landscape in July 2026 has narrowed considerably. All three providers now converge within the same order of magnitude for flagship and budget tiers.</p>
+
+<table class="w-full border-collapse border border-gray-300 my-6">
+<thead>
+<tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Provider</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Flagship</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Input / M</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Output / M</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Budget</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Min Input</th></tr>
+</thead>
+<tbody>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">OpenAI GPT-5</td><td class="border border-gray-300 px-4 py-2">GPT-5.5</td><td class="border border-gray-300 px-4 py-2">$5.00</td><td class="border border-gray-300 px-4 py-2">$20.00</td><td class="border border-gray-300 px-4 py-2">GPT-5.4 Mini</td><td class="border border-gray-300 px-4 py-2">$0.15</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Anthropic Claude 4</td><td class="border border-gray-300 px-4 py-2">Claude 4 Opus</td><td class="border border-gray-300 px-4 py-2">$15.00</td><td class="border border-gray-300 px-4 py-2">$75.00</td><td class="border border-gray-300 px-4 py-2">Claude 4 Sonnet</td><td class="border border-gray-300 px-4 py-2">$3.00</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Google Gemini</td><td class="border border-gray-300 px-4 py-2">Gemini 2.5 Pro</td><td class="border border-gray-300 px-4 py-2">$1.05</td><td class="border border-gray-300 px-4 py-2">$4.20</td><td class="border border-gray-300 px-4 py-2">Gemini 2.5 Flash</td><td class="border border-gray-300 px-4 py-2">$0.15</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Key takeaway:</strong> Google Gemini is cheapest on every tier &mdash; 5x cheaper than GPT-5.5 and 14x cheaper than Claude 4 Opus on flagship input. But pricing alone is misleading. Quality benchmarks, context handling, and feature parity matter for production workloads.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Context Window and Output Limits</h2>
+
+<table class="w-full border-collapse border border-gray-300 my-6">
+<thead>
+<tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Capability</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">GPT-5.5</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Claude 4 Opus</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Gemini 2.5 Pro</th></tr>
+</thead>
+<tbody>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Max context</td><td class="border border-gray-300 px-4 py-2">256K</td><td class="border border-gray-300 px-4 py-2">200K</td><td class="border border-gray-300 px-4 py-2">1M (2M exp)</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Max output per response</td><td class="border border-gray-300 px-4 py-2">8,192 tok</td><td class="border border-gray-300 px-4 py-2">16,384 tok</td><td class="border border-gray-300 px-4 py-2">8,192 tok</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Cached input discount</td><td class="border border-gray-300 px-4 py-2">50% auto</td><td class="border border-gray-300 px-4 py-2">50% opt-in</td><td class="border border-gray-300 px-4 py-2">50% auto</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Gemini owns the context frontier</strong> &mdash; 1M tokens standard and 2M experimental. For workloads that process entire codebases or 500-page research reports without chunking, Gemini is the only viable choice. Claude 4 Opus outputs more tokens per response (16K), making it better for long single-pass generation.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Feature Parity Matrix</h2>
+
+<table class="w-full border-collapse border border-gray-300 my-6">
+<thead>
+<tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Feature</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">GPT-5</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Claude 4</th><th class="border border-gray-300 px-4 py-2 text-left text-sm font-semibold">Gemini</th></tr>
+</thead>
+<tbody>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Function calling</td><td class="border border-gray-300 px-4 py-2">Parallel</td><td class="border border-gray-300 px-4 py-2">Parallel</td><td class="border border-gray-300 px-4 py-2">Parallel</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Computer Use</td><td class="border border-gray-300 px-4 py-2">No</td><td class="border border-gray-300 px-4 py-2">Yes</td><td class="border border-gray-300 px-4 py-2">No</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Structured Outputs</td><td class="border border-gray-300 px-4 py-2">JSON Schema</td><td class="border border-gray-300 px-4 py-2">JSON Schema</td><td class="border border-gray-300 px-4 py-2">JSON mode</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Image input</td><td class="border border-gray-300 px-4 py-2">Yes</td><td class="border border-gray-300 px-4 py-2">Yes</td><td class="border border-gray-300 px-4 py-2">Native</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Audio I/O</td><td class="border border-gray-300 px-4 py-2">Realtime API</td><td class="border border-gray-300 px-4 py-2">No</td><td class="border border-gray-300 px-4 py-2">Native</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Video input</td><td class="border border-gray-300 px-4 py-2">No</td><td class="border border-gray-300 px-4 py-2">No</td><td class="border border-gray-300 px-4 py-2">Native</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">Batch discount</td><td class="border border-gray-300 px-4 py-2">50%, 24h</td><td class="border border-gray-300 px-4 py-2">40%, 24h</td><td class="border border-gray-300 px-4 py-2">50%</td></tr>
+<tr class="even:bg-gray-50"><td class="border border-gray-300 px-4 py-2">OpenAI format</td><td class="border border-gray-300 px-4 py-2">Native</td><td class="border border-gray-300 px-4 py-2">Anthropic</td><td class="border border-gray-300 px-4 py-2">Native</td></tr>
+</tbody>
+</table>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Compatibility Story: OpenAI Format Wins</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The most underappreciated change in the July 2026 wave is <strong>Google Gemini adopting native OpenAI Chat Completions format compatibility</strong>. This means you can point a standard OpenAI SDK client at the Gemini endpoint by changing one line of configuration:</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded mb-4 overflow-x-auto text-sm"><code># Python: switch from OpenAI to Gemini
+from openai import OpenAI
+client = OpenAI(
+    api_key=&quot;your-gemini-api-key&quot;,
+    base_url=&quot;https://generativelanguage.googleapis.com/v1beta/openai/&quot;
+)
+response = client.chat.completions.create(
+    model=&quot;gemini-2.5-flash&quot;,
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hello&quot;}]
+)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic Claude 4 still uses its own Messages API format, but community tools like LiteLLM and OpenRouter provide transparent translation layers. The trend is clear: the OpenAI message format is becoming the USB-C of AI APIs &mdash; not the best in every dimension, but the standard everything adapts to.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Migration Scenarios</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Chat / customer support:</strong> GPT-5.4 is the safest default. Tool-calling is the most mature, rate limits the highest, batch API gives 50% off for async ticket triage. Estimated monthly cost for 10M input tokens: $25 (GPT-5.4) vs $30 (Claude 4 Sonnet) vs $10.50 (Gemini 2.5 Pro).</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Code generation and agents:</strong> Claude 4 Opus with Computer Use is uniquely suited for multi-step agent tasks involving GUI interaction. The 200K context handles full codebases. For pure code generation without Computer Use, GPT-5.5 and Gemini 2.5 Pro are competitive.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Multimodal applications:</strong> Gemini is the clear winner. Only Gemini offers native video understanding, audio input/output, and image understanding in a single API call without composing separate vision and transcription models.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Batch / offline:</strong> All three offer batch APIs at 40-50% discount. OpenAI has the most mature tooling. Gemini is cheapest at scale: 1B tokens of batch input on Gemini 2.5 Flash = $150 (vs $750 on GPT-5.4 Mini).</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>China-based developers:</strong> None of the Big Three are directly accessible from mainland China. FreeModel provides China-direct access to OpenAI-compatible endpoints with competitive pricing.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verdict: Diversify, Do Not Single-Source</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The July 2026 pricing shakeup has three consequences for API buyers:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+<li><strong>No single provider wins every category.</strong> Gemini is cheapest, Claude 4 Opus is the strongest agent model, GPT-5 has the best ecosystem.</li>
+<li><strong>Switching cost has dropped.</strong> Gemini OpenAI format compatibility means you can add it as a backup provider with 30 minutes of integration. Multi-provider is a single env-var change.</li>
+<li><strong>Aggregators are more valuable.</strong> Tools like FreeModel that normalize across providers give automatic failover and cost optimization.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">For most production workloads starting July 2026, the recommended stack: <strong>GPT-5.4 as primary + Gemini 2.5 Flash as budget overflow + Claude 4 Opus for long-context agents</strong>, wired through a translation layer. This three-provider pool optimizes cost without locking into any single vendor roadmap.</p>
+
+<div class="bg-indigo-50 border border-indigo-200 rounded-lg p-6 my-8">
+<p class="text-gray-800 font-semibold text-lg mb-2">Looking for a cost-effective entry point?</p>
+<p class="text-gray-700 mb-4"><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-indigo-600 font-semibold hover:underline">FreeModel</a> provides direct API access to GPT-5, Claude 4, Gemini, and 50+ models through a single endpoint &mdash; with a free dev tier and competitive production pricing. No proxy needed from China.</p>
+<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="inline-block bg-indigo-600 text-white px-6 py-2 rounded font-semibold hover:bg-indigo-700">Try FreeModel for Free</a>
+</div>`;
+
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl}>
+  <div class="max-w-4xl mx-auto px-4 py-12">
+    <div class="mb-8">
+      <a href="/tutorials" class="text-indigo-600 hover:underline">&larr; Back to Tutorials</a>
+    </div>
+    <article itemscope itemtype="https://schema.org/Article" class="prose prose-gray max-w-none">
+      <meta itemprop="datePublished" content="2026-07-24">
+      <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+      <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+      <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+      {enBody}
+    </article>
+  </div>
+</BaseLayout>
