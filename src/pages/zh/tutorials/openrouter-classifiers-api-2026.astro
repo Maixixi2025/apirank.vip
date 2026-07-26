@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'openrouter-classifiers-api-2026';
+const date = '2026-07-26';
+const locale = 'zh';
+const zhTitle = 'OpenRouter Classifiers：AI API 成本与合规追踪';
+const zhDescription = 'OpenRouter Classifiers 自动标记每次 API 调用的部门、任务类型和 Agent 复杂度。用 Gemini 3.5 Flash Lite 追踪成本、合规与模型使用。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip/zh/" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/zh/tutorials/" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question", "name": "什么是 OpenRouter Classifiers？",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenRouter Classifiers 是一项测试版功能，可自动为每次 AI API 调用添加结构化元数据标签。" }
+    },
+    {
+      "@type": "Question", "name": "OpenRouter Classifiers 的费用是多少？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Classifier 本身没有单独收费，你只需支付分类模型消耗的 token 费用。通过采样率控制成本。" }
+    },
+    {
+      "@type": "Question", "name": "Classifiers 会影响 API 响应延迟吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不会。分类在请求完成后异步运行，对推理路径的延迟没有任何影响。" }
+    },
+    {
+      "@type": "Question", "name": "OpenRouter Classifiers 有哪些预设模板？",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenRouter 提供六个预设模板：部门、受众、任务类型、工程工作、Agent 复杂度、资本化软件支出。" }
+    },
+    {
+      "@type": "Question", "name": "Classifiers 与 OpenAI Moderation API 有何不同？",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenAI Moderation API 聚焦内容安全。OpenRouter Classifiers 范围更广，可以标记你定义的任何维度。" }
+    }
+  ]
+};
+
+const zhBody = `
+<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">OpenRouter Classifiers：自动追踪 AI API 调用成本与合规</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>2026 年 7 月 24 日</strong>，OpenRouter 正式发布了 <strong>Classifiers</strong>（分类器）测试版功能——可以自动为每次 AI API 生成添加结构化元数据标签。与其面对一长串 API 调用记录、靠猜来确定属于哪个部门或哪个任务，Classifiers 让你定义一套分类体系（最多 8 个自定义维度），由一个小模型异步为每个请求打标签。结果是：按业务单元的成本归因、按受众类型的合规监管、按任务复杂度的模型选择优化——而且零延迟影响。</p>
+
+<h2 id="what-are-classifiers-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">什么是 OpenRouter Classifiers？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">一个 Classifier 由四部分组成：</p>
+
+<ul class="list-disc pl-6 text-gray-700 leading-relaxed my-4 space-y-2">
+<li><strong>分类体系（Taxonomy）</strong> \u2014 最多 8 个维度，每个维度包含你选择的值。例如维度 "部门" 的值：工程、销售、市场、法务。</li>
+<li><strong>分类提示（Classification prompt）</strong> \u2014 发送给分类模型的系统消息指令，定义如何应用分类体系。</li>
+<li><strong>模型（Model）</strong> \u2014 用于读取每个 prompt 并应用分类的小模型。OpenRouter 推荐 <strong>Gemini 3.5 Flash Lite</strong>，性价比最高。</li>
+<li><strong>采样率（Sampling rate）</strong> \u2014 需要分类的请求比例。合规分类器用 100%，成本归因分类器用 10%。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">分类在请求完成后<strong>异步</strong>运行，零延迟。标签直接写入你的 OpenRouter 日志，可按维度值过滤。</p>
+
+<h2 id="six-preset-templates-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">六个预设模板</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter 内置六个覆盖最常见分类需求的预设模板：</p>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">模板</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">标记内容</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">用途</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">部门 Department</td><td class="border border-gray-200 px-4 py-2">工程、销售、市场、法务等</td><td class="border border-gray-200 px-4 py-2">按业务单元的成本归因</td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">受众 Audience</td><td class="border border-gray-200 px-4 py-2">内部、客户面对、监管、公开</td><td class="border border-gray-200 px-4 py-2">合规与内容治理</td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">任务类型 Task Type</td><td class="border border-gray-200 px-4 py-2">编码、Agent 工作流、数据处理、内容写作</td><td class="border border-gray-200 px-4 py-2">模型选择优化</td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">工程工作 Engineering Work</td><td class="border border-gray-200 px-4 py-2">功能开发、修 bug、文档、重构、代码审查</td><td class="border border-gray-200 px-4 py-2">开发者生产力追踪</td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">Agent 复杂度</td><td class="border border-gray-200 px-4 py-2">从简单工具调用到前沿专家级</td><td class="border border-gray-200 px-4 py-2">Agent 工作负载分析</td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">资本化软件支出</td><td class="border border-gray-200 px-4 py-2">开发 vs 维护 vs 运营 vs 支持</td><td class="border border-gray-200 px-4 py-2">会计/GAAP 合规</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="activity-explorer-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Activity Explorer：聚合、趋势、行动</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Activity Explorer</strong> 将单个日志中的分类数据聚合为可操作的洞察：每个任务类型用了哪些模型？哪个部门的费用最高？Agent 复杂度与成本如何关联？你可以按任何分类维度对流量进行分组，Trends 视图显示随时间变化的模式，Guardrail 集成允许基于分类维度设置费用或用量限制。</p>
+
+<h2 id="pricing-costs-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">成本分析</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Classifier 本身没有额外费用——你只需为分类模型消耗的 token 付费。使用 Gemini 3.5 Flash Lite（约 $0.05/百万输入 token），分类成本仅为工作负载的极小部分。真正的节省来自可见性：识别哪个部门的 API 账单增长最快、哪些任务类型在使用过贵的模型、客户面对的输出是否使用了经过审批的模型版本。</p>
+
+<h2 id="limitations-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">当前限制（测试版）</h2>
+
+<ul class="list-disc pl-6 text-gray-700 leading-relaxed my-4 space-y-2">
+<li><strong>测试版稳定性</strong> \u2014 分类模型和处理基础设施可能发生变化</li>
+<li><strong>8 维度上限</strong> \u2014 对大多数场景足够，极细粒度归因可能需要叠加多个分类器</li>
+<li><strong>模型选择影响准确率</strong> \u2014 推荐 Gemini 3.5 Flash Lite，特殊分类体系可能需要实验</li>
+<li><strong>仅限 OpenRouter 流量</strong> \u2014 直接调用上游提供商的 API 不会被分类</li>
+</ul>
+
+<h2 id="verdict-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">总结</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter Classifiers 解决了随着 AI API 费用增长而日益迫切的问题：知道钱花在了哪里。异步架构零性能影响，采样率控制分类成本，六个预设模板覆盖最常见需求，自定义分类体系处理其余场景。对于已经通过 OpenRouter 进行多提供商路由的团队，Classifiers 是与 Prompt Caching 和 Sticky Routing 并列的必不可少的成本控制工具。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl}>
+  <article className="max-w-3xl mx-auto px-4 py-8">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div set:html={zhBody} />
+  </article>
+</BaseLayout>
