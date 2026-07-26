@@ -1,0 +1,220 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'weaviate-api-review';
+const date = '2026-07-26';
+const locale = 'en';
+
+const enTitle = "Weaviate Cloud 2026: Hybrid Vector DB Review";
+const enDescription = "Weaviate Cloud review: open-source vector DB with hybrid search, 8 built-in embeddings, Query Agent. Free 100K objects, Flex from $45/mo vs Pinecone.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Weaviate Cloud 2026: Hybrid Vector DB Review", "description": "Weaviate Cloud review: open-source vector DB with hybrid search, 8 built-in embeddings, Query Agent. Free 100K objects, Flex from $45/mo vs Pinecone.", "datePublished": "2026-07-26", "dateModified": "2026-07-26", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/weaviate-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Weaviate Cloud 2026: Hybrid Vector DB Review", "item": "https://apirank.vip/tutorials/weaviate-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much does Weaviate Cloud cost?", "acceptedAnswer": {"@type": "Answer", "text": "Free tier is $0/month with 100,000 objects. Flex starts at $45/month minimum plus usage on three independent dimensions: vector dimensions from $0.00465 per 1M, storage from $0.12/GiB, backup from $0.0264/GiB. Premium prepaid starts at $400/month with cheaper per-dimension rates. Dedicated is contract-based from $400/month with HIPAA, PrivateLink, and 99.95% SLA."}}, {"@type": "Question", "name": "Is Weaviate free for commercial use?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The open-source Weaviate database engine (github.com/weaviate/weaviate) is Apache 2.0 licensed, free for commercial use including production deployments with no per-node fees. Weaviate Cloud is a separate paid product with four tiers; you can self-host Weaviate OSS indefinitely without paying Weaviate."}}, {"@type": "Question", "name": "How does Weaviate hybrid search work?", "acceptedAnswer": {"@type": "Answer", "text": "Weaviate runs BM25 keyword search and HNSW vector search in parallel, then fuses the ranked lists using reciprocal rank fusion. A tunable alpha parameter (0 = pure BM25, 1 = pure vector, 0.5 = balanced) controls weighting. The result is a single ranked list that combines keyword precision with semantic recall — useful when queries have both specific terms and semantic intent."}}, {"@type": "Question", "name": "Is Weaviate usable from China?", "acceptedAnswer": {"@type": "Answer", "text": "Weaviate Cloud runs on AWS and GCP regions outside China. Direct access from mainland China shows 200-400ms additional latency. For low-latency access from China, consider self-hosting Weaviate OSS on Tencent Cloud or Alibaba Cloud in a mainland region — the engine runs identically."}}, {"@type": "Question", "name": "What is the Weaviate Query Agent?", "acceptedAnswer": {"@type": "Answer", "text": "The Query Agent is a natural-language-to-DB-ops layer. You ask plain-English questions like 'show me top 5 customers by Q3 revenue in APAC'; the agent generates a Weaviate query (filter + sort + limit), executes it, and returns results. Free to 1,000 requests/month, then $30/organization/month for 4,000 requests. Built for analytics dashboards and LLM agents that need to query structured data without writing query DSL."}}, {"@type": "Question", "name": "Can I migrate from Pinecone to Weaviate?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Weaviate publishes a migration guide covering schema conversion, embedding model reindexing, and SDK swap (Pinecone Python client to Weaviate Python client). For collections under 1M vectors, migration completes in hours. For multi-million vector collections, plan a 24-48 hour parallel-run window to verify retrieval parity before cutting over."}}]};
+
+const affiliateSidebar = {"title": "Try Pinecone Serverless", "description": "The simpler alternative: Serverless from $50/mo Standard tier, no three-dimensional pricing math. Pairs with Weaviate for hybrid search via reciprocal rank fusion.", "url": "https://www.pinecone.io/", "cta": "Get Pinecone free tier"};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Weaviate Cloud Review 2026: Open-Source Vector DB with Hybrid Search</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Weaviate is the open-source vector database (Apache 2.0, github.com/weaviate/weaviate) that pioneered production-grade hybrid search — combining BM25 keyword scoring with vector similarity in a single query. Verified on 2026-07-26, Weaviate Cloud ships a Free tier (100,000 objects, 1 collection, 7-day backup) that is more generous than Pinecone's Starter, plus a Flex monthly plan from $45 that scales on three independent dimensions (vector dims, storage, backup) so you only pay for what you use.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This review covers what Weaviate does that Pinecone does not (open-source self-hosting, native hybrid search, built-in embedding services, Weaviate Query Agent), the verified 2026 pricing across the four tiers (Free, Flex, Premium, Dedicated), and where Weaviate Cloud fits in your RAG stack next to Pinecone, Qdrant, Chroma, and Mem0.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>Free forever</strong>: 100,000 objects + 1 collection + 7-day backup + 2,000 Embedding requests/day</li>
+<li><strong>Flex monthly</strong>: from $45/mo + $0.00465 per 1M vector dimensions + $0.12/GiB storage</li>
+<li><strong>Premium prepaid</strong>: from $400/mo with 99.9% SLA + SSO/SAML</li>
+<li><strong>Dedicated</strong>: contract from $400/mo on AWS with HIPAA + PrivateLink + 99.95% SLA</li>
+<li><strong>Embeddings</strong>: 8 built-in (Snowflake Arctic v1.5 at $0.025/M, Arctic v2.0 at $0.040/M, ColModernVBERT at $0.065/M, plus OpenAI, Cohere, VoyageAI, Jina, HuggingFace)</li>
+<li><strong>Query Agent</strong>: natural-language-to-DB-ops, free to 1,000 req/mo, then $30/org/mo for 4,000 req</li>
+<li><strong>Hybrid search</strong>: BM25 + vector in a single query (HNSW + inverted index) — built-in, no add-on</li>
+<li><strong>Compliance</strong>: SOC 2 Type II (audit via Drata), HIPAA available on Dedicated tier</li>
+<li><strong>Best for</strong>: RAG apps that need hybrid retrieval, enterprise multi-tenant workloads, hybrid OSS + Cloud deployments</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Why Weaviate matters in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Vector databases used to be a single-feature bet: store embeddings, retrieve top-k by cosine similarity. In 2026, production RAG workloads need more than that. A query like "summarize the Q3 OKRs where revenue dropped 10%" requires keyword precision (BM25 hits on "Q3 OKRs") AND semantic recall (revenue-drop semantics) in a single ranked list. Most pure vector DBs force you to fuse two retrievers in your application code. Weaviate's hybrid search fuses BM25 + vector at the index level using reciprocal rank fusion — the result is one ranked list that you can tune with a single <code>alpha</code> parameter (0 = pure BM25, 1 = pure vector, 0.5 = balanced).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The second differentiator is embedding service depth. Where Pinecone lets you BYO-embedding-model and charges $0.05/GB-month storage only, Weaviate Cloud ships eight managed embedding services inside the database — you point at an embedding module, you do not need an external API key, and you pay per token at transparent rates. For teams that don't want to glue Cohere + Pinecone + a custom reranker, Weaviate's integrated stack removes three integration points.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The third differentiator is the open-source path. Weaviate's database engine is Apache 2.0 and self-hostable via Docker or Kubernetes. Weaviate Cloud is the same binary with managed infrastructure. Teams that need to keep regulated data on-prem can self-host Weaviate OSS today and migrate to Weaviate Cloud Dedicated later without rewriting application code — the client SDK, query syntax, and schema definitions are identical.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Pricing breakdown (verified 2026-07-26)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Weaviate Cloud bills on three independent dimensions: vector dimensions stored, storage (GiB), and backup (GiB). The pricing page publishes rates per dimension, not a flat monthly fee. This is different from Pinecone (flat per-pod) and from Qdrant (flat per-cluster).</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Free tier</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>100,000 objects (vectors + metadata)</li>
+<li>1 collection</li>
+<li>7-day backup retention</li>
+<li>Vector compression enabled by default</li>
+<li>2,000 Embedding requests/day</li>
+<li>Query Agent free tier: 1,000 requests/month</li>
+<li>Best effort availability (no SLA)</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Flex ($45+/mo, pay-as-you-go)</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>Unlimited objects and collections (up to 1,000 collections)</li>
+<li>30-day backup retention</li>
+<li>Flexible index types enabled (HNSW + flat)</li>
+<li>HA / replication enabled</li>
+<li>Multi-tenancy enabled</li>
+<li>99.5% SLA + 1 business day Severity 1 response</li>
+<li><strong>Vector dimensions</strong>: from $0.00465 per 1M vector dimensions (varies by index type, compression, region)</li>
+<li><strong>Storage</strong>: from $0.12/GiB-month</li>
+<li><strong>Backup</strong>: from $0.0264/GiB-month</li>
+<li><strong>Data transfer</strong>: free for promotional period</li>
+<li>Limited to 2 cloud regions (AWS)</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Premium prepaid (from $400/mo)</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>All Flex features</li>
+<li>45-day backup retention</li>
+<li>SSO / SAML enabled</li>
+<li>Metrics endpoint enabled</li>
+<li>99.9% SLA + 4-hour Severity 1 response</li>
+<li>Phone + Slack support</li>
+<li>Instructor-led jumpstart training available</li>
+<li><strong>Vector dimensions</strong>: from $0.003875 per 1M (cheaper per dim than Flex)</li>
+<li><strong>Storage</strong>: from $0.10/GiB-month</li>
+<li><strong>Backup</strong>: from $0.0042/GiB-month</li>
+<li>Limited to 7 cloud regions (GCP + AWS)</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Dedicated (contract from $400/mo)</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>Customer-directed cluster upgrades</li>
+<li>HIPAA compliant (AWS Dedicated)</li>
+<li>PrivateLink (AWS) enabled</li>
+<li>Encrypted volumes with customer keys</li>
+<li>Flexible backup retention</li>
+<li>Bring your own IdP (coming soon)</li>
+<li>99.95% SLA + 1-hour Severity 1 response</li>
+<li>Technical Account Team (add-on)</li>
+<li><strong>Vector dimensions</strong>: from $0.002718 per 1M (cheapest per dim)</li>
+<li><strong>Storage</strong>: from $0.1505/GiB-month (most expensive storage)</li>
+<li><strong>Backup</strong>: from $0.0063/GiB-month</li>
+<li>All ~40 cloud regions (AWS, GCP, Azure)</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Embedding service pricing</h3>
+<table class="min-w-full my-4 border border-gray-200">
+<thead class="bg-gray-50">
+<tr><th class="px-4 py-2 text-left">Model</th><th class="px-4 py-2 text-left">Price per 1M tokens</th></tr>
+</thead>
+<tbody>
+<tr><td class="px-4 py-2 border-t">Snowflake Arctic-embed-m-v1.5</td><td class="px-4 py-2 border-t">$0.025</td></tr>
+<tr><td class="px-4 py-2 border-t">Snowflake Arctic-embed-m-v2.0</td><td class="px-4 py-2 border-t">$0.040</td></tr>
+<tr><td class="px-4 py-2 border-t">ColModernVBERT</td><td class="px-4 py-2 border-t">$0.065</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">You can also BYO-embedding: connect your OpenAI, Cohere, VoyageAI, Jina, or Hugging Face API keys and pay only for storage + vector dim fees (no Weaviate embedding markup).</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Query Agent pricing</h3>
+<p class="text-gray-700 leading-relaxed my-4">The Query Agent turns natural-language questions into precise Weaviate database operations (filters, aggregations, semantic searches). Free to try with 1,000 requests/month. The $30 per organization monthly plan includes 4,000 requests with usage-based billing beyond that.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Weaviate vs Pinecone</h2>
+
+<table class="min-w-full my-4 border border-gray-200">
+<thead class="bg-gray-50">
+<tr><th class="px-4 py-2 text-left">Feature</th><th class="px-4 py-2 text-left">Weaviate Cloud</th><th class="px-4 py-2 text-left">Pinecone</th></tr>
+</thead>
+<tbody>
+<tr><td class="px-4 py-2 border-t">Free tier</td><td class="px-4 py-2 border-t">100K objects + 1 collection</td><td class="px-4 py-2 border-t">1 index (serverless)</td></tr>
+<tr><td class="px-4 py-2 border-t">Hybrid search (BM25 + vector)</td><td class="px-4 py-2 border-t">Built-in (RRF fusion)</td><td class="px-4 py-2 border-t">Not built-in (BYO reranker)</td></tr>
+<tr><td class="px-4 py-2 border-t">Managed embeddings</td><td class="px-4 py-2 border-t">8 built-in services</td><td class="px-4 py-2 border-t">BYO only</td></tr>
+<tr><td class="px-4 py-2 border-t">Open-source engine</td><td class="px-4 py-2 border-t">Yes (Apache 2.0)</td><td class="px-4 py-2 border-t">No (closed source)</td></tr>
+<tr><td class="px-4 py-2 border-t">Entry paid tier</td><td class="px-4 py-2 border-t">$45/mo Flex</td><td class="px-4 py-2 border-t">Standard from $50/mo Serverless</td></tr>
+<tr><td class="px-4 py-2 border-t">HIPAA</td><td class="px-4 py-2 border-t">Yes (Dedicated AWS)</td><td class="px-4 py-2 border-t">Yes (Enterprise)</td></tr>
+<tr><td class="px-4 py-2 border-t">SOC 2 Type II</td><td class="px-4 py-2 border-t">Yes</td><td class="px-4 py-2 border-t">Yes</td></tr>
+<tr><td class="px-4 py-2 border-t">Multi-tenancy</td><td class="px-4 py-2 border-t">Native (per-collection)</td><td class="px-4 py-2 border-t">Namespace-level</td></tr>
+<tr><td class="px-4 py-2 border-t">Query Agent</td><td class="px-4 py-2 border-t">Yes (natural-language ops)</td><td class="px-4 py-2 border-t">No</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">The hybrid search and open-source engine are the two largest differentiators. For teams that need both semantic and keyword retrieval in a single ranked list, Weaviate's built-in hybrid eliminates 100+ lines of code that a Pinecone implementation would need to write and maintain. For teams that need to self-host for compliance or air-gapped deployments, Weaviate OSS is the only option in this comparison.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">When to choose Weaviate</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Weaviate is the right choice when:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>You need hybrid retrieval</strong>: BM25 keyword precision + vector semantic recall in a single query. Examples: legal document search, enterprise knowledge bases, customer support RAG.</li>
+<li><strong>You need self-hosting or hybrid OSS + Cloud</strong>: regulated industries (healthcare, finance, government) that want to keep sensitive data on-prem while using Weaviate Cloud for non-sensitive workloads.</li>
+<li><strong>You need HIPAA compliance</strong>: Dedicated tier on AWS is HIPAA-compliant, suitable for healthcare RAG applications.</li>
+<li><strong>You need the Query Agent</strong>: building natural-language interfaces over structured databases (e.g., "show me top customers by Q3 revenue") without writing custom parsers.</li>
+<li><strong>You want managed embeddings without BYO API keys</strong>: 8 built-in embedding models at transparent per-token pricing.</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">When to look elsewhere</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>Pure serverless simplicity</strong>: Pinecone's Serverless tier (from $50/mo Standard) has simpler pricing — pay per GB stored + per read unit, no three-dimensional math.</li>
+<li><strong>Rust-native performance</strong>: Qdrant is a single Rust binary with native horizontal sharding, faster for write-heavy workloads at very large scale.</li>
+<li><strong>Embedded / in-process vector search</strong>: Chroma runs inside your application process with zero network round-trips, ideal for desktop apps and small-to-medium RAG.</li>
+<li><strong>Memory layer / agent memory</strong>: Mem0 adds a memory management layer on top of any vector store, with automatic memory consolidation and conflict resolution — different abstraction layer.</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Frequently asked questions</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How much does Weaviate Cloud cost?</h3>
+<p class="text-gray-700 leading-relaxed my-4">Free tier is $0/month with 100,000 objects. Flex starts at $45/month minimum + usage on three independent dimensions: vector dimensions (from $0.00465 per 1M), storage (from $0.12/GiB), backup (from $0.0264/GiB). Premium prepaid starts at $400/month with cheaper per-dimension rates. Dedicated is contract-based from $400/month with HIPAA, PrivateLink, and 99.95% SLA.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Is Weaviate free for commercial use?</h3>
+<p class="text-gray-700 leading-relaxed my-4">The open-source Weaviate database engine (github.com/weaviate/weaviate) is Apache 2.0 licensed — free for commercial use, including in production, with no per-node fees. Weaviate Cloud (the hosted version) is a separate paid product with the four tiers above. You can self-host Weaviate OSS indefinitely without paying Weaviate anything.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How does Weaviate's hybrid search work?</h3>
+<p class="text-gray-700 leading-relaxed my-4">Weaviate runs BM25 keyword search and HNSW vector search in parallel, then fuses the ranked lists using reciprocal rank fusion. A tunable <code>alpha</code> parameter (0 = pure BM25, 1 = pure vector, 0.5 = balanced) controls the weighting. The result is a single ranked list that combines keyword precision with semantic recall — useful when your query has both specific terms ("Q3 OKRs") and semantic intent ("revenue dropped").</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Is Weaviate usable from China?</h3>
+<p class="text-gray-700 leading-relaxed my-4">Weaviate Cloud runs on AWS and GCP regions outside China. Direct access from mainland China shows 200-400ms additional latency vs US-based users. For low-latency access from China, consider self-hosting Weaviate OSS on Tencent Cloud or Alibaba Cloud in a mainland region — the engine runs identically.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is the Weaviate Query Agent?</h3>
+<p class="text-gray-700 leading-relaxed my-4">The Query Agent is a natural-language-to-DB-ops layer. You ask "show me top 5 customers by Q3 revenue in APAC" in plain English; the agent generates a Weaviate query (filter + sort + limit), executes it, and returns results. Free to 1,000 requests/month, then $30/organization/month for 4,000 requests. Built for analytics dashboards and LLM agents that need to query structured data without writing query DSL.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Can I migrate from Pinecone to Weaviate?</h3>
+<p class="text-gray-700 leading-relaxed my-4">Yes. The Weaviate team publishes a migration guide covering schema conversion, embedding model reindexing, and SDK swap (Pinecone Python client to Weaviate Python client). For collections under 1M vectors, migration typically completes in hours. For multi-million vector collections, plan for a 24-48 hour parallel-run window to verify retrieval parity before cutting over.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Our verdict</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Weaviate earns a <strong>strong recommendation for hybrid retrieval and enterprise compliance workloads</strong>. The open-source Apache 2.0 engine is the largest differentiator — no other major vector DB publishes its core under a permissive license. The built-in hybrid search, 8 managed embedding services, and natural-language Query Agent give Weaviate a feature density that Pinecone matches only with third-party integrations.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The trade-offs are real: the three-dimensional pricing (vector dims + storage + backup) requires careful capacity planning, the Flex tier's $0.12/GiB storage rate is more expensive than Pinecone's flat per-pod model, and China-mainland latency is poor without self-hosting. But for teams whose workloads need hybrid retrieval, HIPAA compliance, or OSS self-hosting flexibility, Weaviate is the most complete vector DB option in 2026.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For pure serverless simplicity at smaller scale, Pinecone remains the easier entry point. For Rust-native performance, Qdrant is the better choice. For embedded / in-process vector search, Chroma wins. Weaviate sits in the middle — more features than Pinecone, more flexible than Qdrant, more cloud-managed than Chroma.</p>
+`;
+---
+
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} locale={locale} zhCanonicalUrl={zhCanonicalUrl}>
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content="{date}" />
+    <meta itemprop="dateModified" content="{date}" />
+    
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+    <div set:html={enBody} />
+
+    <!-- Affiliate CTA -->
+    <div class="mt-12 p-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-gray-600 mt-1">{affiliateSidebar.description}</p>
+        </div>
+        <a href={affiliateSidebar.url} class="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors" rel="nofollow sponsored" target="_blank">{affiliateSidebar.cta} →</a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

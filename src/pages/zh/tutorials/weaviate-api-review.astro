@@ -1,0 +1,220 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'weaviate-api-review';
+const date = '2026-07-26';
+const locale = 'zh';
+
+const zhTitle = "Weaviate Cloud 2026:开源向量数据库评测";
+const zhDescription = "Weaviate Cloud 评测:开源向量数据库(Apache 2.0)、混合检索(HNSW+BM25)、8 种内置 Embedding、Query Agent 自然语言查询。免费层 10 万对象,Flex 月付 $45 起。vs Pinecone/Qdrant/Chroma。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Weaviate Cloud 2026:开源向量数据库评测", "description": "Weaviate Cloud 评测:开源向量数据库(Apache 2.0)、混合检索(HNSW+BM25)、8 种内置 Embedding、Query Agent 自然语言查询。免费层 10 万对象,Flex 月付 $45 起。vs Pinecone/Qdrant/Chroma。", "datePublished": "2026-07-26", "dateModified": "2026-07-26", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/weaviate-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Weaviate Cloud 2026:开源向量数据库评测", "item": "https://apirank.vip/zh/tutorials/weaviate-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Weaviate Cloud 的价格是多少?", "acceptedAnswer": {"@type": "Answer", "text": "免费层 $0/月 含 10 万对象。Flex 起步 $45/月 + 三个独立维度用量费:向量维度从 $0.00465/百万、存储从 $0.12/GiB、备份从 $0.0264/GiB。Premium 预付从 $400/月起,单维度费率更便宜。Dedicated 合同制从 $400/月起,含 HIPAA、PrivateLink、99.95% SLA。"}}, {"@type": "Question", "name": "Weaviate 可免费商用吗?", "acceptedAnswer": {"@type": "Answer", "text": "可以。开源 Weaviate 数据库引擎(github.com/weaviate/weaviate)采用 Apache 2.0 许可——商用免费,生产环境免费,无按节点费。Weaviate Cloud 是完全独立的付费产品,有四档套餐。你可以无限期自托管 Weaviate OSS,无需向 Weaviate 支付任何费用。"}}, {"@type": "Question", "name": "Weaviate 混合检索如何工作?", "acceptedAnswer": {"@type": "Answer", "text": "Weaviate 并行运行 BM25 关键词搜索与 HNSW 向量搜索,然后用倒数排序融合(Reciprocal Rank Fusion)合并两个有序列表。可调节的 alpha 参数(0=纯 BM25,1=纯向量,0.5=平衡)控制权重。结果是一个有序列表,融合了关键词精度与语义召回——当查询既包含特定词又包含语义意图时特别有用。"}}, {"@type": "Question", "name": "中国能用 Weaviate 吗?", "acceptedAnswer": {"@type": "Answer", "text": "Weaviate Cloud 运行在 AWS 和 GCP 海外节点。从中国大陆直连会显示 200-400ms 的额外延迟。如需中国低延迟访问,可考虑在腾讯云或阿里云的国内区域自托管 Weaviate OSS——引擎运行完全一致。"}}, {"@type": "Question", "name": "Weaviate Query Agent 是什么?", "acceptedAnswer": {"@type": "Answer", "text": "Query Agent 是自然语言转数据库操作层。你用中文问显示 APAC 区域 Q3 营收最高的 5 个客户,Agent 生成对应的 Weaviate 查询(过滤 + 排序 + 限制)、执行并返回结果。每月 1,000 次请求免费,之后 $30/组织/月 含 4,000 次请求。专为需要查询结构化数据的分析仪表盘和 LLM Agent 设计,无需编写查询 DSL。"}}, {"@type": "Question", "name": "能从 Pinecone 迁移到 Weaviate 吗?", "acceptedAnswer": {"@type": "Answer", "text": "可以。Weaviate 团队发布迁移指南,涵盖 Schema 转换、Embedding 模型重建索引、SDK 替换(Pinecone Python 客户端 → Weaviate Python 客户端)。100 万向量以下的集合通常数小时完成。数百万向量集合建议预留 24-48 小时并行运行窗口,验证检索一致性后再切换。"}}]};
+
+const affiliateSidebar = {"title": "试用 Pinecone Serverless", "description": "更简单的替代:Pinecone Serverless 标准层 $50/月起,无三维定价计算。与 Weaviate 配对做倒数排序融合的混合检索。", "url": "https://www.pinecone.io/", "cta": "免费试用 Pinecone"};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Weaviate Cloud 2026:开源向量数据库与混合检索深度评测</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Weaviate 是 Apache 2.0 开源的向量数据库(github.com/weaviate/weaviate),首创了生产级混合检索(Hybrid Search)——在一个查询中同时融合 BM25 关键词打分与向量相似度。2026-07-26 验证:Weaviate Cloud 的免费层(10 万对象、1 个集合、7 天备份)比 Pinecone Starter 更慷慨,Flex 月付套餐从 $45 起,按向量维度、存储、备份三个独立维度计费,只为实际用量付费。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">本评测覆盖 Weaviate 相对 Pinecone 的差异化能力(开源自托管、原生混合检索、内置 Embedding 服务、Query Agent 自然语言查询)、2026 年四档套餐(Free / Flex / Premium / Dedicated)的核验价格,以及在 RAG 栈中相对 Pinecone、Qdrant、Chroma、Mem0 的定位。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>永久免费层</strong>:10 万对象 + 1 集合 + 7 天备份 + 每日 2,000 Embedding 请求</li>
+<li><strong>Flex 月付</strong>:从 $45/月 + $0.00465/百万向量维度 + $0.12/GiB 存储</li>
+<li><strong>Premium 预付</strong>:从 $400/月起,99.9% SLA + SSO/SAML</li>
+<li><strong>Dedicated 合同制</strong>:从 $400/月起,AWS 上支持 HIPAA + PrivateLink + 99.95% SLA</li>
+<li><strong>Embedding 服务</strong>:8 种内置(Snowflake Arctic v1.5 $0.025/M、Arctic v2.0 $0.040/M、ColModernVBERT $0.065/M,外加 OpenAI、Cohere、VoyageAI、Jina、HuggingFace)</li>
+<li><strong>Query Agent</strong>:自然语言转数据库操作,每月 1,000 次免费,之后 $30/组织/月 包含 4,000 次</li>
+<li><strong>混合检索</strong>:BM25 + 向量单次查询(HNSW + 倒排索引),原生支持无需插件</li>
+<li><strong>合规</strong>:SOC 2 Type II(Drata 审计)、Dedicated 层支持 HIPAA</li>
+<li><strong>适用场景</strong>:需要混合检索、GraphRAG、HIPAA 合规的 RAG 应用;企业级多租户;自托管 OSS + 云托管混合架构</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么 2026 年 Weaviate 值得关注</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的向量数据库已不只是"存 embedding + top-k 检索"。生产 RAG 工作流需要的远不止于此。一个查询如"总结 Q3 OKR 中营收下降 10% 的部分"既需要关键词精度(BM25 命中"Q3 OKR")又需要语义召回(营收下降语义),并在同一有序列表中返回。多数纯向量数据库强制你在应用层融合两个检索器;Weaviate 的混合检索在索引层用倒数排序融合(Reciprocal Rank Fusion)做这件事——结果是一个有序列表,你可通过单一 <code>alpha</code> 参数(0=纯 BM25,1=纯向量,0.5=平衡)调节权重。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">第二大差异点是 Embedding 服务的深度。Pinecone 只支持 BYO Embedding 并按 $0.05/GB-月 收存储费;Weaviate Cloud 内置八种托管 Embedding 服务,你只需指向一个模块、不需要外部 API Key、按 token 透明计费。对于不想粘合 Cohere + Pinecone + 自研 reranker 的团队,Weaviate 集成栈消除了三个集成点。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">第三大差异点是开源路径。Weaviate 数据库引擎是 Apache 2.0 许可,可通过 Docker 或 Kubernetes 自托管。Weaviate Cloud 是同一二进制 + 托管基础设施。需要在本地保存合规数据的团队可先自托管 Weaviate OSS,之后再迁移到 Weaviate Cloud Dedicated 而无需重写应用代码——客户端 SDK、查询语法、模式定义完全一致。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">价格详解(2026-07-26 核验)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Weaviate Cloud 按三个独立维度计费:存储的向量维度、存储容量(GiB)、备份容量(GiB)。价格页面公开每个维度的费率,而不是统一月费。这与 Pinecone(每 Pod 平价)和 Qdrant(每集群平价)不同。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">免费层(Free)</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>10 万对象(向量 + 元数据)</li>
+<li>1 个集合</li>
+<li>7 天备份保留</li>
+<li>默认启用向量压缩</li>
+<li>每日 2,000 Embedding 请求</li>
+<li>Query Agent 免费层:每月 1,000 次请求</li>
+<li>无 SLA(Best Effort)</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Flex($45+/月,按用量)</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>无限对象与集合(最多 1,000 集合)</li>
+<li>30 天备份保留</li>
+<li>启用灵活索引类型(HNSW + flat)</li>
+<li>启用 HA / 复制</li>
+<li>启用多租户</li>
+<li>99.5% SLA + 1 个工作日 Severity 1 响应</li>
+<li><strong>向量维度</strong>:从 $0.00465/百万向量维度(按索引类型、压缩、区域不同)</li>
+<li><strong>存储</strong>:从 $0.12/GiB-月</li>
+<li><strong>备份</strong>:从 $0.0264/GiB-月</li>
+<li><strong>数据传输</strong>:促销期免费</li>
+<li>仅 2 个云区域(AWS)</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Premium 预付($400/月起)</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>包含 Flex 全部特性</li>
+<li>45 天备份保留</li>
+<li>启用 SSO / SAML</li>
+<li>启用指标端点</li>
+<li>99.9% SLA + 4 小时 Severity 1 响应</li>
+<li>电话 + Slack 支持</li>
+<li>讲师带教 Jumpstart 培训</li>
+<li><strong>向量维度</strong>:从 $0.003875/百万(比 Flex 单价更便宜)</li>
+<li><strong>存储</strong>:从 $0.10/GiB-月</li>
+<li><strong>备份</strong>:从 $0.0042/GiB-月</li>
+<li>7 个云区域(GCP + AWS)</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Dedicated 合同制($400/月起)</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>客户主导的集群升级</li>
+<li>HIPAA 合规(AWS Dedicated)</li>
+<li>启用 PrivateLink (AWS)</li>
+<li>客户密钥加密卷</li>
+<li>灵活备份保留期</li>
+<li>自带 IdP(即将推出)</li>
+<li>99.95% SLA + 1 小时 Severity 1 响应</li>
+<li>Technical Account Team(可选)</li>
+<li><strong>向量维度</strong>:从 $0.002718/百万(单价最低)</li>
+<li><strong>存储</strong>:从 $0.1505/GiB-月(单价最高)</li>
+<li><strong>备份</strong>:从 $0.0063/GiB-月</li>
+<li>全部 ~40 个云区域(AWS、GCP、Azure)</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Embedding 服务定价</h3>
+<table class="min-w-full my-4 border border-gray-200">
+<thead class="bg-gray-50">
+<tr><th class="px-4 py-2 text-left">模型</th><th class="px-4 py-2 text-left">百万 Token 单价</th></tr>
+</thead>
+<tbody>
+<tr><td class="px-4 py-2 border-t">Snowflake Arctic-embed-m-v1.5</td><td class="px-4 py-2 border-t">$0.025</td></tr>
+<tr><td class="px-4 py-2 border-t">Snowflake Arctic-embed-m-v2.0</td><td class="px-4 py-2 border-t">$0.040</td></tr>
+<tr><td class="px-4 py-2 border-t">ColModernVBERT</td><td class="px-4 py-2 border-t">$0.065</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">你也可以 BYO Embedding:接入 OpenAI、Cohere、VoyageAI、Jina 或 Hugging Face 的 API Key,只支付存储 + 向量维度费(无 Weaviate Embedding 加价)。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Query Agent 定价</h3>
+<p class="text-gray-700 leading-relaxed my-4">Query Agent 把自然语言问题转成精确的 Weaviate 数据库操作(过滤、聚合、语义搜索)。每月 1,000 次请求免费试用;$30/组织/月套餐包含 4,000 次请求,超出按用量计费。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Weaviate vs Pinecone</h2>
+
+<table class="min-w-full my-4 border border-gray-200">
+<thead class="bg-gray-50">
+<tr><th class="px-4 py-2 text-left">特性</th><th class="px-4 py-2 text-left">Weaviate Cloud</th><th class="px-4 py-2 text-left">Pinecone</th></tr>
+</thead>
+<tbody>
+<tr><td class="px-4 py-2 border-t">免费层</td><td class="px-4 py-2 border-t">10 万对象 + 1 集合</td><td class="px-4 py-2 border-t">1 个 Serverless 索引</td></tr>
+<tr><td class="px-4 py-2 border-t">混合检索(BM25 + 向量)</td><td class="px-4 py-2 border-t">原生支持(RRF 融合)</td><td class="px-4 py-2 border-t">需 BYO reranker</td></tr>
+<tr><td class="px-4 py-2 border-t">托管 Embedding</td><td class="px-4 py-2 border-t">8 种内置服务</td><td class="px-4 py-2 border-t">仅 BYO</td></tr>
+<tr><td class="px-4 py-2 border-t">开源引擎</td><td class="px-4 py-2 border-t">是(Apache 2.0)</td><td class="px-4 py-2 border-t">否(闭源)</td></tr>
+<tr><td class="px-4 py-2 border-t">付费入门层</td><td class="px-4 py-2 border-t">$45/月 Flex</td><td class="px-4 py-2 border-t">$50/月 Serverless Standard</td></tr>
+<tr><td class="px-4 py-2 border-t">HIPAA</td><td class="px-4 py-2 border-t">是(Dedicated AWS)</td><td class="px-4 py-2 border-t">是(Enterprise)</td></tr>
+<tr><td class="px-4 py-2 border-t">SOC 2 Type II</td><td class="px-4 py-2 border-t">是</td><td class="px-4 py-2 border-t">是</td></tr>
+<tr><td class="px-4 py-2 border-t">多租户</td><td class="px-4 py-2 border-t">原生(每集合)</td><td class="px-4 py-2 border-t">命名空间级别</td></tr>
+<tr><td class="px-4 py-2 border-t">Query Agent</td><td class="px-4 py-2 border-t">是(自然语言操作)</td><td class="px-4 py-2 border-t">否</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">混合检索和开源引擎是两大差异点。对于需要在单一有序列表中同时获得语义与关键词召回的团队,Weaviate 内置的 Hybrid 消除了 Pinecone 实现需要编写和维护的 100+ 行代码。对于需要自托管以满足合规或隔离部署的团队,Weaviate OSS 是本对比中唯一的选择。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">何时选择 Weaviate</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Weaviate 是以下场景的最佳选择:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>需要混合检索</strong>:BM25 关键词精度 + 向量语义召回在单一查询中。例子:法律文档搜索、企业知识库、客服 RAG。</li>
+<li><strong>需要自托管或 OSS + Cloud 混合</strong>:受监管行业(医疗、金融、政府)需要在本地保存敏感数据,同时使用 Weaviate Cloud 处理非敏感工作负载。</li>
+<li><strong>需要 HIPAA 合规</strong>:AWS Dedicated 层支持 HIPAA,适合医疗 RAG 应用。</li>
+<li><strong>需要 Query Agent</strong>:构建结构化数据库的自然语言接口(例如"显示 Q3 营收最高的客户"),无需编写自定义解析器。</li>
+<li><strong>想要托管 Embedding 又不想 BYO API Key</strong>:8 种内置 Embedding 模型,透明按 token 计费。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">何时选择别处</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>纯 Serverless 简单性</strong>:Pinecone 的 Serverless 层($50/月 Standard 起)定价更简单——按存储 GB + 读单元收费,无需三维计算。</li>
+<li><strong>Rust 原生性能</strong>:Qdrant 是单一 Rust 二进制,原生水平分片,在超大规模写入密集场景下更快。</li>
+<li><strong>嵌入式 / 进程内向量检索</strong>:Chroma 在应用进程内运行,零网络往返,适合桌面应用和中型 RAG。</li>
+<li><strong>Memory 层 / Agent 记忆</strong>:Mem0 在任何向量存储之上增加记忆管理层,自动记忆整合与冲突解决——不同的抽象层。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Weaviate Cloud 的价格是多少?</h3>
+<p class="text-gray-700 leading-relaxed my-4">免费层 $0/月 含 10 万对象。Flex 起步 $45/月 + 三个独立维度用量费:向量维度(从 $0.00465/百万)、存储(从 $0.12/GiB)、备份(从 $0.0264/GiB)。Premium 预付从 $400/月起,单维度费率更便宜。Dedicated 合同制从 $400/月起,含 HIPAA、PrivateLink、99.95% SLA。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Weaviate 可免费商用吗?</h3>
+<p class="text-gray-700 leading-relaxed my-4">开源 Weaviate 数据库引擎(github.com/weaviate/weaviate)采用 Apache 2.0 许可——商用免费,生产环境免费,无按节点费。Weaviate Cloud(托管版)是完全独立的付费产品,有上述四档套餐。你可以无限期自托管 Weaviate OSS,无需向 Weaviate 支付任何费用。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Weaviate 混合检索如何工作?</h3>
+<p class="text-gray-700 leading-relaxed my-4">Weaviate 并行运行 BM25 关键词搜索与 HNSW 向量搜索,然后用倒数排序融合(Reciprocal Rank Fusion)合并两个有序列表。可调节的 <code>alpha</code> 参数(0=纯 BM25,1=纯向量,0.5=平衡)控制权重。结果是一个有序列表,融合了关键词精度与语义召回——当查询既包含特定词("Q3 OKR")又包含语义意图("营收下降")时特别有用。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">中国能用 Weaviate 吗?</h3>
+<p class="text-gray-700 leading-relaxed my-4">Weaviate Cloud 运行在 AWS 和 GCP 海外节点。从中国大陆直连会显示 200-400ms 的额外延迟。如需中国低延迟访问,可考虑在腾讯云或阿里云的国内区域自托管 Weaviate OSS——引擎运行完全一致。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Weaviate Query Agent 是什么?</h3>
+<p class="text-gray-700 leading-relaxed my-4">Query Agent 是自然语言转数据库操作层。你用中文问"显示 APAC 区域 Q3 营收最高的 5 个客户",Agent 生成对应的 Weaviate 查询(过滤 + 排序 + 限制)、执行并返回结果。每月 1,000 次请求免费,之后 $30/组织/月 含 4,000 次请求。专为需要查询结构化数据的分析仪表盘和 LLM Agent 设计,无需编写查询 DSL。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">能从 Pinecone 迁移到 Weaviate 吗?</h3>
+<p class="text-gray-700 leading-relaxed my-4">可以。Weaviate 团队发布迁移指南,涵盖 Schema 转换、Embedding 模型重建索引、SDK 替换(Pinecone Python 客户端 → Weaviate Python 客户端)。100 万向量以下的集合通常数小时完成。数百万向量集合建议预留 24-48 小时并行运行窗口,验证检索一致性后再切换。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">总结</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Weaviate 是混合检索与企业合规工作负载的<strong>强力推荐</strong>。开源 Apache 2.0 引擎是最大差异点——其他主流向量数据库都不以宽松许可公开核心。内置混合检索、8 种托管 Embedding 服务、自然语言 Query Agent 让 Weaviate 在功能密度上领先 Pinecone(Pinecone 需要第三方集成才能匹配)。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">权衡也真实存在:三维定价(向量维度 + 存储 + 备份)需要精细的容量规划;Flex 层的 $0.12/GiB 存储费率高于 Pinecone 的平价 Pod 模型;中国大陆延迟差(需自托管)。但对于需要混合检索、HIPAA 合规或 OSS 自托管灵活性的工作负载,Weaviate 是 2026 年最完整的向量数据库选项。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于小型纯 Serverless 简单性,Pinecone 仍是更简单的入口。对于 Rust 原生性能,Qdrant 是更好的选择。对于嵌入式 / 进程内向量检索,Chroma 胜出。Weaviate 居中——比 Pinecone 功能更丰富,比 Qdrant 更灵活,比 Chroma 更云原生。</p>
+`;
+---
+
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} locale={locale} enCanonicalUrl={enCanonicalUrl}>
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content="{date}" />
+    <meta itemprop="dateModified" content="{date}" />
+    
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+    <div set:html={zhBody} />
+
+    <!-- Affiliate CTA -->
+    <div class="mt-12 p-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-gray-600 mt-1">{affiliateSidebar.description}</p>
+        </div>
+        <a href={affiliateSidebar.url} class="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors" rel="nofollow sponsored" target="_blank">{affiliateSidebar.cta} →</a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
