@@ -1,0 +1,594 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { modelsData, lastVerifiedLabel, isStale } from '../../lib/pricing';
+
+const locale = 'zh';
+const slug = 'calculator';
+
+const title = '大模型 API 成本计算器 2026 — 30+ 真实模型价格（Claude Opus 4.8 / DeepSeek V4） | APIRank';
+const description = '免费 LLM API 成本计算器，30+ 模型含 Claude Opus 4.8、Sonnet 4.6、Fable 5、DeepSeek V4 Pro、GLM-5.2、Kimi K2.7。比较每次/每日/每月成本。智能推荐会说明为什么这个替代方案更便宜。';
+const canonicalUrl = 'https://apirank.vip/zh/calculator';
+const enCanonicalUrl = 'https://apirank.vip/calculator';
+
+// A-03: single source of truth — same projection as EN calculator, but
+// rendered with the locale's hero pill driven by lastVerifiedLabel('zh').
+const models = modelsData.models.map((m) => ({
+  id: m.id,
+  name: m.name,
+  nameZh: m.nameZh,
+  provider: m.provider,
+  providerZh: m.providerZh,
+  providerId: m.providerId,
+  tier: m.tier,
+  input: m.pricing.input,
+  output: m.pricing.output,
+  cache: m.pricing.cache,
+  officialUrl: m.officialUrl,
+}));
+const verifiedLabel = lastVerifiedLabel('zh');
+const verifiedStale = isStale();
+
+const webAppJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "大模型 API 成本计算器",
+  "url": "https://apirank.vip/zh/calculator",
+  "description": description,
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" }
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "这个 LLM API 成本计算器准确吗？", "acceptedAnswer": { "@type": "Answer", "text": "价格来自各厂商官方定价页，每月核验（最近一次：2026 年 6 月底）。模型含 Claude Opus 4.8、Sonnet 4.6、Fable 5、GPT-5、DeepSeek V4 Pro、GLM-5.2、Kimi K2.7、Gemini 2.5 Pro 等 30+ 个。最终账单以厂商后台为准。" } },
+    { "@type": "Question", "name": "为什么推荐 DeepSeek V4 Pro 即便我选了 Claude 或 GPT？", "acceptedAnswer": { "@type": "Answer", "text": "因为 DeepSeek V4 Pro 是市场上最便宜的旗舰级模型（价格约为 Claude Opus 4.8 的 1/30，Claude Sonnet 4.6 的 1/3）。在大多数推理 benchmark 上与 GPT-5 只差 5% 左右。计算器同时显示同档位替代方案，你如果需要 Claude 的 tool use 稳定性或 GPT 的多模态精度，可以保留原选。" } },
+    { "@type": "Question", "name": "Prompt 缓存真的能省钱吗？", "acceptedAnswer": { "@type": "Answer", "text": "对重复 prompt 前缀的工作负载（RAG 检索、客服机器人、代码助手），缓存读取价通常比新鲜输入便宜 90%。DeepSeek V4 Flash 缓存仅 $0.0028/百万 token，是目前最便宜。一次性请求把缓存滑块拉到 0%。" } },
+    { "@type": "Question", "name": "什么叫合理的输入输出比例？", "acceptedAnswer": { "@type": "Answer", "text": "大多数生产负载平均 输入:输出 = 3:1 到 5:1。代码生成偏 2:1，分类抽取偏 10:1 以上。" } }
+  ]
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  type="website"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(webAppJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <section class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">使用教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">成本计算器</span>
+      </nav>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+        大模型 API <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">成本计算器</span>
+      </h1>
+      <p class="text-lg text-gray-600 max-w-3xl">
+        选择任意模型，输入你的 token 用量和每日调用次数——立即获得每次 / 每日 / 每月 / 每年费用。
+        <strong>{models.length} 个真实模型</strong>，含 Claude Opus 4.8、Sonnet 4.6、Fable 5、DeepSeek V4 Pro、GLM-5.2、Kimi K2.7。
+        智能推荐会说明<em>为什么</em>更便宜。
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3 text-sm">
+        <span class="inline-flex items-center gap-1.5 bg-white border border-gray-200 rounded-full px-3 py-1 text-gray-600">
+          <span class={`w-2 h-2 rounded-full ${verifiedStale ? 'bg-yellow-500' : 'bg-green-500'}`}></span>
+          {verifiedLabel}{verifiedStale ? '（需复验）' : ''}
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-white border border-gray-200 rounded-full px-3 py-1 text-gray-600">
+          {models.length} 个模型 · 12 家厂商 · 旗舰 / 中等 / 经济三档
+        </span>
+        <a href="#faq" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 rounded-full px-3 py-1 text-gray-600 hover:text-blue-600">
+          常见问题 ↓
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <div class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm sticky top-24">
+            <h2 class="text-lg font-bold text-gray-900 mb-5">使用量设置</h2>
+
+            <label class="block mb-5">
+              <span class="text-sm font-medium text-gray-700 mb-2 block">选择模型</span>
+              <select id="model-select" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {models.map((m, i) => (
+                  <option value={m.id} selected={i === 0} data-tier={m.tier}>
+                    {m.nameZh} — {m.providerZh}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label class="block mb-5">
+              <span class="text-sm font-medium text-gray-700 mb-2 block">
+                每次调用 token 数
+                <span class="text-gray-400 font-normal">（输入 + 输出合计）</span>
+              </span>
+              <input id="tokens-per-call" type="number" min="1" value="2500"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <p class="text-xs text-gray-500 mt-1.5">参考：1K（聊天）·2.5K（检索增强）·8K（长上下文）</p>
+            </label>
+
+            <label class="block mb-5">
+              <span class="text-sm font-medium text-gray-700 mb-2 block">
+                输入比例：<span id="io-display">70%</span> / 输出 30%
+              </span>
+              <input id="io-slider" type="range" min="10" max="95" value="70" step="5"
+                class="w-full accent-blue-600" />
+            </label>
+
+            <label class="block mb-5">
+              <span class="text-sm font-medium text-gray-700 mb-2 block">
+                每日调用次数
+              </span>
+              <input id="daily-calls" type="number" min="1" value="1000"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <p class="text-xs text-gray-500 mt-1.5">快捷：
+                <button data-preset="100" class="preset-btn text-blue-600 hover:underline">100</button>,
+                <button data-preset="1000" class="preset-btn text-blue-600 hover:underline">1K</button>,
+                <button data-preset="10000" class="preset-btn text-blue-600 hover:underline">1万</button>,
+                <button data-preset="100000" class="preset-btn text-blue-600 hover:underline">10万</button>
+              </p>
+            </label>
+
+            <label class="block mb-5">
+              <span class="text-sm font-medium text-gray-700 mb-2 block">
+                缓存命中率：<span id="cache-display">0%</span>
+                <span class="text-gray-400 font-normal">（可选）</span>
+              </span>
+              <input id="cache-slider" type="range" min="0" max="90" value="0" step="10"
+                class="w-full accent-blue-600" />
+              <p class="text-xs text-gray-500 mt-1.5">重复 prompt 前缀越多，缓存价值越高。一次性请求填 0%。</p>
+            </label>
+
+            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+              <span class="text-sm text-gray-600">货币</span>
+              <div class="flex border border-gray-200 rounded-md overflow-hidden text-sm">
+                <button data-currency="USD" class="cur-btn px-3 py-1.5 text-gray-600 hover:bg-gray-50">USD $</button>
+                <button data-currency="CNY" class="cur-btn px-3 py-1.5 bg-blue-600 text-white font-medium">CNY ¥</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 space-y-8">
+
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">费用概览</h2>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-5 shadow-sm">
+                <div class="text-xs uppercase tracking-wide opacity-80 mb-2">每次</div>
+                <div class="text-2xl font-bold" id="cost-per-call">—</div>
+              </div>
+              <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-2xl p-5 shadow-sm">
+                <div class="text-xs uppercase tracking-wide opacity-80 mb-2">每日</div>
+                <div class="text-2xl font-bold" id="cost-daily">—</div>
+              </div>
+              <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl p-5 shadow-sm">
+                <div class="text-xs uppercase tracking-wide opacity-80 mb-2">每月</div>
+                <div class="text-2xl font-bold" id="cost-monthly">—</div>
+              </div>
+              <div class="bg-gradient-to-br from-pink-500 to-pink-600 text-white rounded-2xl p-5 shadow-sm">
+                <div class="text-xs uppercase tracking-wide opacity-80 mb-2">每年</div>
+                <div class="text-2xl font-bold" id="cost-yearly">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white border-2 border-blue-200 rounded-2xl p-6 shadow-sm">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <div class="text-xs uppercase text-blue-600 font-semibold tracking-wider mb-1">当前选择</div>
+                <h3 id="selected-name" class="text-2xl font-bold text-gray-900"></h3>
+                <div id="selected-provider" class="text-sm text-gray-500"></div>
+              </div>
+              <span id="selected-tier" class="px-3 py-1 rounded-full text-xs font-semibold"></span>
+            </div>
+            <div class="grid grid-cols-3 gap-4 text-sm mb-4">
+              <div>
+                <div class="text-gray-500 mb-1">输入 $/M</div>
+                <div class="font-semibold text-gray-900" id="sel-input">—</div>
+              </div>
+              <div>
+                <div class="text-gray-500 mb-1">输出 $/M</div>
+                <div class="font-semibold text-gray-900" id="sel-output">—</div>
+              </div>
+              <div>
+                <div class="text-gray-500 mb-1">缓存读取 $/M</div>
+                <div class="font-semibold text-gray-900" id="sel-cache">—</div>
+              </div>
+            </div>
+            <div class="pt-4 border-t border-gray-100 text-sm text-gray-600" id="sel-note"></div>
+          </div>
+
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">💡 智能推荐</h2>
+            <div class="space-y-4">
+
+              <div id="rec-primary" class="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-green-500 flex-shrink-0 flex items-center justify-center text-white text-xl">💰</div>
+                  <div class="flex-1">
+                    <div class="text-xs uppercase text-green-700 font-semibold tracking-wider mb-1" id="rec-primary-label">最佳替代方案</div>
+                    <h3 id="rec-primary-name" class="text-lg font-bold text-gray-900 mb-1"></h3>
+                    <div id="rec-primary-detail" class="text-sm text-gray-600 mb-2"></div>
+                    <div class="bg-white/70 border-l-4 border-green-400 rounded-r px-3 py-2 mb-3 text-sm text-gray-800">
+                      <span class="font-semibold text-green-700">推荐理由：</span><span id="rec-primary-why"></span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 text-sm">
+                      <div>
+                        <div class="text-gray-500 text-xs">替代方案月费</div>
+                        <div class="font-bold text-green-700" id="rec-primary-monthly">—</div>
+                      </div>
+                      <div>
+                        <div class="text-gray-500 text-xs">节省费用</div>
+                        <div class="font-bold text-green-700" id="rec-primary-save">—</div>
+                      </div>
+                      <div>
+                        <div class="text-gray-500 text-xs">档位</div>
+                        <div class="font-semibold text-gray-700" id="rec-primary-tier">—</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="rec-secondary" class="bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-2xl p-6" style="display:none">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-amber-500 flex-shrink-0 flex items-center justify-center text-white text-xl">⚡</div>
+                  <div class="flex-1">
+                    <div class="text-xs uppercase text-amber-700 font-semibold tracking-wider mb-1">如果你愿意下调一档质量</div>
+                    <h3 id="rec-secondary-name" class="text-lg font-bold text-gray-900 mb-1"></h3>
+                    <div id="rec-secondary-detail" class="text-sm text-gray-600 mb-2"></div>
+                    <div class="bg-white/70 border-l-4 border-amber-400 rounded-r px-3 py-2 mb-3 text-sm text-gray-800">
+                      <span class="font-semibold text-amber-700">推荐理由：</span><span id="rec-secondary-why"></span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 text-sm">
+                      <div>
+                        <div class="text-gray-500 text-xs">替代方案月费</div>
+                        <div class="font-bold text-amber-700" id="rec-secondary-monthly">—</div>
+                      </div>
+                      <div>
+                        <div class="text-gray-500 text-xs">节省费用</div>
+                        <div class="font-bold text-amber-700" id="rec-secondary-save">—</div>
+                      </div>
+                      <div>
+                        <div class="text-gray-500 text-xs">质量差异</div>
+                        <div class="font-semibold text-gray-700" id="rec-secondary-tier">—</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="rec-none" class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 text-center text-sm text-gray-600" style="display:none">
+                你已经在该档位最便宜的选项上了 🎉
+              </div>
+
+            </div>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100">
+              <h3 class="text-lg font-bold text-gray-900">全部模型对比 — 按你的设置计算月费</h3>
+              <p class="text-sm text-gray-500 mt-1">从便宜到昂贵排序。<span class="inline-block w-3 h-3 bg-blue-500 rounded align-middle"></span> = 你当前的选择。点击行可切换。</p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+                  <tr>
+                    <th class="px-4 py-3 text-left">排名</th>
+                    <th class="px-4 py-3 text-left">模型</th>
+                    <th class="px-4 py-3 text-left">厂商</th>
+                    <th class="px-4 py-3 text-right">输入/M</th>
+                    <th class="px-4 py-3 text-right">输出/M</th>
+                    <th class="px-4 py-3 text-right">每月</th>
+                  </tr>
+                </thead>
+                <tbody id="comp-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <section id="faq" class="mt-16 max-w-4xl">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">常见问题</h2>
+        <div class="space-y-4">
+          <details class="bg-white border border-gray-200 rounded-xl p-5 group">
+            <summary class="font-semibold text-gray-900 cursor-pointer flex justify-between items-center">
+              这个计算器的价格准确吗？
+              <span class="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+              价格来自各厂商官方定价页，每月核验（最近一次：2026 年 6 月底）。含 Claude Opus 4.8、Sonnet 4.6、Fable 5、GPT-5、DeepSeek V4 Pro、GLM-5.2、Kimi K2.7、Gemini 2.5 Pro 等 30+ 个模型。最终账单以厂商后台为准。
+            </p>
+          </details>
+          <details class="bg-white border border-gray-200 rounded-xl p-5 group">
+            <summary class="font-semibold text-gray-900 cursor-pointer flex justify-between items-center">
+              为什么我选了 Claude / GPT 也推荐 DeepSeek V4 Pro？
+              <span class="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+              因为 DeepSeek V4 Pro 是当前最便宜的旗舰级模型（价格约为 Claude Opus 4.8 的 1/30、Claude Sonnet 4.6 的 1/3）。在大多数推理 benchmark 上与 GPT-5 只差约 5%。同时计算器也显示同档位替代方案——如果需要 Claude 的 tool use 稳定性或 GPT 的多模态精度，可以保留原选。
+            </p>
+          </details>
+          <details class="bg-white border border-gray-200 rounded-xl p-5 group">
+            <summary class="font-semibold text-gray-900 cursor-pointer flex justify-between items-center">
+              "下调一档" 推荐是什么逻辑？
+              <span class="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+              如果你用旗舰档模型（Claude Opus、GPT-5 等），计算器也会推荐一档便宜的选择。比如你用 Claude Opus 4.8 时它会推荐 DeepSeek V4 Pro——同样的 1M 上下文、几乎一样的推理质量，价格便宜 95%。如果你的工作负载"够用就好"（聊天、文档摘要、普通代码生成），下调一档通常能省 70-90%。如果是医疗、法律、研究等需要顶级精度的场景，建议保持原选。
+            </p>
+          </details>
+          <details class="bg-white border border-gray-200 rounded-xl p-5 group">
+            <summary class="font-semibold text-gray-900 cursor-pointer flex justify-between items-center">
+              Prompt 缓存真的能省钱吗？
+              <span class="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+              对重复 prompt 前缀的工作负载（RAG 检索、客服机器人的固定 system prompt、代码助手的项目上下文），缓存读取价通常比新鲜输入便宜 <strong>90%</strong>。DeepSeek V4 Flash 缓存仅 $0.0028/百万 token，是目前最便宜。一次性补全把缓存滑块拉到 0%。
+            </p>
+          </details>
+        </div>
+      </section>
+
+    </div>
+  </section>
+
+  <script type="application/json" id="models-data" set:html={JSON.stringify(models)} />
+
+  <script is:inline>
+    (() => {
+      const models = JSON.parse(document.getElementById('models-data').textContent);
+      const isCN = document.documentElement.lang === 'zh-CN';
+      const $ = (id) => document.getElementById(id);
+
+      const fmt = (n, cur) => {
+        const symbol = cur === 'CNY' ? '¥' : '$';
+        const v = cur === 'CNY' ? n * 7 : n;
+        if (v < 0.01) return symbol + v.toFixed(5);
+        if (v < 1)    return symbol + v.toFixed(3);
+        if (v < 100)  return symbol + v.toFixed(2);
+        if (v < 10000) return symbol + Math.round(v).toLocaleString();
+        return symbol + Math.round(v).toLocaleString();
+      };
+
+      let currency = isCN ? 'CNY' : 'USD';
+
+      const tierLabel = {
+        frontier: { text: isCN ? '旗舰' : 'Frontier',  cls: 'bg-purple-100 text-purple-700' },
+        mid:      { text: isCN ? '中等' : 'Mid-tier',   cls: 'bg-blue-100 text-blue-700' },
+        budget:   { text: isCN ? '经济' : 'Budget',     cls: 'bg-green-100 text-green-700' }
+      };
+
+      function costForModel(m, tokens, ioRatio, dailyCalls, cachePct) {
+        const inpShare = ioRatio / 100;
+        const outShare = 1 - inpShare;
+        const inpTokens = tokens * inpShare;
+        const outTokens = tokens * outShare;
+        const cacheTokens = inpTokens * (cachePct / 100);
+        const freshInpTokens = inpTokens - cacheTokens;
+        const perCall = (freshInpTokens * m.input + cacheTokens * (m.cache || m.input) + outTokens * m.output) / 1_000_000;
+        return {
+          perCall,
+          daily: perCall * dailyCalls,
+          monthly: perCall * dailyCalls * 30,
+          yearly: perCall * dailyCalls * 365
+        };
+      }
+
+      function pickRecommendations(selected, allCosts) {
+        const selProvider = selected.provider;
+        const selTier = selected.tier;
+        const selCost = allCosts.find(x => x.m.id === selected.id).c.monthly;
+
+        const sameTierDiffProv = allCosts
+          .filter(x => x.m.id !== selected.id && x.m.tier === selTier && x.m.provider !== selProvider)
+          .sort((a, b) => a.c.monthly - b.c.monthly);
+        const sameTier = sameTierDiffProv.length > 0
+          ? sameTierDiffProv
+          : allCosts.filter(x => x.m.id !== selected.id && x.m.tier === selTier).sort((a, b) => a.c.monthly - b.c.monthly);
+
+        const primary = sameTier[0] || null;
+        const primarySave = primary ? (selCost - primary.c.monthly) : 0;
+        const primarySavePct = selCost > 0 ? (primarySave / selCost * 100) : 0;
+        const primaryValid = primary && primarySave > 0;
+
+        const tierBelow = { frontier: 'mid', mid: 'budget', budget: null }[selTier];
+        let secondary = null;
+        if (tierBelow) {
+          const candidates = allCosts
+            .filter(x => x.m.id !== selected.id && x.m.tier === tierBelow)
+            .sort((a, b) => a.c.monthly - b.c.monthly);
+          if (candidates[0]) {
+            const secSave = selCost - candidates[0].c.monthly;
+            const secSavePct = selCost > 0 ? (secSave / selCost * 100) : 0;
+            if (secSavePct > 50) {
+              secondary = { ...candidates[0], secSavePct, secSave };
+            }
+          }
+        }
+
+        return { primary, primarySave, primarySavePct, primaryValid, secondary };
+      }
+
+      function buildWhy(alt, selected) {
+        const isCN = document.documentElement.lang === 'zh-CN';
+        const selProv = selected.provider;
+        const altProv = alt.provider;
+        if (alt.tier === selected.tier) {
+          if (alt.cache && !selected.cache) {
+            return isCN
+              ? `${altProv} 同档位 + 支持 prompt 缓存 — 长 prompt 重复场景可再省 50-90%。`
+              : `Same ${alt.tier} tier, plus ${altProv} supports prompt caching — for long repeated prompts, save another 50-90%.`;
+          }
+          if (!alt.cache && selected.cache) {
+            return isCN
+              ? `同档位的更便宜选项（${altProv}），但不提供 prompt 缓存。一次性请求划算。`
+              : `Cheaper same-tier option (${altProv}), but no prompt caching. Best for one-off completions.`;
+          }
+          if (altProv !== selProv) {
+            return isCN
+              ? `同档位 + 不同厂商（${altProv} vs ${selProv}）— 避免厂商锁定，同档能力下省 60-90%。`
+              : `Same tier, different provider (${altProv} vs ${selProv}) — avoid vendor lock-in, save 60-90% at same capability.`;
+          }
+          return isCN ? `同档位的更便宜选项。` : `Same tier, cheaper price.`;
+        }
+        return isCN ? '更便宜的选择。' : 'Cheaper option.';
+      }
+
+      function recompute() {
+        const modelId = $('model-select').value;
+        const tokens = Math.max(1, parseFloat($('tokens-per-call').value) || 2500);
+        const ioRatio = parseFloat($('io-slider').value);
+        const dailyCalls = Math.max(1, parseInt($('daily-calls').value) || 1000);
+        const cachePct = parseFloat($('cache-slider').value);
+
+        $('io-display').textContent = ioRatio + '%';
+        $('cache-display').textContent = cachePct + '%';
+
+        const selected = models.find(m => m.id === modelId);
+        if (!selected) return;
+        const c = costForModel(selected, tokens, ioRatio, dailyCalls, cachePct);
+
+        $('cost-per-call').textContent = fmt(c.perCall, currency);
+        $('cost-daily').textContent    = fmt(c.daily, currency);
+        $('cost-monthly').textContent  = fmt(c.monthly, currency);
+        $('cost-yearly').textContent   = fmt(c.yearly, currency);
+
+        $('selected-name').textContent = isCN ? selected.nameZh : selected.name;
+        $('selected-provider').textContent = isCN ? selected.providerZh : selected.provider;
+        const t = tierLabel[selected.tier];
+        const tierBadge = $('selected-tier');
+        tierBadge.textContent = t.text;
+        tierBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold ' + t.cls;
+        $('sel-input').textContent  = '$' + selected.input.toFixed(selected.input < 0.1 ? 3 : 2);
+        $('sel-output').textContent = '$' + selected.output.toFixed(selected.output < 0.1 ? 3 : 2);
+        $('sel-cache').textContent  = selected.cache ? '$' + selected.cache.toFixed(selected.cache < 0.1 ? 3 : 2) : (isCN ? '— (不支持)' : '— (not supported)');
+        $('sel-note').textContent = isCN ? selected.noteZh : selected.note;
+
+        const allCosts = models.map(m => ({ m, c: costForModel(m, tokens, ioRatio, dailyCalls, cachePct) }));
+        const rec = pickRecommendations(selected, allCosts);
+
+        if (rec.primary && rec.primaryValid) {
+          document.getElementById('rec-primary').style.display = 'block';
+          $('rec-primary-name').textContent = isCN ? rec.primary.m.nameZh : rec.primary.m.name;
+          $('rec-primary-detail').textContent = `${isCN ? rec.primary.m.providerZh : rec.primary.m.provider} · $${rec.primary.m.input.toFixed(rec.primary.m.input < 0.1 ? 3 : 2)}/M in, $${rec.primary.m.output.toFixed(rec.primary.m.output < 0.1 ? 3 : 2)}/M out`;
+          $('rec-primary-monthly').textContent = fmt(rec.primary.c.monthly, currency);
+          $('rec-primary-save').textContent = rec.primarySave > 0
+            ? `${fmt(rec.primarySave, currency)} / ${isCN ? '月' : 'mo'} (${rec.primarySavePct.toFixed(0)}%)`
+            : (isCN ? '同价同档位' : 'Same cost, same tier');
+          $('rec-primary-tier').textContent = tierLabel[rec.primary.m.tier].text;
+          $('rec-primary-why').textContent = buildWhy(rec.primary.m, selected);
+          const sameProv = rec.primary.m.provider === selected.provider;
+          $('rec-primary-label').textContent = isCN
+            ? (sameProv ? '同厂商更便宜选项' : '同档位最佳选择')
+            : (sameProv ? 'Cheaper option from same provider' : 'Best same-tier alternative');
+        } else {
+          document.getElementById('rec-primary').style.display = 'none';
+        }
+
+        if (rec.secondary) {
+          const sec = rec.secondary;
+          document.getElementById('rec-secondary').style.display = 'block';
+          $('rec-secondary-name').textContent = isCN ? sec.m.nameZh : sec.m.name;
+          $('rec-secondary-detail').textContent = `${isCN ? sec.m.providerZh : sec.m.provider} · $${sec.m.input.toFixed(sec.m.input < 0.1 ? 3 : 2)}/M in, $${sec.m.output.toFixed(sec.m.output < 0.1 ? 3 : 2)}/M out`;
+          $('rec-secondary-monthly').textContent = fmt(sec.c.monthly, currency);
+          $('rec-secondary-save').textContent = `${fmt(sec.secSave, currency)} / ${isCN ? '月' : 'mo'} (${sec.secSavePct.toFixed(0)}%)`;
+          $('rec-secondary-tier').textContent = isCN ? '下调一档' : 'Drop a tier';
+          $('rec-secondary-why').textContent = isCN
+            ? `能力下调一档 — 多数生产负载体验差异 < 5%，但价格便宜 ${sec.secSavePct.toFixed(0)}%。适合"够用就好"的场景。`
+            : `One tier down usually means <5% capability loss for most workloads, but you save ${sec.secSavePct.toFixed(0)}%. Best for "good enough is fine" scenarios.`;
+        } else {
+          document.getElementById('rec-secondary').style.display = 'none';
+        }
+
+        if (!rec.primaryValid && !rec.secondary) {
+          document.getElementById('rec-none').style.display = 'block';
+        } else {
+          document.getElementById('rec-none').style.display = 'none';
+        }
+
+        const tbody = $('comp-tbody');
+        const rows = allCosts.slice().sort((a, b) => a.c.monthly - b.c.monthly);
+
+        tbody.innerHTML = rows.map((row, i) => {
+          const isSel = row.m.id === modelId;
+          const rowCls = isSel ? 'bg-blue-50 border-l-4 border-blue-500' : (i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50');
+          const tierBadge2 = tierLabel[row.m.tier];
+          const displayName = isCN ? row.m.nameZh : row.m.name;
+          const displayProv = isCN ? row.m.providerZh : row.m.provider;
+          return `
+            <tr class="${rowCls} hover:bg-blue-50/30 cursor-pointer transition-colors" data-model="${row.m.id}">
+              <td class="px-4 py-3 font-semibold text-gray-500">${i + 1}</td>
+              <td class="px-4 py-3">
+                <div class="font-medium text-gray-900">${displayName}</div>
+                <span class="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${tierBadge2.cls}">${tierBadge2.text}</span>
+              </td>
+              <td class="px-4 py-3 text-gray-600">${displayProv}</td>
+              <td class="px-4 py-3 text-right font-mono text-gray-700">$${row.m.input.toFixed(row.m.input < 0.1 ? 3 : 2)}</td>
+              <td class="px-4 py-3 text-right font-mono text-gray-700">$${row.m.output.toFixed(row.m.output < 0.1 ? 3 : 2)}</td>
+              <td class="px-4 py-3 text-right font-bold ${isSel ? 'text-blue-700' : 'text-gray-900'}">${fmt(row.c.monthly, currency)}</td>
+            </tr>`;
+        }).join('');
+
+        tbody.querySelectorAll('tr[data-model]').forEach(tr => {
+          tr.addEventListener('click', () => {
+            $('model-select').value = tr.dataset.model;
+            recompute();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
+      }
+
+      ['model-select', 'tokens-per-call', 'io-slider', 'cache-slider', 'daily-calls'].forEach(id => {
+        $(id).addEventListener('input', recompute);
+      });
+      document.querySelectorAll('.preset-btn').forEach(b => {
+        b.addEventListener('click', (e) => {
+          e.preventDefault();
+          $('daily-calls').value = b.dataset.preset;
+          recompute();
+        });
+      });
+      document.querySelectorAll('.cur-btn').forEach(b => {
+        b.addEventListener('click', (e) => {
+          e.preventDefault();
+          currency = b.dataset.currency;
+          document.querySelectorAll('.cur-btn').forEach(x => {
+            x.classList.remove('bg-blue-600', 'text-white');
+            x.classList.add('text-gray-600', 'hover:bg-gray-50');
+          });
+          b.classList.add('bg-blue-600', 'text-white');
+          b.classList.remove('text-gray-600', 'hover:bg-gray-50');
+          recompute();
+        });
+      });
+
+      document.querySelectorAll('.cur-btn').forEach(b => {
+        if (b.dataset.currency === currency) {
+          b.classList.add('bg-blue-600', 'text-white');
+          b.classList.remove('text-gray-600', 'hover:bg-gray-50');
+        }
+      });
+
+      recompute();
+    })();
+  </script>
+</BaseLayout>

@@ -1,0 +1,72 @@
+{
+  "$id": "models.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "APIRank Models Data",
+  "description": "Single source of truth for LLM model metadata + official list pricing. Consumed by src/lib/pricing.ts. Aligned with PRD §7.1 (Model entity).",
+  "type": "object",
+  "required": ["lastVerified", "currency", "unit", "models"],
+  "properties": {
+    "lastVerified": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "ISO date (YYYY-MM-DD) when at least one model's price was last verified."
+    },
+    "currency": { "enum": ["USD"] },
+    "unit": { "enum": ["per_1M_tokens"] },
+    "fxNote": {
+      "type": "string",
+      "description": "USD/CNY conversion note shown to users. Stable reference rate for calculator; not live FX."
+    },
+    "models": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "nameZh", "provider", "providerZh", "providerId", "tier", "tierZh", "pricing", "contextWindow", "capabilities", "note", "noteZh", "availabilityCN", "officialUrl"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "name": { "type": "string" },
+          "nameZh": { "type": "string" },
+          "provider": { "type": "string" },
+          "providerZh": { "type": "string" },
+          "providerId": {
+            "type": "string",
+            "description": "Must match `id` field in src/data/providers.json (foreign-key join)."
+          },
+          "tier": { "enum": ["frontier", "mid", "budget"] },
+          "tierZh": { "type": "string", "enum": ["旗舰", "中等", "经济"] },
+          "pricing": {
+            "type": "object",
+            "required": ["input", "output", "cache"],
+            "properties": {
+              "input":  { "type": "number", "minimum": 0, "description": "USD per 1M input tokens" },
+              "output": { "type": "number", "minimum": 0, "description": "USD per 1M output tokens" },
+              "cache":  { "type": "number", "minimum": 0, "description": "USD per 1M cache-read tokens. 0 = cache not supported." }
+            }
+          },
+          "contextWindow": { "type": "integer", "minimum": 1 },
+          "capabilities": {
+            "type": "array",
+            "items": { "enum": ["reasoning", "code", "tools", "vision", "long_context", "multimodal", "structured_output"] }
+          },
+          "releaseDate": {
+            "type": "string",
+            "pattern": "^([0-9]{4}-[0-9]{2}-[0-9]{2})|unknown$",
+            "description": "Model public release date (PRD §7.1 Model.release_date). Use 'unknown' when the model's public release date has not been independently verified (e.g. catalog uses speculative / roadmap names)."
+          },
+          "note": { "type": "string" },
+          "noteZh": { "type": "string" },
+          "availabilityCN": {
+            "enum": ["direct", "blocked", "proxy_required"],
+            "description": "Mainland-China direct access status per provider's official policy."
+          },
+          "officialUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Provider's official pricing or product page (used for Source.verifiedAt attribution)."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "$id": "price-history.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "APIRank Price History",
+  "description": "Append-only price-change log per PRD §7.1 PriceRecord entity.",
+  "type": "object",
+  "required": ["currency", "unit", "records"],
+  "properties": {
+    "currency": { "enum": ["USD"] },
+    "unit": { "enum": ["per_1M_tokens"] },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["model_id", "region", "input", "output", "cache", "currency", "effective_at", "source_id"],
+        "properties": {
+          "model_id":    { "type": "string" },
+          "region":      { "enum": ["global", "cn", "us", "eu"] },
+          "input":       { "type": "number", "minimum": 0 },
+          "output":      { "type": "number", "minimum": 0 },
+          "cache":       { "type": "number", "minimum": 0 },
+          "currency":    { "enum": ["USD"] },
+          "effective_at":{ "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+          "source_id":   { "type": "string", "description": "Foreign key into pricing-meta.sources[].id." },
+          "note":        { "type": "string" }
+        }
+      }
+    }
+  }
+}

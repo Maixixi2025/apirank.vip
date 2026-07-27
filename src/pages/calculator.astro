@@ -1,0 +1,689 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { modelsData, pricingMeta, lastVerifiedLabel, isStale, ageInDays } from '../lib/pricing';
+
+const locale = 'en';
+const slug = 'calculator';
+
+const title = 'LLM API Cost Calculator 2026 — 30+ Real Models (GPT-5, Claude Opus 4.8, DeepSeek V4) | APIRank';
+const description = 'Free LLM API cost calculator with 30+ models including Claude Opus 4.8, Sonnet 4.6, Fable 5, DeepSeek V4, GLM-5.2, Kimi K2.7. Compare per-call / daily / monthly costs. Smart recommendations explain WHY each alternative is cheaper.';
+const canonicalUrl = `https://apirank.vip/${slug}`;
+const zhCanonicalUrl = 'https://apirank.vip/zh/calculator';
+
+// A-03: single source of truth — project models.json into the flat shape the
+// in-page calculator script expects (id, name, provider, tier, input/output/cache).
+const models = modelsData.models.map((m) => ({
+  id: m.id,
+  name: m.name,
+  nameZh: m.nameZh,
+  provider: m.provider,
+  providerZh: m.providerZh,
+  providerId: m.providerId,
+  tier: m.tier,
+  input: m.pricing.input,
+  output: m.pricing.output,
+  cache: m.pricing.cache,
+  officialUrl: m.officialUrl,
+}));
+const verifiedLabel = lastVerifiedLabel('en');
+const verifiedAgeDays = ageInDays();
+const verifiedStale = isStale();
+
+
+
+// WebApplication JSON-LD
+const webAppJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "LLM API Cost Calculator",
+  "url": "https://apirank.vip/calculator",
+  "description": description,
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" }
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How accurate is this LLM API cost calculator?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Pricing is sourced from each provider's official pricing page and verified monthly (last update: late June 2026). Models include Claude Opus 4.8, Sonnet 4.6, Fable 5, GPT-5, DeepSeek V4 Pro, GLM-5.2, Kimi K2.7, Gemini 2.5 Pro, and 22 more. Cache read pricing is included where supported. For exact billing, always check your provider's invoice." }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does the recommendation say DeepSeek V4 Pro even when I select Claude or GPT?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Because DeepSeek V4 Pro is the cheapest frontier-quality model on the market (about 1/30 the price of Claude Opus 4.8, 1/3 of Claude Sonnet 4.6). It scores within 5% of GPT-5 on most reasoning benchmarks. The calculator also shows a same-tier alternative so you can keep your current provider if you prefer." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does prompt cache pricing actually save money?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes — for workloads with repeated prompt prefixes (RAG with stable contexts, customer-service bots, code assistants), cache read rates are typically 90% cheaper than fresh-input rates. DeepSeek V4 Flash has the cheapest cache at $0.0028/1M. For one-off completions, set cache to 0%." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a realistic input:output ratio?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Most production workloads average 3:1 to 5:1 input:output. Code generation is closer to 2:1 (long prompts, long completions); classification/extraction is 10:1 or higher." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  type="website"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(webAppJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-blue-50 via-white to-indigo-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Cost Calculator</span>
+      </nav>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
+        LLM API <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Cost Calculator</span>
+      </h1>
+      <p class="text-lg text-gray-600 max-w-3xl">
+        Pick any model, plug in your token usage and daily call volume — get per-call, daily, monthly, and yearly costs instantly.
+        <strong>{models.length} real models</strong> including Claude Opus 4.8, Sonnet 4.6, Fable 5, DeepSeek V4 Pro, GLM-5.2, Kimi K2.7.
+        Smart recommendations explain <em>why</em> each alternative is cheaper.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3 text-sm">
+        <span class="inline-flex items-center gap-1.5 bg-white border border-gray-200 rounded-full px-3 py-1 text-gray-600">
+          <span class={`w-2 h-2 rounded-full ${verifiedStale ? 'bg-yellow-500' : 'bg-green-500'}`}></span>
+          {verifiedLabel}{verifiedStale ? ' (refresh due)' : ''}
+        </span>
+        <span class="inline-flex items-center gap-1.5 bg-white border border-gray-200 rounded-full px-3 py-1 text-gray-600">
+          {models.length} models · 12 providers · frontier / mid / budget tiers
+        </span>
+        <a href="#faq" class="inline-flex items-center gap-1.5 bg-white border border-gray-200 rounded-full px-3 py-1 text-gray-600 hover:text-blue-600">
+          See FAQ ↓
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Calculator -->
+  <section class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- LEFT: Inputs -->
+        <div class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm sticky top-24">
+            <h2 class="text-lg font-bold text-gray-900 mb-5">Your Usage</h2>
+
+            <label class="block mb-5">
+              <span class="text-sm font-medium text-gray-700 mb-2 block">Model</span>
+              <select id="model-select" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                {models.map((m, i) => (
+                  <option value={m.id} selected={i === 0} data-tier={m.tier}>
+                    {m.name} — {m.provider}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label class="block mb-5">
+              <span class="text-sm font-medium text-gray-700 mb-2 block">
+                Average tokens per call
+                <span class="text-gray-400 font-normal">(prompt + completion combined)</span>
+              </span>
+              <input id="tokens-per-call" type="number" min="1" value="2500"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <p class="text-xs text-gray-500 mt-1.5">Common: 1K (chat) · 2.5K (RAG) · 8K (long context)</p>
+            </label>
+
+            <label class="block mb-5">
+              <span class="text-sm font-medium text-gray-700 mb-2 block">
+                Input share: <span id="io-display">70%</span> / Output 30%
+              </span>
+              <input id="io-slider" type="range" min="10" max="95" value="70" step="5"
+                class="w-full accent-blue-600" />
+            </label>
+
+            <label class="block mb-5">
+              <span class="text-sm font-medium text-gray-700 mb-2 block">
+                Daily API calls
+              </span>
+              <input id="daily-calls" type="number" min="1" value="1000"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <p class="text-xs text-gray-500 mt-1.5">Quick presets:
+                <button data-preset="100" class="preset-btn text-blue-600 hover:underline">100</button>,
+                <button data-preset="1000" class="preset-btn text-blue-600 hover:underline">1K</button>,
+                <button data-preset="10000" class="preset-btn text-blue-600 hover:underline">10K</button>,
+                <button data-preset="100000" class="preset-btn text-blue-600 hover:underline">100K</button>
+              </p>
+            </label>
+
+            <label class="block mb-5">
+              <span class="text-sm font-medium text-gray-700 mb-2 block">
+                Cache hit rate: <span id="cache-display">0%</span>
+                <span class="text-gray-400 font-normal">(optional)</span>
+              </span>
+              <input id="cache-slider" type="range" min="0" max="90" value="0" step="10"
+                class="w-full accent-blue-600" />
+              <p class="text-xs text-gray-500 mt-1.5">Higher = more prompt prefix reuse. Set 0% for one-off calls.</p>
+            </label>
+
+            <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+              <span class="text-sm text-gray-600">Currency</span>
+              <div class="flex border border-gray-200 rounded-md overflow-hidden text-sm">
+                <button data-currency="USD" class="cur-btn px-3 py-1.5 bg-blue-600 text-white font-medium">USD</button>
+                <button data-currency="CNY" class="cur-btn px-3 py-1.5 text-gray-600 hover:bg-gray-50">CNY ¥</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Results -->
+        <div class="lg:col-span-2 space-y-8">
+
+          <!-- Cost summary cards -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Cost Summary</h2>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-5 shadow-sm">
+                <div class="text-xs uppercase tracking-wide opacity-80 mb-2">Per Call</div>
+                <div class="text-2xl font-bold" id="cost-per-call">—</div>
+              </div>
+              <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 text-white rounded-2xl p-5 shadow-sm">
+                <div class="text-xs uppercase tracking-wide opacity-80 mb-2">Daily</div>
+                <div class="text-2xl font-bold" id="cost-daily">—</div>
+              </div>
+              <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl p-5 shadow-sm">
+                <div class="text-xs uppercase tracking-wide opacity-80 mb-2">Monthly</div>
+                <div class="text-2xl font-bold" id="cost-monthly">—</div>
+              </div>
+              <div class="bg-gradient-to-br from-pink-500 to-pink-600 text-white rounded-2xl p-5 shadow-sm">
+                <div class="text-xs uppercase tracking-wide opacity-80 mb-2">Yearly</div>
+                <div class="text-2xl font-bold" id="cost-yearly">—</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selected model detail -->
+          <div class="bg-white border-2 border-blue-200 rounded-2xl p-6 shadow-sm">
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <div class="text-xs uppercase text-blue-600 font-semibold tracking-wider mb-1">Selected Model</div>
+                <h3 id="selected-name" class="text-2xl font-bold text-gray-900"></h3>
+                <div id="selected-provider" class="text-sm text-gray-500"></div>
+              </div>
+              <span id="selected-tier" class="px-3 py-1 rounded-full text-xs font-semibold"></span>
+            </div>
+            <div class="grid grid-cols-3 gap-4 text-sm mb-4">
+              <div>
+                <div class="text-gray-500 mb-1">Input $/1M</div>
+                <div class="font-semibold text-gray-900" id="sel-input">—</div>
+              </div>
+              <div>
+                <div class="text-gray-500 mb-1">Output $/1M</div>
+                <div class="font-semibold text-gray-900" id="sel-output">—</div>
+              </div>
+              <div>
+                <div class="text-gray-500 mb-1">Cache read $/1M</div>
+                <div class="font-semibold text-gray-900" id="sel-cache">—</div>
+              </div>
+            </div>
+            <div class="pt-4 border-t border-gray-100 text-sm text-gray-600" id="sel-note"></div>
+          </div>
+
+          <!-- Smart recommendations (NEW: 2 alternatives with reasoning) -->
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-4">💡 Smart Recommendations</h2>
+            <div class="space-y-4">
+
+              <!-- Primary recommendation -->
+              <div id="rec-primary" class="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-green-500 flex-shrink-0 flex items-center justify-center text-white text-xl">💰</div>
+                  <div class="flex-1">
+                    <div class="text-xs uppercase text-green-700 font-semibold tracking-wider mb-1" id="rec-primary-label">Best value alternative</div>
+                    <h3 id="rec-primary-name" class="text-lg font-bold text-gray-900 mb-1"></h3>
+                    <div id="rec-primary-detail" class="text-sm text-gray-600 mb-2"></div>
+                    <!-- WHY recommended line (NEW) -->
+                    <div class="bg-white/70 border-l-4 border-green-400 rounded-r px-3 py-2 mb-3 text-sm text-gray-800">
+                      <span class="font-semibold text-green-700">Why:</span> <span id="rec-primary-why"></span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 text-sm">
+                      <div>
+                        <div class="text-gray-500 text-xs">Alt. monthly</div>
+                        <div class="font-bold text-green-700" id="rec-primary-monthly">—</div>
+                      </div>
+                      <div>
+                        <div class="text-gray-500 text-xs">You save</div>
+                        <div class="font-bold text-green-700" id="rec-primary-save">—</div>
+                      </div>
+                      <div>
+                        <div class="text-gray-500 text-xs">Tier</div>
+                        <div class="font-semibold text-gray-700" id="rec-primary-tier">—</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Secondary recommendation (drop a tier) -->
+              <div id="rec-secondary" class="bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-200 rounded-2xl p-6" style="display:none">
+                <div class="flex items-start gap-4">
+                  <div class="w-12 h-12 rounded-xl bg-amber-500 flex-shrink-0 flex items-center justify-center text-white text-xl">⚡</div>
+                  <div class="flex-1">
+                    <div class="text-xs uppercase text-amber-700 font-semibold tracking-wider mb-1">If you can drop one quality tier</div>
+                    <h3 id="rec-secondary-name" class="text-lg font-bold text-gray-900 mb-1"></h3>
+                    <div id="rec-secondary-detail" class="text-sm text-gray-600 mb-2"></div>
+                    <div class="bg-white/70 border-l-4 border-amber-400 rounded-r px-3 py-2 mb-3 text-sm text-gray-800">
+                      <span class="font-semibold text-amber-700">Why:</span> <span id="rec-secondary-why"></span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 text-sm">
+                      <div>
+                        <div class="text-gray-500 text-xs">Alt. monthly</div>
+                        <div class="font-bold text-amber-700" id="rec-secondary-monthly">—</div>
+                      </div>
+                      <div>
+                        <div class="text-gray-500 text-xs">You save</div>
+                        <div class="font-bold text-amber-700" id="rec-secondary-save">—</div>
+                      </div>
+                      <div>
+                        <div class="text-gray-500 text-xs">Quality trade-off</div>
+                        <div class="font-semibold text-gray-700" id="rec-secondary-tier">—</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- "No cheaper option" message -->
+              <div id="rec-none" class="bg-gray-50 border-2 border-gray-200 rounded-2xl p-6 text-center text-sm text-gray-600" style="display:none">
+                You're already on the cheapest option in your tier. 🎉
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Comparison table -->
+          <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100">
+              <h3 class="text-lg font-bold text-gray-900">All Models — Monthly Cost at Your Settings</h3>
+              <p class="text-sm text-gray-500 mt-1">Sorted cheapest → most expensive. <span class="inline-block w-3 h-3 bg-blue-500 rounded align-middle"></span> = your current selection. Click any row to switch.</p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+                  <tr>
+                    <th class="px-4 py-3 text-left">Rank</th>
+                    <th class="px-4 py-3 text-left">Model</th>
+                    <th class="px-4 py-3 text-left">Provider</th>
+                    <th class="px-4 py-3 text-right">Input/M</th>
+                    <th class="px-4 py-3 text-right">Output/M</th>
+                    <th class="px-4 py-3 text-right">Monthly</th>
+                  </tr>
+                </thead>
+                <tbody id="comp-tbody">
+                  <!-- populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <section id="faq" class="mt-16 max-w-4xl">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+          <details class="bg-white border border-gray-200 rounded-xl p-5 group">
+            <summary class="font-semibold text-gray-900 cursor-pointer flex justify-between items-center">
+              How accurate is this LLM API cost calculator?
+              <span class="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+              Pricing is sourced from each provider's official pricing page and verified monthly (last update: late June 2026). Models include Claude Opus 4.8, Sonnet 4.6, Fable 5, GPT-5, DeepSeek V4 Pro, GLM-5.2, Kimi K2.7, Gemini 2.5 Pro, and 22 more. Cache read pricing is included where supported. For exact billing, always check your provider's invoice.
+            </p>
+          </details>
+          <details class="bg-white border border-gray-200 rounded-xl p-5 group">
+            <summary class="font-semibold text-gray-900 cursor-pointer flex justify-between items-center">
+              Why does the recommendation suggest DeepSeek V4 Pro even when I pick Claude or GPT?
+              <span class="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+              Because DeepSeek V4 Pro is the cheapest frontier-quality model on the market (about 1/30 the price of Claude Opus 4.8, 1/3 the price of Claude Sonnet 4.6). It scores within ~5% of GPT-5 on most reasoning benchmarks. The calculator also shows a same-tier alternative so you can keep your current provider if you prefer — for example, if you need Claude's tool-use stability or GPT's multimodal polish.
+            </p>
+          </details>
+          <details class="bg-white border border-gray-200 rounded-xl p-5 group">
+            <summary class="font-semibold text-gray-900 cursor-pointer flex justify-between items-center">
+              How does the "drop a tier" recommendation work?
+              <span class="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+              If you're using a frontier-tier model (Claude Opus, GPT-5, etc.) and the calculator shows a frontier-quality option like DeepSeek V4 Pro that's 80-95% cheaper, you're already on the "drop a tier" play. For workloads where reasoning quality matters but extreme frontier capability is overkill, dropping a tier usually saves 70-90% with &lt;5% quality loss. If you need 100% frontier quality (medical, legal, research), stay where you are.
+            </p>
+          </details>
+          <details class="bg-white border border-gray-200 rounded-xl p-5 group">
+            <summary class="font-semibold text-gray-900 cursor-pointer flex justify-between items-center">
+              Does prompt cache pricing actually save money?
+              <span class="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+            </summary>
+            <p class="mt-3 text-gray-600 text-sm leading-relaxed">
+              Yes — for workloads with repeated prompt prefixes (RAG with stable contexts, customer-service bots, code assistants), cache read rates are typically 90% cheaper than fresh-input rates. DeepSeek V4 Flash has the cheapest cache at $0.0028/1M. For one-off completions, set the cache slider to 0%.
+            </p>
+          </details>
+        </div>
+      </section>
+
+    </div>
+  </section>
+
+  <!-- Inline data + script -->
+  <script type="application/json" id="models-data" set:html={JSON.stringify(models)} />
+
+  <script is:inline>
+    (() => {
+      const models = JSON.parse(document.getElementById('models-data').textContent);
+      const $ = (id) => document.getElementById(id);
+      const isCN = document.documentElement.lang === 'zh-CN';
+
+      const fmt = (n, cur) => {
+        const symbol = cur === 'CNY' ? '¥' : '$';
+        const v = cur === 'CNY' ? n * 7 : n;  // $1 ≈ ¥7
+        if (v < 0.01) return symbol + v.toFixed(5);
+        if (v < 1)    return symbol + v.toFixed(3);
+        if (v < 100)  return symbol + v.toFixed(2);
+        if (v < 10000) return symbol + Math.round(v).toLocaleString();
+        return symbol + Math.round(v).toLocaleString();
+      };
+
+      let currency = isCN ? 'CNY' : 'USD';
+
+      const tierLabel = {
+        frontier: { text: isCN ? '旗舰' : 'Frontier',  cls: 'bg-purple-100 text-purple-700' },
+        mid:      { text: isCN ? '中等' : 'Mid-tier',   cls: 'bg-blue-100 text-blue-700' },
+        budget:   { text: isCN ? '经济' : 'Budget',     cls: 'bg-green-100 text-green-700' }
+      };
+
+      const tierOrder = { frontier: 0, mid: 1, budget: 2 };
+      const tierNameShort = { frontier: 'frontier', mid: 'mid', budget: 'budget' };
+
+      // Cost calculation
+      function costForModel(m, tokens, ioRatio, dailyCalls, cachePct) {
+        const inpShare = ioRatio / 100;
+        const outShare = 1 - inpShare;
+        const inpTokens = tokens * inpShare;
+        const outTokens = tokens * outShare;
+        const cacheTokens = inpTokens * (cachePct / 100);
+        const freshInpTokens = inpTokens - cacheTokens;
+        const perCall = (freshInpTokens * m.input + cacheTokens * (m.cache || m.input) + outTokens * m.output) / 1_000_000;
+        return {
+          perCall,
+          daily: perCall * dailyCalls,
+          monthly: perCall * dailyCalls * 30,
+          yearly: perCall * dailyCalls * 365
+        };
+      }
+
+      // Smart recommendation algorithm (v2):
+      //   Primary alt: same tier, DIFFERENT provider than selected, lowest cost.
+      //     If no same-tier-different-provider, fall back to same tier any provider.
+      //   Secondary alt: one tier down, lowest cost (only if saves >50% AND user is frontier).
+      function pickRecommendations(selected, allCosts) {
+        const selProvider = selected.provider;
+        const selTier = selected.tier;
+        const selCost = allCosts.find(x => x.m.id === selected.id).c.monthly;
+
+        // Primary: same tier, different provider, cheapest
+        const sameTierDiffProv = allCosts
+          .filter(x => x.m.id !== selected.id && x.m.tier === selTier && x.m.provider !== selProvider)
+          .sort((a, b) => a.c.monthly - b.c.monthly);
+        // Fallback: same tier, any provider (if no different-provider option)
+        const sameTier = sameTierDiffProv.length > 0
+          ? sameTierDiffProv
+          : allCosts.filter(x => x.m.id !== selected.id && x.m.tier === selTier).sort((a, b) => a.c.monthly - b.c.monthly);
+
+        const primary = sameTier[0] || null;
+        const primarySave = primary ? (selCost - primary.c.monthly) : 0;
+        const primarySavePct = selCost > 0 ? (primarySave / selCost * 100) : 0;
+        // If primary is more expensive than selected, hide it
+        const primaryValid = primary && primarySave > 0;
+
+        // Secondary: one tier DOWN (only for frontier), cheapest
+        const tierBelow = { frontier: 'mid', mid: 'budget', budget: null }[selTier];
+        let secondary = null;
+        if (tierBelow) {
+          const candidates = allCosts
+            .filter(x => x.m.id !== selected.id && x.m.tier === tierBelow)
+            .sort((a, b) => a.c.monthly - b.c.monthly);
+          if (candidates[0]) {
+            const secSave = selCost - candidates[0].c.monthly;
+            const secSavePct = selCost > 0 ? (secSave / selCost * 100) : 0;
+            // Only show if saves >50%
+            if (secSavePct > 50) {
+              secondary = { ...candidates[0], secSavePct, secSave };
+            }
+          }
+        }
+
+        return { primary, primarySave, primarySavePct, primaryValid, secondary };
+      }
+
+      // Compose "Why recommended" line based on the actual reason
+      function buildWhy(alt, selected, ctx) {
+        const selProv = selected.provider;
+        const altProv = alt.provider;
+        const isCN = document.documentElement.lang === 'zh-CN';
+
+        // Why a same-tier recommendation?
+        if (alt.tier === selected.tier) {
+          if (alt.cache && !selected.cache) {
+            return isCN
+              ? `${altProv} 同档位 + 支持 prompt 缓存 — 长 prompt 重复场景可再省 50-90%。`
+              : `Same ${alt.tier} tier, plus ${altProv} supports prompt caching — for long repeated prompts, you save another 50-90%.`;
+          }
+          if (!alt.cache && selected.cache) {
+            return isCN
+              ? `同档位的更便宜选项（${altProv}），但不提供 prompt 缓存。一次性请求划算。`
+              : `Cheaper same-tier option (${altProv}), but no prompt caching. Best for one-off completions.`;
+          }
+          if (altProv !== selProv) {
+            return isCN
+              ? `同档位 + 不同厂商（${altProv} vs ${selProv}）— 避免厂商锁定，同档能力下省 60-90%。`
+              : `Same tier, different provider (${altProv} vs ${selProv}) — avoid vendor lock-in, save 60-90% at the same capability.`;
+          }
+          return isCN ? `同档位的更便宜选项。` : `Same tier, cheaper price.`;
+        }
+
+        // Why a drop-a-tier recommendation?
+        if (ctx === 'drop-tier') {
+          return isCN
+            ? `质量下调一档 — 多数生产负载体验差异 < 5%，但价格便宜 ${(primarySavePct || 0).toFixed(0)}%。`
+            : `Drop one quality tier — for most production workloads, quality difference is under 5% but you save ${(ctx._pct || 0).toFixed(0)}%.`;
+        }
+
+        return isCN ? '更便宜的选择。' : 'Cheaper option.';
+      }
+
+      // Render a recommendation box
+      function renderRec(prefix, rec, ctx) {
+        if (!rec) {
+          $(prefix + '-box').style.display = 'none';
+          return;
+        }
+        const box = $(prefix + '-box');
+        box.style.display = 'block';
+        const m = rec.m;
+        const cc = rec.c;
+        const save = rec.save;
+        const savePct = rec.savePct;
+        const isCN = document.documentElement.lang === 'zh-CN';
+
+        $(prefix + '-name').textContent = isCN ? m.nameZh : m.name;
+        $(prefix + '-detail').textContent = `${isCN ? m.providerZh : m.provider} · $${m.input.toFixed(m.input < 0.1 ? 3 : 2)}/M in, $${m.output.toFixed(m.output < 0.1 ? 3 : 2)}/M out`;
+        $(prefix + '-monthly').textContent = fmt(cc.monthly, currency);
+        $(prefix + '-save').textContent = save > 0
+          ? `${fmt(save, currency)} / ${isCN ? '月' : 'mo'} (${savePct.toFixed(0)}%)`
+          : (isCN ? '同价' : 'Same cost');
+        $(prefix + '-tier').textContent = tierLabel[m.tier].text;
+        // Note (short model description)
+        const note = isCN ? m.noteZh : m.note;
+        const why = buildWhy(m, rec.selected, ctx);
+        $(prefix + '-why').textContent = why;
+      }
+
+      function recompute() {
+        const modelId = $('model-select').value;
+        const tokens = Math.max(1, parseFloat($('tokens-per-call').value) || 2500);
+        const ioRatio = parseFloat($('io-slider').value);
+        const dailyCalls = Math.max(1, parseInt($('daily-calls').value) || 1000);
+        const cachePct = parseFloat($('cache-slider').value);
+
+        $('io-display').textContent = ioRatio + '%';
+        $('cache-display').textContent = cachePct + '%';
+
+        const selected = models.find(m => m.id === modelId);
+        if (!selected) return;
+        const c = costForModel(selected, tokens, ioRatio, dailyCalls, cachePct);
+
+        $('cost-per-call').textContent = fmt(c.perCall, currency);
+        $('cost-daily').textContent    = fmt(c.daily, currency);
+        $('cost-monthly').textContent  = fmt(c.monthly, currency);
+        $('cost-yearly').textContent   = fmt(c.yearly, currency);
+
+        const isCN = document.documentElement.lang === 'zh-CN';
+
+        $('selected-name').textContent = isCN ? selected.nameZh : selected.name;
+        $('selected-provider').textContent = isCN ? selected.providerZh : selected.provider;
+        const t = tierLabel[selected.tier];
+        const tierBadge = $('selected-tier');
+        tierBadge.textContent = t.text;
+        tierBadge.className = 'px-3 py-1 rounded-full text-xs font-semibold ' + t.cls;
+        $('sel-input').textContent  = '$' + selected.input.toFixed(selected.input < 0.1 ? 3 : 2);
+        $('sel-output').textContent = '$' + selected.output.toFixed(selected.output < 0.1 ? 3 : 2);
+        $('sel-cache').textContent  = selected.cache ? '$' + selected.cache.toFixed(selected.cache < 0.1 ? 3 : 2) : (isCN ? '— (不支持)' : '— (not supported)');
+        $('sel-note').textContent = isCN ? selected.noteZh : selected.note;
+
+        // Compute all costs
+        const allCosts = models.map(m => ({ m, c: costForModel(m, tokens, ioRatio, dailyCalls, cachePct) }));
+        const rec = pickRecommendations(selected, allCosts);
+
+        // === Primary recommendation (same tier, different provider preferred) ===
+        if (rec.primary && rec.primaryValid) {
+          document.getElementById('rec-primary').style.display = 'block';
+          $('rec-primary-name').textContent = isCN ? rec.primary.m.nameZh : rec.primary.m.name;
+          $('rec-primary-detail').textContent = `${isCN ? rec.primary.m.providerZh : rec.primary.m.provider} · $${rec.primary.m.input.toFixed(rec.primary.m.input < 0.1 ? 3 : 2)}/M in, $${rec.primary.m.output.toFixed(rec.primary.m.output < 0.1 ? 3 : 2)}/M out`;
+          $('rec-primary-monthly').textContent = fmt(rec.primary.c.monthly, currency);
+          $('rec-primary-save').textContent = rec.primarySave > 0
+            ? `${fmt(rec.primarySave, currency)} / ${isCN ? '月' : 'mo'} (${rec.primarySavePct.toFixed(0)}%)`
+            : (isCN ? '同价同档位' : 'Same cost, same tier');
+          $('rec-primary-tier').textContent = tierLabel[rec.primary.m.tier].text;
+          $('rec-primary-why').textContent = buildWhy(rec.primary.m, selected, 'same-tier');
+          const sameProv = rec.primary.m.provider === selected.provider;
+          $('rec-primary-label').textContent = isCN
+            ? (sameProv ? '同厂商更便宜选项' : '同档位最佳选择')
+            : (sameProv ? 'Cheaper option from same provider' : 'Best same-tier alternative');
+        } else {
+          document.getElementById('rec-primary').style.display = 'none';
+        }
+
+        // === Secondary recommendation (drop a tier) ===
+        if (rec.secondary) {
+          const sec = rec.secondary;
+          const secBox = document.getElementById('rec-secondary');
+          secBox.style.display = 'block';
+          $('rec-secondary-name').textContent = isCN ? sec.m.nameZh : sec.m.name;
+          $('rec-secondary-detail').textContent = `${isCN ? sec.m.providerZh : sec.m.provider} · $${sec.m.input.toFixed(sec.m.input < 0.1 ? 3 : 2)}/M in, $${sec.m.output.toFixed(sec.m.output < 0.1 ? 3 : 2)}/M out`;
+          $('rec-secondary-monthly').textContent = fmt(sec.c.monthly, currency);
+          $('rec-secondary-save').textContent = `${fmt(sec.secSave, currency)} / ${isCN ? '月' : 'mo'} (${sec.secSavePct.toFixed(0)}%)`;
+          $('rec-secondary-tier').textContent = isCN ? '下调一档' : 'Drop a tier';
+          $('rec-secondary-why').textContent = isCN
+            ? `${tierNameShort[sec.m.tier]} 档位通常能力损失 < 5%，但价格便宜 ${sec.secSavePct.toFixed(0)}%。适合"够用就好"的场景。`
+            : `One tier down usually means <5% capability loss for most workloads, but you save ${sec.secSavePct.toFixed(0)}%. Best for "good enough is fine" scenarios.`;
+        } else {
+          document.getElementById('rec-secondary').style.display = 'none';
+        }
+
+        // No-recommendation message
+        if (!rec.primaryValid && !rec.secondary) {
+          document.getElementById('rec-none').style.display = 'block';
+        } else {
+          document.getElementById('rec-none').style.display = 'none';
+        }
+
+        // Comparison table
+        const tbody = $('comp-tbody');
+        const rows = allCosts.slice().sort((a, b) => a.c.monthly - b.c.monthly);
+
+        tbody.innerHTML = rows.map((row, i) => {
+          const isSel = row.m.id === modelId;
+          const rowCls = isSel ? 'bg-blue-50 border-l-4 border-blue-500' : (i % 2 === 0 ? 'bg-white' : 'bg-gray-50/50');
+          const tierBadge2 = tierLabel[row.m.tier];
+          const displayName = isCN ? row.m.nameZh : row.m.name;
+          const displayProv = isCN ? row.m.providerZh : row.m.provider;
+          return `
+            <tr class="${rowCls} hover:bg-blue-50/30 cursor-pointer transition-colors" data-model="${row.m.id}">
+              <td class="px-4 py-3 font-semibold text-gray-500">${i + 1}</td>
+              <td class="px-4 py-3">
+                <div class="font-medium text-gray-900">${displayName}</div>
+                <span class="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${tierBadge2.cls}">${tierBadge2.text}</span>
+              </td>
+              <td class="px-4 py-3 text-gray-600">${displayProv}</td>
+              <td class="px-4 py-3 text-right font-mono text-gray-700">$${row.m.input.toFixed(row.m.input < 0.1 ? 3 : 2)}</td>
+              <td class="px-4 py-3 text-right font-mono text-gray-700">$${row.m.output.toFixed(row.m.output < 0.1 ? 3 : 2)}</td>
+              <td class="px-4 py-3 text-right font-bold ${isSel ? 'text-blue-700' : 'text-gray-900'}">${fmt(row.c.monthly, currency)}</td>
+            </tr>`;
+        }).join('');
+
+        tbody.querySelectorAll('tr[data-model]').forEach(tr => {
+          tr.addEventListener('click', () => {
+            $('model-select').value = tr.dataset.model;
+            recompute();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        });
+      }
+
+      ['model-select', 'tokens-per-call', 'io-slider', 'cache-slider', 'daily-calls'].forEach(id => {
+        $(id).addEventListener('input', recompute);
+      });
+      document.querySelectorAll('.preset-btn').forEach(b => {
+        b.addEventListener('click', (e) => {
+          e.preventDefault();
+          $('daily-calls').value = b.dataset.preset;
+          recompute();
+        });
+      });
+      document.querySelectorAll('.cur-btn').forEach(b => {
+        b.addEventListener('click', (e) => {
+          e.preventDefault();
+          currency = b.dataset.currency;
+          document.querySelectorAll('.cur-btn').forEach(x => {
+            x.classList.remove('bg-blue-600', 'text-white');
+            x.classList.add('text-gray-600', 'hover:bg-gray-50');
+          });
+          b.classList.add('bg-blue-600', 'text-white');
+          b.classList.remove('text-gray-600', 'hover:bg-gray-50');
+          recompute();
+        });
+      });
+
+      document.querySelectorAll('.cur-btn').forEach(b => {
+        if (b.dataset.currency === currency) {
+          b.classList.add('bg-blue-600', 'text-white');
+          b.classList.remove('text-gray-600', 'hover:bg-gray-50');
+        }
+      });
+
+      recompute();
+    })();
+  </script>
+</BaseLayout>
