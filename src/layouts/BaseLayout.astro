@@ -110,5 +110,32 @@ const zhUrl = `${siteUrl}/zh${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
     <slot />
   </main>
   <Footer locale={locale} />
+
+  <!-- A-09: install analytics event bus. Module auto-installs on import.
+       Calling track() from any page script: window.__analytics.track('event', {params}).
+       Also wires a global click delegate: any <a data-track="cta_name"> or
+       <a data-outbound="provider_id"> fires cta_click / outbound_click automatically. -->
+  <script>
+    import '../lib/analytics';
+    document.addEventListener('click', (e) => {
+      const a = e.target instanceof Element ? e.target.closest('a') : null;
+      if (!a) return;
+      const trackName = a.getAttribute('data-track');
+      const outboundId = a.getAttribute('data-outbound');
+      if (trackName && window.__analytics) {
+        window.__analytics.track('cta_click', {
+          cta: trackName,
+          href: a.getAttribute('href') || '',
+          text: (a.textContent || '').trim().slice(0, 80)
+        });
+      }
+      if (outboundId && window.__analytics) {
+        window.__analytics.track('outbound_click', {
+          provider_id: outboundId,
+          href: a.getAttribute('href') || ''
+        });
+      }
+    });
+  </script>
 </body>
 </html>

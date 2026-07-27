@@ -370,6 +370,13 @@ const faqJsonLd = {
       };
 
       let currency = isCN ? 'CNY' : 'USD';
+      let lastTrackedModel = null; // A-09: dedupe model_select events
+
+      // A-09: calculator_start fires once per page load.
+      window.__analytics && window.__analytics.track('calculator_start', {
+        model_count: models.length,
+        currency: currency
+      });
 
       const tierLabel = {
         frontier: { text: isCN ? '旗舰' : 'Frontier',  cls: 'bg-purple-100 text-purple-700' },
@@ -459,6 +466,19 @@ const faqJsonLd = {
         const ioRatio = parseFloat($('io-slider').value);
         const dailyCalls = Math.max(1, parseInt($('daily-calls').value) || 1000);
         const cachePct = parseFloat($('cache-slider').value);
+
+        // A-09: track model selection on every recompute (PRD §6.1 calculator activation).
+        if (modelId && modelId !== lastTrackedModel) {
+          lastTrackedModel = modelId;
+          window.__analytics && window.__analytics.track('model_select', { model_id: modelId });
+        }
+        window.__analytics && window.__analytics.track('calculator_complete', {
+          model_id: modelId,
+          tokens_per_call: tokens,
+          io_ratio_pct: ioRatio,
+          daily_calls: dailyCalls,
+          cache_pct: cachePct
+        });
 
         $('io-display').textContent = ioRatio + '%';
         $('cache-display').textContent = cachePct + '%';
