@@ -1,8 +1,19 @@
-# Cloudflare Pages redirects (consolidated 2026-07-01)
+# Cloudflare Pages redirects (consolidated 2026-07-29)
 # Format: [source] [destination] [status]
+# Lower-priority static-file rules MUST come last (Cloudflare evaluates in order).
+# CF Pages serves /404.html automatically for any non-matching path, so an explicit
+# 404 catch-all here would be redundant.
 
 # /blog/ → /tutorials/ — remove duplicate-content SEO signal
 /blog    /tutorials    301
 /blog/   /tutorials/   301
 /zh/blog /zh/tutorials 301
 /zh/blog/ /zh/tutorials/ 301
+
+# Legacy /en/ paths (the /en/ prefix was a previous EN locale convention; we
+# now use root paths per Astro i18n routing prefixDefaultLocale: false).
+# Wildcard in CF _redirects takes priority over static files in /dist/en/.
+/en/tutorials/anthropic-claude-api-review    /tutorials/anthropic-claude-api-review    301
+/en/tutorials/anthropic-claude-api-review/   /tutorials/anthropic-claude-api-review/   301
+/en/*    /:splat    301
+/zh/en/*    /:splat    301

@@ -1,5 +1,5 @@
 ---
-import { t, type Locale } from '../i18n/utils';
+import { type Locale } from '../i18n/utils';
 
 interface Props {
   locale: Locale;
@@ -8,17 +8,12 @@ interface Props {
 const { locale } = Astro.props;
 
 // With prefixDefaultLocale: false, EN is root (no /en prefix), ZH is /zh/...
-// stripLangPrefix: /zh/tutorials → /tutorials, /providers → /providers, /zh → /
 const stripLangPrefix = (pathname: string) => pathname.replace(/^\/(en|zh)/, '') || '/';
 
 const pathWithoutLang = stripLangPrefix(Astro.url.pathname);
-// EN path: root URL (no prefix) → / or /tutorials etc.
-// ZH path: always /zh prefix
 const enPath = pathWithoutLang === '/' ? '/' : `/${pathWithoutLang.replace(/^\//, '')}`;
 const zhPath = `/zh${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
 
-// EN is root (no /en prefix), ZH is /zh/...
-// /blog link removed 2026-07-01 (consolidated into /tutorials/ — duplicate-content SEO fix)
 const navLinks = locale === 'en'
   ? [
       { href: '/', label: 'Home' },
@@ -27,6 +22,7 @@ const navLinks = locale === 'en'
       { href: '/tutorials', label: 'Tutorials' },
       { href: '/about', label: 'About' },
       { href: '/privacy', label: 'Privacy' },
+      { href: '/terms', label: 'Terms' },
       { href: '/contact', label: 'Contact' },
     ]
   : [
@@ -36,6 +32,7 @@ const navLinks = locale === 'en'
       { href: '/zh/tutorials', label: '使用教程' },
       { href: '/zh/about', label: '关于我们' },
       { href: '/zh/privacy', label: '隐私政策' },
+      { href: '/zh/terms', label: '使用条款' },
       { href: '/zh/contact', label: '联系我们' },
     ];
 
@@ -46,7 +43,7 @@ const currentPath = Astro.url.pathname.replace(/^\/(en|zh)/, '') || '/';
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <!-- Logo -->
-      <a href={`/${locale}`} class="flex items-center gap-2">
+      <a href={locale === 'zh' ? `/${locale}` : '/'} class="flex items-center gap-2">
         <svg class="w-8 h-8 text-blue-600" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="32" height="32" rx="8" fill="currentColor"/>
           <path d="M8 16L14 10L20 16L14 22L8 16Z" fill="white"/>
@@ -54,7 +51,7 @@ const currentPath = Astro.url.pathname.replace(/^\/(en|zh)/, '') || '/';
         </svg>
         <span class="font-bold text-xl text-gray-900">APIRank</span>
       </a>
-      
+
       <!-- Desktop Nav -->
       <nav class="hidden md:flex items-center gap-8">
         {navLinks.map(link => (
@@ -71,9 +68,9 @@ const currentPath = Astro.url.pathname.replace(/^\/(en|zh)/, '') || '/';
           </a>
         ))}
       </nav>
-      
-      <!-- Lang Switch + CTA -->
-      <div class="flex items-center gap-3">
+
+      <!-- Lang Switch + CTA (desktop) -->
+      <div class="hidden md:flex items-center gap-3">
         <div class="flex items-center gap-1 text-xs border border-gray-200 rounded-md p-0.5">
           <a
             href={enPath}
@@ -88,10 +85,104 @@ const currentPath = Astro.url.pathname.replace(/^\/(en|zh)/, '') || '/';
             中文
           </a>
         </div>
-        <a href={`/${locale}/go/deepseek`} class="btn-primary text-sm py-1.5 px-3">
+        <a
+          href={locale === 'zh' ? `/${locale}/go/deepseek` : `/providers/deepseek`}
+          class="btn-primary text-sm py-1.5 px-3"
+        >
           {locale === 'zh' ? '免费试用' : 'Try Free'}
         </a>
       </div>
+
+      <!-- Mobile: lang switch + hamburger -->
+      <div class="flex md:hidden items-center gap-2">
+        <div class="flex items-center gap-1 text-xs border border-gray-200 rounded-md p-0.5">
+          <a
+            href={enPath}
+            class:list={['px-2 py-1 rounded font-medium transition-colors', locale === 'en' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-blue-600']}
+          >
+            EN
+          </a>
+          <a
+            href={zhPath}
+            class:list={['px-2 py-1 rounded font-medium transition-colors', locale === 'zh' ? 'bg-blue-600 text-white' : 'text-gray-500 hover:text-blue-600']}
+          >
+            中文
+          </a>
+        </div>
+        <button
+          id="mobile-menu-toggle"
+          type="button"
+          aria-label={locale === 'zh' ? '打开菜单' : 'Open menu'}
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          class="p-2 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path id="mobile-menu-icon-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            <path id="mobile-menu-icon-close" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
+
+  <!-- Mobile menu drawer -->
+  <div
+    id="mobile-menu"
+    class="hidden md:hidden border-t border-gray-200 bg-white"
+  >
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col gap-1">
+      {navLinks.map(link => (
+        <a
+          href={link.href}
+          class:list={[
+            'block px-3 py-2 rounded-md text-base font-medium transition-colors',
+            currentPath === link.href.replace(/^\/(en|zh)/, '') || currentPath === link.href
+              ? 'bg-blue-50 text-blue-700'
+              : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
+          ]}
+        >
+          {link.label}
+        </a>
+      ))}
+      <a
+        href={locale === 'zh' ? `/${locale}/go/deepseek` : `/providers/deepseek`}
+        class="mt-2 btn-primary text-center text-sm py-2 px-3"
+      >
+        {locale === 'zh' ? '免费试用' : 'Try Free'}
+      </a>
+    </nav>
+  </div>
 </header>
+
+<script>
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const iconOpen = document.getElementById('mobile-menu-icon-open');
+  const iconClose = document.getElementById('mobile-menu-icon-close');
+  if (toggle && menu && iconOpen && iconClose) {
+    toggle.addEventListener('click', () => {
+      const isOpen = !menu.classList.contains('hidden');
+      if (isOpen) {
+        menu.classList.add('hidden');
+        iconOpen.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+        toggle.setAttribute('aria-expanded', 'false');
+      } else {
+        menu.classList.remove('hidden');
+        iconOpen.classList.add('hidden');
+        iconClose.classList.remove('hidden');
+        toggle.setAttribute('aria-expanded', 'true');
+      }
+    });
+    // Close mobile menu when a link is clicked (so navigation feels single-page)
+    menu.querySelectorAll('a').forEach((a) => {
+      a.addEventListener('click', () => {
+        menu.classList.add('hidden');
+        iconOpen.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+</script>

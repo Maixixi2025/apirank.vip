@@ -7,6 +7,35 @@ interface Props {
 
 const { locale } = Astro.props;
 const year = new Date().getFullYear();
+
+// locale-aware URL helper. EN lives at root (no /en prefix); ZH lives at /zh/.
+const localePath = (path: string): string => {
+  const clean = path.startsWith('/') ? path.slice(1) : path;
+  if (locale === 'en') return clean ? `/${clean}` : '/';
+  return `/zh${clean ? `/${clean}` : ''}`;
+};
+
+const topProviders = [
+  { href: localePath('providers/openai'), label: 'OpenAI' },
+  { href: localePath('providers/anthropic'), label: 'Anthropic' },
+  { href: localePath('providers/google'), label: 'Google AI' },
+  { href: localePath('providers/deepseek'), label: 'DeepSeek' },
+];
+
+const resourceLinks = [
+  { href: localePath('tutorials'), label: t(locale, 'nav.tutorials') },
+  { href: localePath('providers'), label: t(locale, 'nav.providers') },
+  { href: localePath('calculator'), label: t(locale, 'nav.calculator') },
+];
+
+const trustLinks = [
+  { href: localePath('about'), label: t(locale, 'nav.about') },
+  { href: localePath('contact'), label: t(locale, 'nav.contact') },
+  { href: localePath('privacy'), label: t(locale, 'nav.privacy') },
+  { href: localePath('terms'), label: locale === 'zh' ? '使用条款' : 'Terms' },
+  { href: localePath('editorial-policy'), label: locale === 'zh' ? '编辑政策' : 'Editorial Policy' },
+  { href: 'https://about.me/jasonxmai', label: locale === 'zh' ? '关于作者' : 'About the Author', external: true },
+];
 ---
 
 <footer class="bg-gray-900 text-gray-300">
@@ -29,49 +58,68 @@ const year = new Date().getFullYear();
           © {year} APIRank
         </p>
       </div>
-      
-      <!-- Links -->
+
+      <!-- Top Providers -->
       <div>
         <h3 class="font-semibold text-white mb-3 text-sm">
           {locale === 'zh' ? '热门厂商' : 'Top Providers'}
         </h3>
         <ul class="space-y-2">
-          <li><a href={`/${locale}/providers/openai`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">OpenAI</a></li>
-          <li><a href={`/${locale}/providers/anthropic`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">Anthropic</a></li>
-          <li><a href={`/${locale}/providers/google`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">Google AI</a></li>
-          <li><a href={`/${locale}/providers/deepseek`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">DeepSeek</a></li>
+          {topProviders.map((link) => (
+            <li>
+              <a href={link.href} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">{link.label}</a>
+            </li>
+          ))}
         </ul>
       </div>
-      
+
+      <!-- Resources -->
       <div>
         <h3 class="font-semibold text-white mb-3 text-sm">
           {locale === 'zh' ? '资源' : 'Resources'}
         </h3>
         <ul class="space-y-2">
-          <li><a href={`/${locale}/tutorials`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">{t(locale, 'nav.tutorials')}</a></li>
-          <li><a href={`/${locale}/providers`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">{t(locale, 'nav.providers')}</a></li>
+          {resourceLinks.map((link) => (
+            <li>
+              <a href={link.href} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">{link.label}</a>
+            </li>
+          ))}
         </ul>
       </div>
-      
+
+      <!-- Trust & Legal -->
       <div>
         <h3 class="font-semibold text-white mb-3 text-sm">
-          {t(locale, 'nav.about')}
+          {locale === 'zh' ? '信任与法律' : 'Trust & Legal'}
         </h3>
         <ul class="space-y-2">
-          <li><a href={`/${locale}/about`} class="text-sm text-gray-400 hover:text-blue-400 transition-colors">{t(locale, 'nav.about')}</a></li>
-          <li><a href="https://about.me/jasonxmai" rel="me noopener" target="_blank" class="text-sm text-gray-400 hover:text-blue-400 transition-colors">{locale === 'zh' ? '关于作者' : 'About the Author'}</a></li>
+          {trustLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                rel={link.external ? 'me noopener' : undefined}
+                target={link.external ? '_blank' : undefined}
+                class="text-sm text-gray-400 hover:text-blue-400 transition-colors"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))}
         </ul>
       </div>
     </div>
-    
+
     <!-- Bottom -->
-    <div class="border-t border-gray-800 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-      <p class="text-xs text-gray-500">
+    <div class="border-t border-gray-800 mt-8 pt-6 flex flex-col gap-3">
+      <p class="text-xs text-gray-500 text-center md:text-left">
         {t(locale, 'footer.disclaimer')}
       </p>
-      <div class="flex gap-4">
-        <a href={`/${locale}/sitemap.xml`} class="text-xs text-gray-500 hover:text-blue-400">Sitemap</a>
-        <a href={`/${locale}/llms.txt`} class="text-xs text-gray-500 hover:text-blue-400">LLMs.txt</a>
+      <p class="text-xs text-gray-500 text-center md:text-left">
+        {t(locale, 'footer.affiliateDisclosure')}
+      </p>
+      <div class="flex flex-wrap gap-4 justify-center md:justify-end">
+        <a href="/sitemap-index.xml" class="text-xs text-gray-500 hover:text-blue-400">Sitemap</a>
+        <a href="/llms.txt" class="text-xs text-gray-500 hover:text-blue-400">LLMs.txt</a>
       </div>
     </div>
   </div>

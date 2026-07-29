@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getLocale } from '../i18n/utils';
+
+const locale = getLocale(Astro.url);
+const isZh = locale === 'zh';
+
+const suggestedLinks = isZh
+  ? [
+      { href: '/zh', label: '首页' },
+      { href: '/zh/providers', label: '全部厂商' },
+      { href: '/zh/calculator', label: '成本计算器' },
+      { href: '/zh/tutorials', label: '使用教程' },
+      { href: '/zh/about', label: '关于我们' },
+    ]
+  : [
+      { href: '/', label: 'Home' },
+      { href: '/providers', label: 'Providers' },
+      { href: '/calculator', label: 'Calculator' },
+      { href: '/tutorials', label: 'Tutorials' },
+      { href: '/about', label: 'About' },
+    ];
+---
+
+<BaseLayout
+  title={isZh ? '404 - 页面未找到 | APIRank' : '404 - Page Not Found | APIRank'}
+  description={isZh ? '抱歉，您访问的页面不存在。' : 'The page you are looking for does not exist.'}
+  noindex={true}
+>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
+    <p class="text-7xl font-bold text-blue-600 mb-4">404</p>
+    <h1 class="text-3xl font-bold text-gray-900 mb-4">
+      {isZh ? '页面未找到' : 'Page Not Found'}
+    </h1>
+    <p class="text-gray-600 mb-8">
+      {isZh
+        ? '抱歉，您访问的页面不存在或已被移动。请检查链接，或通过下方入口继续浏览。'
+        : 'Sorry, the page you are looking for does not exist or has been moved. Please check the link or use the suggestions below.'}
+    </p>
+
+    <div class="flex flex-wrap justify-center gap-3 mb-12">
+      {suggestedLinks.map((link) => (
+        <a
+          href={link.href}
+          class="px-4 py-2 rounded-md border border-gray-300 text-sm text-gray-700 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-700 transition-colors"
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+
+    <p class="text-sm text-gray-500">
+      {isZh
+        ? '如果您认为这是站点错误，请联系 '
+        : 'If you believe this is a site error, please contact '}
+      <a href="mailto:contact@apirank.vip" class="text-blue-600 underline">contact@apirank.vip</a>.
+    </p>
+  </div>
+</BaseLayout>
