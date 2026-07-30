@@ -1,0 +1,265 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'sonnet-5-vs-gpt-5-5-vs-opus-4-8-llm-api-2026';
+const date = '2026-07-08';
+const locale = 'zh';
+
+const zhTitle = 'Sonnet 5 对比 GPT-5.5/Opus 4.8：API 怎么选';
+const zhDescription = 'Sonnet 5 限时优惠 $2/$10 至 2026-08-31 结束。对比 GPT-5.5、Opus 4.8、Gemini 3.5 四款 LLM API 价格与适用场景,找到 2026 最适合你的模型组合。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` },
+  "inLanguage": "zh-CN"
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Claude Sonnet 5 的 $2/$10 限时价什么时候结束?", "acceptedAnswer": {"@type": "Answer", "text": "Sonnet 5 的限时优惠价 2026-08-31 截止。届时 Anthropic 将恢复标准价 $3 输入、$15 输出每百万 token。Anthropic 没有承诺对任何客户群体延长折扣。"}},
+    {"@type": "Question", "name": "GPT-5.5 涨价一倍之后反而更便宜吗?", "acceptedAnswer": {"@type": "Answer", "text": "在很多生产场景里是的。OpenRouter 2026-07-08 的成本分析显示,GPT-5.5 在常见编码、摘要、工具调用任务上输出 token 缩短 30-45%。当节省超过单价涨幅,实际美元成本反而下降 12-25%。突破点取决于任务类型:短问答倾向 GPT-5.4,结构化输出与推理倾向 GPT-5.5。"}},
+    {"@type": "Question", "name": "Sonnet 5 都这么强了,Opus 4.8 还有意义吗?", "acceptedAnswer": {"@type": "Answer", "text": "Opus 4.8 在高难度推理基准 (AIME 2025、GPQA Diamond、前沿数学) 上仍是 Anthropic 最强的模型。内部评估显示,Opus 4.8 在长周期规划任务上得分 68-72%,Sonnet 5 在 58-63% 封顶。科研、合同审查、多日编码代理等高失败成本场景用 Opus 4.8。一般聊天场景 Sonnet 5 与 Opus 4.8 差距小于 5 个百分点,价格只有 60%。"}},
+    {"@type": "Question", "name": "Gemini 3.5 在这个矩阵里适合什么?", "acceptedAnswer": {"@type": "Answer", "text": "Gemini 3.5 是大批量场景的优选:1M token 上下文窗口 (是 Claude 200K 的 4-8 倍)、激进的批量折扣、输入超过 100K token 时单 token 成本最低。弱项是高并发延迟与代码生成略逊于 Sonnet 5。文档检索、视频分析、长上下文摘要用 Gemini 3.5;短对话用 Sonnet 5。"}},
+    {"@type": "Question", "name": "正在用 OpenAI,该从 GPT-5.4 切到 GPT-5.5 吗?", "acceptedAnswer": {"@type": "Answer", "text": "只有当平均输出 token 超过 600 才值得切。GPT-5.5 的简洁性在长结构化输出 (代码、JSON schema、agent trace) 上赚回差价。短问答、分类、单轮对话让 GPT-5.4 继续便宜。建议 OpenRouter 路由模式:在真实流量上灰度 7 天 GPT-5.5,比较实际花费再迁。"}},
+    {"@type": "Question", "name": "DeepSeek V4 Flash 与四款旗舰比怎么样?", "acceptedAnswer": {"@type": "Answer", "text": "DeepSeek V4 Flash 是 $0.14/$0.28 每百万 token 的价格颠覆者 (大约 Sonnet 5 限时价的 1/15、Opus 4.8 的 1/20)。大多数基准匹配 Sonnet 4.5 级别推理,但在最长上下文评测上落后 8-12 分。高量中文、批量 agent 工作负载用 V4 Flash 是最便宜的选择;关键短推理仍属四款旗舰。"}},
+    {"@type": "Question", "name": "想四个模型都用,不想接四个 SDK,最便宜的方法?", "acceptedAnswer": {"@type": "Answer", "text": "OpenRouter 和 Cloudflare AI Gateway 都把四款旗舰通过一个 OpenAI 兼容端点暴露,内置故障转移与按模型成本分析。Cloudflare AI Gateway 多一层 per-request 缓存与零数据留存路由,把请求路由到隐私最强的厂商。已经在用 OpenAI SDK 的生产团队,把 base URL 切到 OpenRouter 是一行配置改动。"}},
+    {"@type": "Question", "name": "GPT-5.6 Pro 那个泄漏的档位要不要等?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI 2026 年 6 月底的论文列了三个 Pro 变体 (Luna Pro、Terra Pro、Sol Pro),但 API 发布日期未公布。定价估算 (Luna Pro $1.00-$1.50/M 输入、Terra Pro $6-$9/M、Sol Pro $30-$45/M) 是推测。OpenAI 发布官方档位之前,以 GPT-5.5 与 GPT-5.6 base 规划即可。我们有 GPT-5.6 Pro 档位详细分析。"}},
+    {"@type": "Question", "name": "错过 8/31 限时价怎么办?", "acceptedAnswer": {"@type": "Answer", "text": "三个备选方案保住成本优势。第一,改走 OpenRouter 用 Sonnet 5,社区报告显示 OpenRouter 把 $2/$10 又延了 60-90 天。第二,非推理密集型工作负载改 DeepSeek V4 Flash ($0.14/$0.28)。第三,迁移到组合方案 (Sonnet 5 标准价 + GPT-5.4 批量 + Gemini 3.5 长上下文) 用 Cloudflare AI Gateway 路由,把综合成本压到接近 Sonnet 5 限时价。"}}
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Sonnet 5 / GPT-5.5 / Opus 4.8 选型</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Sonnet 5 vs GPT-5.5 vs Opus 4.8:2026 LLM API 选型决策</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime={date}>2026-07-08</time>
+              <span>·</span>
+              <span>选型指南</span>
+              <span>·</span>
+              <span>10 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-700 leading-relaxed">Anthropic 2026-06-30 发布 Claude Sonnet 5,限时优惠 <strong>$2/百万输入 token、$10/百万输出 token</strong>,有效期至 2026-08-31。截止后恢复标准价 $3/$15。叠加 OpenAI GPT-5.5 涨价一倍、Google Gemini 3.5 主打长上下文、DeepSeek V4 Flash 仍报 $0.14/$0.28 的低位,2026 的 API 选型问题不再是「哪个模型最强」,而是<strong>哪个组合</strong>在你的工作负载下综合成本最低。</p>
+          </header>
+
+          <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r my-2">
+            <p class="text-gray-800 text-sm">本指南按生产顺序展开四向决策矩阵:哪个模型做默认路由、哪个做 fallback、哪个覆盖长上下文摘要、哪个跑 agentic 工具调用循环。锚定数据:Anthropic 定价页、OpenAI 定价页、OpenRouter 2026-07-08 的 <a href="https://openrouter.ai/blog/insights/gpt55-cost-analysis/" class="text-blue-600 hover:underline" rel="noopener">GPT-5.5 成本分析</a>。对已经在跑多模型的团队,最便宜的路是保留路由层,重新决定哪一家坐默认位。</p>
+          </div>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r my-2">
+            <p class="text-gray-800 text-sm"><strong>TL;DR:</strong>工作负载是一般聊天或短结构化输出,在 8/31 前锁定 Sonnet 5 的 $2/$10 价。任何输出 token 下降 30%+ 的任务 (编码、摘要、工具调用) 把 GPT-5.5 走 OpenRouter 路由 (涨价一倍反而净省 12-25%)。只有 5-10% 需要前沿推理的请求升级到 Opus 4.8。200K 以上的输入和大批量摘要给 Gemini 3.5,1M 上下文 + 激进批量价它最强。中文、agentic、高量批处理任务继续保留 DeepSeek V4 Flash 在 $0.14/$0.28。</p>
+          </div>
+
+          <h2>8/31 限时价的算术</h2>
+          <p>Sonnet 5 2026-06-30 GA,Anthropic 同时把 Sonnet 4.6 从默认模型位移除。限时价对比标准价的差是:输入端 33% 折扣、输出端 33% 折扣。</p>
+          <ul class="list-disc pl-6 space-y-2 text-gray-700">
+            <li>100 万输入 token 在限时价下:<strong>$2.00</strong>,标准价 $3.00 (省 $1.00/M)</li>
+            <li>100 万输出 token 在限时价下:<strong>$10.00</strong>,标准价 $15.00 (省 $5.00/M)</li>
+          </ul>
+          <p>一个月 10B 输入 + 5B 输出 token 的工作负载,差价是每月 $35,000。小团队 100M 输入 + 50M 输出的级别,每月也差 $350,够认真规划。限时窗口是日历绑定,不是用量绑定,所以没有任何理由拖延决策。</p>
+          <p>Anthropic 没放出任何延期信号。<a href="https://www.anthropic.com/news/claude-sonnet-5" class="text-blue-600 hover:underline" rel="noopener">Sonnet 5 发布稿</a>明确写 8/31 是悬崖式截止。这个季度签了 OpenAI 年度合同的无法在此之后切到 Anthropic,迁移决定必须 8/31 之前做完。</p>
+
+          <h2>GPT-5.5 涨价的真实账</h2>
+          <p>OpenAI 2026 年 6 月把 GPT-5.5 的每 token 单价相对 GPT-5.4 翻倍。同期 OpenRouter 发的<a href="https://openrouter.ai/blog/insights/gpt55-cost-analysis/" class="text-blue-600 hover:underline" rel="noopener">成本分析</a>把这个变化拆成两个常互相抵消的效应:</p>
+          <ol class="list-decimal pl-6 space-y-2 text-gray-700">
+            <li><strong>单价</strong>:GPT-5.5 相对 GPT-5.4 单 token 价格翻倍。</li>
+            <li><strong>输出效率</strong>:GPT-5.5 在编码、摘要、结构化输出任务里输出 token 数量下降 30-45%,因为模型更简洁。</li>
+            <li><strong>净效应</strong>:输出 token 减少超过 50% 的任务,实际美元成本反而比 GPT-5.4 低 12-25%。</li>
+          </ol>
+          <p>突破点大致在平均输出 600 token 这一档。低于 600 token 的用 GPT-5.4 便宜,高于 600 token 的用 GPT-5.5 便宜。客服摘要、代码评审、JSON schema 生成、多步 agent trace 都卡在突破点以上;短问答、分类卡在以下。多数 API 流量是混合的,正确做法是按请求类型路由,而不是按模型做一锤子选择。</p>
+          <p>下一个问题是:Sonnet 5 的 $10/M 输出 vs GPT-5.5 实际 $12-15/M 有效输出,在同一工作负载上谁更划算。Sonnet 5 在法律和科学文本上输出更紧,但在创意写作上输出更长。按工作负载分别测算。先在真实流量上跑 7 天灰度再迁移。</p>
+
+          <h2>四模型对比:数字之外的二阶效应</h2>
+
+          <table class="w-full border-collapse border border-gray-200 my-4">
+            <thead><tr><th class="border border-gray-200 px-3 py-2 bg-gray-50 text-left text-sm font-semibold">模型</th><th class="border border-gray-200 px-3 py-2 bg-gray-50 text-left text-sm font-semibold">输入 $/M</th><th class="border border-gray-200 px-3 py-2 bg-gray-50 text-left text-sm font-semibold">输出 $/M</th><th class="border border-gray-200 px-3 py-2 bg-gray-50 text-left text-sm font-semibold">上下文</th><th class="border border-gray-200 px-3 py-2 bg-gray-50 text-left text-sm font-semibold">最适合</th></tr></thead>
+            <tbody>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">Sonnet 5 (限时 → 8/31)</td><td class="border border-gray-200 px-3 py-2 text-sm">$2.00</td><td class="border border-gray-200 px-3 py-2 text-sm">$10.00</td><td class="border border-gray-200 px-3 py-2 text-sm">200K</td><td class="border border-gray-200 px-3 py-2 text-sm">一般聊天、结构化输出、代码评审</td></tr>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">Sonnet 5 (标准, 8/31 后)</td><td class="border border-gray-200 px-3 py-2 text-sm">$3.00</td><td class="border border-gray-200 px-3 py-2 text-sm">$15.00</td><td class="border border-gray-200 px-3 py-2 text-sm">200K</td><td class="border border-gray-200 px-3 py-2 text-sm">一般聊天 (高端档)</td></tr>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">GPT-5.5 (长输出有效价)</td><td class="border border-gray-200 px-3 py-2 text-sm">~$5.00</td><td class="border border-gray-200 px-3 py-2 text-sm">~$20.00</td><td class="border border-gray-200 px-3 py-2 text-sm">256K</td><td class="border border-gray-200 px-3 py-2 text-sm">代码生成、JSON schema、agent trace</td></tr>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">Opus 4.8 (前沿)</td><td class="border border-gray-200 px-3 py-2 text-sm">$15.00</td><td class="border border-gray-200 px-3 py-2 text-sm">$75.00</td><td class="border border-gray-200 px-3 py-2 text-sm">200K</td><td class="border border-gray-200 px-3 py-2 text-sm">前沿推理、长周期研究</td></tr>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">Gemini 3.5 Pro (长上下文)</td><td class="border border-gray-200 px-3 py-2 text-sm">$1.25</td><td class="border border-gray-200 px-3 py-2 text-sm">$5.00</td><td class="border border-gray-200 px-3 py-2 text-sm">1M</td><td class="border border-gray-200 px-3 py-2 text-sm">大批量摘要、文档搜索、视频</td></tr>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">DeepSeek V4 Flash (价格颠覆)</td><td class="border border-gray-200 px-3 py-2 text-sm">$0.14</td><td class="border border-gray-200 px-3 py-2 text-sm">$0.28</td><td class="border border-gray-200 px-3 py-2 text-sm">128K</td><td class="border border-gray-200 px-3 py-2 text-sm">中文、批处理、agentic 循环</td></tr>
+            </tbody>
+          </table>
+
+          <p>这张表只说了表面。Sonnet 5 的 $2 输入 vs Gemini 3.5 的 $1.25,缓存折扣后差距只剩 1.6 倍:Google 给缓存输入 50% 折,Anthropic 也是。Sonnet 5 vs Gemini 3.5 的临界点取决于缓存命中率,不是单价。80%+ 缓存命中用 Sonnet 5 便宜,50% 以下用 Gemini 3.5 便宜。</p>
+          <p>两个标价还漏了批量折扣。Anthropic Batch API 给异步 (24 小时 SLA) 工作负载 50% 折,OpenAI Batch 同样,Gemini 3.5 批量价最低 $0.625/$2.50 每百万 token。流水线能容忍 24 小时延迟的,把非交互的摘要、分类、ETL 任务默认走批量。</p>
+
+          <h2>Opus 4.8 vs Sonnet 5:什么时候 5 倍溢价值得</h2>
+          <p>Opus 4.8 报 $15/$75 每百万 token,是 Sonnet 5 限时价的 7.5 倍、限时后标准价的 5 倍。Anthropic 自己的评估:Opus 4.8 在高难度推理基准 (AIME 2025、GPQA Diamond、前沿数学) 上领先 Sonnet 5 5-15 个百分点,在长周期规划任务上领先 8-12 个百分点。一般聊天这个差距缩到 5 个百分点以内,在事实回忆上消失。</p>
+          <p>老实的判断:Opus 4.8 只在失败成本高且任务需要持续推理时溢价成立。三类具体场景:</p>
+          <ul class="list-disc pl-6 space-y-2 text-gray-700">
+            <li><strong>法律与合规审查</strong>:100K token 合同漏一条条款是真金白银。Opus 4.8 在合同分析基准上 12-15 个百分点的领先覆盖 5 倍的成本差。</li>
+            <li><strong>科学论文合成</strong>:研究 agent 需要串 30+ 推理步骤不断链,Opus 4.8 的长周期分数覆盖差距。</li>
+            <li><strong>多日编码 agent</strong>:长跑的 Claude Code / Codex 会话碰上百个文件,Opus 4.8 的持续上下文纪律出差距。</li>
+          </ul>
+          <p>90% 不命中这三个场景的流量 — 聊天、摘要、内容生成、结构化问答、单轮补全 — Sonnet 5 与 Opus 4.8 在噪声内持平。把所有这些走 Opus 4.8 等于付 5 倍溢价买不可区分的输出质量。</p>
+
+          <h2>Gemini 3.5 长上下文价位在 100K 输入以下持平</h2>
+          <p>Google Gemini 3.5 配 1M token 上下文窗口。100K 输入以下,Sonnet 5 与 Gemini 3.5 单 token 有效价差在 10% 内。100K 以上,Gemini 的激进分级把价差拉到 2.4 倍:500K token 输入,Gemini 批量 $0.625,Sonnet 5 批量 $1.50。</p>
+          <p>限制在输出:Gemini 3.5 的 $5.00/M 输出是 Sonnet 5 限时价 $10.00/M 的一半。输出量主导成本的工作负载 (长内容生成、研究报告、起草-修订循环) Sonnet 5 仍占优。</p>
+          <p>干净的切分:输入超 200K 的路由到 Gemini 3.5,200K 以下留在 Sonnet 5。Gemini 3.5 还在生产规模视频理解 API 上独家 (Veo 集成),任何含视频文件的多模态输入都该默认走它。Sonnet 5 有视觉但只到图像;Gemini 3.5 在图像、视频、音频上一次完成。</p>
+
+          <h2>DeepSeek V4 Flash:agentic 工作负载比 GPT-5.5 便宜 14 倍</h2>
+          <p>DeepSeek V4 Flash 报 $0.14/$0.28 每百万 token — 大约是 Sonnet 5 限时价的 1/15。在 OpenRouter 2026 Q2 token 份额榜里,V4 Flash 6 个月把 agentic 份额翻倍,是高量结构化输出流量上最便宜的靠谱模型。两个理由让它值得关注,即便你不关心中文工作负载:</p>
+          <ul class="list-disc pl-6 space-y-2 text-gray-700">
+            <li><strong>工具调用纪律</strong>:V4 Flash 是最便宜的、能在 5+ 连续工具调用保持稳定 function-calling 的模型。多数「$0.10/M」档在第 3 步工具调用链以外就崩。</li>
+            <li><strong>128K 原生上下文</strong>:对多数编码 agent 和文档 Q&A 工作负载足够。低于 Sonnet 5 的 200K,但远超 sub-dollar 档常见的 8K-32K。</li>
+          </ul>
+          <p>V4 Flash 的弱项在前沿推理基准 — 在 AIME 2025 与 GPQA 上落后 Sonnet 5 8-12 分。要求前沿推理的研究级负载,V4 Flash 替代不了。对 agentic 工具调用循环、批处理、中文内容生成,它是大幅领先的低价选项。</p>
+
+          <h2>生产路由的推荐模式</h2>
+          <p>多数多模型架构按请求类型路由,不是按绝对质量路由。下面这套模式覆盖 85-95% 的生产 API 流量。剩下 5-15% — 长上下文多模态、前沿推理、低量专门任务 — 需要显式的逐路由决策。</p>
+
+          <table class="w-full border-collapse border border-gray-200 my-4">
+            <thead><tr><th class="border border-gray-200 px-3 py-2 bg-gray-50 text-left text-sm font-semibold">工作负载</th><th class="border border-gray-200 px-3 py-2 bg-gray-50 text-left text-sm font-semibold">默认</th><th class="border border-gray-200 px-3 py-2 bg-gray-50 text-left text-sm font-semibold">Fallback</th><th class="border border-gray-200 px-3 py-2 bg-gray-50 text-left text-sm font-semibold">原因</th></tr></thead>
+            <tbody>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">一般聊天 &lt;500 token 输出</td><td class="border border-gray-200 px-3 py-2 text-sm">Sonnet 5 (限时)</td><td class="border border-gray-200 px-3 py-2 text-sm">GPT-5.5</td><td class="border border-gray-200 px-3 py-2 text-sm">Sonnet 单价胜,Sonnet 不可用时 GPT-5.5</td></tr>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">结构化输出 (JSON、schema、code)</td><td class="border border-gray-200 px-3 py-2 text-sm">GPT-5.5 via OpenRouter</td><td class="border border-gray-200 px-3 py-2 text-sm">Sonnet 5</td><td class="border border-gray-200 px-3 py-2 text-sm">GPT-5.5 30%+ 输出压缩抵消 2 倍单价</td></tr>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">长上下文 &gt;200K token 输入</td><td class="border border-gray-200 px-3 py-2 text-sm">Gemini 3.5 Pro 批量</td><td class="border border-gray-200 px-3 py-2 text-sm">Sonnet 5 批量</td><td class="border border-gray-200 px-3 py-2 text-sm">1M 上下文 + 激进输入分级</td></tr>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">带视频的多模态</td><td class="border border-gray-200 px-3 py-2 text-sm">Gemini 3.5</td><td class="border border-gray-200 px-3 py-2 text-sm">Sonnet 5 (纯图像)</td><td class="border border-gray-200 px-3 py-2 text-sm">Veo 视频理解 Gemini 独家</td></tr>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">前沿推理 / 研究 agent</td><td class="border border-gray-200 px-3 py-2 text-sm">Opus 4.8</td><td class="border border-gray-200 px-3 py-2 text-sm">Sonnet 5 + 重试</td><td class="border border-gray-200 px-3 py-2 text-sm">5-15 个百分点差覆盖 5 倍成本</td></tr>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">Agentic 工具调用循环</td><td class="border border-gray-200 px-3 py-2 text-sm">DeepSeek V4 Flash</td><td class="border border-gray-200 px-3 py-2 text-sm">Sonnet 5</td><td class="border border-gray-200 px-3 py-2 text-sm">$0.28/M 输出比 Sonnet 便宜 36 倍</td></tr>
+              <tr><td class="border border-gray-200 px-3 py-2 text-sm">中文内容生成</td><td class="border border-gray-200 px-3 py-2 text-sm">DeepSeek V4 Flash</td><td class="border border-gray-200 px-3 py-2 text-sm">阿里 Bailian / Qwen</td><td class="border border-gray-200 px-3 py-2 text-sm">V4 Flash 中文 token 效率领先</td></tr>
+            </tbody>
+          </table>
+
+          <p>这套路由的实施成本比看上去低得多。<a href="/tutorials/openrouter-fusion-api-2026/" class="text-blue-600 hover:underline" rel="noopener">OpenRouter</a>、<a href="/tutorials/cloudflare-ai-gateway-review/" class="text-blue-600 hover:underline" rel="noopener">Cloudflare AI Gateway</a>、Portkey 都在一个 OpenAI 兼容端点上把这六个模型暴露。把已有 OpenAI 客户端的 base URL 切过去是一行配置 — 无 SDK 替换、无鉴权重建。</p>
+
+          <h2>90 天决策时间线</h2>
+          <p>三个截止日定义未来 90 天:</p>
+          <ol class="list-decimal pl-6 space-y-2 text-gray-700">
+            <li><strong>2026-08-31 前</strong>:锁定 Sonnet 5 的 $2/$10 限时价。无法长期承诺 Sonnet 5 的稳妥做法是推迟采用,8/31 后流量通过 OpenRouter 走标准价。</li>
+            <li><strong>2026-08-15 前</strong>:在真实生产流量上跑 GPT-5.5 灰度测试。对比 GPT-5.4 默认的实际成本,如果 GPT-5.5 在你的工作负载上胜出就改路由。</li>
+            <li><strong>2026-09-30 前</strong>:重估 Opus 4.8 使用。Anthropic 通常在 Q3 末推 Opus 刷新,4.8 可能被 Opus 4.9 或某个 Sonnet 级模型替代,后者会缩小推理差距。</li>
+          </ol>
+          <p>今天开始新集成,默认 OpenRouter 路由配置:Sonnet 5 主、GPT-5.5 fallback、200K 上下文的 Gemini 3.5。一般多模型 SaaS 负载 (60% 聊天、25% 结构化输出、10% 长上下文、5% 前沿) 综合成本比单厂商低 40-55%。</p>
+
+          <h2>那个泄漏的 GPT-5.6 Pro 档位怎么办</h2>
+          <p>OpenAI 2026 年 6 月底的论文列了三个 Pro 变体 (Luna Pro、Terra Pro、Sol Pro),API 发布日期未定。定价估算 (Luna Pro $1.00-$1.50/M 输入、Terra Pro $6-$9/M、Sol Pro $30-$45/M) 是推测。OpenAI 发布官方结构之前,以 GPT-5.5 与 GPT-5.6 base 规划即可。我们的 <a href="/tutorials/gpt-5-6-pro-tiers-2026/" class="text-blue-600 hover:underline" rel="noopener">GPT-5.6 Pro 档位分析</a> 详细讲了泄漏的结构,OpenAI 一发布官方定价我们就更新本指南。</p>
+          <p>如果 GPT-5.6 Pro 落在估算下限,Sonnet 5 / Opus 4.8 这段矩阵会被打乱 — 特别是 Sol Pro 半价对标 Opus 4.8 的情况。在那之前,把四模型矩阵当作规划基线。</p>
+
+          <h2>FAQ</h2>
+
+          <h3 class="font-semibold text-gray-900 mt-4">Claude Sonnet 5 的 $2/$10 限时价什么时候结束?</h3>
+          <p>2026-08-31。Sonnet 5 的限时优惠价 (输入 $2、输出 $10 每百万 token) 在那天截止。之后回到标准挂牌价 (输入 $3、输出 $15)。Anthropic 没有承诺对任何客户群体延长折扣。</p>
+
+          <h3 class="font-semibold text-gray-900 mt-4">GPT-5.5 涨价一倍之后反而更便宜吗?</h3>
+          <p>在很多生产场景里是。OpenRouter 2026-07-08 的分析显示,GPT-5.5 在常见编码、摘要、工具调用任务上输出 token 缩短 30-45%。当节省覆盖单价涨幅,实际美元成本反而下降 12-25%。突破点取决于任务类型:短问答倾向 GPT-5.4,结构化输出与推理倾向 GPT-5.5。</p>
+
+          <h3 class="font-semibold text-gray-900 mt-4">Sonnet 5 都这么强了,Opus 4.8 还有意义吗?</h3>
+          <p>Opus 4.8 在高难度推理基准 (AIME 2025、GPQA Diamond、前沿数学) 上仍是 Anthropic 最强的模型。内部评估显示,Opus 4.8 在长周期规划任务上得分 68-72%,Sonnet 5 在 58-63% 封顶。科研、合同审查、多日编码 agent 等高失败成本场景用 Opus 4.8。一般聊天场景 Sonnet 5 与 Opus 4.8 差距小于 5 个百分点,价格只有 60%。</p>
+
+          <h3 class="font-semibold text-gray-900 mt-4">Gemini 3.5 在这个矩阵里适合什么?</h3>
+          <p>Gemini 3.5 是大批量场景的优选:1M token 上下文窗口 (是 Claude 200K 的 4-8 倍)、激进的批量折扣、输入超过 100K token 时单 token 成本最低。弱项是高并发延迟与代码生成略逊于 Sonnet 5。文档检索、视频分析、长上下文摘要用 Gemini 3.5;短对话用 Sonnet 5。</p>
+
+          <h3 class="font-semibold text-gray-900 mt-4">正在用 OpenAI,该从 GPT-5.4 切到 GPT-5.5 吗?</h3>
+          <p>只有当平均输出 token 超过 600 才值得切。GPT-5.5 的简洁性在长结构化输出 (代码、JSON schema、agent trace) 上赚回差价。短问答、分类、单轮对话让 GPT-5.4 继续便宜。建议 OpenRouter 路由模式:在真实流量上灰度 7 天 GPT-5.5,比较实际花费再迁。</p>
+
+          <h3 class="font-semibold text-gray-900 mt-4">DeepSeek V4 Flash 与四款旗舰比怎么样?</h3>
+          <p>DeepSeek V4 Flash 是 $0.14/$0.28 每百万 token 的价格颠覆者 (大约 Sonnet 5 限时价的 1/15、Opus 4.8 的 1/20)。大多数基准匹配 Sonnet 4.5 级别推理,但在最长上下文评测上落后 8-12 分。高量中文、批量 agent 工作负载用 V4 Flash 是最便宜的选择;关键短推理仍属四款旗舰。</p>
+
+          <h3 class="font-semibold text-gray-900 mt-4">想四个模型都用,不想接四个 SDK,最便宜的方法?</h3>
+          <p>OpenRouter 和 Cloudflare AI Gateway 都把四款旗舰通过一个 OpenAI 兼容端点暴露,内置故障转移与按模型成本分析。Cloudflare AI Gateway 多一层 per-request 缓存与零数据留存路由,把请求路由到隐私最强的厂商。已经在用 OpenAI SDK 的生产团队,把 base URL 切到 OpenRouter 是一行配置改动。</p>
+
+          <h3 class="font-semibold text-gray-900 mt-4">GPT-5.6 Pro 那个泄漏的档位要不要等?</h3>
+          <p>OpenAI 2026 年 6 月底的论文列了三个 Pro 变体 (Luna Pro、Terra Pro、Sol Pro),API 发布日期未公布。定价估算 (Luna Pro $1.00-$1.50/M 输入、Terra Pro $6-$9/M、Sol Pro $30-$45/M) 是推测。OpenAI 发布官方档位之前,以 GPT-5.5 与 GPT-5.6 base 规划即可。我们有 GPT-5.6 Pro 档位详细分析。</p>
+
+          <h3 class="font-semibold text-gray-900 mt-4">错过 8/31 限时价怎么办?</h3>
+          <p>三个备选方案保住成本优势。第一,改走 OpenRouter 用 Sonnet 5,社区报告显示 OpenRouter 把 $2/$10 又延了 60-90 天。第二,非推理密集型工作负载改 DeepSeek V4 Flash ($0.14/$0.28)。第三,迁移到组合方案 (Sonnet 5 标准价 + GPT-5.4 批量 + Gemini 3.5 长上下文) 用 Cloudflare AI Gateway 路由,把综合成本压到接近 Sonnet 5 限时价。</p>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r my-2">
+            <p class="text-gray-800 text-sm">想要一个仪表板实时追踪这五款旗舰的价格?<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">FreeModel</a> 通过一个 OpenAI 兼容端点聚合 Claude、GPT-5.5、Gemini、DeepSeek,带按请求成本分析。还有 8/31 截止提醒 + 一行配置切换默认模型的功能。</p>
+          </div>
+
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+               data-ad-slot="xxxxxxxxxx"
+               data-ad-format="auto"></ins>
+        </div>
+
+        <aside class="space-y-6 mt-8 lg:mt-0">
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 class="text-lg font-bold text-blue-900 mb-2">一个仪表板跑四款旗舰</h3>
+            <p class="text-sm text-blue-800 mb-3">FreeModel 把 Claude Sonnet 5、GPT-5.5、Gemini 3.5、DeepSeek V4 Flash 通过一个 OpenAI 兼容端点暴露。按请求成本分析、自动故障转移、对 5.4 / Mini 模型的免费档,做 A/B 测试上面矩阵的最便宜方式。</p>
+            <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="block w-full text-center bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition" rel="sponsored noopener" target="_blank">免费试 FreeModel API →</a>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Sonnet 5 限时价速查</h3>
+            <ul class="space-y-1 text-sm text-gray-700">
+              <li><strong>限时价:</strong>$2/M 输入、$10/M 输出 (至 8-31)</li>
+              <li><strong>标准价:</strong>$3/M 输入、$15/M 输出 (8/31 后)</li>
+              <li><strong>端点:</strong><code>https://api.anthropic.com/v1/messages</code></li>
+              <li><strong>模型字符串:</strong><code>claude-sonnet-5</code></li>
+              <li><strong>上下文:</strong>200K tokens</li>
+              <li><strong>替代方案:</strong>OpenRouter 多模型路由</li>
+            </ul>
+          </div>
+          <div class="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-2">相关 apirank 教程</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="/zh/tutorials/claude-sonnet-5-api-pricing-2026/" class="text-blue-600 hover:underline" rel="noopener">Sonnet 5 深度测评</a></li>
+              <li><a href="/zh/tutorials/anthropic-claude-api-review/" class="text-blue-600 hover:underline" rel="noopener">Anthropic Claude API 测评</a></li>
+              <li><a href="/zh/tutorials/openai-gpt-4o-review/" class="text-blue-600 hover:underline" rel="noopener">OpenAI GPT 5.x 测评</a></li>
+              <li><a href="/zh/tutorials/openrouter-review/" class="text-blue-600 hover:underline" rel="noopener">OpenRouter 多模型路由</a></li>
+              <li><a href="/zh/tutorials/gemini-omni-flash-nano-banana-2-lite-pricing-2026/" class="text-blue-600 hover:underline" rel="noopener">Gemini Omni Flash 档位</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

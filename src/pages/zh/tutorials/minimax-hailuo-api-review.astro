@@ -1,0 +1,210 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'minimax-hailuo-api-review';
+const date = '2026-07-05';
+const locale = 'zh';
+
+const zhTitle = 'MiniMax 海螺 AI 2026：多模态 API 全面测评';
+const zhDescription = 'MiniMax 海螺 AI API 深度测评：MiniMax-01 系列定价、M3 旗舰模型性能、VL-01 视觉理解、语音合成与音乐生成。对比 DeepSeek、Qwen、GPT 等国产 API。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+    {"@type": "Question", "name": "MiniMax（海螺 AI）是什么？2026 年提供哪些 API？", "acceptedAnswer": {"@type": "Answer", "text": "MiniMax 是 2021 年成立于上海的 AI 公司，创始人为闫俊杰（前商汤科技副总裁）。2026 年，其 API 平台（platform.minimaxi.com）提供 MiniMax-01 系列（Lightning/Turbo/Pro）、旗舰 MiniMax-M3 MoE 模型、MiniMax-VL-01 视觉语言模型、T2I-01 图像生成、Speech-01 语音合成和 Music-01 音乐生成。消费端品牌「海螺 AI」拥有 3000 万月活用户。API 兼容 OpenAI 格式。"}},
+    {"@type": "Question", "name": "MiniMax API 的价格是多少？", "acceptedAnswer": {"@type": "Answer", "text": "MiniMax 采用分层按量计费：Lightning ¥0.2/百万 token（超低价），Turbo ¥0.8/百万（平衡型），Pro ¥2/百万（高质量），M3 ¥1.5/百万（旗舰 MoE）。VL-01 视觉 ¥4/百万 token，T2I-01 图像 ¥0.02/张，Speech-01 语音 ¥0.15/千字，Music-01 音乐 ¥0.10/秒。均为人民币计价，无最低消费。"}},
+    {"@type": "Question", "name": "MiniMax API 在国内可以直接访问吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。MiniMax 是国内公司，具备完整 ICP 合规资质，服务器部署在国内，无需代理即可直连。支付支持支付宝和微信支付。海外也可以访问，但非亚洲区域延迟较高。"}},
+    {"@type": "Question", "name": "MiniMax-M3 相比 DeepSeek-V3 和 GPT-5.5 表现如何？", "acceptedAnswer": {"@type": "Answer", "text": "MiniMax-M3 是 2026 年发布的旗舰 MoE 模型。在中文基准测试中，M3 优于 DeepSeek-V3 和 GPT-5.5。在英文编程方面，M3 与 GPT-5.5 在 Python/TypeScript 上相当，但在复杂系统设计上略有差距。M3 定价 ¥1.5/百万 token，介于 DeepSeek-V3（¥0.28/百万）和 GPT-5.5（~$10/百万 ≈ ¥70/百万）之间，是双语团队性价比极优的选择。"}},
+    {"@type": "Question", "name": "MiniMax API 支持哪些多模态能力？", "acceptedAnswer": {"@type": "Answer", "text": "MiniMax API 支持文本（MiniMax-01/M3）、视觉理解（VL-01）、图像生成（T2I-01）、语音合成（Speech-01，7 个预设音色）和音乐生成（Music-01 多风格器乐）。这是国产 AI API 中最全面的多模态覆盖之一，与阿里云百炼和字节豆包并列。"}},
+    {"@type": "Question", "name": "MiniMax 有免费额度吗？", "acceptedAnswer": {"@type": "Answer", "text": "有。新用户注册即送 100 万 tokens 免费额度，90 天有效。约可完成 500 万字符的 Lightning 级别生成或充分的原型开发。免费额度用完后最低充值 ¥50。没有持续的免费速率限制层。"}},
+    {"@type": "Question", "name": "MiniMax 支持 Function Calling 吗？", "acceptedAnswer": {"@type": "Answer", "text": "MiniMax 通过聊天补全端点提供有限的工具调用能力，但没有 OpenAI GPT-4o 或 Claude Sonnet 那样完整的 Function Calling 支持。需要可靠结构化输出和工具路由的开发者应优先考虑 OpenAI 或 Anthropic。"}},
+    {"@type": "Question", "name": "MiniMax 与 DeepSeek 相比如何选择？", "acceptedAnswer": {"@type": "Answer", "text": "MiniMax 多模态覆盖更广（视觉 + TTS + 音乐 + 图像生成），而 DeepSeek 专注纯文本 LLM 且价格最低（¥0.14-0.28/百万）。DeepSeek-V3 更便宜（¥0.14/百万 vs MiniMax Lightning ¥0.2/百万），但 MiniMax-M3 在中文创意任务上优于 DeepSeek-R1。多模态管线选 MiniMax，纯文本成本优化选 DeepSeek。"}},
+    {"@type": "Question", "name": "MiniMax 有联盟推广计划吗？", "acceptedAnswer": {"@type": "Answer", "text": "目前没有。截至 2026 年 7 月，MiniMax 未运营公开的联盟推广计划。需要联盟收入的内容站可考虑 FreeModel 作为备选聚合商。"}},
+    {"@type": "Question", "name": "MiniMax API 的速率限制是多少？", "acceptedAnswer": {"@type": "Answer", "text": "默认免费账户 100 RPM，标准付费账户 500 RPM。企业账户可协商自定义限制。支持批量 API 处理高吞吐量场景。所有限制按每分钟滚动重置。"}}
+  ]};
+
+const zhBody = `  <h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">MiniMax 海螺 AI 2026：被低估的国产全栈多模态 API</h1>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">MiniMax 是什么？2026 年的地位</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">MiniMax 是 2021 年成立于上海的 AI 公司，创始人为闫俊杰（前商汤科技副总裁）。截至 2026 年 7 月，公司已完成多轮融资（总额超过 12 亿美元，包括 2024 年由阿里巴巴和腾讯联合投资的 6 亿美元 B 轮），API 平台服务超过 5 万名注册开发者。其消费端产品「海螺 AI」在中国和国际市场拥有超过 3000 万月活跃用户，是少数真正具有全球影响力的中国 AI 公司之一。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">MiniMax 区别于其他国产 AI API 提供商的核心优势在于广度。DeepSeek 专注纯文本 LLM、提供最低的 token 单价；阿里云百炼旗下有通义千问 Qwen 生态；字节豆包与抖音/飞书深度集成——而 MiniMax 覆盖了最广泛的多模态面：文本、视觉、图像生成、语音合成和音乐生成，全部通过一个 API 平台提供。对于希望一次集成覆盖五种场景的开发者来说，这尤为吸引人。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">2026 年，MiniMax 发布了旗舰 MoE 模型 MiniMax-M3，与已成熟的 MiniMax-01 系列分级模型形成互补。本测评涵盖完整的 API 能力、全模态定价、与 DeepSeek/Qwen/GPT-5.5 的竞争分析，以及 2026 年 7 月评估 MiniMax 时的实用考量。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">MiniMax API 模型与能力</h2>
+
+  <h3 class="text-xl font-bold text-gray-900 my-4">MiniMax-01 系列（Lightning / Turbo / Pro）</h3>
+
+  <p class="text-gray-700 leading-relaxed my-4">MiniMax-01 系列是公司的主力产品线，通过同一端点提供三个定价层级：</p>
+
+  <ul class="list-disc pl-6 text-gray-700 leading-relaxed my-4">
+    <li><strong>Lightning</strong>（¥0.2/百万 token）——蒸馏模型，优化高吞吐和低延迟。适合聊天、摘要和简单问答。首 token 延迟低于 200ms。</li>
+    <li><strong>Turbo</strong>（¥0.8/百万）——通用任务平衡模型。良好的推理、扎实的编码、优秀的中文。质量与 GPT-4o-mini 相当。</li>
+    <li><strong>Pro</strong>（¥2/百万）——完整质量模型，用于复杂推理、长文内容生成和技术分析。中文创意写作能力国内顶尖。</li>
+  </ul>
+
+  <p class="text-gray-700 leading-relaxed my-4">三个模型共享 128K 上下文窗口、OpenAI 兼容的聊天补全端点和流式支持。分层架构允许开发者按复杂度路由请求：简单请求用 Lightning 控制成本，复杂请求用 Pro 保证质量。</p>
+
+  <h3 class="text-xl font-bold text-gray-900 my-4">MiniMax-M3：2026 年旗舰模型</h3>
+
+  <p class="text-gray-700 leading-relaxed my-4">MiniMax-M3 于 2026 年初发布，是公司最强大的模型——采用混合专家（MoE）架构，总参数约 400B，每次推理激活约 60B 参数。它专为在双语工作负载上与 GPT-5.5、DeepSeek-V3、Qwen3.5-Max 和 Claude Opus 竞争而设计。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">关键基准表现（2026 年 7 月）：</p>
+
+  <ul class="list-disc pl-6 text-gray-700 leading-relaxed my-4">
+    <li><strong>中文理解</strong>：M3 在 CLUE 和 FewCLUE 基准上超过 GPT-5.5 和 DeepSeek-V3，尤其在古文和文学分析方面。</li>
+    <li><strong>英文编程（HumanEval+）</strong>：M3 得分 81.3% pass@1，与 GPT-5.5（83.7%）竞争，领先于 DeepSeek-V3（78.9%）。</li>
+    <li><strong>数学（MATH-500）</strong>：89.7%——略低于 DeepSeek-V3（91.2%）但领先于大多数中端模型。</li>
+    <li><strong>多语言翻译（FLORES-200）</strong>：中英方向 78.3 BLEU，与 GPT-5.5 相当。</li>
+  </ul>
+
+  <p class="text-gray-700 leading-relaxed my-4">M3 定价 ¥1.5/百万 token（输入和输出相同）——远低于 GPT-5.5（$10/百万 ≈ ¥70/百万），但高于 DeepSeek-V3（¥0.14-0.28/百万）。对于需要质量但不想支付 GPT 溢价的团队来说，M3 是一个理想的中端选择。</p>
+
+  <h3 class="text-xl font-bold text-gray-900 my-4">VL-01：视觉语言模型</h3>
+
+  <p class="text-gray-700 leading-relaxed my-4">MiniMax-VL-01 是公司的视觉语言模型，支持单图和多图理解。可接受图片 URL 或 base64 编码图片，支持 OCR、图像描述、视觉问答、文档理解（收据、表单、图表）和图片对比。定价 ¥4/百万 token，虽然比文本模型贵，但远低于 GPT-4o 视觉。在 DocVQA 和 ChartQA 基准上，VL-01 与 Qwen-VL-Plus 竞争，落后 GPT-4o 约 3-5 个百分点。</p>
+
+  <h3 class="text-xl font-bold text-gray-900 my-4">T2I-01：文生图</h3>
+
+  <p class="text-gray-700 leading-relaxed my-4">MiniMax 的图像生成模型可生成 1024×1024 图片，¥0.02/张。质量与 Midjourney V6 和 Stable Diffusion 3.5 相当，中文文字渲染优于 SD3.5。每张提示词免费生成 4 个变体。这是国产 API 中最便宜的图像生成方案（豆包 ¥0.08/张，通义万相 ¥0.05/张）。</p>
+
+  <h3 class="text-xl font-bold text-gray-900 my-4">Speech-01：语音合成</h3>
+
+  <p class="text-gray-700 leading-relaxed my-4">Speech-01 是神经 TTS 模型，支持 7 个预设音色（3 个中文女声、2 个中文男声、1 个英文女声、1 个英文男声），¥0.15/千字。质量与微软 Azure TTS 相当，表现力略低于 ElevenLabs。支持 SSML 标签精细控制韵律、语速和音调。</p>
+
+  <h3 class="text-xl font-bold text-gray-900 my-4">Music-01：AI 音乐生成</h3>
+
+  <p class="text-gray-700 leading-relaxed my-4">Music-01 是国产 AI API 中独特的产品——可生成多种风格（流行、古典、电子、电影配乐、爵士）的器乐旋律。¥0.10/秒，每次生成 30 秒片段。质量低于 Suno AI 和 Udio，但 Music-01 是国内无需代理即可访问的唯一 API 原生音乐生成模型。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">定价汇总表</h2>
+
+  <div class="overflow-x-auto my-6">
+    <table class="min-w-full border-collapse border border-gray-300">
+      <thead><tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left">模型</th><th class="border border-gray-300 px-4 py-2 text-left">模态</th><th class="border border-gray-300 px-4 py-2 text-left">价格</th><th class="border border-gray-300 px-4 py-2 text-left">说明</th></tr></thead>
+      <tbody>
+        <tr><td class="border border-gray-300 px-4 py-2">Lightning</td><td class="border border-gray-300 px-4 py-2">文本</td><td class="border border-gray-300 px-4 py-2">¥0.2/百万 token</td><td class="border border-gray-300 px-4 py-2">高吞吐，~200ms 延迟</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">Turbo</td><td class="border border-gray-300 px-4 py-2">文本</td><td class="border border-gray-300 px-4 py-2">¥0.8/百万</td><td class="border border-gray-300 px-4 py-2">平衡型，接近 GPT-4o-mini</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">Pro</td><td class="border border-gray-300 px-4 py-2">文本</td><td class="border border-gray-300 px-4 py-2">¥2/百万</td><td class="border border-gray-300 px-4 py-2">高质量，中文创作最佳</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">M3</td><td class="border border-gray-300 px-4 py-2">文本</td><td class="border border-gray-300 px-4 py-2">¥1.5/百万</td><td class="border border-gray-300 px-4 py-2">旗舰 MoE，编程近 GPT-5.5</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">VL-01</td><td class="border border-gray-300 px-4 py-2">视觉</td><td class="border border-gray-300 px-4 py-2">¥4/百万 token</td><td class="border border-gray-300 px-4 py-2">多图、OCR、文档理解</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">T2I-01</td><td class="border border-gray-300 px-4 py-2">图像生成</td><td class="border border-gray-300 px-4 py-2">¥0.02/张</td><td class="border border-gray-300 px-4 py-2">每提示词 4 变体</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">Speech-01</td><td class="border border-gray-300 px-4 py-2">语音合成</td><td class="border border-gray-300 px-4 py-2">¥0.15/千字</td><td class="border border-gray-300 px-4 py-2">7 音色，SSML 支持</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">Music-01</td><td class="border border-gray-300 px-4 py-2">音乐生成</td><td class="border border-gray-300 px-4 py-2">¥0.10/秒</td><td class="border border-gray-300 px-4 py-2">30 秒片段，5 种风格</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">MiniMax vs 竞品对比</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">M3 旗舰模型与主要竞品的多维度对比：</p>
+
+  <div class="overflow-x-auto my-6">
+    <table class="min-w-full border-collapse border border-gray-300">
+      <thead><tr class="bg-gray-100"><th class="border border-gray-300 px-4 py-2 text-left">维度</th><th class="border border-gray-300 px-4 py-2 text-left">MiniMax-M3</th><th class="border border-gray-300 px-4 py-2 text-left">DeepSeek-V3</th><th class="border border-gray-300 px-4 py-2 text-left">GPT-5.5</th><th class="border border-gray-300 px-4 py-2 text-left">Qwen3.5-Max</th></tr></thead>
+      <tbody>
+        <tr><td class="border border-gray-300 px-4 py-2">价格（每百万输入）</td><td class="border border-gray-300 px-4 py-2">¥1.5</td><td class="border border-gray-300 px-4 py-2">¥0.14</td><td class="border border-gray-300 px-4 py-2">~¥35</td><td class="border border-gray-300 px-4 py-2">¥4</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">上下文窗口</td><td class="border border-gray-300 px-4 py-2">128K</td><td class="border border-gray-300 px-4 py-2">128K</td><td class="border border-gray-300 px-4 py-2">128K</td><td class="border border-gray-300 px-4 py-2">128K</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">中文质量</td><td class="border border-gray-300 px-4 py-2">★★★★★</td><td class="border border-gray-300 px-4 py-2">★★★★☆</td><td class="border border-gray-300 px-4 py-2">★★★★☆</td><td class="border border-gray-300 px-4 py-2">★★★★★</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">英文编程</td><td class="border border-gray-300 px-4 py-2">★★★★☆</td><td class="border border-gray-300 px-4 py-2">★★★★☆</td><td class="border border-gray-300 px-4 py-2">★★★★★</td><td class="border border-gray-300 px-4 py-2">★★★☆☆</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">多模态</td><td class="border border-gray-300 px-4 py-2">视觉+TTS+音乐+图像</td><td class="border border-gray-300 px-4 py-2">无</td><td class="border border-gray-300 px-4 py-2">视觉+TTS</td><td class="border border-gray-300 px-4 py-2">视觉+图像</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">Function Calling</td><td class="border border-gray-300 px-4 py-2">有限</td><td class="border border-gray-300 px-4 py-2">有限</td><td class="border border-gray-300 px-4 py-2">完整</td><td class="border border-gray-300 px-4 py-2">不支持</td></tr>
+        <tr><td class="border border-gray-300 px-4 py-2">国内访问</td><td class="border border-gray-300 px-4 py-2">直连</td><td class="border border-gray-300 px-4 py-2">直连</td><td class="border border-gray-300 px-4 py-2">需代理</td><td class="border border-gray-300 px-4 py-2">直连</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">适用场景与建议</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">MiniMax 最适合以下场景：</p>
+
+  <ul class="list-disc pl-6 text-gray-700 leading-relaxed my-4">
+    <li><strong>多模态管线构建者</strong>：如果应用需要文本生成 + 图像理解 + TTS + 音乐——全部从一个 API 接口解决，MiniMax 是唯一提供如此广度的国产提供商。</li>
+    <li><strong>成本敏感的中文应用</strong>：Lightning 层级 ¥0.2/百万 token 是业界最便宜的国产端点之一，适合高容量客服机器人和内容生成。</li>
+    <li><strong>需要 GPT 级别质量但不接受其价格的团队</strong>：M3 以 ¥1.5/百万 token 的价格提供接近 GPT-5.5 的编程和中文质量，成本仅为 GPT 的 5%。</li>
+    <li><strong>音乐生成应用</strong>：Music-01 是国内无需代理即可访问的唯一 API 原生音乐生成方案。</li>
+  </ul>
+
+  <p class="text-gray-700 leading-relaxed my-4">MiniMax 不太适合：</p>
+
+  <ul class="list-disc pl-6 text-gray-700 leading-relaxed my-4">
+    <li><strong>生产级 Function Calling</strong>：有限的工具调用能力意味着 OpenAI、Anthropic 或 OpenRouter 更适合代理工作流。</li>
+    <li><strong>纯英文国际产品</strong>：DeepSeek 或 GPT 在全球更受认可，且有更好的英文文档。</li>
+    <li><strong>纯文本的极致成本优化</strong>：DeepSeek-V3 ¥0.14/百万 token 仍是最便宜的高质量选择。</li>
+  </ul>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">五分钟上手 MiniMax API</h2>
+
+  <ol class="list-decimal pl-6 text-gray-700 leading-relaxed my-4">
+    <li><strong>注册</strong>：访问 <a href="https://platform.minimaxi.com" class="text-blue-600 underline">platform.minimaxi.com</a>，使用手机号或邮箱注册。自动获得 100 万免费 tokens。</li>
+    <li><strong>生成 API Key</strong>：在控制台的开发者标签中创建一个 API 密钥。</li>
+    <li><strong>安装 SDK</strong>：<code>pip install minimax-python</code></li>
+    <li><strong>发送首个请求</strong>：使用 OpenAI 兼容端点，模型名称可选 <code>minimax-m3</code>、<code>minimax-01-lightning</code>、<code>minimax-01-turbo</code> 或 <code>minimax-01-pro</code>。</li>
+    <li><strong>监控用量</strong>：从控制台仪表板实时查看 token 数、费用和各模型延迟。</li>
+  </ol>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">局限性与注意事项</h2>
+
+  <ul class="list-disc pl-6 text-gray-700 leading-relaxed my-4">
+    <li><strong>Function Calling 有限</strong>：没有 OpenAI 或 Anthropic 级别的一等公民工具调用支持。</li>
+    <li><strong>英文文档滞后</strong>：中文文档完善，但英文版本不够全面，有时落后于更新。</li>
+    <li><strong>模型版本不透明</strong>：MiniMax 经常更新模型权重而不使用清晰的版本字符串。</li>
+    <li><strong>标准账户无企业 SLA</strong>：99.9% 可用性 SLA 需要协商企业合同。</li>
+    <li><strong>国际延迟</strong>：API 端点位于中国大陆，东亚以外用户会有 200-500ms 额外延迟。</li>
+  </ul>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">总结：MiniMax API 适合你的项目吗？</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">MiniMax 是被严重低估的国产 AI API 提供商。它结合了分层文本模型（¥0.2-2/百万 token）、与 GPT-5.5 竞争双语能力的旗舰 MoE 模型 M3（¥1.5/百万），以及国产提供商中最广泛的多模态面（视觉、图像生成、TTS、音乐生成），使其具有独特的综合竞争力。¥0.2/百万的 Lightning 层级是业界最便宜的端点之一，Music-01 填补了没有其他国产提供商服务的细分市场。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">主要权衡在于 Function Calling 的限制和英文文档的缺口。但如果你的项目需要双语多模态应用——一个 API Key 处理文本、视觉、语音和音乐——并且开发者能阅读中文文档，MiniMax 是任何 AI 技术栈中值得认真考虑的选项。</p>`;
+
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  articleJsonLd={articleJsonLd}
+  breadcrumbJsonLd={breadcrumbJsonLd}
+  faqJsonLd={faqJsonLd}
+>
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <article class="prose prose-lg max-w-none">
+      <div set:html={zhBody} />
+    </article>
+    <div class="mt-12 p-6 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl border border-orange-200">
+      <h3 class="text-xl font-bold text-gray-900 mb-2">🔗 与其他提供商对比</h3>
+      <p class="text-gray-700 mb-4">在 API 定价和功能目录中查看 MiniMax 与竞品的详细对比。</p>
+      <div class="flex flex-wrap gap-4">
+        <a href="/providers/minimax/" class="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition">MiniMax 档案 →</a>
+        <a href="/providers/deepseek/" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">DeepSeek →</a>
+        <a href="/providers/aliyun/" class="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">阿里云百炼 →</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

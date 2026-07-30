@@ -1,0 +1,359 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'openrouter-fusion-api-2026';
+const date = '2026-06-15';
+const locale = 'zh';
+
+const zhTitle = 'OpenRouter Fusion API 2026 横评：多模型面板超越 GPT-5.5';
+const zhDescription = 'OpenRouter Fusion API 完整测评 2026：多模型面板综合评分超越 GPT-5.5 和 Opus 4.8 单独调用。预算面板 64.7% 性能，仅需一半成本。定价、基准测试、代码示例、四种使用模式。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Fusion 是否在 OpenRouter 标准的 5.5% 平台费用之外额外加价？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不加。Fusion 定价为所有底层补全的总和。OpenRouter 不收取独立的 Fusion 加价——只有标准的 5.5% PAYG 平台费用。" }
+    },
+    {
+      "@type": "Question",
+      "name": "我可以在 Fusion 面板中使用自定义模型吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "可以。使用带有 analysis_models 数组的插件配置，指定任何 OpenRouter 支持的模型。自定义面板支持任意数量的模型。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Fusion 支持流式输出吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不支持。因为系统在合成前收集多个并行回答，回答以单次补全形式返回。需要流式输出时，请使用单独模型调用。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Fusion 可以在免费套餐中使用吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不可以。Fusion 需要 PAYG（按量付费）额度。由于速率限制，免费套餐模型不能参与 Fusion 面板。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Fusion 与直接使用更强模型（如 Claude Fable 5）相比如何？",
+      "acceptedAnswer": { "@type": "Answer", "text": "最佳 Fusion 配置（Fable 5 + GPT-5.5 → Opus 4.8, 69.0%）超过 Fable 5 单独（65.3%）3.7 分。Fusion 的关键优势是推理多样性——多模型共同发现单一模型遗漏的错误和盲区。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Fusion 的最大上下文长度是多少？",
+      "acceptedAnswer": { "@type": "Answer", "text": "有效 Fusion 上下文是所有面板模型上下文窗口的最小值——通常为 128K token（受 GPT-5.5 和 Opus 4.8 限制）。" }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">首页</a>
+        <span>&gt;</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>&gt;</span>
+        <span class="text-gray-900 font-medium">OpenRouter Fusion API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">OpenRouter Fusion API 2026 横评：多模型面板超越 GPT-5.5</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-15">2026 年 6 月 15 日</time>
+              <span>&#8226;</span>
+              <span>OpenRouter Fusion 横评</span>
+              <span>&#8226;</span>
+              <span>约 12 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              2026 年 6 月 12 日，OpenRouter 发布了 Fusion——一种服务端多模型推理系统，将多个前沿模型的回答合成为单一输出。核心理念简单而深刻：不同模型有不同优势，一个精心设计的模型面板，配合一个能综合分析的判断模型，可以超越任何单一模型——即使是最强的那一个——并且成本更低。本文详细介绍 Fusion 的工作原理、基准测试、性价比分析和集成示例。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>概览：</strong>OpenRouter Fusion 将多个前沿模型组合为服务端面板，由判断模型综合输出。质量预设（Opus 4.8 + GPT-5.5 + Gemini 3.1 Pro）DRACO 评分 67.6%，超过 GPT-5.5 单独（60.0%）。预算预设（Gemini 3 Flash + DeepSeek V3.2 + Kimi K2.6）评分 64.7%，成本约一半。支持自定义面板、服务端工具模式、四种使用方式。延迟 2-3 倍权衡。无独立 Fusion 加价——仅标准 5.5% PAYG 平台费用。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>引言：多模型智能的核心理念</h2>
+            <p>2026 年 6 月 12 日，OpenRouter 发布了 Fusion——一种服务端多模型推理系统，将多个前沿模型的回答合成为单一输出。核心理念简单而深刻：不同模型有不同优势，一个精心设计的模型面板，配合一个能综合分析的判断模型，可以超越任何单一模型——即使是最强的那一个——并且成本更低。</p>
+            <p>基准测试证实了这一点。OpenRouter 的内部 DRACO 基准测试（100 个深度研究任务）显示，Fusion 质量面板——结合 Opus 4.8、GPT-5.5 和 Gemini 3.1 Pro——得分 <strong>67.6%</strong>，超过了 GPT-5.5 单独的 <strong>60.0%</strong> 和 Opus 4.8 单独的 <strong>58.8%</strong>。预算面板得分 <strong>64.7%</strong>，同样超过这两个前沿模型，而成本大约只有一半。</p>
+
+            <h2>Fusion 的工作原理</h2>
+            <p>Fusion 不是一个单一模型——它是一个五阶段的服务端处理管道：</p>
+            <ol>
+              <li><strong>并行分发</strong> — 你的提示词被同时发送到所有面板模型</li>
+              <li><strong>独立推理</strong> — 每个面板模型启用网络搜索和网页抓取独立运行</li>
+              <li><strong>结构化分析</strong> — 判断模型读取所有面板的回答，生成结构化分析</li>
+              <li><strong>合成</strong> — 调用/融合模型基于判断模型的分析写出最终答案</li>
+              <li><strong>返回</strong> — 合成后的回答返回给调用者</li>
+            </ol>
+            <p>关键洞察：将同一提示词通过不同模型运行，会产生不同的推理路径、不同的工具调用和不同的源选择。通过综合它们，Fusion 捕捉到比任何单一模型更广泛的知识面。</p>
+
+            <h3>质量预设（默认）</h3>
+            <table>
+              <thead>
+                <tr><th>面板模型</th><th>角色</th><th>输入价格/M tok</th><th>输出价格/M tok</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Claude Opus 4.8</strong></td><td>面板 + 判断/合成</td><td>$5.00</td><td>$25.00</td></tr>
+                <tr><td><strong>OpenAI GPT-5.5</strong></td><td>面板</td><td>$5.00</td><td>$30.00</td></tr>
+                <tr><td><strong>Google Gemini 3.1 Pro</strong></td><td>面板</td><td>$2.00</td><td>$12.00</td></tr>
+              </tbody>
+            </table>
+
+            <h3>预算预设</h3>
+            <table>
+              <thead>
+                <tr><th>面板模型</th><th>角色</th><th>输入价格/M tok</th><th>输出价格/M tok</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Gemini 3 Flash</strong></td><td>面板</td><td>$0.50</td><td>$3.00</td></tr>
+                <tr><td><strong>DeepSeek V3.2</strong></td><td>面板</td><td>$0.2288</td><td>$0.3432</td></tr>
+                <tr><td><strong>Kimi K2.6</strong></td><td>面板</td><td>$0.68</td><td>$3.41</td></tr>
+                <tr><td><strong>Claude Opus 4.8</strong></td><td>判断/合成</td><td>$5.00</td><td>$25.00</td></tr>
+              </tbody>
+            </table>
+
+            <h2>基准测试：DRACO 深度研究评分</h2>
+            <p>OpenRouter 在 DRACO 基准测试上测试了 Fusion——涵盖研究分析、竞争情报、财务建模和技术文档的 100 个深度研究任务。结果来自 OpenRouter 发布的基准数据。</p>
+
+            <h3>最佳配置</h3>
+            <table>
+              <thead>
+                <tr><th>配置</th><th>DRACO 评分</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>Fusion</strong>: Fable 5 + GPT-5.5 → Opus 4.8</td><td><strong>69.0%</strong></td></tr>
+                <tr><td><strong>Fusion</strong>: Opus 4.8 + GPT-5.5 + Gemini 3.1 Pro → Opus 4.8</td><td><strong>68.3%</strong></td></tr>
+                <tr><td><strong>Fusion</strong>: Opus 4.8 + GPT-5.5 → Opus 4.8</td><td><strong>67.6%</strong></td></tr>
+                <tr><td><strong>Fusion</strong>: Opus 4.8 + Opus 4.8（自融合）→ Opus 4.8</td><td><strong>65.5%</strong></td></tr>
+                <tr><td>单独: Claude Fable 5（93/100 任务）</td><td>65.3%</td></tr>
+                <tr><td><strong>Fusion（预算）</strong>: Gemini 3 Flash + Kimi K2.6 + DeepSeek V4 Pro → Opus 4.8</td><td><strong>64.7%</strong></td></tr>
+                <tr><td>单独: DeepSeek V4 Pro</td><td>60.3%</td></tr>
+                <tr><td>单独: GPT-5.5</td><td>60.0%</td></tr>
+                <tr><td>单独: Claude Opus 4.8</td><td>58.8%</td></tr>
+                <tr><td>单独: Kimi K2.6</td><td>53.7%</td></tr>
+                <tr><td>单独: Gemini 3.1 Pro</td><td>45.4%</td></tr>
+                <tr><td>单独: Gemini 3 Flash</td><td>43.1%</td></tr>
+              </tbody>
+            </table>
+            <p>最引人注目的结果：<strong>预算融合面板（64.7%）同时超过 GPT-5.5 和 Opus 4.8 单独调用</strong>，而成本大约只有一半。即使自融合——用两个 Opus 4.8 作为面板——也达到 65.5%，仅合成步骤就提升了 +6.7 分。</p>
+
+            <h2>性价比分析</h2>
+
+            <h3>每 1M 输入 token 成本（质量预设）</h3>
+            <table>
+              <thead>
+                <tr><th>操作</th><th>单独 Opus 4.8</th><th>单独 GPT-5.5</th><th>Fusion 质量</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1M 输入 token</td><td>$5.00</td><td>$5.00</td><td>$5.00+$5.00+$2.00+$5.00 = <strong>$17.00</strong></td></tr>
+                <tr><td>1M 输出 token</td><td>$25.00</td><td>$30.00</td><td>$25.00+$30.00+$12.00+$25.00 = <strong>$92.00</strong></td></tr>
+              </tbody>
+            </table>
+            <p>Fusion 每次请求确实比任何单一模型更贵。但价值在于<strong>每一美元的能力，而不是每次请求的成本</strong>。对于准确性至关重要的任务——研究分析、代码审查、财务建模——7-9 分的 DRACO 提升值得更高的成本。</p>
+
+            <h3>预算 Fusion vs 前沿单独模型</h3>
+            <table>
+              <thead>
+                <tr><th>操作</th><th>单独 GPT-5.5</th><th>Fusion 预算</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1M 输入 token</td><td>$5.00</td><td>$0.50+$0.23+$0.68+$5.00 = <strong>$6.41</strong></td></tr>
+                <tr><td>1M 输出 token</td><td>$30.00</td><td>$3.00+$0.34+$3.41+$25.00 = <strong>$31.75</strong></td></tr>
+              </tbody>
+            </table>
+            <p>预算预设的运行成本约为 <strong>GPT-5.5 的 50-60%</strong>，同时达到或超过其基准测试分数。对于需要前沿级智能但预算有限的团队来说，这是最有说服力的使用场景。</p>
+
+            <h2>API 集成示例</h2>
+
+            <h3>curl</h3>
+            <pre><code class="language-bash">curl https://openrouter.ai/api/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -d '&#123;
+    "model": "openrouter/fusion",
+    "messages": [&#123;"role": "user", "content": "分析 2026 年 AI API 提供商竞争格局。"&#125;]
+  &#125;'</code></pre>
+
+            <h3>Python（OpenAI SDK）</h3>
+            <pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="YOUR_OPENROUTER_KEY",
+)
+
+completion = client.chat.completions.create(
+    model="openrouter/fusion",
+    messages=[&#123;"role": "user", "content": "分析 2026 年 AI API 提供商竞争格局。"&#125;],
+    max_tokens=2048
+)
+
+print(completion.choices[0].message.content)</code></pre>
+
+            <h3>自定义面板配置</h3>
+            <pre><code class="language-python">completion = client.chat.completions.create(
+    model="openrouter/fusion",
+    extra_body=&#123;
+        "plugins": [&#123;
+            "id": "openrouter:fusion",
+            "analysis_models": [
+                "anthropic/claude-opus-4.8",
+                "openai/gpt-5.5",
+                "google/gemini-3.1-pro"
+            ]
+        &#125;]
+    &#125;,
+    messages=[&#123;"role": "user", "content": "深度研究：Cloudflare Workers AI vs AWS Bedrock 市场份额 2025-2026"&#125;],
+)</code></pre>
+
+            <h2>四种使用 Fusion 的方式</h2>
+            <ol>
+              <li><strong>模型 Slug（最简单）</strong> — 使用 <code>"model": "openrouter/fusion"</code> 自动启用质量预设</li>
+              <li><strong>插件配置</strong> — 通过 <code>analysis_models</code> 插件字段指定自定义面板模型</li>
+              <li><strong>服务端工具</strong> — 将 Fusion 设为 <code>tools</code> 数组中的一个工具，基础模型自行决定何时调用</li>
+              <li><strong>聊天室界面</strong> — 使用 <code>openrouter.ai/fusion</code> 进行交互式探索</li>
+            </ol>
+
+            <h2>使用场景</h2>
+            <table>
+              <thead>
+                <tr><th>使用场景</th><th>推荐预设</th><th>原因</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>深度研究 / 竞争情报</td><td>质量</td><td>需要跨多种来源的最大准确性</td></tr>
+                <tr><td>代码审查 / 安全审计</td><td>质量</td><td>不同模型发现不同类型的问题</td></tr>
+                <tr><td>预算内容生成</td><td>预算</td><td>成本减半，性能保持 90%+</td></tr>
+                <tr><td>财务建模</td><td>自定义（Fable 5 + Opus 4.8）</td><td>最高 DRACO 评分 69.0%</td></tr>
+                <tr><td>数据分析仪表板</td><td>预算</td><td>高吞吐量，良好准确性</td></tr>
+              </tbody>
+            </table>
+
+            <h2>局限性</h2>
+            <ul>
+              <li><strong>延迟</strong> — Fusion 调用比单一模型调用慢 2-3 倍，不适合实时应用</li>
+              <li><strong>成本叠加</strong> — 你需要为所有面板成员加判断模型付费</li>
+              <li><strong>判断模型瓶颈</strong> — 合成质量取决于判断模型</li>
+              <li><strong>模型不可控</strong> — 你无法控制哪个面板模型的推理风格占主导</li>
+            </ul>
+
+            <h2>常见问题 FAQ</h2>
+            <p><strong>Q: Fusion 是否在 OpenRouter 标准的 5.5% 平台费用之外额外加价？</strong></p>
+            <p>A: 不加。Fusion 定价为所有底层补全的总和。OpenRouter 不收取独立的 Fusion 加价。</p>
+            <p><strong>Q: 我可以在 Fusion 面板中使用自定义模型吗？</strong></p>
+            <p>A: 可以。使用带有 <code>analysis_models</code> 数组的插件配置，指定任何 OpenRouter 支持的模型。</p>
+            <p><strong>Q: Fusion 支持流式输出吗？</strong></p>
+            <p>A: 不支持。因为系统在合成前收集多个并行回答，回答以单次补全形式返回。</p>
+            <p><strong>Q: Fusion 可以在免费套餐中使用吗？</strong></p>
+            <p>A: 不可以。Fusion 需要 PAYG（按量付费）额度。免费套餐模型不能参与。</p>
+            <p><strong>Q: Fusion 的最大上下文长度是多少？</strong></p>
+            <p>A: 有效 Fusion 上下文是所有面板模型上下文窗口的最小值——通常为 128K token。</p>
+            <p><strong>Q: Fusion 与直接使用 Claude Fable 5 相比如何？</strong></p>
+            <p>A: 最佳 Fusion 配置（Fable 5 + GPT-5.5 → Opus 4.8, 69.0%）超过 Fable 5 单独（65.3%）3.7 分。优势是推理多样性。</p>
+
+            <h2>结论</h2>
+            <p>OpenRouter Fusion 代表了 LLM 推理的一种全新方式。它不再赌一个前沿模型是否足够好，而是让你运行一整个模型面板，综合它们的集体智能。数据很清楚：即使是预算预设，也在 DRACO 基准测试中以一半成本击败了每个单一前沿模型。</p>
+            <p>对于从事研究型应用、代码审查管道或竞争情报系统的 API 开发者来说，Fusion 提供了明显的能力升级。延迟惩罚和叠加成本意味着它不适用于所有场景，但对于最重要的任务来说，7-9 分的准确性提升是显著的。</p>
+            <p>如果你想亲自尝试 Fusion，请在 <a href="https://openrouter.ai/affiliates" class="text-blue-600 hover:underline">OpenRouter</a> 注册并使用 <code>openrouter/fusion</code> 模型 slug。对于需要多提供商访问并支持确定性模型选择的团队，国内用户可考虑 <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a>，它提供 OpenAI 兼容端点，国内直连。</p>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">快速参考</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>产品:</strong> OpenRouter Fusion</li>
+                <li><strong>上线:</strong> 2026 年 6 月 12 日</li>
+                <li><strong>模型 Slug:</strong> openrouter/fusion</li>
+                <li><strong>基础 URL:</strong> openrouter.ai/api/v1</li>
+                <li><strong>预设:</strong> 质量、预算、自定义</li>
+                <li><strong>判断模型:</strong> Claude Opus 4.8（默认）</li>
+                <li><strong>流式:</strong> 不支持</li>
+              </ul>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">试试 OpenRouter</h3>
+              <p class="text-sm text-gray-600 mb-3">想亲自测试 Fusion？OpenRouter 提供联盟计划，注册即送 $1 免费额度。</p>
+              <a href="https://openrouter.ai/affiliates" class="block text-center bg-blue-600 text-white rounded-lg py-2 px-4 text-sm font-medium hover:bg-blue-700">立即注册</a>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">相关文章</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/zh/tutorials/openrouter-review" class="text-blue-600 hover:underline">OpenRouter API 测评</a></li>
+                <li><a href="/zh/tutorials/gpt-5-api-pricing-2026" class="text-blue-600 hover:underline">GPT-5 API 定价 2026</a></li>
+                <li><a href="/zh/tutorials/claude-fable-5-mythos-5-2026" class="text-blue-600 hover:underline">Claude Fable 5 / Mythos 5</a></li>
+                <li><a href="/zh/tutorials/deepinfra-api-review" class="text-blue-600 hover:underline">Deep Infra API 测评</a></li>
+              </ul>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">提供商信息</h3>
+              <ul class="text-sm text-gray-600 space-y-1">
+                <li>分类: 聚合平台</li>
+                <li>类型: 多模型融合</li>
+                <li>定价: 面板合计 + 5.5% 平台费</li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center text-xs text-gray-400">
+              广告位
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

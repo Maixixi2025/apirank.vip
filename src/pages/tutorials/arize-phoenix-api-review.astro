@@ -1,0 +1,579 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'arize-phoenix-api-review';
+const date = '2026-07-21';
+const locale = 'en';
+const enTitle = "Arize Phoenix 2026: Open-Source LLM Observability";
+const enDescription = "Arize Phoenix 2026 review: open-source LLM observability (Elastic-2.0, 10.6k stars), OpenTelemetry-native. 17+ frameworks. Cloud free 10 GiB.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Arize Phoenix 2026: Open-Source LLM Observability", "description": "Arize Phoenix 2026 review: open-source LLM observability (Elastic-2.0, 10.6k stars), OpenTelemetry-native. 17+ frameworks. Cloud free 10 GiB.", "datePublished": "2026-07-21", "dateModified": "2026-07-21", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/arize-phoenix-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip/"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Arize Phoenix 2026: Open-Source LLM Observability", "item": "https://apirank.vip/tutorials/arize-phoenix-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is Arize Phoenix used for in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "Arize Phoenix is an open-source LLM observability and evaluation platform. It captures traces from any OpenTelemetry-instrumented app (OpenAI, Anthropic, vLLM, Ollama, LangChain, LlamaIndex, etc.), exposes them through a web UI, and adds evaluation, dataset management, experiment comparison, and prompt-management features on top. Phoenix is to LLM apps what Honeycomb is to microservices — but open-source and self-hostable. In 2026 it is the default observability backend for teams that want minimal vendor lock-in."}}, {"@type": "Question", "name": "Is Arize Phoenix free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, in three ways. The Phoenix Cloud free tier ships with 10 GiB of included storage per workspace and is free indefinitely (no time limit beyond the storage cap). Phoenix self-hosted under Elastic-2.0 is free to deploy anywhere with no licensing cost (you pay only your infrastructure bill). The Phoenix source code on GitHub is fully public. The paid Cloud tier is pay-as-you-go for higher storage quotas; the enterprise tier (Arize AX) is a custom contract with SAML, SSO, audit logs, and on-prem deployment."}}, {"@type": "Question", "name": "How does Phoenix compare to Helicone in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "Both are LLM observability tools, but they optimize for different things. Phoenix is observation-first (you bring your own client; Phoenix collects traces via OTel) and open-source (Elastic-2.0, self-host anywhere). Helicone is a proxy-first wrapper around your LLM calls with caching, fallbacks, and HQL queries — also open-source (Apache-2.0) but typically deployed as a SaaS via proxy. Use Phoenix if you want full control and OpenTelemetry-native architecture. Use Helicone if you want request-side caching and a no-code observability dashboard.."}}, {"@type": "Question", "name": "Does Phoenix work with OpenAI's Agents SDK?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Phoenix ships an OpenTelemetry auto-instrumentor for openai-agents (and smolagents, LangChain, LlamaIndex, Haystack, etc.). The setup is one line of code — register(project_name=\"...\", endpoint=\"...\") — and every agent invocation, sub-agent decision, and tool call is traced into Phoenix. The new PXI agent can narrate the trace for debugging. Agents tracing is the fastest-growing Phoenix use case in 2026."}}, {"@type": "Question", "name": "Can I self-host Phoenix on Kubernetes?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The official Phoenix Helm chart at Arize-ai/phoenix-helm deploys Phoenix with one helm install command. AWS users have an official CloudFormation template; GCP users have a one-click Cloud Run deploy; Azure users have an ARM template; Railway and Render users have one-click Blueprints. The minimum resource footprint is roughly 2 CPU + 2 GiB RAM for the app server and a 10 GiB PostgreSQL database for typical workloads."}}, {"@type": "Question", "name": "Does Arize Phoenix support LLM evaluations?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Phoenix includes code-based evaluators (exact match, JSON schema validation, regex), LLM-as-judge evaluators (you bring any LLM as the grader), and custom Python evaluators. Run them over a dataset (one-click conversion from any span), then compare evaluator scores across prompt versions in the experiments UI. The evaluation harness is comparable to LangSmith's at the SDK level and slightly less polished in the UI."}}, {"@type": "Question", "name": "Is Phoenix OpenTelemetry-native?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Phoenix accepts standard OTLP traces from any OTel-instrumented app. It is fully interchangeable with Tempo, Jaeger, Honeycomb, Datadog, and any other OTel backend. You can also fan traces out to multiple backends via standard OTel collector configuration. OpenTelemetry is the strategic protocol choice that gives Phoenix its long-term flexibility."}}, {"@type": "Question", "name": "Who built and maintains Phoenix?", "acceptedAnswer": {"@type": "Answer", "text": "Phoenix is built and maintained by Arize AI, the same company behind the Arize AX enterprise observability product. The Phoenix repo on GitHub has 10 contributors with commit activity on a near-daily cadence. Releases ship weekly on a Semantic Versioning cadence; the v19.x line shipped on 2026-07-20. The maintainer team includes engineers from the OpenTelemetry community, and Phoenix is one of the canonical reference implementations for OTel-based LLM instrumentation."}}, {"@type": "Question", "name": "What's the difference between Phoenix and Arize AX?", "acceptedAnswer": {"@type": "Answer", "text": "Phoenix is the open-source core (Elastic-2.0, fully self-hostable, free Cloud tier). Arize AX is the commercial enterprise product that builds on Phoenix with SAML SSO, on-prem deployment, role-based access control, audit logs, dedicated Slack support, custom MSAs, and bulk cloud discounts. A typical path is: Phoenix Cloud free tier → Phoenix self-hosted on EKS → Arize AX for the regulated-industry tier. The data model and SDKs are identical across both."}}]};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Arize Phoenix 2026: The Open-Source LLM Observability Reference</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Arize Phoenix is the open-source standard for AI observability and evaluation that ships from Arize AI. Verified on 2026-07-21, Phoenix is the <strong>only</strong> top-tier LLM observability platform that is open-source under Elastic-2.0 (commercial-friendly) and that natively speaks OpenTelemetry, the open standard for trace export. The project crossed <strong>10,600 GitHub stars</strong>, ships v19.x on a ~weekly cadence, and has been adopted as the default observability backend inside LangChain, LlamaIndex, and the OpenAI Agents SDK. Phoenix is a peer of Helicone (Apache-2.0 closed-control-plane variant), Portkey (closed SaaS), Langfuse (LGPL), LangSmith (closed SaaS from LangChain), and Arize AX (Arize's commercial enterprise counterpart).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This review walks through what Phoenix does that closed SaaS alternatives do not, the verified 2026 pricing (free Cloud tier with 10 GiB included, paid tiers, and self-host), how to add Phoenix tracing to an OpenAI / Anthropic / vLLM / Ollama app in a few lines, and how Phoenix compares to Helicone, Portkey, Langfuse, LangSmith, and OpenLLMetry. The numbers come from the v19.3.0 release (2026-07-20), the official <code>arize-phoenix</code> PyPI package, the GitHub README, and the phoenix-cloud.mdx docs page.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are evaluating LLM observability in 2026 and you are allergic to vendor lock-in, this is the reference guide.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What Arize Phoenix does (and what it does not)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Phoenix is an <strong>AI observability + evaluation platform</strong>, not an LLM router or gateway. It sits between your application and your LLM provider, capturing every request, every tool call, every retrieval, and every trace span, then exposing them through a web UI, an SDK query layer, and an evaluation harness.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Core capabilities (verified 2026-07-21 from Phoenix v19.3.0 docs and the GitHub README):</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Open-source under Elastic-2.0.</strong> Phoenix's source code is fully public at github.com/Arize-ai/phoenix (10,643 stars, 998 forks, active since 2022-11-09). You can self-host, fork, modify, and ship a derivative without paying anyone. This is the only top-3 LLM observability tool with a permissive license and zero required SaaS tier.</li>
+
+<li><strong>OpenTelemetry-native.</strong> Phoenix accepts standard OTLP traces from any OTel-instrumented app. It is fully interchangeable with any other OTel backend (Tempo, Jaeger, Honeycomb, Datadog). The protocol is open; the storage engine is pluggable.</li>
+
+<li><strong>17+ LLM framework integrations.</strong> Out of the box, Phoenix auto-instruments OpenAI SDK, Anthropic SDK, Google Vertex, AWS Bedrock, Cohere, Mistral, Groq, Together AI, Fireworks, Hugging Face, vLLM, Ollama, LangChain, LlamaIndex, Haystack, OpenAI Agents SDK, and smolagents.</li>
+
+<li><strong>Tracing + spans + evaluations + datasets + experiments + prompt playground + PXI agent.</strong> Helicone is primarily a logging proxy. Phoenix is a full AI engineering workspace: traces, evaluations, datasets, experiment comparison, prompt versioning, retrieval inspection, and a new "PXI" AI engineering agent (BETA, 2026-Q3).</li>
+
+<li><strong>Self-host on anything.</strong> Verified deployment options from the docs: CLI (<code>px setup</code>), Docker, Compose, Kubernetes, Helm, AWS CloudFormation, Railway one-click, Render blueprint, Google Cloud Run, and Azure ARM. There is also a managed Phoenix Cloud option for teams that want zero infra.</li>
+
+<li><strong>Cloud free tier.</strong> Phoenix Cloud ships a free tier with <strong>10 GiB of included storage</strong> per workspace, ready to use with a free <code>app.arize.com</code> account. There is no time limit on the free tier beyond the storage quota.</li>
+
+<li><strong>Single-command setup (<code>px setup</code>).</strong> The new 2026-Q3 CLI walks through the five-step onboarding: git safety check, connection, agent handoff for instrumentation, verification, and artifact write-back. For greenfield apps, you can be tracing in under five minutes.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Phoenix does <strong>not</strong> train or fine-tune models, does <strong>not</strong> host inference (unlike Helicone's caching layer or Vercel AI Gateway's routing), does <strong>not</strong> replace your LLM provider's billed tokens (it is observation-only), and does <strong>not</strong> act as an authentication proxy in the standard install (Helicone wraps your call; Phoenix can do that with a small bridge, but its primary mode is OTel collection).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The positioning is: <strong>Phoenix is the "Honeycomb but for LLM apps" that you can self-host, fork, and extend</strong>.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Arize Phoenix pricing in 2026: free cloud tier, paid tiers, and self-host</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Verified 2026-07-21 from the official Phoenix Cloud sign-up page and the self-hosting docs. Phoenix has three deployment models, each with its own pricing:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Deployment</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cost</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Storage limit</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Retention</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Phoenix Cloud (Free)</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0 / month</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">10 GiB per workspace</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Until you hit the cap</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Phoenix Cloud (Paid)</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Pay-as-you-go, varies by data volume</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Custom</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Custom</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Phoenix Self-Host (Apache-2)</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0 (your infrastructure cost only)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Unlimited</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Unlimited</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Arize AX (Enterprise)</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Custom contract</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Unlimited</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Unlimited + SSO + RBAC + audit log</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The free Cloud tier is the lowest-friction path. Sign in at <code>app.arize.com</code>, click "Create a Space," and Phoenix provisions a managed workspace with 10 GiB of storage already attached. The paid Cloud tier is pay-as-you-go (volume-discounted, no per-seat pricing); the enterprise tier (Arize AX) adds SAML SSO, on-prem deployment, custom MSA, audit logs, and dedicated Slack support.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For most teams, the right starting move is the free Cloud tier. Once you hit 10 GiB (about 5–10 million traced LLM spans depending on payload size), the upgrade path is either pay-as-you-go or self-host. Self-host has no licensing cost and runs on the same Phoenix image; you pay only your cloud bill.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">> ⚠️ <strong>Pricing gotcha:</strong> Phoenix Cloud pricing scales with <strong>storage</strong>, not with seat count. A solo developer running 50 RPS through Phoenix consumes the same storage as a 50-engineer team running the same traffic. Seat-based pricing is the Vercel/Portkey model; Phoenix is volume-based.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Arize Phoenix vs Helicone vs Langfuse vs Portkey vs LangSmith vs OpenLLMetry</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The 2026 LLM observability landscape has six credible options. They cluster into three groups by ownership and license:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tool</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">License</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Self-host</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Free tier</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Paid tier</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tracing</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Evaluations</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Dataset / experiments</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Native framework auto-instr</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">OpenTelemetry-native</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Arize Phoenix</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Elastic-2.0</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">10 GiB Cloud</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Pay-as-you-go</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">17+ frameworks</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Helicone</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Apache-2.0</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">10K req/mo</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$79/mo (Pro)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">⚠️ Limited</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">100+ providers</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">⚠️ Proxy-based</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Portkey</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Closed source</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">10K req/mo</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$49/mo (Hobby)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">⚠️ Limited</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">200+ providers</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">⚠️ Proxy-based</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Langfuse</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">LGPL (with managed cloud)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">50K events/mo</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Pay-as-you-go</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">LangChain + broad</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">LangSmith</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Closed (LangChain-owned)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">⚠️ Enterprise-only</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">5K traces/mo</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$39/mo (Plus)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">LangChain-first</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">⚠️ Proxy-based</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">OpenLLMetry</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">MIT (the OTel contrib)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A (library, not service)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">17+ frameworks</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The structural split:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Closed-source paid SaaS (Portkey, LangSmith):</strong> easiest onboarding, but you cannot read the source, cannot self-host, and your data lives in their database. Vendor lock-in is the deal-breaker.</li>
+
+<li><strong>Open-source self-hostable (Phoenix, Langfuse):</strong> free to deploy anywhere; OpenTelemetry-native so you can swap backends; you are responsible for operating them.</li>
+
+<li><strong>OSS-but-proxy-only (Helicone):</strong> the open-source license applies but the production deploys are SaaS-first; you must use their proxy for the full feature set.</li>
+
+<li><strong>Pure library, not a service (OpenLLMetry):</strong> this is the OTel contrib project that Phoenix is built on top of. You can use OpenLLMetry without Phoenix and export to any OTel-compatible backend.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">In practice:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>If you want <strong>maximum control + minimum lock-in</strong>, Phoenix is the strongest pick. It is the only top-tier option with a permissive license <strong>and</strong> open telemetry <strong>and</strong> a full UI.</li>
+
+<li>If you want <strong>easiest onboarding for a non-engineer team</strong>, LangSmith or Portkey will feel more polished.</li>
+
+<li>If you want <strong>Helicone's proxy pattern with an OSS license</strong>, you can use Helicone self-hosted or open source LiteLLM as a proxy in front of Phoenix.</li>
+
+<li>If you want <strong>Phoenix-class capabilities for free without self-hosting</strong>, the Phoenix Cloud free tier covers most solo-developer and early-stage-team use cases.</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How to add Phoenix tracing to an OpenAI / Anthropic app (with code)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The simplest integration uses Phoenix's OTel auto-instrumentor. <strong>One line</strong> of code wires every OpenAI / Anthropic / vLLM call into Phoenix without changing your existing client:</p>
+
+<pre><code class="language-python"># pip install arize-phoenix-otel openai
+from phoenix.otel import register
+from openai import OpenAI
+
+# Point Phoenix at your local or hosted collector
+tracer_provider = register(
+    project_name="my-llm-app",
+    endpoint="http://localhost:6006/v1/traces",  # Phoenix Cloud or self-hosted
+)
+
+client = OpenAI()  # uses OPENAI_API_KEY from env
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[&#123;"role": "user", "content": "Hello, GPT-4o through Phoenix."&#125;],
+)
+print(response.choices[0].message.content)
+# Every API call now shows up in Phoenix with full spans, token counts, latency.</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">That single <code>register()</code> call instruments the OpenAI SDK with OTel spans, exports them to Phoenix, and creates a project in the UI under the name <code>my-llm-app</code>. No change to your existing client code.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Using the Anthropic SDK through Phoenix</h3>
+
+<pre><code class="language-python"># pip install arize-phoenix-otel anthropic
+from phoenix.otel import register
+from anthropic import Anthropic
+
+tracer_provider = register(
+    project_name="claude-eval",
+    endpoint="http://localhost:6006/v1/traces",
+)
+
+client = Anthropic()  # uses ANTHROPIC_API_KEY
+msg = client.messages.create(
+    model="claude-opus-4-8",
+    max_tokens=1024,
+    messages=[&#123;"role": "user", "content": "Summarize Q2 OKRs."&#125;],
+)
+print(msg.content[0].text)
+# Spans appear in Phoenix with the same metadata as OpenAI calls.</code></pre>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Running Phoenix locally for development</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">The fastest local setup is <code>phoenix serve</code>, which starts a Phoenix UI on <code>localhost:6006</code> with an in-process OTel collector and an SQLite storage backend. For dev work this is a one-liner:</p>
+
+<pre><code class="language-bash">pip install arize-phoenix
+phoenix serve
+# Open http://localhost:6006 — Phoenix is ready, no config needed.</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">For production-grade self-host, swap SQLite for PostgreSQL and Docker for a deployment platform. The full Docker Compose file lives in the <code>deploy/docker</code> directory of the GitHub repo. Kubernetes users have an official Helm chart; AWS / GCP / Azure customers have one-click IaC templates in the self-hosting docs.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">OpenTelemetry: why Phoenix's protocol choice matters</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The single most important architectural fact about Phoenix is that it speaks OTLP (OpenTelemetry Line Protocol), the open standard for trace export. This means:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Your existing OTel pipelines work.</strong> If your team already runs Honeycomb, Datadog, Tempo, or any other OTel backend, Phoenix can export to it as a peer. You can also import from any OTel-instrumented app and store traces in Phoenix.</li>
+
+<li><strong>No vendor-locked SDK.</strong> The <code>phoenix-otel</code> package is built on <code>opentelemetry-instrumentation-*</code> — the same instrumentation packages that OTel users run. If you stop using Phoenix, the traces still flow to your OTel collector.</li>
+
+<li><strong>Multi-backend fan-out.</strong> Because the protocol is open, you can run Phoenix as the primary UI backend and fan traces out to Datadog for production alerts without duplicating instrumenting code. This is the canonical pattern for teams adopting Phoenix mid-project.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The strategic insight: <strong>Phoenix is the Grafana of LLM observability</strong>. OpenTelemetry is the protocol, Phoenix is the UI, and you keep the data and the integrations.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Evaluations, datasets, and the PXI agent</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Phoenix is more than a tracer. The other half of the platform is structured evaluation:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Spans → Datasets.</strong> One click in the UI converts any span into a dataset row. If you have 200 traced production calls that you want to grade, the UI extracts them and lets you attach expected outputs and grader configurations.</li>
+
+<li><strong>Evaluators.</strong> Phoenix ships with code-based evaluators (exact match, JSON schema validation, regex), LLM-as-judge evaluators (you bring the model), and custom Python evaluators. Run them in batch over a dataset, then compare results across prompt versions or model versions.</li>
+
+<li><strong>Experiments.</strong> Compare two prompt versions side-by-side on the same dataset. Phoenix ranks them by evaluator scores and surfaces the per-row wins and losses. This is what A/B testing for prompts looks like in 2026.</li>
+
+<li><strong>Prompt playground.</strong> Edit a prompt, regenerate, and grade the outputs without leaving Phoenix. Supports multi-turn conversation editing and the same OTel trace path as production.</li>
+
+<li><strong>PXI (Phoenix Intelligence).</strong> The 2026-Q3 agent (currently BETA) reads your existing traces, datasets, evaluations, and experiments, then answers natural-language questions about them. It is the same pattern as a coding agent pointed at observability data: ask "what changed in the prompt-engineering prompt last week," and PXI diffs the versions and highlights the regression.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The takeaway: <strong>Phoenix is the only LLM observability tool that bundles tracing + evaluations + experiments + prompt management + agent-assisted debugging under one license</strong> (Elastic-2.0). Helicone covers tracing and has evaluation experiments, but not at the depth Phoenix offers. Portkey covers evaluations well, but traces only through its proxy. LangSmith covers all of it but is closed source.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Self-hosting Phoenix with Docker Compose</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">For teams that need on-prem or air-gapped deploys, Phoenix self-hosts in a single Docker Compose file. The minimal Compose is two services: a Phoenix app server (Python, ~2 CPU, 2 GiB RAM for typical dev workloads) and a PostgreSQL database (Postgres 15+). For dev, you can also use the bundled SQLite path:</p>
+
+<pre><code class="language-yaml"># docker-compose.yml (minimal Phoenix self-host)
+services:
+  phoenix:
+    image: arizephoenix/phoenix:latest
+    ports:
+      - "6006:6006"
+    environment:
+      - PHOENIX_SQL_DATABASE_URL=postgresql://phoenix:phoenix@db:5432/phoenix
+      - PHOENIX_ENABLE_AUTH=true   # Optional: enforce local accounts
+    depends_on:
+      - db
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: phoenix
+      POSTGRES_PASSWORD: phoenix
+      POSTGRES_DB: phoenix
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:</code></pre>
+
+<pre><code class="language-bash">docker compose up
+# Open http://localhost:6006 — full Phoenix stack on Postgres.</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">For Kubernetes, the official Helm chart at <code>Arize-ai/phoenix-helm</code> deploys Phoenix to a cluster with a single <code>helm install</code> command. AWS users can use the official CloudFormation template; GCP users have a Cloud Run one-click deploy; Azure users have an ARM template; Railway and Render users have one-click Blueprints.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The pattern at most companies in 2026: <strong>Phoenix Cloud free tier for the first six months, then self-host on EKS or GKE when the storage bill scales</strong>. Switching from Phoenix Cloud to Phoenix self-host is a configuration change, not a code rewrite.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Real-world use cases</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>1. LLM evaluation harness for prompt engineering.</strong> A team running GPT-4o, Claude Opus 4.8, and Gemini 2.5 Pro side-by-side wants to know which prompt produces the best outputs. Phoenix lets them trace every call, convert spans to datasets, run LLM-as-judge evaluations across all three models, and compare results in the UI. The PXI agent can answer "show me all prompts where Claude's score fell below 4.5 last week."</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>2. RAG debugging.</strong> A RAG app is producing wrong answers. Phoenix traces each pipeline step: query embedding → vector retrieval → chunk scoring → LLM synthesis. The UI shows the exact retrieved chunks for each trace, so engineers can pinpoint whether the retrieval step is the failure or the synthesis step. This is the canonical use case for Phoenix — RAG apps need span-level visibility, not just request-level logs.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>3. Production cost attribution.</strong> A SaaS product wants per-customer LLM cost. Phoenix spans carry arbitrary tags (<code>customer_id</code>, <code>feature_name</code>, <code>tenant</code>). A backend job queries the spans through the Phoenix API, groups by <code>customer_id</code>, and produces monthly invoices. The cost is one extra query per call and the engineering time saved is months vs building a custom logging pipeline.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>4. Agent debugging.</strong> An OpenAI Agents SDK or smolagents workflow produces a 14-step tool-call chain. Phoenix traces every tool invocation, every sub-agent decision, and every LLM call. The UI surfaces the full chain as a waterfall, and PXI can narrate what went wrong — "the agent called <code>search_web</code> three times for the same query because the deduplication step fired before the cache was warmed."</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>5. Compliance-grade audit log.</strong> A regulated industry (healthcare, finance, government) needs every LLM call logged for audit. Phoenix emits a structured span per call with prompt, response, latency, model, and tokens. Export those spans to S3 via OTel collector, retain for 7 years, done. The Elastic-2.0 license covers commercial deployment.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Honest limitations</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Phoenix is the strongest open-source LLM observability tool in 2026, but it is not magic:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>No request-side caching or fallback routing.</strong> Phoenix is observation-only. If you want LLM caching, fallback chains, or request retries at the proxy layer, layer Phoenix behind Helicone, Vercel AI Gateway, or LiteLLM. The composition works; Phoenix does not try to be all of them.</li>
+
+<li><strong>No built-in token-cost optimization.</strong> Phoenix tells you what your traces cost. It does not negotiate rates or route to cheaper models automatically. That's a Portkey or Helicone pattern.</li>
+
+<li><strong>Cloud free tier is 10 GiB.</strong> That's enough for solo developers and small teams but will run out for high-volume production usage. Plan the Cloud→self-host migration before you hit the cap (Phoenix emails you when you approach the limit).</li>
+
+<li><strong>PXI is in BETA.</strong> The agent is genuinely useful for trace investigation but produces wrong answers on edge cases. Treat its output as a starting point, not a verified fact.</li>
+
+<li><strong>Self-host requires Postgres + Python.</strong> Not as heavy as Langfuse, but you are running a database and an app server. Railway / Render one-click deploys handle this for most teams.</li>
+
+<li><strong>Closed-source competitors (LangSmith, Portkey) polish the UX.</strong> Phoenix's UI is functional but less polished than LangSmith's. If a non-engineer team member needs to use the tool daily, expect a learning curve.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">These are tradeoffs, not deal-breakers. For technical teams that value control and open standards, Phoenix is the right pick.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verdict for API developers</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Arize Phoenix is the <strong>best open-source LLM observability platform in 2026</strong>. It is the only top-tier option that is permissive-license, self-hostable, OpenTelemetry-native, evaluation-capable, and actively maintained. The Cloud free tier covers most solo developers and small teams; self-host covers everything else. If your team already runs OTel, Phoenix slots in as a peer backend; if your team is new to LLM observability, Phoenix's <code>px setup</code> CLI and 17+ framework integrations make the first hour productive.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Pick Phoenix if you want <strong>maximum control + minimum lock-in</strong> for LLM observability. Pick LangSmith if you want the most polished UI and your stack is LangChain-native. Pick Portkey if you want a SaaS control plane with strong evaluation UX. Pick Helicone if you want a proxy layer with strong caching. Pick Langfuse if you want an LGPL-licensed alternative with broader framework support.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For production use, run Phoenix on the <strong>free Cloud tier</strong> to start. Migrate to <strong>self-host on EKS or GKE</strong> once you exceed 10 GiB of storage. Add <strong>PXI</strong> to your debugging rotation once it leaves BETA. And pair Phoenix with <strong>Helicone or Vercel AI Gateway</strong> if you also need request-side caching and fallback routing — Phoenix and the proxies compose cleanly.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The verified 2026-07-21 numbers are all in the GitHub README, the v19.3.0 release notes, and the official docs. The numbers will change; the architectural pattern will not.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Frequently asked questions</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is Arize Phoenix used for in 2026?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Arize Phoenix is an open-source LLM observability and evaluation platform. It captures traces from any OpenTelemetry-instrumented app (OpenAI, Anthropic, vLLM, Ollama, LangChain, LlamaIndex, etc.), exposes them through a web UI, and adds evaluation, dataset management, experiment comparison, and prompt-management features on top. Phoenix is to LLM apps what Honeycomb is to microservices — but open-source and self-hostable. In 2026 it is the default observability backend for teams that want minimal vendor lock-in.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Is Arize Phoenix free?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes, in three ways. The Phoenix Cloud free tier ships with 10 GiB of included storage per workspace and is free indefinitely (no time limit beyond the storage cap). Phoenix self-hosted under Elastic-2.0 is free to deploy anywhere with no licensing cost (you pay only your infrastructure bill). The Phoenix source code on GitHub is fully public. The paid Cloud tier is pay-as-you-go for higher storage quotas; the enterprise tier (Arize AX) is a custom contract with SAML, SSO, audit logs, and on-prem deployment.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How does Phoenix compare to Helicone in 2026?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Both are LLM observability tools, but they optimize for different things. Phoenix is observation-first (you bring your own client; Phoenix collects traces via OTel) and open-source (Elastic-2.0, self-host anywhere). Helicone is a proxy-first wrapper around your LLM calls with caching, fallbacks, and HQL queries — also open-source (Apache-2.0) but typically deployed as a SaaS via proxy. Use Phoenix if you want full control and OpenTelemetry-native architecture. Use Helicone if you want request-side caching and a no-code observability dashboard. They compose well — Phoenix behind a Helicone proxy is a common 2026 pattern.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Does Phoenix work with OpenAI's Agents SDK?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. Phoenix ships an OpenTelemetry auto-instrumentor for <code>openai-agents</code> (and <code>smolagents</code>, LangChain, LlamaIndex, Haystack, etc.). The setup is one line of code — <code>register(project_name="...", endpoint="...")</code> — and every agent invocation, sub-agent decision, and tool call is traced into Phoenix. The new PXI agent can narrate the trace for debugging. Agents tracing is the fastest-growing Phoenix use case in 2026.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Can I self-host Phoenix on Kubernetes?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. The official Phoenix Helm chart at <code>Arize-ai/phoenix-helm</code> deploys Phoenix with one <code>helm install</code> command. AWS users have an official CloudFormation template; GCP users have a one-click Cloud Run deploy; Azure users have an ARM template; Railway and Render users have one-click Blueprints. The minimum resource footprint is roughly 2 CPU + 2 GiB RAM for the app server and a 10 GiB PostgreSQL database for typical workloads.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Does Arize Phoenix support LLM evaluations?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. Phoenix includes code-based evaluators (exact match, JSON schema validation, regex), LLM-as-judge evaluators (you bring any LLM as the grader), and custom Python evaluators. Run them over a dataset (one-click conversion from any span), then compare evaluator scores across prompt versions in the experiments UI. The evaluation harness is comparable to LangSmith's at the SDK level and slightly less polished in the UI.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Is Phoenix OpenTelemetry-native?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. Phoenix accepts standard OTLP traces from any OTel-instrumented app. It is fully interchangeable with Tempo, Jaeger, Honeycomb, Datadog, and any other OTel backend. You can also fan traces out to multiple backends via standard OTel collector configuration. OpenTelemetry is the strategic protocol choice that gives Phoenix its long-term flexibility.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Who built and maintains Phoenix?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Phoenix is built and maintained by Arize AI, the same company behind the Arize AX enterprise observability product. The Phoenix repo on GitHub has 10 contributors with commit activity on a near-daily cadence. Releases ship weekly on a Semantic Versioning cadence; the v19.x line shipped on 2026-07-20. The maintainer team includes engineers from the OpenTelemetry community, and Phoenix is one of the canonical reference implementations for OTel-based LLM instrumentation.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What's the difference between Phoenix and Arize AX?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Phoenix is the open-source core (Elastic-2.0, fully self-hostable, free Cloud tier). Arize AX is the commercial enterprise product that builds on Phoenix with SAML SSO, on-prem deployment, role-based access control, audit logs, dedicated Slack support, custom MSAs, and bulk cloud discounts. A typical path is: Phoenix Cloud free tier → Phoenix self-hosted on EKS → Arize AX for the regulated-industry tier. The data model and SDKs are identical across both.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Sources</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>Arize Phoenix GitHub repo: github.com/Arize-ai/phoenix — 10,643 stars, 998 forks, Elastic-2.0 licensed</li>
+
+<li>Phoenix v19.3.0 release (verified 2026-07-20)</li>
+
+<li>PyPI package arize-phoenix — Python 3.10-3.14 support</li>
+
+<li>Phoenix Cloud docs: app.arize.com (sign-up), phoenix-cloud.mdx (setup)</li>
+
+<li>Phoenix self-hosting docs: docker, kubernetes, helm, aws-with-cloudformation, railway, render, google-cloud-run</li>
+
+<li>Phoenix Cloud free tier: 10 GiB included storage per workspace</li>
+
+<li>OpenTelemetry OTLP standard: opentelemetry.io/docs/specs/otlp/</li>
+
+<li>LLM framework integration list: integrations.mdx — 17+ frameworks including OpenAI SDK, Anthropic SDK, LangChain, LlamaIndex, Haystack, smolagents, OpenAI Agents SDK</li>
+
+<li>PXI (Phoenix Intelligence) BETA announcement: pxi.mdx</li>
+
+<li>License details: Elastic-2.0, full text at elastic.co/licensing/elastic-license</li>
+
+</ul>
+`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={zhCanonicalUrl} type="article">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div class="mb-8"><a href="/tutorials" class="text-blue-600 hover:underline text-sm">← Back to Tutorials</a></div>
+    <div class="flex items-center gap-3 mb-4"><span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded">Provider Review</span><time datetime={date} class="text-sm text-gray-500">July 21, 2026</time></div>
+    <div set:html={enBody} />
+    <hr class="my-12 border-gray-200" />
+    <section class="mt-8"><p class="text-sm text-gray-500 mb-2"><strong>Disclosure</strong></p><p class="text-sm text-gray-500">APIRank may earn affiliate commission from partner links in this article. Editorial judgments remain independent.</p></section>
+  </article>
+</BaseLayout>

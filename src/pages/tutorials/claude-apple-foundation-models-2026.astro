@@ -117,7 +117,7 @@ const faqJsonLd = {
 
           <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
             <p class="text-blue-800 text-sm">
-              <strong>TL;DR:</strong> The new Anthropic Swift SDK lets iOS / macOS apps route prompts between on-device Apple Foundation Models and the cloud Claude API through a single call. The <code>.costOptimized</code> policy can keep 60-80% of queries on-device for free, dropping cloud Claude spend 10-50x compared to always-cloud. Sonnet 4.5 brings 200K-token context and 99%+ reliable tool calling, replacing Apple FM's 8K effective context and weaker tool guarantees. The catch: requires iOS 18 / macOS 15+, and Anthropic's data-retention policy applies to the cloud path. For China access, point the SDK at <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a>'s China-direct Claude endpoint.
+              <strong>TL;DR:</strong> The new Anthropic Swift SDK lets iOS / macOS apps route prompts between on-device Apple Foundation Models and the cloud Claude API through a single call. The <code>.costOptimized</code> policy can keep 60-80% of queries on-device for free, dropping cloud Claude spend 10-50x compared to always-cloud. Sonnet 4.5 brings 200K-token context and 99%+ reliable tool calling, replacing Apple FM's 8K effective context and weaker tool guarantees. The catch: requires iOS 18 / macOS 15+, and Anthropic's data-retention policy applies to the cloud path. For China access, point the SDK at <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a>'s China-direct Claude endpoint.
             </p>
           </div>
 
@@ -272,7 +272,7 @@ print(response.text)</code></pre>
                 <tr><td>Email / document summarization</td><td>Claude Sonnet 4.5 (cloud)</td><td>Long context, high quality ceiling</td></tr>
                 <tr><td>Code editing in iPad IDE</td><td>Claude Sonnet 4.5 (cloud)</td><td>Tool use + multi-step reasoning</td></tr>
                 <tr><td>Privacy-critical (medical, legal)</td><td>On-device Apple FM only</td><td>Apple privacy guarantees, no cloud</td></tr>
-                <tr><td>Multi-vendor routing (Claude + on-device)</td><td><a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> aggregator + Apple FM</td><td>FreeModel bundles Claude with on-device routing for hybrid UX</td></tr>
+                <tr><td>Multi-vendor routing (Claude + on-device)</td><td><a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a> aggregator + Apple FM</td><td>FreeModel bundles Claude with on-device routing for hybrid UX</td></tr>
               </tbody>
             </table>
 
@@ -289,7 +289,7 @@ print(response.text)</code></pre>
                 <tr><td><strong>Direct Anthropic API (HTTP)</strong></td><td>$3-15 per 1M tokens</td><td>600-1200ms</td><td>Anthropic policy</td><td>Existing cloud-only apps</td></tr>
               </tbody>
             </table>
-            <p>For iOS / macOS apps that previously routed everything to Claude via HTTP, the cost-optimized router is the obvious win — same quality ceiling, 10-50x cost reduction. For China-direct access, an aggregator like <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> paired with the on-device model gives the best of both worlds: Apple-grade privacy for local queries, mainland-direct Claude for the rest.</p>
+            <p>For iOS / macOS apps that previously routed everything to Claude via HTTP, the cost-optimized router is the obvious win — same quality ceiling, 10-50x cost reduction. For China-direct access, an aggregator like <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a> paired with the on-device model gives the best of both worlds: Apple-grade privacy for local queries, mainland-direct Claude for the rest.</p>
 
             <h2>FAQ</h2>
             <p><strong>Q: Do I need an Anthropic API key to use the on-device Apple Foundation Models path?</strong></p>
@@ -302,7 +302,7 @@ print(response.text)</code></pre>
             <p>A: OpenAI's iOS support is HTTP-only (no first-party Swift SDK) and the OpenAI API does not integrate with Apple's Foundation Models framework routing. If you want cloud + on-device routing in a single Swift call, Anthropic's SDK is currently the only first-party option.</p>
 
             <p><strong>Q: Can I use this from China or other regions where <code>api.anthropic.com</code> is blocked?</strong></p>
-            <p>A: Direct calls to <code>api.anthropic.com</code> from mainland China are blocked at the network layer. Workarounds: route through a proxy (adds 200-400ms), or use a China-direct aggregator. <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a>, for example, hosts Claude with a mainland-direct endpoint and is OpenAI-compatible — you can swap <code>api.anthropic.com</code> for FreeModel's base URL in the SDK config and get the same Claude quality without the proxy.</p>
+            <p>A: Direct calls to <code>api.anthropic.com</code> from mainland China are blocked at the network layer. Workarounds: route through a proxy (adds 200-400ms), or use a China-direct aggregator. <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a>, for example, hosts Claude with a mainland-direct endpoint and is OpenAI-compatible — you can swap <code>api.anthropic.com</code> for FreeModel's base URL in the SDK config and get the same Claude quality without the proxy.</p>
 
             <p><strong>Q: What happens if both the on-device model and Claude are unavailable?</strong></p>
             <p>A: The <code>.costOptimized</code> and <code>.qualityFirst</code> policies return an error with a typed enum (<code>RoutingError.allPathsUnavailable</code>). The <code>.onDeviceOnly</code> policy returns whatever the on-device model produced, even if confidence is low. Production apps should display a graceful fallback UI (cached response, "AI unavailable" message) for the <code>allPathsUnavailable</code> case.</p>
@@ -317,9 +317,9 @@ print(response.text)</code></pre>
               <li><strong>Privacy-critical (PII, health, legal)</strong> → On-device Apple FM only (<code>.onDeviceOnly</code> policy)</li>
               <li><strong>Consumer chatbot / productivity app</strong> → Cost-optimized router (<code>.costOptimized</code> policy, default)</li>
               <li><strong>Pro / paid-tier app where quality is the moat</strong> → Always-Claude (<code>.qualityFirst</code> policy)</li>
-              <li><strong>App that needs to call Claude from mainland China</strong> → Anthropic SDK pointed at <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a>'s China-direct Claude endpoint (same API, no proxy)</li>
+              <li><strong>App that needs to call Claude from mainland China</strong> → Anthropic SDK pointed at <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a>'s China-direct Claude endpoint (same API, no proxy)</li>
             </ul>
-            <p>If you're already shipping an iOS app and were using on-device Apple Foundation Models, the new Swift SDK is a drop-in upgrade — change one import, add an API key, switch the policy to <code>.costOptimized</code>, and you get frontier-quality Claude in the same call sites. If you need to call Claude from China, <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline">FreeModel</a> is the natural pair: same OpenAI-compatible API, mainland-direct routing, and a managed setup that handles the proxy for you.</p>
+            <p>If you're already shipping an iOS app and were using on-device Apple Foundation Models, the new Swift SDK is a drop-in upgrade — change one import, add an API key, switch the policy to <code>.costOptimized</code>, and you get frontier-quality Claude in the same call sites. If you need to call Claude from China, <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a> is the natural pair: same OpenAI-compatible API, mainland-direct routing, and a managed setup that handles the proxy for you.</p>
 
             <h2>Comparison Table (Final)</h2>
             <table>
@@ -369,7 +369,7 @@ print(response.text)</code></pre>
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
               <h3 class="font-bold text-gray-900 mb-2">Call Claude from China</h3>
               <p class="text-sm text-gray-700 mb-3">FreeModel is an OpenAI-compatible aggregator with a mainland-direct Claude endpoint. Point the Anthropic SDK at FreeModel's base URL and skip the proxy.</p>
-              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-sm text-blue-600 hover:underline break-all">freemodel.dev/invite/FRE-7a3b6220</a>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-sm text-blue-600 hover:underline break-all" target="_blank" rel="sponsored noopener">freemodel.dev/invite/FRE-7a3b6220</a>
             </div>
             <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
               <p class="text-gray-500 text-sm">Advertisement</p>

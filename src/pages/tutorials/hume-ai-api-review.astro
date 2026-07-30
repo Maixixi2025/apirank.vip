@@ -1,0 +1,565 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'hume-ai-api-review';
+const date = '2026-07-10';
+const locale = 'en';
+
+const enTitle = 'Hume AI 2026: Empathic Voice & OCTAVE TTS';
+const enDescription = 'Hume AI API review: EVI 3 empathic voice agent, OCTAVE TTS voice design, Expression Measurement. Pricing vs ElevenLabs/Cartesia/Deepgram.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Hume AI 2026: Empathic Voice & OCTAVE TTS", "description": "Hume AI API review: EVI 3 empathic voice agent, OCTAVE TTS voice design, Expression Measurement. Pricing vs ElevenLabs/Cartesia/Deepgram.", "datePublished": "2026-07-10", "dateModified": "2026-07-10", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/hume-ai-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Hume AI 2026: Empathic Voice & OCTAVE TTS", "item": "https://apirank.vip/tutorials/hume-ai-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is Hume AI used for?", "acceptedAnswer": {"@type": "Answer", "text": "Hume is used for empathic voice agents — voice applications that need to read and respond to user emotion in real time. Typical use cases include customer service agents that detect caller frustration, therapy and coaching apps that adapt to user mood, call center analytics that flag high-anger calls, accessibility tools that adjust TTS prosody based on user preference, and consumer voice agents (companions, language tutors, sales bots) that need a more natural conversational style than pure TTS."}}, {"@type": "Question", "name": "How much does Hume AI cost?", "acceptedAnswer": {"@type": "Answer", "text": "Hume charges per endpoint, not per model. EVI 3 full-duplex voice is $0.096/min. OCTAVE TTS is $0.048/1K characters. Expression Measurement is $0.0008/sec for audio. There is no subscription fee, no minimum commitment, and no per-seat license. The free credits on signup ($5-10 equivalent) are enough to trial EVI 3 for 50-100 minutes."}}, {"@type": "Question", "name": "Is there a Hume AI free tier?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Hume gives free credits on signup (the exact amount varies; typically $5-10 equivalent at the listed per-endpoint rates). The free credits are enough to trial EVI 3 for 50-100 minutes, run Expression Measurement on ~10,000 minutes of audio, or generate ~150,000 characters of OCTAVE TTS. No credit card is required for the free credits."}}, {"@type": "Question", "name": "Can I use Hume AI from inside China?", "acceptedAnswer": {"@type": "Answer", "text": "Hume's API is hosted on AWS US-East and GCP US-Central. Access from inside China requires a stable proxy connection. Latency from Shanghai to the WebSocket endpoint is typically 200-400ms, which is acceptable for EVI sessions (the EVI client buffers a 200-300ms audio frame anyway). For production deployments serving China-based users, the recommended path is to deploy a regional proxy on Aliyun Bailian or Tencent Cloud that routes to the Hume API."}}, {"@type": "Question", "name": "Does Hume support mid-session language changes?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. EVI 3 (released April 2026) is the only voice API in 2026 that detects a user's language change mid-session and switches output language without re-initializing the WebSocket. The model supports 12 languages (English, Spanish, French, German, Italian, Portuguese, Mandarin, Japanese, Korean, Hindi, Arabic, Russian). Cartesia and ElevenLabs require a new session for language changes; Hume EVI 3 follows the user."}}, {"@type": "Question", "name": "How does Hume compare to ElevenLabs?", "acceptedAnswer": {"@type": "Answer", "text": "ElevenLabs has the best TTS voice quality in 2026 and a 3,000+ voice library, but no empathic layer (no emotion vector returned) and no real-time conversational turnkey. Hume's EVI 3 has the empathic layer, real-time conversational, and a smaller voice library (~50 voices including presets and OCTAVE designs). For pure TTS, ElevenLabs is cheaper ($0.018 vs $0.048 per 1K characters) and higher quality. For an empathic voice agent, Hume is the only option in 2026."}}, {"@type": "Question", "name": "How does Hume compare to Cartesia?", "acceptedAnswer": {"@type": "Answer", "text": "Cartesia Sonic-2 has the fastest real-time TTS (90ms TTFB) and the lowest price among real-time TTS APIs, but no empathic layer. Hume's EVI 3 is slower (200-300ms TTFB) and more expensive, but adds the 48-dimension emotion vector. For a low-latency voice agent that does not need emotion, Cartesia wins. For an empathic voice agent, Hume wins."}}, {"@type": "Question", "name": "How does Hume compare to OpenAI Realtime?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI Realtime (gpt-4o-realtime) is the most turnkey real-time conversational API in 2026, with WebRTC support and zero integration cost for teams already on OpenAI. The pricing is the highest in the comparison ($0.06/min input + $0.24/min output = ~$0.30/min for a balanced conversation). There is no empathic layer (no emotion vector returned) and no MCP server. Hume's EVI 3 is cheaper for the voice layer ($0.096/min total) and adds the empathic layer, but the integration cost is higher (WebSocket vs WebRTC). For an OpenAI-all-in team that does not need emotion, OpenAI Realtime wins. For a team that needs the empathic layer, Hume wins."}}, {"@type": "Question", "name": "What is the Hume MCP server?", "acceptedAnswer": {"@type": "Answer", "text": "The Hume MCP server (released January 2026) exposes every Hume endpoint as a tool call to Claude, Cursor, Cline, and any MCP-compatible agent framework. The setup is one `npx` command. Once configured, an agent can call EVI sessions, OCTAVE synthesis, voice design, and Expression Measurement through the same agent tool registry. The MCP server is free for all Hume API users."}}, {"@type": "Question", "name": "Does Hume have an affiliate program?", "acceptedAnswer": {"@type": "Answer", "text": "Hume does not currently have a public affiliate program. For sites that need an affiliate-style CTA, the alternative is to recommend FreeModel, an OpenAI-compatible aggregator that provides a unified API key across multiple providers and adds cost-routing optimization for self-deployed models."}}, {"@type": "Question", "name": "Can I use Hume for batch emotion analysis on a large audio archive?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Expression Measurement is a REST endpoint that accepts audio, video, or image files and returns a 48-dimension emotion vector per timestamp. The pricing is $0.0008/sec for audio (~$0.048/min). For a 1M-minute audio archive, the cost is ~$48K. The endpoint is rate-limited at 100 concurrent requests per account by default; enterprise customers can request higher limits. The typical batch workflow: upload audio files to S3, send S3 keys to Expression Measurement, store the per-timestamp emotion vectors in a Postgres JSONB column, query the column for `Anger > 0.7` segments, surface those segments in a dashboard."}}]};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Hume AI 2026: The Empathic Voice and OCTAVE TTS Review for Production Voice Agents</h1>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Hume AI, and why does it matter in 2026?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume AI is a New York AI research company that has spent the last four years building what is, in 2026, the most production-grade empathic voice stack outside the big tech speech labs. The company was founded in 2021 by Alan Cowen, a former Google DeepMind research scientist, raised a $50M Series B in 2024 (Union Square Ventures, Nat Friedman, Daniel Gross), and as of July 2026 powers the voice layer for companies like CallMiner (call center analytics), BetterHelp (therapy companion), and a growing list of consumer voice-agent startups building on top of LangChain, AutoGen, and the Vercel AI SDK. The core promise is straightforward: an LLM-agnostic voice API that does not just transcribe and synthesize speech, but measures and responds to the emotional content of the speaker in real time.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Three things make Hume a notable 2026 pick for a voice agent team:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>EVI 3 (Empathic Voice Interface)</strong>, the third-generation conversational voice model released in April 2026, is the first voice API that ships a built-in measure of "how the user feels" alongside the ASR transcript. The model returns a 48-dimensional emotion vector per turn, plus a <code>language</code> switch (EVI 3 detects 12 languages mid-conversation and can pivot without re-initializing the session).</li>
+<li><strong>OCTAVE TTS</strong> (released October 2025), the industry's first text-prompted voice design model. Instead of uploading a 30-second reference clip to clone a voice, you write <code>"A warm, middle-aged female voice with a slight British accent, speaking at a measured pace"</code> and get a new voice back. The model also supports 11 languages and 9 pre-set voice presets.</li>
+<li><strong>MCP server</strong> (released January 2026) exposes every Hume endpoint as a tool call to Claude, Cursor, and any MCP-compatible agent framework. The <code>hume-mcp</code> package installs in one command and routes voice synthesis, transcription, and emotion measurement through the same agent tool registry.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The trade-off is price. Hume's EVI 3 runs at roughly $0.096/min of duplex audio, which is 3-5x more expensive than Cartesia's Sonic-2 for pure TTS, and the OCTAVE voice design is $0.048/1K characters, which is roughly 2x ElevenLabs' TTS-Multilingual v3. The premium is for the empathic layer: if your application needs to read and respond to user emotion, there is no comparable API in 2026. For pure TTS, Cartesia or ElevenLabs is cheaper.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Hume API surface: EVI, OCTAVE, Expression Measurement, and Voice Design</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume offers four distinct endpoint families, and the API for each is different. The base URL is <code>https://api.hume.ai</code> and authentication uses a <code>HUME_API_KEY</code> bearer token.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">1. EVI 3 (Empathic Voice Interface)</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">EVI is Hume's flagship product: a full-duplex conversational voice agent that runs in a WebSocket session. The client streams 16 kHz PCM audio in, and EVI streams back 24 kHz PCM audio out, plus structured events for transcript, emotion, and tool calls. The session model is:</p>
+
+<pre><code class="language-python">import asyncio
+from hume import AsyncHumeClient
+from hume.empathic_voice import AudioFormat
+
+client = AsyncHumeClient(api_key="HUME_API_KEY")
+
+async with client.empathic_voice.connect() as socket:
+    # Send configuration
+    await socket.update_config(
+        voice_id="ito",            # preset voice
+        language="en",             # auto-detect with 12-language fallback
+        emotion_model="evi-3",     # empathic layer on
+        system_prompt="You are a friendly, patient support agent for a yoga studio."
+    )
+
+    # Stream audio in chunks (e.g. from microphone)
+    # ... (omitted for brevity)
+
+    # Receive events as they arrive
+    async for event in socket:
+        if event.type == "audio_output":
+            play(event.audio)  # 24 kHz PCM
+        elif event.type == "user_message":
+            print(f"User said: &#123;event.message.text&#125;")
+            print(f"Emotion: &#123;event.message.emotion&#125;")  # 48-dim vector
+        elif event.type == "assistant_message":
+            print(f"EVI replied: &#123;event.message.text&#125;")</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The <code>event.message.emotion</code> field is the differentiator. Each user turn returns a 48-dimension vector of emotion intensities (e.g. <code>Joy: 0.62, Sadness: 0.04, Anger: 0.02, Confusion: 0.31, ...</code>). Your application can route on this vector: e.g. <code>if event.message.emotion.Joy > 0.7: trigger_celebration_sound()</code>. The 48 dimensions map to Hume's published <code>Expression Measurement</code> taxonomy (see section 3).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">EVI 3 also adds a <strong>mid-session language pivot</strong> that older EVI 2 lacked. The model detects 12 languages in real time and switches output language without dropping the session. A user can start in English, switch to Spanish mid-sentence, and EVI 3 follows without re-initializing the WebSocket. This is the only voice API in 2026 with this capability; Cartesia and ElevenLabs require a new session for language changes.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">2. OCTAVE TTS</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">OCTAVE is Hume's text-to-speech model. Two flavors:</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Voice Design (text-prompted custom voice):</strong></p>
+
+<pre><code class="language-python">from hume import HumeClient
+
+client = HumeClient(api_key="HUME_API_KEY")
+
+response = client.tts.synthesize(
+    text="Welcome to your meditation session. Find a comfortable seat and let your shoulders relax.",
+    voice_description="A warm, middle-aged female voice with a slight British accent, speaking at a measured pace.",
+    language="en",
+    output_format="mp3"
+)
+with open("welcome.mp3", "wb") as f:
+    f.write(response.audio)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">OCTAVE's voice description is a free-form English string, not a constrained schema. The model interprets adjectives like "warm", "gravelly", "excited", "monotone" and produces a voice matching the description. The same description run twice returns similar but not identical voices, so the model is stochastic. For deterministic voices, you can save a <code>voice_id</code> from the first synthesis and reuse it via <code>voice_id="abc123"</code>.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Voice Cloning (reference audio upload):</strong></p>
+
+<pre><code class="language-python">response = client.tts.clone_and_synthesize(
+    text="This is a cloned voice.",
+    reference_audio_path="voice_sample.wav",  # 30+ seconds of clean audio
+    reference_transcript="This is the transcript of the reference audio.",
+    language="en"
+)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Cloning requires at least 30 seconds of clean reference audio plus a verbatim transcript. The quality is comparable to ElevenLabs' Instant Voice Cloning, but with the additional emotion vector returned alongside the audio (Hume's <code>Expression Measurement</code> can be enabled for cloned voices too).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Pricing on OCTAVE is <strong>$0.048 per 1,000 characters of input text</strong>. A 1-minute voiceover at ~150 words/min = ~750 characters = $0.036. ElevenLabs' TTS-Multilingual v3 is $0.018/1K characters at the Creator tier, roughly 2.6x cheaper for plain TTS without the voice-design capability.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">3. Expression Measurement (batch emotion analysis)</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Expression Measurement is the standalone emotion API: pass in audio, video, or image files, get back a 48-dimensional emotion vector per timestamp. The endpoint is REST, not WebSocket:</p>
+
+<pre><code class="language-python">response = client.expression.measure.batch(
+    files=["call_recording.wav"],
+    models=["face", "prosody", "language"],  # multimodal
+    granularity="utterance"  # or "word" / "consecutive-5-second"
+)
+
+for prediction in response.predictions:
+    for emotion in prediction.emotions:
+        print(f"&#123;emotion.name&#125;: &#123;emotion.score:.3f&#125;")</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The 48 emotions are documented in Hume's open <code>Expression Taxonomy v3</code> (publicly released, MIT-licensed). The most commonly used ones in production are: <code>Joy, Sadness, Anger, Fear, Surprise, Disgust, Confusion, Concentration, Awkwardness, Boredom, Excitement, Interest</code>. The taxonomy is comparable to Plutchik's wheel of emotions but data-driven, derived from Hume's training corpus of 10M+ annotated human emotional expressions.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The typical use case: post-call analytics. A call center records a support call, runs Expression Measurement on the audio, and gets per-utterance emotion scores. The dashboard can flag calls where the customer's <code>Anger</code> crossed 0.7 for more than 30 seconds (an SLA-violation signal), or where the agent's <code>Awkwardness</code> was high (a coaching opportunity). CallMiner, Gong, and Chorus.ai are the commercial competitors, but they all charge per-seat subscriptions in the $1,000+/user/month range. Hume's API is $0.0008 per second of audio analyzed, which is roughly $0.05 per minute. For a 100K-call/month call center, that's $5,000/month vs $120,000+/month for a CallMiner seat license.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">4. Voice Design (preset voices)</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">For teams that want a high-quality TTS without writing a voice description, Hume ships 9 preset voices (<code>ito, kora, ronan, dave, ...</code>) and 11 language presets (English, Spanish, French, German, Italian, Portuguese, Mandarin, Japanese, Korean, Hindi, Arabic). The preset voices are tuned for production use cases (e.g. <code>kora</code> is a warm female voice optimized for audiobook narration; <code>ronan</code> is a deep male voice optimized for meditation apps). Pricing on presets is the same as custom voice design: $0.048/1K characters.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hume pricing in practice: a per-feature breakdown</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume's pricing is per-feature, not per-model, and the rates are not always listed in one place. Here is the full breakdown as of July 2026:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Endpoint</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Unit</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Price</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Notes</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">EVI 3 (full-duplex voice)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">per minute of audio</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.096</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Pay-per-second, ~$5.76/hour of conversation</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">EVI 3 (with emotion model off)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">per minute</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.072</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">25% cheaper if you only need ASR + TTS without the empathic layer</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">OCTAVE TTS (custom voice)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">per 1K characters</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.048</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Both text-prompted design and reference cloning</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">OCTAVE TTS (preset voice)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">per 1K characters</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.048</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Same price; presets have no separate license</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Expression Measurement (audio)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">per second</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.0008</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.048/min</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Expression Measurement (video)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">per second</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.0012</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Slightly higher for video frames</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Expression Measurement (image)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">per image</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.0004</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Per-frame face analysis</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Voice Cloning setup</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">one-time per voice</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Free</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Upload 30s+ reference audio + transcript</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The free tier: Hume gives free credits on signup (amount varies; typically $5-10 USD equivalent at the listed per-feature rates). That is enough to trial EVI 3 for ~50-100 minutes of conversation, or to run Expression Measurement on ~10,000 minutes of audio. No credit card is required for the free credits; you need to add a card to continue past the free tier.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Volume discounts: Hume does not publicly list volume tiers, but accounts that spend >$5K/month typically get a 15-20% custom rate. Contact Hume's enterprise team (<code>sales@hume.ai</code>) for a quote.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How Hume compares to ElevenLabs, Cartesia, Deepgram, and OpenAI Realtime</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The 2026 voice API market has five serious contenders, each with a distinct angle. The right pick depends on whether you need the empathic layer, the language coverage, the price, or the realtime turnkey integration.</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Provider</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Strength</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Weakness</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">TTS price (per 1K chars)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Real-time conversational</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Empathic layer</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">MCP server</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Hume AI</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Empathic voice (48-dim emotion), EVI 3 mid-session language pivot, OCTAVE text-prompted voice design</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Higher TTS price (2-3x ElevenLabs), WebSocket protocol integration cost</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.048</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (EVI 3, WebSocket)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (48-dim emotion vector)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Jan 2026)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>ElevenLabs</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Best-in-class voice quality, 70+ languages, large voice library (3,000+ community voices)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No empathic layer, voice cloning ethics controversy, no real-time conversational</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.018 (TTS-Multilingual v3)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Conversational AI, 2025)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Limited (no official MCP)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Cartesia</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Fastest real-time TTS (Sonic-2, 90ms TTFB), Pythonic API, MCP integration</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No empathic layer, smaller voice library (~50 voices), English-first</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.022 (Sonic-2)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Sonic-2 + Ink, 2025)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Aug 2025)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Deepgram</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Best price/performance for STT (transcription), Aura TTS for plain TTS use cases</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">TTS quality below ElevenLabs/Hume, no empathic layer, no real-time conversational turnkey</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.015 (Aura-2)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No (Aura is HTTP only)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>OpenAI Realtime</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Turnkey real-time conversational (gpt-4o-realtime), part of OpenAI SDK</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No empathic layer, premium pricing (~$0.06/min input + $0.24/min output), no MCP yet</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.060 (gpt-4o-realtime, per minute)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (native, WebRTC)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team that wants <strong>empathic voice for a customer-facing agent</strong> (therapy, support, coaching, companion apps): <strong>Hume</strong> wins. The 48-dimensional emotion vector is the only API in 2026 that returns a quantitative measure of user emotion in real time, and the EVI 3 mid-session language pivot is uniquely useful for global call centers.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team that wants <strong>the best TTS voice quality at the lowest price</strong>: <strong>ElevenLabs</strong> wins. The voice quality is industry-leading, the library is massive (3,000+ community voices), and the price is 2.6x cheaper than Hume. You give up the empathic layer, but for audiobook narration, video voiceover, and podcast production, ElevenLabs is the right call.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team that wants <strong>the fastest real-time TTS for low-latency voice agents</strong>: <strong>Cartesia Sonic-2</strong> wins. The TTFB is 90ms, which is roughly 1/3 of ElevenLabs' typical 300-400ms. The trade-off is a smaller voice library and no empathic layer. For interactive voice agents where every 100ms of latency matters (e.g. live customer service with a 1-second total budget), Cartesia is the right call.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team that wants <strong>the cheapest STT (transcription) at production scale</strong>: <strong>Deepgram</strong> wins. The Nova-2 model is the price/performance leader for English and Spanish ASR. Deepgram's TTS (Aura-2) is competent but not best-in-class, so most teams pair Deepgram STT with ElevenLabs or Cartesia TTS for the production stack.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team that wants <strong>the most turnkey OpenAI-integrated experience</strong>: <strong>OpenAI Realtime (gpt-4o-realtime)</strong> wins. The SDK is the same as the rest of the OpenAI ecosystem, the model is a single API call, and there is no separate voice provider to manage. The price is the highest in the comparison (~$0.06/min input + $0.24/min output), and there is no empathic layer or MCP server, but for a team that is already all-in on OpenAI, the integration cost is zero.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hume MCP server: agent integration in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume released its official MCP server in January 2026. The server exposes every Hume endpoint as a tool call to Claude, Cursor, Cline, and any MCP-compatible agent framework. The setup is one command:</p>
+
+<pre><code class="language-bash">npx -y @hume/mcp-server --api-key $HUME_API_KEY</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">In a <code>mcp.json</code> config:</p>
+
+<pre><code class="language-json">&#123;
+  "mcpServers": &#123;
+    "hume": &#123;
+      "command": "npx",
+      "args": ["-y", "@hume/mcp-server"],
+      "env": &#123;
+        "HUME_API_KEY": "your-api-key"
+      &#125;
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Once configured, an agent can call:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><code>hume_evi_start_session</code>: open a full-duplex EVI 3 session with a voice + system prompt</li>
+<li><code>hume_evi_end_session</code>: close the session</li>
+<li><code>hume_octave_synthesize</code>: convert text to audio with a custom or preset voice</li>
+<li><code>hume_octave_describe_voice</code>: generate a new voice from a text description</li>
+<li><code>hume_expression_measure</code>: run emotion analysis on an audio/video/image file</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The MCP server is the path-of-least-resistance for an agent that needs to speak out loud (TTS), listen and respond (EVI), or read user emotion (Expression Measurement). The same <code>HUME_API_KEY</code> is used for all endpoints; no separate subscription is required.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The MCP server is free for all Hume API users. It is also one of the few voice API MCP implementations that supports streaming tool calls, which is the right pattern for long-running voice synthesis or EVI sessions.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Does Hume have an OpenAI-compatible API?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">No. Hume's API is REST + WebSocket, not OpenAI-compatible. There is no drop-in replacement for OpenAI's <code>/v1/audio/speech</code> or <code>/v1/realtime</code> endpoints. If you are migrating from OpenAI Realtime to Hume EVI 3, you will need to rewrite the client to use Hume's WebSocket protocol. The trade-off is the empathic layer: OpenAI's Realtime API does not return the 48-dimension emotion vector, so if you are building a voice agent that needs to read user emotion, the rewrite is unavoidable.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For teams that want OpenAI compatibility plus Hume's empathic layer, the alternative is to use Hume as the voice layer alongside an LLM (e.g. Claude, GPT-4o) for the reasoning. A typical architecture:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li>User speaks → Hume EVI 3 transcribes and returns emotion vector</li>
+<li>Application sends transcript + emotion to LLM with the system prompt + tool definitions</li>
+<li>LLM generates a text response, optionally including a <code>humor: "warm, gentle"</code> or <code>emotion: "apologetic"</code> directive</li>
+<li>Application sends the LLM response to Hume OCTAVE for synthesis with the requested voice style</li>
+<li>Hume streams audio back to the user</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">This is the architecture that most production Hume deployments use. The WebSocket is the right protocol for the voice layer, and the LLM is the right protocol for the reasoning layer. The two are decoupled; the application stitches them together.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Hume's data retention policy?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume retains EVI sessions, OCTAVE audio, and Expression Measurement input/output for 30 days for abuse monitoring and debugging. The retention period is configurable for enterprise customers (most production teams set it to 0 days, with logging going to their own observability stack). For most production workloads, the 30-day retention is acceptable. For workloads handling HIPAA, PHI, or other regulated data, the enterprise tier allows you to disable Hume's logging entirely and route all logs to a private S3 bucket.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume is SOC 2 Type II certified (verified March 2026) and has a published DPA (Data Processing Addendum) for GDPR compliance. The MCP server data does NOT include the audio content by default; only the tool-call metadata is logged for billing and abuse monitoring.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Can I self-host Hume's models?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">No. Hume's models (EVI 3, OCTAVE, Expression Measurement) are not open-weight and are not available for self-hosting. The API is the only access path. The closest alternative for self-hosting empathic voice is to combine:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Whisper</strong> (open-weight STT) for transcription</li>
+<li><strong>Llama 3.3 70B</strong> or <strong>Claude</strong> for reasoning</li>
+<li><strong>CosyVoice</strong> or <strong>ChatTTS</strong> (open-weight TTS) for synthesis</li>
+<li><strong>A custom emotion classifier</strong> trained on Hume's public Expression Taxonomy v3 (the taxonomy is MIT-licensed, but the trained weights are not)</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The result is roughly 80% of Hume's quality for ~40% of the cost, but with significant engineering overhead (a team needs to integrate 4 models, manage the WebSocket protocol, and maintain the emotion classifier). For a team that needs the empathic layer and is not prepared to maintain a multi-model stack, Hume's API is the right call.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Final verdict</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume AI in 2026 is the voice API for teams that need the empathic layer — a quantitative measure of user emotion, returned in real time alongside the transcript, usable to drive agent behavior, call analytics, or content moderation. The EVI 3 mid-session language pivot is the only voice API in 2026 that supports this; Cartesia and ElevenLabs require a new session for language changes. The OCTAVE voice design is the only TTS model in 2026 that generates a new voice from a natural-language description without a reference audio clip. The MCP server is the most underrated feature — any agent that needs to speak, listen, or read user emotion should be routing through Hume's MCP.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The trade-offs are real: higher TTS price (2-3x ElevenLabs), WebSocket protocol integration cost (vs OpenAI Realtime's WebRTC turnkey), and no self-hosting option. For a team building a voice agent that does not need the empathic layer (audiobook narration, podcast production, voiceover for video), ElevenLabs is the right call. For a team that needs the empathic layer and is willing to pay the premium, Hume is the right call.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are building a voice agent in 2026 and you have not tried EVI 3, the free credits on signup are enough to run a 30-minute empathic conversation and benchmark the 48-dimension emotion vector against your use case. That is the right starting point.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>What is Hume AI used for?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume is used for empathic voice agents — voice applications that need to read and respond to user emotion in real time. Typical use cases include customer service agents that detect caller frustration, therapy and coaching apps that adapt to user mood, call center analytics that flag high-anger calls, accessibility tools that adjust TTS prosody based on user preference, and consumer voice agents (companions, language tutors, sales bots) that need a more natural conversational style than pure TTS.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How much does Hume AI cost?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume charges per endpoint, not per model. EVI 3 full-duplex voice is $0.096/min. OCTAVE TTS is $0.048/1K characters. Expression Measurement is $0.0008/sec for audio. There is no subscription fee, no minimum commitment, and no per-seat license. The free credits on signup ($5-10 equivalent) are enough to trial EVI 3 for 50-100 minutes.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Is there a Hume AI free tier?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. Hume gives free credits on signup (the exact amount varies; typically $5-10 equivalent at the listed per-endpoint rates). The free credits are enough to trial EVI 3 for 50-100 minutes, run Expression Measurement on ~10,000 minutes of audio, or generate ~150,000 characters of OCTAVE TTS. No credit card is required for the free credits.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Can I use Hume AI from inside China?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume's API is hosted on AWS US-East and GCP US-Central. Access from inside China requires a stable proxy connection. Latency from Shanghai to the WebSocket endpoint is typically 200-400ms, which is acceptable for EVI sessions (the EVI client buffers a 200-300ms audio frame anyway). For production deployments serving China-based users, the recommended path is to deploy a regional proxy on Aliyun Bailian or Tencent Cloud that routes to the Hume API.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Does Hume support mid-session language changes?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. EVI 3 (released April 2026) is the only voice API in 2026 that detects a user's language change mid-session and switches output language without re-initializing the WebSocket. The model supports 12 languages (English, Spanish, French, German, Italian, Portuguese, Mandarin, Japanese, Korean, Hindi, Arabic, Russian). Cartesia and ElevenLabs require a new session for language changes; Hume EVI 3 follows the user.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How does Hume compare to ElevenLabs?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">ElevenLabs has the best TTS voice quality in 2026 and a 3,000+ voice library, but no empathic layer (no emotion vector returned) and no real-time conversational turnkey. Hume's EVI 3 has the empathic layer, real-time conversational, and a smaller voice library (~50 voices including presets and OCTAVE designs). For pure TTS, ElevenLabs is cheaper ($0.018 vs $0.048 per 1K characters) and higher quality. For an empathic voice agent, Hume is the only option in 2026.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How does Hume compare to Cartesia?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Cartesia Sonic-2 has the fastest real-time TTS (90ms TTFB) and the lowest price among real-time TTS APIs, but no empathic layer. Hume's EVI 3 is slower (200-300ms TTFB) and more expensive, but adds the 48-dimension emotion vector. For a low-latency voice agent that does not need emotion, Cartesia wins. For an empathic voice agent, Hume wins.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How does Hume compare to OpenAI Realtime?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenAI Realtime (gpt-4o-realtime) is the most turnkey real-time conversational API in 2026, with WebRTC support and zero integration cost for teams already on OpenAI. The pricing is the highest in the comparison ($0.06/min input + $0.24/min output = ~$0.30/min for a balanced conversation). There is no empathic layer (no emotion vector returned) and no MCP server. Hume's EVI 3 is cheaper for the voice layer ($0.096/min total) and adds the empathic layer, but the integration cost is higher (WebSocket vs WebRTC). For an OpenAI-all-in team that does not need emotion, OpenAI Realtime wins. For a team that needs the empathic layer, Hume wins.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>What is the Hume MCP server?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">The Hume MCP server (released January 2026) exposes every Hume endpoint as a tool call to Claude, Cursor, Cline, and any MCP-compatible agent framework. The setup is one <code>npx</code> command. Once configured, an agent can call EVI sessions, OCTAVE synthesis, voice design, and Expression Measurement through the same agent tool registry. The MCP server is free for all Hume API users.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Does Hume have an affiliate program?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume does not currently have a public affiliate program. For sites that need an affiliate-style CTA, the alternative is to recommend FreeModel, an OpenAI-compatible aggregator that provides a unified API key across multiple providers and adds cost-routing optimization for self-deployed models.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Can I use Hume for batch emotion analysis on a large audio archive?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. Expression Measurement is a REST endpoint that accepts audio, video, or image files and returns a 48-dimension emotion vector per timestamp. The pricing is $0.0008/sec for audio (~$0.048/min). For a 1M-minute audio archive, the cost is ~$48K. The endpoint is rate-limited at 100 concurrent requests per account by default; enterprise customers can request higher limits. The typical batch workflow: upload audio files to S3, send S3 keys to Expression Measurement, store the per-timestamp emotion vectors in a Postgres JSONB column, query the column for <code>Anger > 0.7</code> segments, surface those segments in a dashboard.</p>
+`;
+
+const affiliateSidebar = {
+  title: 'Try FreeModel',
+  description: 'One API key for multiple providers. DeepSeek + Qwen + Llama + OpenAI-compatible upstream -- pair with voice APIs for full-stack agent cost optimization.',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: 'Get free credits'
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url}
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+             rel="sponsored noopener" target="_blank">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Facts</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Provider:</strong> Hume AI (empathic voice API)</li>
+            <li><strong>Models:</strong> EVI 3, OCTAVE TTS, Expression Measurement, Voice Design</li>
+            <li><strong>Pricing:</strong> EVI 3 $0.096/min; OCTAVE $0.048/1K chars; Expression $0.0008/sec</li>
+            <li><strong>Hosting:</strong> AWS US-East, GCP US-Central</li>
+            <li><strong>API:</strong> <code>https://api.hume.ai</code> + MCP server (Jan 2026)</li>
+            <li><strong>Empathic layer:</strong> 48-dimension emotion vector (unique in 2026)</li>
+            <li><strong>Affiliate:</strong> Use FreeModel for cost-routing optimization</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

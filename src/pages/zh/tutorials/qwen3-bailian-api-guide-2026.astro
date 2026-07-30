@@ -1,0 +1,649 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'qwen3-bailian-api-guide-2026';
+const date = '2026-07-20';
+const locale = 'zh';
+const zhTitle = "Qwen3.5 API 2026：阿里云百炼 vs 开源权重";
+const zhDescription = "Qwen3.5 与阿里云百炼 API 完全指南 2026：核验后的定价、三种访问路径（托管 API、开源权重、聚合器），与 Kimi K3、DeepSeek V4 逐项对比。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Qwen3.5 API 2026：阿里云百炼 vs 开源权重", "description": "Qwen3.5 与阿里云百炼 API 完全指南 2026：核验后的定价、三种访问路径（托管 API、开源权重、聚合器），与 Kimi K3、DeepSeek V4 逐项对比。", "datePublished": "2026-07-20", "dateModified": "2026-07-20", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/qwen3-bailian-api-guide-2026"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh/"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Qwen3.5 API 2026：阿里云百炼 vs 开源权重", "item": "https://apirank.vip/zh/tutorials/qwen3-bailian-api-guide-2026"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Qwen3.5 支持函数调用吗？", "acceptedAnswer": {"@type": "Answer", "text": "支持，通过 DashScope 的 `/v1/services/aigc/text-generation` 端点的 `tools` 参数。Schema 强制力度比 GPT-4o 或 Claude Sonnet 5 弱——请用你具体的工具定义测试。"}}, {"@type": "Question", "name": "我能用 OpenAI Python 客户端访问阿里云百炼吗？", "acceptedAnswer": {"@type": "Answer", "text": "能。阿里云百炼在 `https://dashscope.aliyuncs.com/compatible-mode/v1` 暴露 OpenAI 兼容端点。把 OpenAI 客户端的 `base_url` 设为该 URL，其余代码无需改动。"}}, {"@type": "Question", "name": "Qwen3.5-Max 和 Qwen3.5-Plus 的区别是什么？", "acceptedAnswer": {"@type": "Answer", "text": "Max 是旗舰级生产模型（输入 ¥4/M，输出 ¥12/M），支持混合推理，benchmark 表现最好。Plus 是中段默认模型（输入 ¥2/M，输出 ¥6/M），成本仅一半，覆盖大多数生产场景。"}}, {"@type": "Question", "name": "Qwen3.5 是开源的吗？", "acceptedAnswer": {"@type": "Answer", "text": "Qwen3-2507 系列（235B-A22B、30B-A3B、4B）是 Hugging Face 上的 Apache 2.0。Qwen3.5 托管模型（Max、Plus、72B、32B、14B、7B）是专有的——仅通过阿里云百炼访问。"}}, {"@type": "Question", "name": "Qwen3.5 定价和 DeepSeek V4 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "Qwen3.5-Plus 输入 ¥2/M、输出 ¥6/M 与 DeepSeek V4 输入 ¥2/M、输出 ¥8/M 相当。决定因素通常是多模态支持（Qwen 胜出）与数学/代码基准（DeepSeek 胜出）。"}}, {"@type": "Question", "name": "我能在单 GPU 上跑 Qwen3-235B-A22B 吗？", "acceptedAnswer": {"@type": "Answer", "text": "不能。235B-A22B 模型需要 470GB BF16 / 235GB INT4。完整精度需要 2-4 张 H100/H200（80GB）或 4-8 张 A100（80GB）。单卡选项是 Qwen3-30B-A3B-Instruct-2507（激活 3B，总 60GB）。"}}, {"@type": "Question", "name": "Qwen3.5 支持多模态输入吗？", "acceptedAnswer": {"@type": "Answer", "text": "支持，通过 Qwen-VL-Plus（视觉）和 Qwen-Omni-Turbo（文本 + 图像 + 音频）。这两个模型在百炼控制台里是独立模型，不是 Qwen3.5-Plus 的端点。多模态 token 的计费单价和文本不同。"}}, {"@type": "Question", "name": "Qwen3.5 在代码生成场景如何？", "acceptedAnswer": {"@type": "Answer", "text": "阿里云有 Qwen3.5-Coder 这条独立模型线，专门针对代码补全和仓库级任务。定价和 Qwen3.5-72B-Instruct 相当。开源最佳代码模型方面，Qwen2.5-Coder-32B-Instruct 在 Hugging Face 上仍具竞争力。"}}]};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Qwen3.5 API 2026：阿里云百炼 vs 开源权重</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Qwen3.5 是 Hugging Face 上下载量最高的中文开源 LLM 系列，阿里云百炼平台是跳过自建 GPU 集群直接调用它的最快方式。截至 2026 年 7 月，Qwen3 系列在国内外团队的选型中处于活跃轮转位置——最接近的竞争对手是 Kimi K3 和 DeepSeek V4。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">本文是一份实战指南。你将获得 Qwen3.5 模型矩阵的核验清单、阿里云百炼的最新定价、三种可行的访问路径（托管 API、开源权重自托管、聚合器），以及与 Kimi K3、DeepSeek V4 的逐项对比。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Qwen3.5 家族在售型号（2026 年 7 月）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">当前 Qwen3 系列分两条线：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Qwen3-2507（Instruct + Thinking 双模式）</strong>——2025 年 7 月发布，三种 MoE 尺寸：235B-A22B、30B-A3B 和 4B 稠密。2507 系列是支持双模式的版本（每个请求可在 Instruct 与 Thinking 之间切换）。</li>
+
+<li><strong>Qwen3.5（Plus、Max、Instruct 多版本）</strong>——2026 年初在阿里云百炼正式商用的生产线，覆盖 72B / 32B / 14B / 7B 几个尺寸。这是阿里云控制台默认展示的版本。</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">两条线不是同一个模型。如果你在阿里云 API 看到「Qwen3-Plus」或「Qwen3.5-Max」，那是 Qwen3.5 托管线。如果你在 Hugging Face 看到「Qwen3-235B-A22B-Instruct-2507」，那是 2507 开源权重版本，支持混合推理。</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">模型</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">类型</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">激活参数量</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">上下文</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">许可证</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">获取渠道</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3-235B-A22B-Instruct-2507</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">MoE</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">22B</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Apache 2.0</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Hugging Face、ModelScope</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3-30B-A3B-Instruct-2507</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">MoE</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">3B</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Apache 2.0</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Hugging Face、ModelScope</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3-4B-Instruct-2507</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Dense</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">4B</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Apache 2.0</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Hugging Face、ModelScope</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.5-Max</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">托管</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">不公开</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">专有</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">仅阿里云百炼</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.5-Plus</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">托管</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">不公开</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">专有</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">仅阿里云百炼</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.5-72B-Instruct</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Dense</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">72B</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">专有</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">阿里云百炼</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.5-32B-Instruct</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Dense</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">32B</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">专有</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">阿里云百炼</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen-Omni-Turbo</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">多模态</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">不公开</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">32K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">专有</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">阿里云百炼</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen-VL-Plus</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">视觉</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">不公开</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">32K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">专有</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">阿里云百炼</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">Qwen3-2507 系列在 Hugging Face 上的 235B-A22B 是今天你可以自托管的最大国产开源权重模型。Qwen3.5 家族是阿里云真正卖 API 访问权限的生产线。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">阿里云百炼定价（核验 2026-07-20）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">以下价格来自阿里云百炼平台按量付费模式服务，CNY 每百万 token。海外用户走 bailian-ss.aliyun.com 国际站用 USD 单独计费——跨境部署前请在国际站控制台确认。</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">模型</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">输入 ¥/M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">输出 ¥/M</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">备注</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.5-Max</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">4</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">12</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">旗舰级，混合推理</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.5-Plus</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">6</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">默认生产模型</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.5-72B-Instruct</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">4</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">12</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">大尺寸稠密，benchmark 与 Max 接近</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.5-32B-Instruct</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">6</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">中端甜点位</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.5-14B-Instruct</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">3</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">最便宜的指令微调版本</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen3.5-7B-Instruct</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">0.6</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.8</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">最低档，快速迭代</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">QwQ-32B</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">8</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">推理模型，数学能力接近 o1-mini</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen-Omni-Turbo</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">4（文本）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">12（文本）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">音频输入单独计费</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Qwen-VL-Plus</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">6</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">视觉输入，按图计费</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">免费额度：阿里云新用户送 1,000,000 token，90 天有效期。足够原型设计和小批量评测。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">2026 年访问 Qwen3.5 的三种方式</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">路径一：阿里云百炼（托管，最快）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">最简单的路径。在 bailian.console.aliyun.com 注册并创建 API key 后，调用 OpenAI 兼容端点。百炼暴露了 OpenAI 兼容的 <code>/v1/chat/completions</code> 接口，所以现有 OpenAI 客户端代码只需要改两行就能跑。</p>
+
+<pre><code class="language-bash"># 阿里云百炼 OpenAI 兼容端点
+curl https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions \
+  -H "Authorization: Bearer $DASHSCOPE_API_KEY \
+  -H "Content-Type: application/json" \
+  -d '&#123;
+    "model": "qwen3.5-plus",
+    "messages": [&#123;"role": "user", "content": "用一段话解释 MoE LLM 是什么。"&#125;],
+    "temperature": 0.7
+  &#125;'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Python：</p>
+
+<pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_DASHSCOPE_API_KEY",
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+)
+
+resp = client.chat.completions.create(
+    model="qwen3.5-plus",
+    messages=[&#123;"role": "user", "content": "用一段话解释 MoE LLM。"&#125;],
+    temperature=0.7,
+)
+print(resp.choices[0].message.content)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">注意响应使用标准 OpenAI Python 客户端。<code>base_url</code> 替换是唯一改动，其他（流式、函数调用、JSON 模式）全部照常工作。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">路径二：开源权重自托管（规模化时最便宜）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">如果日处理量超过 5000 万 token，在 Modal、RunPod 或 baseten 上自托管比 API 便宜。Hugging Face 上的 Qwen3-235B-A22B-Instruct-2507 权重（Apache 2.0）是目前可自托管的最大开源 MoE——每 token 激活 22B 参数，总参数量 235B。</p>
+
+<pre><code class="language-python"># Hugging Face transformers
+from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+model_name = "Qwen/Qwen3-235B-A22B-Instruct-2507"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    torch_dtype=torch.bfloat16,
+    device_map="auto",
+    # MoE：BF16 总占用约 470GB；需 2-4 张 H100/H200
+)
+
+messages = [&#123;"role": "user", "content": "MoE LLM 是什么？"&#125;]
+text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+inputs = tokenizer(text, return_tensors="pt").to(model.device)
+outputs = model.generate(**inputs, max_new_tokens=256)
+print(tokenizer.decode(outputs[0][inputs.input_ids.shape[1]:], skip_special_tokens=True))</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">完整 235B-A22B Instruct 需要 470GB 磁盘（BF16，分片）。要拿 Qwen3 90% 的质量、付 10% 的成本，跑 Qwen3-30B-A3B-Instruct-2507（激活 3B）就行，单卡 H100 即可。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">路径三：聚合器（海外访问）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">中国大陆以外的用户，阿里云国际站（bailian-ss.aliyun.com）是独立计费通道。更省事的路径是走聚合器：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>OpenRouter</strong>——暴露 Qwen3-Plus 和 Qwen3.5-Max，USD 计费</li>
+
+<li><strong>Together AI</strong>——运行 Qwen3-235B-A22B-Instruct-2507，输入 $0.20/M</li>
+
+<li><strong>Fireworks AI</strong>——提供 Qwen3-30B-A3B，TTFB 在亚秒级</li>
+
+<li><strong>Replicate</strong>——按秒计费，A100/H100 实例</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">聚合器定价各有差异，部署前请逐家确认。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Qwen3.5 vs Kimi K3 vs DeepSeek V4（2026 年 7 月）</h2>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">能力</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Qwen3.5-Plus</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Kimi K3</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">DeepSeek V4</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">激活参数</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">不公开（托管）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">不公开（托管）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">不公开（托管）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">总参数</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">未披露</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2.8T（MoE）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.6T（MoE）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">上下文</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">256K</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">输入价格（¥/M）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2（缓存命中）/ 20（未缓存）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">输出价格（¥/M）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">6</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">100</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">8</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">原生视觉</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅（Qwen-VL-Plus）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">音频输入</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅（Qwen-Omni-Turbo）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">工具调用</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅（DashScope）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">开源权重</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">最佳场景</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">国内企业级、多模态</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">超长上下文、中文</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">数学/代码、最便宜</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">生产环境要重点看的三个差异：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>上下文窗口</strong>：Kimi K3 默认 1M token。Qwen3.5 是 128K。如果你在做 200K 以上文档分析，Kimi K3 胜出。</li>
+
+<li><strong>输出价格</strong>：Qwen3.5-Plus 输出 ¥6/M 属于中段。DeepSeek V4 输出 ¥8/M 相当；Kimi K3 未缓存输出 ¥100/M 在长生成场景贵 12-16 倍。</li>
+
+<li><strong>多模态</strong>：Qwen-Omni-Turbo 是三者中唯一支持音频输入的。如果你要做语音到 LLM 的流水线，选 Qwen。</li>
+
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Apple Intelligence 维度（说明）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 7 月有报道称 Apple 正将 Qwen3.5 集成到 Apple Intelligence 的中国大陆版本。这是厂商路线图项，截至本文撰写时还未正式 GA。如果你面向中国大陆 iOS 用户发布产品，即使主模型是别的，也请为 Qwen3.5 准备一条兜底路径。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">不要用 Qwen3.5 的三种场景</h2>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>你需要 200K 以上上下文</strong>。Qwen3.5-Plus 是 128K。改用 Kimi K3（1M）或用开源权重 Qwen3-235B-A22B-Instruct-2507 + 长上下文微调。</li>
+
+<li><strong>你在海外、想要最便宜推理</strong>。聚合器定价参差不齐；纯成本角度，DeepSeek V4 在 Modal 自托管永远比 Qwen3.5 便宜。</li>
+
+<li><strong>你需要严格 schema 校验的原生 Function Calling</strong>。Qwen3.5 支持函数调用但 schema 强制比 GPT-4o 或 Claude Sonnet 5 弱。请用你的具体工具定义显式测试。</li>
+
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">5 分钟快速上手</h2>
+
+<pre><code class="language-bash"># 1. 在 bailian.console.aliyun.com 注册
+# 2. 创建 API key，设为环境变量
+export DASHSCOPE_API_KEY="YOUR...Key"
+
+# 3. 测试 API
+curl https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions \
+  -H "Authorization: Bearer $DASHSCOPE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '&#123;"model": "qwen3.5-plus", "messages": [&#123;"role": "user", "content": "你好"&#125;]&#125;'
+
+# 4. 把你已有代码里 OpenAI 客户端的 base_url 换掉
+# 完成——Python/JS/curl 接口与 OpenAI 完全一致</code></pre>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Qwen3.5 配合阿里云百炼是国内团队、多模态应用、阿里云既有客户场景下的正确选择。开源权重 Qwen3-235B-A22B-Instruct-2507 是想要最大开源 MoE 又不想按 token 付费的自托管团队的正确选择。纯长上下文（200K+）选 Kimi K3。最便宜生产推理选 DeepSeek V4 自托管。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">最大的坑：Qwen3.5 托管 API 和 Qwen3-2507 开源权重不是同一个模型。按场景选，别按「Qwen3」品牌名选。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Qwen3.5 支持函数调用吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">支持，通过 DashScope 的 <code>/v1/services/aigc/text-generation</code> 端点的 <code>tools</code> 参数。Schema 强制力度比 GPT-4o 或 Claude Sonnet 5 弱——请用你具体的工具定义测试。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">我能用 OpenAI Python 客户端访问阿里云百炼吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">能。阿里云百炼在 <code>https://dashscope.aliyuncs.com/compatible-mode/v1</code> 暴露 OpenAI 兼容端点。把 OpenAI 客户端的 <code>base_url</code> 设为该 URL，其余代码无需改动。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Qwen3.5-Max 和 Qwen3.5-Plus 的区别是什么？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Max 是旗舰级生产模型（输入 ¥4/M，输出 ¥12/M），支持混合推理，benchmark 表现最好。Plus 是中段默认模型（输入 ¥2/M，输出 ¥6/M），成本仅一半，覆盖大多数生产场景。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Qwen3.5 是开源的吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Qwen3-2507 系列（235B-A22B、30B-A3B、4B）是 Hugging Face 上的 Apache 2.0。Qwen3.5 托管模型（Max、Plus、72B、32B、14B、7B）是专有的——仅通过阿里云百炼访问。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Qwen3.5 定价和 DeepSeek V4 相比如何？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Qwen3.5-Plus 输入 ¥2/M、输出 ¥6/M 与 DeepSeek V4 输入 ¥2/M、输出 ¥8/M 相当。决定因素通常是多模态支持（Qwen 胜出）与数学/代码基准（DeepSeek 胜出）。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">我能在单 GPU 上跑 Qwen3-235B-A22B 吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">不能。235B-A22B 模型需要 470GB BF16 / 235GB INT4。完整精度需要 2-4 张 H100/H200（80GB）或 4-8 张 A100（80GB）。单卡选项是 Qwen3-30B-A3B-Instruct-2507（激活 3B，总 60GB）。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Qwen3.5 支持多模态输入吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">支持，通过 Qwen-VL-Plus（视觉）和 Qwen-Omni-Turbo（文本 + 图像 + 音频）。这两个模型在百炼控制台里是独立模型，不是 Qwen3.5-Plus 的端点。多模态 token 的计费单价和文本不同。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Qwen3.5 在代码生成场景如何？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">阿里云有 Qwen3.5-Coder 这条独立模型线，专门针对代码补全和仓库级任务。定价和 Qwen3.5-72B-Instruct 相当。开源最佳代码模型方面，Qwen2.5-Coder-32B-Instruct 在 Hugging Face 上仍具竞争力。</p>`;
+
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div class="mb-8"><a href="/zh/tutorials" class="text-blue-600 hover:underline text-sm">← 返回教程</a></div>
+    <div class="flex items-center gap-3 mb-4"><span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded">Provider Guide</span><time datetime={date} class="text-sm text-gray-500">2026-07-20</time></div>
+    <div set:html={zhBody} />
+    <hr class="my-12 border-gray-200" />
+    <section class="mt-8"><p class="text-sm text-gray-500 mb-2"><strong>Disclosure</strong></p><p class="text-sm text-gray-500">APIRank may earn affiliate commission from partner links in this article. Editorial judgments remain independent.</p></section>
+  </article>
+</BaseLayout>

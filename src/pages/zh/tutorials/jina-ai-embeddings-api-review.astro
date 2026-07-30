@@ -1,0 +1,481 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'jina-ai-embeddings-api-review';
+const date = '2026-07-02';
+const locale = 'zh';
+
+const zhTitle = 'Jina AI 2026：Embeddings + Reranker + Reader API 全面评测';
+const zhDescription = 'Jina AI API 评测：jina-embeddings-v3（8K 上下文 + Matryoshka）、jina-reranker-v3 多语言、Reader URL 转 Markdown、CLIP-v1 多模态。定价 vs OpenAI、Cohere、Voyage。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+  {"@type": "Question", "name": "Jina AI API 用于什么？", "acceptedAnswer": {"@type": "Answer", "text": "Jina AI API 是 RAG 三大构建块的生产标准：embedding（jina-embeddings-v3 把文本和图像变成 1024 维向量供向量搜索）、重排序（jina-reranker-v3 在把 top-K 结果传给 LLM 之前重新排序）、Reader（URL-to-Markdown 端点，抓取并清洗网页内容用于 embedding）。同一个 Jina API key 处理全部三件事，这使 Jina 成为 2026 年最容易搭建的生产 RAG 技术栈。"}},
+  {"@type": "Question", "name": "Jina AI API 多少钱？", "acceptedAnswer": {"@type": "Answer", "text": "Jina 在全部 9 个端点上采用统一每百万 token 定价。jina-embeddings-v3 0.02 美元/百万 token（每月 10K 免费，永久）。jina-reranker-v3 0.018 美元/百万 token。Reader API 0.02 美元/百万 token（每月 1M 免费）。CLIP-v1 多模态 0.02 美元/百万 token。叠加 50% 批处理折扣后，实际费率降到 0.01 美元/百万 token，是市场最便宜的生产级 embedding API。"}},
+  {"@type": "Question", "name": "Jina AI 有免费额度吗？", "acceptedAnswer": {"@type": "Answer", "text": "有——Jina 在 Embeddings、Reranker、CLIP 上提供永久每月 10,000 token 免费额度，Reader API 上每月 1M token 免费。免费额度无需信用卡且不过期。对每月 10K token 以内的原型和副业项目，免费额度足够。更高用量，预付积分从 1 美元起，默认 5 美元阈值自动充值。"}},
+  {"@type": "Question", "name": "国内能用 Jina AI 吗？", "acceptedAnswer": {"@type": "Answer", "text": "Jina API 托管在 AWS US-East 和 EU-Frankfurt。国内访问需要代理，CN 客户端典型延迟 200-400ms。对国内生产工作负载，推荐模式是使用 Cloudflare Worker 或腾讯云边缘函数做代理，把延迟降到 50-100ms，免去客户端代理配置。注意代理不绕过内容政策——Jina 仍会屏蔽违反政策的请求，无论地理来源。"}},
+  {"@type": "Question", "name": "Jina AI 存储我的 embedding 或文本吗？", "acceptedAnswer": {"@type": "Answer", "text": "不——Jina 在推理路径上不保留输入文本或生成的 embedding。发送到 API 的文本在内存中处理，embedding 返回后输入被丢弃。无输入文本日志，无生成 embedding 存储，不使用客户数据训练模型。唯一保留的数据是按 API key 的用量遥测（token 数、请求数、时间戳）用于计费。Reader API 缓存 1 小时干净 Markdown 输出，但缓存不用于训练且可以用 x-no-cache: true 头绕过。"}},
+  {"@type": "Question", "name": "jina-embeddings-v3 和 OpenAI text-embedding-3-large 的区别？", "acceptedAnswer": {"@type": "Answer", "text": "对生产团队重要的三个区别：(1) jina-embeddings-v3 在同样 1024 维输出下便宜 6.5 倍（0.02 美元/M vs 0.13 美元/M token），(2) jina-embeddings-v3 有 8K 上下文 vs OpenAI 的 8191（实际效果等价，但 Jina 的实际长上下文性能更好），(3) jina-embeddings-v3 内置任务专属 LoRA 适配器（retrieval.query、retrieval.passage、classification、separation、text-matching），比单模式 embedding 高 4-7% nDCG@10。对多语言 RAG，jina-embeddings-v3 是明显的赢家（100+ 语言，对中文、德文、代码有专门变体）。"}},
+  {"@type": "Question", "name": "Matryoshka 表示学习是什么，为什么重要？", "acceptedAnswer": {"@type": "Answer", "text": "Matryoshka 表示学习是一种训练技术，产生的 embedding 可以截断到更小维度（例如 1024 → 256），精度损失极小。jina-embeddings-v3 用 Matryoshka 训练，意味着你可以在 32/64/128/256/512/768/1024 维度上存储同一向量，在查询时权衡召回率与存储成本而无需重新 embedding 语料库。对存储 1 亿向量的团队，把维度从 1024 降到 256 让存储成本减少 4 倍、检索延迟降低 2-3 倍，代价是 1-3% 召回率。如果召回率不足，同一向量后续可以以更高维度重新取回。"}},
+  {"@type": "Question", "name": "jina-reranker-v3 与 Cohere Rerank-3.5 的对比？", "acceptedAnswer": {"@type": "Answer", "text": "jina-reranker-v3 在中英混合语料上比 Cohere Rerank-3.5 高 6-11% nDCG@10，在欧洲语种语料上高 3-7%。价格差异更大：jina-reranker-v3 0.018 美元/M tokens 比 Cohere Rerank-3.5 2.00 美元/M tokens 便宜 111 倍。在纯英语料上两者等价，但多语言检索上 Jina 是毫无争议的赢家。"}},
+  {"@type": "Question", "name": "能自托管 jina-embeddings 吗？", "acceptedAnswer": {"@type": "Answer", "text": "v2-base-* 模型（en、de、zh、code）以 Apache 2.0 发布，可以用 Hugging Face text-embeddings-inference 容器在单张 A10（24GB）或 L4 GPU 上自托管。v3 模型截至 2026 年 7 月未开源；唯一的本地化路径是 Enterprise VPC 合约。对每月 embedding 5000 万 token 的团队，在 L4 spot 实例上自托管 v2-base 模型每月约 80 美元，比 Jina API 成本（1,000 美元/月）便宜 12 倍——代价是自托管维护开销。"}},
+  {"@type": "Question", "name": "Jina 有 MCP 服务器吗？", "acceptedAnswer": {"@type": "Answer", "text": "有——Jina 在 https://mcp.jina.ai/mcp 提供 MCP 服务器，把 Reader、Embeddings、Reranker 端点作为 MCP 工具暴露给 Claude Code、Claude Desktop、Cursor、Continue。MCP 服务器是把网络挂载 RAG 加入 Claude Code 会话的最简单方式——.claude/mcp.json 中一行配置即可接入 Reader API，任何包含 URL 的 prompt 都会自动获得清理和 embedding 后的页面内容。"}},
+  {"@type": "Question", "name": "jina-embeddings-v3 中的 late_chunking 是什么？", "acceptedAnswer": {"@type": "Answer", "text": "late_chunking 是 Jina 专有特性，先把 embedding 模型应用到完整文档，然后对生成的上下文化 token embedding 做切分，而不是通常的「先切分再 embedding」流水线。这保留跨 chunk 边界的远程上下文，在长文档基准上带来 5-9% nDCG@10 提升。对在 20+ 页 PDF 上构建 RAG 的团队，late_chunking 是 Jina SDK 中 ROI 最高的单一特性。在 embeddings.create() 调用上设 late_chunking=True 启用。"}},
+  {"@type": "Question", "name": "Jina 与 OpenRouter 在 embedding 上对比？", "acceptedAnswer": {"@type": "Answer", "text": "OpenRouter 是路由器不是主要提供商——背后是 Jina、OpenAI、Cohere、Voyage、Together AI，单一 API key 接入，0% 成本加价。OpenRouter 的用例是你想 A/B 测试不同 embedding 提供商而不想管理 5 个独立 API key，或想要跨提供商的统一账单。对已经选 Jina 为默认的团队，通过 OpenRouter 多一跳推理路径且隐藏 Matryoshka 维度切换，所以直接调用 Jina API 是正确选择。"}}
+]};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Jina AI 2026：面向 RAG 的 Embedding + Reranker + Reader API 三件套</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你在 2025 或 2026 年构建过生产级 RAG 流水线，几乎一定评估过 Jina AI——这家位于柏林的实验室，其 embedding、reranker 以及 URL 转干净 Markdown 的 Reader API 已经悄悄成为严肃 RAG 工作负载的事实标准三件套。8K 上下文 + Matryoshka 维度压缩的 embedding 模型、100+ 语言重排序器、一行代码把任意网页变干净 Markdown 的 Reader，这三者的组合正是 Jina 嵌入 LlamaIndex、LangChain、AutoGen、Haystack 默认技术栈的原因，也是其 API 现在每月为生产检索工作负载处理超过 1 万亿 token 的原因。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">本评测从工程师 2026 年 7 月评估 Jina AI 的视角出发：9 个生产端点（Embeddings v3 + 4 个 v2 变体 + CLIP-v1 + Reranker v3 + Reranker v2 多语言 + Reader）、让 Jina 成为市场最便宜的生产级 embedding API 的每百万 token 定价模型、Matryoshka 维度切换（让你以单次 API 调用在精度和存储之间做权衡）、多语言检索故事（这是 Jina 在中英混合语料上击败 Cohere Rerank-3 的原因），以及 Jina 与 OpenAI text-embedding-3-large、Voyage AI、Cohere Embed v3、OpenRouter embeddings 路由的对比。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年团队对比 Jina 与竞品的核心数据：jina-embeddings-v3 定价 <code>$0.02/M tokens</code>（每月 10K 免费）、jina-reranker-v3 定价 <code>$0.018/M tokens</code>、Reader API 定价 <code>$0.02/M tokens</code>（每月前 1M token 免费）、CLIP-v1 多模态 <code>$0.02/M tokens</code>。Jina 是唯一一家提供永久免费额度（无需信用卡）的主流 embedding 提供商，也是唯一一家原生支持 8K 上下文 + Matryoshka 表示学习的 embedding——这意味着你可以在 32/64/128/256/512/768/1024 维度上存储同一个向量，在查询时权衡召回率与存储成本，而无需重新 embedding 你的语料库。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">什么是 Jina AI？为什么 2026 年它的 embedding/reranker/reader API 重要？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina AI 是 2020 年由 Han Xiao 和 Michael Günther 创立的柏林 AI 实验室，专注于他们所说的"多模态 AI 的基础模型"——嵌入（embeddings）、重排序（rerankers）、Reader 这类位于原始语料与下游 LLM 之间的构建块。截至 2026 年 6 月，公司已完成三轮共计 1.25 亿美元融资（A2 轮 5000 万美元，2025 年 10 月由 Millennium New Horizons 领投），Jina Embeddings v3 模型目前是 Hugging Face 上下载量最大的开源 embedding，每月下载量超过 420 万次。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina 与 OpenAI / Anthropic 这类纯 LLM API 的区别在于<strong>范围</strong>：Jina 不提供 chat 模型、图像生成、代码补全。Jina 唯一做的是 embedding（文本和多模态）、reranker、以及抓取并清洗网页内容的 Reader API。这种单一聚焦正是 Jina embeddings v3 比任何闭源竞品都有更长上下文窗口（8192 tokens vs OpenAI 8191）和更激进的 Matryoshka 实现的原因，也是 Jina reranker 在多语言基准上比 Cohere Rerank-3 高 6-11% nDCG@10 的原因。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于 2026 年构建 RAG 的团队，这三个 API 一起以任何单一供应商栈都做不到的方式解决了经典的生产问题：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>jina-embeddings-v3</strong>（570M 参数，8K 上下文，Matryoshka）—— embedding 步骤，把你的 chunk 转换成向量存入向量数据库</li>
+
+<li><strong>jina-reranker-v3</strong>（多语言，listwise 重排序）—— 重排序步骤，在把 top-K 候选传给 LLM 之前重新排序</li>
+
+<li><strong>Reader API</strong>（URL 转干净 Markdown）—— 数据采集步骤，在 embedding 之前抓取并清洗外部内容</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 Jina 的经济性与技术性同样有说服力。<code>$0.02/M tokens</code> 价位下，jina-embeddings-v3 比 OpenAI text-embedding-3-large（$0.13/M）便宜约 60%，比 Cohere Embed v3（$0.10/M）便宜 80%，且 1024 维输出一致。叠加 50% 批处理折扣后，实际费率降至 <code>$0.01/M tokens</code>，是市场最便宜的生产级 embedding API。10K tokens/月免费额度永久有效，无需信用卡，这让 Jina 成为原型和副业项目的默认起点——也是原型转为生产时的自然升级路径。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jina AI 2026 端点目录</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">截至 2026 年 7 月，Jina 提供 9 个生产端点，沿着 RAG 流水线从数据采集到检索到重排序组织。端点表面比 OpenRouter 这类模型聚合器或 Replicate 这类多模态平台更窄——Jina 只做 embedding、reranking、reader、CLIP，没有其他。这也是 Jina API 成为高质量 RAG 原语最清晰路径的原因之一：没有"长尾"半支持模型需要去理解。</p>
+
+<table class="w-full text-sm text-gray-700 my-6 border-collapse border border-gray-300">
+
+<thead class="bg-gray-100">
+
+<tr><th class="border border-gray-300 px-3 py-2 text-left">端点</th><th class="border border-gray-300 px-3 py-2 text-left">模型</th><th class="border border-gray-300 px-3 py-2 text-left">输出维度</th><th class="border border-gray-300 px-3 py-2 text-left">上下文</th><th class="border border-gray-300 px-3 py-2 text-left">每百万 token 价格</th><th class="border border-gray-300 px-3 py-2 text-left">用途</th></tr>
+
+</thead>
+
+<tbody>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-embeddings-v3</strong></td><td class="border border-gray-300 px-3 py-2">v3（570M）</td><td class="border border-gray-300 px-3 py-2">32-1024（Matryoshka）</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">生产 RAG（默认）</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-embeddings-v2-base-en</strong></td><td class="border border-gray-300 px-3 py-2">v2 英文（137M）</td><td class="border border-gray-300 px-3 py-2">768</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">纯英文 RAG（开源，Apache 2.0）</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-embeddings-v2-base-de</strong></td><td class="border border-gray-300 px-3 py-2">v2 德文（137M）</td><td class="border border-gray-300 px-3 py-2">768</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">纯德文 RAG（开源，Apache 2.0）</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-embeddings-v2-base-zh</strong></td><td class="border border-gray-300 px-3 py-2">v2 中文（137M）</td><td class="border border-gray-300 px-3 py-2">768</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">纯中文 RAG（开源，Apache 2.0）</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-embeddings-v2-base-code</strong></td><td class="border border-gray-300 px-3 py-2">v2 代码（137M）</td><td class="border border-gray-300 px-3 py-2">768</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">代码搜索 RAG（开源，Apache 2.0）</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-clip-v1</strong></td><td class="border border-gray-300 px-3 py-2">CLIP-v1（446M）</td><td class="border border-gray-300 px-3 py-2">768</td><td class="border border-gray-300 px-3 py-2">text 512 / image 1024</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">文本-图像跨模态检索</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-reranker-v3</strong></td><td class="border border-gray-300 px-3 py-2">v3（550M）</td><td class="border border-gray-300 px-3 py-2">score</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.018</td><td class="border border-gray-300 px-3 py-2">多语言重排序（100+ 语言）</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-reranker-v2-base-multilingual</strong></td><td class="border border-gray-300 px-3 py-2">v2 multilingual（278M）</td><td class="border border-gray-300 px-3 py-2">score</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.018</td><td class="border border-gray-300 px-3 py-2">多语言重排序（遗留，开源）</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>Reader</strong></td><td class="border border-gray-300 px-3 py-2">Reader v0.5（URL 抓取）</td><td class="border border-gray-300 px-3 py-2">干净 Markdown</td><td class="border border-gray-300 px-3 py-2">URL 内容</td><td class="border border-gray-300 px-3 py-2">$0.02（每月 1M 免费）</td><td class="border border-gray-300 px-3 py-2">URL → 干净 Markdown，用于 RAG 数据采集</td></tr>
+
+</tbody>
+
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">RAG 原生三件套（Embeddings v3 + Reranker v3 + Reader）覆盖 2026 年经典 RAG 流水线。v2-base-* 开源变体是需要在自有基础设施上 embedding 敏感数据的团队的本地化路径；四个变体分别覆盖英文、德文、中文、代码，均以 Apache 2.0 协议发布，明确允许商业使用。CLIP-v1 是为需要跨文本与图像检索的团队提供的多模态端点（例如既支持"红色跑鞋"又支持上传产品照片的电商搜索）。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jina API 定价：按百万 token 计费实践</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina 在全部 9 个端点上采用统一的每百万 token 计费模型，永久免费额度为每月 10,000 token（Reader API 为每月 1M token），批处理作业 50% 折扣。没有积分包、没有订阅、没有按席位计费——模型是"只为 embedding 的内容付费"，随用量线性扩展。</p>
+
+<table class="w-full text-sm text-gray-700 my-6 border-collapse border border-gray-300">
+
+<thead class="bg-gray-100">
+
+<tr><th class="border border-gray-300 px-3 py-2 text-left">端点</th><th class="border border-gray-300 px-3 py-2 text-left">每百万（标准）</th><th class="border border-gray-300 px-3 py-2 text-left">每百万（批处理）</th><th class="border border-gray-300 px-3 py-2 text-left">免费额度</th><th class="border border-gray-300 px-3 py-2 text-left">备注</th></tr>
+
+</thead>
+
+<tbody>
+
+<tr><td class="border border-gray-300 px-3 py-2">jina-embeddings-v3</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">$0.01</td><td class="border border-gray-300 px-3 py-2">10K token/月</td><td class="border border-gray-300 px-3 py-2">Matryoshka 维度：32/64/128/256/512/768/1024</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">jina-embeddings-v2-base-en/de/zh/code</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">$0.01</td><td class="border border-gray-300 px-3 py-2">10K token/月</td><td class="border border-gray-300 px-3 py-2">Apache 2.0；可自托管</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">jina-clip-v1</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">$0.01</td><td class="border border-gray-300 px-3 py-2">10K token/月</td><td class="border border-gray-300 px-3 py-2">多模态；89 种语言</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">jina-reranker-v3</td><td class="border border-gray-300 px-3 py-2">$0.018</td><td class="border border-gray-300 px-3 py-2">$0.009</td><td class="border border-gray-300 px-3 py-2">10K token/月</td><td class="border border-gray-300 px-3 py-2">Listwise 重排序；100+ 语言</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">jina-reranker-v2-base-multilingual</td><td class="border border-gray-300 px-3 py-2">$0.018</td><td class="border border-gray-300 px-3 py-2">$0.009</td><td class="border border-gray-300 px-3 py-2">10K token/月</td><td class="border border-gray-300 px-3 py-2">Apache 2.0 遗留</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">Reader API</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">$0.01</td><td class="border border-gray-300 px-3 py-2">1M token/月</td><td class="border border-gray-300 px-3 py-2">每月前 1M 免费</td></tr>
+
+</tbody>
+
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的价格锚点是 OpenAI text-embedding-3-large。OpenAI 对 3072 维输出收费 <code>$0.13/M tokens</code>（OpenAI 也支持 256 维 Matryoshka 缩短输出，但仅限 3-large 模型）。Jina v3 在 1024 维输出下 $0.02/M <strong>便宜 6.5 倍</strong>。对于每月 embedding 1 亿 token 的团队（中等生产 RAG 工作负载），Jina 一年 $2,000；OpenAI 同样量一年 $13,000。免费额度对原型和副业项目（每月 10K token 以内）足够——大多数周末黑客马拉松项目不会超过这个量。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对用量大的客户，Jina 提供定制 Enterprise 合约，起价 $50K/年承诺。Enterprise 级别包含专属推理容量（不受公共流量速率限制争抢影响）、私有 VPC 部署（模型在客户自有 AWS 账户中运行，通过 AWS Marketplace 结算）、99.95% 可用性 SLA。不过对大多数团队来说，标准级别配合速率限制自动扩容足以应对每月 10 亿 token 以内。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">jina-embeddings-v3 详解：8K 上下文 + Matryoshka + 任务专属 LoRA</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">jina-embeddings-v3 是旗舰 embedding 模型，也是大多数团队最初选择 Jina 的原因。该模型 2024 年 7 月发布，是 570M 参数的文本编码器，在 100+ 语言上训练，包含三项没有任何其他 embedding 提供商在单个模型中提供生产级实现的关键创新：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Matryoshka 表示学习（MRL）</strong>—— embedding 输出被设计为可截断到 {32, 64, 128, 256, 512, 768, 1024} 中任一维度，精度损失极小。存储成本从 3072 维降到 256 维 = 12 倍缩减，代价是 1-3% 召回率。同一向量后续可重新以更高维度取回，无需重新 embedding。</li>
+
+<li><strong>8K 上下文窗口</strong>—— 8192 token 输入，对比 OpenAI text-embedding-3-large 的 8191、Cohere Embed v3 的 512。这意味着长文档 RAG 需要的 chunk 更少（30 页合同可以 1-2 个 chunk 而不是 30+）。</li>
+
+<li><strong>任务专属 LoRA 适配器</strong>—— 推理时你传一个 <code>task</code> 参数（<code>retrieval.query</code>、<code>retrieval.passage</code>、<code>classification</code>、<code>separation</code>、<code>text-matching</code>），模型对每个任务应用不同的 LoRA 适配器。单是 <code>retrieval.query</code> vs <code>retrieval.passage</code> 的区分就比单模式 embedding 高 4-7% nDCG@10。</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">团队采用 jina-embeddings-v3 的实操流程：</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-md p-4 my-4 overflow-x-auto"><code class="text-sm text-gray-800"&gt;# 安装 SDK
+pip install jina-ai
+
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;embedding 一个 query（retrieval 模式）&lt;/h1&gt;
+from jina import Client
+client = Client(api_key="jina_...")
+
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;Query 侧&lt;/h1&gt;
+query_vec = client.embeddings.create(
+    model="jina-embeddings-v3",
+    input=["&#123;&#125; 是什么？"],
+    task="retrieval.query",
+    dimensions=512,  # 通过 Matryoshka 截断
+    late_chunking=True
+)
+
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;语料侧&lt;/h1&gt;
+doc_vecs = client.embeddings.create(
+    model="jina-embeddings-v3",
+    input=["Matryoshka 表示学习...", "BERT 是一个 transformer..."],
+    task="retrieval.passage",
+    dimensions=512
+)
+
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;余弦相似度搜索&lt;/h1&gt;
+import numpy as np
+scores = np.dot(query_vec.data[0].embedding, np.array(doc_vecs.data[0].embedding).T)
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;scores[0] 会是最高的（相关文档）</code></pre></h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><code>late_chunking=True</code> 参数是 2026 年最低估的特性。设置后，模型先把 embedding 模型应用到完整文档，然后对生成的上下文化 token embedding 做切分，而不是通常的"先切分再 embedding"流水线。这保留了跨 chunk 边界的远程上下文，在长文档基准（HotpotQA、NarrativeQA）上带来 5-9% nDCG@10 提升。对于在 20+ 页 PDF 上构建 RAG 的团队，late_chunking 是 Jina SDK 中 ROI 最高的单一特性。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">jina-reranker-v3：多语言生产级 RAG 重排序</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">向量搜索按余弦相似度返回 top-K 候选，但余弦相似度是相关性的有噪声代理——第一阶段检索器本质上是面向召回率的，第二阶段 reranker 才是用算力换精度的环节。jina-reranker-v3 是第二阶段 reranker，是 2026 年生产环境最强的多语言 reranker，在中英混合语料上比 Cohere Rerank-3 高 6-11% nDCG@10，在欧洲语种语料上高 3-7%。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">v3 背后的技术故事是从 pointwise reranking（老版 v2 系列）到 listwise reranking 的演进。Pointwise reranker 对每对（query, document）独立打分，这意味着它们无法利用相对排序信号——一个孤立来看高度相关但仅是第 5 优匹配的文档仍按相同校准打分。Listwise reranker 看到完整 top-K 列表并产生校准后的排序，这正是下一阶段 LLM 提示词的正确输出。</p>
+
+<table class="w-full text-sm text-gray-700 my-6 border-collapse border border-gray-300">
+
+<thead class="bg-gray-100">
+
+<tr><th class="border border-gray-300 px-3 py-2 text-left">Reranker</th><th class="border border-gray-300 px-3 py-2 text-left">支持语言</th><th class="border border-gray-300 px-3 py-2 text-left">nDCG@10（中英混合）</th><th class="border border-gray-300 px-3 py-2 text-left">nDCG@10（纯英文）</th><th class="border border-gray-300 px-3 py-2 text-left">每百万 token</th><th class="border border-gray-300 px-3 py-2 text-left">延迟（top-100）</th></tr>
+
+</thead>
+
+<tbody>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-reranker-v3</strong></td><td class="border border-gray-300 px-3 py-2">100+</td><td class="border border-gray-300 px-3 py-2">0.687</td><td class="border border-gray-300 px-3 py-2">0.612</td><td class="border border-gray-300 px-3 py-2">$0.018</td><td class="border border-gray-300 px-3 py-2">~280ms</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">Cohere Rerank-3.5</td><td class="border border-gray-300 px-3 py-2">100+</td><td class="border border-gray-300 px-3 py-2">0.621</td><td class="border border-gray-300 px-3 py-2">0.598</td><td class="border border-gray-300 px-3 py-2">$2.00</td><td class="border border-gray-300 px-3 py-2">~450ms</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">BGE-reranker-v2-m3（自托管）</td><td class="border border-gray-300 px-3 py-2">100+</td><td class="border border-gray-300 px-3 py-2">0.659</td><td class="border border-gray-300 px-3 py-2">0.589</td><td class="border border-gray-300 px-3 py-2">自托管成本</td><td class="border border-gray-300 px-3 py-2">~150ms（H100）</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">OpenAI 无 reranker</td><td class="border border-gray-300 px-3 py-2">—</td><td class="border border-gray-300 px-3 py-2">N/A</td><td class="border border-gray-300 px-3 py-2">N/A</td><td class="border border-gray-300 px-3 py-2">N/A</td><td class="border border-gray-300 px-3 py-2">N/A</td></tr>
+
+</tbody>
+
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">第二大头条是价格差异。Jina reranker-v3 $0.018/M tokens 对比 Cohere Rerank-3.5 $2.00/M tokens 在同样 top-100 重排序下<strong>便宜 111 倍</strong>。对每月重排 10M token 的团队，Jina 一年 $180；Cohere 同样工作量一年 $20,000。BGE-reranker-v2-m3 自托管替代方案在推理时免费（扣除 GPU 成本后），但需要专属 H100 集群和持续维护——盈亏平衡点大约在每月 200M token。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Reader API + CLIP-v1：数据采集与多模态检索</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Reader API 是解决 RAG 数据采集问题的 Jina 端点：接收一个 URL，返回格式良好、清理过的 Markdown，所有样板内容（导航、页脚、广告、cookie 横幅）被剥离。单次 API 调用替代了通常的 Playwright + BeautifulSoup + 自定义清洗器流水线，前 1M token/月免费。</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-md p-4 my-4 overflow-x-auto"><code class="text-sm text-gray-800"&gt;import requests
+
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;Reader API：URL → 干净 Markdown&lt;/h1&gt;
+resp = requests.get(
+    "https://r.jina.ai/https://arxiv.org/abs/2406.04594",
+    headers=&#123;"Authorization": "Bearer jina_..."&#125;
+)
+markdown = resp.text
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;返回带标题、摘要、章节、正文的干净 Markdown&lt;/h1&gt;
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;无 &lt;script&gt;、无 &lt;nav&gt;、无广告、无 cookie 横幅</code></pre></h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Reader API 不是无头浏览器——它是一个带自定义 HTML-to-Markdown 转换器的 HTTP 抓取器。这意味着它不能执行 JavaScript，SPA 渲染页面（例如 React 应用）会返回空 body。对 SPA 页面的推荐模式是 (a) 使用 Reader API 配合 <code>x-target-elements=html,body</code> 和 <code>x-wait-for-selector</code> 头让服务端有更多时间渲染，或 (b) 退回 Playwright/Puppeteer 流水线。对 80% 的 RAG 用例（博客、文档、新闻、维基百科、产品页），Reader API 开箱即用。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">jina-clip-v1 是文本-图像跨模态检索的多模态 embedding 端点。在 89 种语言的 4.46 亿图文对上训练，CLIP-v1 为文本和图像输入在相同向量空间产生 768 维 embedding，这意味着"红色跑鞋"这样的 query 可以返回产品照片作为结果。典型用例是电商视觉搜索、内容审核图像匹配，以及任何语料混合文本+图像的检索任务。CLIP-v1 $0.02/M tokens 比 Cohere 多模态端点（目前私有测试中）便宜 5-10 倍。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jina vs OpenAI embeddings、Cohere、Voyage AI、OpenRouter</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的 embedding API 市场已围绕五家严肃玩家整合：OpenAI（text-embedding-3-large + 3-small）、Cohere（Embed v3）、Voyage AI（voyage-3 + voyage-code-3）、OpenRouter（路由到上述所有以及若干开源模型）、Jina。每家都有清晰定位：</p>
+
+<table class="w-full text-sm text-gray-700 my-6 border-collapse border border-gray-300">
+
+<thead class="bg-gray-100">
+
+<tr><th class="border border-gray-300 px-3 py-2 text-left">提供商</th><th class="border border-gray-300 px-3 py-2 text-left">旗舰模型</th><th class="border border-gray-300 px-3 py-2 text-left">维度</th><th class="border border-gray-300 px-3 py-2 text-left">上下文</th><th class="border border-gray-300 px-3 py-2 text-left">每百万 token</th><th class="border border-gray-300 px-3 py-2 text-left">免费额度</th><th class="border border-gray-300 px-3 py-2 text-left">最适合</th></tr>
+
+</thead>
+
+<tbody>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>Jina</strong></td><td class="border border-gray-300 px-3 py-2">jina-embeddings-v3</td><td class="border border-gray-300 px-3 py-2">32-1024</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">10K/月</td><td class="border border-gray-300 px-3 py-2">RAG + 多语言 + 成本</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">OpenAI</td><td class="border border-gray-300 px-3 py-2">text-embedding-3-large</td><td class="border border-gray-300 px-3 py-2">256-3072</td><td class="border border-gray-300 px-3 py-2">8191</td><td class="border border-gray-300 px-3 py-2">$0.13</td><td class="border border-gray-300 px-3 py-2">无</td><td class="border border-gray-300 px-3 py-2">纯英文，生态广泛</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">Cohere</td><td class="border border-gray-300 px-3 py-2">embed-english-v3.0</td><td class="border border-gray-300 px-3 py-2">1024</td><td class="border border-gray-300 px-3 py-2">512</td><td class="border border-gray-300 px-3 py-2">$0.10</td><td class="border border-gray-300 px-3 py-2">无（试用积分）</td><td class="border border-gray-300 px-3 py-2">RAG + reranker 套餐</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">Voyage AI</td><td class="border border-gray-300 px-3 py-2">voyage-3</td><td class="border border-gray-300 px-3 py-2">1024</td><td class="border border-gray-300 px-3 py-2">32000</td><td class="border border-gray-300 px-3 py-2">$0.12</td><td class="border border-gray-300 px-3 py-2">2 亿 token（一次性）</td><td class="border border-gray-300 px-3 py-2">长上下文检索</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">OpenRouter</td><td class="border border-gray-300 px-3 py-2">路由到 5+ 模型</td><td class="border border-gray-300 px-3 py-2">因模型而异</td><td class="border border-gray-300 px-3 py-2">因模型而异</td><td class="border border-gray-300 px-3 py-2">因模型而异（$0.02-0.15）</td><td class="border border-gray-300 px-3 py-2">无</td><td class="border border-gray-300 px-3 py-2">跨厂商统一账单</td></tr>
+
+</tbody>
+
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">对成本敏感的 RAG 头条对比：<strong>Jina 比 OpenAI 便宜 6.5 倍</strong>（同样 1024 维输出），比 Cohere 便宜 5 倍，比 Voyage AI 便宜 6 倍。对精度敏感的 RAG，差距更小——MTEB 基准上 jina-embeddings-v3 平均 65.5 分，OpenAI text-embedding-3-large 64.6，Cohere Embed v3 64.2。精度差距小到成本差异成为大多数生产团队的决定因素。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对多语言 RAG（这是 Jina 客户群强烈倾向跨境电商和国际 SaaS 的原因），Jina 是毫无争议的赢家：embedding 和 reranker 同时支持 100+ 语言，且对中文、德文、西班牙文、法文、日文、韩文有显式训练信号。OpenAI 和 Voyage AI 是英文优先；Cohere 支持多语言但上下文只有 512 维（vs Jina 的 8192）。对中英混合检索（跨境电商和出海中国 SaaS 产品最常见的 RAG 工作负载），Jina reranker-v3 + Jina embeddings v3 是 2026 年 7 月的最优组合。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter 是特殊情况：它是一个 embedding 路由器，背后是 Jina、OpenAI、Cohere、Voyage、Together AI，0% 成本加价。OpenRouter 的用例是你想 A/B 测试不同 embedding 提供商而不想管理 5 个独立 API key，或想要跨提供商的统一账单。成本是 0 加价，但延迟多一跳且 Matryoshka 维度切换不通过路由器暴露。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">生产环境中的 Jina：必须知道的运维细节</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina API 文档完善且稳定，但四个运维细节让首次用户在生产环境中踩坑。它们都不是阻塞性的，但每个都值得在第一次生产部署前了解。</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>速率限制按 API key 年龄和积分余额分层</strong>—— 新 API key 的默认限制是 500 RPM（每分钟请求数）和 1M TPM（每分钟 token 数）。累计花费达 $100 后自动扩容到 2K RPM / 5M TPM。$1K 后到 5K RPM / 20M TPM。429 响应包含 <code>Retry-After</code> 头指明精确等待时间，指数退避很简单。</li>
+
+<li><strong>批处理作业是异步的</strong>—— 批处理端点立即返回 <code>job_id</code>，实际 embedding 在 2-30 分钟内计算完成（取决于队列深度）。对需要 embedding 1000 万 chunk 语料的团队，批处理作业是正确的路径（节省 50% 成本，3-6 小时周转）；对延迟敏感的工作负载，使用同步端点。</li>
+
+<li><strong>多模态 CLIP-v1 需要 base64 编码的图像字节</strong>—— CLIP-v1 端点接受 base64 编码字节的图像输入（每图最大 5MB），不接受 URL。对大规模导入产品照片的团队，base64 转换比 URL 引用增加 30-40% 载荷大小。</li>
+
+<li><strong>Reader API 缓存按 URL，1 小时 TTL</strong>—— Reader API 为每个 URL 缓存 1 小时干净 Markdown。同一 URL 在 1 小时内再次请求从缓存服务，零 token 成本。对反复抓取同一文档页面的团队，这是主要成本节省点。</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">可观测性方面，Jina dashboard（<code>dashboard.jina.ai</code>）展示每个端点的 token 用量、每日花费、每个 API key 的消费量。对需要把花费归因到具体项目的团队，推荐模式是一个项目一个 API key（dashboard 自动展示细分）。对需要强制每团队花费上限的团队，Jina 通过 dashboard 支持组织级预算告警。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jina 的数据保留策略是什么？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina 在推理路径上不保留输入文本或生成的 embedding。发送到 <code>embeddings.create()</code> 的文本在内存中处理，embedding 返回后输入被丢弃。无输入文本日志，无生成 embedding 存储，不使用客户数据训练模型。Jina 唯一保留的数据是按 API key 的用量遥测（token 数、请求数、时间戳）用于计费——不包含请求内容。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Reader API 的保留策略略有不同。Reader API 缓存 1 小时干净 Markdown 输出（缓存命中零成本，缓存内容不用于训练）。对隐私敏感的 URL 抓取，API 支持 <code>x-no-cache: true</code> 头绕过缓存，代价是每次请求都重新抓取。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对合规敏感工作负载（HIPAA、带 EU 数据驻留的 GDPR），Jina 在 Enterprise 合约下提供私有 VPC 部署。模型在客户自有 AWS 账户中运行（Frankfurt、Virginia 或 Singapore 区域），推理数据永不离开 VPC，Jina 工程团队无法访问请求负载。Enterprise 合约是与 Jina 达成 BAA / DPA / SOC2 Type II 合规的唯一路径；标准公共 API 本身是 GDPR 合规的（数据在 EU-Frankfurt 处理，无第三方传输），但不包含签名的 BAA。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">能否自托管 jina-embeddings？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">可以——Jina 将 v2-base-* embedding 模型以 Apache 2.0 发布，你可以从 Hugging Face（<code>jinaai/jina-embeddings-v2-base-en</code>、<code>-de</code>、<code>-zh</code>、<code>-code</code>）下载权重并在自有基础设施上自托管。v2-base 模型各 137M 参数，意味着单张 A10（24GB）GPU 就能装下还有余量。137M 参数规模是有意为之——Jina 为 v2 系列优化到能在普通硬件上运行，用一些精度换取可及性。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">v3 模型截至 2026 年 7 月并<strong>未开源</strong>。Jina 未承诺 v3 权重的发布时间表，理由是支撑实验室研究的商业模式。对需要 v3 质量 on-prem 的团队，推荐路径是 Enterprise VPC 合约（Jina 在你自有 AWS 账户中运行 v3，通过 AWS Marketplace 结算）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对 v2-base 模型，推荐的自托管设置是单张 A10 或 L4 GPU 上的 vLLM 或 Text Embeddings Inference（TEI）服务器，吞吐 1-2K embedding/秒。Hugging Face <code>text-embeddings-inference</code> 容器（<code>ghcr.io/huggingface/text-embeddings-inference:latest</code>）开箱支持 jina-embeddings-v2，自动处理批处理、动态填充、请求队列。对每月 embedding 5000 万 token 的团队，一张 L4 spot 实例足够，每月约 $80，比 Jina API 成本（$1,000/月）便宜 12 倍——代价是自托管维护开销。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jina 如何处理速率限制和配额超限？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina 的速率限制模型很直接：超出每分钟请求或 token 限制时返回带 <code>Retry-After</code> 头（单位：秒）的 429 响应。新 API key 的默认限制是 500 RPM / 1M TPM，随累计花费增加自动扩容（见上文生产细节部分）。对批处理作业，速率限制按作业计（无 RPM 上限）但每作业 token 限制是 10 亿（更大的作业被拆分成多个子作业）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">标准级别没有硬性"配额超限"场景——积分余额预付，超出余额的请求返回 402 Payment Required。对生产团队，推荐模式是把自动充值阈值设到 $5（默认）并把自动充值金额设到 $50，这样余额永远不为负。dashboard 展示当前余额和自动充值设置，充值触发时给 API key 所有者发邮件。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对需要超过标准级别提供的速率限制的团队（例如实时 RAG 工作负载的 10K+ RPM），Enterprise 合约包含专属推理容量和按 key 的速率限制保证。Enterprise 级别 SLA 还包含 99.95% 可用性和 7×24 支持响应。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jina embeddings 与 LLM 向量搜索的区别</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">这是 2026 年经常出现的问题，因为 OpenAI 和 Anthropic 现在都在 LLM API 套餐中提供向量搜索（OpenAI 的 <code>file_search</code> 工具和 Anthropic 的 <code>retrieval</code> 工具）。简短回答：像 Jina 这样的专用 embedding API 便宜 5-10 倍，支持 8K-32K 上下文（vs LLM 厂商工具的 512-2K），并让你完全控制切分和向量存储——LLM 厂商工具方便但范围有限。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">详细对比：OpenAI 的 <code>file_search</code> 是一个托管向量存储 + 检索工具，与 OpenAI Assistants API 一起发布。它在一个托管服务中处理 embedding、切分和检索，这对简单的 RAG 演示是正确的选择，但成本被捆绑进 OpenAI token 价格（已包含 embedding 成本），且切分策略不可定制。对需要自定义切分（例如法律文档的章节感知切分、财务报告的表格感知切分）的团队，像 Jina 这样的专用 embedding API 是正确选择。OpenAI <code>file_search</code> 的检索精度也比 Jina embeddings + Jina reranker v3 流水线低，生产基准上低 8-12% nDCG@10。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 的 <code>retrieval</code> 工具概念类似但不包含重排序——它只是基础余弦相似度检索器。对基于 Claude 的 RAG 栈，推荐模式是 Claude 用于生成步骤，专用 embedding + reranker API（Jina 是自然之选）用于检索步骤。这种组合是 2026 年大多数生产级 Claude RAG 系统使用的架构。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jina 的 MCP 服务器与 IDE 集成</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina 在 <code>https://mcp.jina.ai/mcp</code> 提供 MCP 服务器，把 Reader、Embeddings、Reranker 端点作为 MCP 工具暴露给 Claude Code、Claude Desktop、Cursor、Continue。MCP 服务器是把网络挂载的 RAG 加入 Claude Code 会话的最简单方式——<code>claude_desktop_config.json</code> 中一行配置即可接入 Reader API，任何包含 URL 的 prompt 都会自动获得清理和 embedding 后的页面内容。</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-md p-4 my-4 overflow-x-auto"><code class="text-sm text-gray-800"&gt;# .claude/mcp.json (for Claude Code v2.1.198+)
+&#123;
+  "mcpServers": &#123;
+    "jina": &#123;
+      "url": "https://mcp.jina.ai/mcp",
+      "transport": "http",
+      "headers": &#123;
+        "Authorization": "Bearer jina_..."
+      &#125;
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">MCP 服务器配置后，Claude Code 会话获得三个新工具：<code>jina_reader</code>（URL → 干净 Markdown）、<code>jina_embeddings</code>（文本 → 向量）、<code>jina_reranker</code>（重排 top-K）。实际中最有用的是 <code>jina_reader</code>——它让 Claude 像读取本地文件一样干净地读取任何网页，样板内容被剥离。对做文档站、网络研究或竞品分析的开发者，这是 2026 年杠杆最高的 MCP 集成。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对非 MCP 客户端，Jina 的 Python、TypeScript、Go、Rust SDK 暴露完整 API 表面。Python SDK（<code>pip install jina-ai</code>）最成熟，包含 <code>Client</code> 类自动处理认证、重试、速率限制退避。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jina AI 的联盟计划？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina 目前<strong>不提供公开联盟计划</strong>。指向落地页 <code>https://jina.ai</code> 的链接是 UTM 追踪的营销链接，不是联盟链接——没有佣金结构，没有推荐码，没有结算。对通过联盟营销变现的内容站和评测站，这是 2026 年 Jina 唯一最大的不足。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina 团队表示联盟计划在 2026 年路线图上，但截至 2026 年 7 月启动日期未定。对评估 Jina 的内容站，实际建议是暂时使用标准 UTM 链接，等联盟计划启动后再调整。早期参与联盟计划的成本（即还没有佣金结算链接的 Jina 机会成本）很小——Jina 免费额度和 $0.02/M token 定价意味着大多数读者无论如何都会从免费额度开始。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对比一下：OpenAI 没有公开联盟计划（OpenAI 合作伙伴计划是邀请制且只对大平台开放），Cohere 有合作伙伴计划（需要签协议），Voyage AI 有推荐计划（首年消费 10% 佣金）。在主要 embedding 提供商中，Jina 在自助开通方面最宽松，在联盟变现方面最不发达。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">最终结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 7 月的 Jina AI 是市场最具成本效益的生产级 embedding + reranker + reader 三件套，也是唯一在单一 API key 背后提供完整 RAG 三件套的主要提供商。8K 上下文、Matryoshka 维度切换、listwise 重排序、永久 10K token/月免费额度的组合，正是 Jina 成为 LlamaIndex、LangChain、AutoGen、Haystack 用户默认 embedding 提供商的原因。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对 2026 年评估 Jina 的团队，建议很简单：<strong>把 jina-embeddings-v3 作为默认</strong>，<strong>把 jina-reranker-v3 作为第二阶段 reranker</strong>，<strong>用 Reader API 做 URL 抓取</strong>，<strong>自托管 v2-base 模型做本地化路径</strong>。唯一不用 Jina 的理由是你对美国本土供应商有硬性要求（Jina 主要托管在 EU-Frankfurt），或你需要带签名 BAA / SOC2 Type II 报告的供应商（标准公共 API 本身是 GDPR 合规的，但不包含签名 BAA——Enterprise VPC 合约是唯一路径）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的竞争格局对 Jina 很有利：OpenAI embeddings 贵 6.5 倍，Cohere 贵 5 倍且上下文少 16 倍，Voyage AI 贵 6 倍，OpenRouter 是路由器而非主要提供商。对 2026 年构建的成本敏感 RAG 团队，Jina 是正确的默认选择。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 Jina AI API 最常见问题的快速回答。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Jina AI API 用于什么？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina AI API 是 RAG 三大构建块的生产标准：embedding（jina-embeddings-v3 把文本和图像变成 1024 维向量供向量搜索）、重排序（jina-reranker-v3 在把 top-K 结果传给 LLM 之前重新排序）、Reader（URL-to-Markdown 端点，抓取并清洗网页内容用于 embedding）。同一个 Jina API key 处理全部三件事，这使 Jina 成为 2026 年最容易搭建的生产 RAG 技术栈。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Jina AI API 多少钱？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina 在全部 9 个端点上采用统一每百万 token 定价。jina-embeddings-v3 0.02 美元/百万 token（每月 10K 免费，永久）。jina-reranker-v3 0.018 美元/百万 token。Reader API 0.02 美元/百万 token（每月 1M 免费）。CLIP-v1 多模态 0.02 美元/百万 token。叠加 50% 批处理折扣后，实际费率降到 0.01 美元/百万 token，是市场最便宜的生产级 embedding API。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Jina AI 有免费额度吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">有——Jina 在 Embeddings、Reranker、CLIP 上提供永久每月 10,000 token 免费额度，Reader API 上每月 1M token 免费。免费额度无需信用卡且不过期。对每月 10K token 以内的原型和副业项目，免费额度足够。更高用量，预付积分从 $1 起，默认 $5 阈值自动充值。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">国内能用 Jina AI 吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina API 托管在 AWS US-East 和 EU-Frankfurt。国内访问需要代理，CN 客户端典型延迟 200-400ms。对国内生产工作负载，推荐模式是使用 Cloudflare Worker 或腾讯云边缘函数做代理，把延迟降到 50-100ms，免去客户端代理配置。注意代理不绕过内容政策——Jina 仍会屏蔽违反政策的请求，无论地理来源。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Jina AI 存储我的 embedding 或文本吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">不——Jina 在推理路径上不保留输入文本或生成的 embedding。发送到 API 的文本在内存中处理，embedding 返回后输入被丢弃。无输入文本日志，无生成 embedding 存储，不使用客户数据训练模型。唯一保留的数据是按 API key 的用量遥测（token 数、请求数、时间戳）用于计费。Reader API 缓存 1 小时干净 Markdown 输出，但缓存不用于训练且可以用 x-no-cache: true 头绕过。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">jina-embeddings-v3 和 OpenAI text-embedding-3-large 的区别？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">对生产团队重要的三个区别：(1) jina-embeddings-v3 在同样 1024 维输出下便宜 6.5 倍（$0.02/M vs $0.13/M token），(2) jina-embeddings-v3 有 8K 上下文 vs OpenAI 的 8191（实际效果等价，但 Jina 的实际长上下文性能更好），(3) jina-embeddings-v3 内置任务专属 LoRA 适配器（retrieval.query、retrieval.passage、classification、separation、text-matching），比单模式 embedding 高 4-7% nDCG@10。对多语言 RAG，jina-embeddings-v3 是明显的赢家（100+ 语言，对中文、德文、代码有专门变体）。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Matryoshka 表示学习是什么，为什么重要？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Matryoshka 表示学习是一种训练技术，产生的 embedding 可以截断到更小维度（例如 1024 → 256），精度损失极小。jina-embeddings-v3 用 Matryoshka 训练，意味着你可以在 32/64/128/256/512/768/1024 维度上存储同一向量，在查询时权衡召回率与存储成本而无需重新 embedding 语料库。对存储 1 亿向量的团队，把维度从 1024 降到 256 让存储成本减少 4 倍、检索延迟降低 2-3 倍，代价是 1-3% 召回率。如果召回率不足，同一向量后续可以以更高维度重新取回。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">jina-reranker-v3 与 Cohere Rerank-3.5 的对比？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">jina-reranker-v3 在中英混合语料上比 Cohere Rerank-3.5 高 6-11% nDCG@10，在欧洲语种语料上高 3-7%。价格差异更大：jina-reranker-v3 $0.018/M tokens 比 Cohere Rerank-3.5 $2.00/M tokens 便宜 111 倍。在纯英语料上两者等价，但多语言检索上 Jina 是毫无争议的赢家。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">能自托管 jina-embeddings 吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">v2-base-* 模型（en、de、zh、code）以 Apache 2.0 发布，可以用 Hugging Face text-embeddings-inference 容器在单张 A10（24GB）或 L4 GPU 上自托管。v3 模型截至 2026 年 7 月未开源；唯一的本地化路径是 Enterprise VPC 合约。对每月 embedding 5000 万 token 的团队，在 L4 spot 实例上自托管 v2-base 模型每月约 $80，比 Jina API 成本（$1,000/月）便宜 12 倍——代价是自托管维护开销。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Jina 有 MCP 服务器吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">有——Jina 在 <code>https://mcp.jina.ai/mcp</code> 提供 MCP 服务器，把 Reader、Embeddings、Reranker 端点作为 MCP 工具暴露给 Claude Code、Claude Desktop、Cursor、Continue。MCP 服务器是把网络挂载 RAG 加入 Claude Code 会话的最简单方式——<code>.claude/mcp.json</code> 中一行配置即可接入 Reader API，任何包含 URL 的 prompt 都会自动获得清理和 embedding 后的页面内容。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">jina-embeddings-v3 中的 late_chunking 是什么？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">late_chunking 是 Jina 专有特性，先把 embedding 模型应用到完整文档，然后对生成的上下文化 token embedding 做切分，而不是通常的"先切分再 embedding"流水线。这保留跨 chunk 边界的远程上下文，在长文档基准上带来 5-9% nDCG@10 提升。对在 20+ 页 PDF 上构建 RAG 的团队，late_chunking 是 Jina SDK 中 ROI 最高的单一特性。在 embeddings.create() 调用上设 <code>late_chunking=True</code> 启用。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Jina 与 OpenRouter 在 embedding 上对比？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter 是路由器不是主要提供商——背后是 Jina、OpenAI、Cohere、Voyage、Together AI，单一 API key 接入，0% 成本加价。OpenRouter 的用例是你想 A/B 测试不同 embedding 提供商而不想管理 5 个独立 API key，或想要跨提供商的统一账单。对已经选 Jina 为默认的团队，通过 OpenRouter 多一跳推理路径且隐藏 Matryoshka 维度切换，所以直接调用 Jina API 是正确选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>评审依据</strong>：Jina AI 文档（jina.ai/embeddings）、jina-embeddings-v3 发布说明（2024 年 7 月）、Matryoshka 表示学习论文（Kusupati et al., 2022）、MTEB 基准 v2（2026）、Reader API 文档（jina.ai/reader）、MCP 服务器发布说明（2026 年 3 月）、Enterprise 合约条款（2026 年 6 月）、跨境电商团队生产案例研究（2026 年 6 月）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>披露</strong>：本文包含联盟链接。如果你通过这些链接注册，我们可能获得佣金，对你无额外费用。我们的评测保持独立。</p>`;
+
+const affiliateSidebar = {
+  title: '试用 FreeModel',
+  description: '一个 API key 走多 provider 路由。DeepSeek + Qwen + Llama + OpenAI 兼容上游 —— 与 Jina 配合做 RAG 成本优化。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '获取免费额度'
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/zh" class="hover:underline">首页</a> &rsaquo;
+          <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo;
+          <span class="text-gray-700">{zhTitle}</span>
+        </nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} 
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="sponsored noopener">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">关键信息</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>提供商：</strong> Jina AI（柏林，2020 年创立）</li>
+            <li><strong>旗舰模型：</strong> jina-embeddings-v3、jina-reranker-v3、Reader、jina-clip-v1</li>
+            <li><strong>定价：</strong> $0.018-0.02 / 百万 token（无订阅）</li>
+            <li><strong>免费额度：</strong> 每月 10K token（Reader 1M），无需信用卡</li>
+            <li><strong>托管：</strong> AWS US-East + EU-Frankfurt（GDPR 友好）</li>
+            <li><strong>API：</strong> <code>https://api.jina.ai/v1/</code> + MCP 服务器 <code>https://mcp.jina.ai/mcp</code></li>
+            <li><strong>开源：</strong> jina-embeddings-v2-base-* 是 Apache 2.0（可自托管）</li>
+            <li><strong>联盟：</strong> 使用 FreeModel 做多 provider RAG 成本优化</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,224 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'ideogram-api-review';
+const date = '2026-07-04';
+const locale = 'zh';
+
+const zhTitle = 'Ideogram API 2026：图像文字渲染最强的 AI 绘画 API';
+const zhDescription = 'Ideogram API 评测：图像生成 + 最强文字渲染，Magic Prompt 自动优化提示词、Canvas 编辑功能。定价对比 Midjourney、DALL-E 3、Stable Diffusion 3.5。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "测评中心", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+    {"@type": "Question", "name": "Ideogram 是什么？2026 年它的图像生成 API 能做什么？", "acceptedAnswer": {"@type": "Answer", "text": "Ideogram 是多伦多 AI 图像生成初创公司，2022 年 8 月创立，2026 年中估值 $1.6B（Series D，Andreessen Horowitz 领投）。旗舰产品 Ideogram 3.0 模型提供了市场上最强的图像文字渲染能力。API 位于 api.ideogram.ai，支持生成、编辑和描述端点，使用 OpenAI 兼容鉴权。截至 2026 年 7 月已有 24,000+ 注册开发者。"}},
+    {"@type": "Question", "name": "Ideogram API 的价格是多少？", "acceptedAnswer": {"@type": "Answer", "text": "Ideogram 使用积分计费：100 积分 = $1。标准生成为 4 积分/张（每次 4 张 = 16 积分），Turbo 模式 8 积分/张。Canvas 编辑 2-6 积分/次。Describe 描述 1 积分/张。$10 充值可获得 1,000 积分，约 62 次标准四图生成。无月费订阅，积分 12 个月有效。"}},
+    {"@type": "Question", "name": "Ideogram API 有免费层吗？", "acceptedAnswer": {"@type": "Answer", "text": "有——新用户注册即送 $1 体验金（100 积分），约 25 次标准生成。体验金用完后需要预充值才能继续使用。没有持续免费层，且需要美国/欧洲信用卡支付，不支持中国信用卡。"}},
+    {"@type": "Question", "name": "Ideogram 的文字渲染有多好？", "acceptedAnswer": {"@type": "Answer", "text": "Ideogram 3.0 是商用市场图像文字渲染准确率最高的模型，英文 94.2%（对比 DALL-E 3 的 82%、Midjourney V8 的 78%、Stable Diffusion 3.5 的 71%）。中文字符准确率 87%，远超竞品的 52-68%。对于需要在图像中显示清晰文字的任何场景（社交媒体卡片、商品图、海报），Ideogram 是唯一可用的 API。"}},
+    {"@type": "Question", "name": "我能从中国境内使用 Ideogram 吗？", "acceptedAnswer": {"@type": "Answer", "text": "Ideogram API 托管在 AWS us-east-1 和 us-west-2。从中国访问需要代理。同时，Ideogram 不接受中国信用卡支付。对于需要中国直连的开发者，可考虑阿里云百炼的通义万相图像生成（使用 Qwen-VL 后端的中文优先方案）。"}},
+    {"@type": "Question", "name": "Ideogram 支持图像编辑吗？", "acceptedAnswer": {"@type": "Answer", "text": "支持——Ideogram Canvas 提供局部重绘（4 积分/次）、扩展画面（6 积分/次）、风格迁移（3 积分/次）和擦除填充（2 积分/次）。所有编辑操作保留原模型的文字渲染质量，是唯一可以在一次 API 调用中完成「生成含文字图像→修改文字区域→输出成品」全流程的方案。"}},
+    {"@type": "Question", "name": "Ideogram 相比 Midjourney 如何？", "acceptedAnswer": {"@type": "Answer", "text": "Midjourney V8 的图像审美质量更高（MOS 4.51 对 Ideogram 的 4.38），但完全不能生成可读文字。Ideogram 使用 REST API（OpenAI 兼容），Midjourney 仅支持 Discord API（需 webhook 轮询）。对于含文字场景，Ideogram 完胜。对于纯审美生成，Midjourney 更优。"}},
+    {"@type": "Question", "name": "Ideogram 有联盟计划吗？", "acceptedAnswer": {"@type": "Answer", "text": "目前没有。Ideogram 没有公开联盟或推荐计划。对希望通过 Ideogram 内容获利的网站，建议链接到平台作为工具推荐，或在 LLM 文字生成侧使用 FreeModel（有公开联盟计划的聚合器）获得联盟收入。"}},
+    {"@type": "Question", "name": "Ideogram API 的速率限制是多少？", "acceptedAnswer": {"@type": "Answer", "text": "默认 API 层：60 RPM，10,000 张/天。Scale 层（$500/月承诺）：300 RPM，100K 张/天。企业层：从 $5,000/月起，提供自定义 SLA。所有请求为同步 HTTPS POST，生成时间 3-8 秒（Standard）或 1.5-3 秒（Turbo），不支持流式传输。"}},
+    {"@type": "Question", "name": "Ideogram 能自己部署吗？", "acceptedAnswer": {"@type": "Answer", "text": "不能——Ideogram 3.0 不开源，仅通过 API 提供。需要自部署的方案可考虑 Stable Diffusion 3.5（Apache 2.0 开源，文字准确率 71%）或 FLUX.2 Pro（Black Forest Labs，提供非商业开源权重，文字准确率 74%）。两者均需要两阶段流水线：先生成底图，再用 Photoshop/Canva 添加文字。"}}
+  ]};
+
+const zhBody = `  <h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Ideogram 2026：图像文字渲染最强的 AI 绘画 API</h1>
+
+  <p class="text-gray-700 leading-relaxed my-4">Ideogram 是一家多伦多 AI 图像生成初创公司，2022 年 8 月创立时就推出了第一个能在 AI 图像中生成清晰可读文字的商用方案。截至 2026 年 7 月，公司已完成四轮融资共 $265M（最近一轮 Series D 由 Andreessen Horowitz 领投，估值 $1.6B），第三代模型 Ideogram 3.0 通过 <code>api.ideogram.ai</code> 公开 API 提供服务。公司的核心竞争力始终如一：在生成的图像中渲染清晰、准确的文字——任何语言、字体、颜色——这项能力至今仍是 Midjourney、DALL-E 3、Stable Diffusion 3.5 都无法在商用产品中匹敌的。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">2026 年 7 月写 Ideogram API 评测的原因在于：图像生成 API 市场已经分化。纯审美需求（电影级风景、时尚概念图、建筑可视化）选 Midjourney V8。含文字需求——社交媒体卡片（带标题文案）、电商产品图（带 Logo 和标语）、PPT 配图、电影海报、信息图、菜单板——Ideogram 3.0 是唯一单次生成就能产出可用结果的 API。没有 Ideogram 的文字渲染，这些工作流需要两阶段流水线（Midjourney/SD3.5 生成底图 + Photoshop/Canva 叠文字），丧失了端到端 AI 生成的价值。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">本评测以 2026 年 7 月的工程师视角覆盖 Ideogram 的四个端点（generate、edit、describe、canvas）、积分定价模型（$0.04-$0.08/张标准图）、Magic Prompt 自动提示词优化机制、与 Midjourney V8 / DALL-E 3 / Stable Diffusion 3.5 的对比，以及哪些场景值得买单。</p>
+
+  <table class="min-w-full border border-gray-200 my-6">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold">端点</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">用途</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">费用（积分）</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">分辨率</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">模型</th>
+      </tr>
+    </thead>
+    <tbody class="text-sm">
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">POST /generate</td>
+        <td class="px-4 py-2">文生图</td>
+        <td class="px-4 py-2">4/8 积分（标准/Turbo）</td>
+        <td class="px-4 py-2">1,024x1,024（可升至4K）</td>
+        <td class="px-4 py-2">3.0, Turbo</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">POST /edit</td>
+        <td class="px-4 py-2">遮罩重绘</td>
+        <td class="px-4 py-2">4 积分</td>
+        <td class="px-4 py-2">同输入</td>
+        <td class="px-4 py-2">3.0 Canvas</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">POST /canvas</td>
+        <td class="px-4 py-2">扩展画面/风格迁移</td>
+        <td class="px-4 py-2">2-6 积分</td>
+        <td class="px-4 py-2">最大 2 倍尺寸</td>
+        <td class="px-4 py-2">3.0 Canvas</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">POST /describe</td>
+        <td class="px-4 py-2">图生提示词</td>
+        <td class="px-4 py-2">1 积分</td>
+        <td class="px-4 py-2">文本输出</td>
+        <td class="px-4 py-2">Describe</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="text-gray-700 leading-relaxed my-4">Ideogram 使用积分制计费：$10 = 1,000 积分，$50 = 5,500 积分（+10%），$100 = 12,000 积分（+20%），$500 = 65,000 积分（+30%）。标准生成 4 积分/张（每次返回 4 张=16 积分），Turbo 生成 8 积分/张。Canvas 编辑 2-6 积分/次。Describe 1 积分/次。$100 积分包下每张标准图约 $0.033，与 DALL-E 3 的 $0.04/张持平，远低于 Midjourney 按 GPU 分钟计费的批量成本。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">对于月产 500 张社交媒体配图（含文字）的内容团队，月成本约 $40-80。月产 5,000 张电商产品图的团队约 $400-800。对比之下，DALL-E 3 同等量级约 $200-400，但 Ideogram 的首遍通过率（94% 文字准确）意味着重绘次数大大减少。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">Magic Prompt 是 Ideogram 的自动提示词优化功能，默认开启。它会自动重写用户的输入提示词，将文字细节、光照、景深、文字位置等信息补充完整，首遍通过率提高 23 个百分点。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">Ideogram 不支持开源自部署，不开源权重。需要自部署的方案可选择 Stable Diffusion 3.5（Apache 2.0，文字准确率 71%）或 FLUX.2 Pro（非商用开源选项，文字准确率 74%）。两者均需要额外的文字叠加步骤。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Ideogram 对比 Midjourney / DALL-E 3 / Stable Diffusion 3.5</h2>
+
+  <table class="min-w-full border border-gray-200 my-6">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold">厂商</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">文字准确率</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">视觉质量（MOS）</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">API 类型</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">单张成本</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">自部署</th>
+      </tr>
+    </thead>
+    <tbody class="text-sm">
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Ideogram 3.0</td>
+        <td class="px-4 py-2"><strong>94%</strong></td>
+        <td class="px-4 py-2">4.38</td>
+        <td class="px-4 py-2">REST（OpenAI 兼容）</td>
+        <td class="px-4 py-2">$0.033-0.067</td>
+        <td class="px-4 py-2">否</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Midjourney V8</td>
+        <td class="px-4 py-2">78%</td>
+        <td class="px-4 py-2"><strong>4.51</strong></td>
+        <td class="px-4 py-2">Discord（webhook）</td>
+        <td class="px-4 py-2">$0.05/min GPU</td>
+        <td class="px-4 py-2">否</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">DALL-E 3</td>
+        <td class="px-4 py-2">82%</td>
+        <td class="px-4 py-2">4.32</td>
+        <td class="px-4 py-2">OpenAI REST</td>
+        <td class="px-4 py-2">$0.040/张</td>
+        <td class="px-4 py-2">否</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">SD 3.5</td>
+        <td class="px-4 py-2">71%</td>
+        <td class="px-4 py-2">4.15</td>
+        <td class="px-4 py-2">REST + 自部署</td>
+        <td class="px-4 py-2">$0.0065/张</td>
+        <td class="px-4 py-2">是</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>总结：</strong>如果生成的图像包含可见文字，Ideogram 3.0 是 2026 年的最佳选择。94% 的英文文字准确率决定了一个工作流是「全自动」还是「人肉校对」。Magic Prompt 减少迭代次数，Canvas 编辑套件使 API 不仅可用于批量生成，还能做精细修改。对于纯审美生成选 Midjourney，需要自部署选 SD3.5/FLUX，其他一切场景——社交媒体、电商、信息图、广告素材——Ideogram 3.0 是默认选择。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>问：Ideogram API 多少钱？</strong><br>答：积分制：$1=100 积分。标准生成 4 积分/张（每次 4 张=16 积分），Turbo 8 积分/张，Canvas 编辑 2-6 积分/次。$100 包 12,000 积分，每张约 $0.033。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>问：有免费层吗？</strong><br>答：注册送 $1 体验金（100 积分），约 25 次标准生成。用完后需预充值（最低 $10）。无持续免费层。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>问：文字渲染多好？</strong><br>答：英文 94.2%（商用最高），对比 DALL-E 3 的 82%、Midjourney V8 的 78%、SD 3.5 的 71%。中文字符 87%。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>问：从中国能用吗？</strong><br>答：需要代理，且不接受中国信用卡。中国直连替代方案可考虑阿里云百炼通义万相。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><em>本文包含联盟链接。通过这些链接注册，我们可能获得佣金，不增加您的额外费用。评测保持独立。</em></p>`;
+
+const disclaimer = `<p class="text-sm text-gray-500 italic my-4">本文包含联盟链接。通过这些链接注册，我们可能获得佣金，不增加您的额外费用。评测保持独立。</p>`;
+
+const affiliateSidebar = {
+  title: '试试 FreeModel',
+  description: '一个 API key 走多 model 路由。DeepSeek + Qwen + Llama + OpenAI 兼容上游，为图像生成的文字侧提供 LLM 提示词编排能力。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '获取免费额度'
+};
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">首页</a> &rsaquo;
+          <a href="/zh/tutorials" class="hover:underline">测评中心</a> &rsaquo;
+          <span class="text-gray-700">{zhTitle}</span>
+        </nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} 
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="sponsored noopener">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">核心信息</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>厂商：</strong>Ideogram（多伦多，Series D $1.6B 估值）</li>
+            <li><strong>端点：</strong>/generate, /edit, /canvas, /describe</li>
+            <li><strong>定价：</strong>$0.033-0.067/张（积分包），标准 4 积分/张</li>
+            <li><strong>托管：</strong>AWS us-east-1 + us-west-2</li>
+            <li><strong>API：</strong><code>https://api.ideogram.ai</code>（OpenAI 兼容鉴权）</li>
+            <li><strong>免费层：</strong>注册 $1 体验金（~25 次生成）</li>
+            <li><strong>开源：</strong>否——仅 API，不开源权重</li>
+            <li><strong>文字准确率：</strong>英文 94%，中文 87%（市场最高）</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

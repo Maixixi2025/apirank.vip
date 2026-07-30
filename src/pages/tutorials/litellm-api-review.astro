@@ -1,0 +1,257 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'litellm-api-review';
+const date = '2026-07-15';
+const locale = 'en';
+
+const enTitle = "LiteLLM 2026: 100+ LLM AI Gateway (Open Source)";
+const enDescription = "LiteLLM review: open-source AI gateway for 100+ LLMs in OpenAI format. Free self-host, cost tracking, MCP, fallback routing. Pricing vs Portkey/OpenRouter.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "LiteLLM 2026: 100+ LLM AI Gateway (Open Source)", "description": "LiteLLM review: open-source AI gateway for 100+ LLMs in OpenAI format. Free self-host, cost tracking, MCP, fallback routing. Pricing vs Portkey/OpenRouter.", "datePublished": "2026-07-15", "dateModified": "2026-07-15", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/litellm-api-review"}};
+
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "LiteLLM 2026: 100+ LLM AI Gateway (Open Source)", "item": "https://apirank.vip/tutorials/litellm-api-review"}]};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is LiteLLM used for?", "acceptedAnswer": {"@type": "Answer", "text": "LiteLLM is used to route requests across 100+ LLM providers (OpenAI, Anthropic, Google Vertex, AWS Bedrock, Azure, Cohere, Hugging Face, NVIDIA NIM, Ollama, vLLM) using a single OpenAI-compatible interface. It is the standard tool for platform teams that need to give developers access to many models while maintaining cost attribution, rate limiting, and observability. Netflix, Lemonade, and Rocket Money use LiteLLM in production."}}, {"@type": "Question", "name": "How much does LiteLLM cost?", "acceptedAnswer": {"@type": "Answer", "text": "LiteLLM's open-source proxy is MIT-licensed and free to self-host — you only pay the underlying provider costs (OpenAI tokens, Anthropic tokens, GPU spend for self-hosted models). The Enterprise tier adds SSO, JWT auth, audit logs, custom SLAs, dedicated support, and air-gapped deployment; pricing is on application. Public price cards do not exist, but case studies suggest Enterprise contracts in the $50K-$500K/year range depending on request volume."}}, {"@type": "Question", "name": "Is there a LiteLLM free tier?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — the open-source proxy is fully free with no rate limits and no request caps. You can serve unlimited requests through a self-hosted LiteLLM Proxy. The only costs are the upstream provider API spend or the GPU cost of self-hosted models. No credit card is required to start."}}, {"@type": "Question", "name": "Can I use LiteLLM from inside China?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, via self-hosting. LiteLLM's open-source proxy runs anywhere Docker or Kubernetes runs — including on Aliyun ECS, Tencent Cloud, or Huawei Cloud inside China. The proxy talks to the upstream providers (OpenAI, Anthropic, etc.) using your own keys, so if you need to access the providers from inside China, you'll need a stable proxy or your providers need to be available locally (e.g. DeepSeek, Qwen, GLM via Aliyun Bailian). The official LiteLLM SaaS does not currently serve China-based customers."}}, {"@type": "Question", "name": "Does LiteLLM support OpenAI-compatible API calls?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. LiteLLM's primary interface is the OpenAI format — the proxy exposes /v1/chat/completions, /v1/embeddings, /v1/models, and other OpenAI-compatible endpoints. The OpenAI SDK, Anthropic SDK (with a thin shim), Vercel AI SDK, LangChain, LlamaIndex, and any tool that speaks OpenAI format will work with LiteLLM by changing the base URL."}}, {"@type": "Question", "name": "How does LiteLLM compare to Portkey?", "acceptedAnswer": {"@type": "Answer", "text": "Portkey is a SaaS AI gateway with built-in observability, guardrails, and prompt management — faster setup, prettier UI, but no open-source option and higher per-month cost (Hobby $49/month, Growth $199/month). LiteLLM is open-source and self-hosted with similar routing and cost-tracking capabilities but requires you to operate the infrastructure. For a team that values data control and avoids SaaS lock-in, LiteLLM is the better choice. For a team that wants zero-ops with a polished UI, Portkey wins."}}, {"@type": "Question", "name": "How does LiteLLM compare to OpenRouter?", "acceptedAnswer": {"@type": "Answer", "text": "OpenRouter is a multi-provider model marketplace with 300+ models accessed through a single API key and pay-per-token pricing — zero ops, instant setup, but with a 5-30% markup on provider costs and no self-hosted option. LiteLLM is open-source and routes to the same providers, but you bring your own provider keys, you pay provider-direct prices, and you operate the proxy yourself. OpenRouter is faster to start; LiteLLM is cheaper at scale and gives full control."}}, {"@type": "Question", "name": "How does LiteLLM compare to Cloudflare AI Gateway?", "acceptedAnswer": {"@type": "Answer", "text": "Cloudflare AI Gateway is a SaaS request router with caching, analytics, and fallback — best for existing Cloudflare users who want lightweight routing without ops overhead. LiteLLM goes much deeper on cost attribution, per-team budgets, MCP integration, guardrails, and traffic mirroring, but you have to operate it. For a team that lives inside Cloudflare Workers, AI Gateway is the natural fit. For a team that needs platform-grade control, LiteLLM wins."}}, {"@type": "Question", "name": "What is the LiteLLM MCP server?", "acceptedAnswer": {"@type": "Answer", "text": "The LiteLLM MCP server (released Q1 2026) exposes every model in your proxy as a Model Context Protocol tool to Claude Desktop, Cursor, Cline, and any MCP-compatible agent runtime. A single config.yaml turns your LiteLLM proxy into a multi-model MCP tool registry — agents can call Claude, GPT, and local Llama models through the same tool interface."}}, {"@type": "Question", "name": "Does LiteLLM have an affiliate program?", "acceptedAnswer": {"@type": "Answer", "text": "LiteLLM does not currently have a public affiliate program. For teams that need an affiliate-aligned CTA, an alternative is FreeModel, an OpenAI-compatible aggregator that routes across multiple providers and adds cost-routing optimization for self-deployed models."}}]};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">LiteLLM 2026: The Open-Source AI Gateway That Routes 100+ LLMs Through One API</h1>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is LiteLLM, and why does it matter in 2026?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM is the de facto open-source standard for routing requests across multiple LLM providers. Founded in 2023 by Krrish Dholakia and Ishaan Jaffer as a thin Python wrapper around the OpenAI SDK, it has evolved into a 53,599-star GitHub project (verified July 2026) that today powers AI access at Netflix, Lemonade, Rocket Money, and hundreds of platform teams shipping LLM-backed products. The company is Y Combinator-backed and currently transitioning its proxy server from Python to a Rust core for performance.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The core promise is simple: write one completion() call against the OpenAI schema, and LiteLLM will route it to OpenAI, Anthropic, Google Vertex, AWS Bedrock, Azure, Cohere, Hugging Face, NVIDIA NIM, Ollama, vLLM, or any of 100+ other providers. Behind that single interface sits a self-hostable AI Gateway (Proxy) with virtual keys, per-team budgets, rate limiting, fallback chains, load balancing, prompt caching, guardrails, and full OpenTelemetry-compatible observability. As of July 2026 the project has served 1 billion+ requests and pulled 240 million+ Docker images.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">LiteLLM pricing in 2026: free OSS, paid Enterprise</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM is unusual in the AI infrastructure space: the entire core proxy is MIT-licensed open-source software that you can self-host with no per-request fees. The only costs are the underlying GPU or API spend from the providers you route to. For teams that need commercial features (SSO, JWT auth, audit logs, custom SLAs, dedicated support, air-gapped deployment), LiteLLM offers an Enterprise tier with pricing on application — public price cards do not exist, but the Netflix and Lemonade case studies suggest Enterprise contracts in the $50K-$500K/year range depending on request volume.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Compared to Portkey (which starts at $49/month for the Hobby plan and $199/month for Growth) and Cloudflare AI Gateway (which adds $0.20 per million Gateway requests on top of provider fees), LiteLLM's open-source-first model is the most cost-effective path for platform teams that already have Kubernetes/ops capacity. The trade-off is operational ownership: you run the proxy, monitor it, scale it, and patch it.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How the LiteLLM Proxy works (with code)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The simplest way to use LiteLLM is via the Python SDK. The completion() function accepts a model string in the format provider/model, and LiteLLM handles authentication, retries, and provider-specific quirks:</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-md overflow-x-auto my-4"><code>from litellm import completion
+import os
+
+os.environ['OPENAI_API_KEY'] = 'sk-...'
+os.environ['ANTHROPIC_API_KEY'] = 'sk-ant-...'
+
+# Call any of 100+ providers with the same interface
+response = completion(
+    model='anthropic/claude-opus-4-8',
+    messages=[{'role': 'user', 'content': 'Explain transformers in 3 sentences.'}],
+    fallback_models=['openai/gpt-5', 'google/gemini-2.5-pro'],
+)
+print(response.choices[0].message.content)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">For team-scale usage, the AI Gateway (Proxy) runs as a Docker container or Kubernetes deployment. A minimal config.yaml looks like:</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-md overflow-x-auto my-4"><code>model_list:
+  - model_name: gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: claude-opus
+    litellm_params:
+      model: anthropic/claude-opus-4-8
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: local-llama
+    litellm_params:
+      model: ollama/llama3.3
+      api_base: http://ollama.internal:11434
+
+router_settings:
+  routing_strategy: least-busy
+  num_retries: 3
+  timeout: 30
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
+
+# Launch
+# $ litellm --config config.yaml --port 4000</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Once running, the proxy exposes an OpenAI-compatible /v1/chat/completions endpoint that any client (the OpenAI SDK, Anthropic SDK with a shim, Vercel AI SDK, LlamaIndex, LangChain) can talk to. The admin UI is at /ui and provides virtual key management, spend tracking, and team budgets.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cost tracking, budgets, and rate limiting</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM's strongest feature for platform teams is its cost attribution layer. Every request is tagged with a virtual key (mapped to a user, team, or org) and the response includes an accurate cost calculation based on the model's published token rates. Costs can be logged to s3, GCS, Postgres, or any OTEL-compatible backend. Teams can set hard budgets at the key level — when a team exceeds its budget, requests return 429 with a structured error.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Rate limiting is similarly granular. The proxy tracks TPM (tokens per minute) and RPM (requests per minute) per model and per deployment, and supports cooldown periods when a deployment hits rate limits. This is critical for production deployments that talk to OpenAI or Anthropic under tight rate ceilings — LiteLLM will automatically failover to a backup deployment rather than 500ing.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Fallback, load balancing, and traffic mirroring</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM's Router supports three patterns that map directly to production scenarios:</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Fallback chains</strong>: Define primary + backup models. If the primary 429s or 5xxs, the router tries the next model. The 'try in order, fail fast' pattern is great for cost-optimization (cheap model first, premium only when needed) and for resilience (OpenAI + Anthropic + Bedrock as backup).</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Load balancing</strong>: Spread requests across N deployments of the same model. Useful when one provider has rate limits that the others don't. Strategies include simple-shuffle, least-busy, usage-based, and latency-based.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Traffic mirroring</strong>: Copy a percentage of production traffic to a secondary deployment for evaluation. The canonical use case is A/B testing a new model against the incumbent — both get the same prompt, but only the primary's response goes back to the user, while the secondary's response is logged for offline eval.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">LiteLLM vs Portkey vs Cloudflare AI Gateway vs OpenRouter</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">These four tools overlap heavily but target different buyers:</p>
+
+<table class="w-full text-sm my-6 border border-gray-200">
+  <tr>
+    <td class="border border-gray-200 px-3 py-2">Tool</td>
+    <td class="border border-gray-200 px-3 py-2">Pricing model</td>
+    <td class="border border-gray-200 px-3 py-2">Open source</td>
+    <td class="border border-gray-200 px-3 py-2">Best for</td>
+  </tr>
+  <tr>
+    <td class="border border-gray-200 px-3 py-2">LiteLLM</td>
+    <td class="border border-gray-200 px-3 py-2">OSS free + Enterprise (custom)</td>
+    <td class="border border-gray-200 px-3 py-2">Yes (MIT)</td>
+    <td class="border border-gray-200 px-3 py-2">Platform teams that self-host; cost control + routing</td>
+  </tr>
+  <tr>
+    <td class="border border-gray-200 px-3 py-2">Portkey</td>
+    <td class="border border-gray-200 px-3 py-2">$49/mo Hobby, $199/mo Growth, Enterprise</td>
+    <td class="border border-gray-200 px-3 py-2">No (SaaS)</td>
+    <td class="border border-gray-200 px-3 py-2">Teams needing observability + guardrails without ops overhead</td>
+  </tr>
+  <tr>
+    <td class="border border-gray-200 px-3 py-2">Cloudflare AI Gateway</td>
+    <td class="border border-gray-200 px-3 py-2">$0.20/M requests (1M free)</td>
+    <td class="border border-gray-200 px-3 py-2">No (SaaS)</td>
+    <td class="border border-gray-200 px-3 py-2">Existing Cloudflare users; simple caching + analytics</td>
+  </tr>
+  <tr>
+    <td class="border border-gray-200 px-3 py-2">OpenRouter</td>
+    <td class="border border-gray-200 px-3 py-2">Per-token markup on 300+ models</td>
+    <td class="border border-gray-200 px-3 py-2">No (SaaS)</td>
+    <td class="border border-gray-200 px-3 py-2">Exploration / access to many models without commit</td>
+  </tr>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are a platform team with Kubernetes/ops capacity and need fine-grained control over routing, cost attribution, and self-hosted observability, LiteLLM is the strongest choice. If you want a SaaS-only product with minimal setup, Portkey or Cloudflare AI Gateway is faster. If you want access to many models without committing to a single provider, OpenRouter is the right call.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">MCP server, guardrails, and what's new in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Three new features in 2026 make LiteLLM materially stronger:</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>MCP server (Q1 2026)</strong>: LiteLLM now exposes any deployed model as a Model Context Protocol tool to Claude Desktop, Cursor, Cline, and any MCP-compatible agent runtime. This means a single config.yaml turns your proxy into an MCP tool registry — engineers building agents can call Claude, GPT, and local Llama models from the same place.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Guardrails (Q1 2026)</strong>: Built-in guardrail support for PII detection, jailbreak protection, content moderation, and custom regex checks. Guardrails can be configured per-model or per-key, and failures can be configured to either block (return 400) or log-and-pass (with the violation logged for review).</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Rust core (Q2 2026, in progress)</strong>: The proxy server is being rewritten in Rust with PyO3 bindings for the Python SDK compatibility layer. Early benchmarks show 5-10x throughput improvement on the hot path. Existing Python configs continue to work unchanged.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">When NOT to use LiteLLM</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Despite its strengths, LiteLLM is not the right fit for every team. Skip LiteLLM if:</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>You need a SaaS console</strong>: LiteLLM's UI is functional but not as polished as Portkey or Helicone. If your non-technical stakeholders need a dashboard, plan to build a thin internal UI on top of the proxy's API.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>You are routing to a single provider</strong>: If 100% of your traffic goes to OpenAI or Anthropic, the proxy adds latency and operational overhead without much benefit. Use the provider's SDK directly.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>You cannot operate a Kubernetes cluster</strong>: LiteLLM is meant to be self-hosted. There is no hosted LiteLLM-as-a-Service option (only the Enterprise tier, which is self-hosted with support). If you have no ops capacity, choose a SaaS tool.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Frequently asked questions</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>What is LiteLLM used for?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM is used to route requests across 100+ LLM providers (OpenAI, Anthropic, Google Vertex, AWS Bedrock, Azure, Cohere, Hugging Face, NVIDIA NIM, Ollama, vLLM) using a single OpenAI-compatible interface. It is the standard tool for platform teams that need to give developers access to many models while maintaining cost attribution, rate limiting, and observability. Netflix, Lemonade, and Rocket Money use LiteLLM in production.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How much does LiteLLM cost?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM's open-source proxy is MIT-licensed and free to self-host — you only pay the underlying provider costs (OpenAI tokens, Anthropic tokens, GPU spend for self-hosted models). The Enterprise tier adds SSO, JWT auth, audit logs, custom SLAs, dedicated support, and air-gapped deployment; pricing is on application. Public price cards do not exist, but case studies suggest Enterprise contracts in the $50K-$500K/year range depending on request volume.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Is there a LiteLLM free tier?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes — the open-source proxy is fully free with no rate limits and no request caps. You can serve unlimited requests through a self-hosted LiteLLM Proxy. The only costs are the upstream provider API spend or the GPU cost of self-hosted models. No credit card is required to start.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Can I use LiteLLM from inside China?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes, via self-hosting. LiteLLM's open-source proxy runs anywhere Docker or Kubernetes runs — including on Aliyun ECS, Tencent Cloud, or Huawei Cloud inside China. The proxy talks to the upstream providers (OpenAI, Anthropic, etc.) using your own keys, so if you need to access the providers from inside China, you'll need a stable proxy or your providers need to be available locally (e.g. DeepSeek, Qwen, GLM via Aliyun Bailian). The official LiteLLM SaaS does not currently serve China-based customers.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Does LiteLLM support OpenAI-compatible API calls?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. LiteLLM's primary interface is the OpenAI format — the proxy exposes /v1/chat/completions, /v1/embeddings, /v1/models, and other OpenAI-compatible endpoints. The OpenAI SDK, Anthropic SDK (with a thin shim), Vercel AI SDK, LangChain, LlamaIndex, and any tool that speaks OpenAI format will work with LiteLLM by changing the base URL.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How does LiteLLM compare to Portkey?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey is a SaaS AI gateway with built-in observability, guardrails, and prompt management — faster setup, prettier UI, but no open-source option and higher per-month cost (Hobby $49/month, Growth $199/month). LiteLLM is open-source and self-hosted with similar routing and cost-tracking capabilities but requires you to operate the infrastructure. For a team that values data control and avoids SaaS lock-in, LiteLLM is the better choice. For a team that wants zero-ops with a polished UI, Portkey wins.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How does LiteLLM compare to OpenRouter?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter is a multi-provider model marketplace with 300+ models accessed through a single API key and pay-per-token pricing — zero ops, instant setup, but with a 5-30% markup on provider costs and no self-hosted option. LiteLLM is open-source and routes to the same providers, but you bring your own provider keys, you pay provider-direct prices, and you operate the proxy yourself. OpenRouter is faster to start; LiteLLM is cheaper at scale and gives full control.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How does LiteLLM compare to Cloudflare AI Gateway?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Cloudflare AI Gateway is a SaaS request router with caching, analytics, and fallback — best for existing Cloudflare users who want lightweight routing without ops overhead. LiteLLM goes much deeper on cost attribution, per-team budgets, MCP integration, guardrails, and traffic mirroring, but you have to operate it. For a team that lives inside Cloudflare Workers, AI Gateway is the natural fit. For a team that needs platform-grade control, LiteLLM wins.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>What is the LiteLLM MCP server?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">The LiteLLM MCP server (released Q1 2026) exposes every model in your proxy as a Model Context Protocol tool to Claude Desktop, Cursor, Cline, and any MCP-compatible agent runtime. A single config.yaml turns your LiteLLM proxy into a multi-model MCP tool registry — agents can call Claude, GPT, and local Llama models through the same tool interface.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Does LiteLLM have an affiliate program?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM does not currently have a public affiliate program. For teams that need an affiliate-aligned CTA, an alternative is FreeModel, an OpenAI-compatible aggregator that routes across multiple providers and adds cost-routing optimization for self-deployed models.</p>
+`;
+
+const affiliateSidebar = {"title": "Try FreeModel", "description": "One API key routing across DeepSeek + Qwen + Llama + OpenAI-compatible upstreams. Pairs well with LiteLLM for cost optimization on self-hosted models.", "url": "https://freemodel.dev/invite/FRE-7a3b6220", "cta": "Get free credits"};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url}
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+             rel="sponsored noopener" target="_blank">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Facts</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Provider:</strong> LiteLLM (open-source AI gateway)</li>
+            <li><strong>Models:</strong> 100+ LLM providers via OpenAI format</li>
+            <li><strong>Pricing:</strong> OSS free (self-host); Enterprise on application</li>
+            <li><strong>License:</strong> MIT (open source core)</li>
+            <li><strong>Backed by:</strong> Y Combinator</li>
+            <li><strong>GitHub:</strong> 53,599 stars (verified July 2026)</li>
+            <li><strong>Customers:</strong> Netflix, Lemonade, Rocket Money</li>
+            <li><strong>API:</strong> <code>https://your-proxy.litellm.internal/v1</code> (self-hosted)</li>
+            <li><strong>Open-source:</strong> Yes (MIT) - affiliate n/a</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

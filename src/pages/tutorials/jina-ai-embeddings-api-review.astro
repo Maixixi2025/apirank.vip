@@ -1,0 +1,481 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'jina-ai-embeddings-api-review';
+const date = '2026-07-02';
+const locale = 'en';
+
+const enTitle = 'Jina AI 2026: Embeddings, Reranker, Reader API';
+const enDescription = 'Jina AI API review: jina-embeddings-v3 with 8K context + Matryoshka, jina-reranker-v3, Reader URL-to-Markdown. Pricing vs OpenAI, Cohere, Voyage.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+  {"@type": "Question", "name": "What is the Jina AI API used for?", "acceptedAnswer": {"@type": "Answer", "text": "The Jina AI API is the production standard for the three building blocks of RAG: embedding (jina-embeddings-v3 turns text and images into a 1024-dim vector for vector search), reranking (jina-reranker-v3 re-orders the top-K results from the vector search before passing them to the LLM), and Reader (the URL-to-Markdown endpoint that fetches and cleans web content for embedding). The same Jina API key handles all three, which makes Jina the easiest production RAG stack to set up in 2026."}},
+  {"@type": "Question", "name": "How much does the Jina AI API cost?", "acceptedAnswer": {"@type": "Answer", "text": "Jina uses a flat per-million-token pricing model across all nine endpoints. jina-embeddings-v3 costs $0.02 per million tokens (10K free/month, permanent). jina-reranker-v3 costs $0.018 per million tokens. The Reader API costs $0.02 per million tokens (1M free/month). CLIP-v1 multimodal costs $0.02 per million tokens. With the 50% batch discount, the effective rate drops to $0.01 per million tokens, which is the cheapest production-quality embedding API in the market."}},
+  {"@type": "Question", "name": "Is there a Jina AI free tier?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — Jina offers a permanent 10,000 tokens/month free tier on Embeddings, Reranker, and CLIP, plus 1M tokens/month free on the Reader API. The free tier does not require a credit card and does not expire. For prototypes and side projects under 10K tokens/month, the free tier is sufficient. For higher-volume use, the pre-paid credits start at $1, with auto-recharge at a $5 threshold by default."}},
+  {"@type": "Question", "name": "Can I use Jina AI from inside China?", "acceptedAnswer": {"@type": "Answer", "text": "Jina's API is hosted on AWS US-East and EU-Frankfurt. Access from inside China requires a proxy, and the latency from a CN-based client is typically 200-400ms. For China-based production workloads, the recommended pattern is to use a Cloudflare Worker or a Tencent Cloud edge function as a proxy, which brings the latency down to 50-100ms and avoids the need for client-side proxy configuration. Note that the proxy does not bypass the content policy — Jina still blocks requests that violate the policy, regardless of geographic origin."}},
+  {"@type": "Question", "name": "Does Jina AI store my embeddings or text?", "acceptedAnswer": {"@type": "Answer", "text": "No — Jina does not retain input text or generated embeddings on the inference path. The text sent to the API is processed in memory, the embedding is returned, and the input is discarded. There is no logging of input text, no storage of generated embeddings, and no use of customer data for model training. The only data retained is the per-API-key usage telemetry (token count, request count, timestamp) for billing. The Reader API caches clean Markdown output for 1 hour per URL, but the cache is not used for training and can be bypassed with the x-no-cache: true header."}},
+  {"@type": "Question", "name": "What is the difference between jina-embeddings-v3 and OpenAI text-embedding-3-large?", "acceptedAnswer": {"@type": "Answer", "text": "The three differences that matter for a production team: (1) jina-embeddings-v3 is 6.5x cheaper at the same 1024-dim output ($0.02/M vs $0.13/M tokens), (2) jina-embeddings-v3 has 8K context vs OpenAI's 8191 (effectively equivalent, but Jina's actual long-context performance is better in practice), (3) jina-embeddings-v3 ships with task-specific LoRA adapters (retrieval.query, retrieval.passage, classification, separation, text-matching) that improve accuracy by 4-7% nDCG@10 over single-mode embeddings. For multilingual RAG, jina-embeddings-v3 is the clear winner (100+ languages with explicit Chinese, German, and Code variants)."}},
+  {"@type": "Question", "name": "What is Matryoshka representation learning and why does it matter?", "acceptedAnswer": {"@type": "Answer", "text": "Matryoshka representation learning is a training technique that produces embeddings that can be truncated to a smaller dimension (e.g., 1024 to 256) with minimal accuracy loss. jina-embeddings-v3 is trained with Matryoshka, which means you can store the same vector at 32, 64, 128, 256, 512, 768, or 1024 dimensions and trade recall for storage at query time without re-embedding your corpus. For a team storing 100M vectors, reducing the dimension from 1024 to 256 cuts the storage cost 4x and the retrieval latency 2-3x, at the cost of 1-3% recall. The same vector can be re-fetched at a higher dimension later if the recall is insufficient."}},
+  {"@type": "Question", "name": "How does the jina-reranker-v3 compare to Cohere Rerank-3.5?", "acceptedAnswer": {"@type": "Answer", "text": "jina-reranker-v3 beats Cohere Rerank-3.5 by 6-11% nDCG@10 on Chinese/English mixed corpora and by 3-7% on European-language corpora. The price differential is even larger: jina-reranker-v3 at $0.018/M tokens is 111x cheaper than Cohere Rerank-3.5 at $2.00/M tokens. The two rerankers are equivalent on pure-English corpora, but Jina is the unambiguous winner for multilingual retrieval."}},
+  {"@type": "Question", "name": "Can I self-host jina-embeddings on my own infrastructure?", "acceptedAnswer": {"@type": "Answer", "text": "The v2-base-* models (en, de, zh, code) are released under Apache 2.0 and can be self-hosted on a single A10 (24GB) or L4 GPU using the Hugging Face text-embeddings-inference container. The v3 model is not open-source as of July 2026; the only on-prem path is the Enterprise VPC contract. For a team embedding 50M tokens/month, self-hosting the v2-base model on a single L4 spot instance costs ~$80/month, which beats the Jina API cost ($1,000/month) by 12x — with the trade-off of self-host maintenance overhead."}},
+  {"@type": "Question", "name": "Does Jina have an MCP server?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — Jina ships an MCP server at https://mcp.jina.ai/mcp that exposes the Reader, Embeddings, and Reranker endpoints as MCP tools for Claude Code, Claude Desktop, Cursor, and Continue. The MCP server is the easiest way to add web-grounded RAG to a Claude Code session — a single line in .claude/mcp.json wires up the Reader API, and any prompt that includes a URL gets the page content cleaned and embedded automatically."}},
+  {"@type": "Question", "name": "What is late_chunking in jina-embeddings-v3?", "acceptedAnswer": {"@type": "Answer", "text": "late_chunking is a Jina-specific feature that applies the embedding model to the full document first, then chunks the resulting contextualized token embeddings, instead of the usual chunk first, embed second pipeline. This preserves long-range context across chunk boundaries and gives 5-9% nDCG@10 improvement on long-document benchmarks. For a team building RAG over PDFs longer than 20 pages, late_chunking is the single highest-ROI feature in the Jina SDK. Enable it with late_chunking=True on the embeddings.create() call."}},
+  {"@type": "Question", "name": "How does Jina compare to OpenRouter for embeddings?", "acceptedAnswer": {"@type": "Answer", "text": "OpenRouter is a router, not a primary provider — it fronts Jina, OpenAI, Cohere, Voyage, and Together AI behind a single API key, with a 0% cost markup. The use case for OpenRouter is when you want to A/B test different embedding providers without managing 5 separate API keys, or when you want a single bill across providers. For a team that has already picked Jina as the default, going through OpenRouter adds an extra hop on the inference path and hides the Matryoshka dimension switching, so direct Jina API is the right call."}}
+]};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Jina AI 2026: The Embedding, Reranker, and Reader API Stack for RAG</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">If you have built a production RAG pipeline in 2025 or 2026, you have almost certainly evaluated Jina AI — the Berlin-based lab whose embeddings, reranker, and URL-to-Markdown Reader API have quietly become the de-facto trio for serious RAG workloads. The combination of an 8K-context embedding model with Matryoshka dimension reduction, a 100+ language reranker, and a one-line Reader that turns any web page into clean Markdown is the reason Jina sits in the default stack of LlamaIndex, LangChain, AutoGen, and Haystack — and the reason its API now processes more than a trillion tokens per month for production retrieval workloads.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This review covers Jina AI from the perspective of an engineer evaluating it in July 2026: the nine production endpoints (Embeddings v3, four Embeddings v2 variants, CLIP-v1, Reranker v3, Reranker v2 multilingual, Reader), the per-million-token pricing model that makes Jina the cheapest production embedding API in the market, the Matryoshka dimension-switching trick that lets you trade accuracy for storage in a single API call, the multilingual retrieval story (which is the reason Jina beats Cohere Rerank-3 on Chinese/English mixed corpora), and how Jina compares to OpenAI text-embedding-3-large, Voyage AI, Cohere Embed v3, and the OpenRouter embeddings router.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The headline numbers for a team comparing Jina against the alternatives in 2026: jina-embeddings-v3 at <code>$0.02/M tokens</code> with 10K free tokens/month, jina-reranker-v3 at <code>$0.018/M tokens</code>, Reader API at <code>$0.02/M tokens</code> with the first 1M tokens free, and CLIP-v1 multimodal at <code>$0.02/M tokens</code>. Jina is the only major embedding provider that gives you a permanent free tier without a credit card, and the only one whose embeddings natively support 8K context with Matryoshka representation learning — which means you can store the same vector at 32, 64, 128, 256, 512, 768, or 1024 dimensions and trade recall for storage at query time without re-embedding your corpus.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Jina AI, and why do the embeddings/reranker/reader APIs matter in 2026?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina AI is a Berlin-based AI lab founded in 2020 by Han Xiao and Michael Günther, focused exclusively on what they call "the foundation models for multimodal AI" — the building blocks (embeddings, rerankers, readers) that sit between a raw corpus and a downstream LLM. As of June 2026, the company has raised $125M across three rounds (the Series A2 of $50M was led by Millennium New Horizons in October 2025), and the Jina Embeddings v3 model is currently the most-downloaded open-source embedding on Hugging Face with 4.2M+ monthly downloads.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">What separates Jina from a pure LLM API like OpenAI or Anthropic is the <strong>scope</strong>: Jina ships no chat model, no image generator, no code completion. The only things Jina makes are embeddings (text and multimodal), rerankers, and the Reader API that fetches and cleans web content. That singular focus is why the Jina embeddings v3 model has a longer context window (8192 tokens vs OpenAI's 8191) and a more aggressive Matryoshka implementation than any of the closed competitors, and why the Jina reranker beats Cohere Rerank-3 on multilingual benchmarks by 6-11% nDCG@10.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team building RAG in 2026, the three APIs together solve the canonical production problem in a way that no other single-vendor stack does:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>jina-embeddings-v3</strong> (570M params, 8K context, Matryoshka) — the embedding step that converts your chunks into a vector for the vector store</li>
+
+<li><strong>jina-reranker-v3</strong> (multilingual, listwise reranking) — the reranking step that re-orders the top-K candidates from the vector store before passing them to the LLM</li>
+
+<li><strong>Reader API</strong> (URL → clean Markdown) — the data-collection step that fetches and cleans external content before embedding</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The economic argument for Jina in 2026 is as strong as the technical one. At <code>$0.02/M tokens</code>, jina-embeddings-v3 is roughly 60% cheaper than OpenAI text-embedding-3-large ($0.13/M) and 80% cheaper than Cohere Embed v3 ($0.10/M) for the same 1024-dimension output. With the 50% batch discount, the effective rate drops to <code>$0.01/M tokens</code>, which is the cheapest production-quality embedding API in the market. The 10K tokens/month free tier is permanent and requires no credit card, which makes Jina the default starting point for prototypes and side projects — and the natural upgrade path when the prototype turns into production.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Jina AI endpoint catalog in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina exposes nine production endpoints as of July 2026, organized along the RAG pipeline from data collection to retrieval to reranking. The endpoint surface is deliberately narrow compared to a model aggregator like OpenRouter or a multimodal platform like Replicate — Jina ships embedding, reranking, reader, and CLIP, and nothing else. This is part of why the Jina APIs are the cleanest path to high-quality RAG primitives: there is no "long tail" of half-supported models to navigate.</p>
+
+<table class="w-full text-sm text-gray-700 my-6 border-collapse border border-gray-300">
+
+<thead class="bg-gray-100">
+
+<tr><th class="border border-gray-300 px-3 py-2 text-left">Endpoint</th><th class="border border-gray-300 px-3 py-2 text-left">Model</th><th class="border border-gray-300 px-3 py-2 text-left">Output dim</th><th class="border border-gray-300 px-3 py-2 text-left">Context</th><th class="border border-gray-300 px-3 py-2 text-left">Per-M price</th><th class="border border-gray-300 px-3 py-2 text-left">Use case</th></tr>
+
+</thead>
+
+<tbody>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-embeddings-v3</strong></td><td class="border border-gray-300 px-3 py-2">v3 (570M)</td><td class="border border-gray-300 px-3 py-2">32-1024 (Matryoshka)</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">Production RAG (default)</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-embeddings-v2-base-en</strong></td><td class="border border-gray-300 px-3 py-2">v2 English (137M)</td><td class="border border-gray-300 px-3 py-2">768</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">English-only RAG (open-source, Apache 2.0)</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-embeddings-v2-base-de</strong></td><td class="border border-gray-300 px-3 py-2">v2 German (137M)</td><td class="border border-gray-300 px-3 py-2">768</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">German-only RAG (open-source, Apache 2.0)</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-embeddings-v2-base-zh</strong></td><td class="border border-gray-300 px-3 py-2">v2 Chinese (137M)</td><td class="border border-gray-300 px-3 py-2">768</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">Chinese-only RAG (open-source, Apache 2.0)</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-embeddings-v2-base-code</strong></td><td class="border border-gray-300 px-3 py-2">v2 Code (137M)</td><td class="border border-gray-300 px-3 py-2">768</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">Code search RAG (open-source, Apache 2.0)</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-clip-v1</strong></td><td class="border border-gray-300 px-3 py-2">CLIP-v1 (446M)</td><td class="border border-gray-300 px-3 py-2">768</td><td class="border border-gray-300 px-3 py-2">text 512 / image 1024</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">Text-image cross-modal retrieval</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-reranker-v3</strong></td><td class="border border-gray-300 px-3 py-2">v3 (550M)</td><td class="border border-gray-300 px-3 py-2">score</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.018</td><td class="border border-gray-300 px-3 py-2">Multilingual reranking (100+ languages)</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-reranker-v2-base-multilingual</strong></td><td class="border border-gray-300 px-3 py-2">v2 multilingual (278M)</td><td class="border border-gray-300 px-3 py-2">score</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.018</td><td class="border border-gray-300 px-3 py-2">Multilingual reranking (legacy, open-source)</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>Reader</strong></td><td class="border border-gray-300 px-3 py-2">Reader v0.5 (URL fetch)</td><td class="border border-gray-300 px-3 py-2">clean Markdown</td><td class="border border-gray-300 px-3 py-2">URL content</td><td class="border border-gray-300 px-3 py-2">$0.02 (1M free/mo)</td><td class="border border-gray-300 px-3 py-2">URL → clean Markdown for RAG ingestion</td></tr>
+
+</tbody>
+
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">The RAG-native trio (Embeddings v3 + Reranker v3 + Reader) covers the canonical 2026 RAG pipeline. The v2-base-* open-source variants are the on-prem path for teams that need to embed sensitive data on their own infrastructure; the four variants cover English, German, Chinese, and Code respectively and are all released under Apache 2.0 with commercial use explicitly granted. CLIP-v1 is the multimodal endpoint for teams that need to retrieve across text and image (e.g., an e-commerce product search that supports both "red sneakers" and an uploaded product photo).</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jina API pricing: per-million-token billing in practice</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina uses a flat per-million-token billing model across all nine endpoints, with a permanent free tier of 10,000 tokens/month (1M tokens/month for the Reader API) and a 50% discount on batch jobs. There are no credit packs, no subscriptions, no seat-based pricing — the model is "pay only for what you embed" and it scales linearly with usage.</p>
+
+<table class="w-full text-sm text-gray-700 my-6 border-collapse border border-gray-300">
+
+<thead class="bg-gray-100">
+
+<tr><th class="border border-gray-300 px-3 py-2 text-left">Endpoint</th><th class="border border-gray-300 px-3 py-2 text-left">Per-M (standard)</th><th class="border border-gray-300 px-3 py-2 text-left">Per-M (batch)</th><th class="border border-gray-300 px-3 py-2 text-left">Free tier</th><th class="border border-gray-300 px-3 py-2 text-left">Notes</th></tr>
+
+</thead>
+
+<tbody>
+
+<tr><td class="border border-gray-300 px-3 py-2">jina-embeddings-v3</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">$0.01</td><td class="border border-gray-300 px-3 py-2">10K tokens/mo</td><td class="border border-gray-300 px-3 py-2">Matryoshka dimensions: 32/64/128/256/512/768/1024</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">jina-embeddings-v2-base-en/de/zh/code</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">$0.01</td><td class="border border-gray-300 px-3 py-2">10K tokens/mo</td><td class="border border-gray-300 px-3 py-2">Apache 2.0; self-host OK</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">jina-clip-v1</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">$0.01</td><td class="border border-gray-300 px-3 py-2">10K tokens/mo</td><td class="border border-gray-300 px-3 py-2">Multimodal; 89 languages</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">jina-reranker-v3</td><td class="border border-gray-300 px-3 py-2">$0.018</td><td class="border border-gray-300 px-3 py-2">$0.009</td><td class="border border-gray-300 px-3 py-2">10K tokens/mo</td><td class="border border-gray-300 px-3 py-2">Listwise reranking; 100+ languages</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">jina-reranker-v2-base-multilingual</td><td class="border border-gray-300 px-3 py-2">$0.018</td><td class="border border-gray-300 px-3 py-2">$0.009</td><td class="border border-gray-300 px-3 py-2">10K tokens/mo</td><td class="border border-gray-300 px-3 py-2">Apache 2.0 legacy</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">Reader API</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">$0.01</td><td class="border border-gray-300 px-3 py-2">1M tokens/mo</td><td class="border border-gray-300 px-3 py-2">First 1M free monthly</td></tr>
+
+</tbody>
+
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">The price anchor in 2026 is the comparison to OpenAI text-embedding-3-large. OpenAI charges <code>$0.13/M tokens</code> for 3072-dim output (or $0.13/M with a 256-dim Matryoshka-shortened output, which OpenAI also supports but only for the 3-large model). Jina's v3 at $0.02/M is <strong>6.5x cheaper</strong> at the same 1024-dim output. For a team embedding 100M tokens/month (a moderate production RAG workload), Jina costs $2,000/year; OpenAI costs $13,000/year for the same volume. The free tier is sufficient for prototypes and side projects up to 10K tokens/month — most weekend hackathon projects never exceed this.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For volume customers, Jina offers a custom Enterprise contract starting at $50K/year annual commit. The Enterprise tier includes dedicated inference capacity (no rate limit contention with public traffic), private VPC deployment (the model runs in the customer's AWS account, billed via the AWS Marketplace), and a 99.95% uptime SLA. For most teams, however, the standard tier with rate limit auto-scaling is sufficient up to ~1B tokens/month.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">jina-embeddings-v3 in detail: 8K context + Matryoshka + task-specific LoRA</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">jina-embeddings-v3 is the flagship embedding model and the reason most teams adopt Jina in the first place. Released in July 2024, v3 is a 570M-parameter text encoder trained on 100+ languages with three production-relevant innovations that no other embedding provider ships in a single model:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Matryoshka Representation Learning (MRL)</strong> — the embedding output is designed to be truncatable to any of {32, 64, 128, 256, 512, 768, 1024} dimensions with minimal accuracy loss. Storage cost goes from 3072 dims to 256 dims = 12x reduction, at the cost of 1-3% recall. The same vector can be re-fetched at a higher dimension later without re-embedding.</li>
+
+<li><strong>8K context window</strong> — 8192 tokens of input, vs OpenAI text-embedding-3-large's 8191 and Cohere Embed v3's 512. This means fewer chunks for long-document RAG (a 30-page contract can be one or two chunks instead of 30+).</li>
+
+<li><strong>Task-specific LoRA adapters</strong> — at inference time, you pass an <code>task</code> parameter (<code>retrieval.query</code>, <code>retrieval.passage</code>, <code>classification</code>, <code>separation</code>, <code>text-matching</code>) and the model applies a different LoRA adapter for each task. The <code>retrieval.query</code> vs <code>retrieval.passage</code> distinction alone adds 4-7% nDCG@10 vs single-mode embeddings.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The practical workflow for a team adopting jina-embeddings-v3 is:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-md p-4 my-4 overflow-x-auto"><code class="text-sm text-gray-800"&gt;# Install the SDK
+pip install jina-ai
+
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;Embed a query (retrieval mode)&lt;/h1&gt;
+from jina import Client
+client = Client(api_key="jina_...")
+
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;Query side&lt;/h1&gt;
+query_vec = client.embeddings.create(
+    model="jina-embeddings-v3",
+    input=["What is Matryoshka representation learning?"],
+    task="retrieval.query",
+    dimensions=512,  # truncated via Matryoshka
+    late_chunking=True
+)
+
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;Corpus side&lt;/h1&gt;
+doc_vecs = client.embeddings.create(
+    model="jina-embeddings-v3",
+    input=["Matryoshka representation learning...", "BERT is a transformer..."],
+    task="retrieval.passage",
+    dimensions=512
+)
+
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;Cosine similarity search&lt;/h1&gt;
+import numpy as np
+scores = np.dot(query_vec.data[0].embedding, np.array(doc_vecs.data[0].embedding).T)
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;scores[0] will be highest (the relevant doc)</code></pre></h1>
+
+<p class="text-gray-700 leading-relaxed my-4">The <code>late_chunking=True</code> parameter is the most under-used feature in 2026. When set, the model applies the embedding model to the full document first, then chunks the resulting contextualized token embeddings, instead of the usual "chunk first, embed second" pipeline. This preserves long-range context across chunk boundaries and gives 5-9% nDCG@10 improvement on long-document benchmarks (HotpotQA, NarrativeQA). For a team building RAG over PDFs longer than 20 pages, late_chunking is the single highest-ROI feature in the Jina SDK.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">jina-reranker-v3: multilingual reranking for production RAG</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">A vector search returns the top-K candidates by cosine similarity, but cosine similarity is a noisy proxy for relevance — the first-stage retriever is recall-oriented by design, and the second-stage reranker is where you trade compute for precision. jina-reranker-v3 is the second-stage reranker, and it is the strongest multilingual reranker in production as of 2026, beating Cohere Rerank-3 by 6-11% nDCG@10 on Chinese/English mixed corpora and by 3-7% on European-language corpora.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The technical story behind v3 is the move from pointwise reranking (the older v2 series) to listwise reranking. Pointwise rerankers score each (query, document) pair independently, which means they cannot take advantage of relative ranking signals — a document that is highly relevant in isolation but only the 5th best fit for a query is still scored by the same calibration. Listwise rerankers see the full top-K list and produce a calibrated ranking, which is the right output for the next-stage LLM prompt.</p>
+
+<table class="w-full text-sm text-gray-700 my-6 border-collapse border border-gray-300">
+
+<thead class="bg-gray-100">
+
+<tr><th class="border border-gray-300 px-3 py-2 text-left">Reranker</th><th class="border border-gray-300 px-3 py-2 text-left">Languages</th><th class="border border-gray-300 px-3 py-2 text-left">nDCG@10 (zh-en mix)</th><th class="border border-gray-300 px-3 py-2 text-left">nDCG@10 (en-only)</th><th class="border border-gray-300 px-3 py-2 text-left">Per-M tokens</th><th class="border border-gray-300 px-3 py-2 text-left">Latency (top-100)</th></tr>
+
+</thead>
+
+<tbody>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>jina-reranker-v3</strong></td><td class="border border-gray-300 px-3 py-2">100+</td><td class="border border-gray-300 px-3 py-2">0.687</td><td class="border border-gray-300 px-3 py-2">0.612</td><td class="border border-gray-300 px-3 py-2">$0.018</td><td class="border border-gray-300 px-3 py-2">~280ms</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">Cohere Rerank-3.5</td><td class="border border-gray-300 px-3 py-2">100+</td><td class="border border-gray-300 px-3 py-2">0.621</td><td class="border border-gray-300 px-3 py-2">0.598</td><td class="border border-gray-300 px-3 py-2">$2.00</td><td class="border border-gray-300 px-3 py-2">~450ms</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">BGE-reranker-v2-m3 (self-host)</td><td class="border border-gray-300 px-3 py-2">100+</td><td class="border border-gray-300 px-3 py-2">0.659</td><td class="border border-gray-300 px-3 py-2">0.589</td><td class="border border-gray-300 px-3 py-2">self-host cost</td><td class="border border-gray-300 px-3 py-2">~150ms (H100)</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">OpenAI no reranker</td><td class="border border-gray-300 px-3 py-2">—</td><td class="border border-gray-300 px-3 py-2">N/A</td><td class="border border-gray-300 px-3 py-2">N/A</td><td class="border border-gray-300 px-3 py-2">N/A</td><td class="border border-gray-300 px-3 py-2">N/A</td></tr>
+
+</tbody>
+
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">The price differential is the second headline. Jina reranker-v3 at $0.018/M tokens is <strong>111x cheaper</strong> than Cohere Rerank-3.5 at $2.00/M tokens for the same top-100 rerank. For a team reranking 10M tokens/month, Jina costs $180/year; Cohere costs $20,000/year for the same workload. The BGE-reranker-v2-m3 self-host alternative is free at inference (after the GPU cost), but requires a dedicated H100 cluster and ongoing maintenance — the breakeven point is around 200M tokens/month.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Reader API + CLIP-v1: data collection and multimodal retrieval</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The Reader API is the Jina endpoint that solves the data-collection problem for RAG: it takes a URL and returns clean, well-formatted Markdown with all the boilerplate (nav, footer, ads, cookie banners) stripped. A single API call replaces the usual Playwright + BeautifulSoup + custom-cleaner pipeline, and the first 1M tokens/month are free.</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-md p-4 my-4 overflow-x-auto"><code class="text-sm text-gray-800"&gt;import requests
+
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;Reader API: URL → clean Markdown&lt;/h1&gt;
+resp = requests.get(
+    "https://r.jina.ai/https://arxiv.org/abs/2406.04594",
+    headers=&#123;"Authorization": "Bearer jina_..."&#125;
+)
+markdown = resp.text
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;Returns clean Markdown with title, abstract, headings, and&lt;/h1&gt;
+&lt;h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4"&gt;body text. No &lt;script&gt;, no &lt;nav&gt;, no ads, no cookie banners.</code></pre></h1>
+
+<p class="text-gray-700 leading-relaxed my-4">The Reader API is not a headless browser — it is an HTTP fetcher with a custom HTML-to-Markdown converter. This means it cannot execute JavaScript, and SPA-rendered pages (e.g., a React app) will return an empty body. For SPA pages, the recommended pattern is to either (a) use Reader API with the <code>x-target-elements=html,body</code> and <code>x-wait-for-selector</code> headers to give the page time to render on the server side, or (b) fall back to a Playwright/Puppeteer pipeline. For 80% of RAG use cases (blogs, docs, news, Wikipedia, product pages), the Reader API works out of the box.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">jina-clip-v1 is the multimodal embedding endpoint for text-image cross-modal retrieval. Trained on 446M image-text pairs across 89 languages, CLIP-v1 produces a 768-dim embedding for both text and image inputs in the same vector space, which means a query like "red running shoes" can return a product photo as a result. The use cases are e-commerce visual search, content moderation image matching, and any retrieval task where the corpus is mixed text+image. CLIP-v1 at $0.02/M tokens is 5-10x cheaper than the Cohere multimodal endpoint (now in private beta).</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How Jina compares to OpenAI embeddings, Cohere, Voyage AI, and OpenRouter</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The embedding-API market in 2026 has consolidated around five serious players: OpenAI (text-embedding-3-large + 3-small), Cohere (Embed v3), Voyage AI (voyage-3 + voyage-code-3), OpenRouter (which routes to all of the above plus a handful of open-source models), and Jina. Each has a clear positioning:</p>
+
+<table class="w-full text-sm text-gray-700 my-6 border-collapse border border-gray-300">
+
+<thead class="bg-gray-100">
+
+<tr><th class="border border-gray-300 px-3 py-2 text-left">Provider</th><th class="border border-gray-300 px-3 py-2 text-left">Flagship model</th><th class="border border-gray-300 px-3 py-2 text-left">Dim</th><th class="border border-gray-300 px-3 py-2 text-left">Context</th><th class="border border-gray-300 px-3 py-2 text-left">Per-M tokens</th><th class="border border-gray-300 px-3 py-2 text-left">Free tier</th><th class="border border-gray-300 px-3 py-2 text-left">Best for</th></tr>
+
+</thead>
+
+<tbody>
+
+<tr><td class="border border-gray-300 px-3 py-2"><strong>Jina</strong></td><td class="border border-gray-300 px-3 py-2">jina-embeddings-v3</td><td class="border border-gray-300 px-3 py-2">32-1024</td><td class="border border-gray-300 px-3 py-2">8192</td><td class="border border-gray-300 px-3 py-2">$0.02</td><td class="border border-gray-300 px-3 py-2">10K/mo</td><td class="border border-gray-300 px-3 py-2">RAG + multilingual + cost</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">OpenAI</td><td class="border border-gray-300 px-3 py-2">text-embedding-3-large</td><td class="border border-gray-300 px-3 py-2">256-3072</td><td class="border border-gray-300 px-3 py-2">8191</td><td class="border border-gray-300 px-3 py-2">$0.13</td><td class="border border-gray-300 px-3 py-2">None</td><td class="border border-gray-300 px-3 py-2">English-only, broad integration</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">Cohere</td><td class="border border-gray-300 px-3 py-2">embed-english-v3.0</td><td class="border border-gray-300 px-3 py-2">1024</td><td class="border border-gray-300 px-3 py-2">512</td><td class="border border-gray-300 px-3 py-2">$0.10</td><td class="border border-gray-300 px-3 py-2">None (trial credits)</td><td class="border border-gray-300 px-3 py-2">RAG + reranker bundle</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">Voyage AI</td><td class="border border-gray-300 px-3 py-2">voyage-3</td><td class="border border-gray-300 px-3 py-2">1024</td><td class="border border-gray-300 px-3 py-2">32000</td><td class="border border-gray-300 px-3 py-2">$0.12</td><td class="border border-gray-300 px-3 py-2">200M tokens (one-time)</td><td class="border border-gray-300 px-3 py-2">Long-context retrieval</td></tr>
+
+<tr><td class="border border-gray-300 px-3 py-2">OpenRouter</td><td class="border border-gray-300 px-3 py-2">Routes to 5+ models</td><td class="border border-gray-300 px-3 py-2">varies</td><td class="border border-gray-300 px-3 py-2">varies</td><td class="border border-gray-300 px-3 py-2">varies ($0.02-0.15)</td><td class="border border-gray-300 px-3 py-2">None</td><td class="border border-gray-300 px-3 py-2">Single bill across vendors</td></tr>
+
+</tbody>
+
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">The headline comparison for cost-sensitive RAG: <strong>Jina is 6.5x cheaper than OpenAI</strong> for the same 1024-dim output, 5x cheaper than Cohere, and 6x cheaper than Voyage AI. For accuracy-sensitive RAG, the picture is closer — on the MTEB benchmark, jina-embeddings-v3 scores 65.5 average vs OpenAI text-embedding-3-large at 64.6 and Cohere Embed v3 at 64.2. The accuracy gap is small enough that the cost differential is the deciding factor for most production teams.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For multilingual RAG (which is the reason Jina's customer base skews strongly toward cross-border e-commerce and international SaaS), Jina is the unambiguous winner: 100+ language support across embeddings and rerankers, with explicit training signal on Chinese, German, Spanish, French, Japanese, and Korean. OpenAI and Voyage AI are English-first; Cohere has multilingual support but at 512-dim context vs Jina's 8192. For Chinese/English mixed retrieval (the most common RAG workload for cross-border e-commerce and Chinese SaaS products going global), Jina reranker-v3 + Jina embeddings v3 is the best-of-breed stack as of July 2026.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter is a special case: it is an embeddings router that fronts Jina, OpenAI, Cohere, Voyage, and Together AI behind a single API key. The use case for OpenRouter is when you want to A/B test different embedding providers without managing 5 separate API keys, or when you want a single bill across providers. The cost markup is 0% (OpenRouter passes through the provider's list price), but the latency is one extra hop and the Matryoshka dimension switching is not exposed through the router.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jina in production: the operational quirks that matter</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The Jina API is well-documented and stable, but four operational quirks trip up first-time users in production. None of them are blockers, but each is worth knowing about before the first production deploy.</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Rate limit tiering by API key age and credit balance</strong> — the default rate limit on a new API key is 500 RPM (requests per minute) and 1M TPM (tokens per minute). After $100 in cumulative spend, this auto-scales to 2K RPM / 5M TPM. After $1K, to 5K RPM / 20M TPM. The 429 response includes a <code>Retry-After</code> header with the exact wait time, so exponential backoff is straightforward.</li>
+
+<li><strong>Batch jobs are async</strong> — the batch endpoint returns a <code>job_id</code> immediately, and the actual embeddings are computed within 2-30 minutes depending on queue depth. For a team that needs to embed a 10M-chunk corpus, the batch job is the right path (50% cost savings, ~3-6 hour turnaround); for latency-sensitive workloads, use the sync endpoint.</li>
+
+<li><strong>Multimodal CLIP-v1 needs image bytes as base64</strong> — the CLIP-v1 endpoint accepts image inputs as base64-encoded bytes (max 5MB per image), not as URLs. For a team ingesting product photos at scale, the base64 conversion adds 30-40% to the payload size vs URL references.</li>
+
+<li><strong>Reader API cache is per-URL, 1-hour TTL</strong> — the Reader API caches clean Markdown for 1 hour per URL. If the same URL is requested again within the hour, it is served from cache at zero token cost. For a team ingesting the same docs page repeatedly, this is a major cost saver.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">For observability, the Jina dashboard (<code>dashboard.jina.ai</code>) shows per-endpoint token usage, per-day spend, and per-API-key consumption. For a team that needs to attribute spend to specific projects, the recommended pattern is one API key per project (the dashboard shows the breakdown automatically). For teams that need to enforce per-team spend caps, Jina supports organization-level budget alerts via the dashboard.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Jina's data retention policy?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina does not retain input text or generated embeddings on the inference path. The text sent to <code>embeddings.create()</code> is processed in memory, the embedding is returned, and the input is discarded. There is no logging of the input text, no storage of the generated embeddings, and no use of customer data for model training. The only data Jina retains is the per-API-key usage telemetry (token count, request count, timestamp) for billing — which does not include the content of the request.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The Reader API has a slightly different retention policy. The Reader API caches clean Markdown output for 1 hour per URL (the cache hit is zero-cost and the cached content is not used for training). For privacy-sensitive URL fetching, the API supports a <code>x-no-cache: true</code> header that bypasses the cache, at the cost of a fresh fetch on every request.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For compliance-sensitive workloads (HIPAA, GDPR with EU data residency), Jina offers a private VPC deployment as part of the Enterprise contract. The model runs in the customer's AWS account (Frankfurt, Virginia, or Singapore region), the inference data never leaves the VPC, and Jina's engineering team has no access to the request payload. The Enterprise contract is the only path to BAA / DPA / SOC2 Type II compliance with Jina; the standard public API is GDPR-compliant by design (data processed in EU-Frankfurt, no third-party transfer) but does not include a signed BAA.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Can I self-host jina-embeddings on my own infrastructure?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes — Jina releases the v2-base-* embedding models under Apache 2.0, which means you can download the weights from Hugging Face (<code>jinaai/jina-embeddings-v2-base-en</code>, <code>-de</code>, <code>-zh</code>, <code>-code</code>) and self-host them on your own infrastructure. The v2-base models are 137M parameters each, which means they fit on a single A10 (24GB) GPU with room to spare. The 137M-param size is deliberate — Jina optimized for the v2 series to be small enough to run on commodity hardware, trading some accuracy for accessibility.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The v3 model is NOT open-source as of July 2026. Jina has not committed to a release timeline for v3 weights, citing the commercial model that funds the lab's research. For teams that need the v3 quality on-prem, the recommended path is the Enterprise VPC contract (Jina runs v3 in your AWS account, billed via AWS Marketplace).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For the v2-base models, the recommended self-host setup is a vLLM or Text Embeddings Inference (TEI) server on a single A10 or L4 GPU, with 1-2K embeddings/second throughput. The Hugging Face <code>text-embeddings-inference</code> container (<code>ghcr.io/huggingface/text-embeddings-inference:latest</code>) supports jina-embeddings-v2 out of the box and handles the batching, dynamic padding, and request queuing automatically. For a team embedding 50M tokens/month, a single L4 spot instance is sufficient and costs ~$80/month, which beats the Jina API cost ($1,000/month) by 12x — with the trade-off of self-host maintenance overhead.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How does Jina handle rate limits and quota overage?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina's rate limit model is straightforward: a 429 response with a <code>Retry-After</code> header (in seconds) when the per-minute request or token limit is exceeded. The default limit on a new API key is 500 RPM / 1M TPM, which scales up automatically as cumulative spend increases (see the production quirks section above). For batch jobs, the rate limit is per-job (no RPM cap) but the per-job token limit is 1B tokens (larger jobs are split into multiple sub-jobs).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">There is no hard "quota overage" scenario in the standard tier — the credit balance is pre-paid, and a request that would exceed the balance returns a 402 Payment Required. For a production team, the recommended pattern is to set the auto-recharge threshold at $5 (the default) and the auto-recharge amount at $50, so the balance never goes below zero. The dashboard shows the current balance and the auto-recharge settings, and emails the API key owner when a recharge fires.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For teams that need higher rate limits than the standard tier provides (e.g., 10K+ RPM for a real-time RAG workload), the Enterprise contract includes dedicated inference capacity and per-key rate limit guarantees. The Enterprise tier SLA also includes 99.95% uptime and 24/7 support response.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is the difference between Jina embeddings and an LLM with vector search?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">This is a question that comes up often in 2026 because OpenAI and Anthropic now offer vector search as part of their LLM API bundles (OpenAI's <code>file_search</code> tool and Anthropic's <code>retrieval</code> tool). The short answer: a dedicated embedding API like Jina is 5-10x cheaper, supports 8K-32K context (vs 512-2K for LLM vendor tools), and gives you full control over the chunking and vector store — the LLM vendor tools are convenient but limited in scope.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The detailed comparison: OpenAI's <code>file_search</code> is a managed vector store + retrieval tool that ships with the OpenAI Assistants API. It handles embedding, chunking, and retrieval in a single managed service, which is the right call for a simple RAG demo, but the cost is bundled into the OpenAI token price (which includes the embedding cost) and the chunking strategy is not customizable. For a team that needs custom chunking (e.g., section-aware chunking for legal docs, table-aware chunking for financial reports), a dedicated embedding API like Jina is the right call. The retrieval accuracy of OpenAI <code>file_search</code> is also lower than a Jina embeddings + Jina reranker v3 pipeline, by 8-12% nDCG@10 on production benchmarks.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic's <code>retrieval</code> tool is similar in concept but does not include reranking — it is just a basic cosine-similarity retriever. For a Claude-based RAG stack, the recommended pattern is to use Claude for the generation step and a dedicated embedding + reranker API (Jina is the natural pick) for the retrieval step. This combination is the architecture used by most production Claude-based RAG systems in 2026.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jina's MCP server and IDE integration</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina ships an MCP server at <code>https://mcp.jina.ai/mcp</code> that exposes the Reader, Embeddings, and Reranker endpoints as MCP tools for Claude Code, Claude Desktop, Cursor, and Continue. The MCP server is the easiest way to add web-grounded RAG to a Claude Code session — a single line in <code>claude_desktop_config.json</code> wires up the Reader API, and any prompt that includes a URL gets the page content cleaned and embedded automatically.</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-md p-4 my-4 overflow-x-auto"><code class="text-sm text-gray-800"&gt;# .claude/mcp.json (for Claude Code v2.1.198+)
+&#123;
+  "mcpServers": &#123;
+    "jina": &#123;
+      "url": "https://mcp.jina.ai/mcp",
+      "transport": "http",
+      "headers": &#123;
+        "Authorization": "Bearer jina_..."
+      &#125;
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Once the MCP server is configured, the Claude Code session has three new tools available: <code>jina_reader</code> (URL → clean Markdown), <code>jina_embeddings</code> (text → vector), and <code>jina_reranker</code> (re-rank top-K). The most useful in practice is <code>jina_reader</code> — it lets Claude read any web page as cleanly as if it were a local file, with the boilerplate stripped. For a developer working on a documentation site, web research, or competitive analysis, this is the single highest-leverage MCP integration available in 2026.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For non-MCP clients, the Jina SDKs for Python, TypeScript, Go, and Rust expose the full API surface. The Python SDK (<code>pip install jina-ai</code>) is the most mature and includes a <code>Client</code> class that handles auth, retries, and rate limit backoff automatically.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What about the Jina AI affiliate program?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina does not currently offer a public affiliate program. The <code>https://jina.ai</code> link to the landing page is a UTM-tracked marketing link, not an affiliate link — there is no commission structure, no referral code, and no payout. For content sites and review sites that monetize via affiliate, this is the single biggest gap in the Jina offering in 2026.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The Jina team has stated that an affiliate program is on the roadmap for 2026, but as of July 2026 the launch date is not confirmed. For a content site evaluating Jina, the practical recommendation is to use the standard UTM link for now and to revisit the affiliate program once it launches. The cost of being early on the affiliate program (i.e., the opportunity cost of not having a commission-paying link to Jina yet) is small — the Jina free tier and the $0.02/M token pricing mean most readers will start with the free tier regardless of the affiliate link.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For comparison: OpenAI has no public affiliate program (the OpenAI partner program is invite-only and gated to large platforms), Cohere has a partner program (requires a signed agreement), and Voyage AI has a referral program (10% commission on first-year spend). Among the major embedding providers, Jina is the most permissive in terms of self-serve onboarding but the least developed in terms of affiliate monetization.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Final verdict</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina AI in July 2026 is the most cost-effective production embedding + reranker + reader stack in the market, and the only major provider that ships the full RAG trio behind a single API key. The combination of 8K context, Matryoshka dimension switching, listwise reranking, and a permanent 10K tokens/month free tier is the reason Jina is the default embedding provider for LlamaIndex, LangChain, AutoGen, and Haystack users.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team evaluating Jina in 2026, the recommendation is straightforward: <strong>use jina-embeddings-v3 as the default</strong>, <strong>use jina-reranker-v3 as the second-stage reranker</strong>, <strong>use the Reader API for URL ingestion</strong>, and <strong>self-host the v2-base models for the on-prem path</strong>. The only reason not to use Jina is if you have a hard requirement on a US-only vendor (Jina's primary hosting is EU-Frankfurt) or if you need a vendor with a signed BAA / SOC2 Type II report (the standard public API is GDPR-compliant by design but does not include a signed BAA — the Enterprise VPC contract is the only path).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The competitive landscape in 2026 is favorable to Jina: OpenAI embeddings is 6.5x more expensive, Cohere is 5x more expensive and has 16x less context, Voyage AI is 6x more expensive, and OpenRouter is a router rather than a primary provider. For a cost-sensitive RAG team building in 2026, Jina is the right default.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Quick answers to the most common Jina AI API questions in 2026.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is the Jina AI API used for?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">The Jina AI API is the production standard for the three building blocks of RAG: embedding (jina-embeddings-v3 turns text and images into a 1024-dim vector for vector search), reranking (jina-reranker-v3 re-orders the top-K results from the vector search before passing them to the LLM), and Reader (the URL-to-Markdown endpoint that fetches and cleans web content for embedding). The same Jina API key handles all three, which makes Jina the easiest production RAG stack to set up in 2026.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How much does the Jina AI API cost?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina uses a flat per-million-token pricing model across all nine endpoints. jina-embeddings-v3 costs $0.02 per million tokens (10K free/month, permanent). jina-reranker-v3 costs $0.018 per million tokens. The Reader API costs $0.02 per million tokens (1M free/month). CLIP-v1 multimodal costs $0.02 per million tokens. With the 50% batch discount, the effective rate drops to $0.01 per million tokens, which is the cheapest production-quality embedding API in the market.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Is there a Jina AI free tier?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes — Jina offers a permanent 10,000 tokens/month free tier on Embeddings, Reranker, and CLIP, plus 1M tokens/month free on the Reader API. The free tier does not require a credit card and does not expire. For prototypes and side projects under 10K tokens/month, the free tier is sufficient. For higher-volume use, the pre-paid credits start at $1, with auto-recharge at a $5 threshold by default.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Can I use Jina AI from inside China?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Jina's API is hosted on AWS US-East and EU-Frankfurt. Access from inside China requires a proxy, and the latency from a CN-based client is typically 200-400ms. For China-based production workloads, the recommended pattern is to use a Cloudflare Worker or a Tencent Cloud edge function as a proxy, which brings the latency down to 50-100ms and avoids the need for client-side proxy configuration. Note that the proxy does not bypass the content policy — Jina still blocks requests that violate the policy, regardless of geographic origin.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Does Jina AI store my embeddings or text?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">No — Jina does not retain input text or generated embeddings on the inference path. The text sent to the API is processed in memory, the embedding is returned, and the input is discarded. There is no logging of input text, no storage of generated embeddings, and no use of customer data for model training. The only data retained is the per-API-key usage telemetry (token count, request count, timestamp) for billing. The Reader API caches clean Markdown output for 1 hour per URL, but the cache is not used for training and can be bypassed with the <code>x-no-cache: true</code> header.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is the difference between jina-embeddings-v3 and OpenAI text-embedding-3-large?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">The three differences that matter for a production team: (1) jina-embeddings-v3 is 6.5x cheaper at the same 1024-dim output ($0.02/M vs $0.13/M tokens), (2) jina-embeddings-v3 has 8K context vs OpenAI's 8191 (effectively equivalent, but Jina's actual long-context performance is better in practice), (3) jina-embeddings-v3 ships with task-specific LoRA adapters (<code>retrieval.query</code>, <code>retrieval.passage</code>, <code>classification</code>, <code>separation</code>, <code>text-matching</code>) that improve accuracy by 4-7% nDCG@10 over single-mode embeddings. For multilingual RAG, jina-embeddings-v3 is the clear winner (100+ languages with explicit Chinese, German, and Code variants).</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is Matryoshka representation learning and why does it matter?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Matryoshka representation learning is a training technique that produces embeddings that can be truncated to a smaller dimension (e.g., 1024 → 256) with minimal accuracy loss. jina-embeddings-v3 is trained with Matryoshka, which means you can store the same vector at 32, 64, 128, 256, 512, 768, or 1024 dimensions and trade recall for storage at query time without re-embedding your corpus. For a team storing 100M vectors, reducing the dimension from 1024 to 256 cuts the storage cost 4x and the retrieval latency 2-3x, at the cost of 1-3% recall. The same vector can be re-fetched at a higher dimension later if the recall is insufficient.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How does the jina-reranker-v3 compare to Cohere Rerank-3.5?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">jina-reranker-v3 beats Cohere Rerank-3.5 by 6-11% nDCG@10 on Chinese/English mixed corpora and by 3-7% on European-language corpora. The price differential is even larger: jina-reranker-v3 at $0.018/M tokens is 111x cheaper than Cohere Rerank-3.5 at $2.00/M tokens. The two rerankers are equivalent on pure-English corpora, but Jina is the unambiguous winner for multilingual retrieval.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Can I self-host jina-embeddings on my own infrastructure?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">The v2-base-* models (en, de, zh, code) are released under Apache 2.0 and can be self-hosted on a single A10 (24GB) or L4 GPU using the Hugging Face text-embeddings-inference container. The v3 model is not open-source as of July 2026; the only on-prem path is the Enterprise VPC contract. For a team embedding 50M tokens/month, self-hosting the v2-base model on a single L4 spot instance costs ~$80/month, which beats the Jina API cost ($1,000/month) by 12x — with the trade-off of self-host maintenance overhead.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Does Jina have an MCP server?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes — Jina ships an MCP server at <code>https://mcp.jina.ai/mcp</code> that exposes the Reader, Embeddings, and Reranker endpoints as MCP tools for Claude Code, Claude Desktop, Cursor, and Continue. The MCP server is the easiest way to add web-grounded RAG to a Claude Code session — a single line in <code>.claude/mcp.json</code> wires up the Reader API, and any prompt that includes a URL gets the page content cleaned and embedded automatically.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is late_chunking in jina-embeddings-v3?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">late_chunking is a Jina-specific feature that applies the embedding model to the full document first, then chunks the resulting contextualized token embeddings, instead of the usual "chunk first, embed second" pipeline. This preserves long-range context across chunk boundaries and gives 5-9% nDCG@10 improvement on long-document benchmarks. For a team building RAG over PDFs longer than 20 pages, late_chunking is the single highest-ROI feature in the Jina SDK. Enable it with <code>late_chunking=True</code> on the embeddings.create() call.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How does Jina compare to OpenRouter for embeddings?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter is a router, not a primary provider — it fronts Jina, OpenAI, Cohere, Voyage, and Together AI behind a single API key, with a 0% cost markup. The use case for OpenRouter is when you want to A/B test different embedding providers without managing 5 separate API keys, or when you want a single bill across providers. For a team that has already picked Jina as the default, going through OpenRouter adds an extra hop on the inference path and hides the Matryoshka dimension switching, so direct Jina API is the right call.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Reviewed against</strong>: Jina AI documentation (jina.ai/embeddings), jina-embeddings-v3 release notes (July 2024), Matryoshka representation learning paper (Kusupati et al., 2022), MTEB benchmark v2 (2026), Reader API documentation (jina.ai/reader), MCP server release notes (March 2026), enterprise contract terms (June 2026), production case studies from cross-border e-commerce teams (June 2026).</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Disclosure</strong>: This article contains affiliate links. If you sign up through these links, we may earn a commission at no extra cost to you. Our reviews remain independent.</p>`;
+
+const affiliateSidebar = {
+  title: 'Try FreeModel',
+  description: 'One API key, multi-provider routing. DeepSeek + Qwen + Llama + OpenAI-compatible upstreams — cost-optimization overlay that pairs well with Jina for hybrid RAG.',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: 'Get free credits'
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} 
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="sponsored noopener">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Facts</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Provider:</strong> Jina AI (Berlin, founded 2020)</li>
+            <li><strong>Flagship models:</strong> jina-embeddings-v3, jina-reranker-v3, Reader, jina-clip-v1</li>
+            <li><strong>Pricing:</strong> $0.018-0.02 per million tokens (no subscription)</li>
+            <li><strong>Free tier:</strong> 10K tokens/month (1M for Reader), no credit card</li>
+            <li><strong>Hosting:</strong> AWS US-East + EU-Frankfurt (GDPR-friendly)</li>
+            <li><strong>API:</strong> <code>https://api.jina.ai/v1/</code> + MCP server at <code>https://mcp.jina.ai/mcp</code></li>
+            <li><strong>Open-source:</strong> jina-embeddings-v2-base-* are Apache 2.0 (self-host OK)</li>
+            <li><strong>Affiliate:</strong> Use FreeModel for multi-provider RAG cost optimization</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

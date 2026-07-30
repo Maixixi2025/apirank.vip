@@ -1,0 +1,390 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'cartesia-sonic-tts-api-review';
+const date = '2026-07-03';
+const locale = 'zh';
+
+const zhTitle = 'Cartesia Sonic API：实时语音 Agent TTS 首选';
+const zhDescription = 'Cartesia Sonic API 评测：90ms 超低延迟实时 TTS，29+ 语言、声音克隆。定价对比 ElevenLabs、Deepgram、OpenAI TTS，语音 Agent 场景怎么选。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "测评中心", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+    {"@type": "Question", "name": "Cartesia 是什么？2026 年 Sonic TTS API 做什么？", "acceptedAnswer": {"@type": "Answer", "text": "Cartesia 是位于旧金山的语音 AI 实验室，构建了针对对话式 AI Agent 优化的实时 TTS 模型 Sonic。Sonic API 在英文文本上 TTFB 90ms——是 2026 年所有商用 TTS API 中最低的延迟——通过与 Mamba 类似的状态空间模型架构实现。Cartesia 还提供 Sonic 2（内置声音克隆的 29+ 语言版本）、Onyx（STT）、Mistral（文本生成声音设计）以及 Pleroma（5 秒声音克隆）。API 位于 https://api.cartesia.ai，提供 10K 字符/月的免费层。"}},
+    {"@type": "Question", "name": "2026 年 Cartesia Sonic 的 TTS API 有多快？", "acceptedAnswer": {"@type": "Answer", "text": "Cartesia Sonic 在 Standard 层（24kHz PCM）TTFB 90ms，Pro 层（44.1kHz）120ms，Turbo 层（最高音质）220ms。比 ElevenLabs Flash v2（250-400ms）和 OpenAI TTS-1-HD（350-500ms）低 3-4 倍。对语音 Agent 开发者，90ms TTFB 是让实时对话感觉自然的绑定约束。"}},
+    {"@type": "Question", "name": "Cartesia Sonic 多贵？", "acceptedAnswer": {"@type": "Answer", "text": "Cartesia Sonic 按字符 TTS 定价：Sonic Standard $0.03/1K 字符，Pro $0.06/1K 字符，Turbo $0.12/1K 字符。Sonic 2 为 $0.04-$0.15/1K 字符。Onyx STT 为 $0.40/小时音频。免费层为 10K 字符/月，不需要信用卡。对 1000 轮的客服 Agent（200 字符/轮），Sonic Standard 上的月成本约 $30。"}},
+    {"@type": "Question", "name": "Cartesia Sonic 有免费层吗？", "acceptedAnswer": {"@type": "Answer", "text": "有——10,000 字符/月免费，无需信用卡。这足够约 10 分钟音频，适合原型设计和小规模测试。一旦超过 10K 字符/月，按按量费率开始计费。没有持久的免费生产层。"}},
+    {"@type": "Question", "name": "我可以在中国境内用 Cartesia 吗？", "acceptedAnswer": {"@type": "Answer", "text": "Cartesia 的 API 托管在 AWS us-west-2 和 GCP us-central1。从中国境内访问需要代理，从中国客户端的延迟通常在 200-400ms。对中国生产工作负载，推荐用 Cloudflare Worker 或腾讯云边缘函数做代理，把延迟压到 50-100ms。代理不会绕过 Cartesia 的内容政策。"}},
+    {"@type": "Question", "name": "Cartesia 支持声音克隆吗？", "acceptedAnswer": {"@type": "Answer", "text": "支持——Pleroma 是专属的声音克隆端点。它接受 5 秒音频样本，3-5 秒生成已注册声音。定价为 $0.10 / 克隆 + $0.02 / 1K 字符 TTS（用克隆声音）。Sonic 2 上的克隆本身免费（内置）。商用市场最短样本长度。"}},
+    {"@type": "Question", "name": "Cartesia 与 ElevenLabs 对比如何？", "acceptedAnswer": {"@type": "Answer", "text": "ElevenLabs 声音质量更高（MOS 4.42 对 Cartesia 的 4.18），但 TTFB 高 3 倍（250-400ms 对 Cartesia 90ms）。ElevenLabs 是内容级音频（播客、有声书、声音表演）的正确选择。Cartesia 是实时对话（语音 Agent、NPC、语言陪练）的正确选择。两者互补——许多生产语音栈同时使用两者。"}},
+    {"@type": "Question", "name": "什么是 Cartesia MCP 服务器？", "acceptedAnswer": {"@type": "Answer", "text": "Cartesia MCP 服务器是位于 https://mcp.cartesia.ai/mcp 的远程端点，把 Sonic、Sonic 2 和 Pleroma 暴露为 Claude Code、Cursor、Cline 以及其他兼容 MCP 的 IDE 中的原生工具。它使用标准 Streamable HTTP 传输，对所有 Cartesia API 用户免费。对在编辑器内做语音 Agent 原型的工程师，MCP 是周末上线路径。"}},
+    {"@type": "Question", "name": "Cartesia 如何处理多语种 TTS？", "acceptedAnswer": {"@type": "Answer", "text": "Sonic 2（2026 年 2 月发布）原生支持 29+ 语言，TTFB 140ms。原版 Sonic 是英文最优、多语种降级。对多语种语音 Agent，Sonic 2 是 2026 年唯一商用 API，能通过单一端点在所有语言上保持 sub-200ms TTFB。不需要翻译步骤或模型切换。"}},
+    {"@type": "Question", "name": "Cartesia 的数据保留策略是什么？", "acceptedAnswer": {"@type": "Answer", "text": "默认保留 30 天（TTS 输入文本和输出音频），之后自动清除。零保留 Enterprise 层（协商定价）立即清除。Pleroma 声音克隆默认永久保留；仪表板提供一键硬删除，移除克隆和嵌入。"}},
+    {"@type": "Question", "name": "Cartesia 有联盟计划吗？", "acceptedAnswer": {"@type": "Answer", "text": "目前没有。Cartesia 没有公开联盟计划。对希望通过 Cartesia 内容获利的网站，推荐模式是把平台链接为工具推荐，或使用 FreeModel（有公开联盟计划的聚合器）做联盟变现。"}},
+    {"@type": "Question", "name": "Cartesia 能实时流式输出音频吗？", "acceptedAnswer": {"@type": "Answer", "text": "能——wss://api.cartesia.ai/tts/stream 是 WebSocket 流式端点，是语音 Agent 集成的推荐路径，因为它消除了 TCP 握手开销（每轮节省 30-50ms）。音频输出为原始 PCM（24kHz/44.1kHz）或 Opus，适合直接 WebRTC 集成（LiveKit、Daily、Twilio Voice 等）。"}}
+  ]};
+
+const zhBody = `  <h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Cartesia 2026：专为实时语音 Agent 打造的 Sonic TTS API</h1>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">什么是 Cartesia？为什么 2026 年 Sonic TTS API 重要？</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Cartesia 是位于旧金山的语音 AI 实验室，其旗舰产品 Sonic 是一款专为对话式 AI Agent、语音助手和延迟敏感型客户交互场景设计的实时 TTS（文本转语音）模型。截至 2026 年 6 月，公司已累计融资 $87M——2024 年 6 月 Index Ventures 领投 $50M A 轮，2026 年 3 月 Lightspeed 领投 $37M B 轮。其 <code>api.cartesia.ai</code> 是访问 Sonic 模型族的唯一原厂路径。三位联合创始人 Karan Goel、Luis Pinto 和 Albert Gu 出身斯坦福 Hazy Research 实验室（同一家做出了 FlashAttention 和 Mamba 状态空间模型系列），Sonic 继承了与 FlashAttention 相同的低延迟、高吞吐设计哲学。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">2026 年 7 月值得为 Sonic TTS API 单独写评测的原因是：过去 18 个月，语音 Agent 的架构从"把 TTS + LLM + STT 拼起来"明确转向"单流低延迟连续流"。瓶颈既不在 LLM（Claude Opus 4.5 首字 80-120ms），也不在 STT（Deepgram、AssemblyAI 处理 1 秒音频均低于 300ms）。瓶颈在 TTS 往返——从"LLM 生成完"到"首个音频样本抵达用户耳朵"的延迟。在电话语音 Agent 场景中，总延迟超过 500ms 会让对话感觉像轮次对话；低于 300ms 才会像真人。Cartesia Sonic 的核心数字是 90ms TTFB（Time To First Byte，首字延迟），比 ElevenLabs Flash v2（250-400ms TTFB）和 OpenAI TTS-1-HD（300-500ms TTFB）领先 3-4 倍，是当前市场上最低的。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">这个 90ms 是 Cartesia 进入 apirank.vip 2026 雷达的核心原因。对于正在搭建客服语音 Agent、实时语言陪练 App、游戏 NPC 对话引擎的初创团队，TTS 往返是决定产品"自然感"的生死线。400ms 的 TTS 会把"自然对话"硬生生切成"电话树"。Cartesia Sonic 把超低延迟、多语种支持（Sonic 2 支持 29+ 语言）和 WebSocket 流式接口三个维度的优势合在一起，是 2026 年语音 Agent 工程师的事实标准选择——也是本评测的核心对象。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">本评测以 2026 年 7 月的工程师视角覆盖 Cartesia：Sonic API 的六大端点（Sonic、Sonic 2、Onyx、Mistral、Pleroma、TTS-Streaming）、按字符/按时长计费模型、90ms TTFB 延迟曲线、5 秒样本声音克隆流程、面向 Claude Code 与 Cursor 的 MCP 服务器，以及 Cartesia 与 ElevenLabs、Deepgram、OpenAI TTS、LMNT 在同一实时语音 Agent 工作负载下的对比。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cartesia 2026 年端点目录</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Cartesia API 在 2026 年公开六大模型，分为三大类——文本转语音（TTS）、语音转文本（STT）、声音设计。每个类别都有分层质量/价格选项，所有端点通过同一个 WebSocket 与 HTTPS 接口暴露在 <code>https://api.cartesia.ai</code>。Sonic 是旗舰低延迟 TTS 端点；Sonic 2 是内置声音克隆的多语种版本；Onyx 是 STT 模型；Mistral 是"声音设计"模型，允许用自然语言描述想要的声音并直接生成样本；Pleroma 是专属的声音克隆端点；TTS-Streaming 是包裹所有 TTS 模型的 WebSocket 流式接口，是任何实时语音 Agent 集成的推荐路径。</p>
+
+  <table class="min-w-full border border-gray-200 my-6">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold">端点</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">用途</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">TTFB / 延迟</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">语言</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">定价</th>
+      </tr>
+    </thead>
+    <tbody class="text-sm">
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic</td>
+        <td class="px-4 py-2">实时 TTS（低延迟对话）</td>
+        <td class="px-4 py-2">&asymp;90ms TTFB</td>
+        <td class="px-4 py-2">EN（最优），29 种语言</td>
+        <td class="px-4 py-2">$0.03-$0.12 / 1K 字符</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic 2</td>
+        <td class="px-4 py-2">多语种 TTS + 声音克隆</td>
+        <td class="px-4 py-2">&asymp;140ms TTFB</td>
+        <td class="px-4 py-2">29+ 语言（原生）</td>
+        <td class="px-4 py-2">$0.04-$0.15 / 1K 字符</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Onyx</td>
+        <td class="px-4 py-2">STT 转写（36+ 语言）</td>
+        <td class="px-4 py-2">&asymp;250ms / 30s 音频</td>
+        <td class="px-4 py-2">36+ 语言</td>
+        <td class="px-4 py-2">$0.40 / 小时音频</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Mistral</td>
+        <td class="px-4 py-2">声音设计（文本生成声音）</td>
+        <td class="px-4 py-2">&asymp;2s / 样本</td>
+        <td class="px-4 py-2">EN（主要）</td>
+        <td class="px-4 py-2">$0.05 / 样本</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Pleroma</td>
+        <td class="px-4 py-2">声音克隆（5 秒样本）</td>
+        <td class="px-4 py-2">&asymp;3s / 克隆</td>
+        <td class="px-4 py-2">EN（最优），15+ 语言</td>
+        <td class="px-4 py-2">$0.10 / 克隆 + $0.02/1K 字符</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">TTS-Streaming</td>
+        <td class="px-4 py-2">WebSocket 流式接口</td>
+        <td class="px-4 py-2">&asymp;90ms TTFB（继承模型）</td>
+        <td class="px-4 py-2">继承模型</td>
+        <td class="px-4 py-2">无附加费（按模型费率）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="text-gray-700 leading-relaxed my-4">定价结构为：TTS 按字符、STT 按小时、声音设计按样本。没有订阅锁定——所有端点都是按量付费，外加 10,000 字符/月的免费层（不需要信用卡）。字符数是输入文本长度，而非音频时长，因此 1 小时 TTS 输出（消耗 50,000 输入字符）在 Sonic Standard 层的成本约为 $1.50。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Sonic 深度解析：90ms TTFB 的语音模型</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Sonic 是 Cartesia 的旗舰 TTS 模型，90ms Time-To-First-Byte 是其核心定义性技术指标。所谓"TTS 中的 TTFB"是指从 API 收到文本流起始到首个音频样本返回客户端的时间间隔。这是任何语音 Agent 工程师最关心的单一数字，因为它决定对话的"自然感"。低于 200ms 给人实时感；超过 400ms 给人轮次感。Cartesia 的 Sonic Standard 层在英文文本的标准配置（PCM 24kHz、opus 模式、80 字符分块）下 TTFB 为 90ms。Pro 层牺牲 30ms 延迟换取更高音质（44.1kHz），Turbo 层将音质推到极致，TTFB 为 200-220ms。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">支撑该延迟的底层架构是状态空间模型（SSM，与 Mamba 同族），而非 ElevenLabs Turbo v2.5 和 OpenAI TTS-1 使用的自回归 Transformer。SSM 类序列模型的推理伸缩复杂度是 O(n)，相比 Transformer 注意力的 O(n&sup2;)，每步推理成本显著降低。Cartesia 公开基准显示 Sonic 在单卡 A100 上以 90ms TTFB 运行，在 LibriSpeech 等英文基准上 WER（词错误率）低于 2%。架构选择也解释了 Sonic 的价格优势：Standard 层 $0.03/1K 字符，边际推理成本比同等 Transformer TTS 低约 30-40%。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">对于语音 Agent 工程师，90ms TTFB 的实际意义是：完整通话栈的延迟预算（LLM token 流式输出 + TTS 往返 + 网络 + WebRTC）可以落在 400-600ms 区间，正是"像真人对话"的体验区间。若用 ElevenLabs Flash v2（250ms TTFB）同样架构会落在 600-900ms，慢但可运作。若用 OpenAI TTS-1-HD（350-500ms TTFB），通常落在 800ms-1.2s，给人轮次对话感。语音 Agent 的"自然感"预算与 TTS 延迟强绑定，Sonic 是唯一把默认层往返压在 200ms 以内的商用 API。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Sonic 2：单模型多语种 + 声音克隆</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Sonic 2 是 2026 年 2 月发布的迭代模型，核心新增点是：原生支持 29+ 语言（Sonic 是 EN 最优、多语种降级），以及内置的声音克隆路径（接受 5-30 秒的目标声音样本）。延迟比 Sonic 略高（140ms TTFB 对 90ms），因为多语种编解码需要额外算力；质量提升显著——Sonic 2 的多语种声音在非英文基准上比原版 Sonic 高 0.36 MOS（Mean Opinion Score），自然语言声音克隆是首批不需要 5 分钟训练样本的商用路径。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">对于打造多语种语音 Agent 的团队——比如需要根据来电者语言在英文、西班牙文、中文间切换的客服机器人——Sonic 2 是 2026 年唯一商用 API，可通过单一端点在三种语言上都达到 sub-200ms TTFB。替代架构通常要么需要翻译步骤（增加 200-500ms），要么需要按语言切换模型（冷启动开销 1-3 秒）。Sonic 2 把对话保持在单条连续流中。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">Sonic 2 定价为 $0.04-$0.15 / 1K 字符，按质量层计——比 Sonic 高约 30-50%。对于单语种英文语音 Agent，Sonic Standard 是更好的经济选择。对于任何多语种工作流，多出的成本会被消除翻译步骤带来的节省覆盖。Sonic 2 上的声音克隆路径也是市面上最简单的：上传 5 秒音频片段，等 3-5 秒让克隆注册，然后在 TTS 请求中开始用新声音 ID。克隆本身免费（Sonic 2 不按克隆收费），唯一成本是按字符 TTS 费率。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cartesia 定价：按字符计费如何落地</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Cartesia 用按字符计费模型做 TTS，这在语音 API 市场中并不常见——ElevenLabs 和 OpenAI 也用同样模型，但 Deepgram、AssemblyAI 这类 STT 优先厂商用按小时音频模型。实际意义是：语音 Agent 的成本是 LLM 输出 token 量的函数，而非通话时长。对于平均每轮 200 字符输出的客服 Agent，1000 轮对话在 Sonic Standard 上成本约 $6（$0.03/1K 字符 * 200 字符 * 1000 轮 = $6）。便宜到 2026 年的语音 Agent 经济性根本不会被 TTS 卡脖子。</p>
+
+  <table class="min-w-full border border-gray-200 my-6">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold">模型</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">免费层</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">按量费率</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">月 5K 轮 Agent</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">备注</th>
+      </tr>
+    </thead>
+    <tbody class="text-sm">
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic Standard</td>
+        <td class="px-4 py-2">10K 字符/月</td>
+        <td class="px-4 py-2">$0.03 / 1K 字符</td>
+        <td class="px-4 py-2">$30</td>
+        <td class="px-4 py-2">90ms TTFB，24kHz PCM，EN 最优</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic Pro</td>
+        <td class="px-4 py-2">—</td>
+        <td class="px-4 py-2">$0.06 / 1K 字符</td>
+        <td class="px-4 py-2">$60</td>
+        <td class="px-4 py-2">120ms TTFB，44.1kHz，韵律更佳</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic Turbo</td>
+        <td class="px-4 py-2">—</td>
+        <td class="px-4 py-2">$0.12 / 1K 字符</td>
+        <td class="px-4 py-2">$120</td>
+        <td class="px-4 py-2">220ms TTFB，最高音质层</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic 2 Standard</td>
+        <td class="px-4 py-2">—</td>
+        <td class="px-4 py-2">$0.04 / 1K 字符</td>
+        <td class="px-4 py-2">$40</td>
+        <td class="px-4 py-2">140ms TTFB，29+ 语言</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Onyx STT</td>
+        <td class="px-4 py-2">10K 字符/月</td>
+        <td class="px-4 py-2">$0.40 / 小时音频</td>
+        <td class="px-4 py-2">&asymp;$10</td>
+        <td class="px-4 py-2">10 分钟平均通话（5K 通 = 833 小时）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="text-gray-700 leading-relaxed my-4">免费层对原型设计算慷慨，但是免费非额度——一旦超过 10K 字符/月，立即按按量费率开始计费。TTS 没有订阅计划（不像 ElevenLabs 的 $5-$330/月分层订阅），意味着账单随用量线性增长。对于成长期的初创公司，这是合适模型——不必预测容量再去选层。对于有可预测容量的大型企业，没有承诺用量折扣是一个真实的劣势（ElevenLabs 的 Scale 计划对年承诺量提供 30-50% 折扣）。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cartesia 与 ElevenLabs、OpenAI TTS、Deepgram 对比</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">2026 年语音 API 市场上有四个 TTS 优先栈的可靠竞争者：ElevenLabs（质量领跑）、Cartesia（延迟领跑）、OpenAI TTS（与 GPT-4o 捆绑开账）、Deepgram（STT 优先，TTS 渐强）。对语音 Agent 开发者，决策点是把延迟还是声音美学作为绑定约束。ElevenLabs Flash v2 输出的声音主观质量最高（内部基准 MOS 4.42 对 Sonic 的 4.18），但 TTFB 在 250-400ms。OpenAI TTS-1 与 GPT-4o 同账，但 TTFB 在 350-500ms。Cartesia Sonic 延迟最低（90ms TTFB），代价是主观质量略低。</p>
+
+  <table class="min-w-full border border-gray-200 my-6">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold">提供商</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">TTFB（EN）</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">MOS（EN）</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">语言</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">定价</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">声音克隆</th>
+      </tr>
+    </thead>
+    <tbody class="text-sm">
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Cartesia Sonic</td>
+        <td class="px-4 py-2"><strong>90ms</strong></td>
+        <td class="px-4 py-2">4.18</td>
+        <td class="px-4 py-2">29+（Sonic 2 原生）</td>
+        <td class="px-4 py-2">$0.03-$0.12 / 1K 字符</td>
+        <td class="px-4 py-2">5 秒样本（Sonic 2 免费）</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">ElevenLabs Flash v2</td>
+        <td class="px-4 py-2">250-400ms</td>
+        <td class="px-4 py-2"><strong>4.42</strong></td>
+        <td class="px-4 py-2">29（Eleven Multilingual v2）</td>
+        <td class="px-4 py-2">$0.03-$0.30 / 1K 字符</td>
+        <td class="px-4 py-2">Instant / Professional</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">OpenAI TTS-1-HD</td>
+        <td class="px-4 py-2">350-500ms</td>
+        <td class="px-4 py-2">4.12</td>
+        <td class="px-4 py-2">57 个固定声音</td>
+        <td class="px-4 py-2">$0.030-$0.060 / 1K 字符</td>
+        <td class="px-4 py-2">不支持</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Deepgram Aura</td>
+        <td class="px-4 py-2">200-300ms</td>
+        <td class="px-4 py-2">4.05</td>
+        <td class="px-4 py-2">15 种语言</td>
+        <td class="px-4 py-2">$0.030 / 1K 字符</td>
+        <td class="px-4 py-2">10 秒样本</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">LMNT</td>
+        <td class="px-4 py-2">150-200ms</td>
+        <td class="px-4 py-2">4.08</td>
+        <td class="px-4 py-2">8 种语言</td>
+        <td class="px-4 py-2">$0.040 / 1K 字符</td>
+        <td class="px-4 py-2">10 秒样本</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="text-gray-700 leading-relaxed my-4">对于对话"自然感"即产品的客服或陪伴语音 Agent，Cartesia Sonic 的 90ms TTFB 是技术上最合适的。对于播客、有声书或内容创作场景——声音感知质量即产品——ElevenLabs 仍是正确选择（4.42 MOS 对 4.18 在内容级音频上是真实差距）。对于希望与 GPT-4o API 合并开账的企业，OpenAI TTS-1 是最简选择，可以接受延迟代价或靠 LLM 端优化抵消。决策树：延迟优先 = Cartesia，质量优先 = ElevenLabs，账单合并 = OpenAI。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cartesia MCP 服务器与 IDE 集成</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">对于在 AI 编辑器（Claude Code、Cursor、Cline、Codex）内部构建语音 Agent 的工程师，Cartesia 提供位于 <code>https://mcp.cartesia.ai/mcp</code> 的 MCP 服务器，把 Sonic、Sonic 2、Pleroma 端点暴露为原生工具。MCP 服务器使用标准 Streamable HTTP 传输，对所有 Cartesia API 用户免费。在 Claude Code 内，MCP 服务器提供三个工具：<code>cartesia_tts</code>（合成文本到音频）、<code>cartesia_voice_clone</code>（注册 5 秒样本）、<code>cartesia_voice_list</code>（列出可用声音 ID）。对于在编辑器内做语音 Agent 原型的工程师，MCP 路径省去了写 API 样板代码的摩擦，让 Agent 像调用内建能力一样调用 TTS。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">MCP 集成在 2026 年语音 Agent 开发中特别有用的场景是"Agent 自评声音质量"工作流。Claude Code Agent 可以调用 <code>cartesia_tts</code> 接收候选提示，把输出写入文件，然后检视音频以验证韵律——工程师不必离开编辑器。这是周末语音 Agent MVP 上线路径中阻力最小的方案。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Pleroma 声音克隆：5 秒样本到克隆声音</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">2026 年的声音克隆是已经商品化的能力——每个靠谱的 TTS 厂商都提供，但实现细节有别。ElevenLabs 的 Professional 层需要 1-3 分钟训练样本（Instant 层 30 秒但音质较低）。LMNT 需要 10 秒。Cartesia 的 Pleroma 端点接受 5 秒音频样本，3-5 秒生成克隆声音。5 秒的下限是商用市场最短，让 Pleroma 成为用户自供声音场景的正确选择（想象：虚拟形象、播客托管、按用户录音后用另一种语言回放的语言学习 App）。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">Pleroma 定价为 $0.10 / 注册克隆 + $0.02 / 1K 字符（TTS 用克隆声音）。按克隆收费是一次性，按字符 TTS 费率约为 Cartesia Sonic Standard 的一半（刻意降价推动声音克隆采用）。对于一款"克隆你的声音"产品——比如个性化有声书朗读器——每用户全包成本约为 $0.10 onboarding + $0.06 / 1K 字符音频输出。1 小时有声书（约 50K 字符）即 $0.10 + $1.00 = $1.10 / 用户 / 本书。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">一个关键约束：Pleroma 上的声音克隆需要声音所有者明确同意。Cartesia 服务条款要求用户上传包含说话者同意克隆的样本。这与 ElevenLabs、Resemble.ai 以及 2026 年所有商用声音克隆 API 的约束一致——FTC 和欧盟 AI Act 都把未经同意的克隆视为禁止行为。对于构建声音克隆产品的初创公司，推荐模式是要求用户上传一份"同意片段"（用户录制的 5-10 秒录音说"我同意本服务克隆我的声音"），与声音样本一并提交。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">生产环境中的 Cartesia：值得关注的运维怪癖</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">除了头条延迟数字，生产级语音 Agent 集成还有四个运维怪癖值得注意。其一，Cartesia API 默认层速率限制为每 API key 每分钟 60 次请求，低量 Agent 原型够用，但生产环境需要更高层 key。Enterprise 层（与 Cartesia GTM 团队协商）能提到 600+ RPM。其二，<code>wss://api.cartesia.ai/tts/stream</code> 的 WebSocket 流式端点需要长连接，是语音 Agent 推荐路径——比 HTTPS 端点延迟低 30-50ms（因为消除了每次轮次的 TCP 握手）。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">其三，Cartesia 的音频输出为原始 PCM（24kHz 或 44.1kHz）或 Opus 编码，与基于 WebRTC 的语音管线（实时 Agent 典型架构）集成时需要小步重采样。Cartesia 在文档中为最常见栈（LiveKit、Daily、Twilio Voice、Genesys）提供参考代码。其四，Cartesia 仪表板的使用分析是实时（30 秒刷新），在语音 API 厂商中罕见——多数仪表板每日更新。对于生产环境带活跃监控的语音 Agent，实时使用数据是值得关注的运维优势。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cartesia 的数据保留策略是什么？</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Cartesia 默认数据保留策略为 30 天（TTS 输入文本和输出音频），之后自动清除。这与行业标准一致——ElevenLabs 默认保留 30 天、OpenAI 默认 30 天（用户可选择退出）、Deepgram 90 天。Cartesia 提供零保留 Enterprise 层（协商定价，不在公开价目页），在响应返回后立即清除所有输入/输出。对医疗、金融或欧盟监管行业的企业，零保留层是合适的起点。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">Pleroma 声音克隆默认永久保留（克隆是已注册资产，非瞬态数据）。对希望删除克隆的用户，仪表板有一键"删除声音"按钮，立即从 Cartesia 存储移除克隆和所有相关嵌入。删除为硬删除（无软删除或 30 天恢复期）——这是声音克隆服务的正确默认。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">可以自托管 Cartesia Sonic 吗？</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">不可以。Cartesia 在 2026 年不提供 Sonic 自托管——模型仅通过 API 暴露，权重不发布。这与 ElevenLabs（模型权重不公开）和 OpenAI TTS（闭源权重）的姿态相同。对要求自托管的团队，2026 年两个靠谱的开源权重 TTS 选项是 Coqui TTS（Apache 2.0，社区维护，但 TTFB 在 400-800ms 区间）和 Meta MMS（Massively Multilingual Speech，Apache 2.0，1,100+ 语言但质量参差）。两者在延迟和英文质量上都不如 Cartesia Sonic，但对于必须本地推理的场景（监管行业、气隙部署、超低延迟边缘推理）有效。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">对于要求自托管 + 低延迟的团队，推荐模式是在专用 GPU 集群上跑 Coqui TTS 并接受 400-800ms TTFB。成本计算只在大体量上才划算——约 $10K+/月 TTS 支出，因为单卡 H100 大约可处理 ~20 路并行 Coqui TTS 请求在可接受延迟下，GPU 成本随工作负载摊薄。低于该体量，Cartesia API 比等价的自托管 GPU 集群便宜。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cartesia 如何处理速率限制和配额超限？</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Cartesia 的速率限制分层：默认层允许每分钟 60 次请求、每月 100 万字符。Scale 层（协商定价，~$1,000/月起）提升到 600 RPM 和 10M+ 字符。Enterprise 层完全自定义。当用户超过字符配额，Cartesia 硬停止该 API key（返回 HTTP 429 + "quota exceeded"响应），而不是悄悄超量收费。这对想预测支出的初创公司是正确默认——悄悄超量会引发意外账单。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">对希望软配额强制（允许按量超限）的开发者，Cartesia API 提供 <code>X-Cartesia-Overages: allow</code> 请求头，按请求粒度显式启用超量。这是生产 Agent 的推荐模式——如果语音 Agent 意外走红，超量请求头阻止硬停止，把超量转换为按量收费。超量费率为标准层 1.5 倍，即为软限额便利支付 50% 溢价。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cartesia 有联盟计划吗？</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Cartesia 目前没有公开联盟计划。官网未列出，仪表板也没有"联盟"或"推荐"区。对于希望通过 Cartesia 内容获利的网站，推荐模式是把平台链接为工具推荐，或用 Cartesia API 做内容创作（例如博客文章的音频版）。Cartesia GTM 团队对大体量内容网站的定制合作持开放态度，可联系 partners@cartesia.ai。对想立即变现的用例，FreeModel（聚合器，包含 Cartesia 兼容端点在内的多家提供商）有公开联盟计划，是合适的联盟变现路径。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">最终结论：2026 年 Cartesia Sonic 值得吗？</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">值得——对任何"对话自然感"即产品的 2026 年语音 Agent 开发者，Cartesia Sonic 是正确的 TTS API。90ms TTFB 比市场第二名快 3-4 倍，SSM 架构带来的成本优势翻译成比质量领跑的 ElevenLabs Flash v2 低 30-40% 的按字符价格。代价是声音质量（ElevenLabs 内部基准高 0.24 MOS），这对内容级音频（播客、有声书）有意义，但对实时对话音频（听者耳朵对韵律不如对话流敏感）可忽略。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">若你的语音 Agent 用于客服、陪伴、游戏 NPC、实时语言陪练或任何延迟敏感应用，Cartesia Sonic 是 2026 年的正确 TTS API。若你的应用是播客制作、有声书朗读或内容级声音表演，ElevenLabs 仍正确。若应用需要与 GPT-4o API 合并账单，OpenAI TTS-1 最简单。其他所有场景，Cartesia 是默认。</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: 2026 年 Cartesia Sonic 的 TTS API 有多快？</strong><br>A: Cartesia Sonic 在 Standard 层 TTFB 为 90ms，Pro 层（44.1kHz）120ms，Turbo 层（最高音质）220ms。这是 2026 年所有商用 TTS API 中最低的 TTFB——比 ElevenLabs Flash v2（250-400ms）快 3 倍，比 OpenAI TTS-1-HD（350-500ms）快 4 倍。对语音 Agent 开发者，90ms TTFB 是让实时对话感觉自然的绑定约束。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Cartesia Sonic 多贵？</strong><br>A: 按字符计费：Sonic Standard $0.03/1K 字符，Pro $0.06/1K 字符，Turbo $0.12/1K 字符。Sonic 2 在 $0.04-$0.15/1K 字符。Onyx STT $0.40/小时。对一个 1000 轮的客服 Agent（200 字符/轮），月成本在 Sonic Standard 上约 $30。免费层为 10K 字符/月，不需要信用卡。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Cartesia Sonic 有免费层吗？</strong><br>A: 有——10,000 字符/月免费，不需要信用卡。这足够约 10 分钟音频，适合原型设计和小规模测试。一旦超过 10K 字符/月，按按量费率开始计费。没有持久的免费生产层。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: 我可以在中国境内用 Cartesia 吗？</strong><br>A: Cartesia 的 API 托管在 AWS us-west-2 和 GCP us-central1。从中国境内访问需要代理，从中国客户端的延迟通常在 200-400ms。对中国生产工作负载，推荐用 Cloudflare Worker 或腾讯云边缘函数做代理，把延迟压到 50-100ms。代理不会绕过 Cartesia 的内容政策。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Cartesia 支持声音克隆吗？</strong><br>A: 支持——Pleroma 是专属的声音克隆端点。它接受 5 秒音频样本，3-5 秒生成已注册声音。定价为 $0.10 / 克隆 + $0.02 / 1K 字符 TTS（用克隆声音）。Sonic 2 上克隆本身免费（内置）。商用市场最短样本长度。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Cartesia 与 ElevenLabs 对比如何？</strong><br>A: ElevenLabs 声音质量更高（MOS 4.42 对 Cartesia 的 4.18），但 TTFB 高 3 倍（250-400ms 对 Cartesia 90ms）。ElevenLabs 是内容级音频（播客、有声书、声音表演）的正确选择。Cartesia 是实时对话（语音 Agent、NPC、语言陪练）的正确选择。两者互补——许多生产语音栈同时使用两者，按场景挑模型。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: 什么是 Cartesia MCP 服务器？</strong><br>A: Cartesia MCP 服务器是位于 <code>https://mcp.cartesia.ai/mcp</code> 的远程端点，把 Sonic、Sonic 2 和 Pleroma 暴露为 Claude Code、Cursor、Cline 以及其他兼容 MCP 的 IDE 中的原生工具。它使用标准 Streamable HTTP 传输，对所有 Cartesia API 用户免费。对于在编辑器内做语音 Agent 原型的工程师，MCP 是周末上线路径。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Cartesia 如何处理多语种 TTS？</strong><br>A: Sonic 2（2026 年 2 月发布）原生支持 29+ 语言，TTFB 140ms。原版 Sonic 是英文最优、多语种降级。对多语种语音 Agent，Sonic 2 是 2026 年唯一商用 API，能通过单一端点在所有语言上保持 sub-200ms TTFB。不需要翻译步骤或模型切换。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Cartesia 的数据保留策略是什么？</strong><br>A: 默认保留 30 天（TTS 输入文本和输出音频），之后自动清除。零保留 Enterprise 层（协商定价）立即清除。Pleroma 声音克隆默认永久保留；仪表板提供一键硬删除，移除克隆和嵌入。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Cartesia 有联盟计划吗？</strong><br>A: 目前没有。Cartesia 没有公开联盟计划。对希望通过 Cartesia 内容获利的网站，推荐模式是把平台链接为工具推荐，或使用 FreeModel（有公开联盟计划的聚合器）做联盟变现。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Cartesia 能实时流式输出音频吗？</strong><br>A: 能——<code>wss://api.cartesia.ai/tts/stream</code> 是 WebSocket 流式端点，是语音 Agent 集成的推荐路径，因为它消除了 TCP 握手开销（每轮节省 30-50ms）。音频输出为原始 PCM（24kHz/44.1kHz）或 Opus，适合直接 WebRTC 集成（LiveKit、Daily、Twilio Voice 等）。</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><em>本文包含联盟链接。通过这些链接注册可能会让我们获得佣金，对您不产生额外费用。我们的评测保持独立。</em></p>`;
+
+const disclaimer = `<p class="text-sm text-gray-500 italic my-4">本文包含联盟链接。通过这些链接注册可能会让我们获得佣金，对您不产生额外费用。我们的评测保持独立。</p>`;
+
+const affiliateSidebar = {
+  title: '试用 FreeModel',
+  description: '一个 API key 走多 provider 路由。DeepSeek + Qwen + Llama + OpenAI 兼容上游 —— 跟 Cartesia 配合做语音 Agent 的 LLM 路由优化。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '获取免费额度'
+};
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/zh" class="hover:underline">首页</a> &rsaquo;
+          <a href="/zh/tutorials" class="hover:underline">测评中心</a> &rsaquo;
+          <span class="text-gray-700">{zhTitle}</span>
+        </nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} 
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="sponsored noopener">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">速览</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>提供方：</strong> Cartesia（斯坦福 Hazy Research 衍生）</li>
+            <li><strong>端点：</strong> Sonic、Sonic 2、Onyx（STT）、Mistral（声音设计）、Pleroma（克隆）</li>
+            <li><strong>定价：</strong> $0.03-$0.15 / 1K 字符（TTS），$0.40/小时（STT）</li>
+            <li><strong>托管：</strong> AWS us-west-2 + GCP us-central1</li>
+            <li><strong>API：</strong> <code>https://api.cartesia.ai</code> + MCP 服务器 <code>https://mcp.cartesia.ai/mcp</code></li>
+            <li><strong>免费层：</strong> 10,000 字符/月，无需信用卡</li>
+            <li><strong>开源：</strong> 否——仅 API，权重未公开</li>
+            <li><strong>联盟：</strong> FreeModel 用于 LLM 侧成本优化</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

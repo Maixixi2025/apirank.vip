@@ -1,0 +1,557 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'hume-ai-api-review';
+const date = '2026-07-10';
+const locale = 'zh';
+
+const zhTitle = 'Hume AI 2026 评测：EVI 3 情感语音接口与 OCTAVE TTS';
+const zhDescription = 'Hume AI API 全面评测：EVI 3 情感对话、OCTAVE TTS 声音设计、Expression Measurement 情绪量化。定价对比 ElevenLabs / Cartesia / Deepgram / OpenAI Realtime。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Hume AI 2026 评测：EVI 3 情感语音接口与 OCTAVE TTS", "description": "Hume AI API 全面评测：EVI 3 情感对话、OCTAVE TTS 声音设计、Expression Measurement 情绪量化。定价对比 ElevenLabs / Cartesia / Deepgram / OpenAI Realtime。", "datePublished": "2026-07-10", "dateModified": "2026-07-10", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/hume-ai-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "测评中心", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Hume AI 2026 评测：EVI 3 情感语音接口与 OCTAVE TTS", "item": "https://apirank.vip/zh/tutorials/hume-ai-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Hume AI 用来做什么？", "acceptedAnswer": {"@type": "Answer", "text": "Hume 用于情感语音 agent —— 需要实时读懂并回应用户情绪的语音应用。典型用例：检测呼叫者挫败感的客服 agent、适应用户情绪的治疗和辅导 App、标记高愤怒通话的呼叫中心分析、按用户偏好调整 TTS 韵律的无障碍工具、需要比纯 TTS 更自然对话风格的消费者语音 agent（陪伴、语言导师、销售机器人）。"}}, {"@type": "Question", "name": "Hume AI 多少钱？", "acceptedAnswer": {"@type": "Answer", "text": "Hume 按端点计费，不按模型。EVI 3 全双工语音 $0.096/分钟。OCTAVE TTS $0.048/1K 字符。Expression Measurement 音频 $0.0008/秒。无订阅费、无最低承诺、无每席位许可。注册免费 credits（$5-10 等值）足够试用 EVI 3 对话 50-100 分钟。"}}, {"@type": "Question", "name": "Hume AI 有免费套餐吗？", "acceptedAnswer": {"@type": "Answer", "text": "有。Hume 注册即送免费 credits（数额变化，通常 $5-10 等值）。免费 credits 足够试用 EVI 3 对话 50-100 分钟、对 ~10,000 分钟音频跑 Expression Measurement、或生成 ~150,000 字符 OCTAVE TTS。免费 credits 不需信用卡。"}}, {"@type": "Question", "name": "可以从中国使用 Hume AI 吗？", "acceptedAnswer": {"@type": "Answer", "text": "Hume API 托管在 AWS US-East 和 GCP US-Central。从中国访问需要稳定代理连接。从上海到 WebSocket 端点延迟通常 200-400ms，对 EVI 会话可接受（EVI 客户端本来就缓冲 200-300ms 音频帧）。服务中国用户生产部署推荐路径：在阿里云百炼或腾讯云部署区域代理，转发到 Hume API。"}}, {"@type": "Question", "name": "Hume 支持会话中语言切换吗？", "acceptedAnswer": {"@type": "Answer", "text": "支持。EVI 3（2026 年 4 月发布）是 2026 年唯一实时检测用户语言切换、无需重新初始化 WebSocket 即可切换输出语言的语音 API。模型支持 12 种语言（英、西、法、德、意、葡、中、日、韩、印地、阿、俄）。Cartesia 和 ElevenLabs 语言切换需要新会话；Hume EVI 3 跟随用户。"}}, {"@type": "Question", "name": "Hume 与 ElevenLabs 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "ElevenLabs 拥有 2026 年最佳 TTS 声音质量和 3,000+ 声音库，但无情感层（不返回情绪向量）、无实时对话开箱即用。Hume EVI 3 有情感层、实时对话、较小的声音库（~50 声音含预置和 OCTAVE 设计）。纯 TTS，ElevenLabs 更便宜（$0.018 vs $0.048/1K 字符）且质量更高。情感语音 agent，Hume 是 2026 年唯一选项。"}}, {"@type": "Question", "name": "Hume 与 Cartesia 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "Cartesia Sonic-2 拥有最快实时 TTS（90ms TTFB）和实时 TTS API 最低价格，但无情感层。Hume EVI 3 较慢（200-300ms TTFB）且较贵，但增加 48 维情绪向量。无需情感层的低延迟语音 agent，Cartesia 胜。需要情感层的语音 agent，Hume 胜。"}}, {"@type": "Question", "name": "Hume 与 OpenAI Realtime 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI Realtime（gpt-4o-realtime）是 2026 年最开箱即用的实时对话 API，支持 WebRTC，对已用 OpenAI 的团队零集成成本。价格是对比中最高（$0.06/分钟输入 + $0.24/分钟输出 = 平衡对话约 $0.30/分钟）。无情感层（不返回情绪向量）、无 MCP server。Hume EVI 3 语音层更便宜（$0.096/分钟总）且增加情感层，但集成成本更高（WebSocket vs WebRTC）。无需情感、已全栈 OpenAI 的团队，OpenAI Realtime 胜。需要情感层，Hume 胜。"}}, {"@type": "Question", "name": "Hume MCP server 是什么？", "acceptedAnswer": {"@type": "Answer", "text": "Hume MCP server（2026 年 1 月发布）将每个 Hume 端点作为工具调用暴露给 Claude、Cursor、Cline 和任何 MCP 兼容 agent 框架。安装一条 `npx` 命令。配置完成后，agent 可通过同一 agent 工具注册表调用 EVI 会话、OCTAVE 合成、声音设计、Expression Measurement。MCP server 对所有 Hume API 用户免费。"}}, {"@type": "Question", "name": "Hume 有联盟营销计划吗？", "acceptedAnswer": {"@type": "Answer", "text": "Hume 当前没有公开联盟营销计划。需要联盟风格 CTA 的站点，替代方案是推荐 FreeModel —— 一个 OpenAI 兼容聚合器，提供跨多 provider 统一 API key 并为自部署模型增加成本路由优化。"}}, {"@type": "Question", "name": "能用 Hume 对大型音频档案跑批量情绪分析吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。Expression Measurement 是 REST 端点，接收音频、视频或图片文件，按时间戳返回 48 维情绪向量。音频定价 $0.0008/秒（~$0.048/分钟）。100 万分钟音频档案成本约 $48K。默认端点限速每账户 100 并发；企业客户可申请更高限额。典型批量工作流：上传音频到 S3，把 S3 keys 发给 Expression Measurement，把按时间戳的情绪向量存到 Postgres JSONB 列，查询 `Anger > 0.7` 片段，在仪表盘里显示这些片段。"}}]};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Hume AI 2026：情感语音接口与 OCTAVE TTS 生产级语音 agent 评测</h1>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">什么是 Hume AI？2026 年它为何值得关注？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume AI 是一家位于纽约的 AI 研究公司，过去四年专注于构建 2026 年除大厂语音实验室外最成熟的情感语音栈。公司由前 Google DeepMind 研究科学家 Alan Cowen 于 2021 年创立，2024 年完成 5000 万美元 B 轮融资（Union Square Ventures、Nat Friedman、Daniel Gross 参投），截至 2026 年 7 月服务的客户包括 CallMiner（呼叫中心分析）、BetterHelp（治疗陪伴应用）以及越来越多在 LangChain、AutoGen、Vercel AI SDK 之上构建的消费者语音 agent 创业公司。核心承诺是：一个 LLM 无关的语音 API，不仅能转写和合成语音，还能实时测量并回应说话者的情感内容。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">让 Hume 在 2026 年成为语音 agent 团队首选的三件事：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>EVI 3（情感语音接口）</strong>，2026 年 4 月发布的第三代对话语音模型，是首个在 ASR 转写旁路返回"用户当前感受"量化向量的语音 API。模型每轮返回 48 维情绪向量，并支持会话中途切换语言（EVI 3 实时检测 12 种语言，无需重新初始化 WebSocket 会话）。</li>
+<li><strong>OCTAVE TTS</strong>（2025 年 10 月发布），业界首个文本提示词驱动的声音设计模型。无需上传 30 秒参考音频做声音克隆，只需写"温暖、中年女性、轻微英音、节奏沉稳"即可生成新声音。模型同时支持 11 种语言和 9 个预置声音。</li>
+<li><strong>MCP server</strong>（2026 年 1 月发布）将每个 Hume 端点作为工具调用暴露给 Claude、Cursor 和任何 MCP 兼容的 agent 框架。<code>hume-mcp</code> 包一条命令安装，统一路由语音合成、转写、情绪测量到同一个 agent 工具注册表。</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">权衡在于价格。Hume 的 EVI 3 约 $0.096/分钟双工音频，比纯 TTS 的 Cartesia Sonic-2 贵 3-5 倍；OCTAVE 声音设计 $0.048/1K 字符，比 ElevenLabs TTS-Multilingual v3 贵约 2 倍。溢价是情感层换来的：如果你的应用需要读懂并回应用户情绪，2026 年没有可替代的 API。纯 TTS 场景，Cartesia 或 ElevenLabs 更便宜。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hume API 接口：EVI、OCTAVE、Expression Measurement 与 Voice Design</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume 提供四个不同的端点家族，每个端点 API 都不同。基础 URL 是 <code>https://api.hume.ai</code>，认证使用 <code>HUME_API_KEY</code> Bearer Token。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">1. EVI 3（情感语音接口）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">EVI 是 Hume 旗舰产品：一个全双工对话语音 agent，运行在 WebSocket 会话中。客户端按 16 kHz PCM 推流音频输入，EVI 推流 24 kHz PCM 音频输出，并返回转写、情绪和工具调用的结构化事件。会话模型：</p>
+
+<pre><code class="language-python">import asyncio
+from hume import AsyncHumeClient
+
+client = AsyncHumeClient(api_key="HUME_API_KEY")
+
+async with client.empathic_voice.connect() as socket:
+    await socket.update_config(
+        voice_id="ito",            # 预置声音
+        language="en",             # 12 种语言自动检测回退
+        emotion_model="evi-3",     # 情感层开启
+        system_prompt="你是瑜伽工作室的友好、耐心支持顾问。"
+    )
+
+    # 推送音频分块（从麦克风）
+    # ... (此处省略)
+
+    # 接收事件
+    async for event in socket:
+        if event.type == "audio_output":
+            play(event.audio)  # 24 kHz PCM
+        elif event.type == "user_message":
+            print(f"用户说: &#123;event.message.text&#125;")
+            print(f"情绪: &#123;event.message.emotion&#125;")  # 48 维向量</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><code>event.message.emotion</code> 字段是关键差异化点。每个用户轮次返回 48 维情绪强度向量（如 <code>Joy: 0.62, Sadness: 0.04, Anger: 0.02, Confusion: 0.31</code>）。应用可以基于该向量路由：例如 <code>if event.message.emotion.Joy > 0.7: trigger_celebration_sound()</code>。48 维对应 Hume 公开的 <code>Expression Measurement</code> 分类法（见第 3 节）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">EVI 3 还新增了<strong>会话中途语言切换</strong>能力，老版 EVI 2 没有。模型实时检测 12 种语言，无需重启 WebSocket 即可切换输出语言。用户可以先用英语，中途切到西班牙语，EVI 3 无需重新初始化即跟随。这是 2026 年唯一具备此能力的语音 API；Cartesia 和 ElevenLabs 语言切换需要新会话。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">2. OCTAVE TTS</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">OCTAVE 是 Hume 的 TTS 模型。两种风格：</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>声音设计（文本提示词定制声音）：</strong></p>
+
+<pre><code class="language-python">from hume import HumeClient
+
+client = HumeClient(api_key="HUME_API_KEY")
+
+response = client.tts.synthesize(
+    text="欢迎来到你的冥想课。找一个舒适的座位，让双肩放松。",
+    voice_description="温暖、中年女性、轻微英音、节奏沉稳。",
+    language="zh",
+    output_format="mp3"
+)
+with open("welcome.mp3", "wb") as f:
+    f.write(response.audio)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">OCTAVE 的声音描述是自由英文文本，不是受约束的 schema。模型解释"温暖、沙哑、兴奋、平淡"等形容词，产出匹配的声音。同一描述运行两次返回相似但不完全相同的声音，因此模型是随机的。如需确定性声音，可保存首次合成的 <code>voice_id</code> 后用 <code>voice_id="abc123"</code> 复用。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>声音克隆（参考音频上传）：</strong></p>
+
+<pre><code class="language-python">response = client.tts.clone_and_synthesize(
+    text="This is a cloned voice.",
+    reference_audio_path="voice_sample.wav",  # 30+ 秒干净音频
+    reference_transcript="This is the transcript of the reference audio.",
+    language="en"
+)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">克隆至少需要 30 秒干净参考音频加逐字转写。质量与 ElevenLabs Instant Voice Cloning 相当，但同时返回情绪向量（Hume 的 Expression Measurement 也可对克隆声音启用）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">OCTAVE 定价 <strong>$0.048/1K 输入字符</strong>。1 分钟配音 ~150 词/分钟 = ~750 字符 = $0.036。ElevenLabs TTS-Multilingual v3 是 $0.018/1K 字符（Creator 套餐），纯 TTS（不需声音设计）约便宜 2.6 倍。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">3. Expression Measurement（批量情绪分析）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Expression Measurement 是独立情绪 API：传入音频、视频或图片文件，按时间戳返回 48 维情绪向量。端点是 REST，不是 WebSocket：</p>
+
+<pre><code class="language-python">response = client.expression.measure.batch(
+    files=["call_recording.wav"],
+    models=["face", "prosody", "language"],  # 多模态
+    granularity="utterance"  # 或 "word" / "consecutive-5-second"
+)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">48 种情绪定义在 Hume 公开的 <code>Expression Taxonomy v3</code>（MIT 协议）。生产中最常用：<code>Joy、Sadness、Anger、Fear、Surprise、Disgust、Confusion、Concentration、Awkwardness、Boredom、Excitement、Interest</code>。分类法与 Plutchik 情绪轮类似，但基于数据驱动，源自 Hume 的 1000 万+ 标注人类情绪训练语料。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">典型用例：通话后分析。呼叫中心录制客服通话，对音频跑 Expression Measurement，按 utterance 返回情绪分数。仪表盘标记客户 <code>Anger</code> 超过 0.7 持续 30 秒以上的通话（SLA 违规信号），或客服 <code>Awkwardness</code> 高的片段（辅导机会）。商业竞品 CallMiner、Gong、Chorus.ai 每个席位 $1,000+/月。Hume API 是 $0.0008/秒音频，约 $0.05/分钟。10 万通通话/月呼叫中心，Hume 约 $5,000/月 vs CallMiner $120,000+/月。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">4. Voice Design（预置声音）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">想要高质量 TTS 又不写声音描述的团队，Hume 提供 9 个预置声音（<code>ito, kora, ronan, dave, ...</code>）和 11 种语言预置（英、西、法、德、意、葡、中、日、韩、印地、阿）。预置声音针对生产用例调优（<code>kora</code> 是温暖女声，有声书朗读优化；<code>ronan</code> 是低沉男声，冥想 App 优化）。预置价格与定制声音设计相同：$0.048/1K 字符。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hume 定价实战：按功能拆分</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume 按功能定价，不按模型，费率不全列在一处。2026 年 7 月完整价格：</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">端点</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">单位</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">价格</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">备注</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">EVI 3（全双工语音）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">每分钟音频</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.096</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">按秒计费，~$5.76/小时对话</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">EVI 3（关闭情感层）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">每分钟</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.072</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">仅 ASR + TTS 便宜 25%</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">OCTAVE TTS（定制声音）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">每 1K 字符</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.048</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">文本提示词设计 + 参考克隆</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">OCTAVE TTS（预置声音）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">每 1K 字符</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.048</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">同价，预置无单独许可</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Expression Measurement（音频）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">每秒</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.0008</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.048/分钟</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Expression Measurement（视频）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">每秒</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.0012</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">视频帧略高</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Expression Measurement（图片）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">每张</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.0004</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">单帧人脸分析</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">声音克隆设置</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">每个声音一次性</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">免费</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">上传 30s+ 参考音频 + 转写</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">免费层：Hume 注册即送免费 credits（数额变化，通常等值 $5-10）。可试用 EVI 3 对话 50-100 分钟，或对 10,000 分钟音频跑 Expression Measurement。免费 credits 不需信用卡，超出免费层后需要添加卡片。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">批量折扣：Hume 不公开列出批量阶梯，月花费 >$5K 的账户通常获 15-20% 定制费率。联系 Hume 销售团队（<code>sales@hume.ai</code>）获取报价。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hume 与 ElevenLabs、Cartesia、Deepgram、OpenAI Realtime 的对比</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年语音 API 市场有五家主要玩家，每家角度不同。选择取决于你需要情感层、语言覆盖、价格还是实时开箱即用集成。</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">提供商</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">优势</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">劣势</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">TTS 价格（每 1K 字符）</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">实时对话</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">情感层</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">MCP server</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Hume AI</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">情感语音（48 维情绪）、EVI 3 会话中语言切换、OCTAVE 文本提示词声音设计</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">TTS 价格较高（2-3 倍 ElevenLabs）、WebSocket 协议集成成本</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.048</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（EVI 3，WebSocket）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（48 维情绪向量）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（2026 年 1 月）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>ElevenLabs</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">业界最佳 TTS 质量、70+ 种语言、大型声音库（3,000+ 社区声音）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">无情感层、声音克隆伦理争议、无实时对话</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.018（TTS-Multilingual v3）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（Conversational AI，2025）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">否</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">有限（无官方 MCP）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Cartesia</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">最快实时 TTS（Sonic-2，90ms TTFB）、Pythonic API、MCP 集成</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">无情感层、声音库较小（~50 声音）、英文优先</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.022（Sonic-2）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（Sonic-2 + Ink，2025）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">否</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（2025 年 8 月）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Deepgram</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">STT（转写）性价比最优、Aura TTS 适合纯 TTS 用例</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">TTS 质量低于 ElevenLabs/Hume、无情感层、无实时对话</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.015（Aura-2）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">否（Aura 仅 HTTP）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">否</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">否</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>OpenAI Realtime</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">开箱即用实时对话（gpt-4o-realtime），OpenAI SDK 一部分</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">无情感层、定价较高（~$0.06/分钟输入 + $0.24/分钟输出）、尚无 MCP</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.060（gpt-4o-realtime，按分钟）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">是（原生，WebRTC）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">否</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">否</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>做面向客户的情感语音 agent（治疗、客服、辅导、陪伴）：</strong> Hume 胜。48 维情绪向量是 2026 年唯一实时返回用户情绪量化度量的 API，EVI 3 会话中语言切换对全球呼叫中心独有价值。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>做最佳 TTS 质量 + 最低价格：</strong> ElevenLabs 胜。声音质量业界领先，声音库大，价格比 Hume 便宜 2.6 倍。放弃情感层，但有声书朗读、视频配音、播客制作 ElevenLabs 是首选。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>做最低延迟实时 TTS 语音 agent：</strong> Cartesia Sonic-2 胜。TTFB 90ms，约是 ElevenLabs 典型 300-400ms 的 1/3。权衡是声音库较小、无情感层。每个 100ms 延迟都重要的交互式语音 agent（如 1 秒总预算的实时客服），Cartesia 是首选。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>做最便宜的 STT（转写）大规模生产：</strong> Deepgram 胜。Nova-2 是英、西语 ASR 性价比领先者。Deepgram TTS（Aura-2）合格但不顶尖，所以多数团队用 Deepgram STT 配 ElevenLabs 或 Cartesia TTS 搭生产栈。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>做最开箱即用 OpenAI 集成：</strong> OpenAI Realtime（gpt-4o-realtime）胜。SDK 与 OpenAI 生态一致，模型单次 API 调用，无需管理单独语音提供商。价格最高（~$0.06/分钟输入 + $0.24/分钟输出），无情感层或 MCP server，但全 OpenAI 团队集成成本为零。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hume MCP server：2026 年 agent 集成</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume 在 2026 年 1 月发布官方 MCP server。服务器将每个 Hume 端点作为工具调用暴露给 Claude、Cursor、Cline 和任何 MCP 兼容 agent 框架。安装一条命令：</p>
+
+<pre><code class="language-bash">npx -y @hume/mcp-server --api-key $HUME_API_KEY</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><code>mcp.json</code> 配置：</p>
+
+<pre><code class="language-json">&#123;
+  "mcpServers": &#123;
+    "hume": &#123;
+      "command": "npx",
+      "args": ["-y", "@hume/mcp-server"],
+      "env": &#123;
+        "HUME_API_KEY": "your-api-key"
+      &#125;
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">配置完成后，agent 可以调用：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><code>hume_evi_start_session</code>：用声音 + 系统提示词开全双工 EVI 3 会话</li>
+<li><code>hume_evi_end_session</code>：关闭会话</li>
+<li><code>hume_octave_synthesize</code>：用定制或预置声音把文本转音频</li>
+<li><code>hume_octave_describe_voice</code>：用文本描述生成新声音</li>
+<li><code>hume_expression_measure</code>：对音频/视频/图片文件跑情绪分析</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">MCP server 是需要说话（合成）、听并回应（EVI）、读用户情绪（Expression Measurement）的 agent 的阻力最小路径。同一 <code>HUME_API_KEY</code> 用于所有端点；无需单独订阅。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">MCP server 对所有 Hume API 用户免费。它也是少数支持流式工具调用的语音 API MCP 实现之一，是长时语音合成或 EVI 会话的正确模式。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hume 有 OpenAI 兼容 API 吗？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">没有。Hume API 是 REST + WebSocket，不是 OpenAI 兼容。没有可直接替换 OpenAI <code>/v1/audio/speech</code> 或 <code>/v1/realtime</code> 端点的接口。如果从 OpenAI Realtime 迁移到 Hume EVI 3，需要重写客户端使用 Hume WebSocket 协议。权衡是情感层：OpenAI Realtime API 不返回 48 维情绪向量，所以如果你构建需要读用户情绪的语音 agent，重写在所难免。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">想要 OpenAI 兼容 + Hume 情感层的团队，方案是 Hume 做语音层 + LLM（Claude、GPT-4o）做推理。典型架构：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li>用户说话 → Hume EVI 3 转写并返回情绪向量</li>
+<li>应用把转写 + 情绪发给 LLM，带系统提示词 + 工具定义</li>
+<li>LLM 生成文本回复，可选包含 <code>humor: "warm, gentle"</code> 或 <code>emotion: "apologetic"</code> 指令</li>
+<li>应用把 LLM 回复发给 Hume OCTAVE，按要求声音风格合成</li>
+<li>Hume 流式推回音频给用户</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">这是大多数 Hume 生产部署的架构。WebSocket 是语音层的正确协议，LLM 是推理层的正确协议。两者解耦，应用串接。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hume 数据保留策略？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume 保留 EVI 会话、OCTAVE 音频、Expression Measurement 输入/输出 30 天，用于滥用监控和调试。企业客户可配置保留期（多数生产团队设为 0 天，日志走自己的可观测栈）。多数生产工作负载 30 天保留可接受。处理 HIPAA、PHI 或其他合规数据的工作负载，企业套餐可完全关闭 Hume 日志，所有日志路由到私有 S3 桶。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume 通过 SOC 2 Type II 认证（2026 年 3 月验证），GDPR 合规有公开 DPA。默认 MCP server 数据<strong>不</strong>包含音频内容；只为计费和滥用监控记录工具调用元数据。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">能自托管 Hume 模型吗？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">不能。Hume 模型（EVI 3、OCTAVE、Expression Measurement）不开源权重，不提供自托管。API 是唯一访问路径。自托管情感语音最接近的方案是组合：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Whisper</strong>（开源 STT）做转写</li>
+<li><strong>Llama 3.3 70B</strong> 或 <strong>Claude</strong> 做推理</li>
+<li><strong>CosyVoice</strong> 或 <strong>ChatTTS</strong>（开源 TTS）做合成</li>
+<li><strong>自训练情绪分类器</strong>，基于 Hume 公开的 Expression Taxonomy v3（分类法是 MIT 协议，但训练权重不是）</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">结果约为 Hume 80% 质量、成本 40%，但工程开销巨大（团队需集成 4 个模型、管理 WebSocket 协议、维护情绪分类器）。需要情感层但不愿维护多模型栈的团队，Hume API 是首选。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">最终结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume AI 在 2026 年是<strong>需要情感层的语音 API</strong> —— 实时返回用户情绪的量化度量，伴随转写，可用于驱动 agent 行为、呼叫分析或内容审核。EVI 3 会话中语言切换是 2026 年唯一支持此能力的语音 API；Cartesia 和 ElevenLabs 语言切换需要新会话。OCTAVE 声音设计是 2026 年唯一无需参考音频即可从自然语言描述生成新声音的 TTS 模型。MCP server 是最被低估的功能 —— 需要说话、听或读用户情绪的 agent 都应通过 Hume MCP 路由。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">权衡是真实的：TTS 价格较高（2-3 倍 ElevenLabs）、WebSocket 协议集成成本（vs OpenAI Realtime WebRTC 开箱即用）、无自托管选项。<strong>构建不需要情感层的语音 agent</strong>（有声书、播客制作、视频配音），ElevenLabs 首选。<strong>构建需要情感层且愿意付溢价的团队</strong>，Hume 首选。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果 2026 年你正在构建语音 agent 且未试过 EVI 3，注册免费 credits 足够跑 30 分钟情感对话，对照你的用例基准测试 48 维情绪向量。这就是正确的起点。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Hume AI 用来做什么？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume 用于情感语音 agent —— 需要实时读懂并回应用户情绪的语音应用。典型用例：检测呼叫者挫败感的客服 agent、适应用户情绪的治疗和辅导 App、标记高愤怒通话的呼叫中心分析、按用户偏好调整 TTS 韵律的无障碍工具、需要比纯 TTS 更自然对话风格的消费者语音 agent（陪伴、语言导师、销售机器人）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Hume AI 多少钱？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume 按端点计费，不按模型。EVI 3 全双工语音 $0.096/分钟。OCTAVE TTS $0.048/1K 字符。Expression Measurement 音频 $0.0008/秒。无订阅费、无最低承诺、无每席位许可。注册免费 credits（$5-10 等值）足够试用 EVI 3 对话 50-100 分钟。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Hume AI 有免费套餐吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">有。Hume 注册即送免费 credits（数额变化，通常 $5-10 等值）。免费 credits 足够试用 EVI 3 对话 50-100 分钟、对 ~10,000 分钟音频跑 Expression Measurement、或生成 ~150,000 字符 OCTAVE TTS。免费 credits 不需信用卡。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>可以从中国使用 Hume AI 吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume API 托管在 AWS US-East 和 GCP US-Central。从中国访问需要稳定代理连接。从上海到 WebSocket 端点延迟通常 200-400ms，对 EVI 会话可接受（EVI 客户端本来就缓冲 200-300ms 音频帧）。服务中国用户生产部署推荐路径：在阿里云百炼或腾讯云部署区域代理，转发到 Hume API。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Hume 支持会话中语言切换吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">支持。EVI 3（2026 年 4 月发布）是 2026 年唯一实时检测用户语言切换、无需重新初始化 WebSocket 即可切换输出语言的语音 API。模型支持 12 种语言（英、西、法、德、意、葡、中、日、韩、印地、阿、俄）。Cartesia 和 ElevenLabs 语言切换需要新会话；Hume EVI 3 跟随用户。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Hume 与 ElevenLabs 相比如何？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">ElevenLabs 拥有 2026 年最佳 TTS 声音质量和 3,000+ 声音库，但无情感层（不返回情绪向量）、无实时对话开箱即用。Hume EVI 3 有情感层、实时对话、较小的声音库（~50 声音含预置和 OCTAVE 设计）。纯 TTS，ElevenLabs 更便宜（$0.018 vs $0.048/1K 字符）且质量更高。情感语音 agent，Hume 是 2026 年唯一选项。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Hume 与 Cartesia 相比如何？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Cartesia Sonic-2 拥有最快实时 TTS（90ms TTFB）和实时 TTS API 最低价格，但无情感层。Hume EVI 3 较慢（200-300ms TTFB）且较贵，但增加 48 维情绪向量。无需情感层的低延迟语音 agent，Cartesia 胜。需要情感层的语音 agent，Hume 胜。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Hume 与 OpenAI Realtime 相比如何？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenAI Realtime（gpt-4o-realtime）是 2026 年最开箱即用的实时对话 API，支持 WebRTC，对已用 OpenAI 的团队零集成成本。价格是对比中最高（$0.06/分钟输入 + $0.24/分钟输出 = 平衡对话约 $0.30/分钟）。无情感层（不返回情绪向量）、无 MCP server。Hume EVI 3 语音层更便宜（$0.096/分钟总）且增加情感层，但集成成本更高（WebSocket vs WebRTC）。无需情感、已全栈 OpenAI 的团队，OpenAI Realtime 胜。需要情感层，Hume 胜。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Hume MCP server 是什么？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume MCP server（2026 年 1 月发布）将每个 Hume 端点作为工具调用暴露给 Claude、Cursor、Cline 和任何 MCP 兼容 agent 框架。安装一条 <code>npx</code> 命令。配置完成后，agent 可通过同一 agent 工具注册表调用 EVI 会话、OCTAVE 合成、声音设计、Expression Measurement。MCP server 对所有 Hume API 用户免费。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Hume 有联盟营销计划吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Hume 当前没有公开联盟营销计划。需要联盟风格 CTA 的站点，替代方案是推荐 FreeModel —— 一个 OpenAI 兼容聚合器，提供跨多 provider 统一 API key 并为自部署模型增加成本路由优化。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>能用 Hume 对大型音频档案跑批量情绪分析吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">可以。Expression Measurement 是 REST 端点，接收音频、视频或图片文件，按时间戳返回 48 维情绪向量。音频定价 $0.0008/秒（~$0.048/分钟）。100 万分钟音频档案成本约 $48K。默认端点限速每账户 100 并发；企业客户可申请更高限额。典型批量工作流：上传音频到 S3，把 S3 keys 发给 Expression Measurement，把按时间戳的情绪向量存到 Postgres JSONB 列，查询 <code>Anger > 0.7</code> 片段，在仪表盘里显示这些片段。</p>
+`;
+
+const affiliateSidebar = {
+  title: '试用 FreeModel',
+  description: '一个 API key 走多 provider 路由。DeepSeek + Qwen + Llama + OpenAI 兼容上游 —— 跟 Hume 配合做情感语音 + LLM 全栈 agent 成本优化。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '获取免费额度'
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/zh" class="hover:underline">首页</a> &rsaquo;
+          <a href="/zh/tutorials" class="hover:underline">测评中心</a> &rsaquo;
+          <span class="text-gray-700">{zhTitle}</span>
+        </nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url}
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+             rel="sponsored noopener" target="_blank">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">快速概览</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>提供商：</strong> Hume AI（情感语音 API）</li>
+            <li><strong>模型：</strong> EVI 3、OCTAVE TTS、Expression Measurement、Voice Design</li>
+            <li><strong>定价：</strong> EVI 3 $0.096/分钟；OCTAVE $0.048/1K 字符；Expression $0.0008/秒</li>
+            <li><strong>托管：</strong> AWS US-East、GCP US-Central</li>
+            <li><strong>API：</strong> <code>https://api.hume.ai</code> + MCP server（2026 年 1 月）</li>
+            <li><strong>情感层：</strong> 48 维情绪向量（2026 年业界独有）</li>
+            <li><strong>联盟：</strong> 用 FreeModel 做成本路由优化</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

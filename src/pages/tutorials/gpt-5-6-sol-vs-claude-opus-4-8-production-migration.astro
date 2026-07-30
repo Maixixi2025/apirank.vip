@@ -1,0 +1,560 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-5-6-sol-vs-claude-opus-4-8-production-migration';
+const date = '2026-07-13';
+const locale = 'en';
+
+const enTitle = 'GPT-5.6 Sol vs Claude Opus 4.8: Migration';
+const enDescription = 'Ploy cut agent cost 27% and wall-clock 2.2x switching from Claude Opus 4.8 to GPT-5.6 Sol. 4 engineering fixes + CLIProxyAPI.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the cost difference between GPT-5.6 Sol and Claude Opus 4.8 in production?", "acceptedAnswer": {"@type": "Answer", "text": "On Ploy's redesign agent (n=10 vs n=11), GPT-5.6 Sol was 27% cheaper per completed build ($2.22 vs $3.06) and 2.2x faster in wall-clock time (3m 42s vs 8m 00s), with higher visual score. The cost advantage is post-cache-fix; pre-fix, Sol was 50% more expensive. Output token count was cut roughly in half — Sol writes lean code, not just faster code."}}, {"@type": "Question", "name": "Why did Ploy switch from Claude Opus 4.8 to GPT-5.6 Sol?", "acceptedAnswer": {"@type": "Answer", "text": "Opus 4.8 had held Ploy's default model slot for four months. Nothing in that window beat it. GPT-5.6 Sol was the first model that did, on the specific Ploy workload of building, editing, and screenshotting real marketing websites. The 27% cost reduction + 2.2x speedup + higher visual score was a large enough delta to justify a migration effort. The decision was a cost play, not a capability play — same $5/$30 per-token price, but Sol's token efficiency flipped the per-task total."}}, {"@type": "Question", "name": "Did the migration require code changes?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Four engineering fixes: (1) audit the eval harness for incumbent-model assumptions, (2) transform tool schemas at the provider boundary so Sol's 'fill every parameter' habit doesn't get interpreted as real arguments, (3) rebuild prompt caching around GPT-5.6's key-partitioned cache nodes with per-workspace keys, and (4) set `store: false` on Responses API calls to make reasoning replay self-contained. The 4th is the smallest code change. The 3rd is the largest cost lever."}}, {"@type": "Question", "name": "Can I use GPT-5.6 Sol without rewriting my client code?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, via CLIProxyAPI (github.com/router-for-me/CLIProxyAPI), an open-source proxy that provides OpenAI / Gemini / Claude / Codex / Grok compatible API interfaces. Tibo Sottiaux's X thread walks through a 5-minute setup: install the proxy, connect with your existing OAuth credentials, point your client at the OpenAI-compatible endpoint. Useful for solo dev or small team evaluations; less suitable for Ploy-scale production traffic."}}, {"@type": "Question", "name": "Where does Claude Opus 4.8 still beat GPT-5.6 Sol?", "acceptedAnswer": {"@type": "Answer", "text": "Three workloads: (1) short-form generation where per-call reasoning quality matters more than throughput, (2) design tasks with strong existing brand systems (Sol 'reaches for very big text' by default per Ploy's design lead), and (3) any multi-tenant architecture that depends on Anthropic's org-scoped shared cache — GPT-5.6 cannot share a static prefix across workspaces by design, so each tenant pays a ~$0.18 cold-write cost on idle."}}, {"@type": "Question", "name": "How does Claude Sonnet 5 (re-deployed June 30) fit into the comparison?", "acceptedAnswer": {"@type": "Answer", "text": "Sonnet 5 launched with a promo price of $2/$10 through August 31, 2026 — a 33% discount on Sonnet 4.5. For mid-weight agent loops and short high-quality generation, Sonnet 5 at $2/$10 is often the better default than Sol at $5/$30, especially if your workload doesn't need Sol's reasoning depth. The full competitive set today is Sonnet 5 ($2/$10) + Opus 4.8 ($15/$75) + Sol ($5/$30) + Terra ($2.50/$15) + Luna ($1/$6). The right default depends on the workload."}}, {"@type": "Question", "name": "What is the catch with GPT-5.6's prompt caching?", "acceptedAnswer": {"@type": "Answer", "text": "Two. First, GPT-5.6 dropped partial-prefix matching, so the old 'implicit cache on common prefix' trick no longer works — you need explicit `prompt_cache_breakpoint` markers and a `prompt_cache_key`. Second, the key is part of cache identity, and each key maps to a node that handles ~15 rpm before traffic fans to cold nodes. A wrong key strategy (per-conversation, one global) gives you near-zero first-call hit rates. Per-workspace keys are the sweet spot for multi-tenant apps."}}, {"@type": "Question", "name": "Is GPT-5.6 Sol available now?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, as of June 26, 2026, all three tiers (Sol, Terra, Luna) are generally available through the OpenAI API. The launch page is at openai.com/index/gpt-5-6. Sonnet 5 (the comparable Anthropic tier) is also live again as of June 30, 2026, after the US export-control directive was lifted."}}, {"@type": "Question", "name": "How do I get an API key for GPT-5.6 Sol?", "acceptedAnswer": {"@type": "Answer", "text": "Existing OpenAI API keys work — Sol is on the same api.openai.com endpoint, you just specify model: 'gpt-5.6-sol' in the request. The Responses API (/v1/responses) is the recommended surface for agent workloads, and it is where the cache key + breakpoint design applies. Chat Completions (/v1/chat/completions) also works for simpler use cases."}}, {"@type": "Question", "name": "Should I migrate from Opus 4.8 to GPT-5.6 Sol today?", "acceptedAnswer": {"@type": "Answer", "text": "Only if your workload matches Ploy's: long-running, tool-heavy, output-token-dominated, design or generation. Run the 6-step evaluation before committing. The cost lever (cache strategy) is the largest source of pre-fix waste — if you migrate without rebuilding your cache config, you will conclude Sol is 50% more expensive than Opus and the migration is a mistake. With the cache rebuilt, the conclusion is usually the opposite. The lesson: never trust a cross-vendor cost comparison that was measured on a cold cache."}}]};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">GPT-5.6 Sol vs Claude Opus 4.8: What Real Production Migration Taught Ploy (and 4 Engineering Lessons)</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">On <strong>June 26, 2026</strong>, OpenAI launched the <strong>GPT-5.6 family</strong> with three capability tiers — <strong>Sol, Terra, Luna</strong> — at the same per-token price points as GPT-5.5. The first ten days of public availability produced two well-publicized production migrations away from <strong>Claude Opus 4.8</strong>:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Ploy.ai</strong> — switched its default agent model from Opus 4.8 to GPT-5.6 Sol on day one, after Opus had held the default slot for four months through both the 4.7 and 4.8 generations.</li>
+
+<li><strong>CLIProxyAPI (Tibo Sottiaux)</strong> — pointed Claude Code's backend at GPT-5.6 Sol via a self-hosted proxy, replacing an Anthropic-direct path without rewriting client code.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Both teams published their numbers. Both got it working in production. Both ran into surprises that the on-paper Sol vs Opus comparison can't tell you. This article is the engineering post-mortem of what each team actually had to change, the cost/cache math that flipped their decision, and where Sol still loses to Opus on workloads that don't make the press release.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are evaluating GPT-5.6 Sol as a replacement for Claude Opus 4.8 in a production agent today, this is the operational guide to doing it without breaking your eval harness, your prompt cache, or your tool call layer.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Ploy's head-to-head result on their own agent eval suite (n=10 vs n=11):</strong> GPT-5.6 Sol delivered builds <strong>2.2× faster</strong> (3m 42s vs 8m 00s), <strong>27% cheaper</strong> ($2.22 vs $3.06), at <strong>higher visual score</strong> (0.970 vs 0.936). Output token count was cut roughly in half.</li>
+
+<li><strong>The decision was not "Sol is better" — it was "Sol wins on this specific job."</strong> Ploy's agent builds, edits, screenshots, and ships real marketing websites. Opus had held the slot because nothing in 4 months beat it on that workload.</li>
+
+<li><strong>The migration required 4 engineering fixes</strong> before the cost numbers made sense. Ploy had to rewrite their eval harness, fix tool schemas for Sol's "fill every parameter" habit, rebuild prompt caching around GPT-5.6's key-partitioned cache nodes, and make Responses API reasoning replay self-contained.</li>
+
+<li><strong>Tibo / CLIProxyAPI used a different lever</strong>: a 5-minute proxy install that lets existing Claude Code or Codex clients point at Sol without code changes, useful for solo dev workflows that don't have Ploy's SDK-level access.</li>
+
+<li><strong>Where Opus 4.8 still wins</strong>: short-form generation where per-call reasoning quality matters more than throughput, design tasks where Opus plays a more conservative type scale, and any workload that depends on Anthropic's org-scoped shared cache (GPT-5.6 cannot share static prefix across workspaces by design).</li>
+
+<li><strong>If you only do one thing carefully during your own migration</strong>, rebuild your prompt caching. Ploy's pre-fix Sol looked <strong>50% more expensive than Opus</strong> purely because of cache misconfiguration. After the fix, it landed <strong>below</strong> Opus on the same suite. Every dollar of the gap they had been staring at was cache config, not model pricing.</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Why this is not a normal "Model A vs Model B" comparison</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The standard Opus vs Sol writeup is a benchmark shootout: Terminal-Bench scores, GPQA, MMLU, latency on synthetic prompts. That is not what happened here. Ploy did not run a benchmark; they ran their <strong>production eval suite</strong> — hundreds of cases of "build a homepage from scratch" through "is this clone request safe to execute" — and got a clear answer on their specific workload. The same model can win Ploy's suite and lose yours.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Two reasons their numbers are worth reading carefully:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>The harness was tuned to the incumbent, and Ploy didn't know it.</strong> Their tool-call budgets were sized for Opus's sequential style; Sol fans out parallel calls and blew through them on cases it was solving correctly. Their eval executor didn't support batched file reads, which Opus rarely used and Sol uses constantly. Roughly a third of the raw failures in the first cross-model run traced back to <strong>harness assumptions, not model behavior</strong>, and they were not evenly distributed between models. Ploy's lesson: triage the traces before you trust the pass rate.</li>
+
+<li><strong>The "winning model" was the cheaper one.</strong> A common pattern in 2026 model launches is that the new flagship is more expensive and slightly better, and you adopt it for premium workloads. Ploy's case is the inverse: Sol is the same price as Opus ($5/$30) and went 27% cheaper because of token efficiency, then went lower still once the cache was configured. That makes the migration a <strong>cost play</strong>, not a capability play — exactly the kind of decision that gets skipped because the press coverage frames it as a quality comparison.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The rest of this article is the four-step engineering post-mortem. If you only read one section, read <strong>Step 2 (prompt caching)</strong> — it is the single largest source of cost surprise in any OpenAI-to-Anthropic or Anthropic-to-OpenAI migration.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Ploy numbers, before and after the fixes</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">From the published Ploy migration post (June 26, 2026), comparing Claude Opus 4.8 vs GPT-5.6 Sol on a redesign suite where the agent rebuilds a brand's homepage against a reference design:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Metric (per completed build)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Claude Opus 4.8 (n=11)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">GPT-5.6 (n=10)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Delta</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Cost per build</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3.06</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.22</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>−27%</strong></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Wall-clock time</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">8m 00s</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">3m 42s</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>−54% (2.2× faster)</strong></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Input tokens</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2.60M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1.70M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>−35%</strong></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Output tokens</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">33.0K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">17.1K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>−48%</strong></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Visual score (1.0 = match)</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">0.936</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">0.970</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>+3.4%</strong></td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Mean of completed builds</strong>, not best case. The Sol run finished a build in under four minutes on average. Opus on the same suite took eight. The visual score is from a binary-check judge running 10 yes/no questions ("hero is a full-bleed photographic scene", "primary CTAs are rounded rectangles, not pills") plus content checks, tool-trajectory checks, and file assertions. The cost is the actual OpenAI bill for the run, not a calculated estimate.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">A representative matched pair: Opus produced a 17,957-character <code>globals.css</code> with 174 CSS variables (full color ramps, mostly unused). GPT-5.6 wrote 2,508 characters and 45 variables for a comparable (and sometimes better) rendered page. Sol writes lean code, not just faster code.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The catch: <strong>these numbers are post-fix.</strong> Pre-fix, Sol was 50% more expensive on the same workload because of prompt cache misconfiguration. Read Step 2 before you trust any cross-vendor price comparison in a benchmarking post.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Step 0: Fix your eval harness before you trust a single number</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">This is the part nobody wants to write a blog post about because it makes the previous weeks of model evaluations look silly. Ploy ran their suite across both models and found that roughly a third of the raw failures in the first cross-model run traced to harness assumptions, not model behavior — and the failures were not evenly distributed between models.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Two concrete examples from the post:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Tool-call budgets were sized for Opus's sequential style.</strong> Sol fans out parallel calls. On cases Sol was solving correctly, it was exceeding the budget the harness had inherited from Opus. Ploy's harness was failing valid Sol runs for hitting a limit designed around a different model.</li>
+
+<li><strong>The eval executor didn't support batched file reads.</strong> Opus rarely used them. Sol uses them constantly. The harness was treating each file read as a separate tool call and blowing past the per-step budget.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">There was also an inherited default that silently changed pass/fail outcomes: a minScore threshold of 1.0 on the visual judge meant a hero Sol scored 0.98 on was marked "failed", and an Opus run that passed every individual check was also "failed" by the same threshold. One invisible threshold, two different model behaviors, neither was the model being wrong.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>The take-away</strong>: before declaring a model "the winner," triage the traces. You are grading the new model on how well it imitates the old one if you don't. The number that matters is not the pass rate on a tuned-to-the-incumbent harness — it is the pass rate after the harness has been audited for assumptions that the incumbent absorbed and the challenger exposes.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Step 1: Sol sends every tool parameter, every time</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">This was the one that was silently corrupting results before Ploy caught it. Ploy's agent's code tool has 25 top-level parameters, one required (<code>action</code>) and the rest optional. <strong>Opus sends the two or three it is using and omits the rest. Sol sends all 25, every time</strong>, inventing plausible values for the ones it doesn't need: <code>offset: 0</code>, <code>timeout: 120000</code>, <code>siteId: "00000000-0000-0000-0000-000000000000"</code>.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Ploy's measurement of three days of production traces:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Model</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Calls</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Calls carrying all 25 properties</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">% carrying all 25</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">gpt-5.6</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">6,635</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">6,635</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>100%</strong></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">claude-opus-4.8</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">2,898</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">4</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">0.1%</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">claude-sonnet-5</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,933</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">0</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">0%</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>The problem isn't verbosity. It is that an invented value is indistinguishable from an intended one.</strong> <code>offset: 0</code> looks like a real argument. Ploy's file-read implementation treated it as one, and <strong>52% to 64% of Sol's file reads were coming back empty</strong> because of it. The tool returned <code>success: true</code> both ways, so the model had no way to know it was reading blank files. It just did the work worse, with more calls.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Prompting doesn't fix this. Ploy tried:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>A tool-description directive to "omit unused parameters": still 25/25.</li>
+
+<li>Per-property "OPTIONAL, omit if unused" hints: still 25/25.</li>
+
+<li>OpenAI's <code>strict</code> mode: identical behavior, and adopting it would have forced them to strip <code>pattern</code>, <code>format</code>, and array-bound validation from every schema.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">This is <strong>baked into how the model emits function calls</strong>. You don't instruct it away; you design around it.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>The fix that worked is a schema transform at the provider boundary.</strong> For OpenAI-family models only, Ploy rewrites every optional property to be <strong>required but nullable</strong>, using <code>anyOf: [T, null]</code>, which gives the model an explicit way to say "not using this." Then, at the single seam every tool invocation passes through, they strip the nulls back out before validation, so no tool implementation changes at all.</p>
+
+<pre><code class="language-javascript">// Before: 25 keys, every one carrying an invented value
+&#123; "action": "read", "file_paths": [...], "offset": 0, "timeout": 120000, ... &#125;
+
+// After: 25 keys, 4 real values, 21 explicit nulls (stripped before the tool runs)
+&#123; "action": "read", "file_paths": [...], "offset": null, "timeout": null, ... &#125;</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Results after the fix</strong>: empty file reads went from 52% to 0%, and the agent needed roughly 30% fewer tool calls for the same work, because it was no longer re-reading files that came back blank.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you maintain a tool layer with optional properties and you are evaluating Sol, this is the <strong>first</strong> thing to fix. It is not optional. The cost of missing it is invisible to the model (it gets <code>success: true</code> back) but shows up as worse work, more tool calls, and higher cost.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Step 2: Rebuild prompt caching — this is where the real cost lives</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">This is the most instructive engineering difference in the entire migration, because on the surface both providers offer "prompt caching" and the words hide two entirely different designs. <strong>If you migrate one thing carefully, make it this: before Ploy did, GPT-5.6 looked about 50% more expensive than Opus. It wasn't the model's pricing; it was their cache configuration.</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Ploy's agent opens with a static prefix of roughly 29K tokens (tool schemas plus the core system prompt) that is identical for every conversation. On Claude, they mark cache breakpoints with <code>cache_control</code> and that prefix <strong>caches across the whole organization</strong>: any conversation, any workspace, one shared entry, no throughput budget to think about. Cache hit rates run 92% to 96% and caching fades into the background.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>GPT-5.6 changed OpenAI's caching model out from under Ploy.</strong> Earlier GPT models cached implicitly on partial prefix matches, which gave decent hit rates for free. <strong>GPT-5.6 dropped partial-prefix matching</strong>: implicit caching now only creates whole-prompt entries keyed on the latest message. A new conversation sharing Ploy's 29K static prefix cached <strong>0%</strong> of it. Every conversation re-billed the full prefix at the uncached rate, and on GPT-5.6 every uncached prompt also pays a <strong>1.25× cache-write surcharge</strong>, whether or not you use caching.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The intended mechanism is explicit: <code>prompt_cache_breakpoint</code> markers plus a mandatory <code>prompt_cache_key</code>. And the key is where the design really diverges, because <strong>it is part of cache identity.</strong> Identical prompt, different key: zero cache hits. Each key maps to a cache node that sustains roughly <strong>15 requests per minute</strong> before OpenAI fans traffic to other nodes with independent, cold caches.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">That turns "enable caching" into an actual design decision: <strong>what entity do you scope the key to?</strong></p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cache key strategy</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">First-call hit rate</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Notes</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Per-conversation key</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">0%</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">A new conversation never hits the shared prefix. <strong>The mistake Ploy measured — expensive.</strong></td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">One global key</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">(high when within budget)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Every request hashes to one cache node. Production traffic obliterates the 15 rpm budget; requests spill to cold nodes and you are back to misses.</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Per-workspace key</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>83.7% (Ploy's post-fix result)</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">All conversations in a customer workspace share entries; per-key traffic stays low. <strong>The sweet spot.</strong></td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">Ploy ships the workspace-scoped key and splits the system prompt into breakpointed layers, mirroring the structure they already used for Anthropic:</p>
+
+<pre><code>request ──► hash(prompt head + prompt_cache_key) ──► cache node (~15 req/min per key)
+│
+├── [ tools + static prefix ]······················ A  every session
+├── [ tools + static prefix + workspace context ]·· B  same context
+└── [ ····················· + turn 1 + … + latest ]  C  this session</code></pre>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Entry A</strong> is what makes a session's first call cheap.</li>
+
+<li><strong>Entry B</strong> self-heals: when workspace memory changes, the request misses B but still hits A, then writes a fresh B. One context-sized write instead of a full 29K re-bill.</li>
+
+<li><strong>Entry C</strong> is OpenAI's implicit whole-prompt chain, which works fine within a session because Ploy's prompts are strictly append-only.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>One consequence has no workaround: cross-workspace sharing of the static prefix is structurally impossible on OpenAI.</strong> Anthropic can share it because its cache is org-scoped without key partitioning. On GPT-5.6, every workspace pays one 29K cold write per idle window — about <strong>$0.18</strong>. A real cost, but bounded and predictable.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Results after the change</strong>: first-call cache hits went from roughly 0% to <strong>83.7%</strong>, total uncached input tokens dropped <strong>28%</strong>, and GPT-5.6's per-suite cost landed <strong>below</strong> Opus's. <strong>Every dollar of the gap Ploy had been staring at was cache misconfiguration, not model pricing.</strong> If you are cost-comparing models and one of them has a cold cache, you are comparing your config, not the models.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Step 3: Make Responses API reasoning replay self-contained</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Shorter, but it broke real conversations. <strong>GPT-5.6's Responses API replays prior-turn reasoning as server-side item references by default</strong>; Ploy's started intermittently failing mid-conversation with <code>Item 'rs_...' not found</code>.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The fix is <strong><code>store: false</code></strong>, which makes the SDK request encrypted reasoning content and replay self-contained blobs instead of pointers to server state.</p>
+
+<pre><code class="language-python"># Responses API: turn off server-side reasoning state for self-contained replay
+response = client.responses.create(
+    model="gpt-5.6-sol",
+    input=conversation_history,
+    reasoning=&#123;"effort": "high"&#125;,
+    store=False,  # key fix: request encrypted reasoning blobs, not server-side pointers
+)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">A corollary that cost Ploy a debugging afternoon: with server-side reasoning state in the loop, <strong>the effective prompt can change upstream of you even when the bytes you send are append-only.</strong> If you need reproducible conversation state across requests — for evals, for tests, for audit — <code>store: false</code> is the only path on GPT-5.6.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Step 4 (optional): CLIProxyAPI for solo dev / small team migrations</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Tibo Sottiaux published a different approach for developers who don't have Ploy's SDK-level access. <strong>CLIProxyAPI</strong> is an open-source proxy server (<a href="https://github.com/router-for-me/CLIProxyAPI" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">github.com/router-for-me/CLIProxyAPI</a>) that provides OpenAI / Gemini / Claude / Codex / Grok compatible API interfaces for CLI clients. The Tibo migration use case: point Claude Code or Codex at GPT-5.6 Sol without rewriting client code.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Tibo's X thread (June 26, 2026): <em>"If you aren't yet bold enough to install the Codex app, you can stay in the presence of your orange crab and point it at GPT 5.6 Sol. Takes 5 minutes. Kudos to Theo for explaining one of the ways to get this done."</em></p>
+
+<p class="text-gray-700 leading-relaxed my-4">The setup is three steps:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Install CLIProxyAPI</strong> (binary from the GitHub releases page, or <code>go install</code>).</li>
+
+<li><strong>Connect</strong> with your existing Claude Code or Codex OAuth credentials — the proxy reuses the auth you already have.</li>
+
+<li><strong>Define</strong> an OpenAI-compatible endpoint that points to GPT-5.6 Sol, then point your client at the proxy.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">For a solo dev or a small team that wants to compare Sol against Opus on real workloads without committing to a full SDK rewrite, this is the lowest-friction path. The trade-off: you are running a proxy in the loop, which adds 5-15ms of latency and means you are depending on the CLIProxyAPI maintainers for security and uptime. For Ploy-scale traffic it would be a non-starter; for personal workflows it is the right tool.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The Tibo approach is the <strong>opposite</strong> of Ploy's in one specific way: Ploy treated GPT-5.6 Sol as a replacement for Opus 4.8 on the same agent. Tibo treated it as a drop-in endpoint reachable through existing Claude Code / Codex tooling. Both work, but they imply different bets: Ploy's bet is that Sol will hold the default slot for at least the next 6 months; Tibo's bet is that endpoint-level flexibility matters more than committing to one provider.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What Opus 4.8 still does better than Sol</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Sol is not a strict upgrade over Opus 4.8. Three workloads where Opus holds the line:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Short-form generation where per-call reasoning quality matters.</strong> A single high-stakes summary, a legal review, a design critique — the kinds of calls where you'd rather wait 8 seconds for a careful answer than 3 seconds for a fast one. Opus plays this more conservatively. Ploy's own design lead (in the related Ploy post on Opus vs Sol for web design) notes that Opus "tends to hold a balanced type scale, even when the design is a little less standard" — and that instinct is right for some brand systems.</li>
+
+<li><strong>Design tasks with strong existing systems.</strong> Sol reaches for very big text, especially on hero headings. Ploy's pre-migration harness made Sol "ignore existing design systems and instead produce sharp, restrained, and visibly generic output." The fix is design-side steering, but for teams without a Ploy-scale design + engineering org, that is a real cost.</li>
+
+<li><strong>Any workload that depends on Anthropic's org-scoped shared cache.</strong> GPT-5.6 cannot share a static prefix across workspaces by design. If your multi-tenant architecture is built on top of Anthropic's cache scoping and you have thousands of customers hitting the same tool definitions, the $0.18/workspace cold-write cost adds up. Anthropic's cache is the right primitive for that architecture; OpenAI's is not.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The opposite is also true: if you have a single-tenant or low-workspace-count deployment, Sol's per-workspace cache hits 83.7% and beats Anthropic's 92-96% only on the metric of cost-per-hit (Sol's cached input is $0.50/M vs Claude's ~$0.30/M, but the cold-write surcharge on Sol changes the math). The right answer depends on the workload.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Claude Sonnet 5 wildcard (June 30, 2026)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Ploy's migration story ends June 26 with Sol as the new default. Two weeks later, <strong>Anthropic re-deployed Claude Fable 5 and Mythos 5</strong> (June 30, 2026) after a US government export-control directive was lifted, restoring Claude Sonnet 5 globally. Sonnet 5 launched with a <strong>promo price of $2/$10 (input/output per million tokens)</strong> through August 31, 2026 — a 33% discount on Sonnet 4.5's $3/$15.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are running the Ploy comparison today, the model set is not just "Opus 4.8 vs Sol." The competitive landscape is:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Claude Sonnet 5</strong> at $2/$10 (promo) — best price/quality for the non-flagship tier, 200K context, ideal for code review, short generation, mid-weight agent loops.</li>
+
+<li><strong>Claude Opus 4.8</strong> at $15/$75 — premium tier, worth it only for the workloads where Opus's instincts are categorically better.</li>
+
+<li><strong>GPT-5.6 Sol</strong> at $5/$30 (and dropping to GPT-5.5-effective prices post-cache-fix) — flagship tier with the strongest cacheability after the rebuild.</li>
+
+<li><strong>GPT-5.6 Terra</strong> at $2.50/$15 — the balanced default for production, matches GPT-5.5 capability at half the cost.</li>
+
+<li><strong>GPT-5.6 Luna</strong> at $1/$6 — the budget tier for chat, classification, and one-shot generation.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For the specific Ploy workload (long-running, tool-heavy, design-output agent), Sol still wins. For a 1-hour research agent, Sonnet 5 at $2/$10 is probably the right call. <strong>The migration lesson generalizes: do the math on your own eval suite, on your own cache, on your own cost ceiling, before you commit to a default model.</strong> The default model that won a benchmark isn't the default model that wins your production workload.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How to evaluate Sol vs Opus on your own agent</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">If you want to reproduce Ploy's result on your own workload, here is the order of operations:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Audit your eval harness for incumbent-model assumptions.</strong> Tool-call budgets, batched-call support, minScore thresholds, default judge weights. Roughly a third of Ploy's "failures" pre-fix were harness artifacts. Don't skip this.</li>
+
+<li><strong>Fix the tool schema boundary</strong> for Sol's "fill every parameter" habit. Required-but-nullable via <code>anyOf: [T, null]</code>, with nulls stripped before tool execution. Verify that empty-read rates drop to zero and that the tool-call count per task drops 20-30%.</li>
+
+<li><strong>Design your cache key strategy before the first request.</strong> Per-workspace for multi-tenant, per-tenant for enterprise, per-user for consumer. Each key maps to a ~15 rpm cache node, so high-traffic keys will spill to cold nodes — design for that, don't discover it.</li>
+
+<li><strong>Add <code>store: false</code></strong> to Responses API calls unless you specifically need server-side reasoning state. This is the default that will bite you in production.</li>
+
+<li><strong>Measure cost on a fixed eval suite for 24-48 hours</strong> with the new cache strategy before you commit to a migration. The pre-fix Sol is 50% more expensive than Opus. The post-fix Sol is cheaper. The difference is configuration, not model.</li>
+
+<li><strong>Re-evaluate after every OpenAI or Anthropic pricing update.</strong> The model you migrate to today at $5/$30 may be $3/$18 in three months. Ploy's migration made sense at GPT-5.6 launch pricing; the math shifts every time either provider touches a price card.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">Ploy's result is a real, measured, post-fix number on a specific workload. It is not a general "Sol is better than Opus" claim. If your workload matches Ploy's — long-running, tool-heavy, output-token-dominated, design or generation — Sol is likely the right call. If it doesn't, run the eval yourself. The Ploy post-mortem is the playbook for how to do that eval well, not a substitute for doing it.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is the cost difference between GPT-5.6 Sol and Claude Opus 4.8 in production?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">On Ploy's redesign agent (n=10 vs n=11), GPT-5.6 Sol was 27% cheaper per completed build ($2.22 vs $3.06) and 2.2× faster in wall-clock time (3m 42s vs 8m 00s), with higher visual score. The cost advantage is post-cache-fix; pre-fix, Sol was 50% more expensive. Output token count was cut roughly in half — Sol writes lean code, not just faster code.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Why did Ploy switch from Claude Opus 4.8 to GPT-5.6 Sol?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Opus 4.8 had held Ploy's default model slot for four months. Nothing in that window beat it. GPT-5.6 Sol was the first model that did, on the specific Ploy workload of building, editing, and screenshotting real marketing websites. The 27% cost reduction + 2.2× speedup + higher visual score was a large enough delta to justify a migration effort. The decision was a cost play, not a capability play — same $5/$30 per-token price, but Sol's token efficiency flipped the per-task total.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Did the migration require code changes?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. Four engineering fixes: (1) audit the eval harness for incumbent-model assumptions, (2) transform tool schemas at the provider boundary so Sol's "fill every parameter" habit doesn't get interpreted as real arguments, (3) rebuild prompt caching around GPT-5.6's key-partitioned cache nodes with per-workspace keys, and (4) set <code>store: false</code> on Responses API calls to make reasoning replay self-contained. The 4th is the smallest code change. The 3rd is the largest cost lever.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Can I use GPT-5.6 Sol without rewriting my client code?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes, via CLIProxyAPI (github.com/router-for-me/CLIProxyAPI), an open-source proxy that provides OpenAI / Gemini / Claude / Codex / Grok compatible API interfaces. Tibo Sottiaux's X thread walks through a 5-minute setup: install the proxy, connect with your existing OAuth credentials, point your client at the OpenAI-compatible endpoint. Useful for solo dev or small team evaluations; less suitable for Ploy-scale production traffic.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Where does Claude Opus 4.8 still beat GPT-5.6 Sol?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Three workloads: (1) short-form generation where per-call reasoning quality matters more than throughput, (2) design tasks with strong existing brand systems (Sol "reaches for very big text" by default per Ploy's design lead), and (3) any multi-tenant architecture that depends on Anthropic's org-scoped shared cache — GPT-5.6 cannot share a static prefix across workspaces by design, so each tenant pays a ~$0.18 cold-write cost on idle.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How does Claude Sonnet 5 (re-deployed June 30) fit into the comparison?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Sonnet 5 launched with a promo price of $2/$10 through August 31, 2026 — a 33% discount on Sonnet 4.5. For mid-weight agent loops and short high-quality generation, Sonnet 5 at $2/$10 is often the better default than Sol at $5/$30, especially if your workload doesn't need Sol's reasoning depth. The full competitive set today is Sonnet 5 ($2/$10) + Opus 4.8 ($15/$75) + Sol ($5/$30) + Terra ($2.50/$15) + Luna ($1/$6). The right default depends on the workload.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is the catch with GPT-5.6's prompt caching?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Two. First, GPT-5.6 dropped partial-prefix matching, so the old "implicit cache on common prefix" trick no longer works — you need explicit <code>prompt_cache_breakpoint</code> markers and a <code>prompt_cache_key</code>. Second, the key is part of cache identity, and each key maps to a node that handles ~15 rpm before traffic fans to cold nodes. A wrong key strategy (per-conversation, one global) gives you near-zero first-call hit rates. Per-workspace keys are the sweet spot for multi-tenant apps.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Is GPT-5.6 Sol available now?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes, as of June 26, 2026, all three tiers (Sol, Terra, Luna) are generally available through the OpenAI API. The launch page is at <code>openai.com/index/gpt-5-6</code>. Sonnet 5 (the comparable Anthropic tier) is also live again as of June 30, 2026, after the US export-control directive was lifted.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How do I get an API key for GPT-5.6 Sol?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Existing OpenAI API keys work — Sol is on the same <code>api.openai.com</code> endpoint, you just specify <code>model: "gpt-5.6-sol"</code> in the request. The Responses API (<code>/v1/responses</code>) is the recommended surface for agent workloads, and it is where the cache key + breakpoint design applies. Chat Completions (<code>/v1/chat/completions</code>) also works for simpler use cases.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Should I migrate from Opus 4.8 to GPT-5.6 Sol today?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Only if your workload matches Ploy's: long-running, tool-heavy, output-token-dominated, design or generation. Run the 6-step evaluation above before committing. The cost lever (cache strategy) is the largest source of pre-fix waste — if you migrate without rebuilding your cache config, you will conclude Sol is 50% more expensive than Opus and the migration is a mistake. With the cache rebuilt, the conclusion is usually the opposite. The lesson: never trust a cross-vendor cost comparison that was measured on a cold cache.</p>`;
+
+const affiliateSidebar = {
+  title: '试用 FreeModel',
+  description: '一个 API key 走多 provider 路由。GPT-5.6 Sol + Claude Sonnet 5 + Opus 4.8 + DeepSeek V4 —— 在 Sol vs Opus 切换时做 cost-routing 优化。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '获取免费额度'
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} rel="sponsored noopener" target="_blank"
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Facts</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Headline:</strong> Ploy cut cost 27% and time 2.2x by switching Opus 4.8 to GPT-5.6 Sol</li>
+            <li><strong>Per-build cost:</strong> $2.22 (Sol) vs $3.06 (Opus 4.8)</li>
+            <li><strong>Wall-clock:</strong> 3m 42s (Sol) vs 8m 00s (Opus 4.8)</li>
+            <li><strong>Visual score:</strong> 0.970 (Sol) vs 0.936 (Opus 4.8)</li>
+            <li><strong>Output tokens:</strong> 17.1K (Sol) vs 33.0K (Opus 4.8) — half the tokens</li>
+            <li><strong>Cache lever:</strong> Pre-fix Sol was 50% MORE expensive (cold cache); per-workspace key raised first-call hit to 83.7%</li>
+            <li><strong>Tool schema fix:</strong> Sol sends all 25 tool params with invented defaults; rewrite as required-but-nullable</li>
+            <li><strong>Sonnet 5 angle:</strong> $2/$10 promo through 8/31/2026 is a cheaper default for non-flagship workloads</li>
+            <li><strong>Affiliate:</strong> Use FreeModel to multi-route between Sol / Opus / Sonnet 5 with one key</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

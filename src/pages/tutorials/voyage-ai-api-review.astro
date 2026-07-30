@@ -1,0 +1,364 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'voyage-ai-api-review';
+const date = '2026-06-17';
+const locale = 'en';
+
+const enTitle = 'Voyage AI 2026: Best Embedding API at $0.02/M';
+const enDescription = 'Voyage AI API review: voyage-4-large with 32K context, MoE architecture, 200M free tokens. Pricing vs OpenAI, Cohere, Jina.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does Voyage AI offer that other embedding providers don't?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Voyage AI focuses exclusively on embeddings and reranking, and is the only major provider to release production-grade MoE embedding models (voyage-4-large). The voyage-4 series beats OpenAI v3 Large by 14.05%, Cohere Embed v4 by 8.20%, and Gemini Embedding 001 by 3.87% on Voyage's RTEB benchmark (29 datasets, January 2026). It also offers Matryoshka flexible dimensions (2048/1024/512/256) and the longest commercial context (32K tokens vs OpenAI's 8K)." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the Voyage AI API OpenAI-compatible?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Voyage uses its own API contract at https://api.voyageai.com/v1/ with three endpoints: POST /v1/embeddings, POST /v1/rerank, and POST /v1/multimodalembeddings. The request schema requires an input_type parameter (query or document) which OpenAI's API does not. Authentication is Bearer token. There is no chat completions endpoint — Voyage is embedding + rerank only, not a general LLM provider." }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does Voyage AI cost in 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "As of June 2026, voyage-4-large is $0.12 per million tokens, voyage-4 is $0.06/M, voyage-4-lite is $0.02/M, voyage-context-3 and voyage-code-3 are $0.18/M, and voyage-multimodal-3.5 is $0.12/M text tokens plus $0.60 per billion pixels. Rerank-2.5 is $0.05/M tokens and rerank-2.5-lite is $0.02/M tokens. A 33% batch discount is available with 12-hour SLA. New accounts receive 200M free tokens for embeddings and rerankers, and 50M free tokens for legacy domain models." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Voyage AI work from inside China?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Voyage's marketing site is reachable from China, but the company has not published any mainland-China-specific API endpoint, ICP filing, or CDN node. The official solution for restricted regions is in-VPC deployment via AWS Marketplace or Azure Marketplace, putting compute behind the customer's own cloud tenant. For teams that need a guaranteed China-direct embedding API, aggregators like FreeModel (freemodel.dev/invite/FRE-7a3b6220) bundle multiple embedding providers behind one key with verified domestic connectivity." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between voyage-4-large, voyage-4, and voyage-4-lite?",
+      "acceptedAnswer": { "@type": "Answer", "text": "All three share the same 32K context window and 1024 default embedding dimension, and crucially share an embedding space — you can index documents with voyage-4-large and query with voyage-4-lite for asymmetric retrieval without re-indexing. voyage-4-large uses Mixture-of-Experts (MoE) for frontier accuracy at $0.12/M; voyage-4 is the mid-size balanced option at $0.06/M; voyage-4-lite is optimized for lowest latency and cost at $0.02/M. The shared embedding space is unique to Voyage — OpenAI's text-embedding-3-small and 3-large do not share a space, so asymmetric retrieval is not possible." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the RTEB benchmark and how does it differ from MTEB?",
+      "acceptedAnswer": { "@type": "Answer", "text": "MTEB (Massive Text Embedding Benchmark) is the legacy Hugging Face leaderboard covering 100+ tasks. RTEB (Retrieval Embedding Benchmark) is Voyage's own benchmark released January 2026, focused specifically on retrieval across 29 datasets spanning law, finance, code, healthcare, and conversational QA. Voyage claims RTEB better reflects production RAG workloads, where retrieval accuracy matters more than classification or clustering. Independent third-party verification of RTEB rankings is not yet available." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Voyage AI API 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Voyage AI 2026: Best Embedding API at $0.02/M Tokens</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-17">June 17, 2026</time>
+              <span>•</span>
+              <span>Voyage AI Review</span>
+              <span>•</span>
+              <span>About 9 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Voyage AI is not a general LLM provider. Founded in 2023 by Stanford professor Tengyu Ma and now a MongoDB company (acquired March 2025), Voyage does one thing and does it better than anyone else: text embeddings and reranking. The voyage-4 series, released January 2026, is the first production-grade Mixture-of-Experts embedding model, beating OpenAI v3 Large by 14.05% on Voyage's RTEB benchmark. With 200 million free tokens on signup and pricing as low as $0.02 per million tokens, Voyage has become the default embedding backend for serious RAG applications. This review covers the Voyage API from the perspective of an engineer evaluating embedding providers for production retrieval systems.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> Voyage AI offers a focused stack of text embedding models (voyage-4-large $0.12/M, voyage-4 $0.06/M, voyage-4-lite $0.02/M), domain-specialized variants (voyage-code-3, voyage-finance-2, voyage-law-2, voyage-context-3), rerankers (rerank-2.5 at $0.05/M tokens), and a unique multimodal embedding model (voyage-multimodal-3.5 supporting interleaved text+image+video). All voyage-4 models share a single 32K context window and 1024-dim embedding space, enabling asymmetric retrieval. New accounts get 200M free tokens. The API is NOT OpenAI-compatible (custom schema, requires input_type). China access is unverified. No public affiliate program. Best for: RAG systems, vector search, code retrieval, and multimodal applications where retrieval accuracy matters more than chat quality.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>Introduction: The Embedding Specialist</h2>
+            <p>The embedding model market in 2026 looks very different from the chat completion market. While a dozen providers compete on the same GPT-4 class chat models, the embedding layer is consolidating around a few serious players: OpenAI, Cohere, Google, Jina, and Voyage AI. Of these, Voyage is the only company that has chosen to focus exclusively on embeddings and reranking — they do not offer a chat model, and they do not try to.</p>
+            <p>This focus pays off in retrieval accuracy. The voyage-4 series, announced January 15, 2026, was trained by a team that includes Stanford NLP faculty (Christopher Manning, Fei-Fei Li, Christopher Ré) and optimized specifically for production RAG workloads. The flagship voyage-4-large is the first production-grade Mixture-of-Experts embedding model, with 14.05% higher average retrieval accuracy than OpenAI v3 Large on Voyage's RTEB benchmark of 29 datasets.</p>
+            <p>For AI engineers building production RAG systems, this focus matters. Embedding quality is often the single biggest determinant of retrieval accuracy — and therefore the single biggest determinant of whether a RAG app actually works. Choosing a mediocre embedding model means a chain of downstream workarounds: query rewriting, hybrid search, re-ranking, more chunks, larger context windows, etc. Choosing a top-tier embedding model simplifies everything.</p>
+
+            <h2>Models: A Complete Embedding Stack</h2>
+            <p>Voyage's 2026 lineup is a complete embedding stack, not a single model:</p>
+            <table>
+              <thead>
+                <tr><th>Model</th><th>Type</th><th>Context</th><th>Dims</th><th>Price (/M tokens)</th><th>Best For</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>voyage-4-large</strong></td><td>Text</td><td>32K</td><td>256/512/1024/2048</td><td>$0.12</td><td>Flagship — MoE, frontier retrieval accuracy</td></tr>
+                <tr><td><strong>voyage-4</strong></td><td>Text</td><td>32K</td><td>256/512/1024/2048</td><td>$0.06</td><td>Balanced — quality and cost tradeoff</td></tr>
+                <tr><td><strong>voyage-4-lite</strong></td><td>Text</td><td>32K</td><td>256/512/1024/2048</td><td>$0.02</td><td>Latency & cost — high-volume indexing</td></tr>
+                <tr><td><strong>voyage-context-3</strong></td><td>Text (chunk)</td><td>32K</td><td>1024</td><td>$0.18</td><td>Contextualized chunk embeddings for RAG</td></tr>
+                <tr><td><strong>voyage-code-3</strong></td><td>Text (code)</td><td>32K</td><td>256/512/1024/2048</td><td>$0.18</td><td>Code retrieval, repo search</td></tr>
+                <tr><td><strong>voyage-finance-2</strong></td><td>Text (finance)</td><td>32K</td><td>1024</td><td>$0.12</td><td>Financial document retrieval</td></tr>
+                <tr><td><strong>voyage-law-2</strong></td><td>Text (legal)</td><td>16K</td><td>1024</td><td>$0.12</td><td>Legal document retrieval</td></tr>
+                <tr><td><strong>voyage-multimodal-3.5</strong></td><td>Text+Image+Video</td><td>32K</td><td>1024</td><td>$0.12 + $0.60/B pixels</td><td>Cross-modal retrieval, video frame search</td></tr>
+                <tr><td><strong>rerank-2.5</strong></td><td>Rerank</td><td>32K (8K query)</td><td>—</td><td>$0.05</td><td>Top-tier cross-encoder reranker</td></tr>
+                <tr><td><strong>rerank-2.5-lite</strong></td><td>Rerank</td><td>32K (8K query)</td><td>—</td><td>$0.02</td><td>Latency-optimized reranker</td></tr>
+              </tbody>
+            </table>
+            <p>Two features make this lineup especially attractive for production RAG:</p>
+            <p><strong>Shared embedding space across the voyage-4 family.</strong> Embeddings from voyage-4-large, voyage-4, and voyage-4-lite live in the same vector space. This means you can index documents with the more expensive voyage-4-large, then query with voyage-4-lite for cost savings, and the dot product still works. OpenAI's text-embedding-3-small and text-embedding-3-large do NOT share a space, so this asymmetric retrieval pattern requires re-indexing when you change models.</p>
+            <p><strong>Matryoshka flexible dimensions.</strong> Voyage 4 series supports 2048, 1024, 512, and 256 dimensions natively, with float, int8, uint8, binary, and ubinary data types. This Matryoshka representation lets you trade retrieval accuracy for vector DB storage and search speed. A 256-dim binary embedding is 8x smaller than a 1024-dim float embedding, and the recall degradation is typically less than 5% — sometimes less than 2%.</p>
+            <p>Older models (voyage-3, voyage-3.5, voyage-3-large) are still available at $0.06-$0.18/M tokens but are positioned as legacy. New deployments should use the 4-series.</p>
+
+            <h2>Pricing: Free 200M Tokens, Then Industry-Leading Low</h2>
+            <p>Voyage's pricing is aggressive at every tier:</p>
+            <ul>
+              <li><strong>voyage-4-lite</strong>: $0.02 per million tokens — 5x cheaper than OpenAI text-embedding-3-small ($0.02 vs $0.10)</li>
+              <li><strong>voyage-4</strong>: $0.06 per million tokens — 40% cheaper than OpenAI text-embedding-3-large ($0.06 vs $0.13)</li>
+              <li><strong>voyage-4-large</strong>: $0.12 per million tokens — competitive with OpenAI's large tier, justified by 14% accuracy advantage</li>
+              <li><strong>voyage-code-3 / voyage-context-3</strong>: $0.18 per million tokens — premium for specialized retrieval</li>
+            </ul>
+            <p>The 200M-token free tier is unusually generous. For a typical RAG system embedding 50K documents averaging 1,000 tokens each (50M tokens total), this covers an entire production corpus. For high-volume reindexing scenarios, the batch API offers a 33% discount with a 12-hour SLA.</p>
+            <p>Compare to OpenAI's free tier (no free embeddings, pay-as-you-go from day one) and Cohere (5K free trial embeddings, pay-as-you-go after). Voyage's free tier is a real differentiator for startups and indie developers.</p>
+
+            <h2>API Surface: Custom, Not OpenAI-Compatible</h2>
+            <p>Voyage's API is its own contract, not an OpenAI wrapper. The base URL is <code>https://api.voyageai.com/v1/</code> with three endpoints:</p>
+            <pre><code class="language-python">import voyageai
+
+vo = voyageai.Client(api_key="YOUR_VOYAGE_API_KEY")
+
+# Single-string embedding
+result = vo.embed(
+    texts=["What is the capital of France?"],
+    model="voyage-4-large",
+    input_type="query"  # 'query' or 'document'
+)
+print(result.embeddings[0])  # list of 1024 floats
+</code></pre>
+            <p>Two key differences from the OpenAI embedding API:</p>
+            <ol>
+              <li>The <code>input_type</code> parameter (query or document) is required. Voyage's models are trained to optimize embeddings differently for queries (questions) vs documents (corpus items), and the input_type parameter activates the right optimization. OpenAI does not have this distinction.</li>
+              <li>The response shape is different: Voyage returns a flat list of embeddings rather than OpenAI's <code>&#123;"data": [...], "usage": &#123;...&#125;&#125;</code> wrapper.</li>
+            </ol>
+            <p>For users who need OpenAI compatibility (e.g. swapping Voyage in for OpenAI in an existing RAG pipeline), Voyage provides a separate <a href="https://docs.voyageai.com/docs/embeddings" class="text-blue-600 hover:underline">migration guide</a> but not an OpenAI-compatible endpoint.</p>
+            <p>Voyage also ships official Python and TypeScript SDKs. Community SDKs exist for Ruby, Go, and Vercel. The OpenAPI spec is published, so you can generate your own client if needed.</p>
+
+            <h2>Rerankers: The Other Half of the Embedding Stack</h2>
+            <p>Voyage's rerankers (rerank-2.5 and rerank-2.5-lite) are cross-encoders that re-score the top-k results from an initial vector search. The typical RAG pattern:</p>
+            <ol>
+              <li>User asks a question</li>
+              <li>Vector search returns top-50 documents by cosine similarity</li>
+              <li>Reranker scores each (query, document) pair with a cross-encoder, returning a more accurate ranking</li>
+              <li>Top-5 reranked documents are sent to the LLM for answer generation</li>
+            </ol>
+            <p>This two-stage pattern consistently outperforms single-stage vector search by 10-20% on production RAG benchmarks. Voyage's rerank-2.5 is one of the top 2-3 rerankers in the industry (alongside Cohere Rerank v4 and Jina Reranker), with particularly strong performance on legal and financial domains.</p>
+            <p>Pricing is per million tokens (not per request): rerank-2.5 at $0.05/M tokens means a typical 100-document rerank (10K tokens of content) costs about $0.0005 — essentially free for most production workloads.</p>
+
+            <h2>Multimodal: A Real Differentiator</h2>
+            <p>voyage-multimodal-3.5 (released November 2024, updated in 2025) is unique in the industry: it accepts <strong>interleaved</strong> text+image+video inputs. CLIP-based competitors like OpenAI CLIP handle text OR image as separate inputs; Voyage handles arbitrary combinations like "this image with the caption 'red car' is similar to the text 'automobile'" in a single embedding space.</p>
+            <p>This is powerful for e-commerce search (search by image with text refinement), video search (search a frame plus spoken word), and document AI (a PDF page with embedded text and images as a single vector). The pricing ($0.12/M text tokens + $0.60/B pixels) is reasonable for the use case.</p>
+            <p>The 200M free text tokens + 150B free pixels on signup covers a lot of multimodal experimentation before you need to pay.</p>
+
+            <h2>Domain-Specific Models: A Quiet Advantage</h2>
+            <p>Voyage ships specialized models for code (voyage-code-3), finance (voyage-finance-2), and law (voyage-law-2). For teams building retrieval systems in these domains, these are the best off-the-shelf embeddings available. The 1-3% accuracy gain over voyage-4-large in the relevant domain is meaningful for production RAG, where every point of recall matters.</p>
+            <p>For example, in a code repository search system, voyage-code-3 understands variable references, function calls, and code structure — it embeds <code>getUserById(id)</code> near <code>fetchUser(userId)</code> in vector space. A general-purpose embedding model treats them as unrelated strings.</p>
+
+            <h2>Pros and Cons</h2>
+            <p><strong>Pros</strong></p>
+            <ul>
+              <li>✅ Industry-leading retrieval accuracy (14% over OpenAI v3 Large on RTEB benchmark)</li>
+              <li>✅ First production MoE embedding model — frontier accuracy at lower serving cost</li>
+              <li>✅ 32K context (4x OpenAI's 8K, 64x Cohere's 512) for long documents</li>
+              <li>✅ Shared embedding space across the voyage-4 family — asymmetric retrieval without reindexing</li>
+              <li>✅ Matryoshka flexible dimensions + binary quantization — vector DB cost savings</li>
+              <li>✅ 200M free tokens on signup — covers most startup workloads</li>
+              <li>✅ Domain-specialized models for code, finance, law</li>
+              <li>✅ Strong rerankers (rerank-2.5 / rerank-2.5-lite) for two-stage retrieval</li>
+              <li>✅ Multimodal embeddings with interleaved text+image+video support</li>
+              <li>✅ Backed by MongoDB (acquired March 2025) — long-term stability</li>
+            </ul>
+            <p><strong>Cons</strong></p>
+            <ul>
+              <li>❌ API not OpenAI-compatible — requires schema migration if swapping from OpenAI</li>
+              <li>❌ No chat completions endpoint — Voyage is embedding-only, you need a separate LLM for generation</li>
+              <li>❌ China mainland access not officially documented — no specific CDN or ICP filing</li>
+              <li>❌ No public affiliate program</li>
+              <li>❌ Smaller brand recognition than OpenAI — may raise eyebrows in non-technical stakeholder reviews</li>
+            </ul>
+
+            <h2>Use Case Recommendations</h2>
+            <table>
+              <thead>
+                <tr><th>Use Case</th><th>Recommended Model</th><th>Why</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>General RAG (mid-size corpus)</td><td>voyage-4 (index + query)</td><td>Best price/quality ratio, 32K context</td></tr>
+                <tr><td>High-stakes RAG (legal, medical, finance)</td><td>voyage-4-large (index) + voyage-4 (query) + rerank-2.5</td><td>14% accuracy advantage, asymmetric retrieval</td></tr>
+                <tr><td>Code search / repo Q&amp;A</td><td>voyage-code-3</td><td>Understands code semantics, not just text similarity</td></tr>
+                <tr><td>High-volume indexing (100M+ tokens/month)</td><td>voyage-4-lite</td><td>$0.02/M tokens, 5x cheaper than OpenAI</td></tr>
+                <tr><td>Vector DB cost optimization</td><td>voyage-4 + 256-dim binary</td><td>8x storage savings, minor recall loss</td></tr>
+                <tr><td>E-commerce / image search</td><td>voyage-multimodal-3.5</td><td>Interleaved text+image inputs</td></tr>
+                <tr><td>Two-stage retrieval pipeline</td><td>voyage-4 + rerank-2.5</td><td>10-20% recall gain over vector-only</td></tr>
+              </tbody>
+            </table>
+
+            <h2>How Voyage Compares</h2>
+            <p><strong>vs OpenAI embeddings:</strong> Voyage wins on retrieval accuracy (14% on RTEB), context length (32K vs 8K), and pricing ($0.06 vs $0.13 for the large tier). OpenAI wins on OpenAI API compatibility (obviously), brand recognition, and being a one-stop shop if you already use OpenAI chat models.</p>
+            <p><strong>vs Cohere Embed v4:</strong> Voyage wins on retrieval accuracy (8% on RTEB), context length (32K vs 512 for some Cohere models), and multimodal support. Cohere wins on chat+rerank integration (one provider for everything) and a longer track record in enterprise.</p>
+            <p><strong>vs Jina AI:</strong> Voyage wins on retrieval accuracy and free tier generosity. Jina wins on price (Jina v3 base is $0.02/M tokens) and on the open-weight Jina Embeddings v3 (can be self-hosted for free).</p>
+            <p><strong>vs self-hosted open-weight models (BGE, E5, Nomic Embed):</strong> Self-hosting wins on data privacy and per-query cost (free at the margin). Voyage wins on retrieval accuracy, no infrastructure overhead, and the operational simplicity of a managed service.</p>
+
+            <h2>Frequently Asked Questions</h2>
+
+            <h3>What is the difference between voyage-4 and voyage-3?</h3>
+            <p>voyage-4 is the current generation (released January 15, 2026), built on a MoE architecture for the large variant. voyage-3 is the previous generation, still available but with lower accuracy and no MoE optimization. New deployments should use voyage-4. Voyage-3 is priced at $0.06-$0.18/M tokens and remains useful for legacy code that has not been migrated.</p>
+
+            <h3>Can I use voyage-4 embeddings with a vector database like Pinecone or Weaviate?</h3>
+            <p>Yes. Voyage embeddings are just floating-point vectors and work with any vector database — Pinecone, Weaviate, Qdrant, Milvus, pgvector, Chroma, LanceDB, etc. The Matryoshka flexible dimensions are particularly useful for storage-constrained vector DBs. The 256-dim binary variant is 32 bytes per vector, allowing billions of vectors on a single commodity server.</p>
+
+            <h3>Does Voyage support batching?</h3>
+            <p>Yes. The Python and TypeScript SDKs automatically batch requests up to 1,000 texts per call. For very large indexing jobs (1M+ documents), Voyage's batch API offers a 33% discount with a 12-hour SLA — submit by 6 PM PT, get results by 6 AM PT next day.</p>
+
+            <h3>How does Voyage handle rate limits?</h3>
+            <p>The default rate limit is 300 requests per minute and 4M tokens per minute for paid accounts. Higher limits are available on request for production deployments. The batch API has separate, much higher limits.</p>
+
+            <h3>Is there a self-hosted version of Voyage?</h3>
+            <p>No self-hosted model weights are available. Voyage is a managed API only. For self-hosted alternatives, see BGE-M3 (open weight, multilingual), Nomic Embed Text v2 (open weight, 137M params), or Jina Embeddings v3 (open weight, 570M params, 8K context, 1024 dims).</p>
+
+            <h3>What happens after the 200M free tokens are used?</h3>
+            <p>You are automatically moved to pay-as-you-go pricing at the standard rates above ($0.02-$0.18/M tokens depending on model). The free tier is a one-time grant per account, not a recurring monthly allocation. You can set a hard spending cap in the Voyage dashboard to prevent surprise bills.</p>
+
+            <h2>Conclusion</h2>
+            <p>Voyage AI is the strongest choice in 2026 for serious RAG and vector retrieval systems. The combination of frontier retrieval accuracy (14% over OpenAI v3 Large on RTEB), generous pricing ($0.02/M tokens for the lite tier, 200M free tokens on signup), shared embedding space across the voyage-4 family (enabling asymmetric retrieval), and a complete embedding stack (text, code, finance, law, multimodal) makes it the default choice for AI engineers who prioritize retrieval quality.</p>
+            <p>The downsides — no OpenAI API compatibility, no chat completions, unverified China access — are real but manageable. Most production RAG systems already use a separate embedding provider and a separate chat provider, so Voyage's embedding-only focus is a feature, not a bug.</p>
+            <p>Decision framework for picking an embedding provider in 2026:</p>
+            <ul>
+              <li>Need frontier retrieval accuracy + cost efficiency → <strong>Voyage AI (voyage-4)</strong></li>
+              <li>Need OpenAI API compatibility + a single provider for everything → <strong>OpenAI (text-embedding-3-large)</strong></li>
+              <li>Need code-aware retrieval for a repository Q&amp;A system → <strong>Voyage AI (voyage-code-3)</strong></li>
+              <li>Need to self-host for data privacy → <strong>BGE-M3 or Nomic Embed Text v2</strong></li>
+              <li>Need multimodal (text+image) embedding → <strong>Voyage AI (voyage-multimodal-3.5)</strong></li>
+              <li>Need a multi-provider aggregator with China-direct access → <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener"><strong>FreeModel</strong></a></li>
+            </ul>
+            <p>For teams building production RAG in 2026, Voyage AI is the obvious default embedding backend. The accuracy advantage is real, the free tier is generous, and the shared embedding space unlocks a powerful asymmetric retrieval pattern that OpenAI simply does not support.</p>
+          </div>
+
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+            <dl class="text-sm space-y-2">
+              <div><dt class="text-gray-500">Provider</dt><dd class="font-medium">Voyage AI (MongoDB)</dd></div>
+              <div><dt class="text-gray-500">Founded</dt><dd class="font-medium">2023</dd></div>
+              <div><dt class="text-gray-500">Headquarters</dt><dd class="font-medium">Palo Alto, CA</dd></div>
+              <div><dt class="text-gray-500">Free tier</dt><dd class="font-medium">200M tokens</dd></div>
+              <div><dt class="text-gray-500">Cheapest model</dt><dd class="font-medium">$0.02/M tokens</dd></div>
+              <div><dt class="text-gray-500">Context window</dt><dd class="font-medium">32K (all models)</dd></div>
+              <div><dt class="text-gray-500">Embedding dim</dt><dd class="font-medium">256/512/1024/2048</dd></div>
+              <div><dt class="text-gray-500">OpenAI compatible</dt><dd>❌ No</dd></div>
+            </dl>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="font-bold text-gray-900 mb-3">Code Sample</h3>
+            <pre class="text-xs bg-gray-50 p-3 rounded overflow-x-auto"><code>import voyageai
+
+vo = voyageai.Client(api_key="YOUR_KEY")
+
+# Query embedding
+q = vo.embed(
+    texts=["What is the capital of France?"],
+    model="voyage-4-large",
+    input_type="query"
+)
+
+# Document embedding (same vector space)
+d = vo.embed(
+    texts=["Paris is the capital of France."],
+    model="voyage-4",
+    input_type="document"
+)
+
+# Compute similarity
+import numpy as np
+sim = np.dot(q.embeddings[0], d.embeddings[0])</code></pre>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+            <h3 class="font-bold text-blue-900 mb-3">Try Multi-Provider AI</h3>
+            <p class="text-sm text-blue-800 mb-3">Need embeddings + chat in one key? FreeModel bundles OpenAI, Anthropic, DeepSeek, and Voyage behind a single API with China-direct access.</p>
+            <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="inline-block bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded hover:bg-blue-700" target="_blank" rel="sponsored noopener">Try FreeModel →</a>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+            <ul class="text-sm space-y-2">
+              <li><a href="/tutorials/cheapest-llm-api-pricing-2026" class="text-blue-600 hover:underline">Cheapest LLM API Pricing 2026</a></li>
+              <li><a href="/tutorials/openai-compatible-api-2026" class="text-blue-600 hover:underline">OpenAI-Compatible API 2026</a></li>
+              <li><a href="/tutorials/ai-api-function-calling-2026" class="text-blue-600 hover:underline">AI API Function Calling 2026</a></li>
+              <li><a href="/tutorials/ai-api-streaming-output-2026" class="text-blue-600 hover:underline">AI API Streaming Output 2026</a></li>
+            </ul>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-5">
+            <h3 class="font-bold text-gray-900 mb-3">Provider Categories</h3>
+            <ul class="text-sm space-y-2">
+              <li><a href="/providers/?category=international" class="text-blue-600 hover:underline">International Providers</a></li>
+              <li><a href="/providers/?category=aggregator" class="text-blue-600 hover:underline">Aggregators</a></li>
+              <li><a href="/providers/?category=domestic" class="text-blue-600 hover:underline">China-Direct Providers</a></li>
+            </ul>
+          </div>
+
+          <div class="bg-gray-100 border border-gray-200 rounded-lg p-5 text-center">
+            <p class="text-xs text-gray-500 mb-2">Advertisement</p>
+            <div class="bg-gray-200 h-32 rounded flex items-center justify-center text-gray-400 text-sm">Ad slot</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

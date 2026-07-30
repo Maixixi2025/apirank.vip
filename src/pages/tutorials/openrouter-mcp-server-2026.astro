@@ -1,0 +1,320 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'openrouter-mcp-server-2026';
+const date = '2026-06-28';
+const locale = 'en';
+
+const enTitle = 'OpenRouter MCP Server 2026: 400+ Models in 5 Min';
+const enDescription = "OpenRouter MCP server: connect Claude Code, Codex, Cursor to 400+ LLMs with one URL. Setup guide, code examples, comparison to manual routing.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is the OpenRouter MCP server free to use?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes for the four read-only tools (model_search, model_info, pricing_compare, provider_routing). The chat_completion tool uses your PAYG balance at standard rates plus the 5.5% platform fee." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this work with Claude Desktop (not Code)?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Claude Desktop supports remote MCP servers as of the 1.5 release. The config goes in ~/Library/Application Support/Claude/claude_desktop_config.json on macOS or the equivalent path on Windows and Linux." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use the MCP server with a free OpenRouter account?",
+      "acceptedAnswer": { "@type": "Answer", "text": "You can install and explore the four read-only tools with a free account. The chat_completion tool requires PAYG credits (minimum $5 top-up)." }
+    },
+    {
+      "@type": "Question",
+      "name": "How is this different from the OpenRouter REST API?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The REST API exposes chat completions and credit management. The MCP server exposes catalog discovery and routing intelligence. They complement each other: most workflows use MCP tools for browsing and comparison, then drop to REST for streaming production calls." }
+    },
+    {
+      "@type": "Question",
+      "name": "Will the MCP server route through provider-direct endpoints or always through OpenRouter's infrastructure?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Always through OpenRouter's infrastructure. If you need provider-direct routing (for lower latency or compliance reasons), use the provider_routing tool to discover which providers serve a model, then call their APIs directly." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the MCP server support ZDR (zero data retention)?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The MCP tools themselves do not store any data. For chat completions, you can pass zdr: true in the request body and the server forwards it to providers that support ZDR." }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>&gt;</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>&gt;</span>
+        <span class="text-gray-900 font-medium">OpenRouter MCP Server 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+          
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">OpenRouter MCP Server 2026: 400+ Models in 5 Minutes From Claude Code, Codex, or Cursor</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-28">June 28, 2026</time>
+              <span>&#8226;</span>
+              <span>OpenRouter MCP Setup Guide</span>
+              <span>&#8226;</span>
+              <span>About 11 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              On June 27, 2026, OpenRouter shipped a first-party MCP (Model Context Protocol) server that exposes its entire 400+ model catalog as native tools inside Claude Code, Codex, Cursor, Cline, and any MCP-compatible client. The pitch is simple but powerful: instead of hand-editing model slugs and re-pasting curl snippets every time you want to compare GPT-5.5 against Claude Fable 5 against Gemini 3.1 Pro, your IDE now does it for you. This guide walks through what the server exposes, how to wire it into the three major coding agents, and how the architecture compares to manual routing and to building your own MCP proxy.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> OpenRouter's MCP server is a remote endpoint at <code>https://mcp.openrouter.ai/mcp</code> that exposes five tools — <code>model_search</code>, <code>model_info</code>, <code>pricing_compare</code>, <code>provider_routing</code>, and <code>chat_completion</code> — over Streamable HTTP transport. Setup is a 5-line JSON config in <code>~/.claude/mcp_servers.json</code> (or the Cursor/Codex equivalent). It works with Claude Code, OpenAI Codex CLI, Cursor, Cline, Continue.dev, and any other MCP host. The pricing data is live from OpenRouter's catalog, so tool calls reflect yesterday's price cuts, not last month's. The MCP server uses the standard OAuth 2.1 + PKCE flow and is free to use — you only pay for the underlying chat completions.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>What the MCP Server Actually Exposes</h2>
+            <p>The server is not a thin wrapper that proxies chat calls. It exposes five domain-specific tools that solve the specific pain points OpenRouter users hit when picking from 400+ models:</p>
+            <ol>
+              <li><strong><code>model_search</code></strong> — Free-text search across the live catalog. Filter by capability (vision, function calling, 1M+ context), provider, price band, or modality. Returns ranked model IDs plus one-line summaries.</li>
+              <li><strong><code>model_info</code></strong> — Detailed spec sheet for any model: context window, modalities, supported parameters (tools, structured outputs, response_format), latency p50/p95, and uptime stats.</li>
+              <li><strong><code>pricing_compare</code></strong> — Given a task profile (expected input/output tokens, with or without caching), return ranked pricing across the relevant models. Includes the 5.5% platform fee automatically.</li>
+              <li><strong><code>provider_routing</code></strong> — Given a model, list which underlying providers serve it and their individual pricing, uptime, and ZDR (zero data retention) availability. Useful when you want to pin to a specific vendor.</li>
+              <li><strong><code>chat_completion</code></strong> — A unified OpenAI-compatible chat call. Pass any model ID, get the response. This is what your IDE uses when you ask it to "switch to a cheaper model for this file."</li>
+            </ol>
+            <p>The first four are read-only and don't consume credits. Only <code>chat_completion</code> bills against your OpenRouter PAYG balance. This separation matters for cost-controlled teams: an agent can browse the catalog freely, then route a chat call only when the user explicitly asks for inference.</p>
+
+            <h2>Setup: Claude Code (5 lines)</h2>
+            <p>Add this to <code>~/.claude/mcp_servers.json</code>:</p>
+
+            <h3>JSON config</h3>
+            <pre><code class="language-json">&#123;
+  "mcpServers": &#123;
+    "openrouter": &#123;
+      "url": "https://mcp.openrouter.ai/mcp",
+      "transport": "streamable-http"
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+            <p>Restart Claude Code. The first time you invoke any of the five tools, you'll get an OAuth 2.1 + PKCE consent screen. Approve once and the token is cached. No API key to copy-paste — the OAuth flow handles key derivation per workspace.</p>
+
+            <h3>Try it from Claude Code</h3>
+            <pre><code class="language-bash">/mcp openrouter model_search --query "vision model under $1 per million output tokens"</code></pre>
+
+            <p>Claude Code will call <code>model_search</code>, get back a ranked list (Gemini 3 Flash, GPT-4o-mini, Llama 3.3 70B, Claude Haiku 4.5, etc.), and present them inline. You can then chain a follow-up like <em>"compare pricing for the top 3 on a 5K-in/1K-out task"</em> — that triggers <code>pricing_compare</code> with the actual model IDs.</p>
+
+            <h2>Setup: OpenAI Codex CLI</h2>
+            <p>Codex CLI uses the same MCP config schema but lives at <code>~/.codex/mcp_servers.json</code>:</p>
+
+            <pre><code class="language-json">&#123;
+  "mcpServers": &#123;
+    "openrouter": &#123;
+      "url": "https://mcp.openrouter.ai/mcp",
+      "transport": "streamable-http"
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+            <p>Once Codex loads the server, you can ask it the same questions. One thing Codex does particularly well here is the chat_completion fallback: when the default OpenAI model in Codex runs out of quota, you can tell it <em>"switch this session to anthropic/claude-sonnet-4.5 via openrouter"</em> and the MCP server handles the routing without any environment variable changes.</p>
+
+            <h2>Setup: Cursor</h2>
+            <p>Cursor exposes MCP servers through Settings → Models → Model Context Protocol → Add Server. Point it at:</p>
+
+            <pre><code class="language-bash">https://mcp.openrouter.ai/mcp</code></pre>
+
+            <p>Use the Streamable HTTP transport. After saving, the five OpenRouter tools appear in Cursor's Agent mode. Cursor's tab-completion will suggest them when you type commands like <em>"find a model that..."</em> or <em>"compare pricing on..."</em>.</p>
+
+            <h2>Setup: Cline / Continue.dev / Zed</h2>
+            <p>All MCP-compatible clients accept the same JSON config block. For Cline (VS Code extension), add to <code>~/.cline/mcp_settings.json</code>:</p>
+
+            <pre><code class="language-json">&#123;
+  "mcpServers": &#123;
+    "openrouter": &#123;
+      "url": "https://mcp.openrouter.ai/mcp",
+      "transport": "streamable-http"
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+            <p>Continue.dev uses <code>~/.continue/config.json</code> with the same schema. Zed (the Rust IDE) supports MCP natively as of 0.165; the config goes in <code>~/.config/zed/settings.json</code> under <code>context_servers</code> with <code>&#123; "openrouter": &#123; "url": "https://mcp.openrouter.ai/mcp" &#125; &#125;</code>.</p>
+
+            <h2>What It Looks Like in Practice</h2>
+            <p>Here's a real workflow that demonstrates why the MCP server matters. You're writing a code-review bot and need to pick a model:</p>
+
+            <h3>Without MCP (manual):</h3>
+            <ol>
+              <li>Open browser → openrouter.ai/models</li>
+              <li>Filter by "code"</li>
+              <li>Skim 12 model cards</li>
+              <li>Note prices from 3 of them</li>
+              <li>Edit config file to test each one</li>
+              <li>Run, check output, switch, repeat</li>
+            </ol>
+
+            <h3>With MCP:</h3>
+            <pre><code class="language-bash">/mcp openrouter model_search --query "code review, function calling, under $3/M output"</code></pre>
+
+            <p>Then:</p>
+            <pre><code class="language-bash">/mcp openrouter pricing_compare --models "anthropic/claude-sonnet-4.5,openai/gpt-4.1,deepseek/deepseek-v3" --input-tokens 8000 --output-tokens 2000</code></pre>
+
+            <p>The agent gets back a markdown table with cost-per-call, latency p50, and uptime for each model. From there, you can immediately invoke <code>chat_completion</code> to test the winner. Total time: under 90 seconds, all inside your IDE.</p>
+
+            <h2>Architecture: How It Stays Fast and Fresh</h2>
+            <p>Three things make the MCP server feel native instead of "yet another API to wrap":</p>
+
+            <h3>1. Streamable HTTP, not stdio</h3>
+            <p>Most MCP servers today use stdio transport — they run as local subprocesses that communicate via stdin/stdout. OpenRouter chose Streamable HTTP for a specific reason: the catalog is too large (400+ models, 60+ providers) to fit in a static tool list. With stdio, every model and price becomes a separate tool definition, blowing past the 100-tool limit most clients impose. Streamable HTTP lets the server <em>describe</em> tools on demand, and clients can call them with arbitrary arguments without pre-registering schemas.</p>
+
+            <h3>2. Live pricing, not a static snapshot</h3>
+            <p>OpenRouter's catalog updates several times a day as providers add models, change prices, or adjust rate limits. The MCP server reads from the same catalog endpoint the web UI uses, so <code>pricing_compare</code> returns yesterday's prices, not last month's. When Qwen 3.5-14B dropped to $0.06/M output on June 26, the MCP server reflected it within hours.</p>
+
+            <h3>3. OAuth 2.1 + PKCE instead of static API keys</h3>
+            <p>Static API keys in MCP configs are a security smell — they leak into shell history, config syncs, and dotfile repos. OAuth 2.1 with PKCE means each IDE session gets a short-lived bearer token scoped to the workspace, with refresh tokens that rotate. Revoking access is a one-click operation from your OpenRouter dashboard.</p>
+
+            <h2>Comparison: MCP Server vs Manual Routing vs Custom MCP Proxy</h2>
+            <table>
+              <thead>
+                <tr><th>Approach</th><th>Setup time</th><th>Catalog freshness</th><th>Cost to run</th><th>Best for</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><strong>OpenRouter MCP server</strong></td><td>5 min</td><td>Live (minutes)</td><td>Free + chat costs</td><td>Most users; standard IDE setups</td></tr>
+                <tr><td><strong>Manual OpenRouter calls</strong></td><td>30 min initial</td><td>Manual updates</td><td>Free + chat costs</td><td>One-off scripts, CI pipelines</td></tr>
+                <tr><td><strong>Custom MCP proxy</strong></td><td>4-8 hours</td><td>Whatever you build</td><td>Hosting + chat costs</td><td>Air-gapped environments, custom auth</td></tr>
+                <tr><td><strong>Direct provider APIs</strong></td><td>1+ hours per provider</td><td>N/A</td><td>Provider-direct pricing</td><td>Single-provider shops</td></tr>
+              </tbody>
+            </table>
+
+            <p>The custom MCP proxy route is over-engineered for 95% of teams. The two cases where you'd still build one: (a) you need to enforce a custom approval flow (e.g., legal review before any chat call), or (b) you have an air-gapped environment with no internet egress from the IDE.</p>
+
+            <h2>Limitations and Gotchas</h2>
+            <ul>
+              <li><strong>No streaming through MCP tools</strong> — <code>chat_completion</code> returns the full response. For streaming UIs, call the OpenRouter REST endpoint directly.</li>
+              <li><strong>5.5% platform fee is not exposed in tool descriptions</strong> — It's added to the <code>pricing_compare</code> output, but the per-model fields don't include it. Plan for it when budgeting.</li>
+              <li><strong>Tool count varies by client</strong> — Claude Code and Cursor show all 5 tools. Some lightweight MCP clients cap at 3-4 tools per server and will hide <code>provider_routing</code>.</li>
+              <li><strong>OAuth token expires after 30 days of inactivity</strong> — Re-consent is one click from the dashboard.</li>
+              <li><strong>No support for BYOK (bring your own key)</strong> — All calls route through OpenRouter's balance. If you have direct Anthropic/OpenAI credits, the MCP server won't use them.</li>
+            </ul>
+
+            <h2>FAQ</h2>
+            <p><strong>Q: Is the OpenRouter MCP server free to use?</strong></p>
+            <p>A: Yes for the four read-only tools (<code>model_search</code>, <code>model_info</code>, <code>pricing_compare</code>, <code>provider_routing</code>). The <code>chat_completion</code> tool uses your PAYG balance at standard rates plus the 5.5% platform fee.</p>
+            <p><strong>Q: Does this work with Claude Desktop (not Code)?</strong></p>
+            <p>A: Yes. Claude Desktop supports remote MCP servers as of the 1.5 release. The config goes in <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> (macOS) or the equivalent path on Windows/Linux.</p>
+            <p><strong>Q: Can I use the MCP server with a free OpenRouter account?</strong></p>
+            <p>A: You can install and explore the four read-only tools with a free account. <code>chat_completion</code> requires PAYG credits (minimum $5 top-up).</p>
+            <p><strong>Q: How is this different from the OpenRouter REST API?</strong></p>
+            <p>A: The REST API exposes chat completions and credit management. The MCP server exposes catalog discovery and routing intelligence. They complement each other: most workflows use MCP tools for browsing and comparison, then drop to REST for streaming production calls.</p>
+            <p><strong>Q: Will the MCP server route through provider-direct endpoints (Anthropic, OpenAI) or always through OpenRouter's infra?</strong></p>
+            <p>A: Always through OpenRouter's infra. If you need provider-direct routing (for lower latency or compliance reasons), use the <code>provider_routing</code> tool to discover which providers serve a model, then call their APIs directly.</p>
+            <p><strong>Q: Does the MCP server support ZDR (zero data retention)?</strong></p>
+            <p>A: The MCP tools themselves don't store any data. For chat completions, you can pass <code>"zdr": true</code> in the request body — the server forwards it to providers that support ZDR.</p>
+
+            <h2>Conclusion</h2>
+            <p>OpenRouter's MCP server is the missing piece that turns "aggregator with 400+ models" into "actual workflow tool." For the first time, your IDE can answer questions like <em>"which model is cheapest for a 5K-token code review?"</em> or <em>"switch this session to a model that handles 1M context"</em> without you ever leaving the editor or copying a curl snippet.</p>
+            <p>For most teams, the 5-minute setup is a clear win over maintaining a custom MCP proxy or hand-coding model comparisons. The OAuth flow keeps credentials out of dotfiles, the catalog stays live, and the five-tool surface area covers the 90% case for switching models mid-session.</p>
+            <p>If you want to try it, sign up at <a href="https://openrouter.ai/affiliates" class="text-blue-600 hover:underline">OpenRouter</a> and add the 5-line config to your IDE. For teams that need multi-provider access with deterministic model selection and ZDR guarantees, aggregators like <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a> provide OpenAI-compatible endpoints with China-direct routing — useful when OpenRouter's standard routing doesn't reach the regions you need.</p>
+          </div>
+
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Product:</strong> OpenRouter MCP Server</li>
+                <li><strong>Launch:</strong> June 27, 2026</li>
+                <li><strong>Endpoint:</strong> mcp.openrouter.ai/mcp</li>
+                <li><strong>Transport:</strong> Streamable HTTP</li>
+                <li><strong>Tools:</strong> 5 (4 read-only + 1 chat)</li>
+                <li><strong>Auth:</strong> OAuth 2.1 + PKCE</li>
+                <li><strong>Catalog:</strong> 400+ models, live</li>
+                <li><strong>Cost:</strong> Free + standard 5.5% fee on chat</li>
+              </ul>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Try OpenRouter</h3>
+              <p class="text-sm text-gray-600 mb-3">Get $1 free credits and access to all 400+ models via MCP or REST. OpenRouter's affiliate program pays out on every credit purchase.</p>
+              <a href="https://openrouter.ai/affiliates" class="block text-center bg-blue-600 text-white rounded-lg py-2 px-4 text-sm font-medium hover:bg-blue-700">Sign Up</a>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Reviews</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/openrouter-review" class="text-blue-600 hover:underline">OpenRouter API Review</a></li>
+                <li><a href="/tutorials/openrouter-fusion-api-2026" class="text-blue-600 hover:underline">OpenRouter Fusion API</a></li>
+                <li><a href="/tutorials/openrouter-data-residency-2026" class="text-blue-600 hover:underline">OpenRouter Data Residency</a></li>
+                <li><a href="/tutorials/openrouter-q2-2026-token-share-leaderboard" class="text-blue-600 hover:underline">OpenRouter Q2 Token Share</a></li>
+              </ul>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Provider Details</h3>
+              <ul class="text-sm text-gray-600 space-y-1">
+                <li>Category: Aggregator + MCP Tooling</li>
+                <li>Type: Remote MCP server</li>
+                <li>Pricing: Free tools + chat at standard rates</li>
+                <li>Models covered: 400+ across 60+ providers</li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center text-xs text-gray-400">
+              Ad Placeholder
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

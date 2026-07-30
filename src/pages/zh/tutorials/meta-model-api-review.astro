@@ -1,0 +1,641 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'meta-model-api-review';
+const date = '2026-07-12';
+const locale = 'zh';
+
+const zhTitle = 'Meta Model API 2026 评测：Muse Spark 1.1 深度解析';
+const zhDescription = 'Meta Model API 全面评测：Muse Spark 1.1 定价 $1.25/百万 input token、Agentic 工具调用、1M 上下文窗口、搜索增强。对比 OpenAI/Anthropic/Google。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Meta Model API 2026 评测：Muse Spark 1.1 深度解析", "description": "Meta Model API 全面评测：Muse Spark 1.1 定价 $1.25/百万 input token、Agentic 工具调用、1M 上下文窗口、搜索增强。对比 OpenAI/Anthropic/Google。", "datePublished": "2026-07-12", "dateModified": "2026-07-12", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/meta-model-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "测评中心", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Meta Model API 2026 评测：Muse Spark 1.1 深度解析", "item": "https://apirank.vip/zh/tutorials/meta-model-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "如何开始使用 Meta Model API？", "acceptedAnswer": {"@type": "Answer", "text": "访问 https://developer.meta.com/ai/，注册公开预览，生成 API Key，然后将 OpenAI SDK 的 base_url 设为 `https://api.meta.ai/v1`。入门指南将引导你完成五分钟内的首次请求。"}}, {"@type": "Question", "name": "Meta Model API 免费吗？", "acceptedAnswer": {"@type": "Answer", "text": "免费层提供每分钟 60 次请求和每分钟 200 万 Token。此外注册公开预览还赠送免费额度。免费层无需信用卡。生产工作负载使用按 Token 即用即付的付费层，无最低承诺。"}}, {"@type": "Question", "name": "可以从中国使用 Meta Model API 吗？", "acceptedAnswer": {"@type": "Answer", "text": "目前 Meta Model API 仅对美国开发者开放公开预览。从中国大陆访问需要稳定的代理连接。Meta 已承诺国际扩展但未公布时间表。对于中国开发者，DeepSeek、阿里云百炼、腾讯混元等提供直连选项。"}}, {"@type": "Question", "name": "Meta Model API 与 Llama 开源版有何不同？", "acceptedAnswer": {"@type": "Answer", "text": "Llama 开源权重模型（Llama 2、3、4）继续在 Hugging Face 和 GitHub 上以 Llama 社区许可证提供，用于自托管使用。Meta Model API 是一个独立的托管服务，运行 Muse Spark 1.1——一个不同的、能力更强的模型，不可下载。可以这样理解：OpenAI 的 GPT-4o-mini 不开源，但可以通过 API 调用。类似地，Muse Spark 是 Meta 仅通过 API 提供的前沿模型。"}}, {"@type": "Question", "name": "Meta Model API 支持图像生成吗？", "acceptedAnswer": {"@type": "Answer", "text": "不支持。Muse Spark 1.1 可以理解图像（读取文字、描述场景、分析图表）但不能生成图像。图像生成由 Meta 的独立产品（Imagine with Meta）提供，不属于 Model API 范畴。"}}, {"@type": "Question", "name": "速率限制是多少？", "acceptedAnswer": {"@type": "Answer", "text": "免费层：每分钟 60 次请求（RPM）、每分钟 200 万 Token（TPM），按团队计算。付费层：RPM 3,000、TPM 4,000,000。后台响应有单独的提交限制：每分钟 600 次。"}}, {"@type": "Question", "name": "Meta Model API 提供 SLA 吗？", "acceptedAnswer": {"@type": "Answer", "text": "Meta 尚未公开发布 Model API 的 SLA。企业客户可通过 Meta 企业销售团队协商 SLA。公开预览条款不包括正常运行时间保证。"}}, {"@type": "Question", "name": "如何获取 Meta Model API Key？", "acceptedAnswer": {"@type": "Answer", "text": "在 https://developer.meta.com/ai/ 注册（仅美国开发者）。批准后从控制台生成 API Key。该 Key 作为 Bearer Token 以 `MODEL_API_KEY` 环境变量使用。"}}, {"@type": "Question", "name": "可以在 LangChain 或 LlamaIndex 中使用 Meta Model API 吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。由于 API 兼容 OpenAI，任何支持 OpenAI SDK 的框架（LangChain、LlamaIndex、AutoGen、CrewAI、Vercel AI SDK）只需将 `base_url` 改为 `https://api.meta.ai/v1` 即可使用。模型 ID 为 `muse-spark-1.1`。"}}, {"@type": "Question", "name": "Muse Spark 1.1 的上下文窗口是多少？", "acceptedAnswer": {"@type": "Answer", "text": "1,048,576 Token（1M）。与 Google Gemini 2.5 Pro 的上下文窗口相当，远超 OpenAI（128K）和 Anthropic（200K）。无长上下文溢价——无论上下文长度如何都支付相同的每 Token 费率。"}}]};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Meta Model API 2026 评测：Muse Spark 1.1 — $1.25/百万 Token 的 Agent 平台</h1>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">什么是 Meta Model API？2026 年它为何值得关注？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Meta Model API 是 Meta（原 Facebook）在 2026 年初推出的官方 AI API 平台。经过多年通过 Hugging Face 开源 Llama 家族（Llama 2、Llama 3、Llama 4）的策略后，Meta 终于构建了一个自助服务的 API 平台，在 <code>api.meta.ai</code> 上直接与 OpenAI、Anthropic、Google 竞争。旗舰模型是 <strong>Muse Spark 1.1</strong>，一款多模态（文本+图像+视频+PDF）模型，拥有 100 万 Token 上下文窗口，定价为 $1.25/百万 input token 和 $4.25/百万 output token——在价格上卡在 GPT-4o 和 Claude Sonnet 5 之间。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">让 Meta Model API 在 2026 年 7 月成为 Agent 构建团队关注焦点的三件事：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Agent 原生基础设施开箱即用。</strong> Muse Spark 标配并行工具调用、流式工具参数、计算机使用（模型像人类一样直观操作计算机，类似 Claude 的 computer use）、搜索增强（实时网络数据+引用）、多 Agent 编排——全部通过 Responses API 第一天可用。Meta 明确为 Agent 时代构建 API，而非仅聊天。</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>三种 API 格式，同一后端。</strong> Meta Model API 通过三个端点暴露同一模型——Responses API（Agent 格式，内置工具状态管理）、Chat Completions API（OpenAI 替代方案）、Messages API（Anthropic 格式）。开发者选择自己代码已经使用的格式，获得同一模型、同一认证、同一价格。从 OpenAI 迁移只需改 <code>base_url</code> 和 <code>api_key</code>。</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>同时兼容 OpenAI 和 Anthropic SDK。</strong> Chat Completions 端点是 OpenAI SDK 的直接替代（<code>openai.base_url = "https://api.meta.ai/v1"</code>），Messages API 使用 Anthropic Messages 格式。Meta 是 2026 年第一家明确双兼容两种 SDK 格式的主流厂商，成为迁移摩擦最低的选择。</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">权衡：目前仅 1 个模型（Muse Spark 1.1）可通过 API 调用——没有独立的 Llama 4 端点、无微调 API、无嵌入模型。公开预览仅限美国开发者。$1.25/$4.25 的定价有竞争力，但 output 价格高于 GPT-4o-mini 和 DeepSeek V3，因此不是纯性价比选择。Meta Model API 适合希望在零 SDK 重写和原生 Agent 基础设施下获得 Meta 第一方模型质量的团队。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Meta Model API 接口：Responses、Chat Completions 与 Messages</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Meta Model API 通过三个端点家族提供同一骨干模型。基础 URL 为 <code>https://api.meta.ai/v1</code>，认证使用 <code>MODEL_API_KEY</code> Bearer Token。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">1. Responses API（Agent 端点）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Responses API 是 Meta 的旗舰格式——专为多轮 Agent 工作流设计的有状态端点。与无状态的 Chat Completions 不同，Responses 自动跨轮次维护工具调用状态：当 Muse Spark 调用工具时，将结果提交回同一 response，模型使用更新后的上下文继续执行。</p>
+
+<pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.meta.ai/v1",
+    api_key="MODEL_API_KEY"
+)
+
+# 创建带搜索增强的 response
+response = client.responses.create(
+    model="muse-spark-1.1",
+    input="2026年7月有哪些最新的VPS主机优惠？",
+    tools=[&#123;"type": "web_search"&#125;]
+)
+print(response.output_text)
+# 回复包含来自网络搜索的内联引用</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Responses API 还支持<strong>后台响应</strong>（<code>background: true</code>）——长期运行的任务立即返回结果，完成时通过 webhook 推送。适用于数小时的代码重构、批量文档分析或定时搜索爬取。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">2. Chat Completions API（OpenAI 替代）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">对于已使用 OpenAI SDK 的团队，Chat Completions 是零迁移路径：</p>
+
+<pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.meta.ai/v1",
+    api_key="MODEL_API_KEY"
+)
+
+response = client.chat.completions.create(
+    model="muse-spark-1.1",
+    messages=[
+        &#123;"role": "system", "content": "你是一名资深软件架构师。"&#125;,
+        &#123;"role": "user", "content": "为电商平台设计微服务架构。"&#125;
+    ],
+    tools=[&#123;
+        "type": "function",
+        "function": &#123;
+            "name": "design_service",
+            "parameters": &#123;
+                "type": "object",
+                "properties": &#123;
+                    "name": &#123;"type": "string"&#125;,
+                    "responsibilities": &#123;"type": "array", "items": &#123;"type": "string"&#125;&#125;,
+                    "api_endpoints": &#123;"type": "array", "items": &#123;"type": "string"&#125;&#125;
+                &#125;
+            &#125;
+        &#125;
+    &#125;]
+)
+print(response.choices[0].message.content)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">所有 Chat Completions 特性都能用：流式输出、函数调用、结构化输出（JSON 模式）、logprobs、max_completion_tokens、temperature、seed。模型 ID <code>muse-spark-1.1</code> 在所有三个端点家族中相同。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">3. Messages API（Anthropic 替代）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Meta 也支持 Anthropic Messages 格式：</p>
+
+<pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic(
+    base_url="https://api.meta.ai/v1",
+    api_key="MODEL_API_KEY"
+)
+
+response = client.messages.create(
+    model="muse-spark-1.1",
+    max_tokens=4096,
+    messages=[
+        &#123;"role": "user", "content": "用通俗语言解释 Transformer 架构。"&#125;
+    ]
+)
+print(response.content[0].text)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">这种双兼容在 2026 年独一无二：没有其他提供商原生支持两种 SDK 格式而不需要代理层（如 LiteLLM 或 OpenRouter）。Meta 在 API 层面做到了。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">定价详解</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Meta Model API 采用按 Token 即用即付制，无最低消费或承诺：</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">使用类型</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">每百万 Token 价格</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">输入（标准）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.25</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">缓存输入</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>$0.15</strong>（88% 折扣）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">输出</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$4.25</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">网络搜索增强</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.50/1000 次查询</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">定价观察：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>无长上下文溢价。</strong> 无论你的提示是 100 Token 还是 80 万 Token，都支付相同的每 Token 费率。Google Gemini 对超过 20 万 Token 的请求收取更高费率；OpenAI o 系列有按上下文的分层定价。Meta 将其扁平化。</li>
+
+</ul>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>缓存输入 $0.15/百万 Token 很有竞争力。</strong> OpenAI 收取 $0.075/M（GPT-4o 标准价的 50%），Anthropic 对 Claude Sonnet 5 缓存输入收取 $0.30/M。Meta 的 $0.15/M 介于两者之间。对于高缓存、高吞吐量的工作负载（固定系统提示的客服、共享上下文前缀的文档分析），这是关键的成本杠杆。</li>
+
+</ul>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>网络搜索增强 $2.50/1000 次查询</strong> 属于中等水平。Google 在 Gemini 免费层内免费提供搜索增强；OpenAI 的 web search 工具收费 $5/1000 次查询。Meta 比 OpenAI 便宜但不及免费。</li>
+
+</ul>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>输出是差异化因素。</strong> $4.25/百万 Token，Meta 的输出比 Claude Sonnet 5（$15/M）和 GPT-4o（$10/M）便宜，但比 DeepSeek V3（$0.28/M）和 Gemini 2.5 Flash（$0.30-5/M）贵。对于长文本生成工作负载（报告、代码生成、多轮 Agent 响应），Meta 在不牺牲第一方模型质量的前提下，相比一级竞争对手提供了可观的节省。</li>
+
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">免费层</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">免费层提供 <strong>每分钟 60 次请求（RPM）和每分钟 200 万 Token（TPM）</strong>——对原型开发来说相当慷慨。对比 OpenAI 的免费层（GPT-4o 仅 3 RPM）和 Anthropic（Claude API 无免费层）。付费层可扩展至 3,000 RPM 和 4M TPM。限制按团队而非按 API Key 计算。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">注意：免费层目前仅限<strong>美国开发者</strong>（公开预览限制）。Meta 尚未公布国际可用性。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Muse Spark 1.1 能力</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Muse Spark 1.1 是一款为 Agent 和编程工作优化的多模态模型。关键规格：</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">能力</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Muse Spark 1.1</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">上下文窗口</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,048,576 Token（1M）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">输入模态</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">文本、图像、视频、PDF</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">输出模态</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">文本</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">API 端点家族</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Responses、Chat Completions、Messages</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">工具调用</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">并行、流式参数</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">结构化输出</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">JSON 模式</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">搜索增强</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">网络搜索+引用</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">计算机使用</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">可视化 Agent 操作</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">提示缓存</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">自动，$0.15/百万 Token 缓存输入</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">后台响应</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Webhook 异步完成</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">速率限制（免费）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">60 RPM、2M TPM</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">速率限制（付费）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">3,000 RPM、4M TPM</td>
+
+</tr>
+
+</tbody></table></div>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">优势</h3>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Agentic 工具调用。</strong> Muse Spark 明确为多步骤工具使用训练。Meta 的基准测试表明，它在 Agent 任务（跨多文件代码重构、基于浏览器的网页任务、多工具编排）上的表现与 Claude Sonnet 5 相当。并行工具调用支持意味着模型可以在单轮中调用多个函数并一起处理所有结果——这对生产级 Agent 循环至关重要。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>100 万 Token 上下文无价格溢价。</strong> 这是 Muse Spark 相对于 OpenAI（GPT-4o 128K）和 Anthropic（200K）最明显的优势。对于需要摄取整个代码库、数小时会议记录或多小时视频流的工作负载，1M 窗口消除了分片复杂度。而且由于没有长上下文溢价，使用它不会增加费用。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>计算机使用。</strong> 与 Claude 的 computer use 类似，Muse Spark 可以通过截图查看桌面环境并与之交互。模型识别 UI 元素、移动光标、点击、输入并在应用之间导航。这作为工具调用暴露——模型请求截图、处理视觉状态、输出下一个操作。在 2026 年初，Claude 和 Meta 是唯一两个通过 API 提供生产级计算机使用的提供商。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">不足</h3>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>单一模型。</strong> API 仅提供 Muse Spark 1.1。没有针对轻量任务的更小/更快/更便宜模型、无独立视觉模型、无嵌入模型。预算有限的团队需要为非 Agent 工作负载叠加辅助提供商（Groq 用于快速推理、DeepInfra 用于预算）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>仅限美国。</strong> 公开预览有地理限制。国际团队，包括中国开发者，无法直接注册。这严重限制了 2026 年中的可寻址开发者受众。Meta 已承诺全球扩张但未公布时间表。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>无微调。</strong> 与 OpenAI（GPT-4o-mini 微调 API）和 Together AI（开源模型原生微调）不同，Meta Model API 提供零模型定制。对于需要领域特定模型适配的团队，Meta 尚不是选项。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Meta Model API vs 竞品</h2>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">维度</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Meta Muse Spark 1.1</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">OpenAI GPT-4o</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Claude Sonnet 5</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Gemini 2.5 Flash</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">输入价格</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$1.25/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.50/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$3/M（推广价 $2）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.15-1.25/M</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">输出价格</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$4.25/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$10/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$15/M（推广价 $10）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.30-5/M</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">缓存输入</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.15/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.075/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.30/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">无</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">上下文窗口</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">128K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">200K</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1M</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">OpenAI SDK</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅ 原生</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅ 原生</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌（需代理）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌（不同 SDK）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Anthropic SDK</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅ 原生</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅ 原生</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">计算机使用</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">搜索增强</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅（$2.50/千次）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅（$5/千次）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅（免费）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">微调</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">✅</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">❌</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">免费层</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">60 RPM / 2M TPM</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">GPT-4o 3 RPM</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">无</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">15 RPM</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">地理限制</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">仅美国</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">全球</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">全球</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">全球（中国需代理）</td>
+
+</tr>
+
+</tbody></table></div>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">选择 Meta Model API 的场景</h3>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Agent 化代码助手</strong> — Muse Spark 1.1 的计算机使用 + 并行工具调用 + 1M 上下文使其非常适合需要浏览 IDE 并引用完整代码库的自主编程 Agent。</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>多格式迁移</strong> — 同时拥有 OpenAI 和 Anthropic SDK 代码库的团队可以统一迁移到 Meta Model API，无需重写任何一种格式。</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>长上下文文档处理</strong> — 1M 上下文按标准费率收费，消除了长文档、会议记录和视频内容的分片需求。</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>缓存密集型生产工作负载</strong> — $0.15/M 的缓存输入使高吞吐量客服、文档问答和代码分析流水线成本高效。</li>
+
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">如何开始使用 Meta Model API？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">访问 https://developer.meta.com/ai/，注册公开预览，生成 API Key，然后将 OpenAI SDK 的 base_url 设为 <code>https://api.meta.ai/v1</code>。入门指南将引导你完成五分钟内的首次请求。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Meta Model API 免费吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">免费层提供每分钟 60 次请求和每分钟 200 万 Token。此外注册公开预览还赠送免费额度。免费层无需信用卡。生产工作负载使用按 Token 即用即付的付费层，无最低承诺。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">可以从中国使用 Meta Model API 吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">目前 Meta Model API 仅对美国开发者开放公开预览。从中国大陆访问需要稳定的代理连接。Meta 已承诺国际扩展但未公布时间表。对于中国开发者，DeepSeek、阿里云百炼、腾讯混元等提供直连选项。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Meta Model API 与 Llama 开源版有何不同？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Llama 开源权重模型（Llama 2、3、4）继续在 Hugging Face 和 GitHub 上以 Llama 社区许可证提供，用于自托管使用。Meta Model API 是一个独立的托管服务，运行 Muse Spark 1.1——一个不同的、能力更强的模型，不可下载。可以这样理解：OpenAI 的 GPT-4o-mini 不开源，但可以通过 API 调用。类似地，Muse Spark 是 Meta 仅通过 API 提供的前沿模型。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Meta Model API 支持图像生成吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">不支持。Muse Spark 1.1 可以理解图像（读取文字、描述场景、分析图表）但不能生成图像。图像生成由 Meta 的独立产品（Imagine with Meta）提供，不属于 Model API 范畴。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">速率限制是多少？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">免费层：每分钟 60 次请求（RPM）、每分钟 200 万 Token（TPM），按团队计算。付费层：RPM 3,000、TPM 4,000,000。后台响应有单独的提交限制：每分钟 600 次。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Meta Model API 提供 SLA 吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Meta 尚未公开发布 Model API 的 SLA。企业客户可通过 Meta 企业销售团队协商 SLA。公开预览条款不包括正常运行时间保证。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">如何获取 Meta Model API Key？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">在 https://developer.meta.com/ai/ 注册（仅美国开发者）。批准后从控制台生成 API Key。该 Key 作为 Bearer Token 以 <code>MODEL_API_KEY</code> 环境变量使用。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">可以在 LangChain 或 LlamaIndex 中使用 Meta Model API 吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">可以。由于 API 兼容 OpenAI，任何支持 OpenAI SDK 的框架（LangChain、LlamaIndex、AutoGen、CrewAI、Vercel AI SDK）只需将 <code>base_url</code> 改为 <code>https://api.meta.ai/v1</code> 即可使用。模型 ID 为 <code>muse-spark-1.1</code>。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Muse Spark 1.1 的上下文窗口是多少？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">1,048,576 Token（1M）。与 Google Gemini 2.5 Pro 的上下文窗口相当，远超 OpenAI（128K）和 Anthropic（200K）。无长上下文溢价——无论上下文长度如何都支付相同的每 Token 费率。</p>`;
+
+const affiliateSidebar = {
+  name: 'FreeModel',
+  description: '需要聚合多 Provider 的 API？FreeModel 一个 Key 调用 GPT-4o、Claude、Gemini、DeepSeek 等 50+ 模型——国内直连，无需翻墙。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '免费试用 FreeModel →',
+};
+---
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)}></script>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)}></script>
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)}></script>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Main content -->
+      <article class="flex-1 min-w-0">
+        <div set:html={zhBody} />
+      </article>
+
+      <!-- Sidebar -->
+      <aside class="lg:w-80 flex-shrink-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <h3 class="font-semibold text-blue-900 mb-2">{affiliateSidebar.name}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url}
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+             rel="sponsored noopener" target="_blank">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">快速概览</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>提供商：</strong> Meta Model API（Muse Spark 1.1）</li>
+            <li><strong>模型：</strong> muse-spark-1.1（1M 上下文）</li>
+            <li><strong>定价：</strong> $1.25/M input、$4.25/M output、缓存 $0.15/M</li>
+            <li><strong>API：</strong> <code>https://api.meta.ai/v1</code></li>
+            <li><strong>格式：</strong> Responses、Chat Completions、Messages</li>
+            <li><strong>特性：</strong> 计算机使用、搜索增强、工具调用、结构化输出、1M 上下文</li>
+            <li><strong>联盟：</strong> 用 FreeModel 做聚合回退</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,405 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'mem0-api-review';
+const date = '2026-07-23';
+const locale = 'en';
+const enTitle = "Mem0 2026: AI Agent Memory Layer & API Review";
+const enDescription = "Mem0 2026: AI Agent memory layer (Apache-2.0, 61k stars). Hobby free, Starter $19, Pro $249 with Graph Memory. Compare vs Zep, Letta, Pinecone.";
+const canonicalUrl = `https://apirank.vip/tutorials/mem0-api-review`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/mem0-api-review`;
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Mem0 2026: AI Agent Memory Layer & API Review", "description": "Mem0 2026: AI Agent memory layer (Apache-2.0, 61k stars). Hobby free, Starter $19, Pro $249 with Graph Memory. Compare vs Zep, Letta, Pinecone.", "datePublished": "2026-07-23", "dateModified": "2026-07-23", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/mem0-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip/"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Mem0 2026: AI Agent Memory Layer & API Review", "item": "https://apirank.vip/tutorials/mem0-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is Mem0 used for in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "Mem0 is a memory layer for AI agents and chat applications that automatically extracts facts from conversations and stores them as structured, retrievable memories. It is the de-facto open-source (Apache-2.0, 61,493 GitHub stars) memory layer behind production customer-support bots that remember returning users, personalized assistants that recall dietary preferences across sessions, multi-character chat applications, and agent frameworks like LangChain, LlamaIndex, CrewAI, AutoGen, and Mastra that treat memory as a first-class primitive."}}, {"@type": "Question", "name": "Is Mem0 free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The Hobby plan is free with no credit card required and includes 10,000 memories stored plus 1,000 retrieval API calls per month (unlimited end users, 1 project, community support). For production workloads, the Starter plan starts at $19/month with 50,000 memories and 5,000 retrieval API calls per month, and the Pro plan at $249/month adds unlimited memories, Graph Memory (entity-relationship tracking), advanced analytics, and multi-project support. The Hobby free tier is enough for prototyping and side projects but is not sufficient for production chat apps — a typical chat application uses 1 memory add per user message plus 1 search before each assistant reply, so the 1,000 calls/month Hobby quota only supports ~33 messages per day."}}, {"@type": "Question", "name": "How does Mem0 compare to Zep and Letta in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "Mem0, Zep, and Letta all solve the same problem — adding long-term conversational memory to AI agents — with different trade-offs. Mem0 has the largest GitHub community (61,493 stars vs Zep's ~3,500 and Letta's ~14,000), the cleanest LangChain/LlamaIndex integration, and a hosted Cloud SaaS option. Zep optimizes for long-context windows with time-weighted memory decay — if your use case is 'remember what the user said 30 turns ago, weighted by recency', Zep's retrieval model is more sophisticated. Letta (formerly MemGPT) bakes memory management into the agent loop itself — the LLM actively decides when to read/write memory. This is more powerful but requires running a Letta-compatible agent framework, not just calling Mem0's API."}}, {"@type": "Question", "name": "How much does Mem0 cost per million memories?", "acceptedAnswer": {"@type": "Answer", "text": "Mem0's pricing is per memory stored and per retrieval API call, not per million memories. The Hobby tier is $0/month with 10,000 memories and 1,000 retrieval calls included; overage is not available (you must upgrade). The Starter tier at $19/month includes 50,000 memories and 5,000 retrieval calls. The Pro tier at $249/month includes unlimited memories and 50,000 retrieval calls. Note that LLM costs for fact extraction are NOT included — a high-traffic app doing millions of memory adds can rack up $200-$500/month in OpenAI or Anthropic API costs that are completely separate from the Mem0 subscription. Run a benchmark workload to estimate accurately."}}, {"@type": "Question", "name": "Does Mem0 work in China?", "acceptedAnswer": {"@type": "Answer", "text": "Mem0 has two deployment modes. The Mem0 Cloud SaaS (mem0.ai) is hosted outside mainland China and may have variable latency or access stability for users connecting from China without a proxy. The open-source `mem0ai/mem0` GitHub repository (Apache-2.0, 61,493 stars) ships a complete Docker Compose setup that bundles the API server, a vector store (Qdrant by default), and an optional Neo4j for Graph Memory — this can be deployed on any Chinese cloud (Aliyun, Tencent Cloud, Huawei Cloud) without proxying through Mem0's Cloud SaaS. For Chinese AI applications needing in-country data residency or low-latency access, the self-hosted option is the recommended path."}}, {"@type": "Question", "name": "Can Mem0 replace a vector database like Pinecone?", "acceptedAnswer": {"@type": "Answer", "text": "No — Mem0 and vector databases serve different purposes. Mem0 handles conversation memory (extracting and retrieving facts from multi-turn dialogues), while Pinecone handles document retrieval (searching across a corpus of PDFs, articles, or other static content). They are complementary: use Mem0 for user-specific conversational memory (so the agent remembers a returning user's preferences and history), and use Pinecone or Weaviate for document-level RAG (so the agent can cite the right page from your knowledge base). The two layers often sit together in production agent architectures — Mem0 feeds the system prompt with user context, Pinecone feeds the system prompt with document snippets."}}, {"@type": "Question", "name": "Which LLM providers does Mem0 support?", "acceptedAnswer": {"@type": "Answer", "text": "Mem0 supports 8+ LLM providers out of the box as of 2026-07-23: OpenAI (GPT-4o, GPT-4-Turbo, GPT-3.5), Anthropic (Claude 3.5 Sonnet, Haiku, Opus), Google (Gemini 1.5 Pro/Flash), Mistral (Large, Mixtral, Mistral-7B), Groq (Llama 3.1 70B, Mixtral), Ollama (any local model), AWS Bedrock (Claude / Llama / Titan), and Azure OpenAI. The same SDK call works against any of them — you only swap the LLM_PROVIDER and LLM_API_KEY environment variables. This makes Mem0 framework-agnostic: you can switch from OpenAI to Anthropic without rewriting the memory integration."}}]};
+const enBody = `
+<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Mem0 2026: The Memory Layer Standard for Production AI Agents</h1>
+
+
+<p class="text-gray-700 leading-relaxed my-4">Mem0 is the memory layer that production AI agents reach for in 2026, and the one 60,000+ developers have starred on GitHub for adding long-term, personalized context to LLM applications without hand-rolling a vector store, fact-extraction pipeline, and forgetfulness filter. Verified on 2026-07-23, Mem0 is <strong>the</strong> open-source (Apache-2.0, 61,493 stars) memory layer behind customer-support bots that remember a returning user's last ticket, personal-assistant apps that recall dietary preferences across sessions, multi-character chat applications, and the new generation of agent frameworks (LangChain, LlamaIndex, CrewAI, AutoGen, Mastra) that treat memory as a first-class primitive.</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4">This review walks through what Mem0 does that hand-rolled RAG + vector store does not, the verified 2026 pricing (Hobby free with 10,000 memories, Starter at $19/month with 50,000 memories, Pro at $249/month with unlimited memories and Graph Memory, Enterprise contract for SSO/audit/on-prem), how to wire Mem0 into a LangChain or vanilla OpenAI/Anthropic agent in a few lines of Python or TypeScript, and how Mem0 compares to alternatives (Zep, Letta, Redis vector search, custom Pinecone + LLM fact extraction). The numbers come from the Mem0 pricing page (verified live 2026-07-23), the mem0ai/mem0 GitHub repository (last commit 2026-07-23), and the Mem0 documentation.</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4">If you are building an AI agent in 2026 and you want skip the "build-your-own-fact-extraction-pipeline" tax without giving up control over what gets remembered, this is the reference guide.</p>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What Mem0 does (and what it does not)</h2>
+
+
+<p class="text-gray-700 leading-relaxed my-4">Mem0 is a <strong>memory layer for AI applications</strong>, not an LLM router, gateway, or vector database on its own. It sits between your application code and your LLM, extracting facts from conversations, storing them in a structured (and optionally vector-indexed) memory store, retrieving relevant memories at query time, and feeding them back into the LLM prompt as context. The core abstraction is <code>memory.add()</code> and <code>memory.search()</code> — the platform handles the rest.</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4">Core capabilities (verified 2026-07-23 from Mem0 docs and pricing page):</p>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Automatic fact extraction.</strong> When you call <code>memory.add(messages=[...])</code>, Mem0 uses an LLM (configurable; defaults to a fast model like GPT-4o-mini) to extract atomic facts from the conversation. A chat like "I'm allergic to shellfish and I prefer dark mode" becomes two stored memories: <code>{"role": "user", "content": "User is allergic to shellfish"}</code> and <code>{"role": "user", "content": "User prefers dark mode"}</code>. This is the killer feature — without it, you would write the extraction prompt, manage the JSON parsing, and decide what to forget yourself.</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Vector + structured hybrid storage.</strong> Mem0 stores memories as both structured JSON (for direct queries) and vector embeddings (for semantic search). The default vector store is Qdrant (self-hosted or Qdrant Cloud), but you can swap in Pinecone, Weaviate, Chroma, pgvector, or Redis. The Cloud SaaS deploys a managed vector store for you; the self-hosted version uses whatever you configure.</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Configurable LLM provider.</strong> Mem0 supports 8+ LLM providers out of the box: OpenAI (GPT-4o, GPT-4-Turbo, GPT-3.5), Anthropic (Claude 3.5 Sonnet, Haiku, Opus), Google (Gemini 1.5 Pro/Flash), Mistral (Large, Mixtral, Mistral-7B), Groq (Llama 3.1 70B, Mixtral), Ollama (any local model), AWS Bedrock (Claude / Llama / Titan), and Azure OpenAI. The same SDK call works against any of them — you only swap the <code>LLM_PROVIDER</code> and <code>LLM_API_KEY</code> env vars.</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Graph Memory (Pro tier and up).</strong> Beyond vector-based memory, Mem0 Pro adds a graph store that tracks entity relationships — if a user mentions "my wife Sarah" and later "Sarah's birthday", the graph links the two and surfaces the relationship at retrieval time. This is what differentiates Mem0 from a vanilla RAG system: it remembers not just facts but relationships.</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Multi-user isolation via user_id.</strong> Every memory call takes a <code>user_id</code> (and optionally <code>agent_id</code>, <code>run_id</code>, <code>app_id</code>). The store partitions memories by user automatically, so a single Mem0 instance can serve thousands of users without cross-contamination. This is the foundation of any production multi-tenant agent.</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Self-hostable with Docker.</strong> The open-source <code>mem0ai/mem0</code> repo ships a complete Docker Compose setup that bundles the API server, a vector store, an LLM worker, and an optional Neo4j instance for graph memory. You can run it on any cloud (AWS, GCP, Azure, Aliyun, Tencent Cloud) without proxying through Mem0's Cloud SaaS.</li>
+</ul>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What Mem0 does NOT do</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>No LLM inference itself.</strong> Mem0 is not an LLM provider. You still need an OpenAI / Anthropic / Gemini API key for fact extraction and for your main agent loop. Mem0 orchestrates; it does not generate.</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>No RAG-as-a-service.</strong> Mem0 handles <em>conversation memory</em>, not document retrieval. If you want to search across a corpus of PDFs and cite them, you want a vector database like Pinecone or Weaviate (not Mem0). The two are complementary: use Mem0 for user-specific conversational memory, use a vector DB for document-level retrieval.</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>No agent orchestration.</strong> Mem0 does not run the agent loop. You still use LangChain / LlamaIndex / CrewAI / AutoGen / Mastra / your own code to orchestrate tool calls, planning, and execution. Mem0 is the memory layer, not the brain.</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>No built-in UI for memory inspection.</strong> Mem0 ships a Cloud dashboard for browsing memories in the SaaS version, but the self-hosted version is API-only. If you want a polished memory-explorer UI for non-engineers, you will need to build one or use Mem0 Cloud.</li>
+</ul>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verified 2026 pricing (from mem0.ai/pricing, checked 2026-07-23)</h2>
+
+
+<p class="text-gray-700 leading-relaxed my-4">Mem0 ships four tiers. The numbers below were captured live from <code>mem0.ai/pricing</code> on 2026-07-23 — re-verify before any procurement decision since Mem0 has adjusted its Hobby/Starter quotas twice in 2024-2025.</p>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Hobby (free)</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>$0 / month</strong> — no credit card required</li>
+<li><strong>10,000 memories</strong> stored (memory entries, not bytes)</li>
+<li><strong>1,000 retrieval API calls / month</strong></li>
+<li>Unlimited end users</li>
+<li>1 project</li>
+<li>Community support (Discord + GitHub issues)</li>
+<li>Best for prototyping, side projects, and personal use</li>
+</ul>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Starter ($19/month)</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>$19 / month</strong></li>
+<li><strong>50,000 memories</strong> stored</li>
+<li><strong>5,000 retrieval API calls / month</strong></li>
+<li>Unlimited end users</li>
+<li>1 project</li>
+<li>Community support</li>
+<li>Best for solo builders shipping their first AI agent or chat application with paying users</li>
+</ul>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Pro ($249/month)</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>$249 / month</strong></li>
+<li><strong>Unlimited memories</strong> stored</li>
+<li><strong>50,000 retrieval API calls / month</strong></li>
+<li>Unlimited end users</li>
+<li><strong>Multiple projects support</strong></li>
+<li><strong>Graph Memory</strong> (entity-relationship tracking on top of vector memory)</li>
+<li><strong>Advanced Analytics</strong> (memory growth, retrieval hit rates, latency dashboards)</li>
+<li><strong>Private Slack channel</strong> for support</li>
+<li>Best for growing AI products with thousands of active users, or teams that need Graph Memory for entity-aware retrieval</li>
+</ul>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Enterprise (custom contract)</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Custom pricing</strong> (typically starts at $1,000-$2,500/month for mid-market)</li>
+<li>Unlimited memories</li>
+<li>Unlimited retrieval API calls</li>
+<li><strong>On-prem deployment</strong> (Docker / Kubernetes, no data leaves your VPC)</li>
+<li><strong>SSO</strong> (Okta, Azure AD, Google Workspace)</li>
+<li><strong>Audit logs</strong> (SOC 2 Type II readiness)</li>
+<li><strong>Custom SLAs</strong> (typically 99.9% or 99.95%)</li>
+<li>Best for regulated industries (finance, healthcare, government), or any team with a strict data-residency requirement</li>
+</ul>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Hidden costs to know about</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>LLM costs are on top.</strong> Mem0 uses an LLM for fact extraction (and one for the optional re-ranking step at retrieval time). The Hobby/Starter/Pro pricing does NOT include LLM tokens. A high-traffic app doing millions of memory adds can rack up $200-$500/month in OpenAI or Anthropic API costs that are completely separate from the Mem0 subscription.</li>
+<li><strong>Retrieval quota vs. add quota asymmetry.</strong> A typical chat-app pattern is 1 add (on every user message) + 1 search (before every assistant reply). On the Hobby plan, 1,000 searches/month = ~33 messages/day — not enough for a real product. The Starter plan at 5,000 searches = ~166 messages/day is the realistic minimum for a small production app.</li>
+<li><strong>Vector store add-on for Cloud users.</strong> Mem0 Cloud ships with a managed Qdrant instance, but if you want Pinecone / Weaviate / pgvector, you pay those vendors separately. The Cloud subscription covers Mem0's API and graph layer, not the underlying vector DB.</li>
+<li><strong>Graph Memory storage cost.</strong> If you turn on Graph Memory on Pro, Neo4j (or Mem0's managed equivalent) becomes part of your deployment. Expect +$50-$200/month for a managed Neo4j cluster on AWS/GCP at typical Pro workloads.</li>
+</ul>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How Mem0 fits into an AI Agent pipeline</h2>
+
+
+<p class="text-gray-700 leading-relaxed my-4">Mem0 sits between your agent framework and your LLM. The minimal pattern is:</p>
+
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded mb-4 overflow-x-auto text-sm"><code class="language-python">
+from mem0 import Memory
+from openai import OpenAI
+
+# 1. Initialize memory
+memory = Memory()
+
+# 2. Add memories from a conversation
+messages = [
+    {"role": "user", "content": "I'm allergic to shellfish and I prefer dark mode."},
+    {"role": "assistant", "content": "Got it, I'll remember both."}
+]
+memory.add(messages, user_id="user-12345")
+
+# 3. Retrieve relevant memories before the next LLM call
+relevant = memory.search(
+    query="What food should I avoid?",
+    user_id="user-12345",
+    limit=5
+)
+
+# 4. Inject memories into the prompt
+context = "\n".join([m["memory"] for m in relevant["results"]])
+system_prompt = f"You are a helpful assistant. User context:\n{context}"
+
+# 5. Call the LLM with the augmented prompt
+client = OpenAI()
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": "What's a good restaurant for tonight?"}
+    ]
+)
+print(response.choices[0].message.content)
+</code></pre>
+
+
+<p class="text-gray-700 leading-relaxed my-4">The same pattern works in TypeScript, Java, Go, and Ruby. Mem0's SDKs are first-class (not community-maintained) and ship with TypeScript types out of the box.</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4">For LangChain users, Mem0 provides a drop-in <code>Mem0ChatMemory</code> class that integrates with <code>ConversationChain</code>, <code>AgentExecutor</code>, and <code>RunnableWithMessageHistory</code>. For LlamaIndex users, there is a <code>Mem0Memory</code> class that integrates with <code>ChatMemoryBuffer</code> and the agent runner. For CrewAI / AutoGen / Mastra, the integration is via the raw Mem0 client (no special wrapper yet).</p>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How Mem0 compares to alternatives in 2026</h2>
+
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+<thead class="bg-gray-50"><tr>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Feature</th>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mem0</th>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Zep</th>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Letta</th>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Pinecone + custom</th>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Redis vector search</th>
+</tr></thead>
+<tbody class="divide-y divide-gray-200 bg-white">
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">License</td>
+<td class="px-4 py-3 text-sm text-gray-700">Apache-2.0 (core) + Cloud SaaS</td>
+<td class="px-4 py-3 text-sm text-gray-700">Apache-2.0</td>
+<td class="px-4 py-3 text-sm text-gray-700">Apache-2.0</td>
+<td class="px-4 py-3 text-sm text-gray-700">Proprietary SaaS</td>
+<td class="px-4 py-3 text-sm text-gray-700">Redis Source Available (RSALv2/AGPLv3)</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">Self-hostable</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Docker)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes</td>
+<td class="px-4 py-3 text-sm text-gray-700">No (Pinecone only)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">Auto fact extraction</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (LLM-based)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (LLM-based)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (built into agent loop)</td>
+<td class="px-4 py-3 text-sm text-gray-700">No — you write the prompt</td>
+<td class="px-4 py-3 text-sm text-gray-700">No — you write the prompt</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">Graph Memory</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Pro+)</td>
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (built-in agent context)</td>
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+<td class="px-4 py-3 text-sm text-gray-700">No</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">Multi-user isolation</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (user_id partition)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (user_id)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (user/agent IDs)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (namespace)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (key prefix)</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">Vector store included</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Qdrant default)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Postgres + pgvector)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Postgres + pgvector)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Pinecone-managed)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Redis-managed)</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">Cloud SaaS</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Zep Cloud)</td>
+<td class="px-4 py-3 text-sm text-gray-700">No (self-host only)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Pinecone)</td>
+<td class="px-4 py-3 text-sm text-gray-700">Yes (Redis Cloud)</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">Min monthly cost</td>
+<td class="px-4 py-3 text-sm text-gray-700">$0 (Hobby) / $19 (Starter)</td>
+<td class="px-4 py-3 text-sm text-gray-700">$0 (OSS) / $19 (Zep Cloud Starter)</td>
+<td class="px-4 py-3 text-sm text-gray-700">$0 (OSS)</td>
+<td class="px-4 py-3 text-sm text-gray-700">$50 (Pinecone Standard)</td>
+<td class="px-4 py-3 text-sm text-gray-700">$0 (OSS) / $5 (Redis Cloud Essentials)</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">LangChain integration</td>
+<td class="px-4 py-3 text-sm text-gray-700">First-class</td>
+<td class="px-4 py-3 text-sm text-gray-700">First-class</td>
+<td class="px-4 py-3 text-sm text-gray-700">First-class</td>
+<td class="px-4 py-3 text-sm text-gray-700">DIY</td>
+<td class="px-4 py-3 text-sm text-gray-700">DIY</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">Best for</td>
+<td class="px-4 py-3 text-sm text-gray-700">Production agents needing fast setup</td>
+<td class="px-4 py-3 text-sm text-gray-700">Long-context windows, time-weighted memory</td>
+<td class="px-4 py-3 text-sm text-gray-700">Stateful agent frameworks</td>
+<td class="px-4 py-3 text-sm text-gray-700">DIY power users</td>
+<td class="px-4 py-3 text-sm text-gray-700">Existing Redis users</td>
+</tr>
+</tbody></table></div>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Mem0's edge:</strong> zero prompt-engineering to get started (one <code>memory.add()</code> call and you have working memory), Graph Memory on Pro for entity-aware retrieval, the largest GitHub community (61,493 stars vs Zep's ~3,500, Letta's ~14,000), and the cleanest LangChain / LlamaIndex integration.</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Mem0's weakness:</strong> fact extraction is async (the LLM call adds 200-500ms latency vs raw vector search), Pro pricing at $249/month is steep for hobbyists, Graph Memory requires a Neo4j dependency that adds ops complexity on self-host, and Mem0 is not a substitute for a vector database (you still need one for document retrieval).</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>The Zep counter-argument:</strong> Zep optimizes for long-context windows with time-weighted memory decay — if your use case is "remember what the user said 30 turns ago, weighted by recency", Zep's retrieval model is more sophisticated. Mem0's vector-only retrieval (on Hobby/Starter) is more naive.</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>The Letta counter-argument:</strong> Letta (formerly MemGPT) bakes memory management into the agent loop itself — the LLM actively decides when to read/write memory. This is more powerful but requires running a Letta-compatible agent framework, not just calling Mem0's API. Mem0 is framework-agnostic.</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>The Pinecone + custom counter-argument:</strong> if you already have a vector DB and an LLM ops team, building your own memory layer with <code>pinecone.upsert()</code> + an extraction prompt + a forgetfulness filter is straightforward and gives you full control. Mem0's value proposition collapses when you have the engineering capacity to maintain that pipeline yourself.</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>The Redis counter-argument:</strong> if your stack already runs Redis (caching, sessions, queues), using <code>redis-vector</code> for memory keeps everything in one engine. The trade-off is no fact extraction — you store raw messages, not structured memories, so retrieval quality depends on your embedding + chunking strategy.</p>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">When to choose Mem0 (and when not to)</h2>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Choose Mem0 if:</strong></p>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>You are building a multi-turn AI agent and you do NOT want to write the fact-extraction prompt yourself</li>
+<li>You need memory isolation across users (multi-tenant SaaS agent, customer-support bot, personalized assistant)</li>
+<li>You want to ship fast and prefer a managed SaaS over self-hosting infrastructure</li>
+<li>You need Graph Memory for entity-relationship awareness (Pro tier and up)</li>
+<li>You already use LangChain / LlamaIndex / CrewAI and want a drop-in memory class</li>
+</ul>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Do NOT choose Mem0 if:</strong></p>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>You are prototyping and a vector database is overkill (use raw conversation history in your LLM context window up to ~50K tokens)</li>
+<li>You have strict data-residency requirements that rule out Mem0 Cloud (Enterprise self-host is the option, but it requires a contract)</li>
+<li>You need document-search RAG, not conversation memory (use Pinecone / Weaviate / Qdrant instead — Mem0 is not a substitute)</li>
+<li>You have a small engineering team and a self-hosted Mem0 + Neo4j + Qdrant stack is too much ops overhead (use Mem0 Cloud, or stick with raw conversation history)</li>
+<li>You need sub-100ms retrieval latency (Mem0's LLM-based extraction adds 200-500ms — for latency-critical paths, use a pre-computed vector index)</li>
+</ul>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Sources</h2>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>Mem0 pricing page: mem0.ai/pricing — verified 2026-07-23</li>
+<li>Mem0 documentation: docs.mem0.ai</li>
+<li>Mem0 Python SDK: pypi.org/project/mem0ai</li>
+<li>Mem0 TypeScript SDK: npmjs.com/package/mem0ai</li>
+<li>Mem0 GitHub repository: github.com/mem0ai/mem0 — 61,493 stars, Apache-2.0, last commit 2026-07-23</li>
+<li>Mem0 supported LLMs: docs.mem0.ai/components/llms/overview — OpenAI, Anthropic, Gemini, Mistral, Groq, Ollama, AWS Bedrock, Azure OpenAI</li>
+<li>LangChain integration: docs.mem0.ai/integrations/langchain</li>
+<li>LlamaIndex integration: docs.mem0.ai/integrations/llamaindex</li>
+<li>Self-host Docker Compose: github.com/mem0ai/mem0/tree/main/server — bundled Qdrant + Neo4j</li>
+<li>Comparison alternatives: Zep (getzep.com), Letta (letta.com), Pinecone (pinecone.io), Redis vector search (redis.io/docs/latest/develop/interact/search-and-query/vectors)</li>
+</ul>
+`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={zhCanonicalUrl} type="article">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div class="mb-8"><a href="/tutorials" class="text-blue-600 hover:underline text-sm">← Back to Tutorials</a></div>
+    <div class="flex items-center gap-3 mb-4"><span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded">Provider Review</span><time datetime={date} class="text-sm text-gray-500">July 23, 2026</time></div>
+    <div set:html={enBody} />
+    <hr class="my-12 border-gray-200" />
+    <section class="mt-8"><p class="text-sm text-gray-500 mb-2"><strong>Disclosure</strong></p><p class="text-sm text-gray-500">APIRank may earn affiliate commission from partner links in this article. Editorial judgments remain independent.</p></section>
+  </article>
+</BaseLayout>

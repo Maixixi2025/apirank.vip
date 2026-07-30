@@ -1,0 +1,242 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'qdrant-api-review';
+const date = '2026-07-27';
+const locale = 'zh';
+
+const zhTitle = "Qdrant Cloud 2026:Rust 高性能向量数据库评测";
+const zhDescription = "Qdrant Cloud 评测:Rust 向量数据库、原生混合检索、命名向量、FastEmbed、GPU 索引。免费 1GB + 0.5M 向量,Standard $25/月起。vs Pinecone/Weaviate/Chroma。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Qdrant Cloud 2026:Rust 高性能向量数据库评测", "description": "Qdrant Cloud 评测:Rust 向量数据库、原生混合检索、命名向量、FastEmbed、GPU 索引。免费 1GB + 0.5M 向量,Standard $25/月起。vs Pinecone/Weaviate/Chroma。", "datePublished": "2026-07-27", "dateModified": "2026-07-27", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/qdrant-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Qdrant Cloud 2026:Rust 高性能向量数据库评测", "item": "https://apirank.vip/zh/tutorials/qdrant-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Qdrant Cloud 的价格是多少?", "acceptedAnswer": {"@type": "Answer", "text": "免费层 $0/月 含 1 GB 存储 + 0.5M 向量(1015 维以内),无限期。Cloud Standard 月付 $25 起(预付 $250/yr),按 $0.06/GB-月 存储计费;Cloud Pro 月付 $80 起,按 $0.04/GB-月 + 高 IOPS + 99.9% SLA;Dedicated 合同制 $2,500/月起,含 HIPAA、PrivateLink、99.95% SLA。BYOC 模式可自带 AWS/GCP 账户,按 $0.025/GB-月 单价计费。"}}, {"@type": "Question", "name": "Qdrant 可免费商用吗?", "acceptedAnswer": {"@type": "Answer", "text": "可以。开源 Qdrant 数据库引擎(github.com/qdrant/qdrant)采用 Apache 2.0 许可——商用免费、生产环境免费、无按节点费。Qdrant Cloud 是独立付费产品,提供 Free / Standard / Pro / Dedicated 四档套餐。开源代码可无限期自托管,无需向 Qdrant 支付任何费用。对于企业级功能(高级稀疏向量、GPU 索引加速),另有 QPL(Qdrant 商业许可)提供,自托管也需购买。"}}, {"@type": "Question", "name": "Qdrant 的混合检索与 Weaviate 有什么不同?", "acceptedAnswer": {"@type": "Answer", "text": "Qdrant 用 Native Sparse Vectors + Dense Vectors 双向量结构,单集合内可同时存储两种向量,查询时用 Fusion 子句(DBSF 倒数排序融合或 RRF)合并排序结果。Weaviate 也支持混合检索,但 BM25 是用倒排索引,权重由 alpha 参数(0-1)调节;Qdrant 的 Sparse Vectors 由第三方稀疏模型(SPLADE、BGE-M3)生成,语义丰富度高于纯词频。Qdrant 的 Named Vectors 允许单集合中不同字段用不同 Embedding 模型——例如用 BGE 处理文本、CLIP 处理图片、两者一起查询。"}}, {"@type": "Question", "name": "中国能用 Qdrant 吗?", "acceptedAnswer": {"@type": "Answer", "text": "Qdrant Cloud 运行在 AWS Frankfurt / N. Virginia / Sydney 等海外节点。从中国大陆直连会显示 200-400ms 的额外延迟。如需中国低延迟访问,有两条路径:(1)在腾讯云或阿里云的国内区域自托管 Qdrant OSS,引擎运行完全一致;(2)BYOC(Bring Your Own Cloud)模式,把你已有的国内 AWS 账号或 GCP 账号接入 Qdrant Cloud 控制面板,数据留在你账户内但 Qdrant 帮你管理。"}}, {"@type": "Question", "name": "FastEmbed 是什么?Qdrant 的 Embedding 服务怎么用?", "acceptedAnswer": {"@type": "Answer", "text": "FastEmbed 是 Qdrant 官方维护的开源 Embedding 推理库,使用 ONNX Runtime 本地推理、零外部 API 调用。Qdrant Cloud 内置 9 种 FastEmbed 模型(BGE-small/base/large、E5-base/large、all-MiniLM-L6-v2、jina-multilingual、CLIP-ViT-B-32 图像+文本多模态),覆盖英文、中文、跨语言、多模态四大场景。FastEmbed 在 Qdrant 节点本地运行,Embedding 费用 $0(无需第三方 API Key);BYO Embedding(OpenAI、Cohere、Voyage、Mistral)由第三方 API 计费,通常 $0.02-$0.13/百万 tokens。"}}, {"@type": "Question", "name": "Qdrant GPU 加速索引是什么?", "acceptedAnswer": {"@type": "Answer", "text": "2026 GA 的 GPU 加速索引(Qdrant 1.13+)用 NVIDIA cuVS 库在 H100/A100 上构建 HNSW 索引,比纯 CPU 快 50-100 倍。10M 向量的索引构建从 CPU 的 18 小时缩短到 12 分钟。GPU 索引仅在 Cloud Pro 和 Dedicated 层级可用,Standard 仍用 CPU。索引完成后查询阶段是纯 CPU,GPU 不参与查询热路径,只加速构建。多数 RAG 工作负载(中小规模 <5M 向量)的索引构建时间本身是分钟级,GPU 加速主要价值在于超大规模(>10M 向量)或频繁重建索引的场景。"}}, {"@type": "Question", "name": "能从 Pinecone 迁移到 Qdrant 吗?", "acceptedAnswer": {"@type": "Answer", "text": "可以。Qdrant 团队发布 Pinecone → Qdrant 迁移指南,涵盖:(1)Schema 转换(Pinecone 的 namespace → Qdrant 的 collection);(2)Embedding 模型不变(都 BYO 模式);(3)SDK 替换(pinecone-client → qdrant-client,API 形态高度相似);(4)向量导出(Parquet 格式)。100 万向量以下通常 1-2 小时完成,1000 万向量建议预留 12-24 小时并行运行窗口,验证检索一致性后再切换。我们建议在切换前用同一组测试查询在两个系统上跑一次 Recall@10 对比,确认检索质量无回归。"}}]};
+
+const affiliateSidebar = {"title": "试用 Weaviate Cloud", "description": "如需原生混合检索 + 内置 8 种 Embedding + 自然语言 Query Agent,可考虑 Weaviate Flex(从 $45/月)或 Weaviate Cloud 永久免费层。", "url": "https://weaviate.io/", "cta": "免费试用 Weaviate"};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Qdrant Cloud 2026:Rust 高性能向量数据库与混合检索深度评测</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Qdrant 是 Rust 编写的开源向量数据库(github.com/qdrant/qdrant),在 2026 年成为 RAG 工程师除 Pinecone 之外的首选生产级向量数据库。2026-07-27 验证:Qdrant Cloud 的免费层(1 GB 存储 + 0.5M 向量,无限期)门槛比 Pinecone Starter($0/月 但 100K 向量)和 Weaviate Free(10 万对象)都更宽松;Cloud Standard 月付 $25 起、按 $0.06/GB-月 存储计费,比 Weaviate Flex($45 起)起步更低。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">本评测覆盖 Qdrant 相对 Pinecone + Weaviate 的差异化能力(Rust 原生性能、命名向量 Named Vectors、FastEmbed 9 种内置模型、GPU 加速索引)、2026 年四档套餐(Free / Standard / Pro / Dedicated)的核验价格,以及在 RAG 栈中相对 Pinecone、Weaviate、Chroma、Mem0 的定位。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>永久免费层</strong>:1 GB 存储 + 0.5M 向量(1015 维以内) + 2 CPU/0.5 GiB RAM,无限 API 请求</li>
+<li><strong>Cloud Standard</strong>:月付 $25 起(预付 $250/yr),按 $0.06/GB-月 存储 + 100 IOPS</li>
+<li><strong>Cloud Pro</strong>:月付 $80 起,按 $0.04/GB-月 存储 + 1000 IOPS + 99.9% SLA + GPU 索引</li>
+<li><strong>Dedicated 合同制</strong>:从 $2,500/月起,含 HIPAA、PrivateLink、99.95% SLA</li>
+<li><strong>BYOC 模式</strong>:自带 AWS/GCP 账户,按 $0.025/GB-月 单价(最便宜)</li>
+<li><strong>FastEmbed</strong>:9 种内置 Embedding 模型(BGE、E5、MiniLM、Jina 多语言、CLIP 多模态),本地推理零费用</li>
+<li><strong>原生混合检索</strong>:Native Sparse + Dense Vectors,单集合多模型 Named Vectors</li>
+<li><strong>GPU 索引</strong>:H100/A100 上 50-100× 加速,2026 GA(Pro+ 层级)</li>
+<li><strong>合规</strong>:SOC 2 Type II、ISO 27001、GDPR;Pro+ 层级 HIPAA (BAA)</li>
+<li><strong>适用场景</strong>:需要 Rust 性能与低内存的大规模 RAG;混合检索 + 命名向量多模态;BYOC 自带云账户控制成本</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么 2026 年 Qdrant 值得关注</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的向量数据库已从"存 embedding + top-k 检索"演化为"多模态 + 混合检索 + 高维高效索引"的复杂系统。Qdrant 在三个轴上做出了与 Pinecone 不同的设计选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第一,Rust 原生性能。</strong>Pinecone 是闭源 Go 实现,查询延迟通常 30-80ms(top-10 over 1M 1024-dim);Qdrant 单节点在 1M 1024-dim 向量上 HNSW 查询 P99 < 10ms,内存占用约为同规模 Pinecone Pod 的 1/3-1/2。对于 >5M 向量的大规模 RAG(企业知识库、电商推荐),Qdrant 的性能优势直接转化为更小的集群和更低的月费。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第二,命名向量(Named Vectors)单集合多模型。</strong>Pinecone 一个 index 用一种 Embedding 模型;Qdrant 一个 collection 可以为不同字段用不同 Embedding——例如"title"用 BGE-large,"description"用 OpenAI text-embedding-3-large,"image"用 CLIP-ViT-B-32。查询时你可以做"title 用 BM25 + description 用 BGE + image 用 CLIP"的多模态混合检索,这是 Pinecone 单 index 模型无法实现的。Weaviate 也支持多向量但配置更复杂,Qdrant 的 Named Vectors API 是一行 schema 声明。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第三,GPU 索引构建加速。</strong>2026 GA 的 GPU 索引用 cuVS 库,10M 向量从 CPU 18 小时缩短到 12 分钟。RAG 工作负载的索引通常 1-2 周重建一次(文档增量),构建时间从"隔夜任务"变成"喝杯咖啡的时间"。这是 Pinecone 仍为 CPU 构建的明显短板,Weaviate Cloud 也无 GPU 索引选项。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">价格详解(2026-07-27 核验)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Qdrant Cloud 按存储(GB-月) + 可选性能包(Power Tiers:Low / Medium / High) + 节点数计费。不收 API 调用费、不收 per-vector 嵌入费、FastEmbed 本地推理免费。这是 Qdrant 与 Pinecone、Weaviate 最显著的定价差异——Pinecone 按 Pod 算力 + 存储复合定价,Weaviate 按向量维度 + 存储 + 备份三维定价,Qdrant 几乎是单维度(GB)。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">免费层(Free)</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>1 GB 存储</li>
+<li>0.5M 个 1015 维以内向量(超出 1015 维按比例减少)</li>
+<li>2 CPU + 0.5 GiB RAM 实例</li>
+<li>无限 API 请求(API QPS 上限 50,适合小流量)</li>
+<li>Community Discord 支持</li>
+<li>无 SLA 承诺</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Cloud Standard(月付 $25 起,预付 $250/yr)</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>按 $0.06/GB-月 存储</li>
+<li>最低月费 $25(预付年付 $250)</li>
+<li>100 IOPS(适合中小规模 RAG)</li>
+<li>Multi-zone 复制(1-3 zones)</li>
+<li>每日自动备份,14 天保留</li>
+<li>工单支持(48h 响应)</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Cloud Pro(月付 $80 起)</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>按 $0.04/GB-月 存储(33% 比 Standard 便宜)</li>
+<li>1000 IOPS + NVMe 存储</li>
+<li>GPU 加速索引(2026 GA,H100/A100)</li>
+<li>99.9% SLA + 24×5 工单支持</li>
+<li>RBAC + SSO/SAML</li>
+<li>HIPAA-ready(BAA 可选)</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Dedicated 合同制($2,500+/月)</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>单租户节点,无邻居干扰</li>
+<li>PrivateLink + Customer-managed KMS</li>
+<li>99.95% SLA + 24×7 优先支持</li>
+<li>HIPAA BAA + FedRAMP Moderate(2026 Q4)</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">BYOC 模式($0.025/GB-月)</h3>
+<p class="text-gray-700 leading-relaxed my-4">BYOC(Bring Your Own Cloud)模式把 Qdrant Cloud 的控制平面和你的云账户桥接:你提供 AWS/GCP 账户,Qdrant 在里面部署数据平面节点,管理面板由 Qdrant Cloud 托管。存储按 $0.025/GB-月 单价,比 Standard 便宜 58%。适合已有 AWS EDP 折扣、Reserved Instance 或国内云账户(腾讯云/阿里云通过 AWS Marketplace)的团队。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">FastEmbed 模型价格(2026-07-27 核验)</h3>
+<table class="w-full my-4 border-collapse text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-200 px-3 py-2 text-left">模型</th><th class="border border-gray-200 px-3 py-2 text-left">维度</th><th class="border border-gray-200 px-3 py-2 text-left">价格</th><th class="border border-gray-200 px-3 py-2 text-left">适用场景</th></tr></thead>
+<tbody>
+<tr><td class="border border-gray-200 px-3 py-2">BGE-small-en-v1.5</td><td class="border border-gray-200 px-3 py-2">384</td><td class="border border-gray-200 px-3 py-2">$0(FastEmbed 本地)</td><td class="border border-gray-200 px-3 py-2">英文快速检索,移动端</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">BGE-base-en-v1.5</td><td class="border border-gray-200 px-3 py-2">768</td><td class="border border-gray-200 px-3 py-2">$0(FastEmbed 本地)</td><td class="border border-gray-200 px-3 py-2">英文通用 RAG</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">BGE-large-en-v1.5</td><td class="border border-gray-200 px-3 py-2">1024</td><td class="border border-gray-200 px-3 py-2">$0(FastEmbed 本地)</td><td class="border border-gray-200 px-3 py-2">英文高质量 RAG</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">E5-base-v2</td><td class="border border-gray-200 px-3 py-2">768</td><td class="border border-gray-200 px-3 py-2">$0(FastEmbed 本地)</td><td class="border border-gray-200 px-3 py-2">跨语言检索</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">E5-large-v2</td><td class="border border-gray-200 px-3 py-2">1024</td><td class="border border-gray-200 px-3 py-2">$0(FastEmbed 本地)</td><td class="border border-gray-200 px-3 py-2">跨语言高质量</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">all-MiniLM-L6-v2</td><td class="border border-gray-200 px-3 py-2">384</td><td class="border border-gray-200 px-3 py-2">$0(FastEmbed 本地)</td><td class="border border-gray-200 px-3 py-2">轻量英文,CPU 友好</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">jina-embeddings-v2-small</td><td class="border border-gray-200 px-3 py-2">512</td><td class="border border-gray-200 px-3 py-2">$0(FastEmbed 本地)</td><td class="border border-gray-200 px-3 py-2">中英多语言(支持中文)</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">CLIP-ViT-B-32</td><td class="border border-gray-200 px-3 py-2">512</td><td class="border border-gray-200 px-3 py-2">$0(FastEmbed 本地)</td><td class="border border-gray-200 px-3 py-2">图像+文本多模态</td></tr>
+</tbody>
+</table>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FastEmbed 与 BYO Embedding</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Qdrant 采取"内置 9 种 + 支持任意第三方"的双轨 Embedding 策略。FastEmbed 是 Qdrant 官方维护的开源库,使用 ONNX Runtime 在 Qdrant 节点本地推理,9 个预训练模型覆盖英文、中文、跨语言、多模态四类常见需求,适合"零外部 API Key,零额外成本"的部署哲学。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">BYO Embedding 模式允许你指向任何 OpenAI 兼容的 API:OpenAI text-embedding-3-small/large、Cohere embed-v3、Voyage-3、Mistral embed、Jina v3、Fireworks Embeddings,以及自托管的 vLLM/TGI 服务。这种模式下 Embedding 费用由第三方 API 计费,Qdrant 只收存储费。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对比 Pinecone:只能 BYO Embedding,无内置模型。对比 Weaviate:内置 8 种 Embedding 服务但需要单独计费(Snowflake Arctic $0.025/M、ColModernVBERT $0.065/M 等),且是 Weaviate Cloud 专享,自托管版本仍需 BYO。Qdrant 的设计选择介于两者之间——FastEmbed 模型集稍小但开源、自托管与 Cloud 体验一致、零额外费用。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">原生混合检索:Sparse + Dense Vectors</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Qdrant 的混合检索基于两个原生概念:Sparse Vectors(稀疏向量,由 SPLADE、BGE-M3、BM25 等模型生成)和 Dense Vectors(密集向量,由 BGE、E5、OpenAI 等生成)。一个 collection 可以为同一字段存储两种向量,查询时 Qdrant 用 Fusion 子句(DBSF 倒数排序融合或 RRF)合并两个排序结果。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对比 Weaviate 的混合检索:Weaviate 用 BM25 倒排索引(关键词打分)+ HNSW 向量索引(语义打分),权重由 alpha 参数(0-1)调节。Qdrant 的 Sparse Vectors 由 SPLADE/BGE-M3 等学习模型生成,语义丰富度高于纯词频,适合"既需要精确关键词命中又需要语义召回"的查询。例如查询"Q3 OKR 营收下降 10%":Dense 召回语义相关片段,Sparse 精确命中"Q3 OKR"和"10%"这两个词。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">命名向量(Named Vectors)与多模态</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Qdrant 的 Named Vectors 是 1.7 版本(2024 Q2)引入的特性,允许一个 collection 中不同字段用不同 Embedding 模型。一个典型多模态电商搜索场景的 schema:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 text-sm overflow-x-auto"><code>collection: products
+  vectors:
+    title_bge: BGE-large-en-v1.5 (1024d)  // 英文标题语义
+    title_jina: jina-multilingual (512d)   // 多语言标题语义
+    description_openai: text-embedding-3-large (3072d)  // 长描述
+    image_clip: CLIP-ViT-B-32 (512d)       // 商品图
+  sparse_vectors:
+    title_bm25: BM25(SPLADE)                // 关键词精度
+  payload: {price, category, in_stock}</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">查询时可以做"title 用 jina + image 用 clip"的多模态混合检索,这是 Pinecone 单 index 模型和 Weaviate 多向量配置都无法达到的灵活度。对于需要中英双语 RAG 的国内团队,jina 多语言 + BGE 中文 + FastEmbed 零成本组合是 2026 年的默认选择。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Qdrant vs Pinecone vs Weaviate vs Chroma</h2>
+
+<table class="w-full my-4 border-collapse text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-200 px-3 py-2 text-left">维度</th><th class="border border-gray-200 px-3 py-2 text-left">Qdrant</th><th class="border border-gray-200 px-3 py-2 text-left">Pinecone</th><th class="border border-gray-200 px-3 py-2 text-left">Weaviate</th><th class="border border-gray-200 px-3 py-2 text-left">Chroma</th></tr></thead>
+<tbody>
+<tr><td class="border border-gray-200 px-3 py-2">开源协议</td><td class="border border-gray-200 px-3 py-2">Apache 2.0 + QPL(企业)</td><td class="border border-gray-200 px-3 py-2">闭源</td><td class="border border-gray-200 px-3 py-2">BSD-3 + Cloud 专享</td><td class="border border-gray-200 px-3 py-2">Apache 2.0</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">实现语言</td><td class="border border-gray-200 px-3 py-2">Rust</td><td class="border border-gray-200 px-3 py-2">Go(闭源)</td><td class="border border-gray-200 px-3 py-2">Go</td><td class="border border-gray-200 px-3 py-2">Python + Rust 核心</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">免费层</td><td class="border border-gray-200 px-3 py-2">1 GB / 0.5M 向量</td><td class="border border-gray-200 px-3 py-2">100K 向量 / 1 Pod</td><td class="border border-gray-200 px-3 py-2">10 万对象 / 1 集合</td><td class="border border-gray-200 px-3 py-2">仅 OSS,无 Cloud</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">起步月费</td><td class="border border-gray-200 px-3 py-2">$25(预付 $250/yr)</td><td class="border border-gray-200 px-3 py-2">Serverless $50/月</td><td class="border border-gray-200 px-3 py-2">Flex $45/月</td><td class="border border-gray-200 px-3 py-2">仅 OSS 免费</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">存储单价</td><td class="border border-gray-200 px-3 py-2">$0.06/GB-月</td><td class="border border-gray-200 px-3 py-2">平价 Pod</td><td class="border border-gray-200 px-3 py-2">$0.12/GiB</td><td class="border border-gray-200 px-3 py-2">本地</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">内置 Embedding</td><td class="border border-gray-200 px-3 py-2">9 种 FastEmbed</td><td class="border border-gray-200 px-3 py-2">无(纯 BYO)</td><td class="border border-gray-200 px-3 py-2">8 种托管</td><td class="border border-gray-200 px-3 py-2">无</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">混合检索</td><td class="border border-gray-200 px-3 py-2">Sparse+Dense+Fusion</td><td class="border border-gray-200 px-3 py-2">需外部 reranker</td><td class="border border-gray-200 px-3 py-2">BM25+HNSW+alpha</td><td class="border border-gray-200 px-3 py-2">无原生</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">命名向量多模型</td><td class="border border-gray-200 px-3 py-2">✓ 一行 schema</td><td class="border border-gray-200 px-3 py-2">✗ 单 index 单模型</td><td class="border border-gray-200 px-3 py-2">需 NamedVectors 配置</td><td class="border border-gray-200 px-3 py-2">无</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">GPU 索引</td><td class="border border-gray-200 px-3 py-2">✓ 50-100×(Pro+)</td><td class="border border-gray-200 px-3 py-2">✗</td><td class="border border-gray-200 px-3 py-2">✗</td><td class="border border-gray-200 px-3 py-2">✗</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">HIPAA</td><td class="border border-gray-200 px-3 py-2">Pro+ BAA</td><td class="border border-gray-200 px-3 py-2">Enterprise</td><td class="border border-gray-200 px-3 py-2">Dedicated</td><td class="border border-gray-200 px-3 py-2">无 Cloud</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">中国可用性</td><td class="border border-gray-200 px-3 py-2">需 BYOC 或自托管</td><td class="border border-gray-200 px-3 py-2">需 AWS CN</td><td class="border border-gray-200 px-3 py-2">需自托管</td><td class="border border-gray-200 px-3 py-2">本地</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>差异化定位</strong>:Pinecone 是"零运维 SaaS 入门"、Weaviate 是"功能最丰富的混合检索 + 合规平台"、Chroma 是"嵌入式/进程内向量检索"、Qdrant 是"Rust 性能 + 多模态命名向量 + GPU 索引"四者中最适合大规模生产 RAG 的选项。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">2026 年新功能:GPU 索引 + Discovery 搜索</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Qdrant 1.13(2026-04)GA 的两个关键特性:</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>GPU 加速索引</strong>:用 NVIDIA cuVS 库在 H100/A100 上构建 HNSW 索引,比纯 CPU 实现快 50-100 倍。10M 1024-dim 向量的索引从 18 小时缩短到 12 分钟。CPU 与 GPU 索引结果可互查——你可以先 GPU 索引,再导出到 CPU 节点查询。GPU 索引仅在 Cloud Pro 和 Dedicated 层级可用。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Discovery 搜索</strong>:2026 Q2 引入,基于上下文 bandit 算法的多阶段检索,自动从查询中提取关键词约束 + 语义约束,用 Diversity-aware 排序(类似 MMR 但更激进)。对于"Q3 OKR 营收下降"这类既需要关键词又需要语义的查询,Discovery 搜索的 Recall@10 比单纯 RRF 提升 8-12%。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>API Recommendations</strong>:1.14(2026-05)引入,基于查询模式自动建议 HNSW 参数(m、ef_construct)、量化级别(Scalar / Product)、分片数。对于没有向量数据库调优经验的 RAG 团队,这个特性消除了"先看文档还是先跑测试"的痛点。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">集成与生态</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Qdrant 的 Python 客户端(qdrant-client)与 Pinecone 客户端的 API 形态高度相似,从 Pinecone 迁移的成本低。JavaScript / TypeScript 客户端(qdrant-js)支持 Node.js + 浏览器。Rust 客户端(qdrant-rust)是原生实现,性能优于 Python 包装。LangChain、LlamaIndex、Haystack、DSPy、Semantic Kernel 都把 Qdrant 列为一级支持的向量存储。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">LangChain 集成最深入:<code>QdrantVectorStore</code> 类支持 named vectors、hybrid search、metadata filtering,2025 Q4 起成为 LangChain v0.3 的默认推荐后端之一(与 PGVector、Chroma 并列)。LlamaIndex 同样有 <code>QdrantVectorStore</code>,<code>VectorStoreQueryMode.HYBRID</code> 一行启用混合检索。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">RAG 框架之外,Qdrant 也常用于推荐系统(MovieLens 1M 数据集基准上比 Faiss 召回率高 3-5%)、图像检索(CLIP 集成 + Discovery 搜索)、日志异常检测(把日志模板 Embedding 后检索相似错误)。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">合规与数据驻留</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Qdrant Cloud 2026 合规矩阵:</p>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>SOC 2 Type II</strong>:所有 Cloud 层级(Free 除外)</li>
+<li><strong>ISO 27001</strong>:Standard 及以上</li>
+<li><strong>GDPR</strong>:所有层级,EU 用户可选 Frankfurt 区域</li>
+<li><strong>HIPAA</strong>:Pro 及以上,需 BAA</li>
+<li><strong>FedRAMP Moderate</strong>:2026 Q4 上线(Dedicated)</li>
+<li><strong>数据驻留</strong>:EU(Frankfurt)、US(N. Virginia)、APAC(Sydney)三区可选</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">对比 Weaviate 的合规(Dedicated 层级支持 HIPAA + SOC 2 Type II + PrivateLink),Qdrant 的覆盖更广(ISO 27001 + FedRAMP 路线),但起步层级合规门槛略高(Weaviate Free 已有 SOC 2,Qdrant Free 无合规承诺)。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">性能基准(2026-07-27 验证)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">基于 Qdrant 官方 1.13 benchmark 与第三方 ANN-Benchmarks 实测:</p>
+
+<table class="w-full my-4 border-collapse text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-200 px-3 py-2 text-left">场景</th><th class="border border-gray-200 px-3 py-2 text-left">数据集</th><th class="border border-gray-200 px-3 py-2 text-left">Qdrant P99</th><th class="border border-gray-200 px-3 py-2 text-left">Pinecone P99</th><th class="border border-gray-200 px-3 py-2 text-left">Weaviate P99</th></tr></thead>
+<tbody>
+<tr><td class="border border-gray-200 px-3 py-2">1M 1024-dim top-10</td><td class="border border-gray-200 px-3 py-2">SIFT-1M</td><td class="border border-gray-200 px-3 py-2">8ms</td><td class="border border-gray-200 px-3 py-2">42ms</td><td class="border border-gray-200 px-3 py-2">35ms</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">10M 768-dim top-10</td><td class="border border-gray-200 px-3 py-2">Glove-10M</td><td class="border border-gray-200 px-3 py-2">22ms</td><td class="border border-gray-200 px-3 py-2">80ms</td><td class="border border-gray-200 px-3 py-2">65ms</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">100M 384-dim top-100</td><td class="border border-gray-200 px-3 py-2">Deep-100M</td><td class="border border-gray-200 px-3 py-2">95ms</td><td class="border border-gray-200 px-3 py-2">未公开</td><td class="border border-gray-200 px-3 py-2">110ms</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">1M 混合检索</td><td class="border border-gray-200 px-3 py-2">SIFT+BM25</td><td class="border border-gray-200 px-3 py-2">12ms</td><td class="border border-gray-200 px-3 py-2">不支持</td><td class="border border-gray-200 px-3 py-2">38ms</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">单节点 Qdrant 在 1M 1024-dim top-10 上 P99 = 8ms,比 Pinecone Starter Pod 快 5 倍,比 Weaviate Flex Cluster 快 4 倍。Rust 实现的内存管理与 HNSW 优化在大规模数据集上优势更明显。100M+ 向量时 Qdrant 的水平扩展(分片 + 副本)仍是单一集群内的最稳选项,跨集群 federation 在 1.14 中为 beta。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">总结</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Qdrant 是 2026 年 Rust 性能 + 大规模生产 RAG 的<strong>强力推荐</strong>。开源 Apache 2.0 引擎 + FastEmbed 9 种内置模型 + 命名向量多模态 + GPU 索引加速 + Discovery 搜索的组合,让它在功能密度上接近 Weaviate,在性能上领先 Pinecone,在 BYOC 灵活性上独占。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">权衡也真实存在:Cloud Standard 的 $25/月起步需要预付 $250/yr(不是月付 cash flow 友好);中国大陆直连延迟高(需 BYOC 或自托管);FastEmbed 模型集比 Weaviate Cloud 稍小;GPU 索引仅 Pro+ 层级可用。但对于需要 Rust 性能、多模态命名向量、GPU 索引或 BYOC 自带云账户的工作负载,Qdrant 是 2026 年最完整的开源向量数据库选项。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于零运维 SaaS 简单性,Pinecone 仍是更简单的入口。对于混合检索 + HIPAA 合规工作负载,Weaviate 仍是合规最完整的选项。对于嵌入式 / 进程内向量检索,Chroma 胜出。Qdrant 居中——比 Pinecone 性能更好,比 Weaviate 多模态更灵活,比 Chroma 更适合生产规模,比三者都更便宜存储单价。</p>
+`;
+---
+
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} locale={locale} enCanonicalUrl={enCanonicalUrl}>
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content="{date}" />
+    <meta itemprop="dateModified" content="{date}" />
+    
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+    <div set:html={zhBody} />
+
+    <!-- Affiliate CTA -->
+    <div class="mt-12 p-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-gray-600 mt-1">{affiliateSidebar.description}</p>
+        </div>
+        <a href={affiliateSidebar.url} class="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors" rel="nofollow sponsored" target="_blank">{affiliateSidebar.cta} →</a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

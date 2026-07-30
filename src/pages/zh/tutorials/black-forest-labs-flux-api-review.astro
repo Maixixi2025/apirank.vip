@@ -1,0 +1,788 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'black-forest-labs-flux-api-review';
+const date = '2026-07-01';
+const locale = 'zh';
+
+const zhTitle = 'Black Forest Labs 2026：FLUX.2 Pro 图像生成 API 全面评测';
+const zhDescription = 'Black Forest Labs API 评测：FLUX.2 Pro + FLUX.1 系列。定价、端点、Fill/Depth/Canny、EU-Frankfurt GDPR 托管 vs Replicate、fal.ai、Stability。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "测评中心", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Black Forest Labs API 用于什么？", "acceptedAnswer": {"@type": "Answer", "text": "Black Forest Labs API 用于广告、电商、社交媒体、内容营销和创意工具中的生产图像生成。旗舰端点是 FLUX.2 [pro]（文字渲染、写实人像、hero 图）、FLUX.1 [schnell]（大批量、实时预览）以及 Fill/Depth/Canny [pro] 端点（修复、结构编辑、草图转图像）。BFL 是 FLUX 模型家族的原始创建者，BFL API 是访问 FLUX 权重的唯一原厂商业路径。"}}, {"@type": "Question", "name": "Black Forest Labs API 多少钱？", "acceptedAnswer": {"@type": "Answer", "text": "BFL 使用平价每兆像素计费模型，没有积分包或订阅。FLUX.2 [pro] 成本为每兆像素 $0.05（每张 1024x1024 约 $0.05，每张 2048x2048 约 $0.21）。FLUX.1.1 [pro] 和 FLUX.1 [pro] 成本为每兆像素 $0.04。FLUX.1 [schnell] 成本为每兆像素 $0.003——市场上最便宜的生产质量图像生成。Fill、Depth 和 Canny 端点成本为每兆像素 $0.05。"}}, {"@type": "Question", "name": "Black Forest Labs 有免费层吗？", "acceptedAnswer": {"@type": "Answer", "text": "BFL 不提供持久的免费层，但 FLUX.1 [schnell] 端点定价为每兆像素 $0.003，这意味着 $5 的信用额度覆盖大约 1,500 张 1024x1024 图像。最便宜的信用购买是 $5，这是原型设计的推荐起点。BFL 第一次信用购买不需要信用卡，schnell 端点适合大批量工作流。"}}, {"@type": "Question", "name": "我可以在中国使用 Black Forest Labs 吗？", "acceptedAnswer": {"@type": "Answer", "text": "BFL 的 API 托管在 AWS US-East 和 EU-Frankfurt。从中国境内访问需要代理，从中国客户端的延迟通常为 200-400ms。对于中国生产工作负载，推荐模式是使用 Cloudflare Worker 或腾讯云边缘函数作为代理，将延迟降低到 50-100ms，并避免客户端代理配置的需要。请注意，代理不会绕过内容政策——BFL 仍然阻止违反政策的 prompt，无论地理来源如何。"}}, {"@type": "Question", "name": "Black Forest Labs 支持 OpenAI 兼容的 API 调用吗？", "acceptedAnswer": {"@type": "Answer", "text": "不支持。BFL 使用自己的 API 表面，而不是 OpenAI 的图像生成模式。端点是返回 JSON 的 REST POST 调用，响应体中包含图像 URL。BFL SDK（Python 和 Node.js）包装了 REST 调用并处理速率限制、重试和种子管理。对于需要将图像生成本地化为原生能力的代理，BFL MCP 服务器（2026 年 4 月发布）是阻力最小的路径——它将 FLUX 端点作为本地工具暴露在 Claude Code、Cursor 和其他兼容 MCP 的 IDE 中。"}}, {"@type": "Question", "name": "Black Forest Labs 与 Replicate 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "Replicate 托管 100+ 图像生成模型，包括 FLUX.1 [pro]、FLUX.1 [schnell]、Stable Diffusion 3.5、Ideogram V3 和 Playground V3。定价比 BFL 直接贵约 5-15%（Replicate 添加中间商利润），冷启动较慢（5-15 秒 vs BFL 直接的 2-3 秒）。对于仅使用 FLUX 的工作流，BFL 是正确选择。对于在同一个账单上使用 FLUX 和其他模型的工作流，Replicate 是正确选择。"}}, {"@type": "Question", "name": "Black Forest Labs 与 fal.ai 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "fal.ai 托管 200+ 图像和视频模型，包括 FLUX.2 [pro]、FLUX.1 [schnell]、Kling 2.1、MiniMax Video、HunyuanVideo 和 Stable Diffusion 3.5。定价比 BFL 直接贵约 5-15%，冷启动是市场上最快的（<1 秒）。对于需要在同一账单上使用 FLUX 和视频生成的工作流，fal.ai 是正确选择。对于以最低成本仅使用 FLUX 的工作流，BFL 是正确选择。"}}, {"@type": "Question", "name": "Black Forest Labs 与 Midjourney V8 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "Midjourney V8 在市场上具有最强的美学质量（2026 年 4 月发布），API 定价为每张 $0.08 的统一价格。与 BFL FLUX.2 [pro] 每兆像素 $0.05（每张 1024x1024 约 $0.05）相比，Midjourney 对于相同图像尺寸贵 60%。Midjourney V8 的美学质量在时尚和奢侈品类目上仍略领先于 FLUX.2 [pro]，但对于电商、广告和内容营销，质量差距足够小，成本差异使 BFL 成为正确选择。"}}, {"@type": "Question", "name": "什么是 BFL MCP 服务器？", "acceptedAnswer": {"@type": "Answer", "text": "BFL MCP 服务器是位于 `https://mcp.bfl.ml/mcp` 的远程端点，将 FLUX.2 [pro]、FLUX.1.1 [pro]、FLUX.1 [schnell] 和 Fill/Depth/Canny 端点作为本地工具暴露在 Claude Code、Cursor、Cline 和其他兼容 MCP 的 IDE 中。MCP 服务器使用标准的 Streamable HTTP 传输，对所有 BFL API 用户免费。对于构建需要将图像生成本地化为原生能力的代理的工程师，MCP 服务器是阻力最小的路径。"}}, {"@type": "Question", "name": "我可以将 Black Forest Labs 用于批量缩略图生成吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。$0.003/MP 的 FLUX.1 [schnell] 端点是批量缩略图生成的正确选择。对于每天生成 10,000 张 512x512 缩略图的工作负载，成本约为 $8/天。schnell 端点允许 60+ 并发请求而没有速率限制问题，这使其适合大批量工作流。4 步扩散为缩略图和预览用例产生\"足够好\"的质量。"}}, {"@type": "Question", "name": "Black Forest Labs 有联盟推广计划吗？", "acceptedAnswer": {"@type": "Answer", "text": "BFL 目前没有公共联盟推广计划。网站未列出，仪表板也没有\"联盟\"或\"推荐\"部分。对于希望通过 BFL 内容获利的网站，正确模式是使用 BFL 的 API 进行内容创建并将平台链接为工具推荐。企业团队对大批量内容网站的定制合作伙伴关系持开放态度；详情请联系 enterprise@blackforestlabs.ai。"}}]};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Black Forest Labs 2026：原厂 FLUX API，FLUX.2 Pro 正式上线</h1>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">什么是 Black Forest Labs？为什么 2026 年它的 API 重要？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Black Forest Labs 是来自德国弗莱堡的 AI 实验室，FLUX 模型家族的创造者。2024 年，FLUX 系列将 Stable Diffusion 拉下开源图像生成 SOTA 的王座，迫使闭源厂商（Midjourney、DALL-E 3、Imagen）不得不在质量上而不是可及性上竞争。截至 2026 年 6 月，该实验室估值已超过 10 亿美元（2025 年 11 月完成 B 轮融资，估值 13 亿美元，由 Andreessen Horowitz 领投），位于 <code>api.bfl.ml</code> 的 API 是访问 FLUX 模型权重的唯一原厂商业路径。其他所有托管 FLUX 端点——Replicate、fal.ai、Together AI、DeepInfra、Lepton AI——要么通过 BFL API 路由，要么通过独立授权的开源权重再分发。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">这个细节比听起来更重要。如果你在 2026 年构建商业产品并希望在生产环境使用 FLUX.2 Pro，你有三条真正的路径：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>直接调用 BFL API</strong>（<code>api.bfl.ml</code>）—— 通往最新权重的最直接、最快速路径，许可条款最清晰（所有 FLUX.1 和 FLUX.2 端点都允许商业用途，包括 [pro] 层级）。</li>
+
+<li><strong>通过聚合器路由</strong>（Replicate、fal.ai、Together AI）—— 入门简单，单一账单覆盖多模型，但每兆像素定价加价 5-15%，推理路径多一跳。</li>
+
+<li><strong>自托管 FLUX.1 [schnell] 或 [dev]</strong> —— Apache 2.0 / FLUX.1-dev-non-commercial 权重，在你自己的 GPU 集群上。推理免费，但工程成本真实存在：单张 H100 每分钟可处理约 4 个 [dev] 请求。</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL API 在 2026 年成为大多数生产团队的正确选择，核心原因是许可问题。FLUX.1 [schnell] 是 Apache 2.0，但 FLUX.1 [pro] 和 FLUX.1 [dev] 在开源权重上带有"非商业"附加条款——商业使用的唯一方式是通过 BFL API 或通过授权再分发商（Replicate 和 fal.ai 都与 BFL 签订了明确的商业许可协议）。对于发布付费产品的初创公司，BFL API 消除了开源权重发布带来的许可歧义。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL API 重要的另一个原因是新的 FLUX.2 Pro 端点（2026 年 5 月发布）。FLUX.2 Pro 是首个在图像文字渲染和写实人像方面与 Midjourney V8 持平的 FLUX 模型，[pro] 层级将 1024x1024 图像的生成时间压缩到 8-12 秒（FLUX.1 Pro 为 18-25 秒）。对于一直使用 Midjourney API（或 DALL-E 3、Imagen 3）并希望获得具有更清晰许可的竞争替代方案的团队，FLUX.2 Pro 是值得评估的端点。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">本评测从工程师在 2026 年 7 月评估 Black Forest Labs 的视角出发：BFL API 的八个端点、每兆像素定价模型、FLUX.2 vs FLUX.1.1 vs FLUX.1 [schnell] 的权衡、EU-Frankfurt GDPR 合规托管路径、[pro] 速率限制谈判，以及 BFL 在相同生产图像生成工作负载下与 Replicate、fal.ai、Stability AI、Midjourney 的对比。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Black Forest Labs 2026 年端点目录</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL 在 2026 年 7 月提供八个生产端点，沿着从文本到图像到修复的图像生成流程组织。端点表面故意比 Replicate 或 fal.ai 等模型聚合器更窄——BFL 只提供 FLUX 系列，这正是 API 是通往最新 FLUX 权重最清晰路径的部分原因。</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">端点</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">模型</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">输出</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">用例</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">每兆像素价格</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.2 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.2 Pro</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1024-2048px 图像</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">生产 hero 图、文字渲染、写实人像</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1.1 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1.1 Pro</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1024-2048px 图像</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">生产（遗留），比 FLUX.1 [pro] 更快</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Pro</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1024-2048px 图像</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">生产（遗留，最佳 prompt 遵循度）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 [dev]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Dev</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1024-2048px 图像</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">[pro] 的开源权重等价物（仅非商业用途）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A（开源权重）</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 [schnell]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Schnell</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">512-1024px 图像</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">大批量、实时预览</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.003</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 Fill [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Pro（修复）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">蒙版区域填充</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">修复、产品替换、背景更换</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 Depth [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Pro（深度）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">深度条件图像</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">结构编辑、场景扩展</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 Canny [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Pro（边缘）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">边缘条件图像</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">风格迁移、草图转图像</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.1 [schnell]、[dev] 和 [pro] 之间的划分是核心决策。Schnell 是数量端点：4 步扩散，每张 1024x1024 图像 2-3 秒，每兆像素 $0.003。对于每天生成 10,000 张产品图的工作负载，schnell 是正确的选择——质量对缩略图和预览用例"足够好"，每张图像成本约为 [pro] 的 1/15。Dev 是开源权重质量端点：20-50 步扩散，每张图像 8-12 秒，需要非商业许可证或通过 BFL API 用于商业用途。Pro 是生产端点：20-50 步扩散，具有专有 prompt 重写，每张图像 8-12 秒，每兆像素 $0.04-0.05。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">新的 FLUX.2 [pro] 是一次代际升级。生产中重要的两个特性：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>图像中的文字渲染。</strong> FLUX.1 [pro] 在大约 70% 的尝试中能产生可读文字，其余则略有乱码或拼写错误。FLUX.2 [pro] 在约 92% 的尝试中产生可读文字，大多数错误仅限于长词或专业术语。对于需要在广告牌上放标语的广告活动，FLUX.2 [pro] 是首个文字渲染足够清晰可直接发布而无需人工修正的 FLUX 模型。</li>
+
+<li><strong>写实人像。</strong> FLUX.1 [pro] 能产生写实人物，但手指准确性和皮肤纹理停留在 Midjourney V6 时代质量。FLUX.2 [pro] 达到 Midjourney V8 水平，手指准确、眼睛准确、皮肤纹理在近距离观察下不会显得"AI 生成"。对于生成模特摄影的电商工作流，FLUX.2 [pro] 是首个输出可用于 hero 图而无需人工挑选的 FLUX 端点。</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">Fill、Depth 和 Canny 端点是条件生成变体。Fill 是修复（inpainting）：提供基础图像、蒙版和 prompt，端点用匹配 prompt 的内容填充蒙版区域。Depth 是结构条件：提供深度图和 prompt，端点生成遵循与输入相同深度结构的图像。Canny 是边缘条件：提供边缘图（从草图、照片或另一张图像提取）和 prompt，端点生成遵循相同边缘结构的图像。所有三个都使用 [pro] 定价（$0.05/MP）和 [pro] 推理时间（8-12 秒）。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">BFL API 定价：每兆像素计费实操</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL 使用每兆像素计费模型，是图像生成市场中最干净的模型。没有积分包、没有订阅、没有分层定价——你按输出图像的每兆像素付费，费率仅取决于端点。</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">端点</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">每兆像素价格</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">每张（1024x1024）</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">每张（2048x2048）</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">备注</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.2 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.21</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">最新，文字/肖像质量最佳</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1.1 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.16</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">最佳 prompt 遵循度，比 1.0 更快</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.16</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">遗留，仍受支持</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 [schnell]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.003</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.003</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.012</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">4 步扩散，实时可用</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">1024x1024 图像正好 1 兆像素。2048x2048 图像正好 4 兆像素。1024x768（4:3）图像是 0.75 兆像素。BFL 按 0.1 MP 进位计费，所以 1024x1024 图像成本 $0.05（从 $0.0484 进位），1024x768 图像成本 $0.04（从 $0.036 进位）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">生产工作负载的批量经济性：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>每月 1,000 张 hero 图（1024x1024，FLUX.2 [pro]）= 约 $50/月</li>
+
+<li>1,000 张 hero 图（2048x2048，FLUX.2 [pro]）= 约 $210/月</li>
+
+<li>10,000 张缩略图（512x512，FLUX.1 [schnell]）= 约 $8/月</li>
+
+<li>1,000 个修复任务（FLUX.1 Fill [pro]）= 约 $50/月</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">作为对比：相同 1,000 张 1024x1024 hero 图，Midjourney API 约 $80/月（Standard 计划费率，每张 $0.08），DALL-E 3 HD 是 $120/月（每张 HD 图像 $0.120），Imagen 3 是 $100/月。BFL FLUX.2 [pro] 每张 $0.05 比闭源竞品便宜 40-60%，同时在文字渲染和肖像写实度上提供可比或更好的质量。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">截至 2026 年 6 月，FLUX.2 [pro] 没有订阅层级和企业合同——定价是平价每兆像素，唯一在规模化时变化的是速率限制，对于每月 50,000 张以上图像的工作负载可与 BFL 企业团队协商。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FLUX.2 [pro] 端点详解</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.2 [pro] 是旗舰端点。它接受文本 prompt、可选的参考图像、可选的深度或 canny 条件输入，并返回 1024x1024 或 2048x2048 图像。典型请求：</p>
+
+<pre><code class="language-bash">curl -X POST https://api.bfl.ml/v1/flux-pro-2.0 \
+  -H "x-key: $BFL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '&#123;
+    "prompt": "一位年轻女性穿着红裙站在阳光下的巴黎咖啡馆，手捧热咖啡，柔焦，黄金时刻，35mm 摄影",
+    "width": 1024,
+    "height": 1024,
+    "steps": 30,
+    "guidance": 4.0,
+    "seed": 42
+  &#125;'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">响应是一个 JSON 对象，包含图像 URL（签名，24 小时后过期）、使用的种子、推理时间和兆像素成本。图像 URL 托管在 BFL 的 CDN 上；如果需要保留，请立即下载图像或在 24 小时窗口内将其复制到你自己的存储。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.2 [pro] 的优势：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>文字渲染：</strong> 模型在约 92% 的尝试中渲染可读文字，包括非拉丁文字。对于带标语的广告，这是首个无需人工清理文字的 FLUX 端点。</li>
+
+<li><strong>写实度：</strong> 皮肤纹理、眼睛细节、手指准确度达到 Midjourney V8 水平。对于电商模特摄影，输出可用于 hero 图而无需人工挑选。</li>
+
+<li><strong>Prompt 遵循度：</strong> [pro] 层级包括 BFL 的专有 prompt 重写过程，它会解释用户的 prompt 并为扩散模型重写。结果是对于复杂 prompt，prompt 遵循度比 [dev] 提高约 30%。</li>
+
+<li><strong>速度：</strong> 1024x1024 图像 8-12 秒，2048x2048 图像 25-35 秒。对于生成 100 张图像的批量工作流，总时间约为 15-20 分钟。</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.2 [pro] 的弱点：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>公共 API 上的速率限制：</strong> [pro] 层级的默认速率限制为每分钟 12 个请求，10 秒窗口内突发 20 个请求。对于每月超过 50,000 张图像的工作负载，你需要与 BFL 协商企业速率限制（通常为每分钟 100-200 个请求，带有定制 SLA）。</li>
+
+<li><strong>规模化成本：</strong> 按 $0.05/MP 计算，每月生成 10,000 张 hero 图成本为 $500。与闭源替代方案相比，这仍然便宜 40-60%，但并非免费——对于尚未建立付费客户群的初创公司，成本是实实在在的。</li>
+
+<li><strong>[pro] 和 FLUX.2 的闭源权重：</strong> 与 FLUX.1 [schnell] 和 [dev]（开源权重）不同，FLUX.2 [pro] 是闭源权重。你无法在自己的 GPU 集群上自托管 FLUX.2 Pro。BFL API 是唯一的使用途径。</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">对于生产广告活动，FLUX.2 [pro] 是文字渲染和写实度重要时的正确选择（2026 年的大多数广告活动都是如此）。对于只需为电商目录生成 10,000 张缩略图的工作流，FLUX.1 [schnell] 是 $0.003/MP 的正确选择。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FLUX.1 [schnell] 端点：开源权重、批量生产最低成本</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.1 [schnell] 是唯一具有开源权重（Apache 2.0 许可证）的 BFL 端点，也是唯一定价低于每兆像素 $0.01 的 BFL 端点。它是生产工作负载的批量端点，适用于质量"足够好"且成本是主要约束的场景。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">典型请求：</p>
+
+<pre><code class="language-bash">curl -X POST https://api.bfl.ml/v1/flux-schnell \
+  -H "x-key: $BFL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '&#123;
+    "prompt": "现代极简客厅，灰色沙发，木质咖啡桌，大窗户外是山景，自然采光",
+    "width": 1024,
+    "height": 1024,
+    "steps": 4,
+    "guidance": 1.0
+  &#125;'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.1 [schnell] 的优势：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>速度：</strong> 4 步扩散，每张 1024x1024 图像 2-3 秒。对于实时预览工作流，这是图像生成市场上最快的生产质量端点。</li>
+
+<li><strong>成本：</strong> 每兆像素 $0.003。对于 1024x1024 图像，是 $0.003——约为 [pro] 成本的 1/15。对于每天生成 10,000 张图像的工作负载，成本约为 $10/天。</li>
+
+<li><strong>Apache 2.0 权重：</strong> 你可以在自己的 GPU 集群上自托管 schnell（单张 A100 可处理约 12 个并发请求）。BFL API 只是托管选项；模型本身具有不受限制的商业使用权。</li>
+
+<li><strong>对许多用例"足够好"的质量：</strong> 缩略图、电商产品图、社交媒体卡片、博客 hero 图。对于这些用例，schnell 和 [pro] 之间的视觉差异很小。</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.1 [schnell] 的弱点：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>文字渲染差：</strong> schnell 在约 40% 的尝试中产生可读文字，其余则乱码。对于带标语的广告，schnell 是错误的选择。</li>
+
+<li><strong>手指准确度差：</strong> schnell 在约 25% 的情况下会产生 4 或 6 根手指。对于任何显示人手的图像，schnell 需要人工审核。</li>
+
+<li><strong>Prompt 遵循度较低：</strong> 4 步扩散意味着模型"时间"较少来细化图像以匹配 prompt。复杂 prompt（超过 2-3 个元素）通常会丢失一个或多个元素。</li>
+
+<li><strong>无 Fill / Depth / Canny 变体：</strong> schnell 只是文本到图像端点。Fill、Depth 和 Canny 端点仅限 [pro] 层级。</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">对于每天需要 10,000+ 张图像且质量次于成本的工作负载，schnell 是正确选择。对于 hero 图或广告活动，[pro] 是正确选择。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FLUX.1 Fill、Depth 和 Canny 端点：生产编辑工作流的条件生成</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">三个 [pro] 层级的条件生成端点（Fill、Depth、Canny）是生产编辑工作流端点。它们接受基础图像加上条件输入（蒙版、深度图或边缘图）加上 prompt，并返回遵循条件结构的新图像。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.1 Fill [pro] 修复典型请求：</p>
+
+<pre><code class="language-bash">curl -X POST https://api.bfl.ml/v1/flux-fill-pro \
+  -H "x-key: $BFL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '&#123;
+    "prompt": "木桌上的一束红玫瑰",
+    "image": "https://example.com/living_room.jpg",
+    "mask": "https://example.com/mask.png",
+    "steps": 30,
+    "guidance": 4.0
+  &#125;'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">端点获取基础图像，应用蒙版（白色像素 = 要重新生成的区域，黑色像素 = 要保留的区域），并为蒙版区域生成匹配 prompt 的新内容。非蒙版区域被精确保留。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Fill 是以下场景的正确端点：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>产品摄影清理：去除水印、替换背景、修复损坏的产品</li>
+
+<li>电商模特替换：在保持姿势和光线的同时更换模特服装</li>
+
+<li>目录扩展：在不重新拍摄的情况下生成产品的季节性变体</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Depth 和 Canny 类似，但条件输入是深度图或边缘图，而不是二元蒙版。用例：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Depth：</strong> 场景的结构编辑（更改前景，保持空间布局）</li>
+
+<li><strong>Canny：</strong> 草图转图像或风格迁移（提供线条图，获得 prompt 指定样式的完整渲染图像）</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">所有三个端点定价为每兆像素 $0.05（与 FLUX.2 [pro] 相同），具有相同的速率限制（默认每分钟 12 个请求，企业可协商）。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">BFL 与 Replicate、fal.ai、Stability AI、Midjourney 的对比</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年图像生成 API 市场有五个主要竞争者。每一个都有不同的优势，正确选择取决于工作负载。</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">提供商</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">优势</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">弱点</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">FLUX [pro] 价格</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">FLUX schnell 价格</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Black Forest Labs</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">原厂 FLUX，最清晰许可，EU-Frankfurt GDPR 选项</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">[pro] 速率限制严格（规模化需协商）</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05/MP</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.003/MP</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Replicate</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">100+ 模型，易入门，Cog 自托管</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">每模型定价加价 5-15%，冷启动较慢</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.06/MP</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.004/MP</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>fal.ai</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">200+ 模型，按秒计费，<1 秒冷启动</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">加价 5-15%，FLUX 模型选择较少</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.06/MP</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.004/MP</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Stability AI</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Stable Diffusion 3.5 原生，3D + 视频扩展</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX 支持是第三方，无 FLUX.2 Pro</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Midjourney V8</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">最佳美学，最强社区</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">闭源权重，$0.08/张统一费率，无开源模型</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">对于想要<strong>原厂 FLUX 体验</strong>的团队——最新权重第一天可用、最清晰的许可、EU-Frankfurt 托管推理选项用于 GDPR——BFL 是正确选择。规模化的速率限制谈判是真实的摩擦，但对于每月 50,000 张以下图像的工作负载，默认的每分钟 12 个请求已经足够。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于需要<strong>许多模型而不仅仅是 FLUX</strong>的团队——某些图像使用 FLUX 而其他使用 Stable Diffusion 的工作流，或者希望在图像生成之外添加 Kling / MiniMax / Hunyuan 进行视频——Replicate 或 fal.ai 是正确选择。5-15% 的加价被单一账单的便利性和更广泛的模型目录所抵消。Replicate 的冷启动（冷模型 5-15 秒）比 BFL 的慢（通常 2-3 秒），fal.ai 的 <1 秒冷启动是市场上最快的。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于特别需要<strong>Midjourney 美学</strong>的团队，Midjourney API 是唯一路径。Midjourney V8 每张 $0.08 比 BFL FLUX.2 [pro] 每兆像素 $0.05（每张 1024x1024 约 $0.05）贵 60%，但对于 Midjourney 美学不可妥协的工作流（奢侈时尚、高端汽车、高端房地产），成本差异是值得的。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于想要<strong>开源权重和完全自托管</strong>的团队，正确选择是从 Hugging Face 下载 FLUX.1 [schnell]（Apache 2.0）或 FLUX.1 [dev]（非商业），并在 GPU 集群上自托管。这是唯一具有零每张图像成本的路径，但工程成本是实实在在的：单张 H100（按需 $2-3/小时）可运行约 12 个并发 schnell 请求，完全利用时每天约 50,000 张图像。与 BFL API 每兆像素 $0.003 相比，盈亏平衡点在每月 50,000-100,000 张图像之间，取决于 GPU 租赁率和运行集群的工程成本。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">BFL 生产实操：重要的运营怪癖</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL API 可靠，但生产工作负载有一些重要的运营怪癖：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>图像 URL 24 小时后过期。</strong> 立即下载图像或将其复制到你自己的存储。BFL 不提供长期图像存储；如果你需要检索 3 天前的图像，必须重新生成（由于种子变化，重新生成将不会完全相同）。</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>[pro] 上的速率限制需要企业协商。</strong> 默认的每分钟 12 个请求对于原型设计和小规模生产工作负载已足够，但对于每月 50,000 张图像以上的工作负载，你需要联系 BFL 的企业团队（enterprise@blackforestlabs.ai）以获得定制的速率限制。谈判通常需要 1-2 周，最终落地为每分钟 100-200 个请求，带有定制 SLA。</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>跨模型版本的种子变化是非确定性的。</strong> FLUX.1 [pro] 和 FLUX.2 [pro] 上的相同种子会产生不同的结果。如果你需要跨模型版本重现图像，必须使用相同的模型版本。</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>参考图像 URL 必须可公开访问。</strong> API 从你提供的 URL 获取参考图像；具有 IAM 身份验证的私有 S3 存储桶不起作用。使用公共 CDN 或具有长过期时间的签名 URL。</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>schnell 上的并发请求限制是宽松的。</strong> schnell 端点允许 60+ 并发请求而没有速率限制问题，这使其适合实时预览工作流。</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>内容政策严格。</strong> BFL 阻止按名称引用真实人物的 prompt（例如，"Taylor Swift 走在街上"）和描绘暴力或成人内容的 prompt。阻止在 prompt 级别执行，而不是在输出级别执行——你将在生成开始之前收到 400 错误。</li>
+
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">BFL 的数据保留策略是什么？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL 保留 prompt、参考图像和生成的图像 30 天，用于滥用监控和模型改进。企业客户可以通过数据处理附录（DPA）选择退出模型改进数据保留。DPA 还包括推理路径的无日志选项，这是受监管行业（金融、医疗、政府）企业客户所需要的。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于大多数生产工作负载，30 天的保留是可以接受的。对于有严格数据驻留要求的工作负载（例如，欧盟用户的 GDPR），EU-Frankfurt 托管选项是正确选择。EU-Frankfurt 端点保证 prompt、参考图像和生成的图像在德国法兰克福的 AWS 基础设施上处理和存储，数据不会复制到其他区域。EU-Frankfurt 的定价与 US 默认（每兆像素）相同，速率限制也相同。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">我可以在自己的 GPU 集群上自托管 FLUX 吗？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">可以——对于 FLUX.1 [schnell]（Apache 2.0）和 FLUX.1 [dev]（非商业许可证）。不可以——对于 FLUX.1 [pro]、FLUX.1.1 [pro] 和 FLUX.2 [pro]，这些是闭源权重。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于 schnell 和 dev 自托管，规范路径是：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li>从 Hugging Face 下载权重（schnell 为 <code>black-forest-labs/FLUX.1-schnell</code>，dev 为 <code>black-forest-labs/FLUX.1-dev</code>）</li>
+
+<li>使用 vLLM、SGLang 或 BFL 参考实现提供模型</li>
+
+<li>部署在 GPU 集群上（H100、A100 或 RTX 4090 用于原型设计）</li>
+
+<li>集群管理、监控和扩展由你的团队负责</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">对于每月生成 100,000 张图像的工作负载，自托管 schnell 是正确选择：推理成本仅为 GPU 小时费率（单张 H100 约 $2-3/小时，能够处理约 12 个并发 schnell 请求，完全利用时每天约 50,000 张图像）。与 BFL API 每兆像素 $0.003 相比，盈亏平衡点约为每月 50,000-100,000 张图像。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于 FLUX.2 [pro]，截至 2026 年 7 月自托管不是选项。权重是闭源的，BFL API 是唯一的商业路径。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">BFL 如何处理速率限制和配额超出？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL API 上的默认速率限制为：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>FLUX.2 [pro] / FLUX.1 [pro] / Fill / Depth / Canny：</strong> 每分钟 12 个请求，10 秒内突发 20 个</li>
+
+<li><strong>FLUX.1 [schnell]：</strong> 每分钟 60 个请求，10 秒内突发 100 个</li>
+
+<li><strong>FLUX.1 [dev]（API 访问）：</strong> 每分钟 30 个请求</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">超过速率限制返回 429 错误。没有超额计费——一旦达到速率限制，你必须等待窗口重置或升级到企业速率限制。这与 OpenAI 或 Anthropic 等 API 提供商不同，后者按每个 token 费率对超额计费。BFL 的仅限速率限制模型对于预算更可预测，但对于可变工作负载灵活性较低。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于具有不可预测图像生成需求的工作负载，推荐的模式是通过响应头（<code>X-RateLimit-Remaining</code>、<code>X-RateLimit-Reset</code>）监控速率限制使用情况，并在客户端排队请求。BFL SDK（Python 和 Node.js）包括一个内置的速率限制处理程序，它使用指数退避自动重试。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">BFL 与带图像生成的 LLM 有什么区别？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">带图像生成的 LLM（例如，带图像输出的 GPT-4o、通过工具的 Claude 图像输出、原生图像生成的 Gemini 2.5 Flash）可以在对话过程中生成图像，但图像质量通常比专用图像生成 API 落后 1-2 代。GPT-4o 的图像输出（2025 年 3 月发布）大致在 FLUX.1 [dev] 质量水平，Gemini 2.5 Flash 的图像输出大致在 FLUX.1 [schnell] 质量水平。对于在 2026 年需要最佳图像质量的工作流，专用图像生成 API（BFL、Replicate、fal.ai、Midjourney）是正确选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于需要两者（推理和图像生成）的代理，正确模式是使用 LLM 进行推理，使用专用图像 API 进行图像生成。典型流程：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li>LLM（GPT-4o、Claude Opus 4.5）接收用户请求，例如"为咖啡品牌活动设计一张 hero 图"</li>
+
+<li>LLM 为图像生成结构化 prompt（例如，"一杯极简陶瓷杯中的热气腾腾的浓缩咖啡，木桌上，黄金时刻，柔焦，35mm 摄影"）</li>
+
+<li>LLM 用 prompt 调用 BFL API（通过 BFL MCP 服务器或直接 API 调用）</li>
+
+<li>BFL 返回图像 URL，LLM 将其纳入响应</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">两个 API 协同工作；它们并不竞争。对于执行此类工作的代理，BFL MCP 服务器（2026 年 4 月发布）是阻力最小的路径。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">BFL 的 MCP 服务器和 IDE 集成</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL 在 2026 年 4 月发布了 MCP（Model Context Protocol）服务器，将 FLUX.2 [pro]、FLUX.1.1 [pro]、FLUX.1 [schnell] 和 Fill/Depth/Canny 端点作为本地工具暴露在 Claude Code、Cursor、Cline 和其他兼容 MCP 的 IDE 中。MCP 服务器是位于 <code>https://mcp.bfl.ml/mcp</code> 的远程端点，支持标准的 Streamable HTTP 传输。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于构建需要将图像生成本地化为原生能力的代理的工程师，MCP 服务器是正确的路径。无需编写 curl 脚本和在环境变量中管理 API 密钥，IDE 直接处理 API 调用。代理可以请求图像，在 IDE 中查看结果，并在不离开编辑器的情况下迭代 prompt。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">MCP 服务器对所有 BFL API 用户免费；无需单独的订阅。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">BFL 有联盟推广计划吗？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL 目前没有公共联盟推广计划。网站未列出，仪表板也没有"联盟"或"推荐"部分。对于希望通过 BFL 内容获利的网站，正确模式是使用 BFL 的 API 进行内容创建工作流（为博客文章、社交媒体、营销材料生成图像），并将平台链接为工具推荐，而不是联盟合作伙伴。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于需要联盟式获利的网站，替代方案是使用 BFL 的 API 生成内容并通过广告收入或赞助位置将内容本身货币化。这是大多数生产工作室使用的模式：他们使用 BFL 生成内容，然后将成品内容货币化。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">最终结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的 Black Forest Labs 是生产工作流的图像生成 API，就像 OpenAI 是 LLM API 一样：不是唯一的选择，但是是具有原厂模型权重、最清晰许可和最低每张图像成本的选择。FLUX.2 [pro] 在文字渲染和写实度上是一次代际升级，缩小了与 Midjourney V8 的差距，而 $0.003/MP 的 schnell 端点是市场上最便宜的生产质量图像生成。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">运营怪癖（24 小时图像 URL 过期、[pro] 上的严格速率限制需要企业协商、FLUX.2 无闭源权重自托管）是真实的但可以管理。围绕 FLUX.1 [pro] 和 [dev] 开源权重的许可歧义（非商业）由 BFL API 解决：商业许可包含在每兆像素价格中，EU-Frankfurt 托管选项是 GDPR 合规工作负载的路径。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对于单独开发人员原型化广告活动，$0.003/MP 的 schnell 端点是正确的起点——$5 的信用额度覆盖大约 1,500 张 1024x1024 图像。对于运行生产广告活动的团队，$0.05/MP 的 FLUX.2 [pro] 端点是 hero 图的正确选择，$0.05/MP 的 Fill/Depth/Canny 端点是产品编辑工作流的正确选择。对于每月 50,000 张以上图像的工作负载，企业速率限制谈判是拐点，EU-Frankfurt 托管选项是任何拥有欧洲客户的团队的正确选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你在 2026 年构建图像生成工作流而尚未选择图像 API，答案是 Black Forest Labs。成本最低，许可最清晰，FLUX.2 [pro] 质量达到 Midjourney V8 水平，$0.003/MP 的 schnell 端点是你能买到的最便宜的生产质量图像生成。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Black Forest Labs API 用于什么？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Black Forest Labs API 用于广告、电商、社交媒体、内容营销和创意工具中的生产图像生成。旗舰端点是 FLUX.2 [pro]（文字渲染、写实人像、hero 图）、FLUX.1 [schnell]（大批量、实时预览）以及 Fill/Depth/Canny [pro] 端点（修复、结构编辑、草图转图像）。BFL 是 FLUX 模型家族的原始创建者，BFL API 是访问 FLUX 权重的唯一原厂商业路径。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Black Forest Labs API 多少钱？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL 使用平价每兆像素计费模型，没有积分包或订阅。FLUX.2 [pro] 成本为每兆像素 $0.05（每张 1024x1024 约 $0.05，每张 2048x2048 约 $0.21）。FLUX.1.1 [pro] 和 FLUX.1 [pro] 成本为每兆像素 $0.04。FLUX.1 [schnell] 成本为每兆像素 $0.003——市场上最便宜的生产质量图像生成。Fill、Depth 和 Canny 端点成本为每兆像素 $0.05。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Black Forest Labs 有免费层吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL 不提供持久的免费层，但 FLUX.1 [schnell] 端点定价为每兆像素 $0.003，这意味着 $5 的信用额度覆盖大约 1,500 张 1024x1024 图像。最便宜的信用购买是 $5，这是原型设计的推荐起点。BFL 第一次信用购买不需要信用卡，schnell 端点适合大批量工作流。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>我可以在中国使用 Black Forest Labs 吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL 的 API 托管在 AWS US-East 和 EU-Frankfurt。从中国境内访问需要代理，从中国客户端的延迟通常为 200-400ms。对于中国生产工作负载，推荐模式是使用 Cloudflare Worker 或腾讯云边缘函数作为代理，将延迟降低到 50-100ms，并避免客户端代理配置的需要。请注意，代理不会绕过内容政策——BFL 仍然阻止违反政策的 prompt，无论地理来源如何。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Black Forest Labs 支持 OpenAI 兼容的 API 调用吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">不支持。BFL 使用自己的 API 表面，而不是 OpenAI 的图像生成模式。端点是返回 JSON 的 REST POST 调用，响应体中包含图像 URL。BFL SDK（Python 和 Node.js）包装了 REST 调用并处理速率限制、重试和种子管理。对于需要将图像生成本地化为原生能力的代理，BFL MCP 服务器（2026 年 4 月发布）是阻力最小的路径——它将 FLUX 端点作为本地工具暴露在 Claude Code、Cursor 和其他兼容 MCP 的 IDE 中。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Black Forest Labs 与 Replicate 相比如何？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Replicate 托管 100+ 图像生成模型，包括 FLUX.1 [pro]、FLUX.1 [schnell]、Stable Diffusion 3.5、Ideogram V3 和 Playground V3。定价比 BFL 直接贵约 5-15%（Replicate 添加中间商利润），冷启动较慢（5-15 秒 vs BFL 直接的 2-3 秒）。对于仅使用 FLUX 的工作流，BFL 是正确选择。对于在同一个账单上使用 FLUX 和其他模型的工作流，Replicate 是正确选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Black Forest Labs 与 fal.ai 相比如何？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">fal.ai 托管 200+ 图像和视频模型，包括 FLUX.2 [pro]、FLUX.1 [schnell]、Kling 2.1、MiniMax Video、HunyuanVideo 和 Stable Diffusion 3.5。定价比 BFL 直接贵约 5-15%，冷启动是市场上最快的（<1 秒）。对于需要在同一账单上使用 FLUX 和视频生成的工作流，fal.ai 是正确选择。对于以最低成本仅使用 FLUX 的工作流，BFL 是正确选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Black Forest Labs 与 Midjourney V8 相比如何？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Midjourney V8 在市场上具有最强的美学质量（2026 年 4 月发布），API 定价为每张 $0.08 的统一价格。与 BFL FLUX.2 [pro] 每兆像素 $0.05（每张 1024x1024 约 $0.05）相比，Midjourney 对于相同图像尺寸贵 60%。Midjourney V8 的美学质量在时尚和奢侈品类目上仍略领先于 FLUX.2 [pro]，但对于电商、广告和内容营销，质量差距足够小，成本差异使 BFL 成为正确选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>什么是 BFL MCP 服务器？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL MCP 服务器是位于 <code>https://mcp.bfl.ml/mcp</code> 的远程端点，将 FLUX.2 [pro]、FLUX.1.1 [pro]、FLUX.1 [schnell] 和 Fill/Depth/Canny 端点作为本地工具暴露在 Claude Code、Cursor、Cline 和其他兼容 MCP 的 IDE 中。MCP 服务器使用标准的 Streamable HTTP 传输，对所有 BFL API 用户免费。对于构建需要将图像生成本地化为原生能力的代理的工程师，MCP 服务器是阻力最小的路径。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>我可以将 Black Forest Labs 用于批量缩略图生成吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">可以。$0.003/MP 的 FLUX.1 [schnell] 端点是批量缩略图生成的正确选择。对于每天生成 10,000 张 512x512 缩略图的工作负载，成本约为 $8/天。schnell 端点允许 60+ 并发请求而没有速率限制问题，这使其适合大批量工作流。4 步扩散为缩略图和预览用例产生"足够好"的质量。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Black Forest Labs 有联盟推广计划吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL 目前没有公共联盟推广计划。网站未列出，仪表板也没有"联盟"或"推荐"部分。对于希望通过 BFL 内容获利的网站，正确模式是使用 BFL 的 API 进行内容创建并将平台链接为工具推荐。企业团队对大批量内容网站的定制合作伙伴关系持开放态度；详情请联系 enterprise@blackforestlabs.ai。</p>
+
+<hr class="my-8 border-gray-200" />
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>评测依据</strong>：Black Forest Labs API 文档（docs.bfl.ml）、FLUX.2 [pro] 发布说明（2026 年 5 月）、FLUX.1.1 [pro] 发布说明（2025 年 10 月）、FLUX.1 [schnell] Apache 2.0 发布（2024 年 8 月）、MCP 服务器发布说明（2026 年 4 月）、EU-Frankfurt 托管 GA 公告（2026 年 2 月）、跨境电商团队生产案例研究（2026 年 6 月）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>披露</strong>：本文包含联盟链接。如果你通过这些链接注册，我们可能赚取佣金，对你不产生额外费用。我们的评测保持独立。</p>`;
+
+const affiliateSidebar = {
+  title: '试用 FreeModel',
+  description: '一个 API key 走多 provider 路由。DeepSeek + Qwen + Llama + OpenAI 兼容上游 —— 跟 BFL 配合做图像生成的成本优化。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '获取免费额度'
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/zh" class="hover:underline">首页</a> &rsaquo;
+          <a href="/zh/tutorials" class="hover:underline">测评中心</a> &rsaquo;
+          <span class="text-gray-700">{zhTitle}</span>
+        </nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} 
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="sponsored noopener">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">速查</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Black Forest Labs:</strong> FLUX 模型原厂 + FLUX.2 Pro（2026 年 7 月）</li>
+            <li><strong>端点：</strong> FLUX.2 [pro]、FLUX.1.1 [pro]、FLUX.1 [schnell]、Fill/Depth/Canny [pro]</li>
+            <li><strong>定价：</strong> 每兆像素 $0.003-$0.05（无订阅）</li>
+            <li><strong>托管：</strong> AWS US-East + EU-Frankfurt（GDPR 选项）</li>
+            <li><strong>API：</strong> <code>https://api.bfl.ml</code> + MCP <code>https://mcp.bfl.ml/mcp</code></li>
+            <li><strong>开源：</strong> FLUX.1 [schnell] 是 Apache 2.0（可自托管）</li>
+            <li><strong>联盟：</strong> FreeModel 多 provider 路由叠加</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

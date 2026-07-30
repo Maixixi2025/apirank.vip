@@ -1,0 +1,263 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'chroma-api-review';
+const date = '2026-07-28';
+const locale = 'zh';
+
+const zhTitle = "Chroma 2026：Python 优先向量数据库评测";
+const zhDescription = "Chroma Cloud 2026 评测：Python 优先向量数据库、21k+ stars、Apache 2.0 OSS + Cloud。免费 50K 向量 + 5K 查询/月，Pro $0.30/M 向量-月。vs Pinecone/Qdrant/Weaviate。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Chroma 2026：Python 优先向量数据库评测", "description": "Chroma Cloud 2026 评测：Python 优先向量数据库、21k+ stars、Apache 2.0 OSS + Cloud。免费 50K 向量 + 5K 查询/月，Pro $0.30/M 向量-月。vs Pinecone/Qdrant/Weaviate。", "datePublished": "2026-07-28", "dateModified": "2026-07-28", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/chroma-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Chroma 2026：Python 优先向量数据库评测", "item": "https://apirank.vip/zh/tutorials/chroma-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Chroma Cloud 2026 价格是多少？", "acceptedAnswer": {"@type": "Answer", "text": "Chroma OSS 是 Apache 2.0 自托管永久免费（仅受本地硬件限制）。Chroma Cloud 有永久免费层：5 万向量 + 5 千查询/月 + 0.5 GB 存储。Pro 起步 $10/月，按 $0.30/百万向量-月 + $0.01/百万查询计费。Enterprise 合同制定价（通常 $500-5,000/月），含 HIPAA、SOC 2 Type II、99.9% SLA 和独立节点。"}}, {"@type": "Question", "name": "Chroma 可以免费商用吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。Chroma OSS 是 Apache 2.0 协议，可用于任何商业场景——无 per-node 费、无向量数上限、无查询限速（仅受硬件限制）。Chroma Cloud 是独立的付费产品，分 Free / Pro / Enterprise 三档。Chroma 是 LangChain 和 LlamaIndex 的默认内存向量库，已嵌入无数 LLM 应用中。"}}, {"@type": "Question", "name": "Chroma 与 Pinecone 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "Chroma 是 Python 优先、单二进制部署，强调嵌入式 / 开发模式。Pinecone 是纯托管 SaaS（无 OSS），强调横向扩展到 1 亿+ 向量、Pod 多租户架构。Chroma OSS 适合原型开发、Jupyter notebook 和 <500 万向量生产；Pinecone 适合 1000 万+ 向量生产场景，需要 SLA、多区域复制和零运维。Chroma Cloud Pro（$10/月起）在小规模工作负载上比 Pinecone Serverless 便宜，但 1000 万+ 存储向量后 Pinecone Serverless 更便宜。"}}, {"@type": "Question", "name": "Chroma 能像 Qdrant 一样做混合检索吗？", "acceptedAnswer": {"@type": "Answer", "text": "Chroma 没有像 Qdrant 那样的原生 Sparse+Dense 向量作为一等公民类型。要用 Chroma 做混合检索，要么跑一个并行 BM25 索引（如 Elasticsearch、Typesense）然后合并结果，要么用 SPLADE/BGE-M3 把稀疏向量当作稠密向量自行组合，再依赖 Chroma 的元数据过滤。Qdrant 的原生混合检索在生产级混合检索场景中明显更优。Chroma 专注于单向量检索 + 丰富的元数据过滤（$eq / $in / $gte），覆盖 80% 的 RAG 场景。"}}, {"@type": "Question", "name": "Chroma 支持哪些嵌入模型？", "acceptedAnswer": {"@type": "Answer", "text": "Chroma 开箱支持 12+ 嵌入模型。默认是 all-MiniLM-L6-v2（Sentence-Transformers，384 维，本地推理）。内置备选包括 all-mpnet-base-v2（768 维，更高质量）、BGE-small/base/large-en-v1.5、E5-base/large-v2、multi-qa-MiniLM-L6-cos-v1、InstructorXL、BGE-M3 多语言版。BYO 嵌入模式可路由到 OpenAI text-embedding-3-small/large、Cohere embed-v3、VoyageAI voyage-3 / voyage-large-2，或任何自定义 Sentence-Transformers / ONNX 模型。默认嵌入本地推理，零 per-token 成本。"}}, {"@type": "Question", "name": "Chroma 适合生产还是只适合原型？", "acceptedAnswer": {"@type": "Answer", "text": "都适合，但用不同部署模式。原型和小中型生产（<500 万向量、单区域、低 QPS）：Chroma OSS 进程内模式（pip install chromadb）是最简单路径——零基础设施、零延迟、零月费。中型生产（500 万-2000 万向量、多区域、合规）：Chroma Cloud Pro 可用，但比 Pinecone Serverless 或 Qdrant Cloud 大规模下贵。大型生产（>2000 万向量、>100 QPS、99.9% SLA）：建议迁移到 Pinecone、Qdrant Cloud Pro 或 Weaviate Cloud——Chroma 的横向扩展能力较弱。"}}]};
+
+const affiliateSidebar = {"title": "试试 Qdrant Cloud", "description": "需要原生混合检索 + Rust 性能 + GPU 加速索引的大规模场景，可考虑 Qdrant Cloud Standard，$25/月起，存储 $0.06/GB-月。", "url": "https://qdrant.tech/", "cta": "免费试用 Qdrant"};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Chroma 2026：LangChain 与 LlamaIndex 默认的 Python 优先向量数据库</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Chroma 是 2026 年 LLM 应用领域事实上的 Python 向量数据库。2026-07-28 验证：Chroma OSS（github.com/chroma-core/chroma，21k+ GitHub stars，Apache 2.0）是 LangChain 和 LlamaIndex 的默认向量库，通过 <code>pip install chromadb</code> 嵌入，零基础设施。Chroma Cloud Free 永久提供 5 万向量 + 5 千查询/月；Cloud Pro 起步 $10/月，按 $0.30/百万向量-月 + $0.01/百万查询计费。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">本评测覆盖 Chroma 的 Python 优先设计哲学与三种部署模式（嵌入式、客户端-服务器、Cloud）、2026 年 OSS 与 Cloud 各档位实测定价、12+ 支持的嵌入模型（默认本地 Sentence-Transformers + BYO OpenAI/Cohere/Voyage），以及 Chroma 在 Pinecone、Qdrant、Weaviate 并存局面下对 RAG 应用的定位。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>开源</strong>：Apache 2.0、21k+ GitHub stars、LangChain/LlamaIndex 默认向量库</li>
+<li><strong>三种部署模式</strong>：嵌入式（pip 进程内）、客户端-服务器（Docker）、Cloud（托管）</li>
+<li><strong>Cloud 免费层</strong>：5 万向量 + 5 千查询/月 + 0.5 GB 存储，永久</li>
+<li><strong>Cloud Pro</strong>：$10/月起，$0.30/百万向量-月 + $0.01/百万查询</li>
+<li><strong>Enterprise</strong>：合同制（通常 $500-5,000/月），HIPAA + SOC 2 Type II + 99.9% SLA</li>
+<li><strong>默认嵌入</strong>：all-MiniLM-L6-v2（Sentence-Transformers，本地推理，零成本）</li>
+<li><strong>12+ 嵌入模型</strong>：BGE、E5、mpnet、InstructorXL、BGE-M3 + BYO OpenAI/Cohere/Voyage</li>
+<li><strong>Python 优先 API</strong>：collection.add() / query() / get() 一行调用，Jupyter 原型友好</li>
+<li><strong>丰富元数据过滤</strong>：$eq / $in / $gte / $and / $or，无需后端 SQL</li>
+<li><strong>最适合</strong>：Python 数据科学团队；LangChain/LlamaIndex RAG；<500 万向量生产；教学与原型</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么 Chroma 在 2026 年重要</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的向量数据库已分化成两类：生产级托管服务（Pinecone、Qdrant Cloud、Weaviate Cloud）服务 1000 万+ 向量的企业工作负载；开发者友好的嵌入式存储（Chroma）服务绝大多数驻留在 Python 进程中的 LLM 应用。Chroma 决定性地占据了第二类。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第一，Python 优先的开发者体验。</strong>Pinecone 需要账号、API key、网络请求；Chroma 只需 <code>pip install chromadb</code> 加 4 行 Python。一个使用 Chroma 的 LangChain RAG 教程可以在 Jupyter notebook 中完全离线端到端运行，无需任何云端配置。对绝大多数 LLM 应用——聊天机器人、内部工具、原型、研究代码——这一摩擦差异是决定性因素。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第二，与 LangChain 和 LlamaIndex 默认集成。</strong>当 LangChain 文档展示向量库示例时，用的是 Chroma。当 LlamaIndex 的 RAG 教程展示持久化时，用的是 Chroma。这种默认位置效应意味着 Chroma 已嵌入无数生产级 LLM 应用，即使最终部署使用了不同的后端——Chroma 是大多数 Python AI 开发者的"向量数据库第一口"。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第三，三种部署模式共享同一套 API。</strong>在进程内（嵌入式模式）创建的 Chroma Collection 可以不加代码改动地升级到客户端-服务器（Docker 容器、多进程），再通过一行 client 切换升级到 Cloud。Python 代码完全一致：开发时的 <code>client = chromadb.PersistentClient(path="./db")</code> 在生产环境变成 <code>client = chromadb.HttpClient(host="cloud.trychroma.com")</code>。无 SQL、无模式迁移、无索引重建。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">定价明细（2026-07-28 验证）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Chroma 有两个定价面：Chroma OSS（免费、自托管）和 Chroma Cloud（Free + Pro + Enterprise）。OSS 路径完全不收费；Cloud 按三个维度（存储向量 + 查询 + 存储容量）计费，无 per-embedding 费。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Chroma OSS（免费，Apache 2.0）</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>Apache 2.0 协议，完全开源</li>
+<li>三种模式：嵌入式（进程内）、客户端-服务器（Docker）、PersistentClient（本地文件）</li>
+<li>无向量数上限、无查询限速、无 per-feature 费用</li>
+<li>仅受本地硬件（内存、磁盘）限制</li>
+<li>社区 Discord + GitHub Issues 支持</li>
+<li>默认嵌入（Sentence-Transformers）本地运行——零外部 API 成本</li>
+<li>BYO 嵌入（OpenAI、Cohere、Voyage）由第三方 API 按你的成本计费</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Chroma Cloud Free（永久）</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>5 万存储向量</li>
+<li>5,000 查询/月（约 165/天，个人项目和演示够用）</li>
+<li>0.5 GB 存储</li>
+<li>每工作区 1 个 Collection</li>
+<li>社区 Discord 支持</li>
+<li>无 SLA、无合规认证</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Chroma Cloud Pro（$10/月起，按用量）</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>$0.30/百万向量-月（存储维度）</li>
+<li>$0.01/百万查询（吞吐量维度）</li>
+<li>$10/月最低承诺</li>
+<li>3 个 Cloud 区域（2026 H1：us-east-1、eu-west-1、ap-southeast-2）</li>
+<li>邮件工单支持（48 小时响应）</li>
+<li>多工作区，无限 Collection</li>
+<li>每日自动备份，14 天保留</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Chroma Cloud Enterprise（合同制）</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>自定义定价（通常 $500-5,000/月，取决于向量数）</li>
+<li>独立单租户节点，无嘈杂邻居</li>
+<li>提供 HIPAA BAA、SOC 2 Type II 认证</li>
+<li>99.9% SLA，7x24 优先支持</li>
+<li>私有部署到 AWS / GCP / Azure 客户 VPC</li>
+<li>客户自管加密密钥（CMK）</li>
+<li>审计日志 + SCIM 配置</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">嵌入模型定价</h3>
+<table class="w-full my-4 border-collapse text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-200 px-3 py-2 text-left">模型</th><th class="border border-gray-200 px-3 py-2 text-left">维度</th><th class="border border-gray-200 px-3 py-2 text-left">价格</th><th class="border border-gray-200 px-3 py-2 text-left">用途</th></tr></thead>
+<tbody>
+<tr><td class="border border-gray-200 px-3 py-2">all-MiniLM-L6-v2（默认）</td><td class="border border-gray-200 px-3 py-2">384</td><td class="border border-gray-200 px-3 py-2">$0（本地 SBERT）</td><td class="border border-gray-200 px-3 py-2">快速英文检索，CPU 友好</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">all-mpnet-base-v2</td><td class="border border-gray-200 px-3 py-2">768</td><td class="border border-gray-200 px-3 py-2">$0（本地 SBERT）</td><td class="border border-gray-200 px-3 py-2">更高质量英文通用</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">multi-qa-MiniLM-L6-cos-v1</td><td class="border border-gray-200 px-3 py-2">768</td><td class="border border-gray-200 px-3 py-2">$0（本地 SBERT）</td><td class="border border-gray-200 px-3 py-2">QA / 语义搜索优化</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">BGE-small-en-v1.5</td><td class="border border-gray-200 px-3 py-2">384</td><td class="border border-gray-200 px-3 py-2">$0（ONNX 本地）</td><td class="border border-gray-200 px-3 py-2">英文快速，BAAI 质量</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">BGE-base-en-v1.5</td><td class="border border-gray-200 px-3 py-2">768</td><td class="border border-gray-200 px-3 py-2">$0（ONNX 本地）</td><td class="border border-gray-200 px-3 py-2">英文通用 RAG</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">BGE-large-en-v1.5</td><td class="border border-gray-200 px-3 py-2">1024</td><td class="border border-gray-200 px-3 py-2">$0（ONNX 本地）</td><td class="border border-gray-200 px-3 py-2">英文高质量 RAG</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">E5-base-v2 / E5-large-v2</td><td class="border border-gray-200 px-3 py-2">768/1024</td><td class="border border-gray-200 px-3 py-2">$0（本地 SBERT）</td><td class="border border-gray-200 px-3 py-2">跨语言检索</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">InstructorXL</td><td class="border border-gray-200 px-3 py-2">768</td><td class="border border-gray-200 px-3 py-2">$0（本地 SBERT）</td><td class="border border-gray-200 px-3 py-2">指令优化检索</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">BGE-M3</td><td class="border border-gray-200 px-3 py-2">1024</td><td class="border border-gray-200 px-3 py-2">$0（本地 FlagEmbedding）</td><td class="border border-gray-200 px-3 py-2">多语言 EN/ZH/ES/FR dense+sparse</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">OpenAI text-embedding-3-small</td><td class="border border-gray-200 px-3 py-2">1536</td><td class="border border-gray-200 px-3 py-2">$0.02 / 1M tokens</td><td class="border border-gray-200 px-3 py-2">BYO OpenAI 高质量</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">OpenAI text-embedding-3-large</td><td class="border border-gray-200 px-3 py-2">3072</td><td class="border border-gray-200 px-3 py-2">$0.13 / 1M tokens</td><td class="border border-gray-200 px-3 py-2">顶级英文检索</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">Cohere embed-english-v3.0</td><td class="border border-gray-200 px-3 py-2">1024</td><td class="border border-gray-200 px-3 py-2">$0.10 / 1M tokens</td><td class="border border-gray-200 px-3 py-2">Cohere 质量英文</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">VoyageAI voyage-3</td><td class="border border-gray-200 px-3 py-2">1024</td><td class="border border-gray-200 px-3 py-2">$0.06 / 1M tokens</td><td class="border border-gray-200 px-3 py-2">领域优化检索</td></tr>
+</tbody>
+</table>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">三种部署模式</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Chroma 的标志性架构特性是三模式 API。创建和查询 Collection 的 Python 代码在嵌入式、客户端-服务器、Cloud 三种模式下完全一致——只有 Client 初始化不同。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">嵌入式模式（进程内）</h3>
+<p class="text-gray-700 leading-relaxed my-4"><code>pip install chromadb</code> 时的默认模式。Chroma 作为库在 Python 进程内运行，将数据持久化到本地 SQLite + DuckDB + Parquet 目录，暴露与网络调用相同的 Collection API。无服务器、无端口、无配置。Python 解释器拥有数据库生命周期；关闭解释器即关闭 Chroma。</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>import chromadb
+
+# 进程内，持久化到 ./chroma_db/
+client = chromadb.PersistentClient(path="./chroma_db")
+collection = client.create_collection("my_docs")
+collection.add(documents=["文档一", "文档二"], ids=["1", "2"])
+results = collection.query(query_texts=["搜索词"], n_results=2)
+print(results)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">90% 的 Jupyter notebook、教程和原型都用此模式。性能受 Python GIL 和单进程限制；在现代笔记本上 <100 万向量可轻松支撑 100+ QPS。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">客户端-服务器模式（Docker）</h3>
+<p class="text-gray-700 leading-relaxed my-4">对于 Python 应用与向量库必须分布在不同容器的多进程或多主机部署，Chroma 提供 Docker 镜像（<code>chromadb/chroma</code>）作为独立 HTTP 服务器运行。应用代码通过 <code>chromadb.HttpClient(host="chroma-server", port=8000)</code> 调用。这是生产自托管路径。</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>import chromadb
+
+# 网络客户端（独立容器/进程）
+client = chromadb.HttpClient(host="localhost", port=8000)
+collection = client.get_or_create_collection("my_docs")
+results = collection.query(query_texts=["搜索词"], n_results=5)</code></pre>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Cloud 模式（托管）</h3>
+<p class="text-gray-700 leading-relaxed my-4">Chroma Cloud 是完全托管版本：相同 API、托管基础设施，默认多租户，Enterprise 档提供单租户节点。配置使用 API key + tenant + database 三元组。</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>import chromadb
+
+# Cloud（托管）
+client = chromadb.CloudClient(
+    tenant="your-tenant-id",
+    database="your-database",
+    api_key="ck-..."
+)
+collection = client.get_collection("my_docs")</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Chroma 从开发到生产的升级只需修改 Client 构造器一行——无模式迁移、无数据重载、Collection 方法无 API 差异。这比 Pinecone（在环境间必须 export/import）或 Qdrant（必须在新 endpoint 重建 collections）显著简化。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">默认嵌入 vs BYO 嵌入</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Chroma 自带默认嵌入函数——Sentence-Transformers 的 <code>all-MiniLM-L6-v2</code>——首次使用时自动下载模型并通过 ONNX Runtime 在本地推理。384 维嵌入对大多数 RAG 工作负载足够好，整个嵌入管线零外部 API 成本。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">需要更高质量或多语言检索时，Chroma 支持 11 种备选内置模型（BGE small/base/large、E5 base/large、mpnet、multi-qa-MiniLM、InstructorXL、BGE-M3）加上 BYO 嵌入对接任何 OpenAI / Cohere / Voyage / Hugging Face 端点。BYO 嵌入通过 <code>collection = client.create_collection(name="x", embedding_function=ef)</code> 配置，其中 <code>ef</code> 是将文本映射为向量的任意可调用对象。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对比 Pinecone：仅 BYO 嵌入，无默认本地模型（必须 BYO OpenAI 或 Cohere）。对比 Qdrant：9 个 FastEmbed 内置但每个需要显式配置；Chroma 的"无需 embedding function 参数即可工作"开箱即用。对比 Weaviate：8 个内置嵌入服务但每个都有独立的 per-token 费用，即使自托管；Chroma 的本地 Sentence-Transformers 在所有部署模式包括 Cloud 上零成本。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">元数据过滤：无需 SQL 的 Where 子句</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Chroma 最被低估的特性之一是其丰富的元数据过滤。每个 <code>add()</code> 的文档都可以携带任意 JSON 元数据：<code>{"category": "blog", "author": "alice", "year": 2025}</code>。查询时用模仿 MongoDB 查询语言的 Where 子句过滤：</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>results = collection.query(
+    query_texts=["向量数据库"],
+    n_results=10,
+    where={
+        "$and": [
+            {"category": {"$eq": "教程"}},
+            {"year": {"$gte": 2025}},
+            {"author": {"$in": ["alice", "bob"]}}
+        ]
+    }
+)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">支持的运算符包括 <code>$eq</code>、<code>$ne</code>、<code>$gt</code>、<code>$gte</code>、<code>$lt</code>、<code>$lte</code>、<code>$in</code>、<code>$nin</code>，以及用 <code>$and</code> / <code>$or</code> 组合逻辑。对于"搜索这些文档但只在这个类别、这个日期范围内、这个作者"的 RAG 应用，Chroma 的元数据过滤覆盖了用例，无需叠加 SQL 过滤、Elasticsearch 或独立的属性存储。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Pinecone 和 Qdrant 都支持元数据过滤，但 Chroma 的 API 是四大向量数据库中最干净的——Pinecone 在免费层仅支持 <code>$eq</code> / <code>$in</code>，完整运算符需要 Pinecone Standard+；Qdrant 的过滤语言同样全面但更冗长；Weaviate 使用 GraphQL 风格过滤器，学习曲线不同。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">性能：Chroma 何时足够快</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Chroma 的 HNSW 索引实现（继承自 hnswlib）在中小型工作负载上有竞争力。来自 Chroma 团队和第三方复现的基准测试（近似值，2026-07-28）：</p>
+
+<table class="w-full my-4 border-collapse text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-200 px-3 py-2 text-left">工作负载</th><th class="border border-gray-200 px-3 py-2 text-left">数据集</th><th class="border border-gray-200 px-3 py-2 text-left">Chroma（单节点）</th><th class="border border-gray-200 px-3 py-2 text-left">Pinecone Starter</th><th class="border border-gray-200 px-3 py-2 text-left">Qdrant Cloud Standard</th></tr></thead>
+<tbody>
+<tr><td class="border border-gray-200 px-3 py-2">10 万 384 维 top-10</td><td class="border border-gray-200 px-3 py-2">SIFT-100K</td><td class="border border-gray-200 px-3 py-2">4ms</td><td class="border border-gray-200 px-3 py-2">15ms</td><td class="border border-gray-200 px-3 py-2">8ms</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">100 万 1024 维 top-10</td><td class="border border-gray-200 px-3 py-2">SIFT-1M</td><td class="border border-gray-200 px-3 py-2">18ms</td><td class="border border-gray-200 px-3 py-2">42ms</td><td class="border border-gray-200 px-3 py-2">35ms</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">1000 万 768 维 top-10</td><td class="border border-gray-200 px-3 py-2">Glove-10M</td><td class="border border-gray-200 px-3 py-2">不建议</td><td class="border border-gray-200 px-3 py-2">80ms</td><td class="border border-gray-200 px-3 py-2">65ms</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">1 亿 384 维 top-100</td><td class="border border-gray-200 px-3 py-2">Deep-100M</td><td class="border border-gray-200 px-3 py-2">不支持</td><td class="border border-gray-200 px-3 py-2">未公开</td><td class="border border-gray-200 px-3 py-2">110ms</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">Chroma 在 10 万-100 万向量区间表现出色，这是单机性能成瓶颈且嵌入式部署很重要的场景。在 >1000 万向量时，Chroma 团队官方文档明确建议用户迁移到 Pinecone、Qdrant 或 Weaviate。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">LangChain 与 LlamaIndex 集成</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Chroma 与两个最流行的 LLM 框架的紧密集成是其开发者心智份额的主要来源。LangChain 的 <code>Chroma</code> 向量库类接受相同的 Where 子句，支持多模态文档（文本 + 图像），开箱即用地提供 async 友好的 <code>aadd_documents</code> / <code>asimilarity_search</code> 方法。LlamaIndex 的 <code>ChromaVectorStore</code> 作为可插入的 <code>VectorStore</code> 实现集成到任何 RAG 流水线中。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">两个框架的文档都把 Chroma 作为向量库教程的规范示例——这意味着 2026 年学习 RAG 的开发者先接触 Chroma，立即上手，之后再评估替代品。这种默认位置效应是持久的：Chroma 在 LLM 应用生态中的装机量显著超过其独立 GitHub stars 所暗示的。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">何时选 Chroma vs 替代品</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选择 Chroma 当：</strong></p>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>你正在用 LangChain 或 LlamaIndex 构建 Python RAG 应用</li>
+<li>向量数 <500 万且希望零基础设施开销</li>
+<li>想要同一份代码库在 Jupyter（嵌入式）、Docker（客户端-服务器）、生产（Cloud）三处运行而无需代码改动</li>
+<li>工作量偏开发，或在构建内部工具 / 聊天机器人 / 研究代码</li>
+<li>想要零 per-token 成本的默认本地嵌入函数</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选择 Pinecone 当：</strong>你需要 >1000 万向量的托管 SaaS 简单性、多区域复制、99.9% SLA 或大规模零运维。Pinecone Serverless 是无基础设施的生产级向量搜索的最简单路径。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选择 Qdrant 当：</strong>你需要原生混合检索（Sparse+Dense）、>500 万向量的 Rust 原生性能、GPU 加速索引，或 BYOC（自带云账户）控制成本。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选择 Weaviate 当：</strong>你需要在 Flex 档就有 HIPAA/SOC 2 合规、8 个内置嵌入服务，或 Query Agent 用于自然语言数据库操作。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">总结</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Chroma 是 2026 年 Python 优先向量存储的<strong>强烈推荐</strong>，尤其当 LangChain 或 LlamaIndex 在技术栈中时。Apache 2.0 OSS + 默认本地 Sentence-Transformers 嵌入 + 三种部署模式（嵌入式 / 客户端-服务器 / Cloud）共享同一 API + LangChain/LlamaIndex 默认集成 + 丰富的元数据过滤的组合，使其在开发者体验上领先 Pinecone，在生态覆盖上领先 Qdrant，并独特地定位为向量搜索最低摩擦的入口。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">权衡是真实的：Cloud Pro $10/月最低 + per-vector 定价在 500 万+ 存储向量后扩展性差于 Pinecone Serverless；原生混合检索弱于 Qdrant；GPU 索引不可用（Pinecone/Qdrant 有）；横向扩展能力在 1 亿+ 向量场景弱于 Pinecone。Cloud 也只有 3 个区域（us-east-1、eu-west-1、ap-southeast-2），中国大陆直连延迟较高——但 OSS 模式可以国内自托管而无此问题。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对零运维 SaaS 大规模简化，Pinecone Serverless 仍是更简单的路径。对原生混合检索 + Rust 性能，Qdrant Cloud Pro 是更好的选择。对 HIPAA 合规 + Flex 档内置嵌入，Weaviate 是合规完成度最高的选择。Chroma 处于中间——最佳开发者体验、最佳 LangChain/LlamaIndex 集成、最适合 Python 优先的小中型原型和生产，但大规模故事弱于三个托管竞品。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对 2026 年大多数构建第一个 RAG 应用的团队，Chroma 是正确的起点。零基础设施、零 per-token 嵌入成本、跨开发/生产同一 API 的组合意味着你可以在一个下午交付可工作的 RAG 系统，如果规模需要再迁移到 Pinecone/Qdrant/Weaviate。从 Chroma 迁移到托管向量 DB 的成本是数据导出加上模式重建——Chroma 的数据以可移植的 Parquet + SQLite 存储，非专有格式。</p>
+`;
+
+---
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} locale={locale} enCanonicalUrl={enCanonicalUrl}>
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content="{date}" />
+    <meta itemprop="dateModified" content="{date}" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+    <div set:html={zhBody} />
+
+    <!-- Affiliate CTA -->
+    <div class="mt-12 p-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-gray-600 mt-1">{affiliateSidebar.description}</p>
+        </div>
+        <a href={affiliateSidebar.url} class="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors" rel="nofollow sponsored" target="_blank">{affiliateSidebar.cta} →</a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

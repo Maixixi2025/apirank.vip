@@ -1,0 +1,210 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'openai-jalapeno-broadcom-inference-chip-2026';
+const date = '2026-06-25';
+const locale = 'zh';
+
+const enTitle = 'OpenAI Jalapeño Chip: API Pricing & Latency Impact';
+const enDescription = 'OpenAI + Broadcom co-designed Jalapeño, an in-house inference chip. Here is what changes for API pricing, latency, and capacity for developers.';
+const zhTitle = 'OpenAI Jalapeño 推理芯片：API 定价、延迟与产能影响开发者解读';
+const zhDescription = 'OpenAI 与 Broadcom 联合发布 Jalapeño 自研推理芯片。本文从 API 定价/延迟/产能三个开发者最关心的角度拆解这次公告。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "OpenAI Jalapeño 意味着 GPT-5.5 会降价吗？", "acceptedAnswer": { "@type": "Answer", "text": "不会马上。这颗芯片给 OpenAI 的是成本可选性，不是立即降价。预期在 Jalapeño 服务足够集群、混合推理成本实质性下降后，在高量 tier（GPT-5.5 Instant、nano-class）选择性降价，时间窗在 2026 年底到 2027 年初。" } },
+    { "@type": "Question", "name": "Jalapeño 会改变 OpenAI API 延迟吗？", "acceptedAnswer": { "@type": "Answer", "text": "对生产流量会，但你不会第一天就看到变化。延迟改进取决于多少比例的推理流量跑在 Jalapeño 上。当 Jalapeño 服务旗舰 GPT-class 负载后，2026 Q4 起能看到有意义的 TTFT 和 streaming 延迟改进。" } },
+    { "@type": "Question", "name": "我应该因为 Jalapeño 从 OpenAI 切换到 Anthropic 或 Gemini 吗？", "acceptedAnswer": { "@type": "Answer", "text": "不要。Jalapeño 让 OpenAI 更有竞争力，不是更差。这颗芯片修复了 OpenAI 的结构性成本劣势，意思是 OpenAI 的定价随时间变得更有攻击性，不是更弱。如果你之前考虑因为 OpenAI 价格或 rate limit 切走，公告给出的论据是再等 2-3 个季度。" } },
+    { "@type": "Question", "name": "Jalapeño 影响 OpenRouter 或 FreeModel 用户吗？", "acceptedAnswer": { "@type": "Answer", "text": "间接影响。两者都把 OpenAI 作为多个上游提供商之一路由。当 OpenAI 的集群产能扩张（因为 Jalapeño），聚合器用户获得更好的 fallback 选项和更低的上游 rate limit 风险。从推广友好的角度看：如果你想要一个带多模型路由的中国直连聚合器，FreeModel 给你 DeepSeek + Qwen + Llama 在一个 key 后面，可以和 OpenAI 配对做非中国 fallback。" } },
+    { "@type": "Question", "name": "Jalapeño 和 NVIDIA 一样吗？", "acceptedAnswer": { "@type": "Answer", "text": "不一样。不同的 ISA、不同的内存层级、不同的网络栈。跑在 NVIDIA GPU 上的代码不能直接在 Jalapeño 上跑。OpenAI 重写它的推理栈（替代 Triton/CUDA 的代码）来针对 Jalapeño。这是一个多季度的工程项目 — 不是 drop-in 替代。" } },
+    { "@type": "Question", "name": "这会影响 API 兼容提供商如 DeepSeek 或开源 Llama 的价格吗？", "acceptedAnswer": { "@type": "Answer", "text": "间接影响。如果 OpenAI 降 GPT-5.5 Instant 定价，DeepSeek 在其溢价 tier 上会面临压力。如果 OpenAI 不降价，DeepSeek 的成本优势继续。无论如何，开源 Llama 生态被隔离 — 它们本来就跑在通用硬件上。" } }
+  ]
+};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">OpenAI Jalapeño 推理芯片：API 开发者必须知道的事</h1>
+<p class="text-gray-700 leading-relaxed my-4">2026 年 6 月 24 日，OpenAI 公开了与 Broadcom 联合研发的 <strong>OpenAI + Broadcom Jalapeño</strong> — 这是 OpenAI 首次公开披露的自研推理加速器。这颗芯片由 OpenAI 与 Broadcom 共同设计，标志着 OpenAI 在扩展 API 业务上的结构性转变：减少对 NVIDIA 的依赖，掌握每个 API 调用底层硬件的控制权。</p>
+<p class="text-gray-700 leading-relaxed my-4">本文从 API 开发者最关心的角度（定价、延迟、吞吐、产能）拆解这次公告，并对比开发者今天实际拥有的四条路径：留在 OpenAI、切换到 Anthropic Claude、用 Google Gemini，或通过 OpenRouter/FreeModel 等聚合器路由。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么自研推理芯片对 OpenAI 的 API 很重要</h2>
+<p class="text-gray-700 leading-relaxed my-4">2026 年之前，OpenAI 的 GPT-4o、GPT-5、GPT-5.5 以及 o 系列推理模型完全跑在 NVIDIA H100 和 H200 GPU 上。你购买的每一个 API token 都来自 OpenAI 租赁（或在微软 Azure 共同租用）或自有的 GPU 集群。</p>
+<p class="text-gray-700 leading-relaxed my-4">这套安排带来三个问题：</p>
+<ul class="list-disc list-inside text-gray-700 my-3 space-y-1">
+<li><strong>毛利率被挤压。</strong> 随着 Anthropic 和 Google 压低 token 价格（Claude Haiku 4.5 输入价 $0.80/M，Gemini 2.5 Flash 输入价 $0.15/M），OpenAI 在 GPT-4o 级推理上的成本成为限制它能否激进降价的瓶颈。</li>
+<li><strong>产能天花板。</strong> 高峰期的 rate limit 限制和 429 错误是反复出现的投诉。NVIDIA 的产能本身受限 — 即使是 OpenAI 的体量。</li>
+<li><strong>延迟下限。</strong> H100 在 batch size = 1 时推理会撞到一个物理上的 TTFT（time-to-first-token）下限，自研芯片可以突破这个下限。</li>
+</ul>
+<p class="text-gray-700 leading-relaxed my-4">Jalapeño 是 OpenAI 对这三个问题的统一答案。这颗芯片专为自回归 LLM 推理打造 — 不做训练，不做通用计算 — 这让 Broadcom 的网络 ASIC 和 OpenAI 的张量格式选择能去掉通用 GPU 必须承担的额外开销。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jalapeño 是什么，不是什么</h2>
+<p class="text-gray-700 leading-relaxed my-4">公告明确说 Jalapeño <strong>只做推理</strong>。GPT-5.5 及后续模型的训练仍跑在 NVIDIA 上。这与行业更广泛的模式一致 — Google TPU 分为训练 pod 和推理 pod，AWS Trainium（训练）vs Inferentia（推理），微软 Maia 100（也是推理优先）。</p>
+<p class="text-gray-700 leading-relaxed my-4">两个对 API 用户重要的架构细节：</p>
+<ul class="list-disc list-inside text-gray-700 my-3 space-y-1">
+<li><strong>Broadcom 的角色是网络，不是计算 die。</strong> Broadcom 提供把 Jalapeño pod 串起来的高带宽以太网。芯片本身是 OpenAI 设计的硅，由第三方代工厂制造（公告刻意不点名代工厂，但行业共识指向 TSMC 3nm 或 5nm）。</li>
+<li><strong>没有点名具体模型。</strong> 公告提到 "GPT-class 推理负载"，但没有说哪个模型 tier 优先上线。基于产能经济学判断，预期芯片先服务最高吞吐量、最低毛利的 tier — 几乎肯定是 GPT-5.5 Instant 和下一代 nano 模型，不是旗舰推理模型如 o3-pro。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">API 定价影响：什么会变，什么不变</h2>
+<p class="text-gray-700 leading-relaxed my-4">公告 <strong>没有</strong> 公布新的公开定价。它把 Jalapeño 定位为一个让 OpenAI 拥有<em>未来定价可选性</em>的效率杠杆。下面是理解接下来会发生什么的框架：</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>近期（未来 2 个季度）：</strong> 没有公开的 API 降价。OpenAI 还在爬升 Jalapeño 部署。现有 H100/H200 集群继续服务所有当前模型。如果你今天有 rate limit 合同或 reserved capacity，条款不变。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>中期（2026 Q3-Q4）：</strong> 第一个可观察的效果是 <strong>产能释放</strong> — 同样的消费层级获得更高的 RPM/TPM 上限，高峰期更少的 429。这就是 2022-2023 年 Google 用 TPU 替代 H100 时的样子：没有头版降价的新闻，但 rate limit 上限动了。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>长期（2027+）：</strong> 当 Jalapeño 服务足够多的集群以让 OpenAI 的混合推理成本有意义的下降，预期在最高量 tier 上选择性降价 — 大概率是 GPT-5.5 Instant 和下一代的 "mini"/"nano" 模型。旗舰 o 系列和多模态会保持价格更久，因为它们的推理更难优化。</p>
+<p class="text-gray-700 leading-relaxed my-4">作为参照，你今天实际付的 API 价格：</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-300 px-3 py-2 text-left">提供商</th><th class="border border-gray-300 px-3 py-2 text-left">模型</th><th class="border border-gray-300 px-3 py-2 text-right">输入 $/M</th><th class="border border-gray-300 px-3 py-2 text-right">输出 $/M</th></tr></thead>
+<tbody>
+<tr><td class="border border-gray-300 px-3 py-2">OpenAI</td><td class="border border-gray-300 px-3 py-2">GPT-4o</td><td class="border border-gray-300 px-3 py-2 text-right">2.50</td><td class="border border-gray-300 px-3 py-2 text-right">10.00</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">OpenAI</td><td class="border border-gray-300 px-3 py-2">GPT-4o-mini</td><td class="border border-gray-300 px-3 py-2 text-right">0.15</td><td class="border border-gray-300 px-3 py-2 text-right">0.60</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">OpenAI</td><td class="border border-gray-300 px-3 py-2">o3</td><td class="border border-gray-300 px-3 py-2 text-right">10.00</td><td class="border border-gray-300 px-3 py-2 text-right">40.00</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Anthropic</td><td class="border border-gray-300 px-3 py-2">Claude Sonnet 4.5</td><td class="border border-gray-300 px-3 py-2 text-right">3.00</td><td class="border border-gray-300 px-3 py-2 text-right">15.00</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Anthropic</td><td class="border border-gray-300 px-3 py-2">Claude Haiku 4.5</td><td class="border border-gray-300 px-3 py-2 text-right">0.80</td><td class="border border-gray-300 px-3 py-2 text-right">4.00</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Google</td><td class="border border-gray-300 px-3 py-2">Gemini 2.5 Pro</td><td class="border border-gray-300 px-3 py-2 text-right">1.25-10</td><td class="border border-gray-300 px-3 py-2 text-right">5-40</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Google</td><td class="border border-gray-300 px-3 py-2">Gemini 2.5 Flash</td><td class="border border-gray-300 px-3 py-2 text-right">0.15</td><td class="border border-gray-300 px-3 py-2 text-right">0.60</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">DeepSeek</td><td class="border border-gray-300 px-3 py-2">DeepSeek-V3</td><td class="border border-gray-300 px-3 py-2 text-right">0.02</td><td class="border border-gray-300 px-3 py-2 text-right">0.04</td></tr>
+</tbody>
+</table>
+<p class="text-gray-700 leading-relaxed my-4">这些是 Jalapeño 最终要与之竞争的价格。如果 OpenAI 把推理成本压得足够低，预期 GPT-5.5 Instant tier 会向 GPT-4o-mini 价位靠拢（$0.15-0.30/M 输入）— 市场会跟进。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">延迟：更有意思的故事</h2>
+<p class="text-gray-700 leading-relaxed my-4">定价是厂商谈的东西。延迟是开发者真正感受到的东西。Jalapeño 在芯片层面的优势直接映射到生产中三个重要的延迟数字：</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>1. TTFT（time-to-first-token）。</strong> 这取决于 prefill 计算和内存带宽。自研推理芯片可以把 prefill 完全在片上跑，没有 kernel launch 开销，没有 CUDA driver 边界。预期 OpenAI 会在 Jalapeño 服务旗舰模型后公布 20-40% 范围的 TTFT 改进 — 这个数字与 Google 把 Gemini Pro 推理从 H100 迁到 TPU v5p 时观察到的匹配。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>2. 长上下文下的 ITL（inter-token latency）。</strong> 生产 LLM 服务的最难问题。当 context 超过 32K token 时，大多数推理芯片都会遇到问题，因为 KV cache 必须溢出片外。Jalapeño 公告明确提到长上下文优化 — 预期 OpenAI 会把 "100K+ context 下依然快" 当作和 Claude（已经有 200K，但 60K 后质量下降）以及 Gemini（广告 1M+，但要付延迟代价）的差异化卖点。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>3. 流式 tail latency。</strong> 当 1000 个用户同时打你的应用，p99 inter-token latency 会飙升。自研芯片配上确定性互联（Broadcom 的网络是相关组件）能降低 tail latency 方差。这是语音/实时/agent 工作负载的关键指标 — 也是 Gemini 的 TPU 优势在 voice mode 上难以被对手匹配的原因。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jalapeño vs 开发者实际用的四种替代品</h2>
+<p class="text-gray-700 leading-relaxed my-4">你不是在真空中选择 Jalapeño 和 NVIDIA。你是在选择继续用 OpenAI（背后现在有 Jalapeño 加速）还是切换。下面是诚实的对比。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs Anthropic Claude Sonnet 4.5。</strong> Anthropic 推理跑在 AWS Trainium2 上（Trainium 是 AWS 的自研芯片，战略上等同 Maia）。Anthropic 比 OpenAI 更早用上自研硅，但芯片更通用、更少针对 LLM 优化。Claude 胜在：编程、agent 工作流、200K context。OpenAI 有了 Jalapeño 之后胜在：多模态语音、更低 TTFT、生态深度。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs Google Gemini 2.5 Pro。</strong> Google 的 TPU v6/v7（Trillium、Ironwood）是行业里最成熟的定制推理栈 — 5+ 年的迭代。Gemini 在延迟和每 token 价格上已经是 Flash tier 上市场最有攻击性的。Gemini 胜在：Flash tier 上原始单 token 成本、1M+ context、实时语音。OpenAI 有了 Jalapeño 之后胜在：开发者工具、生态、更可靠的全球 rate limit。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs DeepSeek-V3 / DeepSeek-R1。</strong> DeepSeek 跑在 NVIDIA H800 和国产加速器的混合上。它的 $0.02/M 输入价在 NVIDIA 价格体系下结构性亏钱 — DeepSeek 用低推理 overhead 和政府背景资本补贴。对成本敏感的工作负载，DeepSeek 仍然是最便宜的路径。但仅限中国可用、英文质量有差距、非企业账户的 rate limit 不稳定，让它对大多数团队来说成不了默认选项。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs 聚合器（OpenRouter、FreeModel）。</strong> 这是企业买家最被低估、独立开发者最爱的路径。聚合器把你路由到同样的底层模型（GPT-5.5、Claude Sonnet 4.5、Gemini 2.5 Flash），但有两个优势：</p>
+<ul class="list-disc list-inside text-gray-700 my-3 space-y-1">
+<li><strong>OpenRouter</strong> 有 300+ 模型在一个 API key 后面，内置 fallback 和自动路由。如果 OpenAI 的集群抽风，你的流量自动 fail over 到 Anthropic 或 DeepSeek。</li>
+<li><strong><a href="https://freemodel.dev/invite/FRE-7a3b6220"target="_blank" rel="sponsored noopener">FreeModel</a></strong> 是中国直连聚合器，带 DeepSeek、Qwen 和 Llama 模型 — 当你需要 OpenAI 同级推理但要 DeepSeek 价位价格时有用，并且从中国稳定连接。</li>
+</ul>
+<p class="text-gray-700 leading-relaxed my-4">聚合器不会让 Jalapeño 不重要。它让 Jalapeño 变成 <em>单一计费行后面多个选项之一</em>。对已经在用 OpenRouter 或 FreeModel 的团队，Jalapeño 公告是好消息（更多产能、更好的上游价格），但不是切换的理由。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Jalapeño 没有改变的三件事</h2>
+<p class="text-gray-700 leading-relaxed my-4">公告没有交付、你也应该不期待的有：</p>
+<ol class="list-decimal list-inside text-gray-700 my-3 space-y-1">
+<li><strong>作为云实例公开访问 Jalapeño。</strong> 这是内部 OpenAI 加速器。你不能像在 Lambda Labs 或 CoreWeave 租 H100 那样租 Jalapeño。AWS Inferentia 和 Google TPU 仍然是你能直接租的仅有的定制推理硅。</li>
+<li><strong>开源。</strong> 不。Jalapeño 设计保持专有。最接近的开源世界对应物是 Groq 的 LPU 架构，Groq 发布论文但不开放 IP。</li>
+<li><strong>训练加速。</strong> 如前所述，Jalapeño 只做推理。下一代 GPT 的训练仍依赖 NVIDIA。如果你期望 "OpenAI 完全摆脱 NVIDIA" — 那是 2028+ 的故事，不是 2026。</li>
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">谁现在应该关心 Jalapeño</h2>
+<p class="text-gray-700 leading-relaxed my-4">如果你是下面这种 API 开发者，公告直接影响你的近期规划：</p>
+<ul class="list-disc list-inside text-gray-700 my-3 space-y-1">
+<li><strong>每月花 $10K+ 的 OpenAI 大客户。</strong> 你会先看到 rate limit 缓解，再看到价格变化。跟你的 OpenAI 客户经理谈谈把 Jalapeño 产能扩张定价进去的 reserved capacity tier。</li>
+<li><strong>实时/语音/agent 应用。</strong> 芯片级延迟改进最终会到达你依赖的 streaming tier。留 2-3 个月窗口，等模型路由器重新平衡。</li>
+<li><strong>在 GPT-4o-mini vs Gemini Flash vs Claude Haiku 上跑 benchmark 的成本优化团队。</strong> 你今天的 benchmark 数字在 Jalapeño 开始服务 GPT-5.5 Instant 时会变。在 2026 Q4 重跑你的 benchmark。</li>
+<li><strong>任何因为价格或 rate limit 考虑从 OpenAI 切走的人。</strong> 暂缓这个决定。Jalapeño 产能扩张是这两个痛点最可信的近期修复方案。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">问：OpenAI Jalapeño 意味着 GPT-5.5 会降价吗？</h3>
+<p class="text-gray-700 leading-relaxed my-4">答：不会马上。这颗芯片给 OpenAI 的是成本可选性，不是立即降价。预期在 Jalapeño 服务足够集群、混合推理成本实质性下降后，在高量 tier（GPT-5.5 Instant、nano-class）选择性降价，时间窗在 2026 年底到 2027 年初。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">问：Jalapeño 会改变 OpenAI API 延迟吗？</h3>
+<p class="text-gray-700 leading-relaxed my-4">答：对生产流量会，但你不会第一天就看到变化。延迟改进取决于多少比例的推理流量跑在 Jalapeño 上。当 Jalapeño 服务旗舰 GPT-class 负载后，2026 Q4 起能看到有意义的 TTFT 和 streaming 延迟改进。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">问：我应该因为 Jalapeño 从 OpenAI 切换到 Anthropic 或 Gemini 吗？</h3>
+<p class="text-gray-700 leading-relaxed my-4">答：不要。Jalapeño 让 OpenAI 更有竞争力，不是更差。这颗芯片修复了 OpenAI 的结构性成本劣势，意思是 OpenAI 的定价随时间变得更有攻击性，不是更弱。如果你之前考虑因为 OpenAI 价格或 rate limit 切走，公告给出的论据是再等 2-3 个季度。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">问：Jalapeño 影响 OpenRouter 或 FreeModel 用户吗？</h3>
+<p class="text-gray-700 leading-relaxed my-4">答：间接影响。两者都把 OpenAI 作为多个上游提供商之一路由。当 OpenAI 的集群产能扩张（因为 Jalapeño），聚合器用户获得更好的 fallback 选项和更低的上游 rate limit 风险。从推广友好的角度看：如果你已经在用 OpenRouter 或想要一个带多模型路由的中国直连聚合器，<a href="https://freemodel.dev/invite/FRE-7a3b6220"target="_blank" rel="sponsored noopener">FreeModel</a> 给你 DeepSeek + Qwen + Llama 在一个 key 后面，可以和 OpenAI 配对做非中国 fallback。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">问：Jalapeño 和 NVIDIA 一样吗？</h3>
+<p class="text-gray-700 leading-relaxed my-4">答：不一样。不同的 ISA、不同的内存层级、不同的网络栈。跑在 NVIDIA GPU 上的代码不能直接在 Jalapeño 上跑。OpenAI 重写它的推理栈（替代 Triton/CUDA 的代码）来针对 Jalapeño。这是一个多季度的工程项目 — 不是 drop-in 替代。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">问：这会影响 API 兼容提供商如 DeepSeek 或开源 Llama 的价格吗？</h3>
+<p class="text-gray-700 leading-relaxed my-4">答：间接影响。如果 OpenAI 降 GPT-5.5 Instant 定价，DeepSeek 在其溢价 tier 上会面临压力。如果 OpenAI 不降价，DeepSeek 的成本优势继续。无论如何，开源 Llama 生态被隔离 — 它们本来就跑在通用硬件上。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+<p class="text-gray-700 leading-relaxed my-4">Jalapeño 是自 GPT-4 以来 OpenAI 最重要的基础设施公告。它标志着 OpenAI 愿意投入工程资本来脱离 NVIDIA 毛利率陷阱 — 并且选择了 Broadcom（不是 Marvell、不是 Alchip）作为硅合作伙伴。对 API 开发者，务实的结论是：未来 90 天内不要根据这条新闻做切换决策，但要准备好在 2026 Q4 当 Jalapeño 的产能扩张在你实际使用的 rate limit tier 上变得可见时，重新跑你的成本/延迟 benchmark。</p>
+<p class="text-gray-700 leading-relaxed my-4">对通过 OpenRouter 或 FreeModel 等聚合器路由的团队，公告绝对是好消息 — 上游产能扩张、fallback 选项变好、你已经用的多提供商对冲策略变得更有价值。如果你还没有在你的应用和 OpenAI 之间架一层聚合器，Jalapeño 公告是你现在这么做的最强论据 — 在 Q4 产能挤压到来之前。<a href="https://freemodel.dev/invite/FRE-7a3b6220"target="_blank" rel="sponsored noopener">FreeModel</a> 是最简单的切入点 — 一个 API key 覆盖 DeepSeek、Qwen、Llama 和 OpenAI 兼容的上游路由。</p>
+
+<p class="text-sm text-gray-500 mt-8">来源：<a href="https://openai.com/index/openai-broadcom-jalapeno-inference-chip" target="_blank" rel="noopener">OpenAI + Broadcom Jalapeño 公告</a>，OpenAI 官方博客，2026 年 6 月 24 日。</p>
+<p class="text-xs text-gray-500 mt-8">披露：本文包含联盟链接。如果你通过这些链接注册，我们可能获得佣金，对你不产生额外费用。我们的评测保持独立。</p>`;
+
+const affiliateSidebar = {
+  title: "试试 FreeModel",
+  description: "一个 API key 做多提供商路由。在 OpenAI 价格变化前抢先一步，对冲多家厂商的产能。",
+  url: "https://freemodel.dev/invite/FRE-7a3b6220",
+  cta: "获取免费额度"
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/zh" class="hover:underline">首页</a> &rsaquo;
+          <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo;
+          <span class="text-gray-700">{zhTitle}</span>
+        </nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} 
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="sponsored noopener">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">快速参考</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Jalapeño：</strong> OpenAI 首款自研推理芯片（2026 年 6 月）</li>
+            <li><strong>合作方：</strong> Broadcom（网络 ASIC）</li>
+            <li><strong>用途：</strong> 仅推理，非训练</li>
+            <li><strong>预期影响：</strong> 2026 Q3-Q4 产能释放</li>
+            <li><strong>聚合器：</strong> FreeModel 多提供商路由</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

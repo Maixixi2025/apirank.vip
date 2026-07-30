@@ -1,0 +1,238 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'openrouter-mcp-server-2026';
+const locale = 'zh';
+const date = '2026-06-28';
+const zhTitle = 'OpenRouter MCP 服务器 2026：5 分钟接入 400+ 模型';
+const zhDescription = "OpenRouter MCP 服务器实测：Claude Code / Codex / Cursor 接入 5 行配置。model_search / pricing_compare 五个 tool 解析，与手动路由和自建代理对比。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl },
+  "inLanguage": "zh-CN"
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh/" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "OpenRouter MCP 服务器免费吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "4 个只读 tool（model_search、model_info、pricing_compare、provider_routing）免费。chat_completion tool 用你的 PAYG 余额按标准费率加 5.5% 平台费计费。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude Desktop（不是 Code）能用吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "能。Claude Desktop 从 1.5 起支持远程 MCP 服务器。配置在 macOS 的 ~/Library/Application Support/Claude/claude_desktop_config.json 或 Windows/Linux 等价路径。" }
+    },
+    {
+      "@type": "Question",
+      "name": "免费 OpenRouter 账号能用 MCP 服务器吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "可以安装并探索 4 个只读 tool。chat_completion tool 需要 PAYG 额度（最少 $5 充值）。" }
+    },
+    {
+      "@type": "Question",
+      "name": "这和 OpenRouter REST API 有什么区别？",
+      "acceptedAnswer": { "@type": "Answer", "text": "REST API 暴露 chat completion 和额度管理。MCP 服务器暴露目录发现和路由智能。两者互补：大多数工作流用 MCP tool 浏览和比较，生产环境流式调用降级到 REST。" }
+    },
+    {
+      "@type": "Question",
+      "name": "MCP 服务器走厂商直连端点还是总走 OpenRouter 基础设施？",
+      "acceptedAnswer": { "@type": "Answer", "text": "总是走 OpenRouter 基础设施。如果需要厂商直连路由（为了更低延迟或合规原因），用 provider_routing tool 发现哪些厂商服务这个模型，然后直连它们的 API。" }
+    },
+    {
+      "@type": "Question",
+      "name": "MCP 服务器支持 ZDR（零数据留存）吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "MCP tool 本身不存任何数据。chat completion 时，你可以在请求体里传 zdr: true，服务器把它转发给支持 ZDR 的厂商。" }
+    }
+  ]
+};
+
+const zhBody = `<p>2026 年 6 月 27 日，OpenRouter 推出官方 MCP（Model Context Protocol）服务器，把整个 400+ 模型目录以原生 tool 的形式暴露给 Claude Code、Codex、Cursor、Cline 以及任何兼容 MCP 的客户端。卖点简单却有力：你不再需要手动改 model slug、不再需要反复复制 curl 命令才能在 GPT-5.5、Claude Fable 5、Gemini 3.1 Pro 之间对比——你的 IDE 现在自己就能做。本文带你走一遍服务器暴露的 5 个 tool、配置三个主流 IDE 的写法，以及为什么这套架构优于手动路由和自建 MCP 代理。</p>
+
+<p>简短结论：服务器是 <code>https://mcp.openrouter.ai/mcp</code>，暴露 5 个 tool（<code>model_search</code>、<code>model_info</code>、<code>pricing_compare</code>、<code>provider_routing</code>、<code>chat_completion</code>），走 Streamable HTTP transport。配置是 5 行 JSON，写到 <code>~/.claude/mcp_servers.json</code>（或 Cursor/Codex 等价路径）。支持 Claude Code、OpenAI Codex CLI、Cursor、Cline、Continue.dev 以及任何 MCP host。定价数据来自 OpenRouter 实时目录，反映的是昨天的降价，不是上个月的快照。认证用 OAuth 2.1 + PKCE 标准流，tool 调用免费——只有 <code>chat_completion</code> 计费。</p>
+
+<h2>MCP 服务器到底暴露了什么</h2>
+<p>服务器不是一个简单的 chat 调用代理。它暴露 5 个领域专用 tool，专门解决用户在 400+ 模型里选型时的真实痛点：</p>
+<ol>
+  <li><strong><code>model_search</code></strong>——跨实时目录的全文搜索。按能力（视觉、function calling、1M+ 上下文）、厂商、价格段、模态过滤。返回排序后的 model ID 加一句话简介。</li>
+  <li><strong><code>model_info</code></strong>——任意模型的详细规格：上下文窗口、模态、支持的参数（tools、structured outputs、response_format）、p50/p95 延迟、可用率。</li>
+  <li><strong><code>pricing_compare</code></strong>——给定任务画像（预期输入/输出 token，是否启用缓存），跨相关模型排序价格。自动包含 5.5% 平台费。</li>
+  <li><strong><code>provider_routing</code></strong>——给定模型，列出哪些底层厂商提供它，以及各自的独立价格、可用率、ZDR（零数据留存）状态。当你想钉选特定厂商时特别有用。</li>
+  <li><strong><code>chat_completion</code></strong>——统一 OpenAI 兼容的 chat 调用。传任意 model ID，得响应。这是 IDE 在你说"换更便宜的模型处理这个文件"时实际调用的 tool。</li>
+</ol>
+<p>前 4 个只读，不消耗额度。只有 <code>chat_completion</code> 从 PAYG 余额扣费。这个分离对成本控制团队很关键：agent 可以自由浏览目录，只有用户明确要求推理时才路由 chat 调用。</p>
+
+<h2>配置：Claude Code（5 行）</h2>
+<p>把下面这段加到 <code>~/.claude/mcp_servers.json</code>：</p>
+
+<h3>JSON 配置</h3>
+<pre><code class="language-json">&#123;
+  "mcpServers": &#123;
+    "openrouter": &#123;
+      "url": "https://mcp.openrouter.ai/mcp",
+      "transport": "streamable-http"
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+<p>重启 Claude Code。第一次调用任意 tool 时，会弹 OAuth 2.1 + PKCE 授权页。点一次同意，token 自动缓存。不用复制粘贴 API key——OAuth 流按 workspace 派生凭据。</p>
+
+<h3>在 Claude Code 里试一下</h3>
+<pre><code class="language-bash">/mcp openrouter model_search --query "vision model under $1 per million output tokens"</code></pre>
+
+<p>Claude Code 会调用 <code>model_search</code>，返回一个排序列表（Gemini 3 Flash、GPT-4o-mini、Llama 3.3 70B、Claude Haiku 4.5 等），并直接展示在终端里。你可以继续追问：<em>"对前 3 个在 5K 输入/1K 输出任务上的价格做比较"</em>——这会触发 <code>pricing_compare</code> 用真实 model ID 跑一遍。</p>
+
+<h2>配置：OpenAI Codex CLI</h2>
+<p>Codex CLI 用同样的 MCP 配置 schema，但路径在 <code>~/.codex/mcp_servers.json</code>：</p>
+
+<pre><code class="language-json">&#123;
+  "mcpServers": &#123;
+    "openrouter": &#123;
+      "url": "https://mcp.openrouter.ai/mcp",
+      "transport": "streamable-http"
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+<p>Codex 加载服务器后可以问相同的问题。Codex 在 <code>chat_completion</code> 兜底方面做得特别出色：当 Codex 默认 OpenAI 模型额度用完时，你告诉它 <em>"把这个会话切到 anthropic/claude-sonnet-4.5 via openrouter"</em>，MCP 服务器处理路由，不需任何环境变量改动。</p>
+
+<h2>配置：Cursor</h2>
+<p>Cursor 通过 Settings → Models → Model Context Protocol → Add Server 暴露 MCP 服务器配置。指向：</p>
+
+<pre><code class="language-bash">https://mcp.openrouter.ai/mcp</code></pre>
+
+<p>用 Streamable HTTP transport。保存后，5 个 OpenRouter tool 出现在 Cursor 的 Agent 模式里。当你敲 <em>"find a model that..."</em> 或 <em>"compare pricing on..."</em> 这类命令时，Cursor 的 tab 补全会自动建议这些 tool。</p>
+
+<h2>配置：Cline / Continue.dev / Zed</h2>
+<p>所有兼容 MCP 的客户端都接受同样的 JSON 配置块。Cline（VS Code 插件）加到 <code>~/.cline/mcp_settings.json</code>：</p>
+
+<pre><code class="language-json">&#123;
+  "mcpServers": &#123;
+    "openrouter": &#123;
+      "url": "https://mcp.openrouter.ai/mcp",
+      "transport": "streamable-http"
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+<p>Continue.dev 用 <code>~/.continue/config.json</code>，schema 一样。Zed（Rust IDE）从 0.165 起原生支持 MCP，配置在 <code>~/.config/zed/settings.json</code> 的 <code>context_servers</code> 下，写 <code>{ "openrouter": { "url": "https://mcp.openrouter.ai/mcp" } }</code>。</p>
+
+<h2>实际工作流长什么样</h2>
+<p>这里有一个真实工作流能说明 MCP 服务器为什么重要。你在写一个 code review bot，需要选模型：</p>
+
+<h3>不用 MCP（手动）：</h3>
+<ol>
+  <li>开浏览器 → openrouter.ai/models</li>
+  <li>筛选 "code"</li>
+  <li>扫 12 个 model 卡片</li>
+  <li>记录 3 个的价格</li>
+  <li>改配置文件逐个测试</li>
+  <li>跑、看输出、切、重复</li>
+</ol>
+
+<h3>用 MCP：</h3>
+<pre><code class="language-bash">/mcp openrouter model_search --query "code review, function calling, under $3/M output"</code></pre>
+
+<p>然后：</p>
+<pre><code class="language-bash">/mcp openrouter pricing_compare --models "anthropic/claude-sonnet-4.5,openai/gpt-4.1,deepseek/deepseek-v3" --input-tokens 8000 --output-tokens 2000</code></pre>
+
+<p>agent 拿到一个 markdown 表格，包含每个模型的单次调用成本、p50 延迟、可用率。从那里你能立即调用 <code>chat_completion</code> 测赢家。总时间：90 秒以内，全程在你的 IDE 里。</p>
+
+<h2>架构：为什么又快又新</h2>
+<p>三件事让 MCP 服务器用起来像原生工具，而不是"又一个要包装的 API"：</p>
+
+<h3>1. Streamable HTTP，不是 stdio</h3>
+<p>今天大多数 MCP 服务器用 stdio transport——它们作为本地子进程跑，通过 stdin/stdout 通信。OpenRouter 选 Streamable HTTP 是有原因的：目录太大（400+ 模型、60+ 厂商），无法塞进静态 tool 列表。用 stdio，每个模型和价格变成一个独立的 tool 定义，会爆掉大多数客户端 100-tool 的上限。Streamable HTTP 让服务器按需<em>描述</em>tool，客户端可以用任意参数调用而无需预注册 schema。</p>
+
+<h3>2. 实时定价，不是静态快照</h3>
+<p>OpenRouter 目录一天更新好几次（厂商加模型、调价、改限速）。MCP 服务器从 web UI 用的同一个目录接口读，所以 <code>pricing_compare</code> 返回的是昨天的价格，不是上个月的。Qwen 3.5-14B 在 6 月 26 日降到 $0.06/M output，MCP 服务器几小时内就反映了。</p>
+
+<h3>3. OAuth 2.1 + PKCE，不是静态 API key</h3>
+<p>MCP 配置里的静态 API key 是安全隐患——会泄露到 shell 历史、配置同步、dotfile 仓库。OAuth 2.1 + PKCE 让每个 IDE 会话拿到一个短时 bearer token，作用域限定 workspace，带可轮换的 refresh token。从 OpenRouter 仪表盘一键撤销访问。</p>
+
+<h2>对比：MCP 服务器 vs 手动路由 vs 自建 MCP 代理</h2>
+<table>
+<thead><tr><th>方案</th><th>配置时间</th><th>目录新鲜度</th><th>运行成本</th><th>适用场景</th></tr></thead>
+<tbody>
+<tr><td><strong>OpenRouter MCP 服务器</strong></td><td>5 分钟</td><td>实时（分钟级）</td><td>免费 + chat 费用</td><td>大多数用户；标准 IDE 配置</td></tr>
+<tr><td><strong>手动 OpenRouter 调用</strong></td><td>30 分钟首次</td><td>手动更新</td><td>免费 + chat 费用</td><td>一次性脚本、CI 流水线</td></tr>
+<tr><td><strong>自建 MCP 代理</strong></td><td>4-8 小时</td><td>看你怎么实现</td><td>主机费 + chat 费</td><td>气隙环境、自定义认证</td></tr>
+<tr><td><strong>直连厂商 API</strong></td><td>每个厂商 1+ 小时</td><td>不适用</td><td>厂商直购定价</td><td>单厂商方案</td></tr>
+</tbody>
+</table>
+
+<p>自建 MCP 代理对 95% 的团队来说过度工程化。你还会自建的两种情况：(a) 你需要强制自定义审批流（例如 chat 调用前法务审核），或 (b) 你的环境气隙隔离，IDE 无法出公网。</p>
+
+<h2>限制和坑</h2>
+<ul>
+  <li><strong>MCP tool 不支持流式</strong>——<code>chat_completion</code> 返回完整响应。要流式 UI 直接调 OpenRouter REST 端点。</li>
+  <li><strong>5.5% 平台费不在 tool 描述里展示</strong>——它加在 <code>pricing_compare</code> 输出上，但每个模型的字段不包含。做预算时算上。</li>
+  <li><strong>tool 数量按客户端不同</strong>——Claude Code 和 Cursor 展示全部 5 个 tool。一些轻量 MCP 客户端每服务器限 3-4 个 tool，会隐藏 <code>provider_routing</code>。</li>
+  <li><strong>OAuth token 30 天不动过期</strong>——仪表盘一键重新授权。</li>
+  <li><strong>不支持 BYOK（自带 key）</strong>——所有调用都走 OpenRouter 余额。如果你有直连 Anthropic/OpenAI 额度，MCP 服务器不会用它们。</li>
+</ul>
+
+<h2>常见问题</h2>
+<p><strong>Q：OpenRouter MCP 服务器免费吗？</strong></p>
+<p>A：4 个只读 tool 免费（<code>model_search</code>、<code>model_info</code>、<code>pricing_compare</code>、<code>provider_routing</code>）。<code>chat_completion</code> tool 用你的 PAYG 余额按标准费率加 5.5% 平台费。</p>
+<p><strong>Q：Claude Desktop（不是 Code）能用吗？</strong></p>
+<p>A：能。Claude Desktop 从 1.5 起支持远程 MCP 服务器。配置在 macOS 的 <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> 或 Windows/Linux 等价路径。</p>
+<p><strong>Q：免费 OpenRouter 账号能用 MCP 服务器吗？</strong></p>
+<p>A：可以安装并探索 4 个只读 tool。<code>chat_completion</code> 需要 PAYG 额度（最少 $5 充值）。</p>
+<p><strong>Q：这和 OpenRouter REST API 有什么区别？</strong></p>
+<p>A：REST API 暴露 chat completion 和额度管理。MCP 服务器暴露目录发现和路由智能。两者互补：大多数工作流用 MCP tool 浏览和比较，生产环境流式调用降级到 REST。</p>
+<p><strong>Q：MCP 服务器走厂商直连端点（Anthropic、OpenAI）还是总走 OpenRouter 基础设施？</strong></p>
+<p>A：总是走 OpenRouter 基础设施。如果你需要厂商直连路由（为了更低延迟或合规原因），用 <code>provider_routing</code> tool 发现哪些厂商服务这个模型，然后直连它们的 API。</p>
+<p><strong>Q：MCP 服务器支持 ZDR（零数据留存）吗？</strong></p>
+<p>A：MCP tool 本身不存任何数据。chat completion 时，你可以在请求体里传 <code>"zdr": true</code>，服务器把它转发给支持 ZDR 的厂商。</p>
+
+<h2>结论</h2>
+<p>OpenRouter 的 MCP 服务器是"聚合器有 400+ 模型"变成"真正的工作流工具"那块缺失的拼图。你的 IDE 第一次能直接回答 <em>"哪个模型对 5K token 的 code review 最便宜"</em> 或 <em>"把这个会话切到能处理 1M 上下文的模型"</em>，不用离开编辑器、不用复制 curl 命令。</p>
+<p>对大多数团队，5 分钟的配置明显优于维护自建 MCP 代理或手写模型比较。OAuth 流把凭据挡在 dotfile 之外，目录保持实时，5 个 tool 的覆盖面覆盖了会话中途切模型的 90% 场景。</p>
+<p>想试一下，在 <a href="https://openrouter.ai/affiliates" class="text-blue-600 hover:underline">OpenRouter</a> 注册，然后把 5 行配置加到 IDE 里。如果你的团队需要多厂商访问、带确定性模型选择和 ZDR 保证，<a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a> 这种聚合器提供 OpenAI 兼容端点 + 中国直连路由——当 OpenRouter 标准路由够不到你需要的区域时特别有用。</p>
+`;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  pageType="article"
+  date={date}
+  locale="zh"
+>
+  <link rel="alternate" hreflang="zh" href={canonicalUrl} />
+  <link rel="alternate" hreflang="en" href={enCanonicalUrl} />
+  <link rel="canonical" href={canonicalUrl} />
+
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <article class="tutorial-article">
+    <div set:html={zhBody} />
+  </article>
+</BaseLayout>

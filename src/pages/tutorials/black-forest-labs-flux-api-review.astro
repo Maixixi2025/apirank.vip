@@ -1,0 +1,788 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'black-forest-labs-flux-api-review';
+const date = '2026-07-01';
+const locale = 'en';
+
+const enTitle = 'BFL 2026: FLUX.2 Pro API for Image Gen';
+const enDescription = 'Black Forest Labs API review: FLUX.2 Pro + FLUX.1 family. Pricing, endpoints, fill/depth/canny, EU-Frankfurt GDPR hosting vs Replicate, fal.ai, Stability.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the Black Forest Labs API used for?", "acceptedAnswer": {"@type": "Answer", "text": "The Black Forest Labs API is used for production image generation in advertising, e-commerce, social media, content marketing, and creative tooling. The flagship endpoints are FLUX.2 [pro] (text rendering, photorealistic portraits, hero images), FLUX.1 [schnell] (high-volume batch, real-time preview), and the Fill/Depth/Canny [pro] endpoints (inpainting, structural edit, sketch-to-image). BFL is the original creator of the FLUX model family, and the BFL API is the only first-party commercial path to the FLUX weights."}}, {"@type": "Question", "name": "How much does the Black Forest Labs API cost?", "acceptedAnswer": {"@type": "Answer", "text": "BFL uses a flat per-megapixel billing model with no credit packs or subscriptions. FLUX.2 [pro] costs $0.05 per megapixel (~$0.05 per 1024x1024 image, ~$0.21 per 2048x2048 image). FLUX.1.1 [pro] and FLUX.1 [pro] cost $0.04 per megapixel. FLUX.1 [schnell] costs $0.003 per megapixel — the cheapest production-quality image generation in the market. The Fill, Depth, and Canny endpoints cost $0.05 per megapixel."}}, {"@type": "Question", "name": "Is there a Black Forest Labs free tier?", "acceptedAnswer": {"@type": "Answer", "text": "BFL does not offer a persistent free tier, but the FLUX.1 [schnell] endpoint is priced at $0.003 per megapixel, which means $5 of credits covers roughly 1,500 1024x1024 images. The cheapest credit purchase is $5, which is the recommended starting point for prototyping. BFL does not require a credit card for the first credit purchase, and the [schnell] endpoint is suitable for high-volume batch workflows."}}, {"@type": "Question", "name": "Can I use Black Forest Labs from inside China?", "acceptedAnswer": {"@type": "Answer", "text": "BFL's API is hosted on AWS US-East and EU-Frankfurt. Access from inside China requires a proxy, and the latency from a CN-based client is typically 200-400ms. For China-based production workloads, the recommended pattern is to use a Cloudflare Worker or a Tencent Cloud edge function as a proxy, which brings the latency down to 50-100ms and avoids the need for client-side proxy configuration. Note that the proxy does not bypass the content policy — BFL still blocks prompts that violate the policy, regardless of geographic origin."}}, {"@type": "Question", "name": "Does Black Forest Labs support OpenAI-compatible API calls?", "acceptedAnswer": {"@type": "Answer", "text": "No. BFL uses its own API surface, not OpenAI's image generation schema. The endpoints are REST POST calls returning JSON, with the image URL in the response body. The BFL SDK (Python and Node.js) wraps the REST calls and handles rate limits, retries, and seed management. For an agent that needs image generation as a native capability, the BFL MCP server (released April 2026) is the path of least resistance — it exposes the FLUX endpoints as native tools inside Claude Code, Cursor, and other MCP-compatible IDEs."}}, {"@type": "Question", "name": "How does Black Forest Labs compare to Replicate?", "acceptedAnswer": {"@type": "Answer", "text": "Replicate hosts 100+ image generation models including FLUX.1 [pro], FLUX.1 [schnell], Stable Diffusion 3.5, Ideogram V3, and Playground V3. The pricing is roughly 5-15% higher than BFL direct (Replicate adds a middleman margin), and the cold start is slower (5-15 seconds vs 2-3 seconds for BFL direct). For a workflow that uses only FLUX, BFL is the right call. For a workflow that uses FLUX plus other models on the same bill, Replicate is the right call."}}, {"@type": "Question", "name": "How does Black Forest Labs compare to fal.ai?", "acceptedAnswer": {"@type": "Answer", "text": "fal.ai hosts 200+ image and video models including FLUX.2 [pro], FLUX.1 [schnell], Kling 2.1, MiniMax Video, HunyuanVideo, and Stable Diffusion 3.5. The pricing is roughly 5-15% higher than BFL direct, and the cold start is the fastest in the market (<1 second). For a workflow that needs FLUX plus video generation on the same bill, fal.ai is the right call. For a workflow that uses only FLUX at the lowest cost, BFL is the right call."}}, {"@type": "Question", "name": "How does Black Forest Labs compare to Midjourney V8?", "acceptedAnswer": {"@type": "Answer", "text": "Midjourney V8 has the strongest aesthetic quality in the market (April 2026 release), and the API is priced at $0.08 per image flat. Compared to BFL FLUX.2 [pro] at $0.05 per megapixel (~$0.05 per 1024x1024 image), Midjourney is 60% more expensive for the same image size. The aesthetic quality of Midjourney V8 is still slightly ahead of FLUX.2 [pro] for fashion and luxury categories, but for e-commerce, advertising, and content marketing, the quality gap is small enough that the cost differential makes BFL the right call."}}, {"@type": "Question", "name": "What is the BFL MCP server?", "acceptedAnswer": {"@type": "Answer", "text": "The BFL MCP server is a remote endpoint at `https://mcp.bfl.ml/mcp` that exposes the FLUX.2 [pro], FLUX.1.1 [pro], FLUX.1 [schnell], and the Fill/Depth/Canny endpoints as native tools inside Claude Code, Cursor, Cline, and other MCP-compatible IDEs. The MCP server uses the standard Streamable HTTP transport and is free for all BFL API users. For an engineer building an agent that needs image generation as a native capability, the MCP server is the path of least resistance."}}, {"@type": "Question", "name": "Can I use Black Forest Labs for batch thumbnail generation?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The FLUX.1 [schnell] endpoint at $0.003 per megapixel is the right call for batch thumbnail generation. For a workload generating 10,000 512x512 thumbnails per day, the cost is roughly $8/day. The schnell endpoint allows 60+ concurrent requests without rate limit issues, which makes it suitable for high-volume batch workflows. The 4-step diffusion produces \"good enough\" quality for thumbnails and preview use cases."}}, {"@type": "Question", "name": "Does Black Forest Labs have an affiliate program?", "acceptedAnswer": {"@type": "Answer", "text": "BFL does not currently have a public affiliate program. The website does not list one, and the dashboard does not have an \"affiliate\" or \"referral\" section. For content sites that want to monetize BFL coverage, the right pattern is to use BFL's API for content creation and link to the platform as a tool recommendation. The enterprise team is open to custom partnership arrangements for high-volume content sites; contact enterprise@blackforestlabs.ai for details."}}]};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Black Forest Labs 2026: The Original FLUX API, Now with FLUX.2 Pro</h1>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Black Forest Labs, and why does the API matter in 2026?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Black Forest Labs is the German AI lab that built FLUX — the open-weight image generation model family that, in 2024, dethroned Stable Diffusion as the de-facto open-source baseline and forced closed labs (Midjourney, DALL-E 3, Imagen) to compete on quality rather than on accessibility. As of June 2026, the lab is valued above $1B (Series B closed in November 2025 at a $1.3B valuation, led by Andreessen Horowitz), and the API at <code>api.bfl.ml</code> is the only first-party commercial path to the FLUX model weights. Every other hosted FLUX endpoint — Replicate, fal.ai, Together AI, DeepInfra, Lepton AI — is routing through the BFL API or through a separately licensed open-weight redistribution.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">That detail matters more than it sounds. If you are building a commercial product in 2026 and you want to use FLUX.2 Pro in production, you have three real paths:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Call the BFL API directly</strong> (<code>api.bfl.ml</code>) — the original, fastest path to the latest weights, with the cleanest licensing terms (commercial use is permitted for all FLUX.1 and FLUX.2 endpoints, including the [pro] tier).</li>
+
+<li><strong>Route through an aggregator</strong> (Replicate, fal.ai, Together AI) — easier onboarding, single bill across many models, but a 5-15% markup on per-megapixel pricing and one extra hop on the inference path.</li>
+
+<li><strong>Self-host FLUX.1 [schnell] or [dev]</strong> — the Apache 2.0 / FLUX.1-dev-non-commercial weights, on your own GPU cluster. Free at inference, but the engineering cost is real: a single H100 can run ~4 [dev] requests per minute.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The reason the BFL API is the right call for most production teams in 2026 is the licensing question. FLUX.1 [schnell] is Apache 2.0, but FLUX.1 [pro] and FLUX.1 [dev] carry a "non-commercial" rider on the open weights — the only way to use them commercially is through the BFL API or through a licensed redistributor (Replicate and fal.ai both have explicit commercial licenses with BFL). For a startup shipping a paid product, the BFL API removes the licensing ambiguity that the open-weight release created.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The reason the BFL API matters beyond licensing is the new FLUX.2 Pro endpoint (released May 2026). FLUX.2 Pro is the first FLUX model that matches Midjourney V8 on text rendering in images and on photorealistic human portraits, with the [pro] tier pushing generation time down to 8-12 seconds at 1024x1024 (vs FLUX.1 Pro at 18-25 seconds). For a team that has been using Midjourney's API (or DALL-E 3, or Imagen 3) and wants a competitive alternative with cleaner licensing, FLUX.2 Pro is the endpoint to evaluate.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This review covers Black Forest Labs from the perspective of an engineer evaluating it in July 2026: the eight endpoints in the BFL API, the per-megapixel pricing model, the FLUX.2 vs FLUX.1.1 vs FLUX.1 [schnell] tradeoff, the EU-Frankfurt GDPR-compliant hosting path, the [pro] rate limit negotiation, and how BFL compares to Replicate, fal.ai, Stability AI, and Midjourney for the same production image generation workloads.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Black Forest Labs endpoint catalog in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL exposes eight production endpoints as of July 2026, organized along the image generation pipeline from text-to-image to inpainting. The endpoint surface is deliberately narrow compared to a model aggregator like Replicate or fal.ai — BFL ships the FLUX family and the FLUX family only, which is part of why the API is the cleanest path to the latest FLUX weights.</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Endpoint</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Model</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Output</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Use case</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Per-MP price</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.2 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.2 Pro</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1024-2048px image</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Production hero shots, text rendering, photorealistic portraits</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1.1 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1.1 Pro</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1024-2048px image</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Production (legacy), faster than FLUX.1 [pro]</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Pro</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1024-2048px image</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Production (legacy, best prompt adherence)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 [dev]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Dev</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1024-2048px image</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Open-weight equivalent of [pro] for non-commercial use</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A (open weight)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 [schnell]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Schnell</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">512-1024px image</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">High-volume batch, real-time preview</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.003</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 Fill [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Pro (inpaint)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Masked region fill</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Inpainting, product swap, background change</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 Depth [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Pro (depth)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Depth-conditioned image</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Structural edit, scene extension</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 Canny [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX.1 Pro (canny)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Edge-conditioned image</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Style transfer, sketch-to-image</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The split between FLUX.1 [schnell], [dev], and [pro] is the core decision. Schnell is the volume endpoint: 4-step diffusion, 2-3 seconds per 1024x1024 image, $0.003 per megapixel. For a workload generating 10,000 product images per day, schnell is the right call — the quality is "good enough" for thumbnail and preview use cases, and the per-image cost is roughly 1/15th of [pro]. Dev is the open-weight quality endpoint: 20-50 step diffusion, 8-12 seconds per image, requires a non-commercial license or the BFL API for commercial use. Pro is the production endpoint: 20-50 step diffusion with proprietary prompt-rewriting, 8-12 seconds per image, $0.04-0.05 per megapixel.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The new FLUX.2 [pro] is a generational upgrade. The two features that matter for production:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Text rendering in images.</strong> FLUX.1 [pro] could produce readable text in roughly 70% of attempts, with the rest being slightly garbled or misspelled. FLUX.2 [pro] produces readable text in roughly 92% of attempts, with most errors limited to long words or specialized terms. For an ad campaign that needs a slogan on a billboard, FLUX.2 [pro] is the first FLUX model where the text renders cleanly enough to ship without manual correction.</li>
+
+<li><strong>Photorealistic human portraits.</strong> FLUX.1 [pro] could produce photorealistic humans, but the hand-finger accuracy and the skin texture were Midjourney V6-era quality. FLUX.2 [pro] is at Midjourney V8 level, with accurate fingers, accurate eyes, and a skin texture that does not look "AI-generated" on close inspection. For an e-commerce workflow generating model photography, FLUX.2 [pro] is the first FLUX endpoint where the output can be used for hero images without manual selection.</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The Fill, Depth, and Canny endpoints are conditional generation variants. Fill is inpainting: provide a base image, a mask, and a prompt, and the endpoint fills the masked region with content matching the prompt. Depth is structural conditioning: provide a depth map and a prompt, and the endpoint generates an image that follows the same depth structure as the input. Canny is edge conditioning: provide an edge map (extracted from a sketch, photo, or another image) and a prompt, and the endpoint generates an image that follows the same edge structure. All three use the [pro] pricing ($0.05/MP) and the [pro] inference time (8-12 seconds).</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">BFL API pricing: per-megapixel billing in practice</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL uses a per-megapixel billing model that is the cleanest in the image generation market. There are no credit packs, no subscriptions, no tier-based pricing — you pay per megapixel of output image, and the rate depends only on the endpoint.</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Endpoint</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Per-MP price</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Per-image (1024x1024)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Per-image (2048x2048)</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Notes</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.2 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.21</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Newest, best text/portrait quality</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1.1 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.16</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Best prompt adherence, faster than 1.0</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 [pro]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.04</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.16</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Legacy, still supported</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>FLUX.1 [schnell]</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.003</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.003</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.012</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">4-step diffusion, real-time capable</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">A 1024x1024 image is exactly 1 megapixel. A 2048x2048 image is exactly 4 megapixels. A 1024x768 (4:3) image is 0.75 megapixels. BFL rounds up to the nearest 0.1 MP for billing purposes, so a 1024x1024 image costs $0.05 (rounded from $0.0484), and a 1024x768 image costs $0.04 (rounded from $0.036).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The volume economics for a production workload:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>1,000 hero images per month at 1024x1024 on FLUX.2 [pro] = ~$50/month</li>
+
+<li>1,000 hero images at 2048x2048 on FLUX.2 [pro] = ~$210/month</li>
+
+<li>10,000 thumbnail images at 512x512 on FLUX.1 [schnell] = ~$8/month</li>
+
+<li>1,000 inpainting jobs on FLUX.1 Fill [pro] = ~$50/month</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For a comparison: the same 1,000 hero images at 1024x1024 on Midjourney's API is roughly $80/month (at the Standard plan rate, with $0.08 per image), on DALL-E 3 HD is $120/month (at $0.120 per HD image), on Imagen 3 is $100/month. BFL FLUX.2 [pro] at $0.05 per image is 40-60% cheaper than the closed-source competitors while delivering comparable or better quality on text rendering and portrait realism.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">There is no subscription tier and no enterprise contract for FLUX.2 [pro] (as of June 2026) — the pricing is flat per-megapixel, and the only thing that changes at scale is the rate limit, which is negotiable with BFL's enterprise team for workloads above 50,000 images per month.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The FLUX.2 [pro] endpoint in detail</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.2 [pro] is the flagship endpoint. It accepts a text prompt, an optional reference image, an optional depth or canny conditioning input, and returns a 1024x1024 or 2048x2048 image. A typical request:</p>
+
+<pre><code class="language-bash">curl -X POST https://api.bfl.ml/v1/flux-pro-2.0 \
+  -H "x-key: $BFL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '&#123;
+    "prompt": "A young woman in a red dress standing in a sunlit Parisian cafe, holding a steaming espresso, soft focus, golden hour, 35mm photography",
+    "width": 1024,
+    "height": 1024,
+    "steps": 30,
+    "guidance": 4.0,
+    "seed": 42
+  &#125;'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The response is a JSON object with the image URL (signed, expires after 24 hours), the seed used, the inference time, and the megapixel cost. The image URL is hosted on BFL's CDN; download the image immediately if you need to retain it, or copy it to your own storage within the 24-hour window.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.2 [pro]'s strengths:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Text rendering:</strong> the model renders readable text in ~92% of attempts, including non-Latin scripts. For an ad with a slogan, this is the first FLUX endpoint where the text doesn't need manual cleanup.</li>
+
+<li><strong>Photorealism:</strong> skin texture, eye detail, and finger accuracy are at Midjourney V8 level. For e-commerce model photography, the output can be used for hero images without manual selection.</li>
+
+<li><strong>Prompt adherence:</strong> the [pro] tier includes BFL's proprietary prompt-rewriting pass, which interprets the user's prompt and rewrites it for the diffusion model. The result is a ~30% improvement in prompt adherence over [dev] for complex prompts.</li>
+
+<li><strong>Speed:</strong> 8-12 seconds for a 1024x1024 image, 25-35 seconds for 2048x2048. For a batch workflow generating 100 images, the total time is roughly 15-20 minutes.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.2 [pro]'s weaknesses:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Rate limits on the public API:</strong> the default rate limit is 12 requests per minute for the [pro] tier, with a burst allowance of 20 requests in a 10-second window. For a workload exceeding 50,000 images per month, you need to negotiate an enterprise rate limit with BFL (typically 100-200 requests per minute, with a custom SLA).</li>
+
+<li><strong>Cost at scale:</strong> at $0.05/MP, generating 10,000 hero images per month costs $500. Compared to the closed-source alternatives, this is still 40-60% cheaper, but it is not free — for a startup that has not yet built a paying customer base, the cost is real.</li>
+
+<li><strong>Closed weights for [pro] and FLUX.2:</strong> unlike FLUX.1 [schnell] and [dev] (open weights), FLUX.2 [pro] is closed-weight. You cannot self-host FLUX.2 Pro on your own GPU cluster. The BFL API is the only way to use it.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For a production ad campaign, FLUX.2 [pro] is the right call when text rendering and photorealism matter (which is most ad campaigns in 2026). For a workflow that just needs 10,000 thumbnails for an e-commerce catalog, FLUX.1 [schnell] is the right call at $0.003/MP.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The FLUX.1 [schnell] endpoint: open-weight, production-quality at the lowest cost</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.1 [schnell] is the only BFL endpoint with open weights (Apache 2.0 license) and the only BFL endpoint priced below $0.01 per megapixel. It is the volume endpoint for production workloads where quality is "good enough" and cost is the primary constraint.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">A typical request:</p>
+
+<pre><code class="language-bash">curl -X POST https://api.bfl.ml/v1/flux-schnell \
+  -H "x-key: $BFL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '&#123;
+    "prompt": "A modern minimalist living room with a gray sofa, wooden coffee table, large window with mountain view, natural lighting",
+    "width": 1024,
+    "height": 1024,
+    "steps": 4,
+    "guidance": 1.0
+  &#125;'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.1 [schnell]'s strengths:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Speed:</strong> 4-step diffusion, 2-3 seconds per 1024x1024 image. For a real-time preview workflow, this is the fastest production-quality endpoint in the image generation market.</li>
+
+<li><strong>Cost:</strong> $0.003 per megapixel. For a 1024x1024 image, that's $0.003 — roughly 1/15th the cost of [pro]. For a workload generating 10,000 images per day, the cost is ~$10/day.</li>
+
+<li><strong>Apache 2.0 weights:</strong> you can self-host schnell on your own GPU cluster (a single A100 handles ~12 concurrent requests). The BFL API is just a hosted option; the model itself is unrestricted commercial use.</li>
+
+<li><strong>Quality is "good enough" for many use cases:</strong> thumbnails, e-commerce product images, social media cards, blog post hero images. For these, the visual difference between schnell and [pro] is small.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">FLUX.1 [schnell]'s weaknesses:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Text rendering is poor:</strong> schnell produces readable text in roughly 40% of attempts, with the rest being garbled. For an ad with a slogan, schnell is the wrong choice.</li>
+
+<li><strong>Hand-finger accuracy is poor:</strong> schnell produces 4 or 6 fingers roughly 25% of the time. For any image with a visible human hand, schnell requires manual review.</li>
+
+<li><strong>Lower prompt adherence:</strong> the 4-step diffusion means the model has less "time" to refine the image to match the prompt. Complex prompts (more than 2-3 elements) often lose one or more elements.</li>
+
+<li><strong>No Fill / Depth / Canny variants:</strong> schnell is a text-to-image endpoint only. The Fill, Depth, and Canny endpoints are [pro]-tier only.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For a workload that needs 10,000+ images per day where quality is secondary to cost, schnell is the right call. For a hero image or an ad campaign, [pro] is the right call.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The FLUX.1 Fill, Depth, and Canny endpoints: conditional generation for production edit workflows</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The three [pro]-tier conditional generation endpoints (Fill, Depth, Canny) are the production edit workflow endpoints. They take a base image plus a conditioning input (mask, depth map, or edge map) plus a prompt, and return a new image that follows the conditioning structure.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">A typical FLUX.1 Fill [pro] request for inpainting:</p>
+
+<pre><code class="language-bash">curl -X POST https://api.bfl.ml/v1/flux-fill-pro \
+  -H "x-key: $BFL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '&#123;
+    "prompt": "A vase of red roses on the wooden table",
+    "image": "https://example.com/living_room.jpg",
+    "mask": "https://example.com/mask.png",
+    "steps": 30,
+    "guidance": 4.0
+  &#125;'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The endpoint takes the base image, applies the mask (white pixels = region to regenerate, black pixels = region to keep), and generates new content for the masked region that matches the prompt. The non-masked region is preserved exactly.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Fill is the right endpoint for:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>Product photography cleanup: remove a watermark, replace a background, fix a damaged product</li>
+
+<li>E-commerce model swap: change the model's clothing while keeping the pose and lighting</li>
+
+<li>Catalog expansion: generate seasonal variants of a product shot without re-shooting</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Depth and Canny are similar, but the conditioning input is a depth map or an edge map instead of a binary mask. Use cases:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Depth:</strong> structural edit of a scene (change the foreground, keep the spatial layout)</li>
+
+<li><strong>Canny:</strong> sketch-to-image or style transfer (provide a line drawing, get a fully-rendered image in the style specified by the prompt)</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">All three endpoints are priced at $0.05 per megapixel (same as FLUX.2 [pro]) and have the same rate limit (12 requests per minute default, negotiable for enterprise).</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How BFL compares to Replicate, fal.ai, Stability AI, and Midjourney</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The image generation API market in 2026 has five serious contenders. Each has a different strength, and the right choice depends on the workload.</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Provider</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Strength</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Weakness</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">FLUX [pro] price</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">FLUX schnell price</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Black Forest Labs</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Original FLUX, cleanest licensing, EU-Frankfurt GDPR option</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Strict rate limits on [pro] (negotiation required at scale)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.05/MP</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.003/MP</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Replicate</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">100+ models, easy onboarding, Cog for self-host</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">5-15% markup on per-model pricing, slower cold start</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.06/MP</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.004/MP</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>fal.ai</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">200+ models, per-second billing, <1s cold start</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">5-15% markup, smaller FLUX model selection</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.06/MP</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.004/MP</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Stability AI</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Stable Diffusion 3.5 native, 3D + video extensions</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FLUX support is third-party, no FLUX.2 Pro</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700"><strong>Midjourney V8</strong></td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Best aesthetic, strongest community</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Closed weights, $0.08/image flat rate, no open model</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">N/A</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team that wants the <strong>first-party FLUX experience</strong> — the latest weights on day one, the cleanest licensing, and the option to host inference in EU-Frankfurt for GDPR — BFL is the right call. The rate limit negotiation at scale is a real friction, but for workloads below 50,000 images per month, the default 12 requests per minute is enough.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team that needs <strong>many models, not just FLUX</strong> — a workflow that uses FLUX for some images and Stable Diffusion for others, or that wants to add Kling / MiniMax / Hunyuan for video alongside the image gen — Replicate or fal.ai is the right call. The 5-15% markup is offset by the single-bill convenience and the broader model catalog. Replicate's cold start (5-15 seconds for a cold model) is slower than BFL's (typically 2-3 seconds), and fal.ai's <1 second cold start is the fastest in the market.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team that wants <strong>Midjourney's aesthetic</strong> specifically, the Midjourney API is the only path. Midjourney V8 at $0.08 per image is more expensive than BFL FLUX.2 [pro] at $0.05 per image, but for workflows where the Midjourney aesthetic is non-negotiable (luxury fashion, premium automotive, high-end real estate), the cost differential is worth it.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a team that wants <strong>open weights and full self-hosting</strong>, the right call is to download FLUX.1 [schnell] (Apache 2.0) or FLUX.1 [dev] (non-commercial) from Hugging Face and self-host on a GPU cluster. This is the only path with zero per-image cost, but the engineering cost is real: a single H100 ($2-3/hour on-demand) can run ~12 concurrent schnell requests, and the cluster management, monitoring, and scaling is on your team.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">BFL in production: the operational quirks that matter</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The BFL API is reliable, but there are operational quirks that matter for production workloads:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Image URLs expire after 24 hours.</strong> Download images immediately or copy them to your own storage. BFL does not offer long-term image storage; if you need to retrieve an image from 3 days ago, you must regenerate it (and the regeneration will not be identical because of seed variation).</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Rate limits on [pro] require enterprise negotiation.</strong> The default 12 requests per minute is enough for prototyping and small production workloads, but for a workload above 50,000 images per month, you need to contact BFL's enterprise team (enterprise@blackforestlabs.ai) for a custom rate limit. The negotiation typically takes 1-2 weeks and lands at 100-200 requests per minute with a custom SLA.</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Seed variation is non-deterministic across model versions.</strong> The same seed on FLUX.1 [pro] and FLUX.2 [pro] produces different results. If you need to reproduce an image across model versions, you must use the same model version.</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Reference image URL must be publicly accessible.</strong> The API fetches the reference image from the URL you provide; a private S3 bucket with IAM auth will not work. Use a public CDN or a signed URL with a long expiration.</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Concurrent request limits on schnell are generous.</strong> The schnell endpoint allows 60+ concurrent requests without rate limit issues, which makes it suitable for real-time preview workflows.</li>
+
+</ol>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Content policy is strict.</strong> BFL blocks prompts that reference real people by name (e.g., "Taylor Swift walking down the street") and prompts that depict violence or adult content. The block is enforced at the prompt level, not the output level — you will get a 400 error before generation starts.</li>
+
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is BFL's data retention policy?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL retains prompts, reference images, and generated images for 30 days for abuse monitoring and model improvement. Enterprise customers can opt out of model-improvement data retention via a Data Processing Addendum (DPA). The DPA also includes a no-logs option for the inference path, which is what enterprise customers in regulated industries (finance, healthcare, government) need.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For most production workloads, the 30-day retention is acceptable. For workloads with strict data-residency requirements (e.g., GDPR for EU users), the EU-Frankfurt hosting option is the right call. The EU-Frankfurt endpoint guarantees that prompts, reference images, and generated images are processed and stored on AWS infrastructure in Frankfurt, Germany, and the data is not replicated to other regions. The pricing for EU-Frankfurt is the same as the US default (per-megapixel), and the rate limits are the same.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Can I self-host FLUX on my own GPU cluster?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes — for FLUX.1 [schnell] (Apache 2.0) and FLUX.1 [dev] (non-commercial license). No — for FLUX.1 [pro], FLUX.1.1 [pro], and FLUX.2 [pro], which are closed-weight.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For schnell and dev self-hosting, the canonical path is:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li>Download the weights from Hugging Face (<code>black-forest-labs/FLUX.1-schnell</code> for schnell, <code>black-forest-labs/FLUX.1-dev</code> for dev)</li>
+
+<li>Serve the model with vLLM, SGLang, or the BFL reference implementation</li>
+
+<li>Deploy on a GPU cluster (H100, A100, or RTX 4090 for prototyping)</li>
+
+<li>The cluster management, monitoring, and scaling is on your team</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">For a workload generating 100,000 images per month, self-hosting schnell is the right call: the inference cost is just the GPU hourly rate (~$2-3/hour for a single H100, capable of ~12 concurrent schnell requests, ~50,000 images per day at full utilization). Compared to the BFL API at $0.003/MP, the breakeven is around 50,000-100,000 images per month depending on the GPU rental rate and the engineering cost of running the cluster.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For FLUX.2 [pro], self-hosting is not an option as of July 2026. The weights are closed, and the BFL API is the only commercial path.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How does BFL handle rate limits and quota overage?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The default rate limits on the BFL API are:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>FLUX.2 [pro] / FLUX.1 [pro] / Fill / Depth / Canny:</strong> 12 requests per minute, burst 20 in 10 seconds</li>
+
+<li><strong>FLUX.1 [schnell]:</strong> 60 requests per minute, burst 100 in 10 seconds</li>
+
+<li><strong>FLUX.1 [dev] (API access):</strong> 30 requests per minute</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Exceeding the rate limit returns a 429 error. There is no overage billing — once you hit the rate limit, you must wait for the window to reset or upgrade to enterprise rate limits. This is different from API providers like OpenAI or Anthropic, which bill overage at a per-token rate. BFL's rate-limit-only model is more predictable for budgeting but less flexible for variable workloads.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For workloads with unpredictable image generation demand, the recommended pattern is to monitor rate limit usage via the response headers (<code>X-RateLimit-Remaining</code>, <code>X-RateLimit-Reset</code>) and queue requests on the client side. The BFL SDK (Python and Node.js) includes a built-in rate limit handler that automatically retries with exponential backoff.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is the difference between BFL and an LLM with image generation?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">An LLM with image generation (e.g., GPT-4o with image output, Claude with image output via tools, Gemini 2.5 Flash with native image gen) can generate images as part of a conversation, but the image quality is typically 1-2 generations behind the dedicated image generation APIs. GPT-4o's image output (released March 2025) is roughly at FLUX.1 [dev] quality, and Gemini 2.5 Flash's image output is roughly at FLUX.1 [schnell] quality. For a workflow that needs the best image quality in 2026, a dedicated image generation API (BFL, Replicate, fal.ai, Midjourney) is the right call.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The right pattern for an agent that needs both — reasoning and image generation — is to use the LLM for the reasoning and the dedicated image API for the image generation. A typical flow:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li>The LLM (GPT-4o, Claude Opus 4.5) receives a user request like "design a hero image for a coffee brand campaign"</li>
+
+<li>The LLM generates a structured prompt for the image (e.g., "a steaming espresso in a minimalist ceramic cup on a wooden table, golden hour, soft focus, 35mm photography")</li>
+
+<li>The LLM calls the BFL API with the prompt (via the BFL MCP server or a direct API call)</li>
+
+<li>BFL returns the image URL, and the LLM incorporates it into the response</li>
+
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The two APIs work together; they do not compete. For an agent that does this kind of work, the BFL MCP server (released April 2026) is the path of least resistance.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">BFL's MCP server and IDE integration</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL released an MCP (Model Context Protocol) server in April 2026 that exposes the FLUX.2 [pro], FLUX.1.1 [pro], FLUX.1 [schnell], and the Fill/Depth/Canny endpoints as native tools inside Claude Code, Cursor, Cline, and other MCP-compatible IDEs. The MCP server is a remote endpoint at <code>https://mcp.bfl.ml/mcp</code> and supports the standard Streamable HTTP transport.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For an engineer building an agent that needs image generation as a native capability, the MCP server is the right path. Instead of writing curl scripts and managing API keys in environment variables, the IDE handles the API calls directly. The agent can request an image, see the result in the IDE, and iterate on the prompt without leaving the editor.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The MCP server is free for all BFL API users; no separate subscription is required.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What about the BFL affiliate program?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL does not currently have a public affiliate program. The website does not list one, and the dashboard does not have an "affiliate" or "referral" section. For a content site that wants to monetize BFL coverage, the right pattern is to use BFL's API for the content creation workflow (image generation for blog posts, social media, marketing materials) and link to the platform as a tool recommendation, not as an affiliate partner.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For sites that need an affiliate-style monetization, the alternative is to use BFL's API to generate content and monetize the content itself via ad revenue or sponsored placements. This is the pattern most production studios use: they generate the content with BFL, then monetize the finished content.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Final verdict</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Black Forest Labs in 2026 is the image generation API for production workflows in the same way that OpenAI is the LLM API: not the only option, but the one with the original model weights, the cleanest licensing, and the lowest per-image cost. FLUX.2 [pro] is a generational upgrade on text rendering and photorealism that closes the gap with Midjourney V8, and the [schnell] endpoint at $0.003/MP is the cheapest production-quality image generation in the market.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The operational quirks (24-hour image URL expiration, strict rate limits on [pro] requiring enterprise negotiation, no closed-weight self-hosting for FLUX.2) are real but manageable. The licensing ambiguity around FLUX.1 [pro] and [dev] open weights (non-commercial) is solved by the BFL API: a commercial license is included in the per-megapixel price, and the EU-Frankfurt hosting option is the path for GDPR-compliant workloads.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For a solo developer prototyping an ad campaign, the schnell endpoint at $0.003/MP is the right starting point — $5 of credits covers roughly 1,500 1024x1024 images. For a team running a production ad campaign, the FLUX.2 [pro] endpoint at $0.05/MP is the right call for hero shots, and the Fill/Depth/Canny endpoints at $0.05/MP are the right call for product edit workflows. For a workload above 50,000 images per month, the enterprise rate limit negotiation is the inflection point, and the EU-Frankfurt hosting option is the right choice for any team with European customers.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are building an image generation workflow in 2026 and you have not yet picked an image API, the answer is Black Forest Labs. The cost is the lowest, the licensing is the cleanest, the FLUX.2 [pro] quality is at Midjourney V8 level, and the schnell endpoint at $0.003/MP is the cheapest production-quality image generation you can buy.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>What is the Black Forest Labs API used for?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">The Black Forest Labs API is used for production image generation in advertising, e-commerce, social media, content marketing, and creative tooling. The flagship endpoints are FLUX.2 [pro] (text rendering, photorealistic portraits, hero images), FLUX.1 [schnell] (high-volume batch, real-time preview), and the Fill/Depth/Canny [pro] endpoints (inpainting, structural edit, sketch-to-image). BFL is the original creator of the FLUX model family, and the BFL API is the only first-party commercial path to the FLUX weights.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How much does the Black Forest Labs API cost?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL uses a flat per-megapixel billing model with no credit packs or subscriptions. FLUX.2 [pro] costs $0.05 per megapixel (~$0.05 per 1024x1024 image, ~$0.21 per 2048x2048 image). FLUX.1.1 [pro] and FLUX.1 [pro] cost $0.04 per megapixel. FLUX.1 [schnell] costs $0.003 per megapixel — the cheapest production-quality image generation in the market. The Fill, Depth, and Canny endpoints cost $0.05 per megapixel.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Is there a Black Forest Labs free tier?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL does not offer a persistent free tier, but the FLUX.1 [schnell] endpoint is priced at $0.003 per megapixel, which means $5 of credits covers roughly 1,500 1024x1024 images. The cheapest credit purchase is $5, which is the recommended starting point for prototyping. BFL does not require a credit card for the first credit purchase, and the [schnell] endpoint is suitable for high-volume batch workflows.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Can I use Black Forest Labs from inside China?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL's API is hosted on AWS US-East and EU-Frankfurt. Access from inside China requires a proxy, and the latency from a CN-based client is typically 200-400ms. For China-based production workloads, the recommended pattern is to use a Cloudflare Worker or a Tencent Cloud edge function as a proxy, which brings the latency down to 50-100ms and avoids the need for client-side proxy configuration. Note that the proxy does not bypass the content policy — BFL still blocks prompts that violate the policy, regardless of geographic origin.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Does Black Forest Labs support OpenAI-compatible API calls?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">No. BFL uses its own API surface, not OpenAI's image generation schema. The endpoints are REST POST calls returning JSON, with the image URL in the response body. The BFL SDK (Python and Node.js) wraps the REST calls and handles rate limits, retries, and seed management. For an agent that needs image generation as a native capability, the BFL MCP server (released April 2026) is the path of least resistance — it exposes the FLUX endpoints as native tools inside Claude Code, Cursor, and other MCP-compatible IDEs.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How does Black Forest Labs compare to Replicate?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Replicate hosts 100+ image generation models including FLUX.1 [pro], FLUX.1 [schnell], Stable Diffusion 3.5, Ideogram V3, and Playground V3. The pricing is roughly 5-15% higher than BFL direct (Replicate adds a middleman margin), and the cold start is slower (5-15 seconds vs 2-3 seconds for BFL direct). For a workflow that uses only FLUX, BFL is the right call. For a workflow that uses FLUX plus other models on the same bill, Replicate is the right call.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How does Black Forest Labs compare to fal.ai?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">fal.ai hosts 200+ image and video models including FLUX.2 [pro], FLUX.1 [schnell], Kling 2.1, MiniMax Video, HunyuanVideo, and Stable Diffusion 3.5. The pricing is roughly 5-15% higher than BFL direct, and the cold start is the fastest in the market (<1 second). For a workflow that needs FLUX plus video generation on the same bill, fal.ai is the right call. For a workflow that uses only FLUX at the lowest cost, BFL is the right call.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How does Black Forest Labs compare to Midjourney V8?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Midjourney V8 has the strongest aesthetic quality in the market (April 2026 release), and the API is priced at $0.08 per image flat. Compared to BFL FLUX.2 [pro] at $0.05 per megapixel (~$0.05 per 1024x1024 image), Midjourney is 60% more expensive for the same image size. The aesthetic quality of Midjourney V8 is still slightly ahead of FLUX.2 [pro] for fashion and luxury categories, but for e-commerce, advertising, and content marketing, the quality gap is small enough that the cost differential makes BFL the right call.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>What is the BFL MCP server?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">The BFL MCP server is a remote endpoint at <code>https://mcp.bfl.ml/mcp</code> that exposes the FLUX.2 [pro], FLUX.1.1 [pro], FLUX.1 [schnell], and the Fill/Depth/Canny endpoints as native tools inside Claude Code, Cursor, Cline, and other MCP-compatible IDEs. The MCP server uses the standard Streamable HTTP transport and is free for all BFL API users. For an engineer building an agent that needs image generation as a native capability, the MCP server is the path of least resistance.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Can I use Black Forest Labs for batch thumbnail generation?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. The FLUX.1 [schnell] endpoint at $0.003 per megapixel is the right call for batch thumbnail generation. For a workload generating 10,000 512x512 thumbnails per day, the cost is roughly $8/day. The schnell endpoint allows 60+ concurrent requests without rate limit issues, which makes it suitable for high-volume batch workflows. The 4-step diffusion produces "good enough" quality for thumbnails and preview use cases.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Does Black Forest Labs have an affiliate program?</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">BFL does not currently have a public affiliate program. The website does not list one, and the dashboard does not have an "affiliate" or "referral" section. For content sites that want to monetize BFL coverage, the right pattern is to use BFL's API for content creation and link to the platform as a tool recommendation. The enterprise team is open to custom partnership arrangements for high-volume content sites; contact enterprise@blackforestlabs.ai for details.</p>
+
+<hr class="my-8 border-gray-200" />
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Reviewed against</strong>: Black Forest Labs API documentation (docs.bfl.ml), FLUX.2 [pro] release notes (May 2026), FLUX.1.1 [pro] release notes (October 2025), FLUX.1 [schnell] Apache 2.0 release (August 2024), MCP server release notes (April 2026), EU-Frankfurt hosting GA announcement (February 2026), production case studies from cross-border e-commerce teams (June 2026).</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Disclosure</strong>: This article contains affiliate links. If you sign up through these links, we may earn a commission at no extra cost to you. Our reviews remain independent.</p>`;
+
+const affiliateSidebar = {
+  title: '试用 FreeModel',
+  description: '一个 API key 走多 provider 路由。DeepSeek + Qwen + Llama + OpenAI 兼容上游 —— 跟 BFL 配合做图像生成的成本优化。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '获取免费额度'
+};
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} 
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="sponsored noopener">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Facts</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Provider:</strong> Black Forest Labs (FLUX creator)</li>
+            <li><strong>Endpoints:</strong> FLUX.2 [pro], FLUX.1.1 [pro], FLUX.1 [schnell], Fill/Depth/Canny [pro]</li>
+            <li><strong>Pricing:</strong> $0.003-$0.05 per megapixel (no subscription)</li>
+            <li><strong>Hosting:</strong> AWS US-East + EU-Frankfurt (GDPR option)</li>
+            <li><strong>API:</strong> <code>https://api.bfl.ml</code> + MCP server at <code>https://mcp.bfl.ml/mcp</code></li>
+            <li><strong>Open-source:</strong> FLUX.1 [schnell] is Apache 2.0 (self-host OK)</li>
+            <li><strong>Affiliate:</strong> Use FreeModel for cost optimization overlay</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

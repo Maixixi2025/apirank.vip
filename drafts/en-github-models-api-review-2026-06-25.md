@@ -1,0 +1,183 @@
+---
+title: "GitHub Models 2026: Free GPT-4o, Claude & Llama via Your GitHub Account"
+description: "GitHub Models API review: 50+ models (GPT-4o, Claude 3.5 Sonnet, Llama 3.1 405B, o1-preview) behind your existing GitHub account, free daily quotas, OpenAI-compatible chat completions API, GitHub Actions/Codespaces integration. Pricing, rate limits, and the BYOK upgrade path."
+slug: "github-models-api-review"
+provider: "github-models"
+published: true
+date: "2026-06-25"
+type: "review"
+---
+
+# GitHub Models 2026: Free GPT-4o, Claude & Llama via Your GitHub Account
+
+## Introduction: What GitHub Models Is in 2026
+
+GitHub Models is the AI inference arm of GitHub that gives every GitHub account — including free personal accounts — a daily quota of inference calls against 50+ production LLMs. The list as of June 2026 includes OpenAI's GPT-4o and the o1-preview / o1-mini reasoning models, Anthropic's Claude 3.5 Sonnet and Claude 3.7 Sonnet, Meta's Llama 3.1 405B Instruct and Llama 3.2 90B Vision, Mistral Large 2, Microsoft Phi-3.5 MoE, DeepSeek-V3, Cohere Command R+, and AI21's Jamba 1.5 Large. The API is a strict superset of OpenAI's chat completions endpoint — the same JSON shape, the same streaming protocol, the same `tools` parameter for function calling. A developer who has used the OpenAI Python SDK before can switch to GitHub Models by changing the `base_url` and the `Authorization` header. There is no new SDK to learn and no parallel concepts to internalize.
+
+The most surprising thing about GitHub Models is not the catalog — it is the **onboarding path**. You do not need a credit card. You do not need to apply for access. You do not need to wait for a quota approval. You log in with your GitHub account, open the Playground at `github.com/marketplace/models`, and start sending prompts. The free tier rate limits are tight (50 GPT-4o calls per day, 10 o1-preview calls per day, 100 Claude 3.5 Sonnet calls per day, 150 Llama 3.1 405B calls per day) but they are real production quotas against real production models — not a watermarked demo, not a 7-day trial, not a "send us your email and we'll get back to you." For an engineer prototyping an AI feature, evaluating which model to bet on, or building a GitHub Actions workflow that needs LLM judgment, GitHub Models is the fastest path from idea to running code in 2026.
+
+This review covers GitHub Models from the perspective of an engineer evaluating the API in mid-2026: what the free tier actually delivers, how the OpenAI-compatibility layer behaves in production, where the rate limits bite, how GitHub Actions and Codespaces integration differs from raw API access, the BYOK upgrade path to paid models, and how GitHub Models compares to OpenRouter, Hugging Face Inference, and direct vendor APIs.
+
+## Models Available in the Free Tier (June 2026)
+
+The GitHub Models catalog rotates, but the core lineup as of June 2026 covers the following families:
+
+| Family | Models in free tier | Daily quota (per GitHub account) |
+|---|---|---|
+| OpenAI | GPT-4o, GPT-4o mini, o1-preview, o1-mini | 50 / 200 / 10 / 50 |
+| Anthropic | Claude 3.5 Sonnet, Claude 3.7 Sonnet | 100 / 50 |
+| Meta | Llama 3.1 405B Instruct, Llama 3.2 90B Vision | 150 / 100 |
+| Mistral | Mistral Large 2 | 75 |
+| Microsoft | Phi-3.5 MoE instruct | 200 |
+| DeepSeek | DeepSeek-V3 (via hosted variant) | 75 |
+| Cohere | Command R+ | 75 |
+| AI21 | Jamba 1.5 Large | 75 |
+
+The quotas are per-account, not per-model-per-day — you cannot trade GPT-4o calls for extra Claude calls within the same day. If you burn through your daily 10 o1-preview calls before noon, you wait until midnight UTC for the reset. For an engineer evaluating which model to use for a production feature, the free tier is sufficient to run a meaningful benchmark (50 GPT-4o calls covers 5 prompts × 10 rephrasings, or 50 single-shot completions). For a CI workflow that needs to make a small number of LLM decisions per build, the 100 Claude 3.5 Sonnet calls per day handle most reasonable use cases.
+
+The catalog is curated by GitHub. New models appear roughly 1-2 weeks after the upstream vendor announces them — GitHub does the safety review, the SLA negotiation, and the integration work before flipping a model live. As of June 2026, the most-requested missing model is Anthropic's Claude Opus 4.5 (GitHub lists Claude 3.7 Sonnet, the most recent Sonnet, but not the Opus tier). The most-requested missing frontier is OpenAI's GPT-5.5 series (GitHub has GPT-4o and o1, but not GPT-5.5 or the GPT-5.5 Instant tier).
+
+## Pricing: Free Tier vs BYOK vs GitHub-Hosted Paid
+
+GitHub Models has three billing modes, and the difference matters:
+
+**Free tier.** No credit card required. Daily quotas as listed above. Models are served by GitHub from GitHub-managed infrastructure (which is Azure, in practice, but the routing and quota enforcement is GitHub's). The free tier is genuinely free — there is no hidden metered usage, no overage billing if you accidentally exceed quota (you get a 429 response and you stop).
+
+**BYOK (Bring Your Own Key).** Available to GitHub Copilot Business and Enterprise customers. You connect your own Azure OpenAI resource or your own OpenAI organization to GitHub Models, and the inference runs against your existing billing. The free tier quotas do not apply — you get the rate limits of your Azure/OpenAI account. The advantage is unified billing (one invoice from GitHub instead of separate Azure + OpenAI bills) and unified access governance (one place to manage which employees can hit which models). The disadvantage is that you are now paying retail prices to OpenAI or Azure for inference that you could just call directly.
+
+**GitHub-hosted paid.** New in early 2026. You add a payment method to your GitHub account and pay GitHub directly for inference above the free quotas. Prices roughly match the upstream vendor's list price (GPT-4o input is $2.50/M, output $10/M, matching OpenAI's published rates) — GitHub does not appear to mark up the inference. The advantage is unified billing without needing a separate Azure resource. The disadvantage is that this mode is not yet available in all regions and the model selection is narrower than the free tier.
+
+For most individual developers and small teams in mid-2026, the free tier + BYOK (if you already have Copilot Business) covers everything. The pure GitHub-hosted paid mode is a future-proofing feature rather than a current best choice — if you are paying retail for inference, you might as well call the upstream vendor directly and skip the GitHub Models routing layer.
+
+## API Surface: OpenAI Chat Completions, GitHub Authentication
+
+The GitHub Models API is OpenAI's `/v1/chat/completions` endpoint with GitHub authentication instead of OpenAI API keys. The endpoint is `https://models.github.ai/inference/chat/completions` for chat and `https://models.github.ai/inference/embeddings` for embeddings (limited model selection — most embeddings workloads still route to OpenAI / Voyage / Cohere directly).
+
+Authentication uses a GitHub personal access token (PAT) with the `models:read` scope. The standard OpenAI Python SDK works by setting `base_url` to the GitHub Models endpoint and `api_key` to the PAT. Streaming, function calling, system messages, and JSON mode all work without modification. The JavaScript, Go, Java, and Rust OpenAI-compatible SDKs all work the same way.
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://models.github.ai/inference",
+    api_key="ghp_YOUR_GITHUB_PAT_WITH_MODELS_READ",
+)
+
+response = client.chat.completions.create(
+    model="openai/gpt-4o",
+    messages=[
+        {"role": "system", "content": "You are a code reviewer for a Python project."},
+        {"role": "user", "content": "Review this PR diff and list the top 3 issues."}
+    ],
+    temperature=0.2,
+)
+
+print(response.choices[0].message.content)
+```
+
+The model names use a `vendor/model` prefix — `openai/gpt-4o`, `anthropic/claude-3.5-sonnet`, `meta/llama-3.1-405b-instruct`. This is more verbose than the upstream vendor's bare model name (`gpt-4o`, `claude-3-5-sonnet-latest`) but it makes it explicit which vendor's model you are calling when you mix vendors in the same application.
+
+## GitHub Actions and Codespaces Integration
+
+The native integration with GitHub Actions is the single feature that makes GitHub Models unique versus OpenRouter or any other aggregator. A workflow YAML can call GitHub Models directly without storing a secret:
+
+```yaml
+name: AI code review
+on: [pull_request]
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get LLM review
+        uses: actions/ai-inference@v1
+        with:
+          model: openai/gpt-4o
+          system-prompt: "You are a senior code reviewer."
+          prompt-file: ./diff.patch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+The `actions/ai-inference` action is a first-party GitHub action that wraps the GitHub Models API and uses the workflow's `GITHUB_TOKEN` automatically — no PAT, no secret management, no Azure resource to provision. For teams that already run on GitHub Actions, this collapses the operational overhead of "add LLM judgment to a workflow" from a multi-day project (provision Azure OpenAI, store secrets, write the inference code) to a single YAML block.
+
+The same pattern applies to GitHub Codespaces. A Codespace can call GitHub Models without any additional setup — the Codespace's built-in GitHub authentication is sufficient. This makes Codespaces a particularly good environment for AI-assisted development tutorials, demos, and onboarding flows: the user clicks "Open in Codespace," and the LLM features work immediately.
+
+## Where the Free Tier Breaks Down
+
+The free tier is generous but not unlimited. Three patterns will exhaust your quota before lunch:
+
+**Benchmark sweeps.** A 50-call GPT-4o quota sounds like a lot until you are running a 5-prompt × 10-rephrasing × 5-temperature grid for an evaluation. That is 250 calls, not 50. Move to BYOK or paid mode for benchmark work; the free tier is for single-shot evaluation, not grid sweeps.
+
+**Multi-model consensus.** If your application uses 3 models in parallel and averages their outputs (a common agent reliability pattern), your 50 GPT-4o calls become 16 effective decisions. Plan accordingly or use OpenRouter for the heavy lifting.
+
+**CI loops.** A workflow that runs on every push and makes 5 LLM calls per run will exhaust a 100-call daily quota in 20 pushes. Either move to BYOK or restrict the workflow to merge-ready branches only.
+
+When you exceed the free tier quota, GitHub Models returns a `429 Too Many Requests` response with a `Retry-After` header indicating when the daily reset occurs. There is no overage billing — you stop. This is cleaner than OpenAI's pay-as-you-go defaults, where a buggy script can burn through a $500 credit before you notice.
+
+## Comparison to OpenRouter, Hugging Face, and Direct Vendor APIs
+
+The closest analog to GitHub Models in the aggregator space is **OpenRouter** (covered separately in our provider database). OpenRouter has more models (300+ vs GitHub Models' 50+), more flexible routing (you can specify "use the cheapest provider that supports this model"), and no GitHub account requirement. The trade-off is that OpenRouter has no native Actions integration, no first-party Playground tied to your development environment, and no daily free quota — you pay per token or you bring your own keys.
+
+**Hugging Face Inference API** is the other direct competitor. Hugging Face offers a free tier for open-weight models (Llama, Mistral, DeepSeek) but no first-party access to closed-weight models like GPT-4o or Claude. For open-weight model evaluations, Hugging Face has more flexibility (you can run any of the 1M+ models on Hugging Face Hub, including community fine-tunes) but the free tier inference is slower and rate-limited more aggressively than GitHub Models.
+
+**Direct vendor APIs** (OpenAI, Anthropic, Cohere, Mistral) have the most generous free tiers in some cases (Mistral gives you $5 of free credit on signup, no daily cap) but require separate accounts, separate billing, separate rate-limit negotiations, and separate SDKs (or careful base_url management if you use the OpenAI-compatible interface). For a developer evaluating one specific vendor, direct API access is simpler. For a developer evaluating 5+ models side by side, GitHub Models' unified catalog wins.
+
+## Pros and Cons
+
+**Pros**
+
+- Free tier with no credit card — any GitHub account works
+- 50+ production models including GPT-4o, Claude 3.5 Sonnet, Llama 3.1 405B, o1-preview
+- Strict OpenAI chat completions compatibility — drop-in from OpenAI SDK
+- First-party GitHub Actions integration with no secret management
+- First-party Codespaces integration — AI features work in cloud dev environments
+- BYOK mode for unified billing on existing Azure / OpenAI accounts
+- Curated catalog — GitHub vets models before adding them
+
+**Cons**
+
+- Daily quotas are strict — heavy users hit 429s by midday
+- Model versions lag 1-2 weeks behind upstream vendor releases
+- No Claude Opus 4.5, no GPT-5.5 series in the catalog as of June 2026
+- China connectivity issues — GitHub itself requires a proxy from CN
+- No dedicated embedding models — must integrate Voyage or OpenAI separately
+- Limited fine-grained Function Calling controls vs direct OpenAI API
+- BYOK mode requires GitHub Copilot Business ($19/user/month) — not free
+
+## Frequently Asked Questions
+
+**Q: Is GitHub Models really free?**
+A: Yes — the free tier is genuinely free with no credit card required. You get a daily quota per model (50 GPT-4o calls, 100 Claude 3.5 Sonnet calls, etc.). If you exceed the quota, you get a 429 — there is no overage billing. The free tier is intended for prototyping, evaluation, and lightweight CI usage. For production workloads, move to BYOK (if you have Copilot Business) or to direct vendor APIs.
+
+**Q: How does GitHub Models compare to OpenRouter?**
+A: Both aggregate multiple models behind a single API. OpenRouter has more models (300+ vs 50+), more flexible routing, and no GitHub dependency. GitHub Models has tighter integration with GitHub Actions / Codespaces, free daily quotas with no signup friction, and a curated catalog that GitHub vets for safety. For pure model evaluation, OpenRouter is more flexible. For GitHub-native workflows and zero-cost prototyping, GitHub Models wins.
+
+**Q: Can I use GitHub Models with the OpenAI Python SDK?**
+A: Yes. Set `base_url="https://models.github.ai/inference"` and `api_key=<your GitHub PAT with models:read scope>`. Use model names like `openai/gpt-4o` (vendor/model prefix). Streaming, function calling, JSON mode, and system messages all work without modification.
+
+**Q: Does GitHub Models train on my prompts?**
+A: Per GitHub's data usage policy, GitHub Models does not use your prompts or completions to train models. The prompts are logged for abuse monitoring and rate-limit enforcement but are not associated with your GitHub account beyond that. For workloads with strict data handling requirements, the BYOK mode routes inference through your own Azure OpenAI or OpenAI organization, where the upstream vendor's data policy applies.
+
+**Q: What models are missing from GitHub Models?**
+A: As of June 2026, the most-notable absences are Anthropic's Claude Opus 4.5 (only Sonnet variants are listed), OpenAI's GPT-5.5 / GPT-5.5 Instant tier (only GPT-4o and o1-series), and Google's Gemini family (no Gemini models in the catalog). GitHub has not announced timelines for adding these.
+
+**Q: Can I use GitHub Models in GitHub Actions without a secret?**
+A: Yes. The `actions/ai-inference` action uses the workflow's built-in `GITHUB_TOKEN` automatically. You do not need to provision a PAT, an Azure resource, or an OpenAI API key. The free tier quotas apply, so this is best for lightweight CI decisions rather than high-volume batch processing.
+
+**Q: Does GitHub Models work in China?**
+A: No. GitHub itself requires a proxy from mainland China, and the GitHub Models endpoint inherits that constraint. For China-direct AI inference, see Aliyun Bailian, Baidu ERNIE, Kimi, Zhipu GLM, Tencent Hunyuan, or ByteDance Doubao (all in the apirank domestic category).
+
+## Conclusion
+
+GitHub Models is the most useful free AI API in 2026 for developers who already live in the GitHub ecosystem. The free tier daily quotas are enough to evaluate any model in the catalog, build a GitHub Actions workflow with LLM judgment, or prototype a feature without committing to a vendor relationship. The OpenAI compatibility is real, not a partial shim — function calling, streaming, and JSON mode all work. The GitHub Actions integration removes the operational overhead that makes adding LLM features to CI workflows a multi-day project.
+
+The honest limits: the daily quotas are not enough for production workloads, the model catalog lags upstream vendors by 1-2 weeks, and the missing Claude Opus / GPT-5.5 tiers push serious production work elsewhere. For those, the right pattern is to use GitHub Models for evaluation and prototyping, then move to direct vendor APIs (or OpenRouter for aggregator routing) once you have a clear production workload.
+
+The closest natural pairing is GitHub Models as the **free-tier evaluation layer** above a paid production stack. Prototype on GitHub Models, then point your production traffic at OpenAI / Anthropic / Mistral directly. For teams that want a single aggregator across both prototyping and production, OpenRouter is the more flexible aggregator — but you give up the GitHub-native integration and the free tier.
+
+**For most developers**: GitHub Models is the easiest entry point. Open `github.com/marketplace/models`, pick a model, run a prompt in the Playground, then copy the SDK snippet into your project. If the model is wrong for your workload, switch — the free tier covers evaluation for 50+ models.
+
+---
+
+Source: GitHub Models documentation (`docs.github.com/en/github-models`), GitHub Marketplace Models catalog, GitHub Changelog (2026-Q2), community reports on free-tier rate limits. Reviewed against current GitHub PAT `models:read` scope and OpenAI SDK v1.x compatibility.

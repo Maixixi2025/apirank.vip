@@ -1,0 +1,420 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'mem0-api-review';
+const date = '2026-07-23';
+const locale = 'zh';
+const zhTitle = "Mem0 2026 评测：AI Agent 记忆层与 API";
+const zhDescription = "Mem0 2026 评测:AI Agent 记忆层(Apache-2.0、61k stars)。Hobby 免费、Starter $19、Pro $249 含 Graph Memory。对比 Zep、Letta、Pinecone。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/mem0-api-review`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/mem0-api-review`;
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Mem0 2026 评测：AI Agent 记忆层与 API", "description": "Mem0 2026 评测:AI Agent 记忆层(Apache-2.0、61k stars)。Hobby 免费、Starter $19、Pro $249 含 Graph Memory。对比 Zep、Letta、Pinecone。", "datePublished": "2026-07-23", "dateModified": "2026-07-23", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/mem0-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh/"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Mem0 2026 评测：AI Agent 记忆层与 API", "item": "https://apirank.vip/zh/tutorials/mem0-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Mem0 在 2026 年是做什么用的?", "acceptedAnswer": {"@type": "Answer", "text": "Mem0 是面向 AI Agent 和聊天应用的记忆层,自动从对话中抽取事实并存为可检索的结构化记忆。它是事实标准的开源(Apache-2.0、61,493 GitHub stars)记忆层,广泛应用于生产客服机器人(记住回访用户)、个性化助手(跨会话记住饮食偏好)、多角色聊天应用,以及 LangChain、LlamaIndex、CrewAI、AutoGen、Mastra 这些把记忆当作一等公民的 Agent 框架。"}}, {"@type": "Question", "name": "Mem0 是免费的吗?", "acceptedAnswer": {"@type": "Answer", "text": "是的。Hobby 计划完全免费,无需信用卡,包含 10,000 条记忆存储和每月 1,000 次 retrieval API 调用(无限 end users、1 个项目、社区支持)。生产级负载可用 Starter 计划 $19/月:50,000 条记忆 + 5,000 次 retrieval API 调用;Pro 计划 $249/月:无限条记忆 + Graph Memory(实体关系追踪) + 高级分析 + 多项目支持。Hobby 免费层适合原型和 side project,但不够支撑生产聊天应用——典型聊天应用每条用户消息 1 add + 每次助手回复前 1 search,Hobby 1,000 次/月 ≈ 每天 33 条消息。"}}, {"@type": "Question", "name": "Mem0 与 Zep、Letta 在 2026 年怎么对比?", "acceptedAnswer": {"@type": "Answer", "text": "Mem0、Zep、Letta 都解决同一类问题——为 AI Agent 添加长期对话记忆,各有取舍。Mem0 GitHub 社区最大(61,493 stars,Zep ~3,500、Letta ~14,000),LangChain/LlamaIndex 集成最干净,有托管 Cloud SaaS 选项。Zep 针对长上下文窗口 + 时间加权记忆衰减优化——如果你的场景是「记住用户 30 轮前说过的话、按近因性加权」,Zep 检索模型更精细。Letta(原 MemGPT)把记忆管理内嵌进 agent loop 本身——LLM 主动决定何时读写记忆,这更强大,但要求跑 Letta 兼容的 Agent 框架,不是简单调 Mem0 API。"}}, {"@type": "Question", "name": "Mem0 每百万条记忆多少钱?", "acceptedAnswer": {"@type": "Answer", "text": "Mem0 按存储记忆数 + retrieval API 调用次数计费,不是按百万条记忆。Hobby $0/月 含 10,000 记忆 + 1,000 retrieval 调用,不开放超额(必须升级)。Starter $19/月 含 50,000 记忆 + 5,000 retrieval。Pro $249/月 含无限记忆 + 50,000 retrieval。注意:**LLM 抽取费用不包含在内**——一个高流量应用每月做上百万次 memory add,可能额外花 $200-$500/月的 OpenAI 或 Anthropic API 费用,与 Mem0 订阅完全独立。运行 benchmark 工作负载以准确估算。"}}, {"@type": "Question", "name": "Mem0 在国内能用吗?", "acceptedAnswer": {"@type": "Answer", "text": "Mem0 有两种部署模式。Mem0 Cloud SaaS(mem0.ai)托管在大陆境外,国内用户直连可能延迟不稳或需代理。开源 `mem0ai/mem0` GitHub 仓库(Apache-2.0、61,493 stars)自带完整 Docker Compose 配置,打包 API 服务、向量库(Qdrant 默认)、可选 Neo4j(用于 Graph Memory)——可在任何国内云(阿里云、腾讯云、华为云)部署,无需走 Mem0 Cloud SaaS。对国内 AI 应用需要数据驻留或低延迟访问的场景,自托管是推荐路径。"}}, {"@type": "Question", "name": "Mem0 能替代 Pinecone 这类向量库吗?", "acceptedAnswer": {"@type": "Answer", "text": "不能——Mem0 和向量库用途不同。Mem0 处理对话记忆(从多轮对话中抽取并检索事实),Pinecone 处理文档检索(在 PDF、文章或其他静态内容语料库中搜索)。两者互补:用 Mem0 处理用户级对话记忆(让 Agent 记住回访用户的偏好和历史),用 Pinecone 或 Weaviate 处理文档级 RAG(让 Agent 从知识库引用正确页面)。生产 Agent 架构里两层经常并存——Mem0 给 system prompt 喂用户上下文,Pinecone 给 system prompt 喂文档片段。"}}, {"@type": "Question", "name": "Mem0 支持哪些 LLM 提供商?", "acceptedAnswer": {"@type": "Answer", "text": "截至 2026-07-23,Mem0 开箱支持 8+ LLM 提供商:OpenAI(GPT-4o、GPT-4-Turbo、GPT-3.5)、Anthropic(Claude 3.5 Sonnet、Haiku、Opus)、Google(Gemini 1.5 Pro/Flash)、Mistral(Large、Mixtral、Mistral-7B)、Groq(Llama 3.1 70B、Mixtral)、Ollama(任意本地模型)、AWS Bedrock(Claude / Llama / Titan)、Azure OpenAI。同一个 SDK 调用对它们通用——只需改 LLM_PROVIDER 和 LLM_API_KEY 环境变量。这让 Mem0 框架无关:从 OpenAI 切到 Anthropic 不需要重写记忆集成。"}}]};
+const zhBody = `
+<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Mem0 2026 评测：生产 AI Agent 的记忆层标准</h1>
+
+
+<p class="text-gray-700 leading-relaxed my-4">Mem0 是 2026 年生产环境 AI Agent 首选的记忆层,也是 6 万+ 开发者选择用来给 LLM 应用添加长期、个性化上下文的事实标准方案——无需手写向量库、事实抽取流水线和遗忘过滤。2026-07-23 核验,Mem0 是<strong>唯一</strong>同时具备 Apache-2.0 开源(61,493 stars)和生产级 Cloud SaaS 的记忆层,广泛应用于客服机器人(记住回访用户的上一次工单)、个性化助手(跨会话记住饮食偏好)、多角色聊天应用,以及新一代把记忆当作一等公民的 Agent 框架(LangChain、LlamaIndex、CrewAI、AutoGen、Mastra)。</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4">本评测涵盖:Mem0 比手写 RAG + 向量库多做的工作、2026 年核验后的定价(Hobby 免费层 10,000 memories、Starter $19/月 50,000 memories、Pro $249/月无限 memories 加 Graph Memory、Enterprise 合同制含 SSO/审计/私有部署)、如何用几行 Python 或 TypeScript 把 Mem0 接入 LangChain 或原生 OpenAI/Anthropic Agent,以及 Mem0 与 Zep、Letta、Redis 向量搜索、自建 Pinecone + LLM 事实抽取的对比。数据来自 Mem0 定价页(2026-07-23 实时核验)、mem0ai/mem0 GitHub 仓库(最后提交 2026-07-23)和 Mem0 官方文档。</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4">如果你在 2026 年构建 AI Agent,想跳过「自己写事实抽取流水线」的税负,同时保留对记忆内容的控制权,本文就是参考指南。</p>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Mem0 做了什么(以及它不做什么)</h2>
+
+
+<p class="text-gray-700 leading-relaxed my-4">Mem0 是<strong>面向 AI 应用的记忆层</strong>,不是 LLM 路由器、网关或独立的向量数据库。它位于应用代码和 LLM 之间,从对话中抽取事实、结构化(并可选向量索引化)存储记忆、在查询时检索相关记忆,并作为上下文回传到 LLM prompt。核心抽象是 <code>memory.add()</code> 和 <code>memory.search()</code>——其余由平台处理。</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4">核心能力(2026-07-23 从 Mem0 文档与定价页核验):</p>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>自动事实抽取。</strong> 调用 <code>memory.add(messages=[...])</code> 时,Mem0 用一个 LLM(可配置,默认是 GPT-4o-mini 之类的快速模型)从对话里抽取原子事实。一句「我对贝类过敏,而且我喜欢深色模式」会被存成两条记忆:<code>{"role": "user", "content": "用户对贝类过敏"}</code> 和 <code>{"role": "user", "content": "用户偏好深色模式"}</code>。这是杀手特性——没有它,你得自己写抽取 prompt、管理 JSON 解析、决定什么该遗忘。</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>向量 + 结构化混合存储。</strong> Mem0 同时把记忆存成结构化 JSON(供直接查询)和向量嵌入(供语义检索)。默认向量库是 Qdrant(自托管或 Qdrant Cloud),但你可以换成 Pinecone、Weaviate、Chroma、pgvector 或 Redis。Cloud SaaS 自带托管向量库;自托管版则用你配置的任意一个。</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>可配置 LLM 提供商。</strong> Mem0 开箱支持 8+ LLM 提供商:OpenAI(GPT-4o、GPT-4-Turbo、GPT-3.5)、Anthropic(Claude 3.5 Sonnet、Haiku、Opus)、Google(Gemini 1.5 Pro/Flash)、Mistral(Large、Mixtral、Mistral-7B)、Groq(Llama 3.1 70B、Mixtral)、Ollama(任意本地模型)、AWS Bedrock(Claude / Llama / Titan)、Azure OpenAI。同一 SDK 调用对它们通用——只需改 <code>LLM_PROVIDER</code> 与 <code>LLM_API_KEY</code> 环境变量。</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Graph Memory(Pro 档及以上)。</strong> 在向量记忆之外,Mem0 Pro 新增图存储来追踪实体关系——如果用户提到「我老婆 Sarah」,之后又提到「Sarah 的生日」,图谱会把两个节点连起来,在检索时返回这个关系。这正是 Mem0 与普通 RAG 系统的差别:它记住的不仅是事实,还有关系。</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>通过 user_id 实现多用户隔离。</strong> 每次记忆调用都接受 <code>user_id</code>(可选 <code>agent_id</code>、<code>run_id</code>、<code>app_id</code>)。存储自动按 user 分区,单一 Mem0 实例可服务数千用户而不串数据。这是任何生产多租户 Agent 的基础。</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Docker 自托管。</strong> 开源 <code>mem0ai/mem0</code> 仓库自带完整 Docker Compose 配置,打包 API 服务、向量库、LLM worker、可选 Neo4j(用于 Graph Memory)。可在任意云(AWS、GCP、Azure、阿里云、腾讯云)运行,无需走 Mem0 Cloud SaaS。</li>
+</ul>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Mem0 不做的事</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>不做 LLM 推理。</strong> Mem0 不是 LLM 提供商。你仍然需要 OpenAI / Anthropic / Gemini 的 API key 来做事实抽取和 Agent 主循环。Mem0 做编排,不做生成。</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>不做 RAG-as-a-Service。</strong> Mem0 处理<strong>对话记忆</strong>,不处理文档检索。如果你要在 PDF 库里搜并加引用,你要的是 Pinecone 或 Weaviate 这类向量库(而非 Mem0)。两者互补:Mem0 管用户级对话记忆,向量库管文档级检索。</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>不做 Agent 编排。</strong> Mem0 不跑 Agent loop。你仍然用 LangChain / LlamaIndex / CrewAI / AutoGen / Mastra 或你自己的代码来编排工具调用、规划和执行。Mem0 是记忆层,不是大脑。</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>无内置记忆检视 UI。</strong> Mem0 SaaS 自带 dashboard 用于浏览记忆,但自托管版本只有 API。若你需要给非工程师用的精致记忆检视 UI,要么自己写,要么用 Mem0 Cloud。</li>
+</ul>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">2026 年核验后的定价(来源 mem0.ai/pricing,2026-07-23 核验)</h2>
+
+
+<p class="text-gray-700 leading-relaxed my-4">Mem0 提供四档定价。下列数字 2026-07-23 实时从 <code>mem0.ai/pricing</code> 抓取——任何采购决策前请再核验一次,因为 Mem0 在 2024-2025 年调整过两次 Hobby/Starter 配额。</p>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Hobby(免费)</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>$0 / 月</strong>——无需信用卡</li>
+<li><strong>10,000 条记忆</strong>存储(按记忆条目数计,非字节)</li>
+<li><strong>1,000 次 retrieval API 调用 / 月</strong></li>
+<li>无限 end users</li>
+<li>1 个项目</li>
+<li>社区支持(Discord + GitHub issues)</li>
+<li>适合:原型、side project、个人使用</li>
+</ul>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Starter($19/月)</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>$19 / 月</strong></li>
+<li><strong>50,000 条记忆</strong></li>
+<li><strong>5,000 次 retrieval API 调用 / 月</strong></li>
+<li>无限 end users</li>
+<li>1 个项目</li>
+<li>社区支持</li>
+<li>适合:独立开发者上线第一个面向付费用户的 AI Agent 或聊天应用</li>
+</ul>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Pro($249/月)</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>$249 / 月</strong></li>
+<li><strong>无限条记忆</strong></li>
+<li><strong>50,000 次 retrieval API 调用 / 月</strong></li>
+<li>无限 end users</li>
+<li><strong>多项目支持</strong></li>
+<li><strong>Graph Memory</strong>(在向量记忆之上追踪实体关系)</li>
+<li><strong>高级分析</strong>(记忆增长、检索命中率、延迟面板)</li>
+<li><strong>专属 Slack 频道</strong>支持</li>
+<li>适合:有数千活跃用户的成长型 AI 产品,或需要 Graph Memory 做实体感知检索的团队</li>
+</ul>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Enterprise(合同制)</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>自定义定价</strong>(通常中型客户起价 $1,000-$2,500/月)</li>
+<li>无限条记忆</li>
+<li>无限 retrieval API 调用</li>
+<li><strong>On-prem 部署</strong>(Docker / Kubernetes,数据不出你的 VPC)</li>
+<li><strong>SSO</strong>(Okta、Azure AD、Google Workspace)</li>
+<li><strong>审计日志</strong>(SOC 2 Type II ready)</li>
+<li><strong>自定义 SLA</strong>(通常 99.9% 或 99.95%)</li>
+<li>适合:受监管行业(金融、医疗、政府),或有严格数据驻留要求的团队</li>
+</ul>
+
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">你可能漏算的成本</h3>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>LLM 成本另算。</strong> Mem0 用一个 LLM 做事实抽取(可选的检索重排序步骤也用一个 LLM)。Hobby/Starter/Pro 定价<strong>不包含</strong> LLM token。一个高流量应用每月做上百万次 memory add,可能额外花掉 $200-$500/月的 OpenAI 或 Anthropic API 费用,与 Mem0 订阅完全独立。</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>检索配额与新增配额不对称。</strong> 典型聊天应用是 1 add(每条用户消息)+ 1 search(每次助手回复前)。Hobby 计划 1,000 次 search/月 ≈ 每天 33 条消息——对真实产品远远不够。Starter 5,000 次 search ≈ 每天 166 条,才是小规模生产应用的现实下限。</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Cloud 用户另付向量库。</strong> Mem0 Cloud 自带托管 Qdrant,但如果想用 Pinecone / Weaviate / pgvector,你要单独给那些厂商付款。Cloud 订阅只覆盖 Mem0 的 API 与 graph 层,不覆盖底层向量库。</li>
+</ul>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Graph Memory 存储成本。</strong> 在 Pro 上启用 Graph Memory 后,Neo4j(或 Mem0 托管的等价方案)就成为部署的一部分。AWS/GCP 托管 Neo4j 集群在典型 Pro 工作负载下预计 +$50-$200/月。</li>
+</ul>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Mem0 如何接入 AI Agent 流水线</h2>
+
+
+<p class="text-gray-700 leading-relaxed my-4">Mem0 位于 Agent 框架与 LLM 之间。最简模式:</p>
+
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded mb-4 overflow-x-auto text-sm"><code class="language-python">
+from mem0 import Memory
+from openai import OpenAI
+
+# 1. 初始化 memory
+memory = Memory()
+
+# 2. 把对话加入记忆
+messages = [
+    {"role": "user", "content": "我对贝类过敏,而且我喜欢深色模式。"},
+    {"role": "assistant", "content": "记下了,我会记住这两条。"}
+]
+memory.add(messages, user_id="user-12345")
+
+# 3. 下一次 LLM 调用前检索相关记忆
+relevant = memory.search(
+    query="我今晚应该避免什么食物?",
+    user_id="user-12345",
+    limit=5
+)
+
+# 4. 把记忆注入 prompt
+context = "\n".join([m["memory"] for m in relevant["results"]])
+system_prompt = f"你是一个有用的助手。用户上下文:\n{context}"
+
+# 5. 用增强后的 prompt 调用 LLM
+client = OpenAI()
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": "今晚推荐什么餐厅?"}
+    ]
+)
+print(response.choices[0].message.content)
+</code></pre>
+
+
+<p class="text-gray-700 leading-relaxed my-4">TypeScript、Java、Go、Ruby 用同一模式。Mem0 SDK 是一等公民(非社区维护),自带 TypeScript 类型。</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4">LangChain 用户可直接用 <code>Mem0ChatMemory</code> 类,与 <code>ConversationChain</code>、<code>AgentExecutor</code>、<code>RunnableWithMessageHistory</code> 配合。LlamaIndex 用户有 <code>Mem0Memory</code> 类,与 <code>ChatMemoryBuffer</code> 与 agent runner 配合。CrewAI / AutoGen / Mastra 通过原生 Mem0 client 集成(暂无专门 wrapper)。</p>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Mem0 与 2026 年的替代方案对比</h2>
+
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+<thead class="bg-gray-50"><tr>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">维度</th>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Mem0</th>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Zep</th>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Letta</th>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Pinecone + 自建</th>
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Redis 向量搜索</th>
+</tr></thead>
+<tbody class="divide-y divide-gray-200 bg-white">
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">许可证</td>
+<td class="px-4 py-3 text-sm text-gray-700">Apache-2.0(核心)+ Cloud SaaS</td>
+<td class="px-4 py-3 text-sm text-gray-700">Apache-2.0</td>
+<td class="px-4 py-3 text-sm text-gray-700">Apache-2.0</td>
+<td class="px-4 py-3 text-sm text-gray-700">专有 SaaS</td>
+<td class="px-4 py-3 text-sm text-gray-700">Redis Source Available(RSALv2/AGPLv3)</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">自托管</td>
+<td class="px-4 py-3 text-sm text-gray-700">可(Docker)</td>
+<td class="px-4 py-3 text-sm text-gray-700">可</td>
+<td class="px-4 py-3 text-sm text-gray-700">可</td>
+<td class="px-4 py-3 text-sm text-gray-700">否(只有 Pinecone)</td>
+<td class="px-4 py-3 text-sm text-gray-700">可</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">自动事实抽取</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(基于 LLM)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(基于 LLM)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(嵌入 agent loop)</td>
+<td class="px-4 py-3 text-sm text-gray-700">否——你写 prompt</td>
+<td class="px-4 py-3 text-sm text-gray-700">否——你写 prompt</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">Graph Memory</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(Pro+)</td>
+<td class="px-4 py-3 text-sm text-gray-700">否</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(内置 agent 上下文)</td>
+<td class="px-4 py-3 text-sm text-gray-700">否</td>
+<td class="px-4 py-3 text-sm text-gray-700">否</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">多用户隔离</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(user_id 分区)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(user_id)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(user/agent IDs)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(namespace)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(key 前缀)</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">含向量库</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(默认 Qdrant)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(Postgres + pgvector)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(Postgres + pgvector)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(Pinecone 托管)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(Redis 托管)</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">Cloud SaaS</td>
+<td class="px-4 py-3 text-sm text-gray-700">是</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(Zep Cloud)</td>
+<td class="px-4 py-3 text-sm text-gray-700">否(只自托管)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(Pinecone)</td>
+<td class="px-4 py-3 text-sm text-gray-700">是(Redis Cloud)</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">最低月费</td>
+<td class="px-4 py-3 text-sm text-gray-700">$0(Hobby)/ $19(Starter)</td>
+<td class="px-4 py-3 text-sm text-gray-700">$0(OSS)/ $19(Zep Cloud Starter)</td>
+<td class="px-4 py-3 text-sm text-gray-700">$0(OSS)</td>
+<td class="px-4 py-3 text-sm text-gray-700">$50(Pinecone Standard)</td>
+<td class="px-4 py-3 text-sm text-gray-700">$0(OSS)/ $5(Redis Cloud Essentials)</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">LangChain 集成</td>
+<td class="px-4 py-3 text-sm text-gray-700">一等公民</td>
+<td class="px-4 py-3 text-sm text-gray-700">一等公民</td>
+<td class="px-4 py-3 text-sm text-gray-700">一等公民</td>
+<td class="px-4 py-3 text-sm text-gray-700">DIY</td>
+<td class="px-4 py-3 text-sm text-gray-700">DIY</td>
+</tr>
+<tr>
+<td class="px-4 py-3 text-sm text-gray-700">最佳场景</td>
+<td class="px-4 py-3 text-sm text-gray-700">上线快的生产 Agent</td>
+<td class="px-4 py-3 text-sm text-gray-700">长上下文 + 时间加权记忆</td>
+<td class="px-4 py-3 text-sm text-gray-700">有状态 Agent 框架</td>
+<td class="px-4 py-3 text-sm text-gray-700">DIY 极客</td>
+<td class="px-4 py-3 text-sm text-gray-700">已在用 Redis 的团队</td>
+</tr>
+</tbody></table></div>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Mem0 优势:</strong>零提示工程成本(一个 <code>memory.add()</code> 就有可用记忆)、Pro 档提供 Graph Memory 实现实体感知检索、GitHub 社区最大(61,493 stars,Zep 约 3,500、Letta 约 14,000)、LangChain / LlamaIndex 集成最干净。</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Mem0 劣势:</strong>事实抽取异步(LLM 调用加 200-500ms 延迟,比纯向量检索慢)、Pro $249/月对个人偏高、Graph Memory 需引入 Neo4j 增加自托管运维复杂度、Mem0 不能替代向量库(你仍然需要它来做文档检索)。</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Zep 的反方观点:</strong>Zep 专为长上下文窗口 + 时间加权记忆衰减优化——如果你的场景是「记住用户 30 轮前说过的话、按近因性加权」,Zep 的检索模型更精细。Mem0 在 Hobby/Starter 上的纯向量检索相对朴素。</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Letta 的反方观点:</strong>Letta(原 MemGPT)把记忆管理内嵌进 agent loop 本身——LLM 主动决定何时读写记忆。这更强大,但要求跑 Letta 兼容的 agent 框架,不是简单调 Mem0 API。Mem0 是框架无关的。</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Pinecone + 自建的反方观点:</strong>如果你已有向量库和 LLM 运维团队,用 <code>pinecone.upsert()</code> + 一条抽取 prompt + 一个遗忘过滤就能搭起自有记忆层,完全可控。Mem0 的价值在你没有那支工程团队时最明显。</p>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Redis 的反方观点:</strong>如果你的栈已经在跑 Redis(缓存、会话、队列),用 <code>redis-vector</code> 管记忆可让一切共用一个引擎。代价是没有事实抽取——你存的是原始消息,不是结构化记忆,检索质量取决于你的 embedding + 分块策略。</p>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">何时选 Mem0(以及何时不要)</h2>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选 Mem0 当:</strong></p>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>你在构建多轮 AI Agent,<strong>不想</strong>自己写事实抽取 prompt</li>
+<li>你需要跨用户的记忆隔离(多租户 SaaS Agent、客服机器人、个性化助手)</li>
+<li>你想尽快上线,优先选择托管 SaaS 而不是自托管基础设施</li>
+<li>你需要 Graph Memory 做实体关系感知(Pro 档及以上)</li>
+<li>你已经在用 LangChain / LlamaIndex / CrewAI,想直接 drop-in 一个记忆类</li>
+</ul>
+
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>不要选 Mem0 当:</strong></p>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>你在原型阶段,向量库是过度设计(直接用 LLM 上下文窗口承载对话历史,上限 ~50K tokens)</li>
+<li>你有严格数据驻留要求,Mem0 Cloud 被排除(只剩 Enterprise 自托管,需要走合同)</li>
+<li>你要的是文档搜索 RAG,不是对话记忆(用 Pinecone / Weaviate / Qdrant——Mem0 不是替代)</li>
+<li>你的工程团队小,Mem0 + Neo4j + Qdrant 自托管栈运维成本过高(改用 Mem0 Cloud,或退回到原始对话历史)</li>
+<li>你需要 sub-100ms 检索延迟(Mem0 的 LLM 抽取加 200-500ms——延迟关键路径请用预计算向量索引)</li>
+</ul>
+
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">来源</h2>
+
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li>Mem0 定价页:mem0.ai/pricing——2026-07-23 核验</li>
+<li>Mem0 文档:docs.mem0.ai</li>
+<li>Mem0 Python SDK:pypi.org/project/mem0ai</li>
+<li>Mem0 TypeScript SDK:npmjs.com/package/mem0ai</li>
+<li>Mem0 GitHub 仓库:github.com/mem0ai/mem0——61,493 stars、Apache-2.0、最后提交 2026-07-23</li>
+<li>Mem0 支持的 LLM:docs.mem0.ai/components/llms/overview——OpenAI、Anthropic、Gemini、Mistral、Groq、Ollama、AWS Bedrock、Azure OpenAI</li>
+<li>LangChain 集成:docs.mem0.ai/integrations/langchain</li>
+<li>LlamaIndex 集成:docs.mem0.ai/integrations/llamaindex</li>
+<li>自托管 Docker Compose:github.com/mem0ai/mem0/tree/main/server——打包 Qdrant + Neo4j</li>
+<li>对比替代:Zep(getzep.com)、Letta(letta.com)、Pinecone(pinecone.io)、Redis 向量搜索(redis.io/docs/latest/develop/interact/search-and-query/vectors)</li>
+</ul>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div class="mb-8"><a href="/zh/tutorials" class="text-blue-600 hover:underline text-sm">← 返回教程</a></div>
+    <div class="flex items-center gap-3 mb-4"><span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded">提供商评测</span><time datetime={date} class="text-sm text-gray-500">2026年7月23日</time></div>
+    <div set:html={zhBody} />
+    <hr class="my-12 border-gray-200" />
+    <section class="mt-8"><p class="text-sm text-gray-500 mb-2"><strong>披露</strong></p><p class="text-sm text-gray-500">APIRank 可能从本文合作链接中获得联盟佣金。编辑判断保持独立。</p></section>
+  </article>
+</BaseLayout>

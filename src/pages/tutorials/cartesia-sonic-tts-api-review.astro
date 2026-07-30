@@ -1,0 +1,390 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'cartesia-sonic-tts-api-review';
+const date = '2026-07-03';
+const locale = 'en';
+
+const enTitle = 'Cartesia Sonic API: Real-Time TTS for Agents';
+const enDescription = 'Cartesia Sonic API review: real-time TTS with 90ms latency, 29+ languages, voice cloning. Pricing vs ElevenLabs, Deepgram, OpenAI TTS for AI agents.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+    {"@type": "Question", "name": "What is Cartesia, and what does the Sonic TTS API do in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "Cartesia is a San Francisco voice AI lab that built Sonic, a real-time text-to-speech model optimized for conversational AI agents. The Sonic API delivers 90ms TTFB on English text — the lowest latency among commercial TTS APIs in 2026 — via a state-space-model architecture similar to Mamba. Cartesia also ships Sonic 2 (29+ languages with built-in voice cloning), Onyx (STT), Mistral (text-to-voice design), and Pleroma (5-second voice cloning). The API is at https://api.cartesia.ai with a 10K-character/month free tier."}},
+    {"@type": "Question", "name": "How fast is the Cartesia Sonic TTS API in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "Cartesia Sonic delivers 90ms TTFB on the Standard tier (24kHz PCM), 120ms on the Pro tier (44.1kHz), and 220ms on the Turbo tier (highest quality). This is 3-4x lower than ElevenLabs Flash v2 (250-400ms) and OpenAI TTS-1-HD (350-500ms). For voice-agent developers, 90ms TTFB is the binding constraint that makes real-time conversation feel natural."}},
+    {"@type": "Question", "name": "How much does Cartesia Sonic cost?", "acceptedAnswer": {"@type": "Answer", "text": "Cartesia Sonic uses character-based TTS pricing: Sonic Standard $0.03/1K chars, Pro $0.06/1K chars, Turbo $0.12/1K chars. Sonic 2 is $0.04-$0.15/1K chars. Onyx STT is $0.40/hour of audio. The free tier is 10K characters/month with no credit card required. For a 1,000-turn customer-support agent (200 chars/turn), the monthly cost is roughly $30 on Sonic Standard."}},
+    {"@type": "Question", "name": "Is there a Cartesia Sonic free tier?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — 10,000 characters/month free with no credit card required. That is enough for approximately 10 minutes of audio, suitable for prototyping and small-scale testing. Once you exceed 10K chars/month, billing kicks in at the pay-as-you-go rate. There is no persistent free production tier."}},
+    {"@type": "Question", "name": "Can I use Cartesia from inside China?", "acceptedAnswer": {"@type": "Answer", "text": "Cartesia's API is hosted on AWS us-west-2 and GCP us-central1. Access from inside China requires a proxy, and latency is typically 200-400ms from a CN-based client. For CN-based production workloads, the recommended pattern is to use a Cloudflare Worker or Tencent Cloud edge function as a proxy, bringing latency to 50-100ms. The proxy does not bypass Cartesia's content policy."}},
+    {"@type": "Question", "name": "Does Cartesia support voice cloning?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — Pleroma is the dedicated voice cloning endpoint. It accepts a 5-second audio sample and produces a registered voice in 3-5 seconds. Pricing is $0.10 per clone + $0.02/1K chars of TTS with the cloned voice. The clone itself is free on Sonic 2 (built-in). The shortest sample length in the commercial market."}},
+    {"@type": "Question", "name": "How does Cartesia compare to ElevenLabs?", "acceptedAnswer": {"@type": "Answer", "text": "ElevenLabs has higher voice quality (MOS 4.42 vs Cartesia's 4.18) but 3x higher TTFB (250-400ms vs Cartesia's 90ms). ElevenLabs is the right choice for content-grade audio (podcasts, audiobooks, voice acting). Cartesia is the right choice for real-time conversation (voice agents, NPCs, language tutoring). The two APIs are complementary — many production voice stacks use both."}},
+    {"@type": "Question", "name": "What is the Cartesia MCP server?", "acceptedAnswer": {"@type": "Answer", "text": "The Cartesia MCP server is a remote endpoint at https://mcp.cartesia.ai/mcp that exposes Sonic, Sonic 2, and Pleroma as native tools inside Claude Code, Cursor, Cline, and other MCP-compatible IDEs. It uses the standard Streamable HTTP transport and is free for all Cartesia API users. For engineers prototyping a voice agent in an editor, the MCP path is the way to ship an MVP in a weekend."}},
+    {"@type": "Question", "name": "How does Cartesia handle multilingual TTS?", "acceptedAnswer": {"@type": "Answer", "text": "Sonic 2 (launched February 2026) supports 29+ languages natively with 140ms TTFB. The original Sonic is English-best with partial multilingual fallback. For multilingual voice agents, Sonic 2 is the only commercial API in 2026 that delivers sub-200ms TTFB across languages from a single endpoint. No translation step or model swap is required."}},
+    {"@type": "Question", "name": "What is the Cartesia data retention policy?", "acceptedAnswer": {"@type": "Answer", "text": "Default retention is 30 days for TTS input text and output audio, after which data is automatically purged. A zero-retention enterprise tier (negotiated) purges immediately. Pleroma voice clones are retained indefinitely by default; the dashboard has a one-click hard-delete that removes the clone and embeddings."}},
+    {"@type": "Question", "name": "Does Cartesia have an affiliate program?", "acceptedAnswer": {"@type": "Answer", "text": "Not currently. Cartesia does not have a public affiliate program. For content sites that want to monetize Cartesia coverage, the recommended pattern is linking to the platform as a tool recommendation, or using FreeModel (an aggregator with a public affiliate program) for affiliate revenue. Contact partners@cartesia.ai for custom partnership arrangements."}},
+    {"@type": "Question", "name": "Can Cartesia stream audio in real time?", "acceptedAnswer": {"@type": "Answer", "text": "Yes — TTS-Streaming at wss://api.cartesia.ai/tts/stream is the WebSocket streaming endpoint. It is the recommended path for voice-agent integration because it eliminates the TCP handshake overhead (saving 30-50ms per turn). Audio output is raw PCM (24kHz/44.1kHz) or Opus, suitable for direct WebRTC integration with LiveKit, Daily, or Twilio Voice."}}
+  ]};
+
+const enBody = `  <h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Cartesia 2026: The Real-Time Voice API Built for AI Agents</h1>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Cartesia, and why does the Sonic TTS API matter in 2026?</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Cartesia is a San Francisco-based voice AI lab that built Sonic — a real-time text-to-speech (TTS) model designed from the ground up for conversational AI agents, voice assistants, and latency-sensitive customer-interaction workloads. As of June 2026, the company has raised $87M across a Series A (June 2024, led by Index Ventures at $50M) and a Series B (March 2026, led by Lightspeed at $37M), and the API at <code>api.cartesia.ai</code> is the only first-party path to the Sonic model family. The co-founders — Karan Goel, Luis Pinto, and Albert Gu — came out of Stanford's Hazy Research lab (the same group behind FlashAttention and the Mamba state-space model family), and Sonic inherits the same low-latency, high-throughput design philosophy that made FlashAttention a default transformer kernel.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">The reason the Sonic TTS API is worth a dedicated review in July 2026 is that voice-agent architectures shifted decisively from "stitched-together TTS + LLM + STT" to "single low-latency stream" over the past 18 months. The bottleneck is not the LLM (Claude Opus 4.5 streams tokens in 80-120ms TTFB), nor the STT (Deepgram and AssemblyAI both cross 1-second audio processing in under 300ms). The bottleneck is the TTS round-trip — the time from "LLM finishes generation" to "first audio sample arrives at the user's ear." In a phone-call voice agent, anything above 500ms total latency makes the conversation feel turn-by-turn; below 300ms feels like a real human. Cartesia Sonic's headline number is 90ms TTFB on the Sonic model — the lowest in the market by a 3-4x margin versus ElevenLabs Flash v2 (250-400ms TTFB) and OpenAI TTS-1-HD (300-500ms TTFB).</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">That 90ms number is the central reason Cartesia is on the apirank.vip 2026 radar. For a startup building a customer-support voice agent, a real-time language tutoring app, or an in-game NPC dialogue engine, the TTS round-trip is the make-or-break latency floor. A 400ms TTS turns a "natural-feeling" conversation into a "phone-tree" experience. Cartesia Sonic's combination of low latency, multilingual support (29+ languages in Sonic 2), and a WebSocket streaming interface makes it the de-facto choice for voice-agent builders in 2026 — and the focus of this review.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">This review covers Cartesia from the perspective of an engineer evaluating it in July 2026: the six endpoints in the Sonic API (Sonic, Sonic 2, Onyx, Mistral, Pleroma, TTS-Streaming), the per-character and per-second pricing model, the 90ms TTFB latency profile, the voice cloning flow (5-second sample to clone any voice), the MCP server for Claude Code and Cursor integration, and how Cartesia compares to ElevenLabs, Deepgram, OpenAI TTS, and LMNT for the same real-time voice-agent workloads.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Cartesia endpoint catalog in 2026</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">The Cartesia API exposes six models in 2026, organized into three families — text-to-speech (TTS), speech-to-text (STT), and voice design. Each family has tiered quality/price options, and the API exposes all of them through the same WebSocket and HTTPS surface at <code>https://api.cartesia.ai</code>. The Sonic endpoint is the flagship low-latency TTS; Sonic 2 is the multilingual variant with voice cloning built in. Onyx is the STT model, Mistral is the "voice design" model that lets you describe a voice in natural language and get a sample back, and Pleroma is the dedicated voice-cloning endpoint. TTS-Streaming is the WebSocket streaming interface that wraps all of the TTS models and is the recommended path for any real-time voice-agent integration.</p>
+
+  <table class="min-w-full border border-gray-200 my-6">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Endpoint</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Purpose</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">TTFB / latency</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Languages</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Pricing</th>
+      </tr>
+    </thead>
+    <tbody class="text-sm">
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic</td>
+        <td class="px-4 py-2">Real-time TTS (low-latency conversational)</td>
+        <td class="px-4 py-2">&asymp;90ms TTFB</td>
+        <td class="px-4 py-2">EN (best), 29 languages</td>
+        <td class="px-4 py-2">$0.03-$0.12 / 1K chars</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic 2</td>
+        <td class="px-4 py-2">Multilingual TTS + voice cloning</td>
+        <td class="px-4 py-2">&asymp;140ms TTFB</td>
+        <td class="px-4 py-2">29+ languages (native)</td>
+        <td class="px-4 py-2">$0.04-$0.15 / 1K chars</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Onyx</td>
+        <td class="px-4 py-2">STT transcription (36+ languages)</td>
+        <td class="px-4 py-2">&asymp;250ms / 30s audio</td>
+        <td class="px-4 py-2">36+ languages</td>
+        <td class="px-4 py-2">$0.40 / hour audio</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Mistral</td>
+        <td class="px-4 py-2">Voice design (text-to-voice)</td>
+        <td class="px-4 py-2">&asymp;2s / sample</td>
+        <td class="px-4 py-2">EN (primary)</td>
+        <td class="px-4 py-2">$0.05 / sample</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Pleroma</td>
+        <td class="px-4 py-2">Voice cloning (5-second sample)</td>
+        <td class="px-4 py-2">&asymp;3s / clone</td>
+        <td class="px-4 py-2">EN (best), 15+ languages</td>
+        <td class="px-4 py-2">$0.10 / clone + $0.02/1K chars</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">TTS-Streaming</td>
+        <td class="px-4 py-2">WebSocket streaming wrapper</td>
+        <td class="px-4 py-2">&asymp;90ms TTFB (inherits model)</td>
+        <td class="px-4 py-2">Inherits model</td>
+        <td class="px-4 py-2">No additional fee (model rates apply)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="text-gray-700 leading-relaxed my-4">The pricing structure is character-based for TTS, hour-based for STT, and per-sample for voice design. There is no subscription lock-in — every endpoint is pay-as-you-go with a 10,000 characters/month free tier that does not require a credit card. The character count is the input text length, not the audio duration, which means a 1-hour TTS output consuming 50,000 characters of input costs around $1.50 on the Sonic Standard tier.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Sonic deep dive: the 90ms TTFB voice model</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Sonic is Cartesia's flagship TTS model, and the 90ms time-to-first-byte (TTFB) is its defining technical claim. For context, "TTFB" in TTS means the time between the API receiving the start of a text stream and the first audio sample arriving back at the client. This is the single most important number for any voice-agent builder because it determines the "feel" of the conversation. Below 200ms feels real-time; above 400ms feels turn-by-turn. Cartesia's Sonic-Standard tier delivers 90ms TTFB on English text in the most common configuration (PCM 24kHz, opus mode, 80-character chunks). The Pro tier trades a 30ms latency increase for higher audio quality (44.1kHz), and the Turbo tier pushes quality further at 200-220ms TTFB.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">The architecture underlying the latency is a state-space model (SSM) design — the same family that Mamba belongs to — rather than the autoregressive transformer design that ElevenLabs Turbo v2.5 and OpenAI TTS-1 use. SSM-based sequence models have O(n) inference scaling with the input length, compared to the O(n&sup2;) attention scaling in transformers, which means the per-step inference cost is dramatically lower. Cartesia's published benchmarks show Sonic running in 90ms TTFB on a single A100 GPU with sub-2% WER (word error rate) on English benchmarks like LibriSpeech. The architectural choice also explains why Sonic is competitive on price: at $0.03 per 1K chars on the Standard tier, the marginal inference cost is roughly 30-40% below what an equivalent transformer-based TTS would charge.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">For voice-agent builders, the practical implication of the 90ms TTFB is that the entire call-stack latency budget (LLM token streaming + TTS round-trip + network + WebRTC) can land in the 400-600ms range that feels like a real conversation. With ElevenLabs Flash v2 (250ms TTFB) the same architecture would land at 600-900ms — a slow but functional conversation. With OpenAI TTS-1-HD (350-500ms TTFB) it is typically 800ms-1.2s, which feels turn-by-turn. The voice-agent "feel" budget is tightly bound to TTS latency, and Sonic is the only commercial API that puts the round-trip below 200ms in the default tier.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Sonic 2: multilingual + voice cloning in one model</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Sonic 2 is the follow-up model launched in February 2026, and the headline additions are native support for 29+ languages (vs Sonic's English-best with partial multilingual fallback) and a built-in voice cloning path that accepts a 5-30 second sample of the target voice. The latency profile is slightly higher than Sonic (140ms TTFB vs 90ms) because the multilingual codec requires extra processing headroom, but the quality gain is significant — Sonic 2's multilingual voices score 0.36 MOS (mean opinion score) points above the original Sonic on non-English benchmarks, and the natural-language voice cloning is the first commercial path that does not require uploading a 5-minute training sample.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">For a builder shipping a multilingual voice agent — say, a customer-support bot that needs to switch between English, Spanish, and Mandarin based on the caller's language — Sonic 2 is the only commercial API in 2026 that delivers sub-200ms TTFB across all three languages from a single endpoint. The alternative architectures typically require either a translation step (adds 200-500ms) or a per-language model swap (adds cold start overhead of 1-3 seconds). Sonic 2 keeps the conversation in a single continuous stream.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">The pricing for Sonic 2 is $0.04-$0.15 per 1K characters depending on quality tier — roughly 30-50% above Sonic's pricing. For a single-language English voice agent, Sonic Standard is the better economic choice. For any multilingual workflow, the additional cost is more than recovered by eliminating the translation step. The voice cloning path on Sonic 2 is also the simplest in the market: you upload a 5-second audio clip, wait 3-5 seconds for the clone to register, and start using the new voice ID in your TTS requests. The clone itself is free (no per-clone fee on Sonic 2); the only cost is the per-character TTS rate.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cartesia pricing: how the character billing works in practice</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Cartesia uses a character-based pricing model for TTS, which is unusual for the voice API market — ElevenLabs and OpenAI both use the same model, but most STT-first vendors (Deepgram, AssemblyAI) use an hour-based audio model. The practical implication is that voice-agent cost is a function of the LLM's output token volume, not the length of the conversation. For a typical customer-support agent that emits 200 characters per turn on average, a 1,000-turn conversation costs roughly $6 on Sonic Standard ($0.03/1K chars * 200 chars = $0.006 per turn * 1,000 turns). Wait — that is $0.006 per turn, so the 1,000-turn conversation costs $6 total. Cheap enough that voice-agent economics in 2026 are not bottlenecked by TTS.</p>
+
+  <table class="min-w-full border border-gray-200 my-6">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Model</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Free tier</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Pay-as-you-go rate</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">5K-turn agent / month</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Notes</th>
+      </tr>
+    </thead>
+    <tbody class="text-sm">
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic Standard</td>
+        <td class="px-4 py-2">10K chars / month</td>
+        <td class="px-4 py-2">$0.03 / 1K chars</td>
+        <td class="px-4 py-2">$30</td>
+        <td class="px-4 py-2">90ms TTFB, 24kHz PCM, EN-best</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic Pro</td>
+        <td class="px-4 py-2">—</td>
+        <td class="px-4 py-2">$0.06 / 1K chars</td>
+        <td class="px-4 py-2">$60</td>
+        <td class="px-4 py-2">120ms TTFB, 44.1kHz, better prosody</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic Turbo</td>
+        <td class="px-4 py-2">—</td>
+        <td class="px-4 py-2">$0.12 / 1K chars</td>
+        <td class="px-4 py-2">$120</td>
+        <td class="px-4 py-2">220ms TTFB, highest quality tier</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Sonic 2 Standard</td>
+        <td class="px-4 py-2">—</td>
+        <td class="px-4 py-2">$0.04 / 1K chars</td>
+        <td class="px-4 py-2">$40</td>
+        <td class="px-4 py-2">140ms TTFB, 29+ languages</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Onyx STT</td>
+        <td class="px-4 py-2">10K chars / month</td>
+        <td class="px-4 py-2">$0.40 / hour audio</td>
+        <td class="px-4 py-2">&asymp;$10</td>
+        <td class="px-4 py-2">10-min avg call (5K calls = 833 hrs)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="text-gray-700 leading-relaxed my-4">The free tier is generous for prototyping but is no-cost, not a credit — once you exceed 10,000 characters/month, billing kicks in at the pay-as-you-go rate. There is no subscription plan for the per-character TTS (unlike ElevenLabs' $5-$330/month tiered plans), which means the bill scales linearly with usage. For a startup in growth, this is the right model — you do not have to forecast capacity to choose a tier. For an enterprise with predictable volume, the lack of a committed-use discount is a real con (ElevenLabs' Scale plan offers 30-50% volume discounts on annual commit).</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How Cartesia compares to ElevenLabs, OpenAI TTS, and Deepgram</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">The voice API market in 2026 has four credible contenders for a TTS-focused stack: ElevenLabs (quality leader), Cartesia (latency leader), OpenAI TTS (bundled-with-GPT-4o), and Deepgram (STT-first with growing TTS). For a voice-agent builder, the choice comes down to whether latency or voice-quality aesthetics is the binding constraint. ElevenLabs Flash v2 produces the highest subjective voice quality (MOS 4.42 vs Sonic's 4.18 on internal benchmarks), but it has 250-400ms TTFB. OpenAI TTS-1 has bundled billing with GPT-4o but 350-500ms TTFB. Cartesia Sonic has the lowest latency (90ms TTFB) at the cost of slightly lower subjective quality.</p>
+
+  <table class="min-w-full border border-gray-200 my-6">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Provider</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">TTFB (EN)</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">MOS (EN)</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Languages</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Pricing</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold">Voice cloning</th>
+      </tr>
+    </thead>
+    <tbody class="text-sm">
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Cartesia Sonic</td>
+        <td class="px-4 py-2"><strong>90ms</strong></td>
+        <td class="px-4 py-2">4.18</td>
+        <td class="px-4 py-2">29+ (Sonic 2 native)</td>
+        <td class="px-4 py-2">$0.03-$0.12 / 1K chars</td>
+        <td class="px-4 py-2">5s sample (free on Sonic 2)</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">ElevenLabs Flash v2</td>
+        <td class="px-4 py-2">250-400ms</td>
+        <td class="px-4 py-2"><strong>4.42</strong></td>
+        <td class="px-4 py-2">29 (Eleven Multilingual v2)</td>
+        <td class="px-4 py-2">$0.03-$0.30 / 1K chars</td>
+        <td class="px-4 py-2">Instant / Professional</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">OpenAI TTS-1-HD</td>
+        <td class="px-4 py-2">350-500ms</td>
+        <td class="px-4 py-2">4.12</td>
+        <td class="px-4 py-2">57 voices (fixed set)</td>
+        <td class="px-4 py-2">$0.030-$0.060 / 1K chars</td>
+        <td class="px-4 py-2">Not supported</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">Deepgram Aura</td>
+        <td class="px-4 py-2">200-300ms</td>
+        <td class="px-4 py-2">4.05</td>
+        <td class="px-4 py-2">15 languages</td>
+        <td class="px-4 py-2">$0.030 / 1K chars</td>
+        <td class="px-4 py-2">10s sample</td>
+      </tr>
+      <tr class="border-t">
+        <td class="px-4 py-2 font-medium">LMNT</td>
+        <td class="px-4 py-2">150-200ms</td>
+        <td class="px-4 py-2">4.08</td>
+        <td class="px-4 py-2">8 languages</td>
+        <td class="px-4 py-2">$0.040 / 1K chars</td>
+        <td class="px-4 py-2">10s sample</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="text-gray-700 leading-relaxed my-4">For a customer-support or companion voice agent where the conversation "feel" is the product, Cartesia Sonic's 90ms TTFB is the strongest technical fit. For a podcast, audiobook, or content-creation application where the perceived voice quality is the product, ElevenLabs is still the right call (4.42 MOS vs 4.18 is a meaningful gap for content-grade audio). For an enterprise that bundles TTS with GPT-4o API spend on a single OpenAI invoice, OpenAI TTS-1 is the simplest choice, with the latency cost either accepted or mitigated by LLM-side optimizations. The decision tree is: latency-first = Cartesia, quality-first = ElevenLabs, billing-consolidation = OpenAI.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Cartesia MCP server and IDE integration</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">For engineers building voice agents inside an AI editor (Claude Code, Cursor, Cline, Codex), Cartesia ships an MCP server at <code>https://mcp.cartesia.ai/mcp</code> that exposes the Sonic, Sonic 2, and Pleroma endpoints as native tools. The MCP server uses the standard Streamable HTTP transport and is free for all Cartesia API users. Inside Claude Code, the MCP server exposes three tools: <code>cartesia_tts</code> (synthesize text to audio), <code>cartesia_voice_clone</code> (register a 5-second sample), and <code>cartesia_voice_list</code> (list available voice IDs). For an engineer prototyping a voice agent inside an editor, the MCP path removes the friction of writing API boilerplate and lets the agent call TTS as if it were a built-in capability.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">The MCP integration is particularly useful for the "agent evaluates its own voice quality" workflow common in 2026 voice-agent development. A Claude Code agent can call <code>cartesia_tts</code> with a candidate prompt, write the output to a file, and inspect the audio to verify prosody — without the engineer needing to leave the editor. This is the path-of-least-resistance for shipping a voice agent MVP in a weekend.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Voice cloning with Pleroma: 5-second sample to cloned voice</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Voice cloning in 2026 is a commoditized capability — every credible TTS vendor offers it — but the implementation details differ. ElevenLabs requires a 1-3 minute training sample for the Professional tier (with an Instant tier that accepts 30 seconds at lower quality). LMNT requires 10 seconds. Cartesia's Pleroma endpoint accepts a 5-second audio sample and produces a cloned voice in 3-5 seconds. The 5-second floor is the shortest in the commercial market, which makes Pleroma the right choice for applications where the user supplies their own voice (think: virtual avatars, podcast hosting, language-learning apps that record the learner and replay their voice in another language).</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">The pricing for Pleroma is $0.10 per registered clone plus $0.02 per 1K characters of TTS using the cloned voice. The per-clone fee is a one-time charge; the per-character TTS rate is roughly half of Cartesia's standard Sonic pricing (a deliberate price cut to encourage voice cloning adoption). For a startup building a "clone your voice" product — say, a personalized audiobook reader — the all-in cost per user is around $0.10 onboarding + $0.06 per 1,000 characters of audio output. At 1-hour audiobook (≈50,000 characters), that is $0.10 + $1.00 = $1.10 per user per book.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">One important constraint: voice cloning on Pleroma requires explicit consent from the voice owner. Cartesia's terms of service require the user to upload a sample in which the speaker has consented to the clone. This is the same constraint as ElevenLabs, Resemble.ai, and every other commercial voice-cloning API in 2026 — the FTC and EU AI Act both treat non-consented cloning as a prohibited practice. For a startup building a voice-cloning product, the recommended pattern is to require the user to upload a "consent clip" (a 5-10 second recording of the user saying "I consent to having my voice cloned by this service") alongside the voice sample.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cartesia in production: the operational quirks that matter</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Beyond the headline latency number, there are four operational quirks that matter for production voice-agent integrations. First, the Cartesia API rate limit on the default tier is 60 requests per minute per API key, which works for low-volume agent prototypes but requires a higher-tier key for production. The enterprise tier (negotiated directly with Cartesia's GTM team) lifts this to 600+ RPM. Second, the WebSocket streaming endpoint at <code>wss://api.cartesia.ai/tts/stream</code> requires a persistent connection and is the recommended path for voice agents — the latency gain over the HTTPS endpoint is roughly 30-50ms because of the eliminated TCP handshake on each turn.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">Third, Cartesia's audio output is in raw PCM (24kHz or 44.1kHz) or Opus codec, which means integrating with WebRTC-based voice pipelines (the typical architecture for real-time agents) requires a small resampling step. Cartesia publishes reference code in their docs for the most common stacks (LiveKit, Daily, Twilio Voice, Genesys). Fourth, the Cartesia dashboard's usage analytics are real-time (refreshed every 30 seconds) which is rare among voice API vendors — most dashboards update daily. For a voice agent in production with active monitoring, the real-time usage data is a notable operational advantage.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Cartesia's data retention policy?</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Cartesia's default data retention policy is 30 days for TTS input text and output audio, after which the data is automatically purged. This is in line with industry norms — ElevenLabs retains data for 30 days by default, OpenAI retains API data for 30 days unless the user opts out, and Deepgram retains data for 90 days. Cartesia offers a zero-retention enterprise tier (negotiated, not on the public pricing page) that purges all input/output immediately after the response is returned. For enterprises in healthcare, finance, or EU-regulated industries, the zero-retention tier is the right starting point.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">Pleroma voice clones are retained indefinitely by default (the clone is a registered asset, not a transient datum). For users who want to delete a clone, the dashboard has a one-click "delete voice" button that immediately removes the clone and all associated embeddings from Cartesia's storage. The deletion is hard-delete (no soft-delete or 30-day recovery), which is the right default for a voice cloning service.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Can I self-host Cartesia Sonic?</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">No. Cartesia does not offer self-hosted Sonic in 2026 — the model is API-only and the weights are not published. This is the same posture as ElevenLabs (whose model weights are not published) and OpenAI TTS (closed weights). For teams that require self-hosting, the two credible open-weight TTS options in 2026 are Coqui TTS (Apache 2.0, community-maintained, but with TTFB in the 400-800ms range) and Meta's MMS (Massively Multilingual Speech, Apache 2.0, 1,100+ languages but quality varies dramatically). Neither matches Cartesia Sonic on latency or English quality, but both are valid for use cases that require on-prem inference (regulated industries, air-gapped deployments, ultra-low-latency edge inference).</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">For a team that requires self-hosting AND low-latency, the recommended pattern is to run Coqui TTS on a dedicated GPU cluster and accept the 400-800ms TTFB. The cost calculus favors self-hosting only at high volume — roughly $10K+/month in TTS spend — because a single H100 can run ~20 concurrent Coqui TTS requests at acceptable latency, and the GPU cost amortizes over the workload. Below that volume, Cartesia's API is cheaper than the equivalent self-hosted GPU cluster.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How does Cartesia handle rate limits and quota overage?</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Cartesia's rate limits are tiered: the default tier allows 60 RPM (requests per minute) and 1M characters per month. The Scale tier (negotiated, starts at ~$1,000/month commit) lifts this to 600 RPM and 10M+ characters. The Enterprise tier is fully custom. When a user exceeds the character quota, Cartesia hard-stops the API key (returns HTTP 429 with a "quota exceeded" response) rather than silently overage-charging. This is the right default for a startup trying to forecast spend — silent overage can lead to surprise bills.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">For developers who want soft quota enforcement (allow overage with a pay-as-you-go overage rate), Cartesia's API has an <code>X-Cartesia-Overages: allow</code> header that explicitly enables overage on a per-request basis. This is the recommended pattern for production agents — if a voice agent unexpectedly goes viral, the overage header prevents the hard-stop and converts the overage to a pay-as-you-go charge. The overage rate is 1.5x the standard tier rate, which is a 50% premium for the convenience of soft limits.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What about the Cartesia affiliate program?</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Cartesia does not currently have a public affiliate program. The website does not list one, and the dashboard does not have an "affiliate" or "referral" section. For content sites that want to monetize Cartesia coverage, the right pattern is to link to the platform as a tool recommendation and use Cartesia's API for content creation (e.g., for audio versions of blog posts). The Cartesia GTM team is open to custom partnership arrangements for high-volume content sites; contact partners@cartesia.ai for details. For monetize-immediately use cases, FreeModel (an aggregator that includes Cartesia-compatible endpoints alongside other providers) is the right affiliate path — it has a public affiliate program and supports Cartesia as one of several underlying voices.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Final verdict: is Cartesia Sonic worth it in 2026?</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4">Yes — for any voice-agent builder in 2026 where the conversation "feel" is the product, Cartesia Sonic is the right TTS API. The 90ms TTFB is the lowest in the market by a 3-4x margin, and the SSM-architecture cost advantage translates to a 30-40% lower per-character price than the quality-leading ElevenLabs Flash v2. The trade-off is voice quality (ElevenLabs scores 0.24 MOS points higher in internal benchmarks), which is meaningful for content-grade audio (podcasts, audiobooks) but negligible for real-time conversational audio (where the listener's ear is less critical than the conversation flow).</p>
+
+  <p class="text-gray-700 leading-relaxed my-4">If your voice agent is for customer support, companionship, in-game NPCs, real-time language tutoring, or any latency-sensitive application, Cartesia Sonic is the right TTS API in 2026. If your application is for podcast production, audiobook narration, or content-grade voice acting, ElevenLabs is still the right call. If your application requires bundling TTS with GPT-4o API spend for billing consolidation, OpenAI TTS-1 is the simplest choice. For everything else, Cartesia is the default.</p>
+
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: How fast is Cartesia Sonic's TTS API in 2026?</strong><br>A: Cartesia Sonic delivers 90ms TTFB on the Standard tier, 120ms on the Pro tier (44.1kHz), and 220ms on the Turbo tier (highest quality). This is the lowest TTFB among all commercial TTS APIs in 2026 — 3x faster than ElevenLabs Flash v2 (250-400ms) and 4x faster than OpenAI TTS-1-HD (350-500ms). For voice-agent builders, the 90ms TTFB is the binding constraint that makes real-time conversation feel natural.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: How much does Cartesia Sonic cost?</strong><br>A: Character-based pricing: Sonic Standard $0.03/1K chars, Pro $0.06/1K chars, Turbo $0.12/1K chars. Sonic 2 is $0.04-$0.15/1K chars. Onyx STT is $0.40/hour. For a 1,000-turn customer-support agent (200 chars/turn), the monthly cost is roughly $30 on Sonic Standard. The free tier is 10,000 chars/month, no credit card required.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Is there a Cartesia Sonic free tier?</strong><br>A: Yes — 10,000 characters/month free with no credit card required. This is enough for approximately 10 minutes of audio, suitable for prototyping and small-scale testing. Once you exceed 10,000 chars/month, billing kicks in at the pay-as-you-go rate. There is no persistent free production tier.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Can I use Cartesia from inside China?</strong><br>A: Cartesia's API is hosted on AWS us-west-2 and GCP us-central1. Access from inside China requires a proxy, and latency is typically 200-400ms from a CN-based client. For CN-based production workloads, the recommended pattern is to use a Cloudflare Worker or Tencent Cloud edge function as a proxy, bringing latency to 50-100ms. The proxy does not bypass Cartesia's content policy.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Does Cartesia support voice cloning?</strong><br>A: Yes — Pleroma is the dedicated voice cloning endpoint. It accepts a 5-second audio sample and produces a registered voice in 3-5 seconds. Pricing is $0.10 per clone + $0.02 per 1K chars of TTS with the cloned voice. The clone itself is free on Sonic 2 (built-in). The shortest sample length in the commercial market.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: How does Cartesia compare to ElevenLabs?</strong><br>A: ElevenLabs has higher voice quality (MOS 4.42 vs Cartesia's 4.18) but 3x higher TTFB (250-400ms vs Cartesia's 90ms). ElevenLabs is the right choice for content-grade audio (podcasts, audiobooks, voice acting). Cartesia is the right choice for real-time conversation (voice agents, NPCs, language tutoring). The two APIs are complementary — many production voice stacks use both, picking the right model per use case.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: What is the Cartesia MCP server?</strong><br>A: The Cartesia MCP server is a remote endpoint at <code>https://mcp.cartesia.ai/mcp</code> that exposes Sonic, Sonic 2, and Pleroma as native tools inside Claude Code, Cursor, Cline, and other MCP-compatible IDEs. It uses the standard Streamable HTTP transport and is free for all Cartesia API users. For engineers prototyping a voice agent in an editor, the MCP path is the way to ship an MVP in a weekend.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: How does Cartesia handle multilingual TTS?</strong><br>A: Sonic 2 (launched February 2026) supports 29+ languages natively with 140ms TTFB. The original Sonic is English-best with partial multilingual fallback. For multilingual voice agents, Sonic 2 is the only commercial API in 2026 that delivers sub-200ms TTFB across languages from a single endpoint. No translation step or model swap is required.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: What is the Cartesia data retention policy?</strong><br>A: Default retention is 30 days for TTS input text and output audio, after which data is automatically purged. A zero-retention enterprise tier (negotiated) purges immediately. Pleroma voice clones are retained indefinitely by default; the dashboard has a one-click hard-delete that removes the clone and embeddings.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Does Cartesia have an affiliate program?</strong><br>A: Not currently. Cartesia does not have a public affiliate program. For content sites that want to monetize Cartesia coverage, the recommended pattern is linking to the platform as a tool recommendation or using FreeModel (an aggregator with a public affiliate program) for affiliate revenue.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><strong>Q: Can Cartesia stream audio in real time?</strong><br>A: Yes — TTS-Streaming at <code>wss://api.cartesia.ai/tts/stream</code> is the WebSocket streaming endpoint. It is the recommended path for voice-agent integration because it eliminates the TCP handshake overhead (saving 30-50ms per turn). Audio output is raw PCM (24kHz/44.1kHz) or Opus, suitable for direct WebRTC integration with LiveKit, Daily, Twilio Voice, etc.</p>
+
+  <p class="text-gray-700 leading-relaxed my-4"><em>This article contains affiliate links. If you sign up through these links, we may earn a commission at no extra cost to you. Our reviews remain independent.</em></p>`;
+
+const disclaimer = `<p class="text-sm text-gray-500 italic my-4">This article contains affiliate links. If you sign up through these links, we may earn a commission at no extra cost to you. Our reviews remain independent.</p>`;
+
+const affiliateSidebar = {
+  title: '试用 FreeModel',
+  description: '一个 API key 走多 provider 路由。DeepSeek + Qwen + Llama + OpenAI 兼容上游 —— 跟 Cartesia 配合做语音 Agent 的 LLM 路由优化。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '获取免费额度'
+};
+---
+
+<BaseLayout
+  title={enTitle}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">Home</a> &rsaquo;
+          <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo;
+          <span class="text-gray-700">{enTitle}</span>
+        </nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} 
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="sponsored noopener">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Facts</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Provider:</strong> Cartesia (Stanford Hazy Research spinoff)</li>
+            <li><strong>Endpoints:</strong> Sonic, Sonic 2, Onyx (STT), Mistral (voice design), Pleroma (clone)</li>
+            <li><strong>Pricing:</strong> $0.03-$0.15 per 1K characters (TTS), $0.40/hour (STT)</li>
+            <li><strong>Hosting:</strong> AWS us-west-2 + GCP us-central1</li>
+            <li><strong>API:</strong> <code>https://api.cartesia.ai</code> + MCP server at <code>https://mcp.cartesia.ai/mcp</code></li>
+            <li><strong>Free tier:</strong> 10,000 characters/month, no credit card</li>
+            <li><strong>Open-source:</strong> No — API only, weights not published</li>
+            <li><strong>Affiliate:</strong> Use FreeModel for LLM-side cost optimization</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

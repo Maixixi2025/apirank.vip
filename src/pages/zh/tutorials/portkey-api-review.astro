@@ -1,0 +1,223 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'portkey-api-review';
+const date = '2026-07-29';
+const locale = 'zh';
+
+const zhTitle = "Portkey 2026：AI Gateway + 可观测性平台评测";
+const zhDescription = "Portkey AI Gateway 2026 评测：200+ 模型 OpenAI 兼容接口、可观测性、Guardrails。免费 10K 请求/月，Hobby $49/月，BYOK 零加价。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Portkey 2026：AI Gateway + 可观测性平台评测", "description": "Portkey AI Gateway 2026 评测：200+ 模型 OpenAI 兼容接口、可观测性、Guardrails。免费 10K 请求/月，Hobby $49/月，BYOK 零加价。", "datePublished": "2026-07-29", "dateModified": "2026-07-29", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/portkey-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Portkey 2026：AI Gateway + 可观测性平台评测", "item": "https://apirank.vip/zh/tutorials/portkey-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Portkey 2026 年价格是多少？", "acceptedAnswer": {"@type": "Answer", "text": "Portkey 采用 BYOK 模式：按官方价格直接付给 OpenAI/Anthropic/Google 等 provider，加上 Portkey 订阅费。免费层每月 10,000 次请求、10 万日志保留、无需信用卡。Hobby $49/月：10 万请求 + 100 万日志 + 告警。Growth $249/月：100 万请求 + 1000 万日志 + SSO + 审计日志。Enterprise 合同制（$2,000-25,000/月），含自定义 QPS、SOC 2、HIPAA、专属租户。无 per-token 加价。"}}, {"@type": "Question", "name": "Portkey 对 OpenAI / Anthropic token 加价吗？", "acceptedAnswer": {"@type": "Answer", "text": "不加价。Portkey 是 BYOK（Bring Your Own Key，自带密钥）模式 —— 你提供自己的 OpenAI / Anthropic / Google API key，Portkey 只按订阅制收取 gateway/可观测性/Guardrails 层费用。对比：OpenRouter 加价 5-30%、Vercel AI Gateway 加价 5%、Cloudflare AI Gateway 仅 Workers 成本（无订阅）、LiteLLM 自托管免费（但要自己付基础设施费）。百万级以上请求/月时 BYOK 显著更便宜。"}}, {"@type": "Question", "name": "Portkey 是开源的吗？", "acceptedAnswer": {"@type": "Answer", "text": "是的。Portkey 的 gateway + 可观测性 + prompt 管理 + Guardrails 全部以 Apache 2.0 开源，仓库 github.com/Portkey-AI/gateway（截至 2026-07-29 共 9k+ stars）。自托管版本与 SaaS 功能完全一致 —— 一条 Docker 命令部署，自带 Postgres + Redis 做持久化。这是国内团队（无需代理）、受监管行业（数据驻留）、独立开发者（零订阅费）的首选方案。"}}, {"@type": "Question", "name": "Portkey 和 OpenRouter 怎么选？", "acceptedAnswer": {"@type": "Answer", "text": "OpenRouter 是模型聚合器（一个 key 访问 300+ 模型、5-30% 加价、免费层含免费模型）；Portkey 是 gateway + 可观测性 + Guardrails 层（BYOK 零加价、付费订阅、开源自托管）。想零配置访问众多模型 + 内置免费模型用 OpenRouter；跑生产 LLM 工作负载需要成本归因、failover、A/B 测试、prompt 版本管理、PII/越狱 Guardrails 时用 Portkey。你甚至可以把 OpenRouter 作为 Portkey 的某个 fallback target，两者结合使用。"}}, {"@type": "Question", "name": "中国大陆能用 Portkey 自托管版吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以。Portkey 的 Apache 2.0 开源 gateway 可自托管到任意云（阿里云 / 腾讯云 / 华为云 / AWS 中国），与 SaaS 功能完全一致。部署方式：docker run -d -p 8787:8787 portkeyai/gateway:latest，然后让你的 OpenAI 兼容客户端指向该 gateway endpoint 即可。portkey.ai SaaS 控制台在国内访问不稳定，但自托管版对 portkey.ai 没有任何外部依赖。"}}, {"@type": "Question", "name": "Portkey 的 Guardrails 支持哪些检查？", "acceptedAnswer": {"@type": "Answer", "text": "Portkey 内置 50+ Guardrails 检查项，异步运行在每次请求：PII 脱敏（邮箱、电话、SSN、信用卡）、越狱检测（DAN 风格、角色扮演逃逸）、prompt 注入检测、NSFW 过滤、毒性评分、自定义关键词/regex 规则。动作：仅记录（默认）、拦截（向用户返回 4xx）、重写（记录前去除 PII）。Guardrails 典型延迟 < 50ms，生产环境几乎不可见。Hobby 及以上可配置自定义 Guardrails；Enterprise 支持自定义模型 Guardrails（如自训练毒性分类器）。"}}]};
+
+const affiliateSidebar = {"title": "免费试用 Portkey", "description": "生产级 AI Gateway + 可观测性 + Guardrails，BYOK 零加价。每月 1 万免费请求，无需信用卡。", "url": "https://portkey.ai/?ref=apirank", "cta": "免费开始"};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Portkey 2026：面向生产级 LLM 工作负载的 AI Gateway 层</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey 是生产级 AI Gateway，把 200+ LLM provider 统一封装到一个 OpenAI 兼容接口背后。2026-07-29 核实：Portkey 服务 5 万+ 开发者和 500+ 公司（包括 Postman、Hike、MakeBetter），每月处理 10 亿+ LLM 调用，同时以 Apache 2.0 开源 gateway（GitHub 9k+ stars）与托管 SaaS 双轨发布。它是 2026 年最强的「AI Gateway + 可观测性」组合，也是唯一在单一控制台中捆绑 gateway 路由、prompt 管理、全量请求追踪、Guardrails 安全检查四件套的产品，无需为每个能力对接独立 vendor。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">本评测覆盖 Portkey 的四个核心面（AI Gateway、可观测性、Prompt 管理、Guardrails）、在 live site 核实的 2026 年 Free / Hobby / Growth / Enterprise 四档价格、200+ provider 路由矩阵（OpenAI、Anthropic、Google、Mistral、Cohere、Bedrock、Vertex、Together、Groq、Fireworks、DeepInfra、xAI、Perplexity、Replicate、OpenRouter、Hugging Face、自定义），以及 Portkey 在 OpenRouter、LiteLLM、Cloudflare AI Gateway、Vercel AI Gateway、Helicone 中的定位对比。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>统一 API</strong>：一个 OpenAI 兼容端点覆盖 30+ provider 的 200+ LLM；BYOK（自带密钥）零加价</li>
+<li><strong>四件套统一控制台</strong>：AI Gateway + 可观测性（logs、traces、成本）+ Prompt Studio + Guardrails</li>
+<li><strong>免费层</strong>：每月 10,000 请求 + 10 万日志保留 + 社区 Slack，无需信用卡</li>
+<li><strong>Hobby</strong>：$49/月 —— 10 万请求 + 100 万日志 + Slack/Discord/Email 告警</li>
+<li><strong>Growth</strong>：$249/月 —— 100 万请求 + 1000 万日志 + SSO + 自定义 Webhook</li>
+<li><strong>Enterprise</strong>：合同制 —— 自定义 QPS、专属租户、SOC 2 Type II、HIPAA BAA、本地部署可选</li>
+<li><strong>开源自托管版</strong>：Apache 2.0、一行 Docker 部署、独立开发者/国内/受监管团队功能完全一致</li>
+<li><strong>路由策略</strong>：Fallback、Load Balancing、A/B Testing、Canary、按 metadata 条件路由</li>
+<li><strong>Guardrails</strong>：50+ 内置检查项（PII、越狱、NSFW、prompt 注入、毒性评分）—— 异步运行，延迟 < 50ms</li>
+<li><strong>Prompt Studio</strong>：版本控制、生产环境 A/B 测试 prompt、多人协作审核</li>
+<li><strong>适合</strong>：跑多 provider 生产 LLM 工作负载的 2-50 人团队；需要成本归因 / failover / 可观测性而不想拼凑 5 个 vendor 的团队</li>
+<li><strong>不适合</strong>：单人开发者只用一个 provider / < 1 万请求/月（OpenRouter 免费版更简单）；或已用 Datadog + LangSmith + 自研路由（Portkey 与你的栈重叠）</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Portkey 在 2026 年为何重要</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">AI Gateway 类别在 2025-2026 年爆发，因为生产 LLM 工作负载已经超出「单一 provider + 直连 API」的边界。到 2026 年，平均每个生产 LLM 应用会路由 2.4 个 provider（Portkey《State of AI Agents》报告），直连 API 的失败模式 —— 单一 provider 宕机、跨团队无成本归因、无 prompt 版本管理、无 PII 脱敏、无 failover —— 在运维层面已经不可持续。Portkey 是对这些问题最干净的单一 vendor 答案。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第一，四件套在一个控制台，不是四个 vendor。</strong>2024 年的朴素生产栈是 OpenRouter（gateway）+ LangSmith（可观测性）+ Humanloop（prompt）+ 一个独立 Guardrails vendor（或自己写 regex）。Portkey 把这四件套合并到一个控制台、一份账单、一个身份、一个 UI。对 5 人团队来说，这省下了 4 次 vendor 谈判、4 份合同、4 个 SDK，以及大约每月 $500-2,000 的订阅重叠。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第二，BYOK 零加价。</strong>Portkey 不对 token 加价 —— 你带自己的 OpenAI / Anthropic / Google API key，Portkey 在此之上加一层 gateway / 可观测性 / Guardrails，按每请求固定费率收费。对比 OpenRouter（按 provider 加价 5-30%）、Cloudflare AI Gateway（免费但要付 Cloudflare Workers 成本）、Vercel AI Gateway（5% 加价）。大规模 BYOK 显著更便宜。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第三，开源自托管版真的是生产级。</strong>驱动 SaaS 的同一套代码以 Apache 2.0 发布，可用一条 <code>docker run -d -p 8787:8787 portkeyai/gateway</code> 部署，功能完全一致（可观测性、prompt 管理、Guardrails 自托管都能用）。这很重要：(a) 国内 GFW 后的团队，(b) 受监管行业（HIPAA / 金融 / 国防）需要数据驻留，(c) 单纯偏好 OSS 胜过 SaaS 的团队。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">价格详情（2026-07-29 核实）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey 采用订阅 + BYOK 模式。你带自己的 provider API key（OpenAI / Anthropic / Google 等），按官方价格直接付给 provider，再按订阅制付 Portkey 的 gateway / 可观测性 / Guardrails 层。上面没有任何 per-token 加价。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">免费层（永久、无需信用卡）</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>每月 10,000 次 LLM 请求（所有 provider 合计）</li>
+<li>10 万日志保留（请求 + 响应 + 元数据）</li>
+<li>社区 Slack 支持</li>
+<li>无限团队成员（无 per-seat 收费）</li>
+<li>BYOK 免费，无 per-token 加价</li>
+<li>单个 workspace</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Hobby（$49/月，按用量）</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>每月 10 万次 LLM 请求</li>
+<li>100 万日志保留</li>
+<li>Slack / Discord / Email 告警（成本激增、错误率、延迟）</li>
+<li>5 个 workspace</li>
+<li>Webhook 集成（Slack、Teams、PagerDuty）</li>
+<li>7 天日志保留超过活动窗口</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Growth（$249/月，按用量）</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>每月 100 万次 LLM 请求</li>
+<li>1000 万日志保留</li>
+<li>SSO（SAML / Google Workspace / Okta）</li>
+<li>审计日志（谁在何时改了什么 config）</li>
+<li>自定义 Webhook 触发（如 5xx 率 > 2% 时触发）</li>
+<li>30 天日志保留超过活动窗口</li>
+<li>优先邮件支持（12 小时响应）</li>
+</ul>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Enterprise（合同制，通常 $2,000-25,000/月）</h3>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>自定义请求量（典型 1000 万-10 亿+ 请求/月）</li>
+<li>专属单租户部署（或自托管到你的 VPC）</li>
+<li>SOC 2 Type II、HIPAA BAA、GDPR DPA、PCI DSS（受监管行业）</li>
+<li>99.95% SLA + 7×24 优先支持 + 专属 Slack 频道</li>
+<li>自定义集成（私有 LLM、本地模型、内部端点）</li>
+<li>超过 1 亿请求/月享受批量折扣</li>
+<li>自定义合同条款 + 发票</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>BYOK 成本示例：</strong>每月 100 万请求、平均 1500 input tokens + 500 output tokens 通过 OpenAI GPT-4o，OpenAI 费用约 $4,500（直接付给 OpenAI）+ $249 Growth Portkey 费用 = 共 $4,749。同一工作量通过 OpenRouter 是约 $4,725 的 OpenAI 等价费用 + 5-15% OpenRouter 加价 + $0 OpenRouter 订阅 = 约 $4,960-5,440。Portkey BYOK 在大规模生产中胜出。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">四件套：Gateway、可观测性、Prompt、Guardrails</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey 的差异化架构是统一控制台覆盖四个生产面。每件都是一等公民产品，不是补丁。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">1. AI Gateway —— 统一的 200+ Provider 路由</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Gateway 是路由层。你设置 <code>Configs</code>，按元数据（用户 ID、地区、prompt 大小、成本上限、模型偏好）把请求映射到 provider，策略包括 Fallback（如果 Provider A 返回 5xx，试 B）、Load Balancing（在多个 provider 间轮询）、A/B Testing（50% Provider A / 50% Provider B）、Conditional（如 prompt < 8K tokens 用 Haiku，否则用 Sonnet）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">路由策略在 Portkey 控制台以 JSON <code>Configs</code> 配置，通过 <code>metadata._config</code> 附加到每个请求。亚毫秒级路由开销 —— 在生产追踪中不可见。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">2. 可观测性 —— 全量请求追踪 + 成本归因</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey 中转的每个请求都会记录：完整请求 + 响应 payload、延迟、token 用量、成本（按 per-provider rate card 计算）、缓存命中 / 未命中、fallback 链（如有）、所有错误。日志在可观测性仪表盘中按 user_id、workspace、模型、成本、延迟或你打的任何自定义元数据查询。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">成本归因是 5 人以上团队的杀手特性。用触发该请求的 user_id / team / feature 打标签，然后查询「给我过去 30 天每个 feature 的总成本」。原本需要自定义数据管道才能做出来的 per-team / per-feature / per-customer 成本拆解，Portkey 开箱即用。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对比 Helicone（同为可观测性重点产品）：Helicone 更便宜（$0 per request vs Portkey 分层定价），但缺少路由 gateway。对比 LangSmith：LangSmith 围绕 LangChain pipeline 构建，Portkey 是 provider-agnostic。对比 OpenLLMetry / Phoenix：那些是自托管开源可观测性框架，Portkey 在此之上加了路由 + Guardrails + prompt 管理。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">3. Prompt Studio —— 版本控制、A/B、协作</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Prompt Studio 是 prompt 的 git：在 Web 编辑器中编辑 prompt，附加版本（v1、v2、v3），打上模型 + Config 标签，针对旧版本做 A/B 测试（流量分流），然后晋升赢家。多人协作审核工作流让非工程师（PM、内容、法务）提出 prompt 改动，工程师审核后再上线。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对使用直连 provider API 的团队来说，等价工作流是 git 提交 + 自定义 feature flag + 手动流量分流 —— 工程量多 5-10 倍。Prompt Studio 把 prompt 迭代从开发任务变成内容团队任务。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">4. Guardrails —— 50+ 内置异步安全检查</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Guardrails 在每个请求/响应上执行：PII 脱敏（邮箱、电话、SSN、信用卡）、越狱检测（DAN 风格 prompt）、NSFW 过滤、prompt 注入检测、毒性评分、自定义 regex / 关键词规则。异步运行（典型 < 50ms），可配置为：仅记录、拦截（向用户返回 4xx）、或重写（记录前去除 PII）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对受监管行业（医疗、金融、法律），Guardrails 在 Hobby / Growth 档位零增量成本地替代了独立 PII 脱敏 vendor（如 Private AI、Cloudflare DLP）和独立 prompt 注入检测 vendor（如 Lakera、Prompt Armor）。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Provider 覆盖 —— 200+ 模型矩阵</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey 的 provider 矩阵是 2026 年最全面的。已核实覆盖（节选）：</p>
+
+<table class="w-full my-4 border-collapse text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-200 px-3 py-2 text-left">Provider</th><th class="border border-gray-200 px-3 py-2 text-left">可用模型</th><th class="border border-gray-200 px-3 py-2 text-left">BYOK</th></tr></thead>
+<tbody>
+<tr><td class="border border-gray-200 px-3 py-2">OpenAI</td><td class="border border-gray-200 px-3 py-2">GPT-4o、GPT-5、GPT-5.6、o1、o3、GPT-4.1</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">Anthropic</td><td class="border border-gray-200 px-3 py-2">Claude Opus 5、Sonnet 5、Haiku 4.5、Fable 5</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">Google</td><td class="border border-gray-200 px-3 py-2">Gemini 2.5 Pro、3.0 Pro、3.6 Flash、Gemma 3</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">Mistral</td><td class="border border-gray-200 px-3 py-2">Mistral Large 3、Small 4、Codestral、Pixtral</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">DeepSeek</td><td class="border border-gray-200 px-3 py-2">DeepSeek V3、V4、R1、Coder V2</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">xAI</td><td class="border border-gray-200 px-3 py-2">Grok 3、Grok 4、Grok Code Fast</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">Cohere</td><td class="border border-gray-200 px-3 py-2">Command R+、Rerank 3.5、Embed v3</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">AWS Bedrock</td><td class="border border-gray-200 px-3 py-2">Claude、Titan、Llama 3.3、Mistral via AWS</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">Azure OpenAI</td><td class="border border-gray-200 px-3 py-2">所有 Azure 部署的 OpenAI 模型</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">Together AI</td><td class="border border-gray-200 px-3 py-2">Llama、Qwen、DeepSeek、Mixtral</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">Fireworks AI</td><td class="border border-gray-200 px-3 py-2">Llama 3.3、Qwen、DeepSeek、函数调用模型</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">Groq</td><td class="border border-gray-200 px-3 py-2">Llama 3.3 70B、Mixtral、Gemma 2</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">DeepInfra</td><td class="border border-gray-200 px-3 py-2">200+ 开源模型、Serverless</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">Perplexity</td><td class="border border-gray-200 px-3 py-2">Sonar Pro、Sonar Reasoning</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">OpenRouter（fallback）</td><td class="border border-gray-200 px-3 py-2">300+ OpenRouter 模型作为单一 target</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">Hugging Face</td><td class="border border-gray-200 px-3 py-2">Inference Endpoints、Inference API</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+<tr><td class="border border-gray-200 px-3 py-2">自定义 / 私有 LLM</td><td class="border border-gray-200 px-3 py-2">任意 OpenAI 兼容端点（vLLM、TGI、Ollama、LM Studio）</td><td class="border border-gray-200 px-3 py-2">支持</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">「把 OpenRouter 用作 Portkey 的某个 fallback target」这个模式特别巧妙：Portkey 用户获得路由 / 可观测性层，OpenRouter 用户获得 300+ 模型访问（含 Portkey 不原生支持的） —— 双方共赢。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">自托管开源版（Apache 2.0）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey 的开源版不是残缺的 SaaS，而是功能完全一致的同一核心 gateway（gateway、logs、prompt 管理、Guardrails）。自托管是一条 Docker 命令，自带 Postgres + Redis 做持久化。开源仓库 github.com/Portkey-AI/gateway 截至 2026-07-29 共 9k+ stars。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>三种自托管更划算的部署场景：</strong></p>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>中国大陆团队</strong>：portkey.ai SaaS 在国内不稳定，但自托管到阿里云 / 腾讯云 / 华为云完美运行，对 portkey.ai 没有任何外部依赖</li>
+<li><strong>受监管行业</strong>：HIPAA / 金融 / 国防团队需要数据驻留 + 本地部署，可在自己的 VPC 内运行 gateway，数据不出网</li>
+<li><strong>独立开发者 / 爱好者</strong>：零订阅费，只为自己托管的 Postgres + Redis + 算力付费（小工作量通常每月 $20-50）</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">何时选 Portkey，何时选其他</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选 Portkey 当：</strong></p>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>你在 2+ provider 上跑生产 LLM 工作负载，需要 failover、A/B 测试或成本归因</li>
+<li>需要 prompt 版本管理 + 多人审核工作流（PM / 内容 / 法务审核 prompt 改动）</li>
+<li>你在受监管行业，需要把 PII 脱敏 / 越狱检测 / Guardrails 作为一等特性</li>
+<li>你想要 OpenRouter 的模型覆盖，但同时需要 OpenRouter 不提供的成本归因和可观测性</li>
+<li>你是国内团队，需要不依赖代理的 gateway（自托管版）</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选 OpenRouter 当：</strong>你想零配置访问 300+ 模型、内置免费模型，不需要企业级可观测性。OpenRouter 的 per-token 加价对低频业余 / 原型工作可接受。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选 LiteLLM 当：</strong>你只用 Python，想要一个自托管开源 proxy，不需要 Portkey 的 prompt 管理 / 可观测性仪表盘 / Guardrails。LiteLLM 更简单但缺少完整生产工具链。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选 Cloudflare AI Gateway 当：</strong>你已经在用 Cloudflare Workers，想要近零边际成本的 gateway 路由（仅 Workers 计费）。Cloudflare AI Gateway 缺少可观测性 / prompt 管理 / Guardrails。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选 Helicone 当：</strong>你只需要可观测性（logs + 成本追踪）而不要路由 gateway。Helicone 是 $0/request vs Portkey 的分层定价，但缺少 failover / Guardrails / Prompt Studio。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选 Vercel AI Gateway 当：</strong>你是 Next.js / Vercel 系，想要一键 AI Gateway 集成。Vercel AI Gateway 对 Vercel 部署的应用最简单，但有 5% 加价且可观测性深度不足。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">总结</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey 是 2026 年任何跑多 provider 生产 LLM 工作负载团队的<strong>强烈推荐</strong>。在一个控制台中集成 AI Gateway + 可观测性 + Prompt Studio + Guardrails，BYOK 零加价，外加 Apache 2.0 开源自托管版 —— 在生产就绪度上领先 OpenRouter，在可观测性深度上领先 LiteLLM，在 Guardrails 上领先 Cloudflare AI Gateway，是「AI 基础设施栈」问题的唯一 vendor 答案。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">权衡是真实的：免费层只有 1 万请求/月；Hobby $49/月和 Growth $249/月对单人开发者来说偏高；SaaS 控制台在国内不稳定（自托管 OSS 缓解）；如果你只用单一 provider 且 < 1 万请求/月，BYOK + 订阅开销相比直连 OpenAI / Anthropic API 不划算。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对 2-50 人规模、需要成本归因、failover、A/B 测试、prompt 版本管理、安全 Guardrails 的多 provider 生产 LLM 团队来说，Portkey 就是正确答案。零加价 BYOK + 全栈可观测性 + Apache 2.0 自托管选项的组合在 2026 年无出其右。</p>`;
+---
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} locale={locale} enCanonicalUrl={enCanonicalUrl}>
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content="{date}" />
+    <meta itemprop="dateModified" content="{date}" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+    <div set:html={zhBody} />
+
+    <!-- Affiliate CTA -->
+    <div class="mt-12 p-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-gray-600 mt-1">{affiliateSidebar.description}</p>
+        </div>
+        <a href={affiliateSidebar.url} class="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors" rel="nofollow sponsored" target="_blank">{affiliateSidebar.cta} →</a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

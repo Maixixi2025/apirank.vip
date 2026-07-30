@@ -1,0 +1,188 @@
+---
+title: "ModelScope 2026: Alibaba's Open-Source AI API Hub Review"
+description: "ModelScope API review: Alibaba DAMO's open-source model hub, Qwen3-Max first-release access, ModelScope Studio free tier, OpenAI-compatible inference, plus the Anthropic vs Alibaba Qwen distillation lawsuit and what it means for developers."
+slug: "modelscope-api-review"
+provider: "modelscope"
+published: true
+date: "2026-06-27"
+type: "review"
+---
+
+# ModelScope 2026: Alibaba's Open-Source AI API Hub Review
+
+## What is ModelScope, and why does it matter in 2026?
+
+ModelScope is Alibaba DAMO Academy's flagship open-source AI model hub — the closest thing China has to a national Hugging Face, but with a critical difference: it is the **first-release platform for the Qwen and Wan model families**, which together make up the largest Chinese open-weight LLM and video model lineages in the world. As of June 2026 the platform hosts 18+ model families spanning LLM, multimodal, audio, video, and scientific computing, with daily active downloads in the millions and a 100MB/s-class download throughput from Alibaba Cloud's domestic CDN.
+
+The platform matters to an API developer in 2026 for three reasons that have nothing to do with the recent Anthropic vs Alibaba dispute:
+
+1. **First-release access to Qwen3-Max, Qwen3-72B, and the entire Qwen3 series.** When Alibaba DAMO publishes a new Qwen model, it lands on ModelScope 24-48 hours before any other venue, including Hugging Face. The official inference endpoint on ModelScope Studio goes live at the same time. If you want to evaluate a freshly-released Qwen model on real inference traffic, ModelScope is the fastest path.
+
+2. **A 1000-calls-per-day free inference tier on every hosted model.** ModelScope Studio's free tier gives you 1000 calls per model per day against any of the 18+ hosted model families. There is no credit card requirement, no quota approval workflow, no waitlist. Compare that to OpenAI's $5 free credits (valid for 3 months), Anthropic's free Claude tier (limited to the web app), or even Hugging Face's Inference API (which charges per token after a small initial credit).
+
+3. **A 100 GPU-hour-per-month free Notebook tier for fine-tuning and evaluation.** If you need to fine-tune a Qwen3-7B on your own data, evaluate a model against a custom benchmark, or train a LoRA adapter for a vertical use case, ModelScope's bundled Notebook environment ships with 100 free A100/V100 GPU-hours per month. This is a meaningful allocation — most Chinese startups we know of use ModelScope Notebooks as their primary fine-tuning environment.
+
+Then on June 24, 2026, Reuters reported that Anthropic had formally accused Alibaba of "illicitly extracting" Claude model capabilities — allegedly by using tens of thousands of synthetic prompts to distill Claude's responses into a Qwen-series fine-tune. The allegations are unproven in court, Anthropic has not filed a public lawsuit, and Alibaba has called the claim "baseless." But the news landed in the same week as Alibaba's Qwen3.5-Max public preview, and the timing matters: Qwen3.5-Max is the first Alibaba flagship that Anthropic has publicly flagged as a distillation target. This review treats ModelScope as the platform it is — an open-source model hub with a free inference API — and flags the Anthropic vs Alibaba dispute in its own section, because the legal questions directly affect what you can and cannot do with Qwen models inside the United States and the EU.
+
+## The model catalog: what ships on ModelScope in June 2026
+
+The ModelScope catalog in mid-2026 has three distinct layers. The first layer is **Alibaba's own models**, which is where the platform earns its first-release reputation:
+
+- **Qwen3-Max** — the flagship 480B-parameter MoE, released as a gated preview on May 30, 2026. Qwen3-Max is the model Anthropic singled out in the June 24 distillation allegations. It scores 87.2 on MMLU-Pro and 92.1 on GSM8K, putting it in the same tier as GPT-5.5 and Claude Opus 4.5. Inference access is by application: enterprise customers, accredited researchers, and Alibaba Cloud tenants get a 14-day access window; everyone else waits for the open-weight release (expected Q3 2026).
+- **Qwen3-72B-Instruct / Qwen3-32B-Instruct / Qwen3-14B-Instruct / Qwen3-7B-Instruct** — the full Qwen3 dense series. All four are open-weight (Apache 2.0 for the 7B/14B, custom license for the 32B/72B), all four are first-released on ModelScope, and all four are available for paid inference via ModelScope Studio at ¥4/M input tokens for the 72B tier and ¥0.6/M for the 7B tier.
+- **QwQ-32B** — the Qwen reasoning model, which scored 89.3 on MATH-500 at its March 2026 release and is widely used as a DeepSeek-R1 alternative. Open-weight, Apache 2.0, ¥2/M input tokens.
+- **Qwen2.5-Coder-32B** — the code-specialized variant. At the time of its January 2026 release it was the strongest open-weight code model on HumanEval+ (87.4) and remains a top-3 open code model as of June 2026. Apache 2.0.
+
+The second layer is **third-party open-weight models hosted for first-release or download convenience**: DeepSeek-V3, DeepSeek-R1, Moonshot Kimi K2.7, Zhipu GLM-4.6, 01.AI Yi-Lightning, Shanghai AI Lab InternLM3, SenseTime SenseChat. All of these have first-release homes elsewhere, but ModelScope is often the fastest mirror from inside China — the download speeds from ModelScope's Alibaba Cloud CDN are routinely 5-10x faster than Hugging Face for users on China Telecom or China Unicom.
+
+The third layer is **multimodal and vertical models**: Stable Diffusion 3.5 (Chinese fine-tunes), Tencent HunyuanDiT, Zhipu CogVideoX-5B, Alibaba's own Wan2.1 video generation family, FunASR speech recognition, Paraformer speech synthesis, and a long tail of scientific-computing models (AlphaFold-multimer, protein language models, weather forecasting).
+
+The catalog is large, but the practical recommendation for an API developer in mid-2026 is: if you want a Qwen model, use ModelScope; if you want any other Chinese open-weight model, ModelScope is a fine mirror with the best download speeds from inside China; if you want a non-Chinese model, use Hugging Face or the upstream vendor.
+
+## ModelScope Studio: the free inference tier
+
+ModelScope Studio is the inference-as-a-service front-end of ModelScope. It exposes a hosted inference endpoint for every model in the catalog and bundles three things that are unusual for a free tier:
+
+- **Zero credit card, zero approval workflow.** You sign up with an Alibaba Cloud account (which you can create with a phone number — the international sign-up works with email and a credit card, the China sign-up works with an Alipay-linked phone number), and you immediately get the free tier.
+- **1000 inference calls per model per day.** The quota is per-model, not global — you can call Qwen3-72B 1000 times and Qwen3-7B 1000 times in the same day. Each call counts as one inference request regardless of input or output length, so a 50K-token completion costs the same as a 100-token completion. This is different from token-based free tiers (OpenAI, Anthropic, Google) and is more permissive for evaluation workloads where you want to test the same prompt 100 times.
+- **OpenAI-compatible API for top models.** The top 5 Qwen3 models (Qwen3-Max preview, Qwen3-72B, Qwen3-32B, Qwen3-14B, Qwen3-7B) plus Qwen2.5-Coder-32B and QwQ-32B are exposed at a /v1/chat/completions endpoint with full OpenAI compatibility. You can point the OpenAI Python SDK at ModelScope by overriding the `base_url`. The non-Qwen models on the platform (Kimi, GLM, DeepSeek, multimodal) still require the DashScope SDK or the ModelScope native client.
+
+The paid tier is straightforward: per-token pricing at the same rates as Alibaba Cloud Bailian (because ModelScope and Bailian share the same underlying Qwen inference infrastructure). For Qwen3-72B this is ¥4/M input and ¥12/M output. For Qwen3-7B this is ¥0.6/M input and ¥2/M output. The advantage of paying for ModelScope instead of Bailian is the simpler Studio UI and the bundled Notebook — the advantage of Bailian is the more mature rate-limit handling, the better enterprise SLA, and the integration with the rest of the Alibaba Cloud stack (RAG, Agent, observability).
+
+For a developer evaluating Qwen models in 2026, the recommended workflow is: use the ModelScope Studio free tier for the first 3-5 days of evaluation (1000 calls × 7 models = 7000 calls available in week one), then either upgrade to paid ModelScope inference or migrate to Alibaba Cloud Bailian if you have committed-volume pricing.
+
+## The Anthropic vs Alibaba dispute: what the Reuters report actually says
+
+On June 24, 2026, Reuters published [a report](https://www.reuters.com/world/china/anthropic-says-alibaba-illicitly-extracted-claude-ai-model-capabilities-2026-06-24) alleging that Anthropic had presented evidence to U.S. trade representatives showing that Alibaba used "tens of thousands of synthetic prompts" to extract Claude's outputs and fine-tune a Qwen-series model on the responses. The full text of Anthropic's evidence filing has not been made public. Alibaba has categorically denied the allegations, calling them "baseless" and noting that Alibaba has trained Qwen models on "legally and ethically sourced data."
+
+Three things matter for an API developer in mid-2026:
+
+1. **No public lawsuit has been filed.** Anthropic's evidence is at the regulatory and trade-representative level, not in U.S. federal court. The legal landscape is the same as it has been for the past 18 months: distillation from a closed model to an open-weight model is generally permissible under U.S. copyright law (the output of a generative model is not copyrightable in the U.S. per the 2023 Thaler v. Perlmutter ruling and the 2025 NYT v. OpenAI ruling), but the terms of service of the closed model (Anthropic's ToS, OpenAI's ToS) prohibit this. Anthropic is pursuing the regulatory path, not the courtroom path.
+
+2. **The U.S. Commerce Department's Bureau of Industry and Security (BIS) added Qwen3-Max to the Entity List research-review queue on June 25, 2026.** This does not export-control Qwen3-Max, but it does mean that U.S. persons and U.S.-headquartered companies are now subject to enhanced due-diligence requirements when training, fine-tuning, or distilling from Qwen3-Max weights. If you are a U.S. developer evaluating Qwen3-Max, you do not need a license to *call* the ModelScope inference API (inference is a service, not a technology export), but you should be cautious about *downloading the weights* of Qwen3-Max for any distillation work.
+
+3. **The European AI Office has opened a parallel inquiry** under the EU AI Act's general-purpose AI (GPAI) provisions, focused on whether Qwen's training data disclosure meets the GPAI transparency requirements. The EU inquiry does not target Qwen specifically — it is part of a broader review of all GPAI providers — but the timing aligns with the Anthropic allegations.
+
+For API developers, the practical takeaway is: the Anthropic vs Alibaba dispute does not change the legality of *calling* Qwen models via ModelScope Studio. It does change the legal landscape for U.S. and EU developers who want to *fine-tune or distill* from Qwen weights. The Reuters report and the BIS review are signals that the open-weight LLM ecosystem is entering a phase of geopolitical risk that did not exist in 2024-2025.
+
+## API surface: OpenAI-compatible, DashScope SDK, ModelScope native client
+
+ModelScope Studio exposes three API surfaces. The OpenAI-compatible layer is the most useful for developers with existing OpenAI code:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api-inference.modelscope.cn/v1",
+    api_key="ms-YOUR_MODELSCOPE_TOKEN",
+)
+
+response = client.chat.completions.create(
+    model="Qwen/Qwen3-72B-Instruct",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Write a haiku about distributed systems."}
+    ],
+    temperature=0.7,
+    max_tokens=200,
+)
+
+print(response.choices[0].message.content)
+```
+
+This works for the seven Qwen-family models listed above. The endpoint is `https://api-inference.modelscope.cn/v1`, the API key is generated in the ModelScope profile, and the model names use the `org/model` Hugging Face convention (`Qwen/Qwen3-72B-Instruct`, `Qwen/Qwen3-7B-Instruct`, `Qwen/QwQ-32B`).
+
+For the full model catalog, the **DashScope Python SDK** (`pip install dashscope`) is the official client. DashScope is the same SDK used for Alibaba Cloud Bailian, which means a single SDK integrates with both ModelScope and Bailian inference. The DashScope SDK supports the full DashScope protocol: chat completions, function calling, image understanding, video understanding, audio transcription, web search augmentation, and the Bailian-specific features (RAG, Agent, observability).
+
+For research and fine-tuning workloads, the **ModelScope native Python SDK** (`pip install modelscope`) is the right tool. The native SDK handles model download from the ModelScope Hub (faster than Hugging Face from inside China), model loading from local cache, and integration with the bundled ModelScope Notebook environment. If you are doing any fine-tuning, LoRA, or RLHF work, the ModelScope native SDK + Notebook is the path of least friction.
+
+Authentication is a Bearer token in the `Authorization: Bearer ms-***` header. Tokens are created in the ModelScope profile and stored in the `MODELSCOPE_API_KEY` environment variable. Rate limits are not publicly documented — they appear to be 60 RPM for the free tier and scale with paid-tier credit. The 1000-calls-per-day free quota is the binding constraint, not the per-minute rate limit.
+
+## Pricing: free tier, per-token, and Notebook
+
+The ModelScope pricing model has three layers:
+
+| Tier | Cost | Quota / rate | Best for |
+|---|---|---|---|
+| Free Studio inference | $0 | 1000 calls / model / day | Evaluation, prototyping, learning |
+| Paid Studio inference | Per-token (matches Bailian) | Qwen3-72B ¥4/M in, ¥12/M out | Production workloads under 10M tokens/month |
+| Notebook | Free: 100 GPU-hours / month; Paid: ¥5-15/GPU-hour | A100/V100 instances | Fine-tuning, evaluation, custom training |
+| Model download | Free | Unlimited; ~100MB/s from China | Distributing model weights internally |
+
+For a startup building a Qwen-based product in 2026, the cost arithmetic is: use the free Notebook tier for the first 100 GPU-hours of fine-tuning experiments, then either upgrade to paid Notebook or move to a dedicated GPU instance on Alibaba Cloud. The free Notebook tier is generous enough that most companies we know of do not hit the limit until month 2 or 3 of their fine-tuning program.
+
+The one pricing caveat is that Qwen3-Max inference is **not** included in the standard per-token pricing. Qwen3-Max preview access is gated: you apply through the ModelScope enterprise portal, get approved (typically 5-10 business days for non-Chinese applicants, 1-2 days for Chinese applicants with an Alibaba Cloud tenancy), and then pay a custom contract rate that is materially higher than the Qwen3-72B rate. We do not have a public Qwen3-Max price because there isn't one — the model is in preview and the price is per-customer.
+
+## ModelScope Notebook: the free fine-tuning environment
+
+The ModelScope Notebook deserves its own section because it is the most underrated feature of the platform. ModelScope Notebook is a JupyterLab-based environment hosted on Alibaba Cloud, with three tiers of hardware:
+
+- **CPU (free, unlimited)** — 2 vCPU, 4GB RAM. Fine for data preprocessing, evaluation, and small-model inference.
+- **V100 GPU (free: 100 hours / month, paid: ¥5/GPU-hour)** — 1× V100 32GB. Handles Qwen3-7B fine-tuning with QLoRA, and Qwen3-14B fine-tuning with 4-bit quantization.
+- **A100 GPU (free: included in the 100-hour allocation, paid: ¥15/GPU-hour)** — 1× A100 80GB. Handles Qwen3-72B full-parameter fine-tuning, and Qwen3-32B with full LoRA rank.
+
+The 100 free GPU-hours per month are a meaningful allocation. A typical Qwen3-7B QLoRA fine-tune on 50K training examples takes 6-10 A100 hours. A typical Qwen3-72B evaluation against MMLU-Pro / GSM8K / HumanEval+ takes 2-4 A100 hours. 100 hours is enough for 8-10 fine-tuning experiments plus a full evaluation suite per month, which covers the iteration cycle of most applied AI teams.
+
+The Notebook ships with the ModelScope native SDK, the DashScope SDK, the Hugging Face transformers + peft + trl stack, vLLM for high-throughput inference, and bitsandbytes for quantization. The pre-installed environment is meaningfully better than what you get on Google Colab or Kaggle — it is closer to what you would build yourself on a rented Vast.ai or RunPod instance, with the difference that it is pre-configured and free.
+
+## When to use ModelScope vs alternatives
+
+The honest comparison for an API developer in mid-2026:
+
+- **Use ModelScope if** you want first-release access to Qwen models, you want a free inference tier to evaluate Qwen, you want a free fine-tuning Notebook, or you are a China-based developer and you need the fastest download speeds from inside China.
+- **Use Alibaba Cloud Bailian if** you have committed-volume pricing, you need enterprise SLAs, you need integration with the rest of the Alibaba Cloud stack, or you need mature rate-limit handling for production traffic.
+- **Use Hugging Face Inference if** you want a single API to call any open-weight model (Llama, Mistral, Qwen, DeepSeek, etc.), or you are not based in China and download speed is not a primary concern.
+- **Use DeepInfra or Novita AI if** you want the cheapest per-token pricing on Qwen, Llama, and other open-weight models, and you do not need first-release access.
+- **Use OpenRouter if** you want one API to call both closed (OpenAI, Anthropic, Google) and open-weight models with unified billing.
+
+The single biggest mistake we see developers make in 2026 is treating ModelScope as "just a Hugging Face mirror." It is not — it is the first-release platform for the Qwen family, and the free Studio tier plus the free Notebook tier combine to make it the lowest-friction environment for Chinese open-weight LLM development. If you are doing any work with Qwen models, the recommended first stop is ModelScope.
+
+## Conclusion: ModelScope is the most underrated AI API platform of 2026
+
+ModelScope is the platform that the Qwen ecosystem runs on, and the Qwen ecosystem is the largest open-weight LLM ecosystem in the world. The free inference tier (1000 calls / model / day) is more generous than OpenAI's $5 free credits, Anthropic's free Claude tier, or Google Gemini's free RPM quotas. The free Notebook tier (100 GPU-hours / month) is more generous than Colab's free tier, Kaggle's free tier, or Hugging Face Spaces' free CPU tier. The OpenAI-compatible API is a strict subset of the Qwen inference surface, but it covers the seven most-requested Qwen models.
+
+The Anthropic vs Alibaba dispute is a real legal and geopolitical signal, but it does not change the day-to-day reality of calling Qwen models via the ModelScope inference API. Inference is a service, not a technology export, and the U.S. Commerce Department's BIS review of Qwen3-Max is a research-review queue, not an export control. For an API developer, the recommended action is: try ModelScope Studio for your next Qwen evaluation, use the 1000 calls per model per day to run a real benchmark, and if you are happy with the results, upgrade to paid Studio inference or move to Alibaba Cloud Bailian for production.
+
+The one watch-item is the EU AI Office's parallel inquiry under the EU AI Act's GPAI provisions. If you are an EU-based developer, monitor the EU AI Office's GPAI Code of Practice for any specific disclosure requirements that may apply to Qwen-based products. As of June 2026, the GPAI Code of Practice is in its second draft and the disclosure requirements are still being finalized.
+
+## FAQ
+
+**Is ModelScope free?**
+
+Yes — the free tier is genuinely free, with no credit card required. You get 1000 inference calls per model per day against any of the 18+ hosted model families, plus 100 GPU-hours per month of free Notebook time. There is no overage billing — if you exceed the free quota, the API returns 429 and the Notebook queues.
+
+**Is ModelScope OpenAI-compatible?**
+
+Partially. The top 5 Qwen3 models (Qwen3-Max preview, Qwen3-72B, Qwen3-32B, Qwen3-14B, Qwen3-7B), plus Qwen2.5-Coder-32B and QwQ-32B, are exposed at a /v1/chat/completions endpoint with full OpenAI compatibility. The other 11+ models on the platform require the DashScope SDK or the ModelScope native client. Streaming, function calling, and JSON mode all work on the OpenAI-compatible layer.
+
+**Can I use ModelScope from outside China?**
+
+Yes. The international sign-up flow uses email + credit card, and the inference API is reachable globally (though the latency from outside China is higher than from inside). Model download speeds from outside China are competitive with Hugging Face.
+
+**Does ModelScope train on my prompts?**
+
+No. Per ModelScope's data usage policy, the inference API does not use your prompts or completions to train models. The prompts are logged for abuse monitoring and rate-limit enforcement but are not associated with your Alibaba Cloud account beyond that. For workloads with strict data handling requirements, the self-hosted ModelScope native SDK runs entirely on your own Alibaba Cloud ECS instance.
+
+**What is the Anthropic vs Alibaba dispute about?**
+
+On June 24, 2026, Reuters reported that Anthropic had presented evidence to U.S. trade representatives alleging that Alibaba used "tens of thousands of synthetic prompts" to extract Claude's outputs and fine-tune a Qwen-series model on the responses. The full evidence filing has not been made public, no public lawsuit has been filed, and Alibaba has denied the allegations. The U.S. Commerce Department's BIS added Qwen3-Max to the Entity List research-review queue on June 25, 2026; this does not export-control the model but does subject U.S. persons to enhanced due-diligence requirements when working with Qwen3-Max weights.
+
+**Does this dispute affect my ability to call Qwen models via ModelScope?**
+
+No. Inference is a service, not a technology export, and calling a Qwen model via the ModelScope Studio API is unaffected by the BIS research-review queue. The dispute affects the legal landscape for U.S. and EU developers who want to fine-tune or distill from Qwen weights, not for developers who want to call the inference API.
+
+**Can I fine-tune Qwen models on ModelScope?**
+
+Yes. The ModelScope Notebook environment includes 100 free GPU-hours per month, sufficient for 8-10 Qwen3-7B QLoRA fine-tunes or 2-4 Qwen3-72B full-parameter fine-tunes. The native ModelScope SDK integrates with the Hugging Face transformers + peft + trl stack for the actual training loop.
+
+**What models are missing from ModelScope?**
+
+The most-requested absences are non-Chinese closed models (OpenAI GPT-5.5, Anthropic Claude Opus 4.5, Google Gemini 3.5) — ModelScope is an open-source hub, not an aggregator of closed APIs. For closed models, use OpenRouter, GitHub Models, or the upstream vendor's API. The most-requested Chinese closed model is Tencent Hunyuan (it has an open-source DiT for images, but the flagship LLM is closed and only available via Tencent Cloud).
+
+**What is Qwen3-Max and why is it gated?**
+
+Qwen3-Max is Alibaba's flagship 480B-parameter MoE, released as a gated preview on May 30, 2026. It scores 87.2 on MMLU-Pro and 92.1 on GSM8K, putting it in the same tier as GPT-5.5 and Claude Opus 4.5. Access is gated for export-control reasons (some weights derive from U.S. research) and for capacity reasons (the inference cluster is finite). Enterprise customers, accredited researchers, and Alibaba Cloud tenants get a 14-day access window. Everyone else waits for the open-weight release expected in Q3 2026.
+
+**Should I use ModelScope or Alibaba Cloud Bailian for production?**
+
+For production traffic above 10M tokens/month, Bailian is the better choice — it has more mature rate-limit handling, enterprise SLAs, and integration with the rest of Alibaba Cloud. For evaluation, prototyping, and production traffic below 10M tokens/month, ModelScope Studio's free tier plus paid inference is the lower-friction path.

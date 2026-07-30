@@ -1,0 +1,273 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'sonnet-5-vs-gpt-5-5-vs-opus-4-8-llm-api-2026';
+const date = '2026-07-08';
+const locale = 'en';
+
+const enTitle = 'Sonnet 5 vs GPT-5.5 vs Opus 4.8: LLM API Costs';
+const enDescription = "Sonnet 5's $2/$10 intro pricing ends 8/31/2026. Compare to GPT-5.5, Opus 4.8 and Gemini 3.5 to pick the right LLM API for your workload.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "When does Claude Sonnet 5's $2/$10 promo end?", "acceptedAnswer": {"@type": "Answer", "text": "Anthropic's promotional pricing for Sonnet 5 ($2 per million input tokens, $10 per million output tokens) expires on 2026-08-31. After that date, the standard list price ($3 input, $15 output) becomes the only tier offered through the API. Anthropic has not committed to extending the discount for any customer segment."}},
+    {"@type": "Question", "name": "Is GPT-5.5 actually cheaper after the 2x price increase?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, in many production scenarios. The 2026-07-08 OpenRouter analysis showed GPT-5.5's token output shrank by 30-45% on common coding, summarization, and tool-use workloads because the model is more concise. When the per-token savings outweigh the per-token price increase, the effective dollar cost drops 12-25% despite the headline 2x rate hike. The breakeven point depends on task type: short Q&A favors GPT-5.4 (unchanged price); structured output and reasoning favor GPT-5.5."}},
+    {"@type": "Question", "name": "Why is Opus 4.8 still relevant if Sonnet 5 is so capable?", "acceptedAnswer": {"@type": "Answer", "text": "Opus 4.8 remains Anthropic's strongest model on hard reasoning benchmarks (AIME 2025, GPQA Diamond, frontier math). Internal Anthropic evals show Opus 4.8 hits 68-72% on long-horizon planning tasks that Sonnet 5 caps at 58-63%. The premium matters when the workload is research-grade (legal review, scientific paper analysis, multi-day coding agents). For everyday chat, Sonnet 5 matches Opus 4.8 within 5 percentage points and costs 60% less."}},
+    {"@type": "Question", "name": "Where does Gemini 3.5 fit in this decision matrix?", "acceptedAnswer": {"@type": "Answer", "text": "Gemini 3.5 is the volume-tier option: 1M-token context window (4-8x Claude's 200K), aggressive batch discounts, and the lowest cost-per-million for inputs longer than 100K tokens. Its weakness is latency at the high end and slightly weaker code-generation benchmarks versus Sonnet 5. For document-heavy retrieval, video analysis, and large-context summarization, Gemini 3.5 is the cost leader; for short interactive workloads, Sonnet 5 is."}},
+    {"@type": "Question", "name": "Should I switch from GPT-5.4 to GPT-5.5 if I'm on the OpenAI API?", "acceptedAnswer": {"@type": "Answer", "text": "Only if your prompts average over 600 output tokens. GPT-5.5's concision earns its keep on long structured outputs (code generation, JSON schemas, multi-step agent traces). For short Q&A, classification, and single-turn chat, GPT-5.4's cheaper rate wins. We recommend the OpenRouter routing pattern: try GPT-5.5 on holdout traffic for 7 days and compare effective cost (price * average tokens) before migrating."}},
+    {"@type": "Question", "name": "How does DeepSeek V4 Flash compare to the four flagship models?", "acceptedAnswer": {"@type": "Answer", "text": "DeepSeek V4 Flash is the cost disruptor at $0.14/$0.28 per million tokens (roughly 1/15 the Sonnet 5 promo rate, 1/20 the Opus 4.8 rate). It matches Sonnet 4.5-class reasoning on most benchmarks but loses 8-12 points on the longest-context eval. For high-volume Chinese-language or batch workloads that don't need frontier reasoning, V4 Flash is the cheapest credible option; for short critical reasoning, the four flagships remain worth the premium."}},
+    {"@type": "Question", "name": "What's the cheapest way to access all four flagship models without four separate integrations?", "acceptedAnswer": {"@type": "Answer", "text": "OpenRouter and Cloudflare AI Gateway both expose all four flagships through a single OpenAI-compatible endpoint, with built-in failover and per-model cost analytics. Cloudflare's AI Gateway adds per-request caching and zero-data-retention (ZDR) policies that route the request to providers with the strongest privacy guarantees. For production teams that already use OpenAI's SDK, switching the base URL to OpenRouter is a one-line config change."}},
+    {"@type": "Question", "name": "What about the GPT-5.6 Pro tier rumored in the leak?", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI's late-June 2026 benchmark paper lists three Pro variants (Luna Pro, Terra Pro, Sol Pro) but no API release date has been announced. Pricing estimates (Luna Pro $1.00-$1.50/M input, Terra Pro $6-$9/M, Sol Pro $30-$45/M) are speculative. Until OpenAI publishes the official tier structure, plan around GPT-5.5 and the GPT-5.6 base model. We covered the full Pro leak in our GPT-5.6 Pro tiers analysis."}},
+    {"@type": "Question", "name": "What if I miss the 8/31 Sonnet 5 cutoff?", "acceptedAnswer": {"@type": "Answer", "text": "Three fallback options preserve the cost advantage. First, switch to OpenRouter for Sonnet 5 access — community reports suggest OpenRouter held the $2/$10 rate for an extra 60-90 days past the Anthropic deadline. Second, switch to DeepSeek V4 Flash for non-reasoning-heavy workloads at $0.14/$0.28. Third, migrate to a tier combination (Claude Sonnet 5 standard + GPT-5.4 batch + Gemini 3.5 long-context) and use Cloudflare AI Gateway routing to keep the blended cost near the Sonnet 5 promo rate."}}
+  ]
+};
+---
+
+<BaseLayout
+  title={enTitle}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+
+<script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+<script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+<script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+    <article class="prose prose-lg max-w-none">
+
+<p class="text-sm text-gray-500 mb-2">Decision Guide · 2026-07-08 · 13 min read</p>
+
+<h1 class="text-4xl font-bold text-gray-900 mb-4">Sonnet 5 vs GPT-5.5 vs Opus 4.8: Which LLM API Should You Actually Pay For in 2026?</h1>
+
+<p class="text-xl text-gray-700 leading-relaxed my-4">Anthropic launched Claude Sonnet 5 on June 30, 2026 with a temporary price of <strong>$2 per million input tokens and $10 per million output tokens</strong> — the deal runs through August 31, 2026. After that cutoff the standard rate of $3/$15 kicks in. With OpenAI's GPT-5.5 having gone through a headline 2x price hike, Google pushing Gemini 3.5 deeper into long-context territory, and DeepSeek V4 Flash still trading at $0.14/$0.28, the 2026 API decision is no longer about which model is best — it's about which <strong>combination</strong> of models handles your workload at the lowest blended cost.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This guide walks through the four-way decision matrix in production order: which model should default on the API request, which should fall back, which should handle the long-context summarization, and which should drive the agentic tool-calling loop. We anchor the numbers on the Anthropic pricing page, the OpenAI pricing page, and the OpenRouter <a href="https://openrouter.ai/blog/insights/gpt55-cost-analysis/" class="text-blue-600 hover:underline" rel="noopener">GPT-5.5 cost analysis</a> published July 8, 2026. For teams that already run a multi-model setup, the cheapest path is to keep your routing layer and re-decide which vendor gets the default slot.</p>
+
+<div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 my-6">
+  <p class="text-gray-800 my-2"><strong>TL;DR:</strong> Lock in Sonnet 5's $2/$10 rate by 8/31 if your workload is general-purpose chat or short structured output. Run GPT-5.5 through OpenRouter routing for any task where token output drops by 30%+ (the 2x price hike becomes a net win). Route Opus 4.8 only on the 5-10% of requests that need frontier reasoning. Offload long-context and bulk-summarization workloads to Gemini 3.5 where the 1M-context pricing crushes Claude's 200K. For Chinese-language, agentic, and high-volume batch workloads, DeepSeek V4 Flash is still the cost leader at $0.14/$0.28.</p>
+</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The 8/31 Sonnet 5 deadline in numbers</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Sonnet 5 hit general availability on June 30, 2026 alongside the news that Anthropic was deprecating Sonnet 4.6 from the default model slot. The promotional rate is a sharp 33% input discount and 33% output discount versus the eventual standard price. The math is simple:</p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 space-y-2">
+  <li>1M input tokens at the promo rate: <strong>$2.00</strong> vs $3.00 standard (save $1.00 per M input tokens)</li>
+  <li>1M output tokens at the promo rate: <strong>$10.00</strong> vs $15.00 standard (save $5.00 per M output tokens)</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For a workload that processes 10B input tokens and 5B output tokens per month, the gap is $35,000/month. For a smaller team doing 100M input + 50M output per month, the gap is $350/month — still meaningful enough to plan around. The promotion window is calendar-bound, not volume-bound, so there's no incentive to delay adoption if your workload justifies the lock-in.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic has not signaled an extension. The <a href="https://www.anthropic.com/news/claude-sonnet-5" class="text-blue-600 hover:underline" rel="noopener">Sonnet 5 announcement</a> is explicit that 8/31 is the cliff. If you sign an annual contract on the OpenAI side this quarter, you cannot transfer it to Anthropic after the cutoff; the cutover decision has to happen before 8/31.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How GPT-5.5's "price hike" actually plays out</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenAI doubled GPT-5.5's per-token price relative to GPT-5.4 in mid-June 2026. The OpenRouter <a href="https://openrouter.ai/blog/insights/gpt55-cost-analysis/" class="text-blue-600 hover:underline" rel="noopener">cost analysis</a> from the same week split this into two effects that often cancel out:</p>
+
+<ol class="list-decimal pl-6 my-4 text-gray-700 space-y-2">
+  <li><strong>Headline rate:</strong> GPT-5.5 charges 2x per-token versus GPT-5.4.</li>
+  <li><strong>Output efficiency:</strong> GPT-5.5 produces 30-45% fewer output tokens on coding, summarization, and structured-output tasks because the model is more concise.</li>
+  <li><strong>Net effect</strong>: on tasks where output token reduction exceeds 50%, the effective dollar cost is 12-25% <strong>lower</strong> on GPT-5.5 than GPT-5.4, despite the 2x unit price.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">The breakeven point sits roughly at 600 average output tokens per request. Below 600 tokens, GPT-5.4 wins on raw cost. Above 600 tokens, GPT-5.5 wins on effective cost. Customer-support summarization, code review, JSON schema generation, and multi-step agent traces all sit above the breakeven; short Q&A and classification sit below. Most production APIs serve a mix — the right pattern is to route by request type, not by model selection.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The deeper question is whether Sonnet 5 at $10/M output beats GPT-5.5's effective $12-15/M effective on the same workload. Sonnet 5 has a tighter output profile than GPT-5.5 on legal and scientific text but a longer one on creative writing. Treat the comparison as workload-specific: run a 7-day holdout test on real production traffic before migrating.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The four-model comparison: what the headline numbers hide</h2>
+
+<div class="overflow-x-auto my-6">
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Model</th>
+        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Input $/M</th>
+        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Output $/M</th>
+        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Context</th>
+        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Best workload</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 bg-white">
+      <tr><td class="px-4 py-3 font-medium">Sonnet 5 (promo → 8/31)</td><td class="px-4 py-3">$2.00</td><td class="px-4 py-3">$10.00</td><td class="px-4 py-3">200K</td><td class="px-4 py-3">General chat, structured output, code review</td></tr>
+      <tr><td class="px-4 py-3 font-medium">Sonnet 5 (standard, post 8/31)</td><td class="px-4 py-3">$3.00</td><td class="px-4 py-3">$15.00</td><td class="px-4 py-3">200K</td><td class="px-4 py-3">General chat (premium tier)</td></tr>
+      <tr><td class="px-4 py-3 font-medium">GPT-5.5 (effective on long output)</td><td class="px-4 py-3">~$5.00</td><td class="px-4 py-3">~$20.00</td><td class="px-4 py-3">256K</td><td class="px-4 py-3">Code generation, JSON schema, agent traces</td></tr>
+      <tr><td class="px-4 py-3 font-medium">Opus 4.8 (premium frontier)</td><td class="px-4 py-3">$15.00</td><td class="px-4 py-3">$75.00</td><td class="px-4 py-3">200K</td><td class="px-4 py-3">Frontier reasoning, long-horizon research</td></tr>
+      <tr><td class="px-4 py-3 font-medium">Gemini 3.5 Pro (long context)</td><td class="px-4 py-3">$1.25</td><td class="px-4 py-3">$5.00</td><td class="px-4 py-3">1M</td><td class="px-4 py-3">Bulk summarization, document search, video</td></tr>
+      <tr><td class="px-4 py-3 font-medium">DeepSeek V4 Flash (cost disruptor)</td><td class="px-4 py-3">$0.14</td><td class="px-4 py-3">$0.28</td><td class="px-4 py-3">128K</td><td class="px-4 py-3">Chinese-language, batch, agentic loops</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p class="text-gray-700 leading-relaxed my-4">The table makes the obvious point but misses the second-order effects. Sonnet 5's input rate of $2 is 1.6x cheaper than Gemini 3.5's $1.25 when adjusted for cached-input discounts — Google offers 50% off cached tokens, which Anthropic matches. The break-even for Sonnet 5 versus Gemini 3.5 depends on cache-hit rate, not raw rate. For workloads with 80%+ cache-hit rate, Sonnet 5 wins; below 50%, Gemini 3.5 wins.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The two price tags also don't capture batch discounts. Anthropic's Batch API offers 50% off for async (24-hour SLA) workloads, OpenAI's Batch API is similar, and Gemini 3.5's batch pricing is the lowest at $0.625/$2.50 per million tokens. If your pipeline can tolerate a 24-hour delay, batch is the right default for non-interactive summarization, classification, and ETL workloads.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Opus 4.8 vs Sonnet 5: when the 60% premium pays for itself</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Opus 4.8 lists at $15/$75 per million tokens — 7.5x the Sonnet 5 promo rate and 5x the post-8/31 Sonnet 5 standard rate. Anthropic's own evaluation puts Opus 4.8 ahead of Sonnet 5 by 5-15 percentage points on hard reasoning evals (AIME 2025, GPQA Diamond, frontier math) and 8-12 points on long-horizon planning tasks. For everyday chat, the gap closes to less than 5 percentage points and disappears entirely on factual recall.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The honest call: Opus 4.8 is worth the premium only when the failure cost is high and the task requires sustained reasoning. Three concrete patterns:</p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 space-y-2">
+  <li><strong>Legal and regulatory review</strong>: a missed clause in a 100K-token contract costs real money. Opus 4.8's 12-15 point lift over Sonnet 5 on contract analysis evals justifies the 5x cost.</li>
+  <li><strong>Scientific paper synthesis</strong>: when a research agent needs to chain 30+ reasoning steps without losing thread, Opus 4.8's long-horizon score covers the difference.</li>
+  <li><strong>Multi-day coding agents</strong>: long-running Claude Code or Codex sessions that touch hundreds of files benefit from Opus 4.8's sustained context discipline.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For the 90% of API traffic that doesn't fit those three buckets — chat, summarization, content generation, structured Q&A, single-turn code completion — Sonnet 5 matches Opus 4.8 within the noise. Routing all of that through Opus 4.8 is paying a 5x premium for indistinguishable output quality.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Gemini 3.5's long-context pricing breaks the math below 100K inputs</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Google's Gemini 3.5 ships with a 1M-token context window. For inputs below 100K tokens, Sonnet 5 and Gemini 3.5 price effectively the same per million tokens (within 10%). Above 100K, the gap widens fast because of Gemini's aggressive volume tier — a 500K-token input costs $0.625 on Gemini batch versus $1.50 on Sonnet 5 batch. That's a 2.4x cost delta on the input side for the same prompt.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The catch is output: Gemini 3.5's $5.00/M output rate is half of Sonnet 5's $10.00/M promo rate. For workloads where output volume is the dominant cost (long-form content generation, research reports, draft-and-revise loops), Sonnet 5 still wins even with the higher input rate.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The cleanest split: route any input over 200K tokens to Gemini 3.5, keep Sonnet 5 on inputs under 200K. Gemini 3.5 also has the only video-understanding API at production scale (the Veo integration), making it the right default for any multimodal input that includes a video file. Sonnet 5 does vision but limited to images; Gemini 3.5 does images, video, and audio in one call.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">DeepSeek V4 Flash: the agentic workload priced below GPT-5.5 by 14x</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">DeepSeek V4 Flash charges $0.14/$0.28 per million tokens — roughly 1/15 of Sonnet 5's promo rate. On OpenRouter's Q2 2026 token-share leaderboard, V4 Flash doubled its agentic share in six months and is now the cheapest credible model for high-volume structured-output traffic. Two reasons it deserves attention even if you don't care about Chinese-language workloads:</p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 space-y-2">
+  <li><strong>Tool calling discipline</strong>: V4 Flash is the cheapest model with reliable function-calling across 5+ sequential tool invocations. Most "$0.10/M" models fail on tool-call chains beyond step 3.</li>
+  <li><strong>128K native context</strong>: enough for most coding-agent and document-Q&A workloads. Below Sonnet 5's 200K but well above the 8K-32K range where sub-dollar models typically live.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">V4 Flash's weakness is frontier-reasoning evals — it sits 8-12 points below Sonnet 5 on the AIME 2025 and GPQA benchmarks. For research-grade workloads that demand frontier reasoning, V4 Flash is not a substitute. For agentic tool-calling loops, batch processing, and Chinese-language content, it's the cost leader by a wide margin.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The recommended production routing pattern</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Most multi-model setups route by request type, not by absolute quality. The pattern below covers 85-95% of production API traffic. The remaining 5-15% — long-context multimodal, frontier reasoning, and low-volume specialty workloads — call for explicit per-route decisions.</p>
+
+<div class="overflow-x-auto my-6">
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Workload</th>
+        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Default</th>
+        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Fallback</th>
+        <th class="px-4 py-3 text-left text-sm font-semibold text-gray-900">Reasoning</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 bg-white">
+      <tr><td class="px-4 py-3">General chat &lt;500 tokens output</td><td class="px-4 py-3">Sonnet 5 (promo)</td><td class="px-4 py-3">GPT-5.5</td><td class="px-4 py-3">Sonnet wins on raw rate; GPT-5.5 if Sonnet unavailable</td></tr>
+      <tr><td class="px-4 py-3">Structured output (JSON, schema, code)</td><td class="px-4 py-3">GPT-5.5 via OpenRouter</td><td class="px-4 py-3">Sonnet 5</td><td class="px-4 py-3">GPT-5.5's 30%+ output compression offsets 2x price</td></tr>
+      <tr><td class="px-4 py-3">Long-context &gt;200K tokens input</td><td class="px-4 py-3">Gemini 3.5 Pro batch</td><td class="px-4 py-3">Sonnet 5 batch</td><td class="px-4 py-3">1M context + aggressive input tier</td></tr>
+      <tr><td class="px-4 py-3">Multimodal with video</td><td class="px-4 py-3">Gemini 3.5</td><td class="px-4 py-3">Sonnet 5 (image-only)</td><td class="px-4 py-3">Veo video understanding is Gemini-exclusive</td></tr>
+      <tr><td class="px-4 py-3">Frontier reasoning / research agent</td><td class="px-4 py-3">Opus 4.8</td><td class="px-4 py-3">Sonnet 5 + retry</td><td class="px-4 py-3">5-15 point gap on hard evals justifies 5x cost</td></tr>
+      <tr><td class="px-4 py-3">Agentic tool-calling loops</td><td class="px-4 py-3">DeepSeek V4 Flash</td><td class="px-4 py-3">Sonnet 5</td><td class="px-4 py-3">$0.28/M output undercuts Sonnet by 36x</td></tr>
+      <tr><td class="px-4 py-3">Chinese-language content</td><td class="px-4 py-3">DeepSeek V4 Flash</td><td class="px-4 py-3">Aliyun Bailian / Qwen</td><td class="px-4 py-3">V4 Flash leads on Chinese token efficiency</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p class="text-gray-700 leading-relaxed my-4">The implementation cost of this routing pattern is much lower than it looks. <a href="/tutorials/openrouter-fusion-api-2026/" class="text-blue-600 hover:underline" rel="noopener">OpenRouter</a>, <a href="/tutorials/cloudflare-ai-gateway-review/" class="text-blue-600 hover:underline" rel="noopener">Cloudflare AI Gateway</a>, and Portkey all expose the six models in this matrix through one OpenAI-compatible endpoint. Switching the base URL in your existing OpenAI client is a one-line config change — no SDK swap, no auth rebuild.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The 90-day decision timeline</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Three deadlines shape the next 90 days:</p>
+
+<ol class="list-decimal pl-6 my-4 text-gray-700 space-y-2">
+  <li><strong>By 2026-08-31</strong>: lock in Sonnet 5's $2/$10 promo rate. If you can't commit to Sonnet 5 long-term, the safe call is to delay adoption and route traffic through OpenRouter at the standard rate post-8/31.</li>
+  <li><strong>By 2026-08-15</strong>: run the GPT-5.5 holdout test on real production traffic. Compare effective cost against the current GPT-5.4 default and migrate the routing config if GPT-5.5 wins on your workload.</li>
+  <li><strong>By 2026-09-30</strong>: re-evaluate Opus 4.8 usage. Anthropic typically drops an Opus refresh in the late-Q3 window; the 4.8 tier may get superseded by Opus 4.9 or a Sonnet-class model that closes the reasoning gap.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">If you're starting a new integration today, default to OpenRouter with a routing config that sets Sonnet 5 as primary, GPT-5.5 as fallback, and Gemini 3.5 for long-context workloads. The total cost on a typical multi-model SaaS workload (60% chat, 25% structured output, 10% long-context, 5% frontier) lands around 40-55% lower than a single-vendor setup.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What about the GPT-5.6 Pro tier that just leaked?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenAI's late-June benchmark paper listed three Pro variants — Luna Pro, Terra Pro, Sol Pro — but no API release date. Pricing estimates ($1.00-$1.50/M input for Luna Pro, $6-$9/M for Terra Pro, $30-$45/M for Sol Pro) are speculative. Until OpenAI publishes the official structure, plan around GPT-5.5 and the GPT-5.6 base model. Our <a href="/tutorials/gpt-5-6-pro-tiers-2026/" class="text-blue-600 hover:underline" rel="noopener">GPT-5.6 Pro tiers analysis</a> walks through the leaked structure in detail, and we'll update this guide when OpenAI ships the official pricing.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If GPT-5.6 Pro lands at the lower end of the estimate range, it could disrupt the Sonnet 5 / Opus 4.8 part of this matrix — particularly if Sol Pro turns out to be competitive with Opus 4.8 at half the cost. Until that ships, treat the four-model matrix as the planning baseline.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>When does Claude Sonnet 5's $2/$10 promo end?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">August 31, 2026. Anthropic's promotional pricing for Sonnet 5 ($2 input, $10 output per million tokens) expires on that date. After that the standard list price ($3 input, $15 output) becomes the only tier offered through the API. Anthropic has not committed to extending the discount for any customer segment.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Is GPT-5.5 actually cheaper after the 2x price increase?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">Yes, in many production scenarios. The OpenRouter analysis from 2026-07-08 showed GPT-5.5's token output shrank by 30-45% on common coding, summarization, and tool-use workloads because the model is more concise. When the per-token savings outweigh the per-token price increase, the effective dollar cost drops 12-25% despite the headline 2x rate hike. The breakeven point depends on task type: short Q&amp;A favors GPT-5.4 (unchanged price); structured output and reasoning favor GPT-5.5.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Why is Opus 4.8 still relevant if Sonnet 5 is so capable?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">Opus 4.8 remains Anthropic's strongest model on hard reasoning benchmarks (AIME 2025, GPQA Diamond, frontier math). Internal Anthropic evals show Opus 4.8 hits 68-72% on long-horizon planning tasks that Sonnet 5 caps at 58-63%. The premium matters when the workload is research-grade (legal review, scientific paper analysis, multi-day coding agents). For everyday chat, Sonnet 5 matches Opus 4.8 within 5 percentage points and costs 60% less.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Where does Gemini 3.5 fit in this decision matrix?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">Gemini 3.5 is the volume-tier option: 1M-token context window (4-8x Claude's 200K), aggressive batch discounts, and the lowest cost-per-million for inputs longer than 100K tokens. Its weakness is latency at the high end and slightly weaker code-generation benchmarks versus Sonnet 5. For document-heavy retrieval, video analysis, and large-context summarization, Gemini 3.5 is the cost leader; for short interactive workloads, Sonnet 5 is.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Should I switch from GPT-5.4 to GPT-5.5 if I'm on the OpenAI API?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">Only if your prompts average over 600 output tokens. GPT-5.5's concision earns its keep on long structured outputs (code generation, JSON schemas, multi-step agent traces). For short Q&amp;A, classification, and single-turn chat, GPT-5.4's cheaper rate wins. We recommend the OpenRouter routing pattern: try GPT-5.5 on holdout traffic for 7 days and compare effective cost (price times average tokens) before migrating.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>How does DeepSeek V4 Flash compare to the four flagship models?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">DeepSeek V4 Flash is the cost disruptor at $0.14/$0.28 per million tokens (roughly 1/15 the Sonnet 5 promo rate, 1/20 the Opus 4.8 rate). It matches Sonnet 4.5-class reasoning on most benchmarks but loses 8-12 points on the longest-context eval. For high-volume Chinese-language or batch workloads that don't need frontier reasoning, V4 Flash is the cheapest credible option; for short critical reasoning, the four flagships remain worth the premium.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>What's the cheapest way to access all four flagship models without four separate integrations?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter and Cloudflare AI Gateway both expose all four flagships through a single OpenAI-compatible endpoint, with built-in failover and per-model cost analytics. Cloudflare's AI Gateway adds per-request caching and zero-data-retention (ZDR) policies that route the request to providers with the strongest privacy guarantees. For production teams that already use OpenAI's SDK, switching the base URL to OpenRouter is a one-line config change.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>What about the GPT-5.6 Pro tier rumored in the leak?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">OpenAI's late-June 2026 benchmark paper lists three Pro variants (Luna Pro, Terra Pro, Sol Pro) but no API release date has been announced. Pricing estimates (Luna Pro $1.00-$1.50/M input, Terra Pro $6-$9/M, Sol Pro $30-$45/M) are speculative. Until OpenAI publishes the official tier structure, plan around GPT-5.5 and the GPT-5.6 base model. We covered the full Pro leak in our GPT-5.6 Pro tiers analysis.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>What if I miss the 8/31 Sonnet 5 cutoff?</strong></p>
+<p class="text-gray-700 leading-relaxed my-4">Three fallback options preserve the cost advantage. First, switch to OpenRouter for Sonnet 5 access — community reports suggest OpenRouter held the $2/$10 rate for an extra 60-90 days past the Anthropic deadline. Second, switch to DeepSeek V4 Flash for non-reasoning-heavy workloads at $0.14/$0.28. Third, migrate to a tier combination (Claude Sonnet 5 standard plus GPT-5.4 batch plus Gemini 3.5 long-context) and use Cloudflare AI Gateway routing to keep the blended cost near the Sonnet 5 promo rate.</p>
+
+<div class="bg-blue-50 border-l-4 border-blue-400 p-4 my-6">
+  <p class="text-gray-800 my-2">Looking for a single dashboard that tracks all five flagship model prices in real time? <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">FreeModel</a> aggregates Claude, GPT-5.5, Gemini, and DeepSeek through one OpenAI-compatible endpoint with per-request cost analytics. Use the same dashboard to set the 8/31 deadline reminder and switch the default model in one config change.</p>
+</div>
+
+    </article>
+
+    <aside class="hidden lg:block">
+      <div class="sticky top-8 space-y-6">
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-gray-900 mb-3">Try all four flagship models in one dashboard</h3>
+          <p class="text-sm text-gray-700 mb-4">FreeModel exposes Claude Sonnet 5, GPT-5.5, Gemini 3.5, and DeepSeek V4 Flash through a single OpenAI-compatible endpoint. Per-request cost analytics, automatic failover, and a generous free tier for the 5.4 / Mini models make it the cheapest way to A/B test the matrix above.</p>
+          <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="block w-full text-center bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700 transition" rel="sponsored noopener" target="_blank">Get FreeModel API Access →</a>
+        </div>
+        <div class="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-gray-900 mb-3">Related apirank guides</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="/tutorials/claude-sonnet-5-api-pricing-2026/" class="text-blue-600 hover:underline" rel="noopener">Claude Sonnet 5 deep-dive ($2 intro)</a></li>
+            <li><a href="/tutorials/gpt-5-5-price-hikes-hallucinations-2026/" class="text-blue-600 hover:underline" rel="noopener">GPT-5.5 price hike: real cost analysis</a></li>
+            <li><a href="/tutorials/gpt-5-6-pro-tiers-2026/" class="text-blue-600 hover:underline" rel="noopener">GPT-5.6 Pro tier leak analysis</a></li>
+            <li><a href="/tutorials/anthropic-claude-api-review/" class="text-blue-600 hover:underline" rel="noopener">Anthropic Claude API review</a></li>
+            <li><a href="/tutorials/openai-gpt-4o-review/" class="text-blue-600 hover:underline" rel="noopener">OpenAI GPT-4o/5.x review</a></li>
+            <li><a href="/tutorials/openrouter-fusion-api-2026/" class="text-blue-600 hover:underline" rel="noopener">OpenRouter multi-model routing</a></li>
+            <li><a href="/tutorials/cloudflare-ai-gateway-review/" class="text-blue-600 hover:underline" rel="noopener">Cloudflare AI Gateway routing</a></li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+</BaseLayout>

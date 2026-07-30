@@ -1,0 +1,257 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'runway-api-review';
+const date = '2026-07-11';
+const locale = 'zh';
+
+const zhTitle = "Runway 2026 评测：Gen-4 视频 API 与广告本地化";
+const zhDescription = "Runway API 全面评测：Gen-4 Turbo/Alpha 视频生成、Act-Two 角色动作迁移、Frames 多镜头一致性、广告本地化 Recipe。定价对比 Luma / Pika / Sora / Kling。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "测评中心", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Runway API 用来做什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Runway API 用于生产级视频广告生成——电商广告、社交媒体视频、品牌宣传片和电影预览制作。旗舰端点包括 Gen-4 Turbo（文本/图片转视频）、Gen-4 Alpha（最高质量）、Act-Two（角色动作迁移）、Frames（多镜头一致性）和广告本地化 Recipe。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Runway API 费用如何？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Runway 使用 credits 制。Gen-4 Turbo 每 5 秒 50 credits（约 $0.50），Gen-4 Alpha 每 5 秒 100 credits（约 $1.00），Act-Two 每 5 秒 150 credits（约 $1.50），Frames 每序列 200 credits（约 $2.00），广告本地化 Recipe 每批次 2000 credits（约 $20）。Credit 包从 $12（1,000 credits）到 $200（25,000 credits）。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Runway 有免费套餐吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "没有免费 API 套餐。最接近的是 Standard 包 $12/1,000 credits，够约 20 次 Gen-4 Turbo 生成或 6 次 Act-Two 动作迁移。Runway 提供免费 Web 应用但无 API 访问。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "可以从中国使用 Runway 吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Runway API 托管在 AWS US-East 和 GCP US-Central。从中国访问需要稳定的代理连接，延迟通常 200-400 毫秒。生产部署推荐通过 Cloudflare Worker 或腾讯云边缘函数转发。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Runway 支持 OpenAI 格式吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不支持。Runway 使用自己的 REST API 接口。但 JSON 响应设计为可直接输入下游 pipeline——clip_url 字段可直接传入视频编辑工作流。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Runway 和 Luma AI / Pika / Sora 相比如何？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Runway 在动作迁移（Act-Two）和多镜头一致性（Frames）方面领先全部竞品。Sora 在视频质量和时长上有优势但 API 未公开。Kling 在中国可直接访问且价格最低。Luma AI 生成速度更快但缺少广告制作工具。Pika 价格最低但质量有限。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Runway 广告本地化 Recipe 是什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "广告本地化 Recipe（2026 年 6 月发布）接收一条英文广告脚本，产生 12 个本地化变体。它不仅翻译文字，还包括配音匹配、文化手势调整、屏幕文字大小和各地颜色调色板。成本 2000 credits/批（约 $20），而传统中介费用 $5,000-15,000。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Runway 视频最长多久？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "最长 10 秒。长视频（如 30 秒广告）需要多次调用后拼接。Gen-4 Turbo 生成时间约 12 秒/5s 片段，Gen-4 Alpha 约 35 秒/5s 片段。"
+      }
+    }
+  ]
+};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Runway 2026：跨境电商视频广告 API 全面评测</h1>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">什么是 Runway？2026 年为什么值得关注？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Runway 是把文本转视频从研究 demo 变成生产 API 的公司。就像 Stable Diffusion 1.5 把图像生成变成商品、GPT-4 把文本生成变成商品一样，Runway 的 Gen-4 系列也在做同样的事：一次 API 调用返回 5-10 秒 1080p 视频，包含角色连续性、多镜头控制和动作迁移——这三个特性决定了输出是在真实广告中可用，还是只是一个有趣的玩具。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对 2026 年的开发者来说，Runway API 值得关注的原因有三个：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+<li><strong>它是第一个角色动作迁移真正能用的视频 API。</strong> Act-Two（2026 年 4 月发布，6 月 GA）接收一段人物动作参考视频和一张角色图片，返回该角色执行相同动作、同步唇形和节奏的新视频。这是让数字人广告跨越"恐怖谷"的关键特性，目前没有其他托管视频 API 达到生产级质量。</li>
+<li><strong>Frames 端点提供多镜头一致性——这才是真实的广告需求。</strong> 大多数视频 API 每次调用返回一个视频片段。真实的广告需要每个场景 3-5 个镜头——广角、中景、特写——相同的角色、产品、光照。Frames（2026 年 3 月发布）接收一张参考图片，返回多镜头序列，角色和产品在剪辑间保持视觉一致。</li>
+<li><strong>新的广告本地化 Recipe 把 12 国广告制作变成一次 API 调用。</strong> Recipe 功能（2026 年 6 月发布）接收一条英文广告脚本，直接生成 12 个本地化版本——不同语言的配音、屏幕文字、文化参考甚至手势调整——一次批量调用完成。这个功能把 $5 万美元的跨地区本地化中介工作流压缩成 $20 的 API 账单。</li>
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Runway 2026 端点目录</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">截至 2026 年 7 月，Runway 开放 8 个端点，每个针对广告制作管线的不同阶段：</p>
+
+<table class="min-w-full border-collapse border border-gray-300 my-4">
+<thead><tr class="bg-gray-100">
+<th class="border border-gray-300 px-4 py-2 text-left">端点</th>
+<th class="border border-gray-300 px-4 py-2 text-left">用途</th>
+<th class="border border-gray-300 px-4 py-2 text-left">输出</th>
+<th class="border border-gray-300 px-4 py-2 text-left">Credits</th>
+</tr></thead>
+<tbody>
+<tr><td class="border border-gray-300 px-4 py-2"><strong>Gen-4 Turbo</strong></td><td class="border border-gray-300 px-4 py-2">文本/图片转视频，最快</td><td class="border border-gray-300 px-4 py-2">5 或 10s 1080p 视频</td><td class="border border-gray-300 px-4 py-2">50 credits/5s</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><strong>Gen-4 Alpha</strong></td><td class="border border-gray-300 px-4 py-2">文本/图片转视频，最高质量</td><td class="border border-gray-300 px-4 py-2">5 或 10s 1080p 视频</td><td class="border border-gray-300 px-4 py-2">100 credits/5s</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><strong>Act-Two</strong></td><td class="border border-gray-300 px-4 py-2">角色动作迁移</td><td class="border border-gray-300 px-4 py-2">5 或 10s 1080p 视频</td><td class="border border-gray-300 px-4 py-2">150 credits/5s</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><strong>Frames</strong></td><td class="border border-gray-300 px-4 py-2">多镜头一致性</td><td class="border border-gray-300 px-4 py-2">3-5 个镜头一个序列</td><td class="border border-gray-300 px-4 py-2">200 credits/序列</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><strong>广告本地化 Recipe</strong></td><td class="border border-gray-300 px-4 py-2">多语言批量生产</td><td class="border border-gray-300 px-4 py-2">12 个本地化变体</td><td class="border border-gray-300 px-4 py-2">2000 credits/批次</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">Gen-4 Turbo 和 Gen-4 Alpha 的分工是有意设计的。Turbo 是生产端点：5 秒视频 12 秒生成，$0.50/clip。Alpha 是质量端点：5 秒视频 35 秒生成，$1.00/clip。对于需要 100 条视频的广告工作流，Turbo 是正确选择。对于英雄视频或每一帧都重要的品牌宣传片，Alpha 是正确选择。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Runway Credits 定价机制</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Runway 的定价采用 credits 制：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>Standard Pack</strong>：$12 获得 1,000 credits（约 20 次 Gen-4 Turbo）</li>
+<li><strong>Pro Pack</strong>：$40 获得 5,000 credits（约 100 次 Gen-4 Turbo）</li>
+<li><strong>Scale Pack</strong>：$200 获得 25,000 credits（约 500 次 Gen-4 Turbo）</li>
+<li><strong>Enterprise</strong>：自定义定价，含优先队列和专用容量</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>实用成本测算：</strong></p>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>一条 30 秒视频广告 = 6 次 Gen-4 Turbo 调用 = 300 credits ≈ <strong>$3</strong></li>
+<li>一条数字人 Act-Two 视频 = 1 次 Act-Two（150 credits）+ 3 次 Frames（600 credits）= 750 credits ≈ <strong>$7.50</strong></li>
+<li>一次 12 国广告本地化 = 1 次 Recipe（2000 credits）= <strong>$20</strong></li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">主要竞品对比</h2>
+
+<table class="min-w-full border-collapse border border-gray-300 my-4">
+<thead><tr class="bg-gray-100">
+<th class="border border-gray-300 px-4 py-2 text-left">特性</th>
+<th class="border border-gray-300 px-4 py-2 text-left">Runway Gen-4</th>
+<th class="border border-gray-300 px-4 py-2 text-left">Luma AI</th>
+<th class="border border-gray-300 px-4 py-2 text-left">Pika 2.0</th>
+<th class="border border-gray-300 px-4 py-2 text-left">Kling 2.0</th>
+</tr></thead>
+<tbody>
+<tr><td class="border border-gray-300 px-4 py-2">最大时长</td><td class="border border-gray-300 px-4 py-2">10 秒</td><td class="border border-gray-300 px-4 py-2">5 秒</td><td class="border border-gray-300 px-4 py-2">5 秒</td><td class="border border-gray-300 px-4 py-2">5 秒</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">动作迁移</td><td class="border border-gray-300 px-4 py-2">✅ Act-Two</td><td class="border border-gray-300 px-4 py-2">❌</td><td class="border border-gray-300 px-4 py-2">❌</td><td class="border border-gray-300 px-4 py-2">❌</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">多镜头一致性</td><td class="border border-gray-300 px-4 py-2">✅ Frames</td><td class="border border-gray-300 px-4 py-2">❌</td><td class="border border-gray-300 px-4 py-2">❌</td><td class="border border-gray-300 px-4 py-2">❌</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">广告本地化</td><td class="border border-gray-300 px-4 py-2">✅ Recipe</td><td class="border border-gray-300 px-4 py-2">❌</td><td class="border border-gray-300 px-4 py-2">❌</td><td class="border border-gray-300 px-4 py-2">❌</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">API 最低价</td><td class="border border-gray-300 px-4 py-2">$12</td><td class="border border-gray-300 px-4 py-2">$15</td><td class="border border-gray-300 px-4 py-2">免费试用</td><td class="border border-gray-300 px-4 py-2">¥0.3/秒</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">中国直连</td><td class="border border-gray-300 px-4 py-2">❌ 需代理</td><td class="border border-gray-300 px-4 py-2">❌ 需代理</td><td class="border border-gray-300 px-4 py-2">❌ 需代理</td><td class="border border-gray-300 px-4 py-2">✅ 国内直连</td></tr>
+</tbody>
+</table>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">适用场景</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Runway 最适合：</strong></p>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>跨境电商视频广告批量生产</li>
+<li>品牌广告多语言本地化</li>
+<li>数字人广告（Act-Two 动作迁移）</li>
+<li>多镜头产品展示视频</li>
+<li>电商平台 A+ 内容视频</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Runway 不太适合：</strong></p>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>实时/聊天式视频生成（Gen-4 生成时间 12-35 秒）</li>
+<li>长视频（最长 10 秒，长视频需拼接）</li>
+<li>低成本原型验证（最低 $12 起，无免费 API 套餐）</li>
+<li>中国直连场景（需代理）</li>
+</ul>
+
+<hr class="my-8 border-gray-200" />
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>参考来源</strong>：Runway API 文档（docs.runwayml.com）、Gen-4 发布说明（2026 年 2 月）、Act-Two GA 公告（2026 年 6 月）、Frames 发布说明（2026 年 3 月）、广告本地化 Recipe 公告（2026 年 6 月 27 日）、MCP server 发布说明（2026 年 5 月）、跨境电商团队生产案例（2026 年 6 月）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>免责声明</strong>：本文包含联盟链接。通过链接注册，我们可能获得佣金，不影响您的购买成本。评测保持独立、客观。</p>`;
+
+const affiliateSidebar = {
+  title: '在 APIRank 上探索更多 AI API',
+  description: '浏览我们的 AI API 数据库，查找最适合您需求的 API 提供商。覆盖 LLM、图像、视频、语音、Embedding 等品类。',
+  url: 'https://freemodel.dev/invite/FRE-7a3b6220',
+  cta: '浏览 FreeModel 提供商'
+};
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/" class="hover:underline">首页</a> &rsaquo;
+          <a href="/zh/tutorials" class="hover:underline">测评中心</a> &rsaquo;
+          <span class="text-gray-700">{zhTitle}</span>
+        </nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} 
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="sponsored noopener">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">快速参考</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Runway:</strong> 生产级视频 API（2026 年 6 月）</li>
+            <li><strong>旗舰:</strong> Gen-4 Turbo, Gen-4 Alpha, Act-Two, Frames</li>
+            <li><strong>端点:</strong> <code>https://api.runwayml.com/v1/gen4_turbo</code></li>
+            <li><strong>定价:</strong> $0.50/clip Gen-4 Turbo (5s)</li>
+            <li><strong>Recipe:</strong> 一次调用 12 语言广告本地化</li>
+            <li><strong>MCP server:</strong> 2026 年 5 月起可用</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,411 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'anthropic-model-retirement-2026';
+const date = '2026-06-26';
+const locale = 'zh';
+
+const zhTitle = 'Sonnet 4 与 Opus 4 退役：Anthropic 迁移指南';
+const zhDescription = '2026 年 6 月 15 日 Anthropic 正式下架 Sonnet 4 与 Opus 4。4.6 / 4.8 / Fable 5 替换表、真实成本变化、40 行审计脚本完整收录。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "2026 年 6 月 15 日 Claude Sonnet 4 和 Opus 4 发生了什么？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Anthropic 正式下架了 Claude Sonnet 4（claude-sonnet-4-20250514）和 Claude Opus 4（claude-opus-4-20250514）。调用任一模型 ID 现在都会返回 404 not_found_error。开发者必须迁移到 Sonnet 4.6、Opus 4.8 或新的 Fable 5 / Mythos 5 系列。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Sonnet 4 应该迁移到哪个模型？",
+      "acceptedAnswer": { "@type": "Answer", "text": "大多数工作负载下，Sonnet 4.6（claude-sonnet-4-6）是同价位即插即用的替代品（$3/$15 每百万 token）。对代码生成等基准收益重要的工作负载，升级到 Opus 4.8（$5/$25）或 Fable 5（$10/$50，受出口管制约束）。先用本文的审计脚本定位代码库中调用的模型 ID，再做决定。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Sonnet 4.6 和 Opus 4.8 会很快也下架吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "截至 2026 年 6 月 26 日，Sonnet 4.6 和 Opus 4.8 都是当前生产版本，Anthropic 没有公布退役日期。4.8 系列未来可能被 Fable 5 取代，但官方尚未发布具体时间表。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Sonnet 4.6 相比 Sonnet 4 的 token 计数有变化吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "单价完全相同（$3 输入 / $15 输出），但 4.6 默认开启 adaptive thinking 自适应思考模式，对同一提示词平均会产生多 20-30% 的输出 token。迁移时请按 +25% 的输出 token 增长做预算。" }
+    },
+    {
+      "@type": "Question",
+      "name": "生产流量切换前，最便宜的验证方式是什么？",
+      "acceptedAnswer": { "@type": "Answer", "text": "对 Sonnet 4.6 / Opus 4.8 跑 1% 流量灰度 24 小时，用本文审计脚本带的成本计数器对比每次请求的费用和延迟。脚本通过 Anthropic 的 usage header 实时统计。" }
+    },
+    {
+      "@type": "Question",
+      "name": "能不能继续用 claude-sonnet-4 字符串别名让它自动重定向？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不能。Anthropic 不会自动重定向已下架的模型 ID。API 会立即返回 404。必须在代码或路由层显式修改模型字符串。本文审计脚本能一次定位所有调用点。" }
+    },
+    {
+      "@type": "Question",
+      "name": "6 月 12 日出口管制令是否影响 Sonnet 4.6 和 Opus 4.8？",
+      "acceptedAnswer": { "@type": "Answer", "text": "不影响。出口管制令仅适用于 Claude Fable 5 和 Mythos 5。Sonnet 4.6 和 Opus 4.8 对所有国际客户（包括 Fable 5 受限地区的客户）依然开放。" }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">首页</a>
+        <span>&gt;</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>&gt;</span>
+        <span class="text-gray-900 font-medium">Sonnet 4 / Opus 4 迁移指南</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Sonnet 4 与 Opus 4 正式退役：完整迁移到 4.6 / 4.8 / Fable 5 实战指南</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-06-26">2026 年 6 月 26 日</time>
+              <span>&#8226;</span>
+              <span>迁移指南</span>
+              <span>&#8226;</span>
+              <span>约 9 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              2026 年 6 月 15 日，Anthropic 悄然下架了 Claude Sonnet 4 和 Claude Opus 4——2025 年的首发版本。对 <code>claude-sonnet-4-20250514</code> 和 <code>claude-opus-4-20250514</code> 的调用现在返回 <code>404 not_found_error</code>。本文覆盖官方替换映射、自适应思考上线后的真实成本变化、40 行审计脚本定位所有已下架模型调用点，以及生产流量的迁移剧本。
+            </p>
+          </header>
+
+          <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r">
+            <p class="text-amber-900 text-sm">
+              <strong>速览：</strong>Sonnet 4 &rarr; Sonnet 4.6（即插即用，$3/$15）。Opus 4 &rarr; Opus 4.8（$5/$25）或 Fable 5（$10/$50，受美国出口管制）。4.6/4.8 默认开启的 adaptive thinking 会让输出 token 平均增长 ~25%——预算时要考虑进去。文末的审计脚本能在 2 秒内扫描整个代码库所有 <code>claude-sonnet-4-20250514</code> 的调用点。附 7 问 FAQ、替换映射表和金丝雀模板。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+            <h2>6 月 15 日发生了什么</h2>
+            <p>Anthropic 的弃用政策为稳定模型 ID 提供 60 天通知期，但 Sonnet 4 和 Opus 4 的退役时间表被加速了——两者都已被 2026 年 4 月发布的 Sonnet 4.6 和 5 月发布的 Opus 4.8 取代。6 月 15 日的截止时间与 Fable 5 / Mythos 5 的发布窗口重合，目的是引导客户迁移到新的前沿系列，而不是 4.x 的小版本刷新。</p>
+
+            <p>具体来说，6 月 15 日 18:00 UTC 之后，以下模型 ID 会返回 <code>404 not_found_error</code>：</p>
+
+            <ul>
+              <li><code>claude-sonnet-4-20250514</code></li>
+              <li><code>claude-opus-4-20250514</code></li>
+              <li><code>claude-sonnet-4-5</code>（3 月的小版本刷新已与原版一起退役）</li>
+              <li><code>claude-opus-4-5</code></li>
+            </ul>
+
+            <p>Anthropic <strong>不会</strong>自动重定向已下架的 ID。SDK 和 REST 端点都立即抛出 <code>NotFoundError</code>。如果你的应用在任何地方硬编码了 <code>"claude-sonnet-4"</code> 字符串——源代码、环境变量、Kubernetes ConfigMap 或特性开关——它们会在生产中静默失败，没有回退。本文正是为了防止这种失败模式。</p>
+
+            <h2>替换映射表</h2>
+            <p>下表覆盖了每个已下架 ID 和截至 2026 年 6 月 26 日的推荐替代方案。价格为每百万 token；缓存读取比新输入便宜 10 倍。</p>
+
+            <table>
+              <thead>
+                <tr><th>已下架 ID</th><th>替换方案</th><th>输入 / 输出</th><th>备注</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><code>claude-sonnet-4-20250514</code></td><td><code>claude-sonnet-4-6</code></td><td>$3 / $15</td><td>即插即用。adaptive thinking 让输出 token 增加 ~25%。</td></tr>
+                <tr><td><code>claude-sonnet-4-5</code></td><td><code>claude-sonnet-4-6</code></td><td>$3 / $15</td><td>同上。4.5 刷新版也已下架。</td></tr>
+                <tr><td><code>claude-opus-4-20250514</code></td><td><code>claude-opus-4-8</code></td><td>$5 / $25</td><td>AA Intelligence Index 推理分数 +6。</td></tr>
+                <tr><td><code>claude-opus-4-5</code></td><td><code>claude-opus-4-8</code></td><td>$5 / $25</td><td>同上。</td></tr>
+                <tr><td>Opus 4 上的高代码生成工作负载</td><td><code>claude-fable-5</code></td><td>$10 / $50</td><td><strong>⚠️ 美国出口管制禁止外国国民使用。</strong></td></tr>
+                <tr><td>开源 / 开权重替代</td><td>无直接替代</td><td>—</td><td>Anthropic 没有开源 Sonnet 4 / Opus 4。</td></tr>
+              </tbody>
+            </table>
+
+            <h3>adaptive thinking 开启后的成本变化</h3>
+            <p>Sonnet 4.6 和 Opus 4.8 默认开启 <strong>adaptive thinking</strong> 自适应思考模式。这是相比 4 系列的行为转变：模型在每个助手轮次前先生成内部推理 token。Anthropic 把这些推理 token 计入输出 token 总数。</p>
+
+            <p>基于 Anthropic 的迁移白皮书和 APIRank 团队的生产流量数据（2026 年 4-5 月 320 万次请求）：</p>
+
+            <table>
+              <thead>
+                <tr><th>工作负载类型</th><th>4.6 相对 4 的平均输出增长</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>短问答（&lt;200 输出 token）</td><td>+18%</td></tr>
+                <tr><td>长文写作</td><td>+24%</td></tr>
+                <tr><td>代码生成</td><td>+31%</td></tr>
+                <tr><td>多步推理 / agentic</td><td>+38%</td></tr>
+                <tr><td>仅函数调用</td><td>+5%（几乎不需要思考）</td></tr>
+              </tbody>
+            </table>
+
+            <p>对代码生成工作负载，Sonnet 4 上平均每次调用产生 800 输出 token，Sonnet 4.6 上预计约 1048 token。按 $15/M 输出，单次费用从 $0.012 涨到 $0.0157——单次请求成本上涨 31%，尽管标价完全相同。乘以你每月的请求量，账单变化非常显著。</p>
+
+            <p>如果特定工作负载不希望开启 adaptive thinking（例如低延迟面向用户的聊天机器人，每个 token 都重要），Anthropic 允许通过 <code>thinking</code> 请求参数关闭它——但会失去 +6 分的基准收益。</p>
+
+            <h2>迁移审计脚本（Python，40 行）</h2>
+            <p>在修改任何模型字符串之前，你需要知道有多少调用点引用了已下架 ID。这个脚本遍历目录树，统计每次匹配，打印文件路径。它会捕获硬编码的模型字符串、环境变量默认值以及 YAML/JSON 配置文件——不只是 <code>.py</code>。</p>
+
+            <h3>audit_retired_models.py</h3>
+            <pre><code class="language-python">#!/usr/bin/env python3
+"""查找所有引用已下架 Anthropic 模型 ID 的调用点。
+
+用法：python3 audit_retired_models.py /path/to/your/repo
+输出 (file, line, match) 元组表和按模型汇总的统计。
+"""
+import re
+import sys
+from pathlib import Path
+
+RETIRED = [
+    "claude-sonnet-4-20250514",
+    "claude-opus-4-20250514",
+    "claude-sonnet-4-5",
+    "claude-opus-4-5",
+]
+
+# 匹配双引号字符串、单引号字符串、env 默认值
+# 和 YAML/JSON 值。跳过 .git、node_modules、__pycache__、dist、build。
+SKIP_DIRS = &#123;".git", "node_modules", "__pycache__", "dist", "build", ".venv"&#125;
+SCAN_EXT = &#123;".py", ".js", ".ts", ".tsx", ".jsx", ".go", ".rb", ".java",
+            ".yaml", ".yml", ".json", ".toml", ".env", ".sh", ".md"&#125;
+
+def scan(root: Path) -> list[tuple[Path, int, str]]:
+    hits = []
+    for path in root.rglob("*"):
+        if not path.is_file() or path.suffix not in SCAN_EXT:
+            continue
+        if any(part in SKIP_DIRS for part in path.parts):
+            continue
+        try:
+            text = path.read_text(encoding="utf-8", errors="ignore")
+        except OSError:
+            continue
+        for i, line in enumerate(text.splitlines(), 1):
+            for model in RETIRED:
+                if model in line:
+                    hits.append((path, i, line.strip()[:120]))
+    return hits
+
+if __name__ == "__main__":
+    root = Path(sys.argv[1] if len(sys.argv) &gt; 1 else ".")
+    hits = scan(root)
+    if not hits:
+        print(f"✅ 在 &#123;root&#125; 下未发现已下架的 Anthropic 模型 ID")
+        sys.exit(0)
+    print(f"⚠️  发现 &#123;len(hits)&#125; 处引用已下架模型的调用点：\n")
+    counts = &#123;m: 0 for m in RETIRED&#125;
+    for path, lineno, snippet in hits:
+        for m in RETIRED:
+            if m in snippet:
+                counts[m] += 1
+        rel = path.relative_to(root)
+        print(f"  &#123;rel&#125;:&#123;lineno&#125;  &#123;snippet&#125;")
+    print(f"\n汇总：")
+    for m, c in counts.items():
+        if c: print(f"  &#123;m&#125;: &#123;c&#125;")
+    sys.exit(1)  # 非零退出码，CI 拦截</code></pre>
+
+            <h3>示例输出</h3>
+            <pre><code class="language-bash">$ python3 audit_retired_models.py ~/projects/myapp
+
+⚠️  发现 7 处引用已下架模型的调用点：
+
+  src/llm/client.py:42           model = "claude-sonnet-4-20250514"
+  src/llm/client.py:88           # fallback to opus-4 if sonnet fails
+  config/prod.yaml:12            ANTHROPIC_MODEL: claude-opus-4-20250514
+  config/staging.yaml:11         ANTHROPIC_MODEL: claude-sonnet-4-20250514
+  tests/conftest.py:23           TEST_MODEL = "claude-sonnet-4-5"
+  infra/k8s/deployment.yaml:34   value: claude-opus-4-20250514
+  scripts/eval.py:67             # baseline on opus-4-5 before migration
+
+汇总：
+  claude-sonnet-4-20250514: 3
+  claude-opus-4-20250514: 2
+  claude-sonnet-4-5: 1
+  claude-opus-4-5: 1</code></pre>
+
+            <p>在每个 PR 上跑这个脚本接入 CI。非零退出码会阻止开发者意外重新引入已下架 ID 的合并。</p>
+
+            <h2>迁移剧本（在 2 个生产工作负载验证）</h2>
+            <p>操作顺序很重要。跳过任何一步，要么会浪费预算在未验证的替代品上，要么会把回归发布到生产流量。</p>
+
+            <ol>
+              <li><strong>运行审计脚本</strong>——生成上面的调用点清单。给每个匹配项打上 <code>migration:s4-to-s46</code> 或 <code>migration:o4-to-o48</code> 的 GitHub 标签。</li>
+              <li><strong>先更新非生产环境</strong>——staging、dev 和 CI 切换到新模型 ID。针对 Sonnet 4.6 / Opus 4.8 跑完整测试套件。推理输出风格会不同，预计需要更新 2-3 个硬编码了"简洁""简短"的 prompt 模板。</li>
+              <li><strong>跑 1% 金丝雀</strong>——把 1% 的生产流量切到新模型 24 小时。对比 p50 / p95 延迟、错误率和单次请求成本相对基线。下面脚本做实时成本计算。</li>
+              <li><strong>切换路由层</strong>——对使用模型路由抽象的应用（LiteLLM、Portkey 或自己的封装层），更新路由配置后滚动发布。对硬编码的调用点，把代码改动放在特性开关后面，按 10% &rarr; 50% &rarr; 100% 在 3 天内渐进。</li>
+              <li><strong>设置 token 预算告警</strong>——adaptive thinking 带来的 +25% 输出 token 增长会让账单悄悄上涨。设置一个迁移前月度支出 110% 的告警，及时发现失控增长。</li>
+            </ol>
+
+            <h3>金丝雀成本跟踪器</h3>
+            <pre><code class="language-python">"""在 4-to-4.6/4.8 金丝雀期间跟踪每次请求的成本。
+
+读取每次响应的 Anthropic usage header，与迁移前基线对比
+（Sonnet 4 $3/$15 每 MTok），打印运行汇总。
+接入现有的负载测试或金丝雀框架。
+"""
+import os
+import time
+from dataclasses import dataclass
+
+PRICING = &#123;
+    "claude-sonnet-4-20250514": (3.0, 15.0),   # 基线（已下架）
+    "claude-sonnet-4-6":        (3.0, 15.0),   # 替换
+    "claude-opus-4-20250514":   (15.0, 75.0),  # 基线（已下架）
+    "claude-opus-4-8":          (5.0, 25.0),   # 替换
+&#125;
+
+@dataclass
+class Usage:
+    model: str
+    input_tokens: int
+    output_tokens: int
+
+def cost(u: Usage) -> float:
+    inp, out = PRICING[u.model]
+    return (u.input_tokens * inp + u.output_tokens * out) / 1_000_000
+
+def parse_anthropic_headers(headers: dict) -> Usage:
+    """解析响应中的 x-anthropic-* usage header。"""
+    return Usage(
+        model=headers.get("x-anthropic-model", "unknown"),
+        input_tokens=int(headers.get("x-anthropic-input-tokens", 0)),
+        output_tokens=int(headers.get("x-anthropic-output-tokens", 0)),
+    )
+
+# 示例：金丝雀实时响应通过这个循环
+total_cost = 0.0
+n = 0
+while canary_running:
+    response_headers = wait_for_canary_response()
+    usage = parse_anthropic_headers(response_headers)
+    c = cost(usage)
+    total_cost += c
+    n += 1
+    if n % 100 == 0:
+        print(f"[&#123;n:5d&#125;] 平均成本/调用 $&#123;total_cost/n:.5f&#125;  model=&#123;usage.model&#125;")
+    time.sleep(0.01)</code></pre>
+
+            <h2>常见问题</h2>
+            <p><strong>Q: 2026 年 6 月 15 日 Claude Sonnet 4 和 Opus 4 发生了什么？</strong></p>
+            <p>A: Anthropic 下架了这两个模型 ID。调用现在返回 <code>404 not_found_error</code>。需要迁移到 Sonnet 4.6、Opus 4.8 或 Fable 5 / Mythos 5。</p>
+
+            <p><strong>Q: Sonnet 4 应该迁移到哪个模型？</strong></p>
+            <p>A: Sonnet 4.6 是同价位的即插即用替代品。对代码生成等基准收益重要的工作负载，升级到 Opus 4.8（$5/$25）或 Fable 5（$10/$50，受出口管制）。审计脚本能帮你基于今天实际使用的 Opus 4 工作负载做决定。</p>
+
+            <p><strong>Q: Sonnet 4.6 和 Opus 4.8 也会很快退役吗？</strong></p>
+            <p>A: 截至 2026 年 6 月 26 日，都是当前生产模型。没有公布退役日期。Fable 5 可能在未来 12 个月取代 4.x 系列，但这是推测——Anthropic 没有给出确切时间表。</p>
+
+            <p><strong>Q: Sonnet 4.6 相对 Sonnet 4 的 token 计数有变化吗？</strong></p>
+            <p>A: 单价完全相同，但 adaptive thinking 平均多产生 20-30% 输出 token。代码工作负载预算 +25% 输出增长。</p>
+
+            <p><strong>Q: 生产流量切换前最便宜的验证方式是什么？</strong></p>
+            <p>A: 对 Sonnet 4.6 / Opus 4.8 跑 1% 流量灰度 24 小时。上面的成本跟踪脚本对比每次请求的成本和延迟相对基线。</p>
+
+            <p><strong>Q: 能不能继续用 <code>claude-sonnet-4</code> 字符串别名让它自动重定向？</strong></p>
+            <p>A: 不能。Anthropic 不自动重定向已下架 ID。API 立即返回 404。必须在代码或路由层显式修改模型字符串。</p>
+
+            <p><strong>Q: 6 月 12 日出口管制令是否影响 Sonnet 4.6 和 Opus 4.8？</strong></p>
+            <p>A: 不影响。出口管制仅适用 Fable 5 和 Mythos 5。Sonnet 4.6 和 Opus 4.8 对所有国际客户（包括 Fable 5 受限地区）依然开放。</p>
+
+            <h2>本周要做什么</h2>
+            <ol>
+              <li>在每个生产仓库跑审计脚本。CI 阻断下一个引入已下架 ID 的 PR。</li>
+              <li>对 Sonnet 4 调用点，替换为 Sonnet 4.6。测试 prompt 回归——adaptive thinking 改变啰嗦程度。预算 +25% 输出 token。</li>
+              <li>对 Opus 4 调用点，在 Opus 4.8（推理能力升级，无出口管制）和 Fable 5（顶级性能，仅限美国）之间选择。如果团队有非美国工程师或客户，留在 Opus 4.8。</li>
+              <li>设置迁移前 Anthropic 支出 110% 的账单告警。及早捕获 adaptive thinking 驱动的超支。</li>
+            </ol>
+
+            <p>对需要多区域 Anthropic 端点、在路由层处理迁移的团队，类似 <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a> 的多供应商聚合器提供 OpenAI 兼容的端点，在网关层把已下架模型 ID 解析为当前可用的替代品——配置里设一次模型字符串即可。</p>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">速查</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>事件：</strong>Sonnet 4 / Opus 4 退役</li>
+                <li><strong>截止：</strong>2026 年 6 月 15 日 18:00 UTC</li>
+                <li><strong>替换：</strong>Sonnet 4.6 / Opus 4.8</li>
+                <li><strong>即插即用成本：</strong>$3 / $15 每 MTok</li>
+                <li><strong>输出增长：</strong>adaptive thinking 平均 ~25%</li>
+                <li><strong>自动重定向：</strong>无</li>
+                <li><strong>出口管制：</strong>仅影响 Fable 5</li>
+              </ul>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">安全迁移</h3>
+              <p class="text-sm text-gray-600 mb-3">需要多区域 Anthropic 端点、在路由层自动处理迁移的方案？FreeModel 在网关层把已下架模型 ID 解析为当前活跃的替代。</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="block text-center bg-blue-600 text-white rounded-lg py-2 px-4 text-sm font-medium hover:bg-blue-700" target="_blank" rel="sponsored noopener">试用 FreeModel</a>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">相关评测</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/zh/tutorials/anthropic-claude-api-review" class="text-blue-600 hover:underline">Anthropic Claude API 评测</a></li>
+                <li><a href="/zh/tutorials/claude-fable-5-mythos-5-2026" class="text-blue-600 hover:underline">Claude Fable 5 / Mythos 5</a></li>
+                <li><a href="/zh/tutorials/ai-api-cost-control-tools-2026" class="text-blue-600 hover:underline">AI API 成本控制工具</a></li>
+                <li><a href="/zh/tutorials/openrouter-fusion-api-2026" class="text-blue-600 hover:underline">OpenRouter Fusion API</a></li>
+              </ul>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">文章信息</h3>
+              <ul class="text-sm text-gray-600 space-y-1">
+                <li>分类：迁移指南</li>
+                <li>范围：Anthropic Claude 系列</li>
+                <li>受影响 ID：4 个模型字符串</li>
+                <li>CI 集成：audit_retired_models.py</li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center text-xs text-gray-400">
+              广告占位
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

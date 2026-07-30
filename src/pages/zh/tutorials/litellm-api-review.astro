@@ -1,0 +1,257 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'litellm-api-review';
+const date = '2026-07-15';
+const locale = 'zh';
+
+const zhTitle = "LiteLLM 2026：开源 AI 网关路由 100+ LLM";
+const zhDescription = "LiteLLM 评测：开源 AI 网关，统一 OpenAI 格式接入 100+ LLM。免费自部署、成本跟踪、MCP、Fallback 路由。定价对比 Portkey / OpenRouter / Cloudflare AI Gateway。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "LiteLLM 2026：开源 AI 网关路由 100+ LLM", "description": "LiteLLM 评测：开源 AI 网关，统一 OpenAI 格式接入 100+ LLM。免费自部署、成本跟踪、MCP、Fallback 路由。定价对比 Portkey / OpenRouter / Cloudflare AI Gateway。", "datePublished": "2026-07-15", "dateModified": "2026-07-15", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/litellm-api-review"}};
+
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh"}, {"@type": "ListItem", "position": 2, "name": "测评中心", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "LiteLLM 2026：开源 AI 网关路由 100+ LLM", "item": "https://apirank.vip/zh/tutorials/litellm-api-review"}]};
+
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "LiteLLM 用来做什么？", "acceptedAnswer": {"@type": "Answer", "text": "LiteLLM 用于通过单一 OpenAI 兼容接口路由 100+ LLM Provider 的请求（OpenAI、Anthropic、Google Vertex、AWS Bedrock、Azure、Cohere、Hugging Face、NVIDIA NIM、Ollama、vLLM）。它是需要给开发者提供多模型访问同时保持成本归因、速率限制和可观测性的平台团队的标准工具。Netflix、Lemonade 和 Rocket Money 在生产环境中使用 LiteLLM。"}}, {"@type": "Question", "name": "LiteLLM 多少钱？", "acceptedAnswer": {"@type": "Answer", "text": "LiteLLM 开源 Proxy 是 MIT 协议，可免费自部署——你只需支付底层 Provider 成本（OpenAI tokens、Anthropic tokens、自部署模型的 GPU 花费）。Enterprise tier 增加 SSO、JWT 鉴权、审计日志、自定义 SLA、专属支持和气隙部署；价格按申请。官方未公开价格表，但案例研究表明 Enterprise 合约视请求量在 5 万–50 万美元/年区间。"}}, {"@type": "Question", "name": "LiteLLM 有免费套餐吗？", "acceptedAnswer": {"@type": "Answer", "text": "有——开源 Proxy 完全免费，无速率限制也无请求上限。你可以通过自部署 LiteLLM Proxy 服务无限请求。唯一成本是上游 Provider API 花费或自部署模型的 GPU 成本。无需信用卡即可开始。"}}, {"@type": "Question", "name": "可以从中国使用 LiteLLM 吗？", "acceptedAnswer": {"@type": "Answer", "text": "可以，通过自部署。LiteLLM 开源 Proxy 可在任何 Docker 或 Kubernetes 可运行的地方运行——包括国内阿里云 ECS、腾讯云或华为云。Proxy 使用你自己的 key 与上游 Provider（OpenAI、Anthropic 等）通信，所以如果你需要从国内访问这些 Provider，要么使用稳定代理，要么你的 Provider 需本地可用（例如 DeepSeek、Qwen、通过阿里云百炼的 GLM）。LiteLLM 官方 SaaS 目前不为国内客户提供服务。"}}, {"@type": "Question", "name": "LiteLLM 支持 OpenAI 兼容 API 调用吗？", "acceptedAnswer": {"@type": "Answer", "text": "支持。LiteLLM 的主要接口是 OpenAI 格式——Proxy 暴露 /v1/chat/completions、/v1/embeddings、/v1/models 和其他 OpenAI 兼容端点。OpenAI SDK、带 shim 的 Anthropic SDK、Vercel AI SDK、LangChain、LlamaIndex 以及任何说 OpenAI 格式的工具都可以通过修改 base URL 与 LiteLLM 配合。"}}, {"@type": "Question", "name": "LiteLLM 与 Portkey 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "Portkey 是 SaaS AI 网关，内置可观测性、Guardrails 和 prompt 管理——配置更快、UI 更精致，但无开源选项且每月费用较高（Hobby $49/月，Growth $199/月）。LiteLLM 是开源、自部署的，具有类似的路由和成本跟踪能力，但需要你自己运维基础设施。对于看重数据控制、避免 SaaS 锁定的团队，LiteLLM 是更好的选择。对于想要零运维 + 精致 UI 的团队，Portkey 胜出。"}}, {"@type": "Question", "name": "LiteLLM 与 OpenRouter 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "OpenRouter 是多 Provider 模型市场，通过单一 API key 访问 300+ 模型，按 token 付费——零运维、即开即用，但 Provider 成本上加价 5-30%，且无自部署选项。LiteLLM 是开源的，路由到相同的 Provider，但你自己带 Provider key、按 Provider 直接价格付费、自行运维 Proxy。OpenRouter 起步更快；LiteLLM 大规模时更便宜且提供完全控制。"}}, {"@type": "Question", "name": "LiteLLM 与 Cloudflare AI Gateway 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "Cloudflare AI Gateway 是 SaaS 请求路由器，具有缓存、分析和 fallback 功能——最适合需要轻量路由且不希望运维开销的现有 Cloudflare 用户。LiteLLM 在成本归因、团队预算、MCP 集成、Guardrails 和流量镜像方面深入得多，但需要你自己运维。对于活跃在 Cloudflare Workers 中的团队，AI Gateway 是天然之选。对于需要平台级控制的团队，LiteLLM 胜出。"}}, {"@type": "Question", "name": "LiteLLM MCP Server 是什么？", "acceptedAnswer": {"@type": "Answer", "text": "LiteLLM MCP Server（2026 年 Q1 发布）将 Proxy 中的每个模型作为 Model Context Protocol 工具暴露给 Claude Desktop、Cursor、Cline 以及任何 MCP 兼容的 agent runtime。一个 config.yaml 就能把你的 LiteLLM Proxy 变成多模型 MCP 工具注册中心——agent 可以通过同一工具接口调用 Claude、GPT 和本地 Llama 模型。"}}, {"@type": "Question", "name": "LiteLLM 有联盟营销计划吗？", "acceptedAnswer": {"@type": "Answer", "text": "LiteLLM 目前没有公开的联盟营销计划。对于需要联盟营销 CTA 的团队，一个替代方案是 FreeModel——一个 OpenAI 兼容的聚合器，可跨多个 Provider 路由并为自部署模型增加成本路由优化。"}}]};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">LiteLLM 2026：开源 AI 网关，一套接口路由 100+ LLM</h1>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">什么是 LiteLLM？2026 年为什么重要？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM 是 2026 年多 LLM Provider 路由的事实开源标准。由 Krrish Dholakia 和 Ishaan Jaffer 于 2023 年创立，最初只是 OpenAI SDK 的一个 Python 封装，如今已发展为 GitHub 53,599 stars（2026 年 7 月验证）的明星项目，为 Netflix、Lemonade、Rocket Money 以及数百个生产 LLM 产品的平台团队提供 AI 接入服务。公司由 Y Combinator 投资，目前正将 Proxy 服务器从 Python 迁移到 Rust 核心以提升性能。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">核心承诺很简洁：用 OpenAI 格式写一次 completion() 调用，LiteLLM 就会自动路由到 OpenAI、Anthropic、Google Vertex、AWS Bedrock、Azure、Cohere、Hugging Face、NVIDIA NIM、Ollama、vLLM 等 100+ Provider。在这一统一接口背后，是一个可自部署的 AI Gateway（Proxy），提供 virtual key、团队预算、速率限制、fallback 链、负载均衡、prompt 缓存、Guardrails，以及完整的 OpenTelemetry 可观测性。截至 2026 年 7 月，该项目已服务 10 亿+ 请求，240M+ Docker pulls。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">LiteLLM 2026 年定价：OSS 免费，Enterprise 付费</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM 在 AI 基础设施领域与众不同：整个核心 Proxy 是 MIT 协议的开源软件，可自部署且不收取任何按请求费用。唯一成本是你路由到的 Provider 自身费用（GPU 或 API 花费）。需要商业功能（SSO、JWT 鉴权、审计日志、自定义 SLA、专属支持、气隙部署）的团队，LiteLLM 提供 Enterprise tier，价格按申请——官方未公开价格表，但 Netflix 和 Lemonade 案例研究表明，Enterprise 合约视请求量在 5 万–50 万美元/年区间。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">相比 Portkey（Hobby 套餐 49 美元/月，Growth 199 美元/月）和 Cloudflare AI Gateway（在 Provider 费用之上额外收 0.20 美元/百万请求），LiteLLM 的开源优先模式是已有 Kubernetes/运维能力的平台团队最具成本效益的路径。代价是运营所有权：你需要自己运行 Proxy、监控它、扩容它、打补丁。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">LiteLLM Proxy 的工作原理（含代码示例）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">最简单的 LiteLLM 用法是通过 Python SDK。completion() 函数接受 provider/model 格式的模型字符串，LiteLLM 处理鉴权、重试和 Provider 特定怪癖：</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-md overflow-x-auto my-4"><code>from litellm import completion
+import os
+
+os.environ['OPENAI_API_KEY'] = 'sk-...'
+os.environ['ANTHROPIC_API_KEY'] = 'sk-ant-...'
+
+# 用同一个接口调用 100+ Provider
+response = completion(
+    model='anthropic/claude-opus-4-8',
+    messages=[{'role': 'user', 'content': '用三句话解释 transformers。'}],
+    fallback_models=['openai/gpt-5', 'google/gemini-2.5-pro'],
+)
+print(response.choices[0].message.content)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">团队级使用场景下，AI Gateway（Proxy）以 Docker 容器或 Kubernetes 部署形式运行。最小化的 config.yaml 如下：</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-md overflow-x-auto my-4"><code>model_list:
+  - model_name: gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+  - model_name: claude-opus
+    litellm_params:
+      model: anthropic/claude-opus-4-8
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: local-llama
+    litellm_params:
+      model: ollama/llama3.3
+      api_base: http://ollama.internal:11434
+
+router_settings:
+  routing_strategy: least-busy
+  num_retries: 3
+  timeout: 30
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
+
+# 启动
+# $ litellm --config config.yaml --port 4000</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">运行后，Proxy 暴露一个 OpenAI 兼容的 /v1/chat/completions 端点，任何客户端（OpenAI SDK、带 shim 的 Anthropic SDK、Vercel AI SDK、LlamaIndex、LangChain）都可以对接。管理界面在 /ui，提供 virtual key 管理、花费跟踪和团队预算。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">成本跟踪、预算与速率限制</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM 对平台团队而言最强的特性是成本归因层。每个请求都用 virtual key（映射到用户、团队或组织）打标签，响应中包含基于模型公开 token 费率计算的精确成本。成本可记录到 s3、GCS、Postgres 或任何 OTEL 兼容后端。团队可以在 key 级别设置硬预算——当团队超出预算时，请求返回 429 并带有结构化错误信息。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">速率限制同样精细。Proxy 按模型和部署跟踪 TPM（每分钟 token 数）和 RPM（每分钟请求数），并支持部署命中速率限制时的冷却期。这对那些对接 OpenAI 或 Anthropic 严格速率上限的生产部署至关重要——LiteLLM 会自动 failover 到备份部署，而不是 500 报错。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Fallback、负载均衡与流量镜像</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM 的 Router 支持三种直接映射到生产场景的模式：</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Fallback 链</strong>：定义主模型 + 备份模型。如果主模型 429 或 5xx，Router 会尝试下一个模型。'按顺序尝试、快速失败'模式非常适合成本优化（先用便宜模型，仅在需要时用高级模型）和韧性（OpenAI + Anthropic + Bedrock 备份）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>负载均衡</strong>：将请求分散到同一模型的 N 个部署。当某个 Provider 有速率限制而其他没有时很有用。策略包括 simple-shuffle、least-busy、usage-based 和 latency-based。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>流量镜像</strong>：将生产流量的某个百分比复制到二级部署用于评估。典型用例是 A/B 测试新模型与在用模型——两者收到相同 prompt，但只有主模型的响应返回给用户，二级模型的响应被记录用于离线评估。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">LiteLLM vs Portkey vs Cloudflare AI Gateway vs OpenRouter</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">这四个工具有大量重叠但面向不同买家：</p>
+
+<table class="w-full text-sm my-6 border border-gray-200">
+  <tr>
+    <td class="border border-gray-200 px-3 py-2">工具</td>
+    <td class="border border-gray-200 px-3 py-2">定价模式</td>
+    <td class="border border-gray-200 px-3 py-2">开源</td>
+    <td class="border border-gray-200 px-3 py-2">最适合</td>
+  </tr>
+  <tr>
+    <td class="border border-gray-200 px-3 py-2">LiteLLM</td>
+    <td class="border border-gray-200 px-3 py-2">OSS 免费 + Enterprise（按需）</td>
+    <td class="border border-gray-200 px-3 py-2">是（MIT）</td>
+    <td class="border border-gray-200 px-3 py-2">自部署平台团队；成本控制 + 路由</td>
+  </tr>
+  <tr>
+    <td class="border border-gray-200 px-3 py-2">Portkey</td>
+    <td class="border border-gray-200 px-3 py-2">$49/月 Hobby，$199/月 Growth，Enterprise</td>
+    <td class="border border-gray-200 px-3 py-2">否（SaaS）</td>
+    <td class="border border-gray-200 px-3 py-2">无需运维开销就要可观测性 + Guardrails 的团队</td>
+  </tr>
+  <tr>
+    <td class="border border-gray-200 px-3 py-2">Cloudflare AI Gateway</td>
+    <td class="border border-gray-200 px-3 py-2">$0.20/M 请求（1M 免费）</td>
+    <td class="border border-gray-200 px-3 py-2">否（SaaS）</td>
+    <td class="border border-gray-200 px-3 py-2">现有 Cloudflare 用户；简单缓存 + 分析</td>
+  </tr>
+  <tr>
+    <td class="border border-gray-200 px-3 py-2">OpenRouter</td>
+    <td class="border border-gray-200 px-3 py-2">300+ 模型按 token 加价</td>
+    <td class="border border-gray-200 px-3 py-2">否（SaaS）</td>
+    <td class="border border-gray-200 px-3 py-2">无需承诺即可访问大量模型的探索场景</td>
+  </tr>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你是具备 Kubernetes/运维能力的平台团队，需要对路由、成本归因和自部署可观测性进行精细控制，LiteLLM 是最强选择。如果你想要开箱即用的 SaaS 产品、最少配置，Portkey 或 Cloudflare AI Gateway 更快。如果你希望访问大量模型而无需承诺单一 Provider，OpenRouter 是合适选择。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">MCP Server、Guardrails 与 2026 年新特性</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的三个新特性让 LiteLLM 在本质上更强：</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>MCP Server（2026 Q1）</strong>：LiteLLM 现在可将任何部署的模型作为 Model Context Protocol 工具暴露给 Claude Desktop、Cursor、Cline 和任何 MCP 兼容的 agent runtime。这意味着一个 config.yaml 就能把你的 Proxy 变成 MCP 工具注册中心——构建 agent 的工程师可以从同一位置调用 Claude、GPT 和本地 Llama 模型。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Guardrails（2026 Q1）</strong>：内置 Guardrail 支持 PII 检测、越狱保护、内容审核和自定义 regex 检查。Guardrails 可按模型或按 key 配置，失败可配置为阻断（返回 400）或日志通过（违规行为记录用于审查）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Rust 核心（2026 Q2，进行中）</strong>：Proxy 服务器正用 Rust 重写，配合 PyO3 绑定以保持 Python SDK 兼容性。早期基准测试显示热路径吞吐量提升 5-10 倍。现有 Python 配置继续兼容运行。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">什么场景不适合 LiteLLM</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">尽管 LiteLLM 很强，但并非适合所有团队。在以下场景应跳过 LiteLLM：</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>你需要 SaaS 控制台</strong>：LiteLLM 的 UI 功能完备但不如 Portkey 或 Helicone 精致。如果你的非技术利益相关者需要仪表盘，请计划在 Proxy API 之上构建轻量内部 UI。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>你只路由到单一 Provider</strong>：如果 100% 的流量都走 OpenAI 或 Anthropic，Proxy 增加的延迟和运维开销收益甚微。请直接使用 Provider 的 SDK。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>你无法运维 Kubernetes 集群</strong>：LiteLLM 设计为自部署。没有 LiteLLM-as-a-Service 托管选项（只有 Enterprise tier，即自部署 + 支持）。如果你没有运维能力，请选择 SaaS 工具。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>LiteLLM 用来做什么？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM 用于通过单一 OpenAI 兼容接口路由 100+ LLM Provider 的请求（OpenAI、Anthropic、Google Vertex、AWS Bedrock、Azure、Cohere、Hugging Face、NVIDIA NIM、Ollama、vLLM）。它是需要给开发者提供多模型访问同时保持成本归因、速率限制和可观测性的平台团队的标准工具。Netflix、Lemonade 和 Rocket Money 在生产环境中使用 LiteLLM。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>LiteLLM 多少钱？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM 开源 Proxy 是 MIT 协议，可免费自部署——你只需支付底层 Provider 成本（OpenAI tokens、Anthropic tokens、自部署模型的 GPU 花费）。Enterprise tier 增加 SSO、JWT 鉴权、审计日志、自定义 SLA、专属支持和气隙部署；价格按申请。官方未公开价格表，但案例研究表明 Enterprise 合约视请求量在 5 万–50 万美元/年区间。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>LiteLLM 有免费套餐吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">有——开源 Proxy 完全免费，无速率限制也无请求上限。你可以通过自部署 LiteLLM Proxy 服务无限请求。唯一成本是上游 Provider API 花费或自部署模型的 GPU 成本。无需信用卡即可开始。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>可以从中国使用 LiteLLM 吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">可以，通过自部署。LiteLLM 开源 Proxy 可在任何 Docker 或 Kubernetes 可运行的地方运行——包括国内阿里云 ECS、腾讯云或华为云。Proxy 使用你自己的 key 与上游 Provider（OpenAI、Anthropic 等）通信，所以如果你需要从国内访问这些 Provider，要么使用稳定代理，要么你的 Provider 需本地可用（例如 DeepSeek、Qwen、通过阿里云百炼的 GLM）。LiteLLM 官方 SaaS 目前不为国内客户提供服务。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>LiteLLM 支持 OpenAI 兼容 API 调用吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">支持。LiteLLM 的主要接口是 OpenAI 格式——Proxy 暴露 /v1/chat/completions、/v1/embeddings、/v1/models 和其他 OpenAI 兼容端点。OpenAI SDK、带 shim 的 Anthropic SDK、Vercel AI SDK、LangChain、LlamaIndex 以及任何说 OpenAI 格式的工具都可以通过修改 base URL 与 LiteLLM 配合。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>LiteLLM 与 Portkey 相比如何？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey 是 SaaS AI 网关，内置可观测性、Guardrails 和 prompt 管理——配置更快、UI 更精致，但无开源选项且每月费用较高（Hobby $49/月，Growth $199/月）。LiteLLM 是开源、自部署的，具有类似的路由和成本跟踪能力，但需要你自己运维基础设施。对于看重数据控制、避免 SaaS 锁定的团队，LiteLLM 是更好的选择。对于想要零运维 + 精致 UI 的团队，Portkey 胜出。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>LiteLLM 与 OpenRouter 相比如何？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter 是多 Provider 模型市场，通过单一 API key 访问 300+ 模型，按 token 付费——零运维、即开即用，但 Provider 成本上加价 5-30%，且无自部署选项。LiteLLM 是开源的，路由到相同的 Provider，但你自己带 Provider key、按 Provider 直接价格付费、自行运维 Proxy。OpenRouter 起步更快；LiteLLM 大规模时更便宜且提供完全控制。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>LiteLLM 与 Cloudflare AI Gateway 相比如何？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Cloudflare AI Gateway 是 SaaS 请求路由器，具有缓存、分析和 fallback 功能——最适合需要轻量路由且不希望运维开销的现有 Cloudflare 用户。LiteLLM 在成本归因、团队预算、MCP 集成、Guardrails 和流量镜像方面深入得多，但需要你自己运维。对于活跃在 Cloudflare Workers 中的团队，AI Gateway 是天然之选。对于需要平台级控制的团队，LiteLLM 胜出。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>LiteLLM MCP Server 是什么？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM MCP Server（2026 年 Q1 发布）将 Proxy 中的每个模型作为 Model Context Protocol 工具暴露给 Claude Desktop、Cursor、Cline 以及任何 MCP 兼容的 agent runtime。一个 config.yaml 就能把你的 LiteLLM Proxy 变成多模型 MCP 工具注册中心——agent 可以通过同一工具接口调用 Claude、GPT 和本地 Llama 模型。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>LiteLLM 有联盟营销计划吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">LiteLLM 目前没有公开的联盟营销计划。对于需要联盟营销 CTA 的团队，一个替代方案是 FreeModel——一个 OpenAI 兼容的聚合器，可跨多个 Provider 路由并为自部署模型增加成本路由优化。</p>
+`;
+
+const affiliateSidebar = {"title": "试用 FreeModel", "description": "一个 API key 走多 provider 路由：DeepSeek + Qwen + Llama + OpenAI 兼容上游。配合 LiteLLM 做自部署模型的成本优化。", "url": "https://freemodel.dev/invite/FRE-7a3b6220", "cta": "获取免费额度"};
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/zh" class="hover:underline">首页</a> &rsaquo;
+          <a href="/zh/tutorials" class="hover:underline">测评中心</a> &rsaquo;
+          <span class="text-gray-700">{zhTitle}</span>
+        </nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url}
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+             rel="sponsored noopener" target="_blank">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">快速概览</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Provider:</strong> LiteLLM（开源 AI 网关）</li>
+            <li><strong>模型:</strong> 100+ LLM Provider（OpenAI 格式）</li>
+            <li><strong>定价:</strong> OSS 免费（自部署）；Enterprise 按需</li>
+            <li><strong>协议:</strong> MIT（开源核心）</li>
+            <li><strong>投资方:</strong> Y Combinator</li>
+            <li><strong>GitHub:</strong> 53,599 stars（2026 年 7 月验证）</li>
+            <li><strong>客户:</strong> Netflix、Lemonade、Rocket Money</li>
+            <li><strong>API:</strong> <code>https://your-proxy.litellm.internal/v1</code>（自部署）</li>
+            <li><strong>开源:</strong> 是（MIT）- 无联盟计划</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-xxxxxxxxxxxxxx"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
