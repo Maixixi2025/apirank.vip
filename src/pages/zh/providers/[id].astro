@@ -233,6 +233,43 @@ const breadcrumbJsonLd = {
             <p class="text-indigo-800">{bestFor}</p>
           </section>
 
+          <!-- Review Sections (中文) -->
+          {provider.reviewSections && provider.reviewSections.length > 0 && (
+            <div class="space-y-6">
+              {provider.reviewSections.map((section: any) => (
+                <section class="bg-white rounded-xl border border-gray-200 p-6">
+                  <h2 class="text-xl font-bold text-gray-900 mb-4">{section.titleZh || section.title}</h2>
+                  {section.type === 'table' ? (
+                    <div class="overflow-x-auto">
+                      <table class="table-token">
+                        {section.headers && (
+                          <thead><tr>{section.headers.map((h: string) => <th>{h}</th>)}</tr></thead>
+                        )}
+                        <tbody>
+                          {section.rows.map((row: string[]) => (
+                            <tr>{row.map((cell: string) => <td class="text-gray-700 text-sm">{cell}</td>)}</tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : section.type === 'list' ? (
+                    <ul class="space-y-3">
+                      {section.items.map((item: any) => (
+                        typeof item === 'string' ? (
+                          <li class="flex items-start gap-3"><span class="text-blue-500 mt-0.5">•</span><span class="text-gray-700">{item}</span></li>
+                        ) : (
+                          <li class="flex items-start gap-3"><span class="text-blue-500 mt-0.5">•</span><span class="text-gray-700"><strong>{item.label}:</strong> {item.value}</span></li>
+                        )
+                      ))}
+                    </ul>
+                  ) : (
+                    <p class="text-gray-700 leading-relaxed whitespace-pre-line">{section.textZh || section.text}</p>
+                  )}
+                </section>
+              ))}
+            </div>
+          )}
+
           <!-- AdSense -->
           <div class="adsense-placeholder h-24 rounded-lg"></div>
         </div>
@@ -246,7 +283,7 @@ const breadcrumbJsonLd = {
             <p class="text-sm text-gray-500 mb-4">{freeTier}</p>
             
             {affiliateUrl ? (
-              <a href={affiliateUrl} target="_blank" rel="noopener" class="btn-primary w-full text-center block">
+              <a href={affiliateUrl} target="_blank" rel="sponsored noopener" class="btn-primary w-full text-center block">
                 {t(locale, 'provider.apply')}
               </a>
             ) : (
