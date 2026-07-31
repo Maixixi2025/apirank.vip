@@ -1691,6 +1691,68 @@
     },
     "freeTier": "新用户 $200 免费额度（30天有限）",
     "paidModel": "按量计费，Azure 订阅",
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": ["Model", "Input ($/M tokens)", "Output ($/M tokens)", "Best For"],
+        "headersZh": ["模型", "输入 ($/百万 token)", "输出 ($/百万 token)", "最佳用途"],
+        "rows": [
+          ["GPT-4o", "$2.50", "$10.00", "Multimodal (text+image)"],
+          ["GPT-4o mini", "$0.15", "$0.60", "High-volume, lightweight tasks"],
+          ["o1", "$15.00", "$60.00", "Advanced reasoning, long chain-of-thought"],
+          ["o3", "$10.00", "$40.00", "Structured reasoning, math/code"],
+          ["Provisioned Throughput (PTU)", "Reserved hourly", "—", "Guaranteed capacity, low-latency SLAs"],
+          ["Pay-as-you-go", "$0", "$0", "No commit; same per-token price as OpenAI direct"]
+        ],
+        "rowsZh": [
+          ["GPT-4o", "$2.50", "$10.00", "多模态（文本+图像）"],
+          ["GPT-4o mini", "$0.15", "$0.60", "高频轻量任务"],
+          ["o1", "$15.00", "$60.00", "高级推理，长链式思考"],
+          ["o3", "$10.00", "$40.00", "结构化推理，数学/代码"],
+          ["预留吞吐量 (PTU)", "按小时预留", "—", "保证容量，低延迟 SLA"],
+          ["按量付费", "$0", "$0", "无承诺；与 OpenAI 直连同价"]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {"label": "API Compatibility", "value": "100% wire-compatible with the OpenAI /v1/chat/completions, /v1/embeddings, and /v1/images/generations REST surface; existing OpenAI SDKs work by swapping the base URL and adding an api-key header."},
+          {"label": "Endpoint Base URL", "value": "Per-deployment URL of the form https://{resource}.openai.azure.com/openai/deployments/{deployment}/ — your 'deployment' name acts as the model alias and lets you swap underlying models without code changes."},
+          {"label": "Model Availability", "value": "A subset of OpenAI's catalog — GPT-4o, GPT-4o-mini, o1, o3, GPT-4 Turbo, GPT-3.5 Turbo, DALL-E 3, Whisper, plus enterprise-only preview models (some only via Azure). Region- and quota-gated."},
+          {"label": "Auth & Identity", "value": "Azure AD (Entra ID) tokens or API keys; managed identities let apps running on Azure resources (App Service, Functions, AKS) call the API without storing secrets."},
+          {"label": "Content Safety", "value": "Azure AI Content Safety filter is layered on every prompt and completion by default — severity thresholds (Safe / Low / Medium / High) and category-level toggles are configurable per deployment."},
+          {"label": "Provisioning Model", "value": "Provisioned Throughput Units (PTU) reserve capacity for predictable low-latency SLAs; Pay-as-you-go (PTU-free) is identical per-token pricing to OpenAI direct, useful for spiky workloads."},
+          {"label": "Observability & Monitoring", "value": "Native Azure Monitor metrics, logs in Log Analytics, request/response traces in Application Insights; exportable to Power BI / Grafana via OpenTelemetry-compatible endpoints."}
+        ],
+        "itemsZh": [
+          {"label": "API 兼容性", "value": "与 OpenAI 的 /v1/chat/completions、/v1/embeddings、/v1/images/generations REST 接口 100% 协议兼容；现有 OpenAI SDK 只需替换 base URL 并加上 api-key 头即可使用。"},
+          {"label": "端点 Base URL", "value": "形如 https://{resource}.openai.azure.com/openai/deployments/{deployment}/ 的部署级 URL；'deployment' 名称充当模型别名，可在不改代码的前提下替换底层模型。"},
+          {"label": "模型可用性", "value": "OpenAI 全集中的一部分子集 — GPT-4o、GPT-4o-mini、o1、o3、GPT-4 Turbo、GPT-3.5 Turbo、DALL-E 3、Whisper，加上企业专属预览模型（部分仅 Azure 提供）。按区域与配额开通。"},
+          {"label": "鉴权与身份", "value": "Azure AD (Entra ID) 令牌或 API key；托管身份可让运行在 Azure 资源（App Service、Functions、AKS）上的应用无需存储密钥即可调用 API。"},
+          {"label": "内容安全", "value": "默认在每次 prompt 和 completion 上叠加 Azure AI Content Safety 过滤；Safe / Low / Medium / High 严重等级阈值与类别开关可按 deployment 单独配置。"},
+          {"label": "供给模式", "value": "预留吞吐量单位（PTU）预留容量以提供可预测的低延迟 SLA；按量付费（无 PTU）与 OpenAI 直连每 token 价格完全相同，适合波动负载。"},
+          {"label": "可观测与监控", "value": "原生集成 Azure Monitor 指标、Log Analytics 日志、Application Insights 请求/响应追踪；通过 OpenTelemetry 端点可导出到 Power BI / Grafana。"}
+        ]
+      },
+      {
+        "title": "🏢 Enterprise Compliance & Data Residency",
+        "titleZh": "🏢 企业合规与数据驻留",
+        "type": "text",
+        "text": "Azure OpenAI is the only mainstream OpenAI-compatible service that ships with the full Azure enterprise control plane built in. Prompts and completions live inside the customer's Azure tenant, are never used to train foundation models, and can be deleted on demand. It inherits Azure's compliance portfolio: SOC 2 Type II, ISO 27001 / 27018 / 27701, HIPAA BAA, FedRAMP High, and EU Data Boundary. Teams also get configurable Content Safety filters, Private Endpoint / VNet injection, customer-managed keys via Key Vault, and audit logs feeding Microsoft Purview. For regulated workloads, this is the single biggest reason teams standardize on Azure over the OpenAI direct API or third-party aggregators.",
+        "textZh": "Azure OpenAI 是唯一一款开箱即用搭载完整 Azure 企业控制平面的主流 OpenAI 兼容服务。prompt 与 completion 存储在客户自己的 Azure 租户内，永不用于训练基础模型，可按需删除。它直接继承 Azure 合规资质：SOC 2 Type II、ISO 27001 / 27018 / 27701、HIPAA BAA、FedRAMP High 与 EU Data Boundary。此外还有可配置的内容安全过滤、Private Endpoint / VNet 注入、Key Vault 客户自管密钥、及接入 Microsoft Purview 的审计日志。对受监管负载而言，这正是团队选择 Azure 而非 OpenAI 直连或第三方聚合器的最重要原因。"
+      },
+      {
+        "title": "🌐 China Access & Latency",
+        "titleZh": "🌐 中国访问与延迟",
+        "type": "text",
+        "text": "Azure OpenAI has two distinct offerings for China. The global Azure OpenAI service (api.openai.azure.com across 60+ regions) is not reachable from mainland China due to cross-border data restrictions; it remains the right choice for international deployments via Hong Kong, Singapore, or Japan West. For Mainland-resident traffic, Microsoft 21Vianet operates a separate, ICP-licensed Azure China instance — access requires a Chinese Azure subscription (申请 Azure China account via 21Vianet), a separate approval process (typically 3–5 business days), and a smaller model catalog (some frontier models such as GPT-5 are not yet available on Azure China at launch).\n\nLatency from the 21Vianet instance to Chinese clients is the lowest among Western LLM providers — often under 80ms intra-region and 100–150ms cross-province — because traffic stays inside Mainland Chinese networks and never crosses the GFW. Combined with full ICP and MLPS 2.0 compliance, this is the standard answer for Chinese enterprises that need an OpenAI-grade model on compliant infrastructure.",
+        "textZh": "Azure OpenAI 针对中国市场提供两条独立的产品线。全球版 Azure OpenAI 服务（覆盖 60+ 区域的 api.openai.azure.com）受跨境数据出境限制，中国大陆无法直接访问；它仍是面向海外部署（落地于香港、新加坡、日本西部）的合适选择。对于真正面向中国大陆的流量，由微软世纪互联（21Vianet）运营独立的 ICP 备案 Azure China 实例——访问需先开通 Azure 中国版订阅（通过世纪互联申请），并经过独立审批流程（通常 3-5 个工作日），且模型目录较小（部分前沿模型如 GPT-5 在首发时 Azure China 暂未上线）。\n\n从世纪互联实例到中国客户端的延迟是所有西方 LLM 提供商中最低的——同区域内通常低于 80ms，跨省 100-150ms——因为流量始终位于中国大陆内部网络，不会跨越 GFW。加上完整的 ICP 与 MLPS 2.0 合规，这就是中国企业在合规基础设施上获取 OpenAI 级别模型的标准答案。"
+      }
+    ],
     "availabilityCN": "⚠️ 世纪互联运营版（国内可用，模型比国际版少）",
     "availabilityEN": "⚠️ Available via 21Vianet (restricted model set)",
     "speedRank": 4,
