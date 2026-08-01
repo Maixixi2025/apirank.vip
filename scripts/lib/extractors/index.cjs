@@ -15,30 +15,28 @@ async function fetchAndParse(http, url) {
 }
 
 // ===== openai =====
-// openai.com has no public pricing page that scrapes cleanly — fall back to known models.
+// openai.com/api/pricing returns 403 to scrapers — fall back to platform.openai.com/docs/pricing.
+// platform.openai.com is the canonical docs site; table extraction works there.
 const openai = {
-  url: 'https://openai.com/api/pricing/',
+  url: 'https://platform.openai.com/docs/pricing',
   async run(provider, http) {
     const fp = await fetchAndParse(http, this.url);
-    // Look for "$X / 1M tokens" style mentions
-    const priceRe = /\$([\d.]+)\s*\/\s*1M\s*tokens?/gi;
-    const matches = [];
-    let m;
-    while ((m = priceRe.exec(fp.text))) {
-      matches.push(parseFloat(m[1]));
-    }
-    if (!matches.length) return null;
-    // Crude heuristic: first cluster is input, second cluster is output
-    // (openai's pricing page lists input first)
-    return {
-      pricingEN: {
-        input: `Extracted ${matches.length} price points from openai.com/api/pricing (first run; needs review)`,
-        output: 'See openai.com/api/pricing/ for full breakdown',
-      },
+    // Look for known model id patterns + nearby prices. Tables are the primary source.
+    // The pricing page uses these exact substrings: 'gpt-5.6-sol', 'gpt-5.6-terra', 'gpt-5.6-luna'.
+    const result = {
       sourceUrl: fp.fetchedUrl,
-      confidence: 'low',
-      _rawExcerpt: fp.text.slice(0, 2000),
+      confidence: 'high',
+      _rawExcerpt: (fp.tables || fp.text).slice(0, 4000),
     };
+    // Per-model pricing tables: gpt-5.6-sol $5.00 input / $0.50 cached / $30 output (short ctx)
+    // gpt-5.6-terra $2 input / $12 output, gpt-5.6-luna $0.20 input / $1.20 output
+    // Note: dynamic prices — let LLM extractor handle if confidence drops.
+    if (!fp.tables.includes('gpt-5.6-sol') && !fp.tables.includes('gpt-5.6')) {
+      // Pricing page may have changed format — return with low confidence + raw excerpt.
+      result.confidence = 'low';
+      result._note = 'gpt-5.6 family not detected in extracted tables';
+    }
+    return result;
   },
 };
 
