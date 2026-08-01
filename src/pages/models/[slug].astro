@@ -1,0 +1,366 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import providers from '../../data/providers.json';
+import { modelsData, pricingMeta, lastVerifiedLabel, monthlyCostCents, formatCents } from '../../lib/pricing';
+import type { Model, Tier, AvailabilityCN } from '../../lib/pricing';
+
+// A-04: Model detail page template.
+// getStaticPaths emits one static page per model in models.json.
+// Day 6 (8-2) will publish Claude Sonnet 4.6 as the first concrete page;
+// until then this template is reachable but no model is featured on home.
+
+export function getStaticPaths() {
+  return modelsData.models.map((m) => ({
+    params: { slug: m.id },
+    props: { model: m },
+  }));
+}
+
+const { model } = Astro.props as { model: Model };
+
+if (!model) {
+  return Astro.redirect('/providers');
+}
+
+// Find providers in our DB that list this model.
+// providers.json stores model names as free-text ("Claude Sonnet 4.6", "GPT-5", etc.).
+// We fuzzy-match on the canonical name + a few common aliases.
+const aliases: Record<string, string[]> = {
+  'claude-fable-5': ['Claude Fable 5', 'Claude 4.5', 'Claude Sonnet'],
+  'claude-opus-4-8': ['Claude Opus 4.8', 'Claude Opus'],
+  'claude-sonnet-4-6': ['Claude Sonnet 4.6', 'Claude Sonnet'],
+  'claude-haiku-4-5': ['Claude Haiku 4.5', 'Claude Haiku'],
+  'gpt-5': ['GPT-5'],
+  'gpt-5-mini': ['GPT-5 mini'],
+  'gpt-5-nano': ['GPT-5 nano'],
+  'o3': ['OpenAI o3', 'o3'],
+  'gemini-2-5-pro': ['Gemini 2.5 Pro'],
+  'gemini-2-0-flash': ['Gemini 2.0 Flash'],
+  'grok-3': ['Grok-3', 'Grok 3'],
+  'grok-3-mini': ['Grok-3 mini'],
+  'deepseek-v4-pro': ['DeepSeek V4 Pro'],
+  'deepseek-v4-flash': ['DeepSeek V4 Flash'],
+  'deepseek-r1': ['DeepSeek R1'],
+  'kimi-k2-7': ['Kimi K2.7'],
+  'kimi-k2-6': ['Kimi K2.6'],
+  'glm-5-2': ['GLM-5.2'],
+  'glm-5-1': ['GLM-5.1'],
+  'glm-5-flash': ['GLM-5-Flash'],
+  'mistral-small-3': ['Mistral Small 3'],
+  'qwen-turbo': ['Qwen-Turbo'],
+  'hunyuan-turbo': ['Hunyuan-Turbo'],
+  'doubao-lite': ['Doubao Lite'],
+  'ernie-speed': ['ERNIE-Speed'],
+  'llama-3-3-70b': ['Llama 3.3 70B'],
+};
+
+const modelAliases = aliases[model.id] ?? [model.name];
+const offeringProviders = providers
+  .filter((p: any) =>
+    Array.isArray(p.models) &&
+    p.models.some((m: string) => modelAliases.some(a => m.includes(a)))
+  )
+  .sort((a: any, b: any) => (a.overallRank ?? 99) - (b.overallRank ?? 99));
+
+// Find alternative models in the same tier (for "Related models" section).
+const alternatives = modelsData.models
+  .filter((m) => m.tier === model.tier && m.id !== model.id)
+  .slice(0, 6);
+
+// 4 cost scenarios — assumptions are derived from typical real-world workloads.
+// Numbers are intentionally round so users can spot the cost driver at a glance.
+const scenarios = [
+  { id: 'chatbot',     name: 'AI Chatbot',     dailyCalls: 5000,  inputSharePct: 60, avgTokensPerCall: 600,  cacheHitRatePct: 30 },
+  { id: 'rag',         name: 'RAG Q&A',        dailyCalls: 2000,  inputSharePct: 85, avgTokensPerCall: 1500, cacheHitRatePct: 60 },
+  { id: 'codeassist',  name: 'Code Assistant', dailyCalls: 1500,  inputSharePct: 70, avgTokensPerCall: 2000, cacheHitRatePct: 20 },
+  { id: 'doc-summary', name: 'Doc Summary',    dailyCalls: 500,   inputSharePct: 90, avgTokensPerCall: 8000, cacheHitRatePct: 10 },
+];
+
+const scenarioCosts = scenarios.map((s) => ({
+  ...s,
+  cents: monthlyCostCents(model, {
+    dailyCalls: s.dailyCalls,
+    inputSharePct: s.inputSharePct,
+    avgTokensPerCall: s.avgTokensPerCall,
+    cacheHitRatePct: s.cacheHitRatePct,
+  }),
+}));
+
+// Tier display labels.
+const tierLabel: Record<Tier, string> = {
+  frontier: 'Frontier',
+  mid: 'Mid-tier',
+  budget: 'Budget',
+};
+
+// China availability labels + colors.
+const cnLabel: Record<AvailabilityCN, { text: string; cls: string }> = {
+  direct:         { text: 'Direct access',     cls: 'bg-emerald-100 text-emerald-700 border-emerald-200' },
+  proxy_required: { text: 'Proxy required',    cls: 'bg-amber-100 text-amber-700 border-amber-200' },
+  blocked:        { text: 'Blocked in China',  cls: 'bg-rose-100 text-rose-700 border-rose-200' },
+};
+
+// SEO
+const title = `${model.name} — Pricing, Specs & Providers (2026) | APIRank`;
+const description = `${model.name} API pricing (USD/1M tokens), context window, capabilities, China access, and providers offering it. ${model.contextWindow.toLocaleString()} tokens context. ${model.tier} tier.`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: `${model.name} API — 2026 Pricing & Specs`,
+  description,
+  inLanguage: 'en-US',
+  author: { '@type': 'Organization', name: 'APIRank' },
+  publisher: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' },
+  datePublished: modelsData.lastVerified,
+  dateModified: pricingMeta.lastVerified,
+  about: {
+    '@type': 'SoftwareApplication',
+    name: model.name,
+    applicationCategory: 'AI API',
+    operatingSystem: 'Cloud',
+    offers: {
+      '@type': 'Offer',
+      price: model.pricing.input,
+      priceCurrency: 'USD',
+      description: 'Input price per 1M tokens',
+    },
+  },
+};
+
+const verifiedLabel = lastVerifiedLabel('en');
+---
+
+<BaseLayout title={title} description={description} type="article">
+  <article class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Breadcrumbs -->
+    <nav class="text-sm text-gray-500 mb-4" aria-label="Breadcrumb">
+      <a href="/" class="hover:text-blue-600">Home</a>
+      <span class="mx-2">/</span>
+      <a href="/providers" class="hover:text-blue-600">Providers</a>
+      <span class="mx-2">/</span>
+      <span class="text-gray-700">{model.name}</span>
+    </nav>
+
+    <!-- Hero -->
+    <header class="mb-8">
+      <div class="flex flex-wrap items-center gap-3 mb-3">
+        <span class={`text-xs font-medium px-2 py-1 rounded border ${cnLabel[model.availabilityCN].cls}`}>
+          {cnLabel[model.availabilityCN].text}
+        </span>
+        <span class="text-xs font-medium px-2 py-1 rounded bg-gray-100 text-gray-700 border border-gray-200">
+          {tierLabel[model.tier]}
+        </span>
+        <span class="text-xs text-gray-500">{verifiedLabel}</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-2">{model.name}</h1>
+      <p class="text-gray-600 text-lg max-w-3xl">{model.note}</p>
+      <div class="mt-4 text-sm text-gray-500">
+        Provider: <a href={`/providers/${model.providerId}`} class="text-blue-600 hover:underline">{model.provider}</a>
+        ·
+        <a href={model.officialUrl} target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">Official pricing ↗</a>
+      </div>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+      <!-- Main column -->
+      <div class="lg:col-span-2 space-y-8">
+
+        <!-- Pricing card -->
+        <section class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h2 class="text-xl font-bold text-gray-900 mb-4">💰 Pricing (per 1M tokens)</h2>
+          <div class="grid grid-cols-3 gap-4">
+            <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
+              <div class="text-xs text-blue-700 font-medium uppercase tracking-wide">Input</div>
+              <div class="text-2xl font-bold text-blue-900 mt-1">
+                ${model.pricing.input.toFixed(2)}
+              </div>
+            </div>
+            <div class="bg-purple-50 rounded-lg p-4 border border-purple-100">
+              <div class="text-xs text-purple-700 font-medium uppercase tracking-wide">Output</div>
+              <div class="text-2xl font-bold text-purple-900 mt-1">
+                ${model.pricing.output.toFixed(2)}
+              </div>
+            </div>
+            <div class="bg-emerald-50 rounded-lg p-4 border border-emerald-100">
+              <div class="text-xs text-emerald-700 font-medium uppercase tracking-wide">Cache</div>
+              <div class="text-2xl font-bold text-emerald-900 mt-1">
+                ${model.pricing.cache.toFixed(2)}
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-gray-500 mt-4">USD per 1M tokens. Cache = cached input read. CNY ≈ ×7.</p>
+        </section>
+
+        <!-- Specs card -->
+        <section class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h2 class="text-xl font-bold text-gray-900 mb-4">📋 Specifications</h2>
+          <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="border-b border-gray-100 pb-3">
+              <dt class="text-sm text-gray-500">Context window</dt>
+              <dd class="text-lg font-semibold text-gray-900">{model.contextWindow.toLocaleString()} tokens</dd>
+            </div>
+            <div class="border-b border-gray-100 pb-3">
+              <dt class="text-sm text-gray-500">Tier</dt>
+              <dd class="text-lg font-semibold text-gray-900">{tierLabel[model.tier]}</dd>
+            </div>
+            <div class="border-b border-gray-100 pb-3">
+              <dt class="text-sm text-gray-500">Capabilities</dt>
+              <dd class="flex flex-wrap gap-1 mt-1">
+                {model.capabilities.map((cap) => (
+                  <span class="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 border border-gray-200">{cap}</span>
+                ))}
+              </dd>
+            </div>
+            <div class="border-b border-gray-100 pb-3">
+              <dt class="text-sm text-gray-500">China access</dt>
+              <dd>
+                <span class={`inline-block text-xs font-medium px-2 py-1 rounded border ${cnLabel[model.availabilityCN].cls}`}>
+                  {cnLabel[model.availabilityCN].text}
+                </span>
+              </dd>
+            </div>
+          </dl>
+        </section>
+
+        <!-- Scenario cost cards -->
+        <section class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h2 class="text-xl font-bold text-gray-900 mb-1">📊 Estimated monthly cost</h2>
+          <p class="text-sm text-gray-500 mb-4">4 typical workloads · 30 days · USD</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {scenarioCosts.map((s) => (
+              <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <div class="font-semibold text-gray-900">{s.name}</div>
+                    <div class="text-xs text-gray-500 mt-1">
+                      {(s.dailyCalls * 30).toLocaleString()} calls · {s.avgTokensPerCall} tok avg · {s.cacheHitRatePct}% cache
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="text-2xl font-bold text-blue-700">{formatCents(s.cents)}</div>
+                    <div class="text-xs text-gray-500">/ month</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <a
+            href={`/calculator?model=${model.id}`}
+            class="mt-4 inline-block text-sm text-blue-600 hover:underline"
+          >
+            Calculate with your own numbers →
+          </a>
+        </section>
+
+        <!-- Providers offering this model -->
+        <section class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h2 class="text-xl font-bold text-gray-900 mb-1">🌐 Where to get {model.name}</h2>
+          <p class="text-sm text-gray-500 mb-4">
+            {offeringProviders.length === 0
+              ? 'No providers in our database currently list this model.'
+              : `${offeringProviders.length} provider${offeringProviders.length === 1 ? '' : 's'} offer this model (sorted by rank).`}
+          </p>
+          {offeringProviders.length > 0 && (
+            <div class="space-y-2">
+              {offeringProviders.slice(0, 10).map((p: any) => (
+                <a
+                  href={`/providers/${p.id}`}
+                  class="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50/30 transition-colors"
+                >
+                  <div>
+                    <div class="font-medium text-gray-900">{p.name}</div>
+                    <div class="text-xs text-gray-500">{p.availabilityEN || p.availabilityCN}</div>
+                  </div>
+                  <span class="text-sm text-gray-400">#{p.overallRank}</span>
+                </a>
+              ))}
+            </div>
+          )}
+        </section>
+
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="space-y-6">
+
+        <!-- CTAs -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 class="font-bold text-gray-900 mb-3">Try it</h3>
+          <a
+            href={`/calculator?model=${model.id}`}
+            class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors mb-2"
+          >
+            Calculate cost
+          </a>
+          {offeringProviders.length > 0 && (
+            <a
+              href={`/providers/${offeringProviders[0].id}`}
+              class="block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-2 px-4 rounded-lg transition-colors mb-2"
+            >
+              View top provider
+            </a>
+          )}
+          <a
+            href={model.officialUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block w-full text-center border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors"
+          >
+            Official pricing ↗
+          </a>
+        </div>
+
+        <!-- Alternative models in same tier -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 class="font-bold text-gray-900 mb-3">Alternatives in {tierLabel[model.tier]}</h3>
+          <div class="space-y-2">
+            {alternatives.map((alt) => (
+              <a
+                href={`/models/${alt.id}`}
+                class="flex items-center justify-between py-1.5 text-sm hover:text-blue-600 transition-colors"
+              >
+                <span>{alt.name}</span>
+                <span class="text-gray-400 text-xs">${alt.pricing.input}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <!-- All providers (top 5) -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+          <h3 class="font-bold text-gray-900 mb-3">🏆 Top providers</h3>
+          <div class="space-y-2">
+            {providers
+              .sort((a: any, b: any) => a.overallRank - b.overallRank)
+              .slice(0, 5)
+              .map((p: any) => (
+                <a
+                  href={`/providers/${p.id}`}
+                  class="flex items-center justify-between py-1.5 text-sm hover:text-blue-600 transition-colors"
+                >
+                  <span>{p.name}</span>
+                  <span class="text-gray-400 text-xs">#{p.overallRank}</span>
+                </a>
+              ))}
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+  </article>
+
+  <!-- A-09: model_view event -->
+  <script is:inline define:vars={{ modelId: model.id, modelName: model.name }}>
+    window.__analytics && window.__analytics.track('model_view', {
+      model_id: modelId,
+      model_name: modelName,
+    });
+  </script>
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</BaseLayout>
