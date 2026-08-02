@@ -1,0 +1,292 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'cloudflare-ai-search-agent-sdks-2026';
+const date = '2026-08-02';
+const locale = 'zh';
+const zhTitle = 'Cloudflare AI Search 2026：三大 Agent 框架集成横向评测';
+const zhDescription = 'Cloudflare AI Search 2026-07-30 一次性发布 Vercel AI SDK / LangChain / Agents SDK 三大框架集成：retriever 类型、鉴权方式、混合检索、10 行代码开箱即用 RAG。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh/" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials/" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "2026-07-30 Cloudflare AI Search 升级了什么？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Cloudflare 一次性发布了三套框架集成指南：Vercel AI SDK（新包 ai-search-provider，面向 ai@^6）、LangChain（既有 langchain-cloudflare 包新增 CloudflareAISearchRetriever）、以及 Cloudflare Agents SDK（用 Durable Object + AI Search binding 的有状态 agent 范例）。三个集成分别对应三种框架惯用法：model、retriever、tool。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Vercel AI SDK 集成必须跑在 Cloudflare Worker 里吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "实际上是的。createAISearchNamespace 接受 Workers binding（env.AI_SEARCH），只有在 Worker 里才能拿到。从普通 Node 脚本也能调，但需要自己拼 REST（account ID + API token），也不是这个包的主要优化方向。如果 AI SDK 主程序本身就部署在 Workers，那就是零摩擦；如果跑在 Vercel/Node 上，建议改用 LangChain 的 REST 鉴权路径。" }
+    },
+    {
+      "@type": "Question",
+      "name": "LangChain 集成能否在 Python Worker 里跑？",
+      "acceptedAnswer": { "@type": "Answer", "text": "可以。CloudflareAISearchRetriever 同时支持两种鉴权：普通 Python 进程走 account_id + api_token；在 Cloudflare Worker（Pyodide + Workers）里跑 Python 时直接传 binding。retrieval_type 参数接受 vector、keyword、hybrid，与鉴权方式无关，每次调用可选。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Agents SDK 集成与 retriever / model 集成有什么不同？",
+      "acceptedAnswer": { "@type": "Answer", "text": "AI SDK 和 LangChain 把 AI Search 当成无状态的检索原语：调用一次，返回 chunks。Agents SDK 指南把它当作有状态 agent 的持久记忆层：agent（以 Durable Object 为后端）自 provision 一个 AI Search instance，边交互边向里写新内容，再把 search 调用暴露成模型工具循环里的 tool。这种模式适合会话级或按租户的 agent，需要索引跨越多次请求存活。" }
+    },
+    {
+      "@type": "Question",
+      "name": "AI Search 是否支持 Model Context Protocol（MCP）？",
+      "acceptedAnswer": { "@type": "Answer", "text": "支持。每个 AI Search instance 都内置一个开箱即用的 MCP 端点。2026-07-30 的更新本身没加 MCP——MCP 一直就在——但三个新的框架指南都把 MCP 集成变成一次 tool 包装就能跑的事，让任何 MCP 客户端（Claude Desktop、Cursor、自定义 MCP 客户端）都能不写胶水地搜这个 instance。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Cloudflare AI Search 怎么定价？和 Pinecone / Weaviate / Qdrant 比呢？",
+      "acceptedAnswer": { "@type": "Answer", "text": "AI Search 的定价形态更接近 Cloudflare 存储和 Workers 计算，而非独立托管向量 DB。免费层覆盖几万条向量 + 每月查询配额——够做原型。Paid Workers 套餐扩到百万级记录，每次调用价格在几分之一美分级。Pinecone / Weaviate / Qdrant / Chroma 在规模化段定价落在同一区间，但它们把 embedding 和重排单独计费；AI Search 把这些都打包进检索调用，hybrid 的 vector + keyword + rerank 实际等于免费。" }
+    },
+    {
+      "@type": "Question",
+      "name": "什么时候该继续留在 Pinecone / Weaviate / Qdrant / Chroma，不迁移到 AI Search？",
+      "acceptedAnswer": { "@type": "Answer", "text": "当你每个 namespace 有几千万向量、需要自定义 embedding 模型、要求任意基数元数据过滤（比如跨 namespace 的 SQL 式 join）、有硬性多区域复制合同、或短时间无法迁移既有 Pinecone / Weaviate / Qdrant / Chroma 现网部署时，留下。如果你要求检索延迟预算在 Cloudflare 网络之外 50ms p99 以下，独立向量 DB 与你的模型更近比 managed service 更适合。" }
+    }
+  ]
+};
+
+const zhBody = `
+<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Cloudflare AI Search 2026：三大 Agent 框架集成横向对比</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>2026-07-30</strong>，Cloudflare 一次性发布了 <strong>AI Search</strong> 与三个 Agent 框架的官方集成指南：<strong>Vercel AI SDK</strong>、<strong>LangChain</strong>、<strong>Cloudflare Agents SDK</strong>。三个集成将一套原本只暴露 REST API 的托管检索服务，变成三个 agent 框架里可以直接当 <code>model</code>、<code>retriever</code> 或 <code>tool</code> 用的<strong>一等公民</strong>。</p>
+
+<h2 id="ai-search-90s" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">90 秒读懂 AI Search</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">AI Search 是 Cloudflare 在 Workers 技术栈之上做的<strong>托管检索</strong>服务。你创建一个 <em>instance</em>、把数据塞进去（Workers 存储 / R2 桶 / 公开网站 / 直接 REST 推送），剩下的<strong>切片 → embedding → 建索引 → 混合召回（语义 + 关键词） → 重排 → 格式化输出</strong>全部托管。你不用选 embedding 维度、不用部署重排模型、不用为向量 DB 做版本升级。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">三个关键原语：</p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>Namespaces（命名空间）</strong> — 按租户 / agent / 项目做的逻辑隔离，每个 namespace 是一份独立可检索语料。</li>
+<li><strong>Search modes（检索模式）</strong> — <code>vector</code>、<code>keyword</code>、<code>hybrid</code>（默认；用倒数排序融合把两者合并）。</li>
+<li><strong>MCP endpoint</strong> — 每个 instance 都内置 Model Context Protocol 端点，Claude Desktop、Cursor 或任何 MCP 客户端能直接调它。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">这才是产品形态。2026-07-30 的升级是：你不用再为这三个框架各自写"胶水代码"——胶水直接以官方包的形式发布。</p>
+
+<h2 id="three-sdks" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">三个框架集成各自做了什么</h2>
+
+<h3 id="vercel-ai-sdk-zh" class="text-xl font-semibold text-gray-900 mt-8 mb-3">Vercel AI SDK — <code>ai-search-provider</code> 包</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Cloudflare 单独发了一个 npm 包叫 <code>ai-search-provider</code>，对 AI SDK 的 v6 主线（<code>ai@^6</code>）。它把 AI Search instance <strong>当作语言模型</strong>暴露，让 <code>generateText</code> / <code>streamText</code> / <code>tool</code> 这些原语不动即可工作。最关键的调用：</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-4 my-4 overflow-x-auto text-sm"><code>import { createAISearchNamespace } from "ai-search-provider";
+import { generateText } from "ai";
+
+const aiSearch = createAISearchNamespace({ binding: env.AI_SEARCH });
+const { text, sources } = await generateText({
+  model: aiSearch.get("knowledge-base").chat(),
+  messages: [{ role: "user", content: "How does caching work?" }],
+});</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">三个细节值得注意：</p>
+
+<ol class="list-decimal pl-6 my-4 text-gray-700 leading-relaxed">
+<li><code>binding</code> 是 <strong>Workers binding</strong>，不是 REST 凭据。要拿到 <code>env.AI_SEARCH</code>，代码必须跑在 Worker 里。从外部 Node 脚本调可以用，但需要自己写 REST 拼装。</li>
+<li>返回结构里 <code>sources</code> 是顶层字段——每一段召回都带 source URL、namespace、相关度分数，可以直接喂给"查看引用" UI 或写日志。</li>
+<li>也可以把 <code>instance.search()</code> 暴露成 <strong>tool</strong>，让模型在工具循环里决定要不要主动查。</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">已经在 AI SDK 里跑 chat completions、想最低改动接上检索增强，这就是最短路径。包是新的，但写法符合 v5 → v6 时代的常规迁移节奏。</p>
+
+<h3 id="langchain-zh" class="text-xl font-semibold text-gray-900 mt-8 mb-3">LangChain — <code>CloudflareAISearchRetriever</code></h3>
+
+<p class="text-gray-700 leading-relaxed my-4">LangChain 集成落在已有的 <strong>langchain-cloudflare</strong> 包（PyPI + GitHub，Cloudflare 官方维护）里，作为新 retriever 类发布。它不是 <code>BaseChatModel</code>，而是 <code>BaseRetriever</code>。这个位置选择有讲究：</p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li>可以独立使用（一个 Python 服务的精简 RAG）。</li>
+<li>可以用 <code>create_retriever_tool</code> 包成 LangChain agent 的搜索工具。</li>
+<li>可以直接接进既有的 RAG 链（<code>RetrievalQA</code>、<code>ConversationalRetrievalChain</code>），下游代码完全不动。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">支持<strong>两种鉴权模式</strong>：REST 凭据（<code>ACCOUNT_ID</code> + <code>API_TOKEN</code>）给普通 Python 进程；Workers binding 给 Pyodide + Workers 环境下的 Python Worker。调用形态：</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-4 my-4 overflow-x-auto text-sm"><code>from langchain_cloudflare import CloudflareAISearchRetriever
+
+retriever = CloudflareAISearchRetriever(
+    account_id=ACCOUNT_ID,
+    api_token=API_TOKEN,
+    instance_name="knowledge-base",
+    retrieval_type="hybrid",
+)
+docs = retriever.invoke("How do I configure Workers AI?")</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">2024 年就标准化在 LangChain 上、还没迁移的团队，这是最低成本接入路径。retriever 尊重 LangChain 标准的 <code>.invoke()</code> / <code>.batch()</code> API，下游不需要任何改动。</p>
+
+<h3 id="agents-sdk-zh" class="text-xl font-semibold text-gray-900 mt-8 mb-3">Cloudflare Agents SDK — 有状态 agent 模式</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Agents SDK 指南和前两个不一样。它假设你在 Cloudflare 上构建<strong>有状态 agent</strong>——以 Durable Object 为后端、跨多轮对话持久存在——并演示了怎样让这个 agent 自己 provision 一个 AI Search instance、往里塞内容、再让 agent 的工具循环能去 search。核心代码：</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-4 my-4 overflow-x-auto text-sm"><code>import { tool } from "ai";
+import { z } from "zod";
+
+const instance = env.AI_SEARCH.get("knowledge-base");
+
+const searchKnowledgeBase = tool({
+  description: "Search the knowledge base for relevant content.",
+  inputSchema: z.object({ query: z.string() }),
+  execute: ({ query }) =&gt; instance.search({ query }),
+});</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">AI SDK 和 LangChain 把 AI Search 当作"既有应用里的检索原语"；Agents SDK 指南把它当作"长跑 agent 的持久记忆层"。Durable Object 状态 + AI Search 让 agent 能把整个会话的问题与答案积累在按租户划分的知识库上，不用每轮重建索引。</p>
+
+<h2 id="comparison-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">横向对比</h2>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">维度</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Vercel AI SDK</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">LangChain</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Agents SDK</th>
+</tr>
+</thead>
+<tbody class="text-gray-700">
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">包名</td>
+<td class="border border-gray-200 px-4 py-2"><code>ai-search-provider</code> (npm)</td>
+<td class="border border-gray-200 px-4 py-2"><code>langchain-cloudflare</code> v ≥ 0.6 (PyPI)</td>
+<td class="border border-gray-200 px-4 py-2">Agents SDK 内置</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">抽象层</td>
+<td class="border border-gray-200 px-4 py-2">Model</td>
+<td class="border border-gray-200 px-4 py-2">Retriever</td>
+<td class="border border-gray-200 px-4 py-2">Tool（绑 agent 状态）</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">运行位置</td>
+<td class="border border-gray-200 px-4 py-2">Worker（binding 必需）</td>
+<td class="border border-gray-200 px-4 py-2">Python 进程 / Python Worker</td>
+<td class="border border-gray-200 px-4 py-2">Worker（Durable Object + binding）</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">语言</td>
+<td class="border border-gray-200 px-4 py-2">TypeScript</td>
+<td class="border border-gray-200 px-4 py-2">Python</td>
+<td class="border border-gray-200 px-4 py-2">TypeScript</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">检索模式</td>
+<td class="border border-gray-200 px-4 py-2">vector/keyword/hybrid</td>
+<td class="border border-gray-200 px-4 py-2">vector/keyword/hybrid</td>
+<td class="border border-gray-200 px-4 py-2">继承自 instance</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Sources 返回</td>
+<td class="border border-gray-200 px-4 py-2">✓</td>
+<td class="border border-gray-200 px-4 py-2">✓</td>
+<td class="border border-gray-200 px-4 py-2">✓</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">MCP</td>
+<td class="border border-gray-200 px-4 py-2">通过 tool 包装</td>
+<td class="border border-gray-200 px-4 py-2">需额外包装</td>
+<td class="border border-gray-200 px-4 py-2">内置</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">最小代码行数</td>
+<td class="border border-gray-200 px-4 py-2">~6</td>
+<td class="border border-gray-200 px-4 py-2">~6</td>
+<td class="border border-gray-200 px-4 py-2">~10</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="hybrid-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">为什么 2026 年默认走 hybrid 检索</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">三个集成全都默认开 <strong>hybrid</strong>：向量相似度（语义）+ 关键词匹配（BM25 类），最后用倒数排序融合合并。纯向量检索有一个广为人知的失败模式——高度具体的术语（确切产品名、代码、ID、错误码）会被平均掉当成噪声。纯关键词检索反着来——改写型问句（"怎么让它更快"）词不匹配就漏掉。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Cloudflare 的 hybrid 把重排模型内建在检索调用里，所以你不用再额外采购 Cohere / Voyage 的 cross-encoder。2024 年用过纯向量检索、被"为什么找不到那个错误码"折磨过的团队，hybrid 默认就把这事治了。</p>
+
+<h2 id="stack-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">周边栈：R2 / Workers / AI Gateway / Vectorize</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">AI Search 不是孤岛，它处在一个四元组里：</p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>Workers</strong> — 跑 indexer 和 runtime。Worker 推数据，indexer 自动摄取，Workers KV 处理切片元数据。</li>
+<li><strong>R2</strong> — 存原文件（PDF、HTML 抓取）。data source 是 R2 桶时，AI Search 直接读。</li>
+<li><strong>Vectorize</strong> — Cloudflare 的独立向量数据库。AI Search 内部就用 Vectorize 做 hybrid 里向量那一半，但外面包装了更高层的 API。</li>
+<li><strong>AI Gateway</strong> — LLM 层。AI Search 返<em>文档</em>，AI Gateway 路由合成答案的 LLM 调用。两块拼起来就是一个完整的"检索—生成"闭环，不用离开 Workers 平台。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">这也是三个集成读起来都很干净的原因：它们都不拥有存储、不拥有 indexing、不拥有 generation。它们各自拥有一个<em>接缝</em>——托管检索和你使用的框架的 tool/retriever/model 抽象之间的接缝。</p>
+
+<h2 id="pricing-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">价格、免费层、限额</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">AI Search 在 Cloudflare 文档里被标为<strong>所有套餐可用</strong>（Free + Paid Workers）。存储、查询、indexing 各自有套餐上限。准确数字会动——以 <code>/ai-search/limits</code> 页面为准——但 2026 年中的大致形态：</p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>免费层</strong>：几万条向量记录 + 每月查询次数——够做原型和单租户知识库。</li>
+<li><strong>Paid Workers</strong>：扩到百万级记录，单次调用价格和其他 Cloudflare 原语同一量级（每千次检索几分之一美分）。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">和本站收录的向量 DB 比，AI Search 的<em>定价逻辑更像 Cloudflare 存储和 Workers 计算，不像托管向量 DB</em>。Pinecone / Weaviate / Qdrant / Chroma 在规模化定价上落在同一区间，但它们把 embedding 与重排单独计费；AI Search 把这些都打包进了检索调用本身，所以 vector + keyword + rerank 的 hybrid 实际等于免费。</p>
+
+<h2 id="when-to-use-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">AI Search 适用 / 不适用的场景</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>该用 AI Search 时：</strong></p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li>你已经在 Workers / Pages / R2 上跑、想零新增基础设施。</li>
+<li>需要开箱即用的 hybrid 检索，不想自己搭重排。</li>
+<li>数据规模是 RAG 友好型——几十到几百个 namespace，每个几千到几百万条记录。</li>
+<li>想要内置 MCP 端点，让 Claude Desktop / Cursor / 任何 MCP agent 不用写胶水就调。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>继续留在 Pinecone / Weaviate / Qdrant / Chroma：</strong></p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li>每个 namespace 几千万向量、或需要 Cloudflare 没公开 benchmark 过的分片规模。</li>
+<li>需要自定义 embedding 模型、需要任意基数元数据过滤（SQL 式跨 namespace join）、或硬性多区域复制合同。</li>
+<li>检索延迟预算在 50ms p99 以下且查询来源在 Cloudflare 网络之外——独立向量 DB 离你的模型更近。</li>
+<li>已有 Pinecone / Weaviate / Qdrant / Chroma 现网、短时间内无法迁移。</li>
+</ul>
+
+<h2 id="verdict-zh" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026-07-30 这个 changelog 篇幅小、影响面大：<strong>对任何已经在 Workers 上跑的应用来说，AI Search 升级为默认的检索层</strong>。三个框架集成不是"用三种方式做同一件事"，而是"为三种框架习惯各自定一种形态"（model / retriever / tool）。Cloudflare 在释放信号——未来框架版本会持续把 AI Search 当一等公民对待，而不是又一个要你自己包装的 REST 端点。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你之前因为"没有一个包能同时适配 LangChain / AI SDK / Agents SDK 三个框架"而犹豫——这条阻力 2026-07-30 之后就不存在了。挑一个匹配你已用框架的集成就好。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>想让 AI Search 与多个 LLM 供应商走同一把密钥？</strong> 如果你同时把 LLM 调用分发到 OpenAI、Anthropic、Gemini、Workers AI，又想要一个面板把"每次搜索成本"和"每次生成成本"汇总看，<a href="https://freemodel.dev/invite/FRE-7a3b6220" rel="sponsored nofollow" target="_blank" class="text-blue-600 underline">FreeModel</a> 通过一个 API key 把它们全暴露出来，配有跨模型用量看板——尤其在你需要在"全开 hybrid 检索"和"只开 keyword"之间按 query 动态切换时最有用。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl}>
+  <article className="max-w-3xl mx-auto px-4 py-8">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div set:html={zhBody} />
+  </article>
+</BaseLayout>

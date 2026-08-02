@@ -1,0 +1,294 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'cloudflare-ai-search-agent-sdks-2026';
+const date = '2026-08-02';
+const locale = 'en';
+const enTitle = 'Cloudflare AI Search: 3 Agent SDKs Side-by-Side';
+const enDescription = 'Cloudflare AI Search (2026-07-30) ships Agents SDK, Vercel AI SDK, LangChain integrations. Side-by-side: retriever types, auth, RAG-ready in 10 lines.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What changed in Cloudflare AI Search on 2026-07-30?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Cloudflare published three framework integration guides for AI Search: one for the Vercel AI SDK (new npm package ai-search-provider targeting ai@^6), one for LangChain (new CloudflareAISearchRetriever in the existing langchain-cloudflare package), and one for the Cloudflare Agents SDK (stateful agent recipe with Durable Object + AI Search binding). Each integration matches the framework idiomatic usage: model, retriever, and tool respectively." }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need a Cloudflare Workers account to use the Vercel AI SDK integration?",
+      "acceptedAnswer": { "@type": "Answer", "text": "In practice, yes. The createAISearchNamespace call accepts a Workers binding (env.AI_SEARCH), which is only available when the AI SDK code runs inside a Worker. Calling from a standalone Node script is technically possible but requires manual REST plumbing (account ID plus API token) and is not what the package is optimized for. If you run the rest of your AI SDK app on Workers, this is frictionless; if you run on Vercel or Node, pick LangChain REST path instead." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can the LangChain integration run as a Python Worker, not just a normal Python process?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. CloudflareAISearchRetriever accepts both auth models. Pass account_id and api_token for a regular Python process. Inside a Cloudflare Worker running Pyodide, pass a binding and the retriever uses it directly. The retrieval_type parameter accepts vector, keyword, or hybrid to pick the search mode per call, regardless of which auth path you used." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the Agents SDK integration differ from a retriever or model integration?",
+      "acceptedAnswer": { "@type": "Answer", "text": "AI SDK and LangChain treat AI Search as a stateless retrieval primitive: call it, get chunks back, done. The Agents SDK guide treats it as a persistent memory layer for a long-running agent: the agent (Durable Object-backed) provisions its own AI Search instance, indexes new content on the fly, and exposes the search call as a tool the model tool loop can invoke. The pattern fits session-based or per-tenant agents where the index needs to outlive a single request." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does AI Search support the Model Context Protocol (MCP)?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, every AI Search instance exposes a built-in MCP endpoint out of the box. The 2026-07-30 update did not add MCP, it has been part of AI Search since general availability, but the three new framework guides each make MCP integration one tool wrapper away, which means any MCP-speaking agent (Claude Desktop, Cursor, custom MCP clients) can search the instance without writing glue code." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the pricing of Cloudflare AI Search compare to Pinecone, Weaviate, or Qdrant?",
+      "acceptedAnswer": { "@type": "Answer", "text": "AI Search is priced like Cloudflare storage and Workers compute, not like a standalone managed vector DB. The free tier covers tens of thousands of vector records plus a monthly query allowance, enough for prototyping. Paid Workers plans scale into the millions of records at per-call prices in the fraction-of-a-cent range. Pinecone, Weaviate, Qdrant, and Chroma publish dedicated pricing plans in the same band when you scale, but they charge separately for embeddings and for re-rankers; AI Search bundles those into the retrieval call, which is why hybrids like vector plus keyword plus rerank are essentially free." }
+    },
+    {
+      "@type": "Question",
+      "name": "When should I stay on Pinecone, Weaviate, Qdrant, or Chroma instead of migrating to AI Search?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Stay on dedicated vector DBs when you have tens of millions of vectors per namespace, need custom embedding models, demand metadata filtering at arbitrary cardinality (for example SQL-style joins across namespaces), have hard multi-region replication contracts, or run an existing Pinecone, Weaviate, Qdrant, or Chroma deployment you cannot migrate. Also stay if your retrieval latency budget is below 50 ms p99 from outside the Cloudflare network, a managed vector DB co-located with your model is a better path for cold-tail latency." }
+    }
+  ]
+};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Cloudflare AI Search 2026: Three Agent Framework Integrations, Side by Side</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">On <strong>2026-07-30</strong>, Cloudflare published three integration guides for <strong>AI Search</strong>: one for the <strong>Vercel AI SDK</strong>, one for <strong>LangChain</strong>, and one for the <strong>Cloudflare Agents SDK</strong>. Together they turn a managed retrieval product into a drop-in <code>retriever</code> or <code>model</code> for the three agent frameworks most teams already use. The 2026-07-30 changelog post itself is short, but the substance lands a question apirank readers have been asking for months: <em>"if I want retrieval-augmented generation without standing up Elasticsearch + Weaviate + a re-ranker myself, where do I plug in?"</em></p>
+
+<h2 id="what-is-ai-search" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">What Cloudflare AI Search is, in 90 seconds</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">AI Search is a managed retrieval service on the Workers stack. You create an <em>instance</em>, push data into it (Workers storage, R2 bucket, public website, or a manual REST API push), and the service handles <strong>chunking</strong>, <strong>embedding</strong>, <strong>indexing</strong>, <strong>hybrid query</strong> (semantic + keyword), <strong>reranking</strong>, and <strong>result formatting</strong>. There is no model weight to deploy, no embedding dimension to choose, no vector DB to version-bump. You ship a JSON document in, you get a JSON list of relevant chunks out.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Three primitives matter:</p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>Namespaces</strong> &mdash; a logical partition per tenant / agent / project. Each namespace is its own searchable corpus.</li>
+<li><strong>Search modes</strong> &mdash; <code>vector</code>, <code>keyword</code>, or <code>hybrid</code> (default; combines both with reciprocal-rank fusion).</li>
+<li><strong>MCP endpoint</strong> &mdash; every instance exposes a built-in Model Context Protocol server, so any MCP-speaking agent (Claude Desktop, Cursor, the SDK tool-calling loop in this article) can search it without writing glue code.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">That's the shape of the product. What changed on 2026-07-30 is that you no longer have to write the glue yourself &mdash; for three frameworks, the glue ships as a package.</p>
+
+<h2 id="the-three-sdks" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">The three framework integrations: what each one actually does</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Reading the changelog and the three dedicated guides, you can tell each framework integration matches the framework's idiomatic usage. None of them is a thin HTTP wrapper.</p>
+
+<h3 id="vercel-ai-sdk" class="text-xl font-semibold text-gray-900 mt-8 mb-3">Vercel AI SDK &mdash; <code>ai-search-provider</code> package</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Cloudflare shipped a dedicated npm package called <code>ai-search-provider</code>. It targets AI SDK <strong>v6</strong> (<code>ai@^6</code>) and exposes an AI Search instance as a language model so the existing <code>generateText</code> / <code>streamText</code> / <code>tool</code> primitives work unchanged. The key call is:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-4 my-4 overflow-x-auto text-sm"><code>import { createAISearchNamespace } from "ai-search-provider";
+import { generateText } from "ai";
+
+const aiSearch = createAISearchNamespace({ binding: env.AI_SEARCH });
+const { text, sources } = await generateText({
+  model: aiSearch.get("knowledge-base").chat(),
+  messages: [{ role: "user", content: "How does caching work?" }],
+});</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Three things to notice:</p>
+
+<ol class="list-decimal pl-6 my-4 text-gray-700 leading-relaxed">
+<li>The <code>binding</code> accepts a <strong>Workers binding</strong>, not REST credentials. The integration is built to run inside a Worker, where <code>env.AI_SEARCH</code> is the way Cloudflare exposes the instance to your code. Calling this from a Node script outside Workers is possible but requires manual REST plumbing.</li>
+<li><code>sources</code> comes back as a top-level return field &mdash; every retrieved chunk is structured with its source URL, namespace, and relevance score, ready to feed a "view sources" UI or to log for analytics.</li>
+<li>You can also expose <code>instance.search()</code> as a <strong>tool</strong> for agent loops, so the model can decide when to look something up rather than always retrieving.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">If you are already using the AI SDK for chat completions and you want the minimum-diff path to grounded answers, this is it. The package is new, but it follows the v5 &rarr; v6 migration pattern many other providers shipped in 2026.</p>
+
+<h3 id="langchain" class="text-xl font-semibold text-gray-900 mt-8 mb-3">LangChain &mdash; <code>CloudflareAISearchRetriever</code></h3>
+
+<p class="text-gray-700 leading-relaxed my-4">The LangChain integration lands in the existing <strong>langchain-cloudflare</strong> package (PyPI and GitHub, both maintained by Cloudflare) as a new retriever class. It does not implement <code>BaseChatModel</code>; it implements <code>BaseRetriever</code>. That placement matters:</p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li>You can use it standalone (a thin RAG over a Python service).</li>
+<li>You can wrap it with <code>create_retriever_tool</code> to give a LangChain agent a search tool.</li>
+<li>You can drop it into a pre-built RAG chain (<code>RetrievalQA</code>, <code>ConversationalRetrievalChain</code>) and the rest of the chain is unchanged.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">It supports <strong>two auth models</strong>: REST credentials (<code>ACCOUNT_ID</code> + <code>API_TOKEN</code>) for normal Python processes, and a Workers binding for Python that runs inside Cloudflare Workers (Pyodide + Workers). Calling pattern:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-4 my-4 overflow-x-auto text-sm"><code>from langchain_cloudflare import CloudflareAISearchRetriever
+
+retriever = CloudflareAISearchRetriever(
+    account_id=ACCOUNT_ID,
+    api_token=API_TOKEN,
+    instance_name="knowledge-base",
+    retrieval_type="hybrid",
+)
+docs = retriever.invoke("How do I configure Workers AI?")</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">For teams that standardized on LangChain in 2024 and have not migrated, this is the lowest-cost on-ramp. The retriever respects the standard <code>.invoke()</code> / <code>.batch()</code> LangChain API, so downstream code keeps working.</p>
+
+<h3 id="agents-sdk" class="text-xl font-semibold text-gray-900 mt-8 mb-3">Cloudflare Agents SDK &mdash; the stateful agent pattern</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">The Agents SDK guide does something different from the other two. It assumes you are building a <strong>stateful agent</strong> on Cloudflare &mdash; Durable Object-backed, persistent across turns &mdash; and shows how to provision its own AI Search instance, index content into it, and let the agent's tool loop call search. The recipe:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-4 my-4 overflow-x-auto text-sm"><code>import { tool } from "ai";
+import { z } from "zod";
+
+const instance = env.AI_SEARCH.get("knowledge-base");
+
+// Expose AI Search to the agent's model as a tool it can call.
+const searchKnowledgeBase = tool({
+  description: "Search the knowledge base for relevant content.",
+  inputSchema: z.object({ query: z.string() }),
+  execute: ({ query }) =&gt; instance.search({ query }),
+});</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Where AI SDK and LangChain each treat AI Search as a <em>retrieval primitive inside an existing app</em>, the Agents SDK guide treats it as a <em>persistent memory layer for a long-running agent</em>. The combination of Durable Object state + AI Search is what enables the agent to accumulate a session's worth of questions and answers against a per-tenant knowledge base without rebuilding an index every turn.</p>
+
+<h2 id="comparison" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Side-by-side comparison</h2>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Dimension</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Vercel AI SDK</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">LangChain</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Cloudflare Agents SDK</th>
+</tr>
+</thead>
+<tbody class="text-gray-700">
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Package</td>
+<td class="border border-gray-200 px-4 py-2"><code>ai-search-provider</code> (npm)</td>
+<td class="border border-gray-200 px-4 py-2"><code>langchain-cloudflare</code> v &ge; 0.6 (PyPI)</td>
+<td class="border border-gray-200 px-4 py-2">Bundled with Agents SDK</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Abstraction layer</td>
+<td class="border border-gray-200 px-4 py-2">Model (BaseChatModel-like)</td>
+<td class="border border-gray-200 px-4 py-2">Retriever (BaseRetriever)</td>
+<td class="border border-gray-200 px-4 py-2">Tool, attached to Agent state</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Runtime</td>
+<td class="border border-gray-200 px-4 py-2">Worker (binding required); REST takes manual plumbing</td>
+<td class="border border-gray-200 px-4 py-2">Any Python process (REST creds) or Python Worker (binding)</td>
+<td class="border border-gray-200 px-4 py-2">Worker (Durable Object + binding)</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Language</td>
+<td class="border border-gray-200 px-4 py-2">TypeScript / JavaScript</td>
+<td class="border border-gray-200 px-4 py-2">Python</td>
+<td class="border border-gray-200 px-4 py-2">TypeScript / JavaScript</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Search modes</td>
+<td class="border border-gray-200 px-4 py-2">vector / keyword / hybrid (instance-level)</td>
+<td class="border border-gray-200 px-4 py-2">vector / keyword / hybrid (<code>retrieval_type</code>)</td>
+<td class="border border-gray-200 px-4 py-2">Inherits from instance; query can be customized per tool call</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Sources returned</td>
+<td class="border border-gray-200 px-4 py-2">&check; (<code>{ text, sources }</code>)</td>
+<td class="border border-gray-200 px-4 py-2">&check; (Document object fields)</td>
+<td class="border border-gray-200 px-4 py-2">&check; (native search result)</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">MCP</td>
+<td class="border border-gray-200 px-4 py-2">via tool wrapper</td>
+<td class="border border-gray-200 px-4 py-2">extra wrapping required</td>
+<td class="border border-gray-200 px-4 py-2">built-in per instance</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Min lines of code</td>
+<td class="border border-gray-200 px-4 py-2">~6</td>
+<td class="border border-gray-200 px-4 py-2">~6</td>
+<td class="border border-gray-200 px-4 py-2">~10 (incl. Agent class setup)</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="hybrid-retrieval" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Why hybrid retrieval matters in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">All three integrations default to <strong>hybrid mode</strong> &mdash; the combination of vector similarity (semantic) and keyword matching (BM25-style), with reciprocal-rank fusion at the end. Pure vector search still has a well-known failure mode: highly specific terms &mdash; exact product names, codes, IDs, error messages &mdash; get averaged into noise. Pure keyword search has the opposite failure: paraphrase-friendly queries like "how do I make it faster" miss the right page because the words don't match.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Cloudflare's hybrid mode ships a re-ranker as part of retrieval, so you don't need a Cohere / Voyage cross-encoder in your stack. For teams that ran pure vector retrieval in 2024 and got bitten by the "why won't it find the exact error code" complaint, hybrid is the default that fixes it.</p>
+
+<h2 id="surrounding-stack" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">The surrounding stack: R2, Workers, AI Gateway, Vectorize</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">AI Search is not a standalone &mdash; it sits inside a quartet:</p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>Workers</strong> hosts the indexer and the runtime. You push content from a Worker, the indexer ingests it, and Workers KV writes handle chunk metadata.</li>
+<li><strong>R2</strong> stores large / raw documents (PDFs, HTML crawls). AI Search reads from R2 directly when your data source is a bucket.</li>
+<li><strong>Vectorize</strong> is Cloudflare's standalone vector database. AI Search uses Vectorize under the hood for the vector half of hybrid mode, but exposes a much higher-level API.</li>
+<li><strong>AI Gateway</strong> is the LLM layer. AI Search returns <em>documents</em>; AI Gateway routes the LLM call that synthesizes the answer. Putting the two together gives you a complete retrieval-generation loop without leaving the Workers platform.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">This is also why the three integrations read so cleanly: none of them owns the storage, the indexing, or the generation. They each own a <em>seam</em>. The seam between managed retrieval and your framework's tool/retriever/model abstraction.</p>
+
+<h2 id="pricing" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Pricing, free tier, and limits</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Cloudflare AI Search is listed as <strong>available on all plans</strong> (Free, Paid Workers). Storage, queries, and indexing have tier-bounded limits. The exact public numbers move &mdash; the official <code>Limits &amp; pricing</code> page under <code>/ai-search/</code> is the source of truth &mdash; but the rough shape in mid-2026:</p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>Free plan</strong>: tens of thousands of vector records and a monthly query allowance &mdash; enough for prototyping and a single-tenant knowledge base.</li>
+<li><strong>Paid Workers plan</strong>: scales into the millions of records, with the same per-request pricing as other Cloudflare primitives (a few tenths of a cent per 1K retrieval calls).</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For a fair comparison against vector DBs in this catalog, AI Search is <em>priced like Cloudflare storage and Workers compute, not like a managed vector DB</em>. Pinecone / Weaviate / Qdrant / Chroma all publish priced plans in the same range when you scale; the AI Search differentiator is that you do not pay separately for embeddings or for re-ranking because they are part of the retrieval call.</p>
+
+<h2 id="when-to-use" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">When AI Search is the right answer &mdash; and when it isn't</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Use AI Search when:</strong></p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li>You already run on Workers / Pages / R2 and want zero new infra.</li>
+<li>You need hybrid retrieval (semantic + keyword) out of the box without configuring a re-ranker.</li>
+<li>Your content fit is RAG-shaped: one to a few hundred namespaces, each in the thousands to low-millions of records.</li>
+<li>You want an MCP endpoint for free, so Claude Desktop / Cursor / any MCP agent can search without integration work.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Stay on Pinecone / Weaviate / Qdrant / Chroma when:</strong></p>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li>You have tens of millions of vectors per namespace or need sharding at a scale Cloudflare has not publicly benchmarked.</li>
+<li>You need custom embedding models, metadata filtering at arbitrary cardinality (e.g. SQL-style joins), or hard multi-region replication contracts.</li>
+<li>Your retrieval latency budget is below 50 ms p99 from outside the Cloudflare network &mdash; there are better paths on a dedicated vector DB.</li>
+<li>You have an existing Pinecone / Weaviate / Qdrant / Chroma deployment you cannot migrate off.</li>
+</ul>
+
+<h2 id="verdict" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Verdict</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The 2026-07-30 changelog is small in volume but large in implication: <strong>AI Search becomes the default retrieval layer for any app already running on Workers</strong>. The three framework integrations are not three ways to do the same thing &mdash; they are three distinct shapes (model / retriever / tool) for three distinct framework idioms. Cloudflare is signaling that future framework releases will keep treating AI Search as a first-class primitive, not a REST endpoint to wrap.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you have been on the fence about managed retrieval because no single package fit your framework &mdash; LangChain for one app, AI SDK for another, Agents SDK for a third &mdash; that excuse is now closed. Pick the integration that matches the framework you are already in.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Working with AI Search across multiple providers?</strong> If you also route your LLM calls through OpenAI, Anthropic, Gemini, and Workers AI and want a single dashboard for cost-per-search and cost-per-generation, <a href="https://freemodel.dev/invite/FRE-7a3b6220" rel="sponsored nofollow" target="_blank" class="text-blue-600 underline">FreeModel</a> exposes them all through one API key with usage breakdowns that surface when AI Search retrieval cost dominates an agent's per-request budget &mdash; useful when you decide whether to keep hybrid retrieval on for a query or fall back to keyword-only.</p>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl}>
+  <article className="max-w-3xl mx-auto px-4 py-8">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div set:html={enBody} />
+  </article>
+</BaseLayout>
