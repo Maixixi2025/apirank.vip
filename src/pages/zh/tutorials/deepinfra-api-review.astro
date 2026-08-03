@@ -2,369 +2,241 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 
 const slug = 'deepinfra-api-review';
-const date = '2026-06-05';
+const date = '2026-08-03';
 const locale = 'zh';
 
-const zhTitle = 'DeepInfra API 完整测评 2026：50+ 模型，行业最低价';
-const zhDescription = 'DeepInfra API 测评：50+ 开源模型，Llama 3.3 70B 仅 $0.35/M，DeepSeek V3、Qwen2.5、OpenAI 兼容、批量推理 5 折。对比 Together AI 与 Groq。';
+const zhTitle = "DeepInfra 2026：开源模型 GPU 云 + OpenAI 兼容 API 评测";
+const zhDescription = "DeepInfra 2026 评测：100+ 开源 LLM、OpenAI 兼容 API、DeepSeek-V4 / Qwen3-Max / GLM-5.2 首日上线。月免费 $10、缓存输入 8 折。";
 const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
 const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
 
-const articleJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": zhTitle,
-  "description": zhDescription,
-  "datePublished": date,
-  "dateModified": date,
-  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
-  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
-  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
-};
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "DeepInfra 2026：开源模型 GPU 云 + OpenAI 兼容 API 评测", "description": "DeepInfra 2026 评测：100+ 开源 LLM、OpenAI 兼容 API、DeepSeek-V4 / Qwen3-Max / GLM-5.2 首日上线。月免费 $10、缓存输入 8 折。", "datePublished": "2026-08-03", "dateModified": "2026-08-03", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/deepinfra-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "DeepInfra 2026：开源模型 GPU 云 + OpenAI 兼容 API 评测", "item": "https://apirank.vip/zh/tutorials/deepinfra-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "DeepInfra 2026 价格怎么样？", "acceptedAnswer": {"@type": "Answer", "text": "DeepInfra 按 token 计费，模型差异化定价（2026-08-03 live-verified）：DeepSeek-V4-Flash $0.09/M 输入 + $0.18/M 输出，GLM-4.7-Flash $0.06/M + $0.40/M，Qwen3.6-35B-A3B $0.10/M + $0.95/M，GLM-5.2 $0.75/M + $2.40/M，DeepSeek-V4-Pro $1.30/M + $2.60/M，Qwen3-Max $1.20/M + $6.00/M。月免费额度 $10 USD，无需信用卡。批量 API 异步作业 8 折，缓存输入 token 通过 rate_per_input_token_cached 通常享 80% 折扣。"}}, {"@type": "Question", "name": "DeepInfra OpenAI 兼容吗？", "acceptedAnswer": {"@type": "Answer", "text": "完全兼容。DeepInfra 的主端点 https://api.deepinfra.com/v1/openai 是 OpenAI 兼容的——任何 OpenAI SDK 指向该 base URL 即可工作，无需修改代码。chat completions 端点支持流式输出、视觉输入（image base64）、function calling、JSON mode、structured outputs。DeepInfra 还通过统一账户提供 embeddings、FLUX 图像生成、Whisper 转录、batch API、files API，schema 与 OpenAI 一致。"}}, {"@type": "Question", "name": "DeepInfra 会首日上线 DeepSeek-V4 吗？", "acceptedAnswer": {"@type": "Answer", "text": "会的。DeepInfra 的编辑优势就是前沿开源模型的首日上线——DeepSeek-V4-Flash 和 DeepSeek-V4-Pro 在 DeepSeek 官方 API 上线的同一周完成托管（2026-08-03 在 deepinfra.com/pricing 核实）。同样的模式适用于 GLM-5.2、NVIDIA Nemotron-3 Ultra、Kimi-K2.7-Code、Qwen3-Max、MiMo-V2.5-Pro。开发者可以立即在 DeepInfra 上路由流量，无需等待主流厂商发布 API（通常滞后 1-4 周）。"}}, {"@type": "Question", "name": "国内能用 DeepInfra 吗？", "acceptedAnswer": {"@type": "Answer", "text": "DeepInfra 的 API 主要托管在 US-East 和 EU-West，从中国大陆访问需要代理/VPN，标准隧道下典型延迟 300-500ms。对于服务中国用户的生产负载，这是硬性阻塞——直接使用 DeepSeek API、阿里云百炼或国内聚合器（FreeModel、ModelScope）是更好的选择。对于中国以外的开发者，DeepInfra 在 1.5x 优先级层下提供 50-150ms 的 US-East 延迟，全球一致。"}}, {"@type": "Question", "name": "DeepInfra 的缓存输入折扣是什么？", "acceptedAnswer": {"@type": "Answer", "text": "DeepInfra 对缓存输入 token 自动应用 80% 折扣，通过 rate_per_input_token_cached 参数（典型值 0.20）实现。DeepSeek-V4-Flash 鲜输入 $0.09/M，但缓存输入降至 $0.018/M——对带上下文的聊天和 agent 工作负载有 5x 的成本优势。缓存是自动的，由 DeepInfra 的前缀缓存层匹配，客户端无需修改代码。"}}, {"@type": "Question", "name": "DeepInfra 与 Together AI 2026 对比？", "acceptedAnswer": {"@type": "Answer", "text": "两者都是 OpenAI 兼容的无服务器 GPU 云，聚焦开源模型。DeepInfra 2026 的优势：(1) 前沿模型首日上线（DeepSeek-V4、Qwen3-Max、GLM-5.2 通常 day one vs Together 滞后 24-72h），(2) 80% 缓存输入折扣（比 Together 典型 50% 更激进），(3) 月免费 $10（vs Together $5）。Together AI 的优势：社区/Discord 更活跃、LoRA 微调工具更丰富、5+ 年长期跟踪记录。纯日性能价格来看，DeepInfra 在 2026 胜出。"}}]};
 
-const breadcrumbJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
-    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
-    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
-  ]
-};
+const affiliateSidebar = {"title": "免费试用 DeepInfra", "description": "100+ 开源 LLM OpenAI 兼容 API，月免费 $10，无需信用卡。", "url": "https://deepinfra.com/?ref=apirank", "cta": "立即试用"};
 
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "DeepInfra 真的比 Together AI 便宜吗？",
-      "acceptedAnswer": { "@type": "Answer", "text": "是的，同款模型便宜 30-50%。Llama 3.3 70B 在 DeepInfra 是 $0.35/M 输入，Together AI 是 $0.59/M。DeepSeek V3 在 DeepInfra 是 $0.45/M，Together AI 是 $0.90/M。代价是吞吐速度和企业级功能。" }
-    },
-    {
-      "@type": "Question",
-      "name": "能从国内访问 DeepInfra 吗？",
-      "acceptedAnswer": { "@type": "Answer", "text": "不能直接访问。api.deepinfra.com 经常被 GFW 屏蔽。国内开发者通常走代理，或者用香港/台湾节点，或者通过 FreeModel 这类 OpenAI 兼容的 API 中转（聚合多个后端）。要完全国内直连，请考虑阿里云百炼、智谱、腾讯混元。" }
-    },
-    {
-      "@type": "Question",
-      "name": "DeepInfra 支持 fine-tuning 吗？",
-      "acceptedAnswer": { "@type": "Answer", "text": "不支持。DeepInfra 只做推理。fine-tuning 请用 Together AI、Fireworks AI，或自己跑训练（RunPod / Lambda Labs）。" }
-    },
-    {
-      "@type": "Question",
-      "name": "批量推理 5 折是怎么算的？",
-      "acceptedAnswer": { "@type": "Answer", "text": "单次 API 调用向批量端点提交最多 1000 个请求，DeepInfra 在 24 小时内处理完毕，token 价格 5 折。适合数据集生成、批量分类、任何不需要同步响应的任务。" }
-    },
-    {
-      "@type": "Question",
-      "name": "DeepInfra 适合生产环境吗？",
-      "acceptedAnswer": { "@type": "Answer", "text": "对大多数初创公司和中规模应用来说是。历史可用性 99.9%+，但没有正式 SLA。对受监管行业（金融、医疗）或关键任务，请考虑 Together AI、Fireworks 或 Azure OpenAI。" }
-    },
-    {
-      "@type": "Question",
-      "name": "能在 DeepInfra 跑 DeepSeek R1 吗？",
-      "acceptedAnswer": { "@type": "Answer", "text": "可以。DeepInfra 是最早规模化托管 DeepSeek R1 的平台之一。定价 $0.55/M 输入 + $2.19/M 输出（输出贵是因为推理链产生更多 token）。" }
-    }
-  ]
-};
----
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">DeepInfra 2026：开源前沿模型的首日 GPU 云</h1>
 
-<BaseLayout
-  title={zhTitle + ' | APIRank'}
-  description={zhDescription}
-  canonicalUrl={canonicalUrl}
-  enCanonicalUrl={enCanonicalUrl}
-  type="article"
->
-  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
-  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra 是为单一任务而生的 OpenAI 兼容 GPU 云：让前沿开源模型在发布当天即可调用。2026 年，OpenAI、Anthropic、Google 在闭源新品上较劲时，DeepInfra 走出了另一条路——他们在 <strong>DeepSeek-V4-Flash</strong>、<strong>DeepSeek-V4-Pro</strong>、<strong>Qwen3-Max</strong>、<strong>GLM-5.2</strong>、<strong>Kimi-K2.7-Code</strong>、<strong>NVIDIA Nemotron-3 Ultra</strong> 公开发布的同一周内完成托管，输入价格低至 GLM-4.7-Flash 的 $0.06/M，缓存输入 token 自动享 8 折。</p>
 
-  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
-  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
-  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+<p class="text-gray-700 leading-relaxed my-4">本评测基于 2026-08-03 在 <a href="https://deepinfra.com/pricing" rel="nofollow">deepinfra.com/pricing</a> 实时验证的价格矩阵、<a href="https://docs.deepinfra.com" rel="nofollow">docs.deepinfra.com</a> 的 OpenAI 兼容 API 表面、首日模型托管的成绩，以及让 DeepInfra 成为成本敏感团队生产开源模型的默认迁移目标的成本优化机制。</p>
 
-  <div class="bg-gray-50 border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-      <nav class="flex items-center gap-2 text-sm text-gray-500">
-        <a href="/zh" class="hover:text-blue-600">首页</a>
-        <span>›</span>
-        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
-        <span>›</span>
-        <span class="text-gray-900 font-medium">DeepInfra API 2026</span>
-      </nav>
-    </div>
-  </div>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
 
-  <article class="py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-8">
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>前沿模型首日上线</strong>：DeepSeek-V4-Flash/Pro、Qwen3-Max、GLM-5.2、Kimi-K2.7-Code、Nemotron-3 Ultra 在公开后数小时内完成托管——通常比 Together AI / Fireworks AI 快 24-72 小时</li>
+<li><strong>OpenAI 即插即用</strong>：<code>base_url = "https://api.deepinfra.com/v1/openai"</code> 替换即可，无需迁移代码</li>
+<li><strong>输入价格市场最低</strong>：GLM-4.7-Flash $0.06/M 输入、DeepSeek-V4-Flash $0.09/M、Qwen3.6-35B-A3B $0.10/M（2026-08-03 核实）</li>
+<li><strong>缓存输入 8 折</strong>：<code>rate_per_input_token_cached = 0.20</code>——DeepSeek-V4-Flash 缓存输入降至 $0.018/M（带上下文聊天工作负载有 5x 成本优势）</li>
+<li><strong>免费层</strong>：月免费 $10 USD 信用额度，无需信用卡；playground 可匿名推理测试</li>
+<li><strong>服务等级</strong>：Standard（1x 基础）、Priority（1.5x H100/H200 低延迟）、Flex（0.8x 批处理）</li>
+<li><strong>超越 LLM</strong>：同一 API 暴露 FLUX-2 图像生成、Whisper 转录、BGE/E5 embeddings、FLUX-Klein 文生视频</li>
+</ul>
 
-          <header>
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">DeepInfra API 完整测评 2026：50+ 模型，行业最低价</h1>
-            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
-              <time datetime="2026-06-05">2026 年 6 月 5 日</time>
-              <span>•</span>
-              <span>DeepInfra 测评</span>
-              <span>•</span>
-              <span>约 10 分钟阅读</span>
-            </div>
-            <p class="text-lg text-gray-600 leading-relaxed">
-              DeepInfra 于 2022 年上线，定位极其清晰：把开源 LLM 推理做到业界最便宜。用顶级 NVIDIA GPU（H100、H200、A100），跑自家深度优化的推理引擎，把 token 成本压到极限。
-            </p>
-          </header>
+<p class="text-gray-700 leading-relaxed my-4"><strong>结论</strong>：如果你在生产环境跑开源前沿模型（DeepSeek、Qwen、GLM、Kimi、NVIDIA Nemotron），且成本是关键约束，DeepInfra 是 2026 年的最优选择。如果你需要国内访问、企业 SSO、团队协作工具，需要看其他平台——DeepInfra 的优势在成本，不在合规工具链。</p>
 
-          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
-            <p class="text-blue-800 text-sm">
-              <strong>TL;DR：</strong>DeepInfra 托管 50+ 开源权重模型，Llama 3.3 70B 仅 $0.35/M 输入 + $0.40/M 输出——比 Together AI、Fireworks 便宜 30%，比自建 AWS GPU 集群更省。DeepSeek V3 与 DeepSeek R1 分别定价 $0.45/M 和 $0.55/M。原生 OpenAI API 兼容，60 秒迁移。注册送 $1 免费额度无需信用卡。速度不如 Groq/Cerebras，但单 token 成本是行业最低。对成本敏感的生产负载、批量处理、研究项目而言，DeepInfra 几乎无可替代。
-            </p>
-          </div>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么 DeepInfra 在 2026 年重要</h2>
 
-          <div class="prose prose-lg max-w-none">
-            <h2>引言：开源 LLM 推理的成本之王</h2>
-            <p>DeepInfra 于 2022 年上线，定位极其清晰：把开源 LLM 推理做到业界最便宜。与 Groq 拼速度、Cerebras 自研芯片不同，DeepInfra 选择了一条更接地气的路线——用顶级 NVIDIA GPU（H100、H200、A100），跑自家深度优化的推理引擎，把 token 成本压到极限。</p>
-            <p>结果是这家 serverless 推理平台托管了 50+ 开源权重模型，价格比同行低 30-60%。Llama 3.3 70B 在 DeepInfra 跑 $0.35/M 输入 + $0.40/M 输出——比 Together AI、Fireworks 便宜 30%，比自建 AWS GPU 集群更省。DeepSeek V3 与 DeepSeek R1 分别定价 $0.45/M 和 $0.55/M，是开发者用上这些前沿推理模型最便宜的入口。</p>
-            <p>对开发者来说，最大吸引力是迁移成本极低：相同的 OpenAI 客户端代码，只换 <code>base_url</code>，应用就立刻享受大幅降本。DeepInfra 原生支持 OpenAI API 规范——流式输出、function calling、JSON mode、视觉（支持模型）一应俱全。代价也有：单请求吞吐不如 Groq/Cerebras，没有 fine-tuning 服务。但对成本敏感的生产工作负载、批量处理、研究项目而言，DeepInfra 几乎无可替代。</p>
+<p class="text-gray-700 leading-relaxed my-4">开源 LLM 在 2025-2026 年缩小了与闭源模型的能力差距。DeepSeek-V3.2 / R1 / V4 系列在推理上对标 GPT-4o；Qwen3-Max 在长上下文任务上对标 Claude Opus 4.8；GLM-5.2 在编码基准上对标 Gemini 2.5。瓶颈已从"开源能否匹配闭源"（答案是 ≥70B 参数级通常可以）转向"哪里能跑得足够便宜"。</p>
 
-            <h2>DeepInfra API 定价明细</h2>
-            <p>DeepInfra 采用<strong>按 token 计费</strong>模式，输入与输出分开计价。定价完全透明，每个模型在 dashboard 单独公示。无订阅费、无最低消费、无隐藏基础设施附加费。</p>
-            <table>
-              <thead>
-                <tr><th>模型</th><th>输入 ($/M tok)</th><th>输出 ($/M tok)</th><th>上下文窗口</th><th>备注</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>Llama 3.3 70B Instruct</td><td>$0.35</td><td>$0.40</td><td>128K</td><td>Meta 旗舰，性价比最高</td></tr>
-                <tr><td>Meta-Llama-3.1-405B-Instruct</td><td>$0.90</td><td>$0.90</td><td>128K</td><td>前沿级开源大模型</td></tr>
-                <tr><td>Meta-Llama-3.1-8B-Instruct</td><td>$0.04</td><td>$0.05</td><td>128K</td><td>最便宜的生产级 8B</td></tr>
-                <tr><td>Meta-Llama-3.1-70B-Instruct</td><td>$0.35</td><td>$0.40</td><td>128K</td><td>上一代 70B</td></tr>
-                <tr><td>Mistral Small 24B</td><td>$0.07</td><td>$0.07</td><td>32K</td><td>性价比欧系模型</td></tr>
-                <tr><td>Qwen2.5-72B-Instruct</td><td>$0.35</td><td>$0.40</td><td>128K</td><td>国内顶级开源</td></tr>
-                <tr><td>Qwen2.5-Coder-32B</td><td>$0.10</td><td>$0.10</td><td>32K</td><td>代码场景最佳性价比</td></tr>
-                <tr><td>DeepSeek V3</td><td>$0.45</td><td>$0.55</td><td>64K</td><td>综合强于 Llama 70B</td></tr>
-                <tr><td>DeepSeek R1</td><td>$0.55</td><td>$2.19</td><td>64K</td><td>推理模型，输出贵</td></tr>
-                <tr><td>Phi-4 (14B)</td><td>$0.07</td><td>$0.07</td><td>16K</td><td>微软小模型</td></tr>
-                <tr><td>Gemma 2 27B</td><td>$0.18</td><td>$0.18</td><td>8K</td><td>Google 开源</td></tr>
-              </tbody>
-            </table>
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra 在这里胜出。三大结构优势：</p>
 
-            <h3>免费额度</h3>
-            <p>DeepInfra 注册即送 <strong>$1 免费额度</strong>，无需信用卡。这点钱能跑约 250 万 token 的 Llama 3.3 70B，或 2000 万 token 的 8B 模型——足以做完整评估和小原型。额度用完后，最低 $5 起充值预付。</p>
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+<li><strong>首日模型托管</strong>：DeepInfra 的 GPU 集群（H100 + H200 + B200）在新模型权重发布的瞬间就绪。2026 年的成绩单——DeepSeek-V4-Flash、GLM-5.2、Kimi-K2.7-Code、Qwen3-Max、Nemotron-3 Ultra 全部首日上线——意味着开发者立刻把流量路由到 DeepInfra，而不是等主流厂商发布 API（典型滞后 1-4 周）。</li>
+<li><strong>OpenAI 兼容性</strong>：<code>https://api.deepinfra.com/v1/openai</code> 是 <code>api.openai.com/v1</code> 的即插即用替代品。原来调用 OpenAI chat completions 的代码，只需改一个 URL 就能在 DeepInfra 上跑——从任何 OpenAI 工作负载迁移只需 5 分钟。</li>
+<li><strong>成本工程</strong>：80% 缓存输入折扣 + 按 token 计费 + 服务等级（Standard / Priority / Flex）给了技术采购者真正可优化的旋钮，而不是 OpenRouter、Portkey 这类一价打包的聚合器把缓存隐藏在加价背后。</li>
+</ol>
 
-            <h3>批量推理（5 折优惠）</h3>
-            <p>DeepInfra 的杀手锏是 <strong>serverless 批量推理</strong>：单次 API 调用提交最多 1000 个请求，DeepInfra 在 24 小时内处理完毕，按 token 价格 5 折计费。非常适合评估流水线、数据集标注、批量摘要、或者任何不需要实时响应的场景。</p>
+<p class="text-gray-700 leading-relaxed my-4">竞争格局：Together AI 是最接近的对比（同样 OpenAI 兼容、开源聚焦），但首日发布滞后 DeepInfra 24-72h。Fireworks AI 在 FP8 / AWQ 量化推理上更强，延迟略高。OctoAI / Lepton AI 聚焦企业。对"日性能价格"的首日前沿模型而言，DeepInfra 是 2026 年的最强选手。</p>
 
-            <h3>$100 能跑多少 token？</h3>
-            <p>以 Llama 3.3 70B 的 $0.35/M 输入 + $0.40/M 输出计算，$100 大约能跑 <strong>2.7 亿 token</strong>（输入+输出混合）。换算成实际场景：</p>
-            <ul>
-              <li><strong>~13,500 轮长对话</strong>（每轮 10K 输入 + 10K 输出）</li>
-              <li><strong>~540,000 次 API 调用</strong>（每次 500 token）</li>
-              <li><strong>~30 小时连续聊天</strong>（按 70B 典型速度）</li>
-            </ul>
-            <p>这相当于同金额在 OpenAI GPT-4o 上能跑 token 量的 3 倍。DeepInfra 是当下最便宜的前沿级开源推理选项。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">价格矩阵（2026-08-03 验证）</h2>
 
-            <h2>速度基准：DeepInfra 与竞品对比</h2>
-            <p>DeepInfra 不是最快的——Groq 与 Cerebras 才是。但按<strong>单位美元吞吐（tokens per dollar per second）</strong>衡量，DeepInfra 极具竞争力。</p>
-            <table>
-              <thead>
-                <tr><th>提供商</th><th>Llama 3.3 70B 速度</th><th>首 token 延迟</th><th>综合价 ($/M tok)</th></tr>
-              </thead>
-              <tbody>
-                <tr><td><strong>DeepInfra</strong></td><td><strong>~150 tok/s</strong></td><td>500ms 以内</td><td><strong>$0.375</strong>（混合）</td></tr>
-                <tr><td>Cerebras</td><td>2,000+ tok/s</td><td>200ms 以内</td><td>$0.60</td></tr>
-                <tr><td>Groq (LPU)</td><td>450 tok/s</td><td>300ms 以内</td><td>$1.78/M（输入+输出求和）</td></tr>
-                <tr><td>Together AI</td><td>120 tok/s</td><td>1s 以内</td><td>$1.38/M</td></tr>
-                <tr><td>Fireworks AI</td><td>180 tok/s</td><td>600ms 以内</td><td>$1.40/M</td></tr>
-                <tr><td>OpenAI GPT-4o</td><td>80 tok/s</td><td>500ms 以内</td><td>$12.50/M</td></tr>
-              </tbody>
-            </table>
-            <p>DeepInfra 比 Cerebras/Groq 慢 5-10 倍，但<strong>单 token 价格便宜 5-10 倍</strong>。对非实时负载（批量处理、离线文档分析、数据集生成），DeepInfra 的成本优势是决定性的。</p>
+<p class="text-gray-700 leading-relaxed my-4">以下价格均来自 <a href="https://deepinfra.com/pricing" rel="nofollow">deepinfra.com/pricing</a> 实时核实。缓存输入价格按 <code>rate_per_input_token_cached</code> 参数（典型值 0.20）享 80% 折扣。服务等级乘数：Standard 1x、Priority 1.5x、Flex 0.8x。</p>
 
-            <h2>OpenAI 兼容 API：60 秒迁移</h2>
-            <p>DeepInfra 实现完整的 OpenAI Chat Completions 规范：</p>
-            <ul>
-              <li>流式输出（<code>stream: true</code>）</li>
-              <li>Function calling / 工具调用</li>
-              <li>JSON mode（<code>response_format: &#123; type: "json_object" &#125;</code>）</li>
-              <li>System messages</li>
-              <li>多轮对话</li>
-              <li>视觉输入（Llama 3.2 Vision、Qwen-VL 模型）</li>
-              <li>Token 用量统计</li>
-            </ul>
-            <p>迁移只需 60 秒：</p>
-            <pre><code class="language-python"># 从 OpenAI 切换到 DeepInfra —— 只改 base_url 和 api_key
-from openai import OpenAI
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200">
+<thead class="bg-gray-50"><tr>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">模型</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">输入 ($/M)</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">输出 ($/M)</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">上下文</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">缓存输入</th>
+</tr></thead>
+<tbody class="divide-y divide-gray-100">
+<tr><td class="px-4 py-2 text-sm">DeepSeek-V4-Flash</td><td class="px-4 py-2 text-sm">$0.09</td><td class="px-4 py-2 text-sm">$0.18</td><td class="px-4 py-2 text-sm">1,048,576</td><td class="px-4 py-2 text-sm">8 折</td></tr>
+<tr><td class="px-4 py-2 text-sm">DeepSeek-V4-Flash-0731</td><td class="px-4 py-2 text-sm">$0.09</td><td class="px-4 py-2 text-sm">$0.18</td><td class="px-4 py-2 text-sm">1,048,576</td><td class="px-4 py-2 text-sm">8 折</td></tr>
+<tr><td class="px-4 py-2 text-sm">DeepSeek-V4-Pro</td><td class="px-4 py-2 text-sm">$1.30</td><td class="px-4 py-2 text-sm">$2.60</td><td class="px-4 py-2 text-sm">1,048,576</td><td class="px-4 py-2 text-sm">81% 折扣</td></tr>
+<tr><td class="px-4 py-2 text-sm">DeepSeek-V3.2</td><td class="px-4 py-2 text-sm">$0.26</td><td class="px-4 py-2 text-sm">$0.38</td><td class="px-4 py-2 text-sm">163,840</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">GLM-5.2</td><td class="px-4 py-2 text-sm">$0.75</td><td class="px-4 py-2 text-sm">$2.40</td><td class="px-4 py-2 text-sm">1,048,576</td><td class="px-4 py-2 text-sm">81% 折扣</td></tr>
+<tr><td class="px-4 py-2 text-sm">GLM-5</td><td class="px-4 py-2 text-sm">$0.60</td><td class="px-4 py-2 text-sm">$2.08</td><td class="px-4 py-2 text-sm">202,752</td><td class="px-4 py-2 text-sm">8 折</td></tr>
+<tr><td class="px-4 py-2 text-sm">GLM-4.7-Flash</td><td class="px-4 py-2 text-sm">$0.06</td><td class="px-4 py-2 text-sm">$0.40</td><td class="px-4 py-2 text-sm">202,752</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">Qwen3.6-35B-A3B (MoE)</td><td class="px-4 py-2 text-sm">$0.10</td><td class="px-4 py-2 text-sm">$0.95</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">Qwen3-Max / Qwen3-Max-Thinking</td><td class="px-4 py-2 text-sm">$1.20</td><td class="px-4 py-2 text-sm">$6.00</td><td class="px-4 py-2 text-sm">256,000</td><td class="px-4 py-2 text-sm">8 折</td></tr>
+<tr><td class="px-4 py-2 text-sm">Kimi-K2.7-Code</td><td class="px-4 py-2 text-sm">$0.74</td><td class="px-4 py-2 text-sm">$3.50</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">Kimi-K2.6</td><td class="px-4 py-2 text-sm">$0.75</td><td class="px-4 py-2 text-sm">$3.50</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">NVIDIA Nemotron-3-Super-120B (MoE)</td><td class="px-4 py-2 text-sm">$0.085</td><td class="px-4 py-2 text-sm">$0.40</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">8 折</td></tr>
+<tr><td class="px-4 py-2 text-sm">NVIDIA Nemotron-3-Ultra-550B (MoE)</td><td class="px-4 py-2 text-sm">$0.50</td><td class="px-4 py-2 text-sm">$2.20</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">gemma-4-31B-it</td><td class="px-4 py-2 text-sm">$0.13</td><td class="px-4 py-2 text-sm">$0.38</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">gemma-4-26B-A4B-it</td><td class="px-4 py-2 text-sm">$0.07</td><td class="px-4 py-2 text-sm">$0.34</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">MiMo-V2.5-Pro</td><td class="px-4 py-2 text-sm">$1.00</td><td class="px-4 py-2 text-sm">$3.00</td><td class="px-4 py-2 text-sm">1,048,576</td><td class="px-4 py-2 text-sm">—</td></tr>
+</tbody></table></div>
 
+<p class="text-gray-700 leading-relaxed my-4"><strong>如何读这张表</strong>：DeepSeek-V4-Flash 在 Standard 等级下，1M token 聊天工作负载（10% 缓存前缀、90% 鲜输入 + 100% 输出）成本约 $0.09 × 0.9 + $0.018 × 0.1 + $0.18 = <strong>$0.099/百万总 token</strong>。DeepSeek-V4-Pro 同样工作负载 $1.30 × 0.9 + $0.247 × 0.1 + $2.60 = <strong>$3.79/百万</strong>——贵 38 倍。当 Flash 质量足够时，DeepInfra 的成本差距极为明显。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>对比语境</strong>：OpenAI gpt-4o-mini 收费 $0.15/M 输入 + $0.60/M 输出。DeepSeek-V4-Flash 的 $0.09/$0.18 <strong>输入便宜 40%、输出便宜 70%</strong>。Qwen3-Max-Thinking $1.20/$6.00 与 Claude Sonnet 5（$3/$15）能力等级相当，输出成本显著更低。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">API 与开发者体验</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra 对开发者的核心价值是零迁移成本。位于 <code>https://api.deepinfra.com/v1/openai</code> 的 OpenAI 兼容端点接受相同的 chat completions schema、相同的 function calling schema、相同的流式响应格式、相同的视觉输入格式（base64 image_url）、相同的 JSON 模式 response_format。从任何 OpenAI 工作负载迁移只需：</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>from openai import OpenAI
+
+# 之前（OpenAI 直连）
+client = OpenAI(api_key="sk-...")
+
+# 之后（DeepInfra）——只改一行
 client = OpenAI(
-    api_key="YOUR_DEEPINFRA_TOKEN",
+    api_key="<DEEPINFRA_API_KEY>",
     base_url="https://api.deepinfra.com/v1/openai",
 )
 
 response = client.chat.completions.create(
-    model="meta-llama/Llama-3.3-70B-Instruct",
-    messages=[&#123;"role": "user", "content": "用两句话解释 token 定价"&#125;],
-)
-print(response.choices[0].message.content)</code></pre>
-            <p>无 SDK 变更、无新抽象层、无数据迁移。同一份 <code>openai-python</code> SDK，同样的请求/响应结构，同样的错误码。</p>
+    model="deepseek-ai/DeepSeek-V4-Flash",  # 任意 DeepInfra 模型 slug
+    messages=[{"role": "user", "content": "..."}],
+    stream=True,
+    extra_body={  # DeepInfra 特有参数
+        "temperature": 0.7,
+        "cached_input_discount": True,  # 自动启用前缀缓存
+    }
+)</code></pre>
 
-            <h2>模型矩阵：DeepSeek、Qwen、Mistral、Phi、Llama 一网打尽</h2>
-            <p>DeepInfra 的模型目录是开发者的好朋友——每款主流开源模型发布后数周内即可上。截至 2026 年 6 月：</p>
-            <p><strong>前沿级（70B+）：</strong></p>
-            <ul>
-              <li>Llama 3.3 70B Instruct</li>
-              <li>Meta-Llama-3.1-405B-Instruct</li>
-              <li>Qwen2.5-72B-Instruct</li>
-              <li>DeepSeek V3（671B MoE，激活 37B）</li>
-              <li>DeepSeek R1（推理模型）</li>
-            </ul>
-            <p><strong>中等规模（7B-32B）：</strong></p>
-            <ul>
-              <li>Mistral Small 24B、Mistral 7B</li>
-              <li>Qwen2.5-Coder-32B-Instruct</li>
-              <li>Phi-4（14B）</li>
-              <li>Gemma 2 27B</li>
-            </ul>
-            <p><strong>轻量高效：</strong></p>
-            <ul>
-              <li>Llama 3.1 8B</li>
-              <li>Mistral 7B</li>
-              <li>Phi-3.5 Mini</li>
-            </ul>
-            <p><strong>专用模型：</strong></p>
-            <ul>
-              <li>DeepSeek Coder V2（代码专用）</li>
-              <li>CodeLlama 系列</li>
-              <li>Whisper（语音转文字）</li>
-              <li>Llama 3.2 Vision（多模态）</li>
-            </ul>
-            <p>50+ 模型数量大约是 Groq 或 Cerebras 的 3 倍。DeepInfra 是跨模型家族测试的最全平台。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>关键 API 表面</strong>：</p>
 
-            <h2>使用场景：什么时候选 DeepInfra</h2>
-            <table>
-              <thead>
-                <tr><th>使用场景</th><th>是否推荐</th><th>原因</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>实时聊天机器人</td><td>⚠️ 可用</td><td>Cerebras/Groq 更快，但 DeepInfra 成本可控</td></tr>
-                <tr><td>代码补全（Copilot 类）</td><td>✅ 推荐</td><td>500ms 内延迟，单 token 成本低</td></tr>
-                <tr><td>批量文档分析</td><td>✅ 最佳</td><td>批量 5 折 + 大上下文</td></tr>
-                <tr><td>数据集生成</td><td>✅ 最佳</td><td>最便宜的前沿级 70B，跑合成数据</td></tr>
-                <tr><td>研究实验</td><td>✅ 最佳</td><td>便宜，能跑 1000+ 模型对比</td></tr>
-                <tr><td>生产环境面向 C 端 LLM</td><td>⚠️ 谨慎</td><td>无 SLA；需要 SLA 选 Together AI 或 Fireworks</td></tr>
-                <tr><td>多模态（视觉）</td><td>⚠️ 有限</td><td>视觉支持有但不如 OpenAI 全面</td></tr>
-                <tr><td>国内直连</td><td>❌ 不行</td><td>需代理；选 aliyun/zhipu/tencent</td></tr>
-              </tbody>
-            </table>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>Chat completions</strong>：OpenAI 兼容，支持流式、视觉输入（base64 + URL）、function calling、JSON mode、structured outputs、系统消息、多轮历史</li>
+<li><strong>Embeddings</strong>：<code>/v1/openai/embeddings</code> 支持 BGE / E5 / sentence-transformers 模型，返回 OpenAI 格式的 <code>{embedding: [...], usage: {...}}</code></li>
+<li><strong>图像生成</strong>：<code>/v1/openai/images/generations</code> 支持 FLUX-2-klein-4b / 9b，按张计费——默认 1024×1024 下 $0.014/张</li>
+<li><strong>语音转文字</strong>：<code>/v1/openai/audio/transcriptions</code> 支持 Whisper large-v3，按输入字符 $0.002 计费（已核实）</li>
+<li><strong>批量 API</strong>：OpenAI 兼容的文件上传 + batch 端点，非紧急异步作业享 8 折，结果通过 files 端点检索</li>
+<li><strong>私有模型</strong>：自带权重（或微调 adapter）部署在专用 H100/H200/B200/B300 之上，自动伸缩，每部署一个 OpenAI 兼容端点</li>
+<li><strong>速率限制</strong>：默认每模型每用户 200 并发；Enterprise 可申请更高并发</li>
+</ul>
 
-            <h2>DeepInfra vs Together AI vs Groq vs Fireworks</h2>
-            <table>
-              <thead>
-                <tr><th>维度</th><th>DeepInfra</th><th>Together AI</th><th>Groq</th><th>Fireworks AI</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>模型数量</td><td>50+</td><td>200+</td><td>7</td><td>100+</td></tr>
-                <tr><td>70B 最低价</td><td>$0.35/M</td><td>$0.59/M</td><td>$0.79/M</td><td>$0.50/M</td></tr>
-                <tr><td>速度（70B tok/s）</td><td>150</td><td>120</td><td>450</td><td>180</td></tr>
-                <tr><td>免费额度</td><td>$1</td><td>$5</td><td>限速免费</td><td>$1</td></tr>
-                <tr><td>Fine-tuning</td><td>❌</td><td>✅</td><td>❌</td><td>✅</td></tr>
-                <tr><td>批量折扣</td><td>✅ 5 折</td><td>❌</td><td>❌</td><td>✅ 7 折</td></tr>
-                <tr><td>企业 SLA</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td></tr>
-                <tr><td>OpenAI 兼容</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
-              </tbody>
-            </table>
-            <p><strong>选 DeepInfra 当：</strong> 成本是首要因素、需要 DeepSeek V3/R1、跑批量任务、或者预算紧的研究项目。</p>
-            <p><strong>选 Together AI 当：</strong> 需要 fine-tuning、模型目录更广、或者企业级 SLA。</p>
-            <p><strong>选 Groq 当：</strong> 极低延迟至关重要（语音 Agent、实时聊天、代码补全）。</p>
-            <p><strong>选 Fireworks AI 当：</strong> 需要 fine-tuning + 快速推理 + 良好企业支持。</p>
+<p class="text-gray-700 leading-relaxed my-4">对使用 LangChain、LlamaIndex、Pydantic AI 或任何接受 OpenAI client 框架的开发者，迁移就是一个 <code>base_url</code> 参数的改动。体验上显著优于 Together AI（Together-flavored API）或 Fireworks AI（Fireworks-flavored 参数命名）。</p>
 
-            <h2>优缺点</h2>
-            <p><strong>优点：</strong></p>
-            <ul>
-              <li>✅ 多数模型业内最低价</li>
-              <li>✅ 50+ 开源模型，包括 DeepSeek V3/R1、Qwen2.5、Llama 3.3</li>
-              <li>✅ OpenAI 兼容 API，60 秒迁移</li>
-              <li>✅ 405B 模型 $0.90/M 接入（独家价位）</li>
-              <li>✅ Serverless 批量推理 5 折</li>
-              <li>✅ 注册即送 $1 免费额度，无需信用卡</li>
-            </ul>
-            <p><strong>缺点：</strong></p>
-            <ul>
-              <li>⚠️ 单请求吞吐不如 Groq/Cerebras（150 vs 2,000 tok/s）</li>
-              <li>⚠️ 国内访问需稳定代理</li>
-              <li>⚠️ 不提供 fine-tuning 服务</li>
-              <li>⚠️ 无企业 SLA，只有尽力而为的可用性</li>
-              <li>⚠️ 多模态（视觉、音频）支持不如 OpenAI 全面</li>
-            </ul>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">缓存输入折扣：5 倍的成本优势</h2>
 
-            <h2>常见问题</h2>
-            <p><strong>Q：DeepInfra 真的比 Together AI 便宜吗？</strong></p>
-            <p>A：是的，同款模型便宜 30-50%。Llama 3.3 70B 在 DeepInfra 是 $0.35/M 输入，Together AI 是 $0.59/M。DeepSeek V3 在 DeepInfra 是 $0.45/M，Together AI 是 $0.90/M。代价是吞吐速度和企业级功能。</p>
-            <p><strong>Q：能从国内访问 DeepInfra 吗？</strong></p>
-            <p>A：不能直接访问。api.deepinfra.com 经常被 GFW 屏蔽。国内开发者通常走代理，或者用香港/台湾节点，或者通过 FreeModel 这类 OpenAI 兼容的 API 中转（聚合多个后端）。要完全国内直连，请考虑阿里云百炼、智谱、腾讯混元。</p>
-            <p><strong>Q：DeepInfra 支持 fine-tuning 吗？</strong></p>
-            <p>A：不支持。DeepInfra 只做推理。fine-tuning 请用 Together AI、Fireworks AI，或自己跑训练（RunPod / Lambda Labs）。</p>
-            <p><strong>Q：批量推理 5 折是怎么算的？</strong></p>
-            <p>A：单次 API 调用向批量端点提交最多 1000 个请求，DeepInfra 在 24 小时内处理完毕，token 价格 5 折。适合数据集生成、批量分类、任何不需要同步响应的任务。</p>
-            <p><strong>Q：DeepInfra 适合生产环境吗？</strong></p>
-            <p>A：对大多数初创公司和中规模应用来说是。历史可用性 99.9%+，但没有正式 SLA。对受监管行业（金融、医疗）或关键任务，请考虑 Together AI、Fireworks 或 Azure OpenAI。</p>
-            <p><strong>Q：能在 DeepInfra 跑 DeepSeek R1 吗？</strong></p>
-            <p>A：可以。DeepInfra 是最早规模化托管 DeepSeek R1 的平台之一。定价 $0.55/M 输入 + $2.19/M 输出（输出贵是因为推理链产生更多 token）。</p>
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra 最被低估的特性是通过前缀缓存层自动应用的 <strong>80% 缓存输入折扣</strong>。当你发送重复的聊天对话（相同系统提示 + 工具定义 + 早期消息历史），缓存前缀仅需鲜输入价格的 20%。这在聊天场景下是显著的乘数效应：</p>
 
-            <h2>结论：开源 LLM 推理的预算之选</h2>
-            <p>DeepInfra 是为那些更看重单 token 价格、而非峰值吞吐的开发者设计的成本优先 LLM API。50+ 模型覆盖 Llama 3.3 70B 仅 $0.35/M、DeepSeek V3、Qwen2.5 等几乎所有主流开源需求，价格业内最低。</p>
-            <p>对延迟敏感的实时应用，把 DeepInfra 与 Groq 或 Cerebras 配合使用。对成本敏感的批量处理、数据集生成、研究项目，DeepInfra 是明显赢家。OpenAI 兼容 API 让迁移只需 60 秒，一个下午就能 A/B 测试成本。</p>
-            <p>如果你在预算紧的情况下需要前沿级开源模型，DeepInfra 是起点。如果需要 fine-tuning、SLA、或者峰值速度，升级到 Together AI、Fireworks 或 Groq。要国内直连，用阿里云百炼、智谱、腾讯混元。</p>
-            <p>对于需要在国内直连兼多厂商聚合方案的团队，可以尝试 <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a>——OpenAI 兼容聚合器，内置审核路由，一个 key 覆盖多厂商。</p>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>DeepSeek-V4-Flash</strong>：$0.09/M 鲜输入 → <strong>$0.018/M 缓存输入</strong>（缓存部分便宜 5 倍）</li>
+<li><strong>DeepSeek-V4-Pro</strong>：$1.30/M 鲜输入 → $0.247/M 缓存输入（5.3 倍）</li>
+<li><strong>GLM-5.2</strong>：$0.75/M → $0.143/M 缓存输入（5.2 倍）</li>
+<li><strong>Qwen3-Max-Thinking</strong>：$1.20/M → $0.24/M 缓存输入（5 倍）</li>
+<li><strong>Nemotron-3-Super-120B</strong>：$0.085/M → $0.017/M 缓存输入（5 倍）</li>
+</ul>
 
-            <h2>延伸阅读</h2>
-            <ul>
-              <li><a href="https://deepinfra.com/docs" target="_blank" rel="noopener">DeepInfra 官方文档</a></li>
-              <li><a href="https://deepinfra.com/pricing" target="_blank" rel="noopener">DeepInfra 定价页</a></li>
-              <li><a href="https://deepinfra.com/deepseek-ai/DeepSeek-V3" target="_blank" rel="noopener">DeepInfra 上的 DeepSeek V3</a></li>
-              <li><a href="https://apirank.vip/zh/providers/together-ai/">Together AI 测评（对比参考）</a></li>
-              <li><a href="https://apirank.vip/zh/providers/groq/">Groq 测评（对比参考）</a></li>
-            </ul>
-          </div>
+<p class="text-gray-700 leading-relaxed my-4">对于带上下文的工作负载（50+ 页 RAG、agent loop 工具定义、多轮编码会话长文件历史），缓存命中率通常占总输入 token 的 30-50%。DeepSeek-V4-Flash 上有效混合输入成本降至 <strong>~$0.054-$0.063/M 的缓存部分</strong>，是 2026 年聊天带上下文场景的市场成本领导者。值得注意的是：缓存是自动的，客户端不需要改代码——DeepInfra 的前缀缓存层会自动匹配任何入站请求的最长公共前缀。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对比 OpenAI 2025 年给 gpt-4o 与 o1 引入的自动 prompt 缓存（$0.075/M 缓存输入——半价但不是 5 倍）、Anthropic 的 prompt 缓存（同等价格）、Together AI 的缓存层（约 50% 折扣，不是 80%）。DeepInfra 的 80% 折扣是 2026 年市场最激进的，叠加最低的基础输入价格（DeepSeek-V4-Flash $0.09/M vs OpenAI gpt-4o-mini $0.15/M），让它成为带上下文生产工作负载的成本领跑者。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">服务等级：Standard / Priority / Flex</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra 每个模型都支持三个服务等级，通过 <code>rate_per_service_tier_priority</code> 和 <code>rate_per_service_tier_flex</code> 参数调节：</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200">
+<thead class="bg-gray-50"><tr>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">等级</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">乘数</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">用例</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">延迟</th>
+</tr></thead>
+<tbody class="divide-y divide-gray-100">
+<tr><td class="px-4 py-2 text-sm">Standard</td><td class="px-4 py-2 text-sm">1.0x</td><td class="px-4 py-2 text-sm">默认工作负载，成本/延迟均衡</td><td class="px-4 py-2 text-sm">200-500ms</td></tr>
+<tr><td class="px-4 py-2 text-sm">Priority</td><td class="px-4 py-2 text-sm">1.5x</td><td class="px-4 py-2 text-sm">低延迟交互（聊天 UI、实时 agent）</td><td class="px-4 py-2 text-sm">50-150ms</td></tr>
+<tr><td class="px-4 py-2 text-sm">Flex</td><td class="px-4 py-2 text-sm">0.8x</td><td class="px-4 py-2 text-sm">批量 / 异步 / 非紧急</td><td class="px-4 py-2 text-sm">1-10s</td></tr>
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">这一三等级模型提供了真实可优化的成本/延迟旋钮，一价打包的聚合器（OpenRouter、Portkey）则没有这种灵活性。对批量工作负载（夜间分析、数据处理管道），Flex 0.8x 立即省 20%。对交互 UI（chatbot、agent loop），Priority 1.5x 通过 H100 路由给出 sub-150ms p95 延迟。默认 Standard 是合理的折中。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">免费层与试用额度</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra 的 $10 USD 月度免费信用（无需信用卡、自动续）是 2026 年 OpenAI 兼容市场上最慷慨的免费层。换算到 token：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>GLM-4.7-Flash</strong> $0.06/M 输入：$10 = 每月约 1.66 亿 输入 token 免费推理（约 1 万次 16K 上下文聊天会话）</li>
+<li><strong>DeepSeek-V4-Flash</strong> $0.09/M：$10 = 每月约 1.11 亿 输入 token 免费推理</li>
+<li><strong>FLUX-2 图像生成</strong> $0.014/张：$10 = 每月约 714 张免费图</li>
+<li><strong>Whisper 转录</strong> $0.002/字符：$10 = 每月约 500 万字符的免费音频转录</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">对独立开发者 / 黑客跑原型，$10 免费层足以让受限流量在生产环境跑一个真产品。对更大的工作负载（重度 agent loop、生产级 RAG 系统），按量付费模式无缝接管。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>匿名 Playground</strong>：DeepInfra 还提供无需账户的匿名推理用于测试模型质量——访问 <a href="https://deepinfra.com" rel="nofollow">deepinfra.com</a>，点任意模型，即可开始聊天。便于在投入 API key 之前评估模型质量。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">DeepInfra 对比替代方案</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs OpenRouter</strong>：OpenRouter 是模型聚合器（一把 key、400+ 模型、5-30% 加价、含免费模型的免费层）。DeepInfra 是主 GPU 云（OpenAI 兼容、~25 首日前沿模型、无加价、月免费 $10）。对不需要 OpenRouter 400 模型广度的成本敏感团队，DeepInfra 在 $/M 上胜出。对想用"一把 key 通吃"广度的团队，OpenRouter 更方便。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs Together AI</strong>：Together 是 DeepInfra 最接近的竞品——OpenAI 兼容、开源聚焦、价格梯队相近。Together 优势：跟踪记录长、社区更活跃、LoRA 微调工具更丰富。DeepInfra 优势：首日模型上线（新版本通常快 24-72h）、80% 缓存输入折扣（vs Together ~50%）、月免费 $10（vs Together $5）。追求首日访问和激进缓存，DeepInfra 2026 胜出。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs Fireworks AI</strong>：Fireworks 在 FP8 / AWQ 量化推理上更强，长上下文模型延迟略高。DeepInfra 在单位 token 成本和首日可用性上更强。要 FP8 顶级质量选 Fireworks，要日级首发低价选 DeepInfra。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs OpenAI 直连</strong>：OpenAI 切换成本为零（已经在用）、$5 免费信用（vs DeepInfra $10）、无 80% 缓存折扣（50%）、50% 加价模型通过 router 端点。对已经在跑 gpt-4o-mini $0.15/$0.60 的 OpenAI 原生工作负载，迁移到 DeepInfra DeepSeek-V4-Flash $0.09/$0.18 即可省 40-70%，质量相当。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs 自托管</strong>：自托管 DeepSeek-V4-Flash 在 H100 GPU 上每小时 $2-3，加上自动伸缩、监控、限流的工程开销。DeepInfra 的 serverless 模型消除了 GPU 租金 + 运维成本，代价是少量 per-token 加价。对每月 1 亿 token 以下、绝大多数团队，serverless 在成本 + 运维简化上胜出。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">何时选择 DeepInfra</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>选择 DeepInfra 如果</strong>：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>你在生产环境跑开源前沿 LLM（DeepSeek-V4、Qwen3、GLM-5、Kimi-K2.7、NVIDIA Nemotron）且需要首日访问</li>
+<li>你有带上下文聊天工作负载，80% 缓存输入折扣能实质性地降低成本</li>
+<li>你在迁移 OpenAI 工作负载来削减成本——一行 base_url 迁移只需 5 分钟</li>
+<li>你需要按量付费无月费承诺，$10 免费信用足够验证平台</li>
+<li>你想在同一计费账户下混用 LLM、图像生成（FLUX-2）、语音转文字（Whisper）</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>如果以下请看其他平台</strong>：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>你在中国大陆——DeepInfra 不翻墙基本不可达。用 DeepSeek 直连（国内）、阿里云百炼、或国内聚合器（FreeModel、ModelScope）</li>
+<li>你需要企业 SSO、专用租户、审计日志——DeepInfra 是开发者优先平台，不是企业合规平台</li>
+<li>你需要一把 key 通 400+ 模型——如果广度优先，OpenRouter 的聚合器模型更方便</li>
+<li>你每月跑 1 亿 token 以上且有严格延迟 SLA——与 DeepInfra 协商专用私有部署定价（竞品亦然）</li>
+<li>你需要完全的 EU 数据驻留——DeepInfra 部分流量走 EU-West 但默认不保证数据驻留</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">总结</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra 是 2026 年<strong>成本敏感团队跑开源前沿 LLM 时的最强 OpenAI 兼容 GPU 云</strong>。首日模型托管（DeepSeek-V4-Flash/Pro、Qwen3-Max、GLM-5.2、Kimi-K2.7-Code、Nemotron-3 Ultra 全部发布后数小时内完成）、市场最激进的缓存输入折扣（8 折 vs OpenAI 5 折 vs Together 5 折）、$10 月免费层、OpenAI 兼容的即插即用迁移路径，这些组合让 DeepInfra 成为开源 LLM 生产部署的事实默认 2026 迁移目标。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">代价是真实的：中国大陆访问被封（对国内生产是硬性阻塞）、无企业 SSO/审计工具、无月费订阅选项（纯按量付费带来预算复杂度）、服务等级定价（1x / 1.5x / 0.8x）需要理解才能优化。对 1-50 人团队在生产跑开源前沿模型且成本作为主要约束，DeepInfra 是 2026 年的正确选择。对国内生产、企业合规需求、或 ≥1 亿/月 token 的超大规模工作负载需要 SLA 的情况，看其他厂商或协商专用部署定价。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对成本工程师特别提醒：DeepSeek-V4-Flash 首日上线 + 80% 缓存输入折扣 + Priority 等级交互 UI，对比 OpenAI gpt-4o-mini 是 5-10 倍成本优势，迁移成本仅一行 <code>base_url</code> 参数的改动。</p>`;
+---
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} locale={locale} enCanonicalUrl={enCanonicalUrl}>
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content="{date}" />
+    <meta itemprop="dateModified" content="{date}" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+    <div set:html={zhBody} />
+
+    <!-- Affiliate CTA -->
+    <div class="mt-12 p-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-gray-600 mt-1">{affiliateSidebar.description}</p>
         </div>
-
-        <aside class="lg:col-span-1">
-          <div class="sticky top-4 space-y-6">
-            <div class="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 class="font-bold text-gray-900 mb-3">快速参考</h3>
-              <ul class="space-y-2 text-sm text-gray-600">
-                <li><strong>厂商：</strong>DeepInfra</li>
-                <li><strong>成立：</strong>2022</li>
-                <li><strong>模型：</strong>50+ 开源</li>
-                <li><strong>入门价：</strong>$0.04/百万 token（Llama 3.1 8B）</li>
-                <li><strong>API 兼容：</strong>OpenAI 形态</li>
-                <li><strong>国内访问：</strong>❌ 需代理</li>
-                <li><strong>免费层：</strong>$1 额度（无需信用卡）</li>
-                <li><strong>旗舰：</strong>DeepSeek V3 + Llama 3.3 70B</li>
-                <li><strong>批量折扣：</strong>✅ 5 折</li>
-                <li><strong>Fine-tuning：</strong>❌ 不支持</li>
-              </ul>
-            </div>
-            <div class="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 class="font-bold text-gray-900 mb-3">相关文章</h3>
-              <ul class="space-y-2 text-sm">
-                <li><a href="/zh/tutorials/siliconflow-api-review/" class="text-blue-600 hover:underline">SiliconFlow 硅基流动 API 测评 2026</a></li>
-                <li><a href="/zh/tutorials/openai-compatible-api-2026/" class="text-blue-600 hover:underline">OpenAI 兼容 API 2026 厂商对比</a></li>
-                <li><a href="/zh/tutorials/ai-api-free-tiers-2026/" class="text-blue-600 hover:underline">AI API 免费额度 2026</a></li>
-                <li><a href="/zh/tutorials/ai-api-speed-benchmarks-2026/" class="text-blue-600 hover:underline">AI API 速度基准 2026</a></li>
-                <li><a href="/zh/tutorials/cheapest-llm-api-pricing-2026/" class="text-blue-600 hover:underline">2026 最便宜 LLM API 价格</a></li>
-              </ul>
-            </div>
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 class="font-bold text-gray-900 mb-2">搭配使用 FreeModel</h3>
-              <p class="text-sm text-gray-700 mb-3">OpenAI 兼容聚合器，内置审核路由，适合多厂商场景。国内直连，有免费层。</p>
-              <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-sm text-blue-600 hover:underline break-all" target="_blank" rel="sponsored noopener">freemodel.dev/invite/FRE-7a3b6220</a>
-            </div>
-            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
-              <p class="text-gray-500 text-sm">广告</p>
-            </div>
-          </div>
-        </aside>
+        <a href={affiliateSidebar.url} class="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors" rel="nofollow sponsored" target="_blank">{affiliateSidebar.cta} →</a>
       </div>
     </div>
   </article>

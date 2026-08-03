@@ -2,368 +2,241 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const slug = 'deepinfra-api-review';
-const date = '2026-06-05';
+const date = '2026-08-03';
 const locale = 'en';
 
-const enTitle = 'DeepInfra API Review 2026: 50+ Models, Lowest LLM Pricing';
-const enDescription = 'DeepInfra API review 2026: 50+ open-source models from $0.04/M tok. Llama 3.3 70B at $0.35/M, DeepSeek V3, OpenAI-compatible, batch 50% off. Compare to Together AI & Groq.';
+const enTitle = "DeepInfra 2026: Open-Source GPU Cloud API Review";
+const enDescription = "DeepInfra 2026 review: 100+ open-source LLMs, OpenAI-compatible API, day-one DeepSeek-V4/Qwen3-Max/GLM-5.2 hosting. $10/mo free, 80% cached-input discount.";
 const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
 const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
 
-const articleJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Article",
-  "headline": enTitle,
-  "description": enDescription,
-  "datePublished": date,
-  "dateModified": date,
-  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
-  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
-  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
-};
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "DeepInfra 2026: Open-Source GPU Cloud API Review", "description": "DeepInfra 2026 review: 100+ open-source LLMs, OpenAI-compatible API, day-one DeepSeek-V4/Qwen3-Max/GLM-5.2 hosting. $10/mo free, 80% cached-input discount.", "datePublished": "2026-08-03", "dateModified": "2026-08-03", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/tutorials/deepinfra-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": "DeepInfra 2026: Open-Source GPU Cloud API Review", "item": "https://apirank.vip/tutorials/deepinfra-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How much does DeepInfra cost in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "DeepInfra charges per token with model-dependent pricing verified 2026-08-03: DeepSeek-V4-Flash $0.09/M input + $0.18/M output, GLM-4.7-Flash $0.06/M + $0.40/M, Qwen3.6-35B-A3B $0.10/M + $0.95/M, GLM-5.2 $0.75/M + $2.40/M, DeepSeek-V4-Pro $1.30/M + $2.60/M, Qwen3-Max $1.20/M + $6.00/M. Free tier is $10 USD credit per month, no credit card. Batch API is 20% off for async jobs, cached input tokens are 80% off (rate_per_input_token_cached typically 0.20)."}}, {"@type": "Question", "name": "Is DeepInfra OpenAI-compatible?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. DeepInfra's primary endpoint https://api.deepinfra.com/v1/openai is OpenAI-compatible — point any OpenAI SDK at this base URL and existing code works without changes. The chat completions endpoint supports streaming, vision input (image base64), function calling, JSON mode, and structured outputs. DeepInfra also exposes embeddings, image generation (FLUX), Whisper transcription, batch API, and files API — all OpenAI-API-shaped."}}, {"@type": "Question", "name": "Does DeepInfra host DeepSeek-V4 on day one?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. DeepInfra's editorial edge is day-one hosting of frontier open-source models — DeepSeek-V4-Flash and DeepSeek-V4-Pro were hosted the same week as DeepSeek's official API launch (verified 2026-08-03 on deepinfra.com/pricing). Same pattern holds for GLM-5.2, NVIDIA Nemotron-3 Ultra, Kimi-K2.7-Code, Qwen3-Max, and MiMo-V2.5-Pro. Developers can route traffic through DeepInfra immediately rather than waiting for major providers to release APIs."}}, {"@type": "Question", "name": "Can I use DeepInfra from inside China?", "acceptedAnswer": {"@type": "Answer", "text": "DeepInfra's API is hosted primarily in US-East and EU-West, and access from mainland China requires proxy/VPN with typical 300-500ms latency through standard tunnels. For production workloads serving China-based users, this is a hard blocker — DeepSeek direct API, Alibaba Bailian, or domestic aggregators (FreeModel, ModelScope) are better choices. For developers outside China, DeepInfra delivers competitive 50-150ms latency at the 1.5x priority tier."}}, {"@type": "Question", "name": "What is the cached-input discount on DeepInfra?", "acceptedAnswer": {"@type": "Answer", "text": "DeepInfra applies an 80% discount on cached input tokens via the rate_per_input_token_cached parameter (typical value 0.20). On DeepSeek-V4-Flash, fresh input is $0.09/M but cached input drops to $0.018/M — a 5x cost win for chat-with-context and agent workloads that send the same prompt prefix repeatedly. Caching is automatic via DeepInfra's prefix-cache layer; no client-side code changes required."}}, {"@type": "Question", "name": "How does DeepInfra compare to Together AI in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "Both are OpenAI-compatible serverless GPU clouds for open-source models. DeepInfra's edges in 2026 are: (1) day-one hosting for newly-released frontier models (DeepSeek-V4, Qwen3-Max, GLM-5.2 typically day one vs Together 24-72h later), (2) the 80% cached-input discount is more aggressive than Together's typical 50%, (3) a $10/month free credit tier (vs Together's $5 starter credit). Together AI's edges are: a stronger community/Discord, more LoRA fine-tuning tooling, and longer 5+ year track record. For pure cost-performance on day-one frontier models, DeepInfra wins in 2026."}}]};
 
-const breadcrumbJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  "itemListElement": [
-    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
-    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
-    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
-  ]
-};
+const affiliateSidebar = {"title": "Try DeepInfra Free", "description": "100+ open-source LLMs with OpenAI-compatible endpoint. $10 free credit per month, no credit card required.", "url": "https://deepinfra.com/?ref=apirank", "cta": "Start Free"};
 
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Is DeepInfra actually cheaper than Together AI?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes, consistently 30-50% cheaper on the same models. Llama 3.3 70B on DeepInfra is $0.35/M input vs Together AI's $0.59/M. DeepSeek V3 is $0.45/M on DeepInfra vs $0.90/M on Together AI. The trade-off is throughput speed and enterprise features." }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I use DeepInfra from China?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Not directly. api.deepinfra.com is frequently blocked by the GFW. Developers in mainland China typically route through a proxy, use Hong Kong/Taiwan endpoints, or aggregate via OpenAI-compatible resellers like FreeModel that handle multiple backends. For fully China-direct access, consider Alibaba Cloud Bailian, Zhipu, or Tencent Hunyuan." }
-    },
-    {
-      "@type": "Question",
-      "name": "Does DeepInfra support fine-tuning?",
-      "acceptedAnswer": { "@type": "Answer", "text": "No. DeepInfra is inference-only. For fine-tuning, use Together AI, Fireworks AI, or run your own training on RunPod / Lambda Labs." }
-    },
-    {
-      "@type": "Question",
-      "name": "How does the batch inference 50% discount work?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Submit up to 1,000 requests in a single API call to the batch endpoint. DeepInfra processes them within 24 hours at 50% off the per-token price. This is ideal for dataset generation, bulk classification, or any workload that doesn't need synchronous responses." }
-    },
-    {
-      "@type": "Question",
-      "name": "Is DeepInfra production-ready?",
-      "acceptedAnswer": { "@type": "Answer", "text": "For most startups and mid-scale applications, yes. The platform has 99.9%+ uptime historically, but no formal SLA. For regulated industries (finance, healthcare) or mission-critical workloads, consider Together AI, Fireworks, or Azure OpenAI for SLA-backed deployments." }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I run DeepSeek R1 on DeepInfra?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Yes. DeepInfra was one of the first providers to host DeepSeek R1 at scale. Pricing is $0.55/M input + $2.19/M output (the output is higher because reasoning chains produce more tokens)." }
-    }
-  ]
-};
----
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">DeepInfra 2026: The Day-One Host for Open-Source Frontier LLMs</h1>
 
-<BaseLayout
-  title={enTitle + ' | APIRank'}
-  description={enDescription}
-  canonicalUrl={canonicalUrl}
-  zhCanonicalUrl={zhCanonicalUrl}
-  type="article"
->
-  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
-  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
-  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra is the OpenAI-compatible GPU cloud built for one job: making open-source frontier models available on the same day they drop. In 2026, while OpenAI, Anthropic, and Google debate their next closed-source releases, DeepInfra has carved out a different lane — they hosted <strong>DeepSeek-V4-Flash</strong>, <strong>DeepSeek-V4-Pro</strong>, <strong>Qwen3-Max</strong>, <strong>GLM-5.2</strong>, <strong>Kimi-K2.7-Code</strong>, and <strong>NVIDIA Nemotron-3 Ultra</strong> the same week they were publicly released, with per-token pricing starting at $0.06/M input for GLM-4.7-Flash and an 80% discount on cached input tokens.</p>
 
-  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
-  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
-  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+<p class="text-gray-700 leading-relaxed my-4">This review covers the live-verified pricing matrix from <a href="https://deepinfra.com/pricing" rel="nofollow">deepinfra.com/pricing</a> (snapshotted 2026-08-03), the OpenAI-compatible API surface (<a href="https://docs.deepinfra.com" rel="nofollow">docs.deepinfra.com</a>), the day-one model-hosting track record, and the cost-optimization mechanism that makes DeepInfra the de facto migration target for cost-conscious teams running open-source models in production.</p>
 
-  <div class="bg-gray-50 border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-      <nav class="flex items-center gap-2 text-sm text-gray-500">
-        <a href="/" class="hover:text-blue-600">Home</a>
-        <span>›</span>
-        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
-        <span>›</span>
-        <span class="text-gray-900 font-medium">DeepInfra API Review 2026</span>
-      </nav>
-    </div>
-  </div>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
 
-  <article class="py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 space-y-8">
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>Day-one frontier model hosting</strong>: DeepSeek-V4-Flash/Pro, Qwen3-Max, GLM-5.2, Kimi-K2.7-Code, Nemotron-3 Ultra hosted within hours of public release — typically 24-72h faster than Together AI or Fireworks AI</li>
+<li><strong>OpenAI drop-in replacement</strong>: <code>base_url = "https://api.deepinfra.com/v1/openai"</code> on any existing OpenAI SDK call works unchanged — no migration code</li>
+<li><strong>Lowest input pricing in market</strong>: GLM-4.7-Flash $0.06/M input, DeepSeek-V4-Flash $0.09/M, Qwen3.6-35B-A3B $0.10/M (verified 2026-08-03)</li>
+<li><strong>80% cached-input discount</strong>: <code>rate_per_input_token_cached = 0.20</code> — DeepSeek-V4-Flash cached input drops to $0.018/M (5x cost win for chat-with-context)</li>
+<li><strong>Free tier</strong>: $10 USD credit per month, no credit card, plus anonymous playground inference for testing</li>
+<li><strong>Service tiers</strong>: Standard (1x base), Priority (1.5x for H100/H200 low-latency routing), Flex (0.8x for batch jobs)</li>
+<li><strong>Beyond LLMs</strong>: Same API exposes FLUX-2 image generation, Whisper transcription, embeddings (BGE/E5), and text-to-video via FLUX-Klein</li>
+</ul>
 
-          <header>
-            <h1 class="text-3xl font-bold text-gray-900 mb-4">DeepInfra API Review 2026: 50+ Models at Industry-Low Pricing</h1>
-            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
-              <time datetime="2026-06-05">June 5, 2026</time>
-              <span>•</span>
-              <span>DeepInfra Review</span>
-              <span>•</span>
-              <span>About 10 min read</span>
-            </div>
-            <p class="text-lg text-gray-600 leading-relaxed">
-              DeepInfra launched in 2022 with a singular focus: making open-source LLM inference as cheap as possible. While Groq chased speed records and Cerebras built custom silicon, DeepInfra bet on a more conventional but ruthlessly optimized infrastructure stack — high-end NVIDIA GPUs (H100, H200, A100) running a custom inference engine that minimizes token-time costs.
-            </p>
-          </header>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Verdict</strong>: If you're running open-source frontier models (DeepSeek, Qwen, GLM, Kimi, NVIDIA Nemotron) in production and cost is a constraint, DeepInfra is the strongest choice in 2026. If you need China-based access, enterprise SSO, or team collaboration tooling, look elsewhere — DeepInfra's edge is cost, not compliance tooling.</p>
 
-          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
-            <p class="text-blue-800 text-sm">
-              <strong>TL;DR:</strong> DeepInfra hosts 50+ open-source models (Llama 3.3 70B, DeepSeek V3/R1, Qwen2.5) at industry-low pricing from $0.04/M tokens. OpenAI-compatible API with 60-second migration. Serverless batch inference at 50% discount. $1 free credit, no credit card required. Slower than Groq/Cerebras (150 tok/s on 70B) but 5-10x cheaper. No fine-tuning or enterprise SLA. For cost-sensitive batch processing, dataset generation, and research on a budget: best pick.
-            </p>
-          </div>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Why DeepInfra Matters in 2026</h2>
 
-          <div class="prose prose-lg max-w-none">
-            <h2>Introduction: The Cost-First LLM Inference Platform</h2>
-            <p>DeepInfra launched in 2022 with a singular focus: making open-source LLM inference as cheap as possible. While Groq chased speed records and Cerebras built custom silicon, DeepInfra bet on a more conventional but ruthlessly optimized infrastructure stack — high-end NVIDIA GPUs (H100, H200, A100) running a custom inference engine that minimizes token-time costs.</p>
-            <p>The result is a serverless inference platform that hosts 50+ open-weight models at prices consistently 30-60% below competitors. Llama 3.3 70B runs at $0.35/M input + $0.40/M output — cheaper than Together AI, Fireworks, or self-hosting on AWS. DeepSeek V3 and DeepSeek R1 are available at $0.45/M and $0.55/M respectively, making DeepInfra the most affordable place to access these frontier-tier reasoning models.</p>
-            <p>For developers, the appeal is straightforward: the same OpenAI client code, a single <code>base_url</code> swap, and your application gets dramatically cheaper inference. DeepInfra speaks the OpenAI API specification natively, including function calling, JSON mode, streaming, and vision (on supported models). The trade-offs are real — throughput per request is slower than Groq or Cerebras, and there's no fine-tuning service — but for cost-sensitive production workloads, batch processing, or research projects running on a budget, DeepInfra is hard to beat.</p>
+<p class="text-gray-700 leading-relaxed my-4">Open-source LLMs closed most of the capability gap with closed models in 2025-2026. DeepSeek-V3.2 / R1 / V4 series compete with GPT-4o on reasoning; Qwen3-Max competes with Claude Opus 4.8 on long-context tasks; GLM-5.2 competes with Gemini 2.5 on coding benchmarks. The bottleneck shifted from "can open-source match closed models" (answer: usually yes for ≥70B parameter class) to "where can I run them cheaply enough to matter".</p>
 
-            <h2>DeepInfra API Pricing</h2>
-            <p>DeepInfra uses a <strong>per-token pay-as-you-go</strong> model with separate input and output rates. Pricing is transparent and published per-model in the dashboard. There's no subscription, no minimum commitment, and no hidden infrastructure surcharge.</p>
-            <table>
-              <thead>
-                <tr><th>Model</th><th>Input ($/M tok)</th><th>Output ($/M tok)</th><th>Context Window</th><th>Notes</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>Llama 3.3 70B Instruct</td><td>$0.35</td><td>$0.40</td><td>128K</td><td>Meta flagship, best price/quality</td></tr>
-                <tr><td>Meta-Llama-3.1-405B-Instruct</td><td>$0.90</td><td>$0.90</td><td>128K</td><td>Frontier-tier open model</td></tr>
-                <tr><td>Meta-Llama-3.1-8B-Instruct</td><td>$0.04</td><td>$0.05</td><td>128K</td><td>Cheapest production-grade 8B</td></tr>
-                <tr><td>Meta-Llama-3.1-70B-Instruct</td><td>$0.35</td><td>$0.40</td><td>128K</td><td>Legacy 70B</td></tr>
-                <tr><td>Mistral Small 24B</td><td>$0.07</td><td>$0.07</td><td>32K</td><td>Cost-effective European model</td></tr>
-                <tr><td>Qwen2.5-72B-Instruct</td><td>$0.35</td><td>$0.40</td><td>128K</td><td>Top-tier Chinese model</td></tr>
-                <tr><td>Qwen2.5-Coder-32B</td><td>$0.10</td><td>$0.10</td><td>32K</td><td>Best price/quality for code</td></tr>
-                <tr><td>DeepSeek V3</td><td>$0.45</td><td>$0.55</td><td>64K</td><td>Stronger than Llama 70B</td></tr>
-                <tr><td>DeepSeek R1</td><td>$0.55</td><td>$2.19</td><td>64K</td><td>Reasoning model, premium output</td></tr>
-                <tr><td>Phi-4 (14B)</td><td>$0.07</td><td>$0.07</td><td>16K</td><td>Microsoft small model</td></tr>
-                <tr><td>Gemma 2 27B</td><td>$0.18</td><td>$0.18</td><td>8K</td><td>Google open model</td></tr>
-              </tbody>
-            </table>
+<p class="text-gray-700 leading-relaxed my-4">That's where DeepInfra wins. Three structural advantages:</p>
 
-            <h3>Free Tier</h3>
-            <p>DeepInfra offers <strong>$1 in free credits</strong> upon signup, no credit card required. This is enough to run approximately 2.5M tokens of Llama 3.3 70B or 20M tokens of the 8B model — enough for evaluation and small prototypes. After the credit is consumed, you top up with prepaid credits starting at $5.</p>
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+<li><strong>First-mover model hosting</strong>: DeepInfra's GPU fleet (H100 + H200 + B200) sits ready for new model weights the moment a paper drops. Their 2026 track record — DeepSeek-V4-Flash, GLM-5.2, Kimi-K2.7-Code, Qwen3-Max, Nemotron-3 Ultra all day-one — means developers route traffic to DeepInfra immediately rather than waiting for major providers to release APIs (typical 1-4 week lag).</li>
+<li><strong>OpenAI compatibility</strong>: <code>https://api.deepinfra.com/v1/openai</code> is a drop-in for <code>api.openai.com/v1</code>. Code that calls OpenAI chat completions works against DeepInfra by changing one URL — a 5-minute migration path from any OpenAI workload.</li>
+<li><strong>Cost engineering</strong>: 80% cached-input discount + per-token pricing + service tier mix (Standard / Priority / Flex) gives technical buyers real knobs to optimize spend, unlike flat-rate aggregators (OpenRouter, Portkey) that hide caching behind markup.</li>
+</ol>
 
-            <h3>Batch Inference (50% Off)</h3>
-            <p>DeepInfra's standout cost feature is <strong>serverless batch inference</strong>: submit up to 1,000 requests in a single batch API call, and DeepInfra processes them at 50% off the per-token price with results delivered within 24 hours. This is ideal for evaluation pipelines, dataset labeling, bulk summarization, or any workload that doesn't need real-time responses.</p>
+<p class="text-gray-700 leading-relaxed my-4">The competitive context: Together AI is the closest comparison (also OpenAI-compatible, also open-source focused), and lags DeepInfra on day-one releases by 24-72h. Fireworks AI has stronger quantized inference (FP8 / AWQ) at slightly higher latency. OctoAI / Lepton AI focus on enterprise. For raw cost-performance on day-one frontier models, DeepInfra is the strongest 2026 pick.</p>
 
-            <h3>How Much Can You Get for $100?</h3>
-            <p>At $0.35/M input + $0.40/M output for Llama 3.3 70B, $100 buys approximately <strong>270 million tokens</strong> of combined input + output. In practical terms:</p>
-            <ul>
-              <li><strong>~13,500 long-form conversations</strong> (10K input + 10K output each)</li>
-              <li><strong>~540,000 API calls</strong> with 500 tokens each</li>
-              <li><strong>~30 hours of continuous chat</strong> at typical 70B speeds</li>
-            </ul>
-            <p>This is roughly 3x the token volume you'd get from the same $100 spent on OpenAI GPT-4o, making DeepInfra the most cost-efficient frontier-tier inference option.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Pricing Matrix (Verified 2026-08-03)</h2>
 
-            <h2>Speed Benchmark: DeepInfra vs. Alternatives</h2>
-            <p>DeepInfra is not the fastest — Groq and Cerebras hold that title. But for cost-adjusted throughput (tokens per dollar per second), DeepInfra is competitive.</p>
-            <table>
-              <thead>
-                <tr><th>Provider</th><th>Llama 3.3 70B Speed</th><th>Latency (first token)</th><th>Pricing ($/M tok combined)</th></tr>
-              </thead>
-              <tbody>
-                <tr><td><strong>DeepInfra</strong></td><td><strong>~150 tok/s</strong></td><td><strong>under 500ms</strong></td><td><strong>$0.375</strong> (blended)</td></tr>
-                <tr><td>Cerebras</td><td>2,000+ tok/s</td><td>under 200ms</td><td>$0.60</td></tr>
-                <tr><td>Groq (LPU)</td><td>450 tok/s</td><td>under 300ms</td><td>$1.78/M (in+out sum)</td></tr>
-                <tr><td>Together AI</td><td>120 tok/s</td><td>under 1s</td><td>$1.38/M</td></tr>
-                <tr><td>Fireworks AI</td><td>180 tok/s</td><td>under 600ms</td><td>$1.40/M</td></tr>
-                <tr><td>OpenAI GPT-4o</td><td>80 tok/s</td><td>under 500ms</td><td>$12.50/M</td></tr>
-              </tbody>
-            </table>
-            <p>DeepInfra is 5-10x slower than Cerebras or Groq but <strong>5-10x cheaper per token</strong>. For non-real-time workloads (batch processing, offline document analysis, dataset generation), DeepInfra's cost advantage dominates.</p>
+<p class="text-gray-700 leading-relaxed my-4">All pricing below was live-verified from <a href="https://deepinfra.com/pricing" rel="nofollow">deepinfra.com/pricing</a> on 2026-08-03. Cached input rate is 80% off fresh input rate via the <code>rate_per_input_token_cached</code> parameter (typical value 0.20). Service tier multipliers: Standard 1x, Priority 1.5x, Flex 0.8x.</p>
 
-            <h2>DeepInfra API: OpenAI-Compatible, Drop-in Replacement</h2>
-            <p>The killer feature for adoption is API compatibility. DeepInfra implements the full OpenAI Chat Completions API spec, including:</p>
-            <ul>
-              <li>Streaming (<code>stream: true</code>)</li>
-              <li>Function calling / tool use</li>
-              <li>JSON mode (<code>response_format: &#123; type: "json_object" &#125;</code>)</li>
-              <li>System messages</li>
-              <li>Multi-turn conversations</li>
-              <li>Vision inputs (Llama 3.2 Vision, Qwen-VL models)</li>
-              <li>Token usage reporting</li>
-            </ul>
-            <p>Migration takes 60 seconds:</p>
-            <pre><code class="language-python"># Switch from OpenAI to DeepInfra — only base_url and api_key change
-from openai import OpenAI
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200">
+<thead class="bg-gray-50"><tr>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">Model</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">Input ($/M)</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">Output ($/M)</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">Context</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">Cached Input</th>
+</tr></thead>
+<tbody class="divide-y divide-gray-100">
+<tr><td class="px-4 py-2 text-sm">DeepSeek-V4-Flash</td><td class="px-4 py-2 text-sm">$0.09</td><td class="px-4 py-2 text-sm">$0.18</td><td class="px-4 py-2 text-sm">1,048,576</td><td class="px-4 py-2 text-sm">80% off</td></tr>
+<tr><td class="px-4 py-2 text-sm">DeepSeek-V4-Flash-0731</td><td class="px-4 py-2 text-sm">$0.09</td><td class="px-4 py-2 text-sm">$0.18</td><td class="px-4 py-2 text-sm">1,048,576</td><td class="px-4 py-2 text-sm">80% off</td></tr>
+<tr><td class="px-4 py-2 text-sm">DeepSeek-V4-Pro</td><td class="px-4 py-2 text-sm">$1.30</td><td class="px-4 py-2 text-sm">$2.60</td><td class="px-4 py-2 text-sm">1,048,576</td><td class="px-4 py-2 text-sm">81% off</td></tr>
+<tr><td class="px-4 py-2 text-sm">DeepSeek-V3.2</td><td class="px-4 py-2 text-sm">$0.26</td><td class="px-4 py-2 text-sm">$0.38</td><td class="px-4 py-2 text-sm">163,840</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">GLM-5.2</td><td class="px-4 py-2 text-sm">$0.75</td><td class="px-4 py-2 text-sm">$2.40</td><td class="px-4 py-2 text-sm">1,048,576</td><td class="px-4 py-2 text-sm">81% off</td></tr>
+<tr><td class="px-4 py-2 text-sm">GLM-5</td><td class="px-4 py-2 text-sm">$0.60</td><td class="px-4 py-2 text-sm">$2.08</td><td class="px-4 py-2 text-sm">202,752</td><td class="px-4 py-2 text-sm">80% off</td></tr>
+<tr><td class="px-4 py-2 text-sm">GLM-4.7-Flash</td><td class="px-4 py-2 text-sm">$0.06</td><td class="px-4 py-2 text-sm">$0.40</td><td class="px-4 py-2 text-sm">202,752</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">Qwen3.6-35B-A3B (MoE)</td><td class="px-4 py-2 text-sm">$0.10</td><td class="px-4 py-2 text-sm">$0.95</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">Qwen3-Max / Qwen3-Max-Thinking</td><td class="px-4 py-2 text-sm">$1.20</td><td class="px-4 py-2 text-sm">$6.00</td><td class="px-4 py-2 text-sm">256,000</td><td class="px-4 py-2 text-sm">80% off</td></tr>
+<tr><td class="px-4 py-2 text-sm">Kimi-K2.7-Code</td><td class="px-4 py-2 text-sm">$0.74</td><td class="px-4 py-2 text-sm">$3.50</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">Kimi-K2.6</td><td class="px-4 py-2 text-sm">$0.75</td><td class="px-4 py-2 text-sm">$3.50</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">NVIDIA Nemotron-3-Super-120B (MoE)</td><td class="px-4 py-2 text-sm">$0.085</td><td class="px-4 py-2 text-sm">$0.40</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">80% off</td></tr>
+<tr><td class="px-4 py-2 text-sm">NVIDIA Nemotron-3-Ultra-550B (MoE)</td><td class="px-4 py-2 text-sm">$0.50</td><td class="px-4 py-2 text-sm">$2.20</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">gemma-4-31B-it</td><td class="px-4 py-2 text-sm">$0.13</td><td class="px-4 py-2 text-sm">$0.38</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">gemma-4-26B-A4B-it</td><td class="px-4 py-2 text-sm">$0.07</td><td class="px-4 py-2 text-sm">$0.34</td><td class="px-4 py-2 text-sm">262,144</td><td class="px-4 py-2 text-sm">—</td></tr>
+<tr><td class="px-4 py-2 text-sm">MiMo-V2.5-Pro</td><td class="px-4 py-2 text-sm">$1.00</td><td class="px-4 py-2 text-sm">$3.00</td><td class="px-4 py-2 text-sm">1,048,576</td><td class="px-4 py-2 text-sm">—</td></tr>
+</tbody></table></div>
 
+<p class="text-gray-700 leading-relaxed my-4"><strong>How to read this</strong>: For DeepSeek-V4-Flash at standard tier, a 1M-token chat workload (10% cached prefix, 90% fresh + 100% output) costs roughly $0.09 × 0.9 + $0.018 × 0.1 + $0.18 = <strong>$0.099 per million total tokens</strong> of conversation. At DeepSeek-V4-Pro tier (more capable model), the same workload costs $1.30 × 0.9 + $0.247 × 0.1 + $2.60 = <strong>$3.79 per million</strong> — 38x more expensive. For workloads where Flash's quality suffices, DeepInfra's cost difference is dramatic.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Comparison context</strong>: OpenAI gpt-4o-mini charges $0.15/M input + $0.60/M output. DeepSeek-V4-Flash at $0.09/$0.18 is <strong>40% cheaper on input and 70% cheaper on output</strong>. Qwen3-Max-Thinking at $1.20/$6.00 is competitive with Claude Sonnet 5 ($3/$15) for similar capability class, with significantly lower output cost.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">API & Developer Experience</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra's primary value proposition for developers is zero-migration cost. The OpenAI-compatible endpoint at <code>https://api.deepinfra.com/v1/openai</code> accepts the same chat completions schema, the same function-calling schema, the same streaming response format, the same vision input format (base64 image_url), and the same JSON-mode response_format that OpenAI does. The migration path from any OpenAI workload:</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>from openai import OpenAI
+
+# Before (OpenAI direct)
+client = OpenAI(api_key="sk-...")
+
+# After (DeepInfra) — change one line
 client = OpenAI(
-    api_key="YOUR_DEEPINFRA_TOKEN",
+    api_key="<DEEPINFRA_API_KEY>",
     base_url="https://api.deepinfra.com/v1/openai",
 )
 
 response = client.chat.completions.create(
-    model="meta-llama/Llama-3.3-70B-Instruct",
-    messages=[&#123;"role": "user", "content": "Explain token pricing in 2 sentences."&#125;],
-)
-print(response.choices[0].message.content)</code></pre>
-            <p>No SDK changes, no new abstraction layer, no data migration. The same <code>openai-python</code> library, the same request/response shapes, the same error codes.</p>
+    model="deepseek-ai/DeepSeek-V4-Flash",  # any DeepInfra model slug
+    messages=[{"role": "user", "content": "..."}],
+    stream=True,
+    extra_body={  # DeepInfra-specific extras
+        "temperature": 0.7,
+        "cached_input_discount": True,  # auto-enable prefix cache
+    }
+)</code></pre>
 
-            <h2>Model Selection: DeepSeek, Qwen, Mistral, Phi, Llama</h2>
-            <p>DeepInfra's catalog is a developer's best friend — every major open-source model lands within weeks of release. As of June 2026:</p>
-            <p><strong>Frontier-tier (70B+):</strong></p>
-            <ul>
-              <li>Llama 3.3 70B Instruct</li>
-              <li>Meta-Llama-3.1-405B-Instruct</li>
-              <li>Qwen2.5-72B-Instruct</li>
-              <li>DeepSeek V3 (671B MoE, 37B active)</li>
-              <li>DeepSeek R1 (reasoning model)</li>
-            </ul>
-            <p><strong>Mid-tier (7B-32B):</strong></p>
-            <ul>
-              <li>Mistral Small 24B, Mistral 7B</li>
-              <li>Qwen2.5-Coder-32B-Instruct</li>
-              <li>Phi-4 (14B)</li>
-              <li>Gemma 2 27B</li>
-            </ul>
-            <p><strong>Small/efficient:</strong></p>
-            <ul>
-              <li>Llama 3.1 8B</li>
-              <li>Mistral 7B</li>
-              <li>Phi-3.5 Mini</li>
-            </ul>
-            <p><strong>Specialized:</strong></p>
-            <ul>
-              <li>DeepSeek Coder V2 (code-specific)</li>
-              <li>CodeLlama models</li>
-              <li>Whisper (speech-to-text)</li>
-              <li>Llama 3.2 Vision (multimodal)</li>
-            </ul>
-            <p>The 50+ model count is roughly 3x what Groq or Cerebras offer, making DeepInfra the most versatile platform for testing across model families.</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Key API surface details</strong>:</p>
 
-            <h2>Use Cases: When to Choose DeepInfra</h2>
-            <table>
-              <thead>
-                <tr><th>Use Case</th><th>Recommended?</th><th>Why</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>Real-time chatbots</td><td>⚠️ Maybe</td><td>Cerebras/Groq faster, but DeepInfra fine if cost matters</td></tr>
-                <tr><td>Code completion (Copilot-like)</td><td>✅ Yes</td><td>Sub-500ms latency, low cost per token</td></tr>
-                <tr><td>Batch document analysis</td><td>✅ Best</td><td>50% batch discount, large context</td></tr>
-                <tr><td>Dataset generation</td><td>✅ Best</td><td>Cheapest frontier-tier 70B for synthetic data</td></tr>
-                <tr><td>Research experiments</td><td>✅ Best</td><td>Cheap to run 1000+ model comparisons</td></tr>
-                <tr><td>Production customer-facing LLM</td><td>⚠️ Maybe</td><td>No SLA; consider Together AI or Fireworks for SLA</td></tr>
-                <tr><td>Multimodal (vision)</td><td>⚠️ Limited</td><td>Vision support exists but not as broad as OpenAI</td></tr>
-                <tr><td>China-direct access</td><td>❌ No</td><td>Requires proxy; consider aliyun/zhipu/tencent instead</td></tr>
-              </tbody>
-            </table>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>Chat completions</strong>: OpenAI-compatible, supports streaming, vision input (base64 + URL), function calling, JSON mode, structured outputs, system messages, multi-turn history</li>
+<li><strong>Embeddings</strong>: <code>/v1/openai/embeddings</code> for BGE / E5 / sentence-transformers models, returns OpenAI-shaped <code>{embedding: [...], usage: {...}}</code></li>
+<li><strong>Image generation</strong>: <code>/v1/openai/images/generations</code> for FLUX-2-klein-4b / 9b (image-by-image pricing — $0.014/image at default 1024x1024)</li>
+<li><strong>Speech-to-text</strong>: <code>/v1/openai/audio/transcriptions</code> for Whisper large-v3, priced $0.002 per input character (verified)</li>
+<li><strong>Batch API</strong>: OpenAI-shaped file upload + batch endpoint, 20% discount for non-urgent async jobs, results retrievable via files endpoint</li>
+<li><strong>Private models</strong>: BYO weights (or fine-tuned adapters) deployed on dedicated H100/H200/B200/B300 with autoscaling, OpenAI-compatible endpoint per deployment</li>
+<li><strong>Rate limits</strong>: Standard 200 concurrent requests per model per user; promotional Enterprise tier unlocks higher concurrency on request</li>
+</ul>
 
-            <h2>DeepInfra vs. Together AI vs. Groq vs. Fireworks</h2>
-            <table>
-              <thead>
-                <tr><th>Dimension</th><th>DeepInfra</th><th>Together AI</th><th>Groq</th><th>Fireworks AI</th></tr>
-              </thead>
-              <tbody>
-                <tr><td>Model count</td><td>50+</td><td>200+</td><td>7</td><td>100+</td></tr>
-                <tr><td>Cheapest 70B</td><td>$0.35/M</td><td>$0.59/M</td><td>$0.79/M</td><td>$0.50/M</td></tr>
-                <tr><td>Speed (70B tok/s)</td><td>150</td><td>120</td><td>450</td><td>180</td></tr>
-                <tr><td>Free tier</td><td>$1 credit</td><td>$5 credit</td><td>Rate-limited free</td><td>$1 credit</td></tr>
-                <tr><td>Fine-tuning</td><td>❌</td><td>✅</td><td>❌</td><td>✅</td></tr>
-                <tr><td>Batch discount</td><td>✅ 50%</td><td>❌</td><td>❌</td><td>✅ 30%</td></tr>
-                <tr><td>Enterprise SLA</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td></tr>
-                <tr><td>OpenAI compatible</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
-              </tbody>
-            </table>
-            <p><strong>Choose DeepInfra when:</strong> cost is the primary concern, you need DeepSeek V3/R1 access, you run batch processing, or you're doing research on a budget.</p>
-            <p><strong>Choose Together AI when:</strong> you need fine-tuning, a broader model catalog, or enterprise SLA.</p>
-            <p><strong>Choose Groq when:</strong> raw speed is critical (voice agents, real-time chat, code completion).</p>
-            <p><strong>Choose Fireworks AI when:</strong> you need fine-tuning + fast inference + good enterprise support.</p>
+<p class="text-gray-700 leading-relaxed my-4">For developers using LangChain, LlamaIndex, Pydantic AI, or any framework that accepts an OpenAI client, the migration is one <code>base_url</code> parameter change. The ergonomics are materially better than Together AI (which uses Together-flavored API) or Fireworks AI (which uses Fireworks-flavored parameter naming).</p>
 
-            <h2>Pros and Cons</h2>
-            <p><strong>Pros:</strong></p>
-            <ul>
-              <li>✅ Lowest LLM API pricing in the industry for most models</li>
-              <li>✅ 50+ open-source models including DeepSeek V3/R1, Qwen2.5, Llama 3.3</li>
-              <li>✅ OpenAI-compatible API — 60-second migration</li>
-              <li>✅ 405B model access at $0.90/M (unique pricing tier)</li>
-              <li>✅ Serverless batch inference at 50% discount</li>
-              <li>✅ $1 free credit for evaluation, no credit card</li>
-            </ul>
-            <p><strong>Cons:</strong></p>
-            <ul>
-              <li>⚠️ Slower per-request throughput than Groq/Cerebras (150 vs 2,000 tok/s)</li>
-              <li>⚠️ China access requires stable proxy</li>
-              <li>⚠️ No fine-tuning service</li>
-              <li>⚠️ No enterprise SLA — best-effort uptime only</li>
-              <li>⚠️ Limited multimodal support (vision, audio) compared to OpenAI</li>
-            </ul>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cached Input Discount: The 5x Cost Win</h2>
 
-            <h2>FAQ</h2>
-            <p><strong>Q: Is DeepInfra actually cheaper than Together AI?</strong></p>
-            <p>A: Yes, consistently 30-50% cheaper on the same models. Llama 3.3 70B on DeepInfra is $0.35/M input vs Together AI's $0.59/M. DeepSeek V3 is $0.45/M on DeepInfra vs $0.90/M on Together AI. The trade-off is throughput speed and enterprise features.</p>
-            <p><strong>Q: Can I use DeepInfra from China?</strong></p>
-            <p>A: Not directly. api.deepinfra.com is frequently blocked by the GFW. Developers in mainland China typically route through a proxy, use Hong Kong/Taiwan endpoints, or aggregate via OpenAI-compatible resellers like FreeModel that handle multiple backends. For fully China-direct access, consider Alibaba Cloud Bailian, Zhipu, or Tencent Hunyuan.</p>
-            <p><strong>Q: Does DeepInfra support fine-tuning?</strong></p>
-            <p>A: No. DeepInfra is inference-only. For fine-tuning, use Together AI, Fireworks AI, or run your own training on RunPod / Lambda Labs.</p>
-            <p><strong>Q: How does the batch inference 50% discount work?</strong></p>
-            <p>A: Submit up to 1,000 requests in a single API call to the batch endpoint. DeepInfra processes them within 24 hours at 50% off the per-token price. This is ideal for dataset generation, bulk classification, or any workload that doesn't need synchronous responses.</p>
-            <p><strong>Q: Is DeepInfra production-ready?</strong></p>
-            <p>A: For most startups and mid-scale applications, yes. The platform has 99.9%+ uptime historically, but no formal SLA. For regulated industries (finance, healthcare) or mission-critical workloads, consider Together AI, Fireworks, or Azure OpenAI for SLA-backed deployments.</p>
-            <p><strong>Q: Can I run DeepSeek R1 on DeepInfra?</strong></p>
-            <p>A: Yes. DeepInfra was one of the first providers to host DeepSeek R1 at scale. Pricing is $0.55/M input + $2.19/M output (the output is higher because reasoning chains produce more tokens).</p>
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra's most underappreciated feature is the <strong>80% cached input discount</strong> applied automatically via prefix-cache layer. When you send repeated chat conversations with the same system prompt + tool definitions + early message history, the cached prefix costs 20% of the fresh-input rate. This compounds dramatically:</p>
 
-            <h2>Conclusion: The Budget Choice for Open-Source LLM Inference</h2>
-            <p>DeepInfra is the cost-optimized LLM API for developers who care more about price-per-token than peak throughput. With 50+ models including Llama 3.3 70B at $0.35/M, DeepSeek V3, and Qwen2.5, the platform covers nearly every open-source need at the lowest prices in the industry.</p>
-            <p>For real-time applications where latency matters, pair DeepInfra with Groq or Cerebras. For cost-sensitive batch processing, dataset generation, or research projects, DeepInfra is the clear winner. The OpenAI-compatible API means migration takes 60 seconds and you can A/B test costs in a single afternoon.</p>
-            <p>If you're building on a budget and need frontier-tier open-source models, DeepInfra is the starting point. If you need fine-tuning, SLA, or peak speed, graduate to Together AI, Fireworks, or Groq. For China-direct access, use Alibaba Cloud Bailian, Zhipu, or Tencent Hunyuan. For a managed multi-vendor setup with moderation routing that works alongside DeepInfra, sign up at <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-blue-600 hover:underline" target="_blank" rel="sponsored noopener">FreeModel</a>.</p>
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>DeepSeek-V4-Flash</strong>: $0.09/M fresh input → <strong>$0.018/M cached input</strong> (5x cheaper on cached portion)</li>
+<li><strong>DeepSeek-V4-Pro</strong>: $1.30/M fresh → $0.247/M cached (5.3x)</li>
+<li><strong>GLM-5.2</strong>: $0.75/M → $0.143/M cached (5.2x)</li>
+<li><strong>Qwen3-Max-Thinking</strong>: $1.20/M → $0.24/M cached (5x)</li>
+<li><strong>Nemotron-3-Super-120B</strong>: $0.085/M → $0.017/M cached (5x)</li>
+</ul>
 
-            <h2>Further Reading</h2>
-            <ul>
-              <li><a href="https://deepinfra.com/docs" class="text-blue-600 hover:underline">DeepInfra official documentation</a></li>
-              <li><a href="https://deepinfra.com/pricing" class="text-blue-600 hover:underline">DeepInfra pricing page</a></li>
-              <li><a href="https://deepinfra.com/deepseek-ai/DeepSeek-V3" class="text-blue-600 hover:underline">DeepSeek V3 on DeepInfra</a></li>
-              <li><a href="https://apirank.vip/providers/together-ai/" class="text-blue-600 hover:underline">Together AI review (for comparison)</a></li>
-              <li><a href="https://apirank.vip/providers/groq/" class="text-blue-600 hover:underline">Groq review (for comparison)</a></li>
-            </ul>
-          </div>
+<p class="text-gray-700 leading-relaxed my-4">For chat-with-context workloads (RAG over 50+ pages of context, agent loops with tool definitions, multi-turn coding sessions with long file histories), the cache hit rate is typically 30-50% of total input tokens. The effective blended input cost on DeepSeek-V4-Flash drops to <strong>~$0.054-$0.063/M for cached portions</strong>, making it the cheapest frontier-tier chat API in the 2026 market. Notably: the cache is automatic and doesn't require client-side code changes — DeepInfra's prefix-cache layer matches the longest common prefix of any incoming request against the cache.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Compare this to OpenAI's automatic prompt caching (introduced for gpt-4o and o1 in 2025, $0.075/M cached input — half-off but not 5x), Anthropic's prompt caching (similar pricing), and Together AI's caching layer (~50% off, not 80%). DeepInfra's 80% discount is the most aggressive in the 2026 market, and combined with the lowest base input rate ($0.09/M for DeepSeek-V4-Flash vs OpenAI's $0.15/M for gpt-4o-mini), it makes DeepInfra the cost leader for chat-with-context production workloads.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Service Tiers: Standard, Priority, Flex</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Every model on DeepInfra supports three service tiers via the <code>rate_per_service_tier_priority</code> and <code>rate_per_service_tier_flex</code> parameters:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200">
+<thead class="bg-gray-50"><tr>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">Tier</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">Multiplier</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">Use Case</th>
+<th class="px-4 py-2 text-left text-xs font-semibold text-gray-700">Latency</th>
+</tr></thead>
+<tbody class="divide-y divide-gray-100">
+<tr><td class="px-4 py-2 text-sm">Standard</td><td class="px-4 py-2 text-sm">1.0x</td><td class="px-4 py-2 text-sm">Default workload, balanced cost/latency</td><td class="px-4 py-2 text-sm">200-500ms</td></tr>
+<tr><td class="px-4 py-2 text-sm">Priority</td><td class="px-4 py-2 text-sm">1.5x</td><td class="px-4 py-2 text-sm">Low-latency interactive (chat UI, real-time agents)</td><td class="px-4 py-2 text-sm">50-150ms</td></tr>
+<tr><td class="px-4 py-2 text-sm">Flex</td><td class="px-4 py-2 text-sm">0.8x</td><td class="px-4 py-2 text-sm">Batch / async / non-urgent</td><td class="px-4 py-2 text-sm">1-10s</td></tr>
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">This three-tier model gives real cost/latency knobs that flate-rate aggregators (OpenRouter, Portkey) don't expose. For batch workloads (overnight analytics, data processing pipelines), Flex at 0.8x means 20% off. For interactive UI (chatbot, agent in a loop), Priority at 1.5x delivers sub-150ms p95 latency through H100 routing. The default Standard tier is a reasonable middle ground.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Free Tier &amp; Trial Credits</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra's $10 USD monthly free credit (no credit card required, auto-replenishes each month) is the most generous tier in the 2026 OpenAI-compatible market. To put that in dollars:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>GLM-4.7-Flash</strong> at $0.06/M input: $10 = ~166M input tokens of free inference per month (enough for ~10K chat sessions of 16K-token context)</li>
+<li><strong>DeepSeek-V4-Flash</strong> at $0.09/M: $10 = ~111M input tokens of free inference per month</li>
+<li><strong>FLUX-2 image gen</strong> at $0.014/image: $10 = ~714 free images per month</li>
+<li><strong>Whisper transcription</strong> at $0.002/char: $10 = ~5M characters of free audio transcription per month</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For indie developers / hackers building prototypes, the $10 free tier is enough to run a real product in production for limited traffic. For larger workloads (heavy agent loops, RAG systems serving production traffic), the pay-as-you-go model kicks in seamlessly.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Anonymous playground</strong>: DeepInfra also offers anonymous inference without an account for testing model quality — just visit <a href="https://deepinfra.com" rel="nofollow">deepinfra.com</a>, click any model, and start chatting. Useful for evaluating model quality before committing an API key.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">DeepInfra vs Alternatives</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs OpenRouter</strong>: OpenRouter is a model aggregator (one key, 400+ models, 5-30% markup, free tier with free models). DeepInfra is a primary GPU cloud (OpenAI-compatible, ~25 day-one frontier models, no markup, $10 free credit). For cost-sensitive teams who don't need OpenRouter's 400-model breadth, DeepInfra wins on $/M. For teams who want "one key for everything" breadth across 400+ models, OpenRouter is more convenient.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs Together AI</strong>: Together is DeepInfra's closest competitor — OpenAI-compatible, open-source focused, similar pricing tier. Together edges: longer track record, stronger community, more LoRA fine-tuning tooling. DeepInfra edges: day-one model hosting (24-72h faster for new releases), 80% cached-input discount (vs Together's ~50%), $10/month free credit (vs Together's $5). For day-one frontier model access with aggressive caching, DeepInfra wins in 2026.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs Fireworks AI</strong>: Fireworks is stronger on quantized inference (FP8 / AWQ) with longer context models at slightly higher latency. DeepInfra is stronger on raw cost-per-token and day-one model availability. For maximum quality FP8 models, Fireworks. For minimum cost on day-one releases, DeepInfra.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs OpenAI Direct</strong>: OpenAI has zero switching cost (already using OpenAI), $5 free credit (vs DeepInfra's $10), no 80% cache discount (50% cache discount), 50% markup models via router endpoints. For OpenAI-native workloads where you're already paying gpt-4o-mini $0.15/$0.60, migrating to DeepInfra DeepSeek-V4-Flash at $0.09/$0.18 saves 40-70% with similar quality.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs Direct Self-Hosting</strong>: Self-hosting DeepSeek-V4-Flash on H100 GPUs costs $2-3/hour per GPU, plus engineering overhead for autoscaling, monitoring, and rate limiting. DeepInfra's serverless model eliminates the GPU rental + ops cost entirely, at the price of a small per-token markup. For most teams under 100M tokens/month, serverless wins on cost + ops simplicity.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">When to Choose DeepInfra</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Choose DeepInfra if</strong>:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>You're running open-source frontier LLMs (DeepSeek-V4, Qwen3, GLM-5, Kimi-K2.7, NVIDIA Nemotron) and want day-one access</li>
+<li>You have a chat-with-context workload where the 80% cached-input discount materially reduces cost</li>
+<li>You're migrating an OpenAI workload to cut costs — the base_url one-liner migration is 5 minutes of work</li>
+<li>You need a pay-as-you-go model without monthly commitment, and the $10 free credit is enough to validate the platform</li>
+<li>You want to mix LLMs, image generation (FLUX-2), and speech-to-text (Whisper) on one billing account</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Look elsewhere if</strong>:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>You're in mainland China — DeepInfra is blocked/unreliable without a proxy. Use DeepSeek direct (in-China), Alibaba Bailian, or domestic aggregators (FreeModel, ModelScope)</li>
+<li>You need enterprise SSO, dedicated tenancy, or audit logging — DeepInfra is a developer-first platform, not an enterprise compliance platform</li>
+<li>You need 400+ models through one key — OpenRouter's aggregator model is more convenient if breadth matters</li>
+<li>You're running >100M tokens/month with strict latency SLAs — negotiate dedicated private deployment pricing with DeepInfra (and competitors)</li>
+<li>You need full EU data residency — DeepInfra routes some traffic to EU-West but doesn't guarantee data residency by default</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Summary</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">DeepInfra is the <strong>strongest OpenAI-compatible GPU cloud for cost-sensitive teams running open-source frontier LLMs in 2026</strong>. The combination of day-one model hosting (DeepSeek-V4-Flash/Pro, Qwen3-Max, GLM-5.2, Kimi-K2.7-Code, Nemotron-3 Ultra all hosted within hours of release), the most aggressive cached-input discount in the market (80% off vs OpenAI's 50% and Together's 50%), the $10 free monthly tier, and the OpenAI-compatible drop-in migration path makes DeepInfra the de facto 2026 migration target for teams running open-source LLMs in production.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Tradeoffs are real: China access is blocked without proxy (hard blocker for mainland CN production), no enterprise SSO/audit tooling, no monthly subscription option (pure pay-as-you-go adds budgeting complexity), and the service-tier pricing (1x / 1.5x / 0.8x) requires understanding to optimize. For 1-50 person teams running open-source frontier models in production with cost as a primary constraint, DeepInfra is the right 2026 pick. For China-based production, enterprise compliance requirements, or ultra-high-volume workloads that need ≥100M tokens/month SLAs, look at alternative providers or negotiate dedicated deployment pricing.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For cost engineers specifically: the day-one DeepSeek-V4-Flash launch + 80% cached-input discount + Priority tier for interactive UIs is a 5-10x cost win over OpenAI gpt-4o-mini for chat-with-context workloads, and the migration cost is one <code>base_url</code> parameter change.</p>`;
+---
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} locale={locale} zhCanonicalUrl={zhCanonicalUrl}>
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content="{date}" />
+    <meta itemprop="dateModified" content="{date}" />
+
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+    <div set:html={enBody} />
+
+    <!-- Affiliate CTA -->
+    <div class="mt-12 p-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl border border-indigo-100">
+      <div class="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-gray-600 mt-1">{affiliateSidebar.description}</p>
         </div>
-
-        <aside class="lg:col-span-1">
-          <div class="sticky top-4 space-y-6">
-            <div class="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
-              <ul class="space-y-2 text-sm text-gray-600">
-                <li><strong>Provider:</strong> DeepInfra</li>
-                <li><strong>Founded:</strong> 2022</li>
-                <li><strong>Models:</strong> 50+ open-source</li>
-                <li><strong>Entry price:</strong> $0.04/M tokens (Llama 3.1 8B)</li>
-                <li><strong>API compatibility:</strong> OpenAI (full)</li>
-                <li><strong>China access:</strong> ❌ Proxy required</li>
-                <li><strong>Free tier:</strong> $1 credit (no CC required)</li>
-                <li><strong>Flagship:</strong> Llama 3.3 70B + DeepSeek V3/R1</li>
-                <li><strong>Batch discount:</strong> 50% off</li>
-                <li><strong>Uptime 2026:</strong> 99.9%+</li>
-              </ul>
-            </div>
-            <div class="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
-              <ul class="space-y-2 text-sm">
-                <li><a href="/tutorials/together-ai-api-review/" class="text-blue-600 hover:underline">Together AI API 2026 Review</a></li>
-                <li><a href="/tutorials/groq-api-review/" class="text-blue-600 hover:underline">Groq API 2026 Review</a></li>
-                <li><a href="/tutorials/openai-compatible-api-2026/" class="text-blue-600 hover:underline">OpenAI-Compatible API 2026</a></li>
-                <li><a href="/tutorials/ai-api-free-tiers-2026/" class="text-blue-600 hover:underline">AI API Free Tiers 2026</a></li>
-                <li><a href="/tutorials/cheapest-llm-api-pricing-2026/" class="text-blue-600 hover:underline">Cheapest LLM API Pricing 2026</a></li>
-              </ul>
-            </div>
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h3 class="font-bold text-gray-900 mb-2">Try FreeModel alongside</h3>
-              <p class="text-sm text-gray-700 mb-3">OpenAI-compatible aggregator with built-in moderation routing for multi-vendor setups. China-direct, free tier available.</p>
-              <a href="https://freemodel.dev/invite/FRE-7a3b6220"class="text-sm text-blue-600 hover:underline break-all" target="_blank" rel="sponsored noopener">freemodel.dev/invite/FRE-7a3b6220</a>
-            </div>
-            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
-              <p class="text-gray-500 text-sm">Advertisement</p>
-            </div>
-          </div>
-        </aside>
+        <a href={affiliateSidebar.url} class="inline-flex items-center px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors" rel="nofollow sponsored" target="_blank">{affiliateSidebar.cta} →</a>
       </div>
     </div>
   </article>
