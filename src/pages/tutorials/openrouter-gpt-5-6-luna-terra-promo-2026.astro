@@ -1,0 +1,349 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'openrouter-gpt-5-6-luna-terra-promo-2026';
+const date = '2026-08-03';
+const locale = 'en';
+const enTitle = 'OpenRouter Luna 50% Off: GPT-5.6 Tier Guide 2026';
+const enDescription = 'OpenRouter cuts GPT-5.6 Luna to $0.10/M and Terra to $1/M (2026-08 promo). Side-by-side: Luna vs Terra vs Sol, when to switch, who stays on direct OpenAI.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What changed on OpenRouter for GPT-5.6 in August 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenRouter applied a 50% discount on GPT-5.6 Luna (permaslug openai/gpt-5.6-luna-20260709), bringing the prompt price to $0.10/M and the completion price to $0.60/M. Terra and Terra-Pro were also repriced to $1.00/M prompt and $6.00/M completion, which is 60% below the official OpenAI list. Sol and Sol-Pro stayed at the $5/$30 list price with no promo. The discount is exclusive to OpenRouter and is the channel-specific promo OpenAI does not offer on its own platform." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the OpenRouter Luna $0.10/M price permanent or a limited-time promo?",
+      "acceptedAnswer": { "@type": "Answer", "text": "It is a limited-time promotional discount coded as `discount: 0.5` on OpenRouter's model object (verified 2026-08-03 against openrouter.ai/openai/gpt-5.6-luna). OpenRouter's standard practice is to honor the discount for the window announced on the model page (typically several weeks to a few months) and then revert to the upstream OpenAI price. Pricing on this site is captured at the time of writing; re-verify on the OpenRouter model page before making a long-term capacity commitment." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the Luna promo apply to Luna-Pro too, and what is the difference?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Both `openai/gpt-5.6-luna` and `openai/gpt-5.6-luna-pro` show the same $0.10/M prompt and $0.60/M completion price on OpenRouter as of 2026-08-03. The Pro variant adds a larger context window and additional `supports_reasoning` controls; the non-Pro variant is the standard 128K context. For pure cost-sensitive workloads (classification, short extraction, single-turn Q&A) the non-Pro Luna is the right pick. For agents that need long context plus reasoning effort, Luna-Pro is the better fit at the same price." }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I migrate a GPT-5.5 workload to GPT-5.6 Luna via OpenRouter?",
+      "acceptedAnswer": { "@type": "Answer", "text": "If your workload runs at GPT-5.5 quality today and the budget is the binding constraint, yes. At $0.10/M prompt and $0.60/M completion, Luna is roughly 50x cheaper than direct GPT-5.5 ($2.50/$10 per the official OpenAI list) and roughly 5x cheaper than GPT-5.4 mini. The capability is one generation behind Sol/Terra but materially above the GPT-5.4-mini line, which is the most common model that teams try to replace when they hit budget pressure. If your workload is on GPT-5.5 or GPT-5.6-Sol today, the migration is unnecessary — Sol's Terminal-Bench scores justify its $5/$30 list price." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if I exceed OpenRouter's promo window and the price reverts?",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenRouter reverts to the upstream OpenAI list price. The fallback for the Luna tier is $1.00/M prompt and $6.00/M completion, which is the official OpenAI list. Two practical hedges: (1) build a runtime tier-selection layer (Portkey, Cloudflare AI Gateway, LiteLLM, OpenRouter's own routing) that can fall back to Gemini 2.5 Flash, DeepSeek V4 Flash, or Claude Haiku 4.5 when Luna reverts, and (2) commit to a max-budget-per-1K-requests SLA so a sudden reversion does not break your cost model silently. FreeModel aggregates OpenRouter, OpenAI direct, and Claude on one key so the failover is one config change." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does OpenRouter's Luna promo compare to direct DeepSeek V4 Flash pricing?",
+      "acceptedAnswer": { "@type": "Answer", "text": "On pure dollar-per-million-tokens, DeepSeek V4 Flash at $0.14/M prompt and $0.28/M completion is still the budget leader. Luna at $0.10/M is now cheaper than V4 Flash on prompt tokens but roughly 2x more expensive on completion tokens. The break-even depends on the prompt-to-completion ratio of your workload: at a 4:1 prompt-to-completion ratio (typical RAG), Luna and V4 Flash are within 10% of each other. At a 1:1 ratio (typical classification or short-form generation), Luna is more expensive on completion than V4 Flash. For agent-heavy workloads with long system prompts, Luna's $0.10/M prompt is the cheapest credible GPT-class option today." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does OpenRouter's Luna keep the same rate limits and reasoning-effort controls as direct OpenAI Luna?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Mostly yes. OpenRouter proxies both `supports_reasoning: true` (Luna supports reasoning) and the standard rate limits published on OpenAI's developer dashboard. Where the two paths diverge: (a) OpenAI's enterprise rate-limit tier and zero-retention mode are not portable through OpenRouter — only available on direct OpenAI; (b) OpenAI's prompt caching with 24-hour TTL extension requires direct OpenAI; OpenRouter honors the standard 5-10 minute cache window only. For zero-retention or long-TTL caching, route the workload to direct OpenAI and use OpenRouter only for the Luna/terra tier where the discount matters most." }
+    }
+  ]
+};
+
+const enBody = `
+<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">OpenRouter Luna 50% Off: GPT-5.6 Tier Cheat Sheet 2026</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">On <strong>2026-08-03</strong>, OpenRouter applied a <strong>50% promotional discount</strong> to GPT-5.6 Luna (permaslug <code>openai/gpt-5.6-luna-20260709</code>): prompt drops from $0.20/M to <strong>$0.10/M</strong>, completion from $1.20/M to <strong>$0.60/M</strong>. The same window repriced <strong>Terra / Terra-Pro</strong> to $1.00/M prompt and $6.00/M completion — a 60% cut versus the OpenAI list. <strong>Sol / Sol-Pro</strong> stayed at the $5/$30 list with no promo. This guide is the cheat sheet for deciding when the OpenRouter channel is the right call, when direct OpenAI wins, and how to wire the failover so a promo reversion does not break your cost model.</p>
+
+<h2 id="pricing-table" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">The 2026-08 pricing matrix</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">All numbers below were verified against <code>https://openrouter.ai/api/v1/models</code> and the per-model <code>https://openrouter.ai/openai/gpt-5.6-{tier}</code> pages on 2026-08-03. The OpenRouter price column reflects the live promo (where applicable); the OpenAI Direct column is the upstream list.</p>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Tier</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">OpenRouter (now)</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">OpenAI Direct (list)</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Discount vs OpenAI</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Reasoning support</th>
+</tr>
+</thead>
+<tbody class="text-gray-700">
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Luna</td>
+<td class="border border-gray-200 px-4 py-2">$0.10/M in &middot; $0.60/M out</td>
+<td class="border border-gray-200 px-4 py-2">$1.00/M in &middot; $6.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">90% (10x cheaper)</td>
+<td class="border border-gray-200 px-4 py-2">Yes (Luna base)</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Luna-Pro</td>
+<td class="border border-gray-200 px-4 py-2">$0.10/M in &middot; $0.60/M out</td>
+<td class="border border-gray-200 px-4 py-2">$1.00/M in &middot; $6.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">90% (10x cheaper)</td>
+<td class="border border-gray-200 px-4 py-2">Yes (longer context)</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Terra</td>
+<td class="border border-gray-200 px-4 py-2">$1.00/M in &middot; $6.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">$2.50/M in &middot; $15.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">60%</td>
+<td class="border border-gray-200 px-4 py-2">Yes</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Terra-Pro</td>
+<td class="border border-gray-200 px-4 py-2">$1.00/M in &middot; $6.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">$2.50/M in &middot; $15.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">60%</td>
+<td class="border border-gray-200 px-4 py-2">Yes</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Sol</td>
+<td class="border border-gray-200 px-4 py-2">$5.00/M in &middot; $30.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">$5.00/M in &middot; $30.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">0% (no promo)</td>
+<td class="border border-gray-200 px-4 py-2">Yes (max effort)</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Sol-Pro</td>
+<td class="border border-gray-200 px-4 py-2">$5.00/M in &middot; $30.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">$5.00/M in &middot; $30.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">0% (no promo)</td>
+<td class="border border-gray-200 px-4 py-2">Yes (max effort, ultra subagent)</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="text-gray-700 leading-relaxed my-4">The headline number is Luna. Going from $1.00/M to $0.10/M puts it in the same cost tier as the budget-class models (Gemini 2.5 Flash at $0.075/$0.30, DeepSeek V4 Flash at $0.14/$0.28) while keeping the GPT-5.6 generation, reasoning controls, and the OpenAI Responses API surface. For teams that standardized on OpenAI's API surface and want to push budget-heavy workloads to a cheaper tier without rewriting prompts, this is the migration that pays for itself in a week.</p>
+
+<h2 id="who-should-switch" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Who should switch — and who should not</h2>
+
+<h3 id="switch" class="text-xl font-semibold text-gray-900 mt-8 mb-3">Switch to OpenRouter Luna if you fall in one of these buckets</h3>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>High-volume classification / extraction / routing</strong> — at $0.10/M prompt and $0.60/M completion, the cost-per-1K-requests drops to roughly $0.001-$0.005 for typical 2K-input / 200-output workloads. Routing traffic from a more expensive model to Luna via OpenRouter is a one-line routing change in any gateway.</li>
+<li><strong>RAG agents with long system prompts</strong> — Luna supports reasoning and prompt caching on OpenRouter (5-10 minute TTL). For a 30K-token system prompt invoked 100 times per hour, the cache hit drops effective prompt cost to $0.01/M per cached read.</li>
+<li><strong>Long-tail fallback for tool loops</strong> — if your Sol or Opus 4.8 call fails or rate-limits, falling back to Luna via OpenRouter keeps the agent responsive at 1/30 the cost of Sol.</li>
+<li><strong>Eval pipelines</strong> — running 10K evals per day against a frontier model eats budget fast. Routing evals to Luna during development and only Sol for the final regression sweep is a common pattern that this promo makes much cheaper.</li>
+</ul>
+
+<h3 id="stay" class="text-xl font-semibold text-gray-900 mt-8 mb-3">Stay on direct OpenAI for these workloads</h3>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>Zero-retention / HIPAA / SOC-2 paths</strong> — OpenAI's enterprise data handling (zero retention, training opt-out, EU data residency) is only available on direct OpenAI. OpenRouter cannot pass those contracts through.</li>
+<li><strong>Long-TTL prompt caching (24h+)</strong> — direct OpenAI offers extended cache TTL for enterprise customers; OpenRouter honors the standard 5-10 minute window only.</li>
+<li><strong>Sol / Sol-Pro frontier work</strong> — there is no OpenRouter discount on Sol, and OpenRouter adds a small latency overhead (single-digit ms typically, but real for time-critical paths). For the flagship tier, direct OpenAI is the right path.</li>
+<li><strong>Workloads that need Microsoft Azure OpenAI Service contracts</strong> — OpenRouter does not proxy the Azure OpenAI endpoint, only the public OpenAI endpoint.</li>
+</ul>
+
+<h2 id="the-cheat-sheet" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">The decision cheat sheet</h2>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Your workload</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Right tier (2026-08)</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Right channel</th>
+</tr>
+</thead>
+<tbody class="text-gray-700">
+<tr>
+<td class="border border-gray-200 px-4 py-2">RAG agent, long system prompt, &lt;500 calls/day</td>
+<td class="border border-gray-200 px-4 py-2">Luna-Pro</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter (cached)</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">RAG agent, short prompt, high concurrency</td>
+<td class="border border-gray-200 px-4 py-2">Luna</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Classification / extraction / routing</td>
+<td class="border border-gray-200 px-4 py-2">Luna</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Mid-difficulty coding agent</td>
+<td class="border border-gray-200 px-4 py-2">Terra</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Frontier reasoning / hard agent</td>
+<td class="border border-gray-200 px-4 py-2">Sol-Pro</td>
+<td class="border border-gray-200 px-4 py-2">Direct OpenAI</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Eval sweep, 10K+ calls</td>
+<td class="border border-gray-200 px-4 py-2">Luna or DeepSeek V4 Flash</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Enterprise zero-retention</td>
+<td class="border border-gray-200 px-4 py-2">Sol or Terra</td>
+<td class="border border-gray-200 px-4 py-2">Direct OpenAI</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Cost ceiling tight, willing to swap mid-flight</td>
+<td class="border border-gray-200 px-4 py-2">Luna today &rarr; DeepSeek V4 Flash if promo reverts</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter + FreeModel as router</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="how-to-wire-it" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">How to wire the failover (so a reversion does not break you)</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter's discount is a promo — at some point it will revert to the upstream list. The right architecture treats Luna as one tier in a tiered router, not a hard dependency. Three implementations, in order of effort:</p>
+
+<h3 id="one-portkey" class="text-xl font-semibold text-gray-900 mt-8 mb-3">Option 1 &mdash; Portkey (5 minutes)</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey's AI Gateway exposes OpenRouter as a virtual provider. You define one config that maps <code>gpt-5.6-luna</code> to <code>openai/gpt-5.6-luna</code> on OpenRouter today and <code>openai/gpt-5.6-luna</code> on OpenAI direct (or DeepSeek V4 Flash) tomorrow. The same client code, the same pricing rule, zero code change when the promo reverts.</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-4 my-4 overflow-x-auto text-sm"><code>{
+  "strategy": { "mode": "fallback" },
+  "targets": [
+    {
+      "provider": "openrouter",
+      "model": "openai/gpt-5.6-luna",
+      "weight": 1.0
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-5.6-luna",
+      "weight": 0.5,
+      "conditions": [{ "type": "price_above", "value": 0.20 }]
+    }
+  ]
+}</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey evaluates the conditions before each request, so if OpenRouter's Luna reverts above $0.20/M prompt, traffic falls back to direct OpenAI (or whatever fallback you list). This is the lowest-friction path.</p>
+
+<h3 id="two-cloudflare" class="text-xl font-semibold text-gray-900 mt-8 mb-3">Option 2 &mdash; Cloudflare AI Gateway (10 minutes)</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Cloudflare AI Gateway accepts OpenRouter and OpenAI as providers and lets you write fallbacks in the request payload. The same pattern, hosted on Workers with zero egress fees. Best when your other agents already run on Cloudflare.</p>
+
+<h3 id="three-litellm" class="text-xl font-semibold text-gray-900 mt-8 mb-3">Option 3 &mdash; LiteLLM + a budget guard (15 minutes)</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">If you already run LiteLLM as your proxy, attach a per-model budget guard that throws a 429 when Luna's effective price crosses the threshold you set. The agent automatically retries the next-cheapest tier in your routing table. More code, but the most explicit.</p>
+
+<h2 id="comparison" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">How Luna stacks up against the 2026 budget tier</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The budget-tier price war in 2026 has been brutal. With Luna at $0.10/M prompt, here is where it sits against the leading alternatives at the same capability band (single-step reasoning, 128K-200K context):</p>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Model</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Prompt $/M</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Completion $/M</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Reasoning</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">OpenAI-compatible</th>
+</tr>
+</thead>
+<tbody class="text-gray-700">
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">GPT-5.6 Luna (OpenRouter)</td>
+<td class="border border-gray-200 px-4 py-2">$0.10</td>
+<td class="border border-gray-200 px-4 py-2">$0.60</td>
+<td class="border border-gray-200 px-4 py-2">Yes</td>
+<td class="border border-gray-200 px-4 py-2">Yes</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">GPT-5.6 Luna (direct)</td>
+<td class="border border-gray-200 px-4 py-2">$1.00</td>
+<td class="border border-gray-200 px-4 py-2">$6.00</td>
+<td class="border border-gray-200 px-4 py-2">Yes</td>
+<td class="border border-gray-200 px-4 py-2">Yes</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Gemini 2.5 Flash</td>
+<td class="border border-gray-200 px-4 py-2">$0.075</td>
+<td class="border border-gray-200 px-4 py-2">$0.30</td>
+<td class="border border-gray-200 px-4 py-2">Limited</td>
+<td class="border border-gray-200 px-4 py-2">Yes (REST only)</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">DeepSeek V4 Flash</td>
+<td class="border border-gray-200 px-4 py-2">$0.14</td>
+<td class="border border-gray-200 px-4 py-2">$0.28</td>
+<td class="border border-gray-200 px-4 py-2">No (instruct)</td>
+<td class="border border-gray-200 px-4 py-2">Yes</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Claude Haiku 4.5</td>
+<td class="border border-gray-200 px-4 py-2">$1.00</td>
+<td class="border border-gray-200 px-4 py-2">$5.00</td>
+<td class="border border-gray-200 px-4 py-2">Yes</td>
+<td class="border border-gray-200 px-4 py-2">Yes (Anthropic API)</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Mistral Nemo 13B</td>
+<td class="border border-gray-200 px-4 py-2">$0.04</td>
+<td class="border border-gray-200 px-4 py-2">$0.08</td>
+<td class="border border-gray-200 px-4 py-2">No</td>
+<td class="border border-gray-200 px-4 py-2">Yes</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="text-gray-700 leading-relaxed my-4">For pure classification or short extraction, Gemini 2.5 Flash and DeepSeek V4 Flash are still cheaper than Luna. The Luna discount matters most for workloads that need GPT-class instruction following, OpenAI's Responses API surface, or a drop-in replacement for code that already targets GPT-5.5. For those workloads, this is the cheapest credible path as of 2026-08-03.</p>
+
+<h2 id="caveats" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Caveats worth knowing</h2>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>The discount is OpenRouter-specific</strong>. The same Luna tier on direct OpenAI is $1/$6. If you migrate a workload to OpenRouter for Luna's sake, you are opting into OpenRouter's contract terms, rate-limit policy, and routing choices. OpenRouter has been a reliable proxy since 2023 but the SLA is materially thinner than direct OpenAI's enterprise tier.</li>
+<li><strong>Discount window</strong>. OpenRouter does not publish explicit end dates for these promos. The pattern across 2025-2026 has been: model launches with a 4-8 week promo, then either extends or reverts. The right move is to wire the failover now, not when the promo expires.</li>
+<li><strong>Reasoning controls work but with subtle differences</strong>. Both Luna and Luna-Pro show <code>supports_reasoning: true</code> on OpenRouter, but the reasoning effort enum and the reasoning token accounting differ slightly from direct OpenAI's docs. Verify against your specific reasoning-effort setting if you depend on exact budgeting of reasoning tokens.</li>
+<li><strong>Cross-region routing</strong>. OpenRouter routes Luna to whatever OpenAI region is cheapest at request time. For EU data residency requirements this is a problem — if you need the request to stay in EU, direct OpenAI with the EU endpoint is the only path.</li>
+</ul>
+
+<h2 id="verdict" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Verdict</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The 2026-08 OpenRouter discount on Luna is not a pricing gimmick. It moves GPT-5.6 Luna into the budget tier while keeping the GPT-5.6 generation's reasoning controls and OpenAI API surface. For teams that already run on the OpenAI ecosystem and want to push budget-heavy workloads to a cheaper tier without rewriting prompts or contracts, this is the migration that makes sense today. <strong>Three concrete actions for the next 24 hours:</strong></p>
+
+<ol class="list-decimal pl-6 my-4 text-gray-700 leading-relaxed">
+<li>Spin up a Portkey or Cloudflare AI Gateway route that maps your "cheap tier" to <code>openai/gpt-5.6-luna</code> on OpenRouter.</li>
+<li>Run a 24-hour A/B on a non-critical workload: 50% Luna via OpenRouter vs 50% your current cheap tier. Compare quality, latency, and cost.</li>
+<li>If Luna wins on cost without losing meaningful quality, make it the default and keep the previous tier as the failover for the day the promo reverts.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Routing GPT-5.6 Luna alongside Claude, Gemini, and DeepSeek on one key?</strong> If you also want a single dashboard for cost-per-search and cost-per-generation across providers and tiers, <a href="https://freemodel.dev/invite/FRE-7a3b6220" rel="sponsored nofollow" target="_blank" class="text-blue-600 underline">FreeModel</a> exposes OpenRouter, direct OpenAI, Anthropic, and Gemini on one API key with usage breakdowns that surface when a tier reversion or rate-limit spike pushes your per-request budget past its guardrail &mdash; useful when the Luna promo ends and you need to decide within the hour whether to fall back to DeepSeek V4 Flash or stay on direct OpenAI.</p>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl}>
+  <article className="max-w-3xl mx-auto px-4 py-8">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div set:html={enBody} />
+  </article>
+</BaseLayout>

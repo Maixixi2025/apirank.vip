@@ -1,0 +1,69 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'reka-ai-api-review';
+const date = '2026-08-01';
+const locale = 'en';
+const enTitle = 'Reka AI 2026: Multimodal API & Research Agent';
+const enDescription = 'Reka AI API 2026 review of Edge, Flash, Core, Spark models, multimodal inputs, Research agent, OpenAI-compatible endpoint, regional availability and pricing.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: enTitle, description: enDescription, datePublished: date, dateModified: date, inLanguage: 'en-US', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://apirank.vip' }, { '@type': 'ListItem', position: 2, name: 'Tutorials', item: 'https://apirank.vip/tutorials' }, { '@type': 'ListItem', position: 3, name: enTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'What is the Reka AI API?', acceptedAnswer: { '@type': 'Answer', text: 'A hosted OpenAI-compatible API for Reka Edge, Flash, Core, Spark and the reka-flash-research agent.' } },
+  { '@type': 'Question', name: 'How much does Reka AI cost?', acceptedAnswer: { '@type': 'Answer', text: 'Edge starts at $0.10 per million input and output tokens; Flash is $0.80/$2.00 and Core is $2.00/$6.00, with separate media charges.' } },
+  { '@type': 'Question', name: 'Does Reka AI have a free tier?', acceptedAnswer: { '@type': 'Answer', text: 'Reka does not publish a permanent free hosted-API tier and uses pay-as-you-go billing.' } },
+  { '@type': 'Question', name: 'Can Reka AI be used from China?', acceptedAnswer: { '@type': 'Answer', text: 'There is no published mainland China endpoint, so stable cross-border proxying or a regional alternative may be required.' } }
+] };
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${enTitle}</h1>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Reka AI</strong> is a US AI lab offering one OpenAI-compatible endpoint for text, image, video and audio understanding. ⚠️ Unlike stacks that combine separate vision, transcription and chat products, Reka Core and Flash accept multiple modalities through the same chat-completions surface. This review covers models, verified August 2026 pricing, integration, Research, regional access, competitors and practical limits.</p>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 Quick take:</strong> Reka is strongest for teams consolidating multimodal workloads and cited web research. There is no public permanent free tier, and mainland China access may require proxying.</div>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🧠 Model list</h2>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">Model</th><th class="border p-2">Tier</th><th class="border p-2">Best use</th></tr></thead><tbody><tr><td class="border p-2">reka-edge</td><td class="border p-2">Small / fast</td><td class="border p-2">Cheap short chat and routing</td></tr><tr><td class="border p-2">reka-flash</td><td class="border p-2">Balanced</td><td class="border p-2">Fast multimodal applications</td></tr><tr><td class="border p-2">reka-core</td><td class="border p-2">Frontier</td><td class="border p-2">Best text, image, video and audio reasoning</td></tr><tr><td class="border p-2">reka-spark</td><td class="border p-2">Experimental</td><td class="border p-2">Interactive assistants</td></tr><tr><td class="border p-2">reka-flash-research</td><td class="border p-2">Research</td><td class="border p-2">Multi-step cited answers</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">💰 Pricing</h2>
+<p class="text-gray-700 leading-relaxed my-4">Token rates are USD per million tokens; media units stack on top. Reka is pay-as-you-go from the first production request.</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">Model</th><th class="border p-2">Input</th><th class="border p-2">Output</th><th class="border p-2">Image</th><th class="border p-2">Video/min</th><th class="border p-2">Audio/min</th></tr></thead><tbody><tr><td class="border p-2">Edge</td><td class="border p-2">$0.10</td><td class="border p-2">$0.10</td><td class="border p-2">$0.005</td><td class="border p-2">$0.03</td><td class="border p-2">—</td></tr><tr><td class="border p-2">Flash</td><td class="border p-2">$0.80</td><td class="border p-2">$2.00</td><td class="border p-2">$0.01</td><td class="border p-2">$0.06</td><td class="border p-2">$0.015</td></tr><tr><td class="border p-2">Core</td><td class="border p-2">$2.00</td><td class="border p-2">$6.00</td><td class="border p-2">$0.02</td><td class="border p-2">$0.08</td><td class="border p-2">$0.02</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🔌 OpenAI Python SDK</h2>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>from openai import OpenAI
+client = OpenAI(base_url="https://api.reka.ai/v1", api_key="YOUR_REKA_API_KEY")
+response = client.chat.completions.create(
+    model="reka-flash",
+    messages=[&#123;"role": "user", "content": "Explain this image"&#125;]
+)
+print(response.choices[0].message.content)</code></pre>
+<p class="text-gray-700 leading-relaxed my-4">The same base URL works with OpenAI-compatible framework adapters. Tool calling, JSON mode and SSE streaming follow familiar chat-completions conventions, reducing migration work to a model-name and credential change.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🧠 Research agent</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>reka-flash-research</strong> plans sub-questions, runs web searches and synthesizes an answer with citations. Standard costs $25 per 1,000 requests, parallel-low $35, and parallel-high $60, plus consumed tokens. It fits due diligence, fact finding and market scans; casual chat should stay on Edge or Flash.</p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>curl https://api.reka.ai/v1/chat/completions \
+ -H "Authorization: Bearer YOUR_REKA_API_KEY" \
+ -H "Content-Type: application/json" \
+ -d '&#123;"model":"reka-flash-research","messages":[&#123;"role":"user","content":"Summarize recent EU AI Act enforcement with citations."&#125;]&#125;'</code></pre>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🌐 Regional availability</h2>
+<p class="text-gray-700 leading-relaxed my-4">Reka publishes no mainland China endpoint. Direct CN routing is not guaranteed, so production teams should test a stable Hong Kong or Singapore gateway and monitor failures. Domestic alternatives such as Qwen, GLM, DeepSeek and Kimi offer similar OpenAI-compatible surfaces with lower in-region latency. Do not assume a fixed cross-border latency number.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Reka vs competitors</h2>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">Provider</th><th class="border p-2">Where it wins</th><th class="border p-2">Where Reka wins</th></tr></thead><tbody><tr><td class="border p-2">OpenAI</td><td class="border p-2">Largest ecosystem</td><td class="border p-2">Unified media billing and low-cost Edge</td></tr><tr><td class="border p-2">Anthropic</td><td class="border p-2">Long-context reasoning and tooling</td><td class="border p-2">First-class video and audio</td></tr><tr><td class="border p-2">Google</td><td class="border p-2">Very long context and cloud distribution</td><td class="border p-2">Simpler OpenAI-style integration</td></tr><tr><td class="border p-2">Mistral</td><td class="border p-2">Open-weight deployment</td><td class="border p-2">Managed Research surface</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">⚠️ Limitations</h2>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700"><li>No permanent public free tier.</li><li>No published mainland China region.</li><li>A thinner community and integration ecosystem than incumbents.</li><li>Parallel-high Research can become expensive without quotas.</li><li>Public enterprise compliance documentation is less extensive; confirm SOC 2, HIPAA and data-retention terms contractually.</li></ul>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🎯 Verdict</h2>
+<p class="text-gray-700 leading-relaxed my-4">Choose Reka when one API and one invoice must cover text, image, video, audio and optional cited research. Edge is especially compelling for inexpensive routing. Skip it when a free tier, mainland deployment, the broadest third-party ecosystem or documented compliance packages are mandatory.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+<p class="text-gray-700 my-4"><strong>Is Reka OpenAI compatible?</strong><br>Yes. Set the OpenAI client base URL to https://api.reka.ai/v1.</p><p class="text-gray-700 my-4"><strong>Which inputs are supported?</strong><br>Core and Flash support text, images, video and audio; Edge targets text workloads.</p><p class="text-gray-700 my-4"><strong>Is there a free tier?</strong><br>No permanent public hosted-API tier is advertised.</p><p class="text-gray-700 my-4"><strong>What is Research for?</strong><br>Cited, multi-step web research such as due diligence and market scans.</p><p class="text-gray-700 my-4"><strong>Can it be used in China?</strong><br>Possibly through tested cross-border routing, but no mainland endpoint is published.</p>`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={zhCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/" class="hover:underline">Home</a> &rsaquo; <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo; <span class="text-gray-700">{enTitle}</span></nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">Quick Reference</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>Endpoint:</strong> api.reka.ai/v1</li><li><strong>Models:</strong> Edge, Flash, Core, Spark</li><li><strong>Modalities:</strong> text, image, video, audio</li><li><strong>Free tier:</strong> none published</li><li><strong>Research:</strong> from $25/1k requests</li></ul></div></aside>
+    </div>
+  </main>
+</BaseLayout>

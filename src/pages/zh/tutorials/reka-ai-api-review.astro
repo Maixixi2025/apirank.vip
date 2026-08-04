@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'reka-ai-api-review';
+const date = '2026-08-01';
+const locale = 'zh';
+const zhTitle = 'Reka AI API 2026 测评：多模态与研究代理';
+const zhDescription = 'Reka AI API 2026 深度评测：Edge、Flash、Core、Spark 模型，多模态输入、研究代理、OpenAI 兼容端点、国内可用性与定价。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Reka AI 接口是什么？', acceptedAnswer: { '@type': 'Answer', text: '它是托管的开放人工智能兼容接口，提供 Edge、Flash、Core、Spark 与 reka-flash-research。' } },
+  { '@type': 'Question', name: 'Reka AI 如何计费？', acceptedAnswer: { '@type': 'Answer', text: 'Edge 输入和输出均为每百万词元 0.10 美元；Flash 为 0.80/2.00 美元，Core 为 2.00/6.00 美元，媒体另计。' } },
+  { '@type': 'Question', name: 'Reka AI 有免费额度吗？', acceptedAnswer: { '@type': 'Answer', text: '目前没有公开的永久免费托管接口额度，采用按量付费。' } },
+  { '@type': 'Question', name: '国内能使用 Reka AI 吗？', acceptedAnswer: { '@type': 'Answer', text: '没有公开的中国大陆端点，可能需要稳定跨境代理或区域替代方案。' } }
+] };
+const affiliateSidebar = { title: '试试 FreeModel 多厂商路由', description: '一个密钥路由多家模型，适合需要免费额度或区域容灾的原型。', url: 'https://freemodel.dev/invite/FRE-7a3b6220', cta: '免费试用' };
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${zhTitle}</h1>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Reka AI</strong> 是一家美国人工智能实验室，通过一条兼容开放人工智能规范的接口提供文本、图像、视频与音频理解。⚠️ 与分别拼接视觉、转写和对话服务的方案不同，Reka Core 与 Flash 可在同一聊天补全接口中接收多种模态。本文完整评测模型、2026 年 8 月价格、接入方式、研究代理、区域可用性、竞品与真实局限。</p>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 简要结论：</strong>Reka 适合希望统一多模态负载与带引用联网研究的团队。没有公开永久免费额度，中国大陆访问可能需要代理。</div>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🧠 模型列表</h2>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">模型</th><th class="border p-2">档位</th><th class="border p-2">适用场景</th></tr></thead><tbody><tr><td class="border p-2">reka-edge</td><td class="border p-2">轻量高速</td><td class="border p-2">低成本短对话与路由</td></tr><tr><td class="border p-2">reka-flash</td><td class="border p-2">均衡</td><td class="border p-2">快速多模态应用</td></tr><tr><td class="border p-2">reka-core</td><td class="border p-2">旗舰</td><td class="border p-2">高质量文本、图像、视频和音频推理</td></tr><tr><td class="border p-2">reka-spark</td><td class="border p-2">实验</td><td class="border p-2">交互式助手</td></tr><tr><td class="border p-2">reka-flash-research</td><td class="border p-2">研究</td><td class="border p-2">多步骤带引用回答</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">💰 定价</h2>
+<p class="text-gray-700 leading-relaxed my-4">词元价格单位为美元每百万词元，图像、视频与音频费用在词元价格之外叠加。Reka 从首个生产请求起按量计费。</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">模型</th><th class="border p-2">输入</th><th class="border p-2">输出</th><th class="border p-2">每张图</th><th class="border p-2">视频每分钟</th><th class="border p-2">音频每分钟</th></tr></thead><tbody><tr><td class="border p-2">Edge</td><td class="border p-2">0.10 美元</td><td class="border p-2">0.10 美元</td><td class="border p-2">0.005 美元</td><td class="border p-2">0.03 美元</td><td class="border p-2">—</td></tr><tr><td class="border p-2">Flash</td><td class="border p-2">0.80 美元</td><td class="border p-2">2.00 美元</td><td class="border p-2">0.01 美元</td><td class="border p-2">0.06 美元</td><td class="border p-2">0.015 美元</td></tr><tr><td class="border p-2">Core</td><td class="border p-2">2.00 美元</td><td class="border p-2">6.00 美元</td><td class="border p-2">0.02 美元</td><td class="border p-2">0.08 美元</td><td class="border p-2">0.02 美元</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🔌 Python 接入示例</h2>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>from openai import OpenAI
+client = OpenAI(base_url="https://api.reka.ai/v1", api_key="YOUR_REKA_API_KEY")
+response = client.chat.completions.create(
+    model="reka-flash",
+    messages=[&#123;"role": "user", "content": "请解释这张图片"&#125;]
+)
+print(response.choices[0].message.content)</code></pre>
+<p class="text-gray-700 leading-relaxed my-4">同一基础地址可用于所有兼容开放人工智能规范的框架适配器。工具调用、结构化输出与服务器推送流式响应沿用熟悉的聊天补全约定，迁移通常只需修改模型名、密钥与基础地址。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🧠 研究代理</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>reka-flash-research</strong> 会规划子问题、执行联网检索并综合带引用的回答。标准档每千次请求 25 美元，并行低档 35 美元，并行高档 60 美元，另加实际词元费用。它适合尽调、事实核查和市场扫描；普通闲聊应使用 Edge 或 Flash。</p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>curl https://api.reka.ai/v1/chat/completions \
+ -H "Authorization: Bearer YOUR_R...EY" \
+ -H "Content-Type: application/json" \
+ -d '&#123;"model":"reka-flash-research","messages":[&#123;"role":"user","content":"总结欧盟人工智能法案近期执法动态并附引用。"&#125;]&#125;'</code></pre>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🌐 区域可用性</h2>
+<p class="text-gray-700 leading-relaxed my-4">Reka 未公开中国大陆端点，国内直连稳定性无法保证。生产团队应测试香港或新加坡网关，配置超时、重试与故障监控。通义千问、智谱、深度求索和月之暗面等国内替代也提供相似的聊天补全接口，区域内时延通常更有优势。跨境网络持续变化，不应假设一个固定时延数字。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Reka 与竞品对比</h2>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">厂商</th><th class="border p-2">对方优势</th><th class="border p-2">Reka 优势</th></tr></thead><tbody><tr><td class="border p-2">开放人工智能</td><td class="border p-2">生态规模最大</td><td class="border p-2">媒体统一计费，Edge 成本低</td></tr><tr><td class="border p-2">安斯洛匹克</td><td class="border p-2">长上下文推理与工具链</td><td class="border p-2">视频和音频是一等输入</td></tr><tr><td class="border p-2">谷歌</td><td class="border p-2">超长上下文与云分发</td><td class="border p-2">接入方式更直接</td></tr><tr><td class="border p-2">米斯特拉尔</td><td class="border p-2">开放权重部署</td><td class="border p-2">托管研究代理更完整</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">⚠️ 局限</h2>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700"><li>没有公开的永久免费额度。</li><li>没有公开的中国大陆区域。</li><li>社区、教程与第三方集成少于头部厂商。</li><li>并行高档研究若无配额控制会快速增费。</li><li>企业合规公开资料较少，信息安全认证、医疗合规与数据保留条款需要写入合同确认。</li></ul>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🎯 最终结论</h2>
+<p class="text-gray-700 leading-relaxed my-4">如果产品希望用一条接口和一张账单覆盖文本、图像、视频、音频以及可选的带引用研究，Reka 值得采用；Edge 对低成本路由尤其有吸引力。如果永久免费额度、中国大陆部署、最广第三方生态或完备公开合规材料是硬要求，则应选择其他厂商。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+<p class="text-gray-700 my-4"><strong>Reka 兼容开放人工智能接口吗？</strong><br>兼容，把客户端基础地址设为 https://api.reka.ai/v1 即可。</p><p class="text-gray-700 my-4"><strong>支持哪些输入？</strong><br>Core 与 Flash 支持文本、图像、视频和音频，Edge 主要面向文本。</p><p class="text-gray-700 my-4"><strong>有免费额度吗？</strong><br>目前没有公开的永久免费托管接口档位。</p><p class="text-gray-700 my-4"><strong>研究代理适合什么？</strong><br>适合尽调、事实核查和市场扫描等多步骤带引用联网研究。</p><p class="text-gray-700 my-4"><strong>国内可以用吗？</strong><br>可以评估稳定跨境线路，但官方没有公开大陆端点。</p>`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-blue-50 border border-blue-200 rounded-lg p-6"><h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3><p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p><a href={affiliateSidebar.url} class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700" target="_blank" rel="sponsored noopener">{affiliateSidebar.cta}</a></div><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">快速参考</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>端点：</strong>api.reka.ai/v1</li><li><strong>模型：</strong>Edge、Flash、Core、Spark</li><li><strong>模态：</strong>文本、图像、视频、音频</li><li><strong>免费额度：</strong>未公开</li><li><strong>研究：</strong>每千次请求 25 美元起</li></ul></div></aside>
+    </div>
+  </main>
+</BaseLayout>

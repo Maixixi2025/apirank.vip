@@ -1,0 +1,349 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'openrouter-gpt-5-6-luna-terra-promo-2026';
+const date = '2026-08-03';
+const locale = 'zh';
+const zhTitle = 'OpenRouter Luna 半价：GPT-5.6 三档选购指南 2026';
+const zhDescription = 'OpenRouter 2026-08 限时把 GPT-5.6 Luna 降到 $0.10/M、Terra 降到 $1/M。Luna vs Terra vs Sol 横向对比，谁该切换、谁该留在 OpenAI 直连。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh/" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials/" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "2026-08 OpenRouter 上 GPT-5.6 发生了什么变化？",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenRouter 对 GPT-5.6 Luna（permaslug openai/gpt-5.6-luna-20260709）打了 50% 的限时折扣，prompt 价从 $0.20/M 降到 $0.10/M，completion 从 $1.20/M 降到 $0.60/M。同窗口 Terra 和 Terra-Pro 也重新定价到 $1.00/M prompt + $6.00/M completion，相比 OpenAI 官方价直降 60%。Sol 和 Sol-Pro 仍维持 $5/$30 列表价，没有折扣。这是 OpenRouter 渠道独家促销，OpenAI 自家平台不提供。" }
+    },
+    {
+      "@type": "Question",
+      "name": "OpenRouter Luna $0.10/M 是长期价格还是限时促销？",
+      "acceptedAnswer": { "@type": "Answer", "text": "是限时促销，OpenRouter 在模型对象里标记为 discount: 0.5（2026-08-03 验证 openrouter.ai/openai/gpt-5.6-luna）。OpenRouter 的惯例是按模型页公告的窗口（通常几周到几个月）执行折扣，然后回到上游 OpenAI 定价。本页价格写作时实时获取；做长期容量承诺前请在 OpenRouter 模型页复核当前价格。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Luna 促销覆盖 Luna-Pro 吗？两者差在哪？",
+      "acceptedAnswer": { "@type": "Answer", "text": "覆盖。openai/gpt-5.6-luna 和 openai/gpt-5.6-luna-pro 在 OpenRouter 上 2026-08-03 都是 $0.10/M prompt + $0.60/M completion。Pro 版多了更大的上下文窗口和更强的 supports_reasoning 控制；非 Pro 是标准 128K。纯成本敏感场景（分类、短抽取、单轮问答）选非 Pro；需要长上下文 + 推理强度的 agent 选 Pro，同价更值。" }
+    },
+    {
+      "@type": "Question",
+      "name": "我应该把 GPT-5.5 的工作负载迁移到 OpenRouter 的 Luna 吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "如果你的负载当前在 GPT-5.5 质量水平、预算又卡脖子，那就迁。Luna $0.10/M prompt + $0.60/M completion 比直接 GPT-5.5（$2.50/$10 OpenAI 官方）便宜约 50 倍，比 GPT-5.4 mini 还便宜 5 倍。能力比 GPT-5.4 mini 强一个档次，正是预算吃紧时大家想换掉的那个级别。如果你的负载已经在 GPT-5.5 或 GPT-5.6-Sol，迁移没必要——Sol 的 Terminal-Bench 分数撑得起它的 $5/$30。" }
+    },
+    {
+      "@type": "Question",
+      "name": "如果 OpenRouter Luna 促销结束价格回到上游，线上服务怎么不被打挂？",
+      "acceptedAnswer": { "@type": "Answer", "text": "OpenRouter 会回到上游 OpenAI 价。Luna 的回落价是 $1.00/M prompt + $6.00/M completion。两个实际对冲：(1) 搭一个运行时分层路由（Portkey / Cloudflare AI Gateway / LiteLLM / OpenRouter 自带路由），Luna 失效时自动切到 Gemini 2.5 Flash、DeepSeek V4 Flash 或 Claude Haiku 4.5；(2) 给每个 tier 设一个 max-budget-per-1K-requests SLA，价格突变时不会悄无声息地打穿预算。FreeModel 把 OpenRouter / OpenAI / Claude 收在一个 key 下，切模型就是改一行配置。" }
+    },
+    {
+      "@type": "Question",
+      "name": "OpenRouter Luna 的促销价和 DeepSeek V4 Flash 比怎么样？",
+      "acceptedAnswer": { "@type": "Answer", "text": "纯 $/M token 计，DeepSeek V4 Flash（$0.14/M prompt + $0.28/M completion）还是便宜之王。Luna $0.10/M 比 V4 Flash 在 prompt 上更便宜，但 completion 上贵约 2 倍。平衡点取决于你 prompt:completion 的比例：4:1（RAG 典型）时两者差距 10% 以内；1:1（分类 / 短生成）时 Luna 的 completion 比 V4 Flash 贵。对 prompt 长、completion 短的 agent 工作流，Luna $0.10/M 的 prompt 是今天能拿到的最便宜的 GPT 系选项。" }
+    },
+    {
+      "@type": "Question",
+      "name": "OpenRouter Luna 的限流和推理控制跟 OpenAI 直连一样吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "大部分一样。OpenRouter 代理 supports_reasoning: true（Luna 支持）和 OpenAI 开发者面板公布的标准限流。两边分叉的地方：(a) OpenAI 的企业级限流档和 zero-retention 模式不能通过 OpenRouter 透传——只有 OpenAI 直连才有；(b) OpenAI 的 prompt caching 24 小时 TTL 扩展要 OpenAI 直连；OpenRouter 只支持标准的 5-10 分钟缓存窗口。zero-retention 或长 TTL 缓存需求走 OpenAI 直连，OpenRouter 只留给 Luna / Terra 折扣最有价值的工作流。" }
+    }
+  ]
+};
+
+const zhBody = `
+<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">OpenRouter Luna 半价：GPT-5.6 三档选购指南 2026</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>2026-08-03</strong>，OpenRouter 对 GPT-5.6 Luna（permaslug <code>openai/gpt-5.6-luna-20260709</code>）打了 <strong>50% 限时折扣</strong>：prompt 从 $0.20/M 降到 <strong>$0.10/M</strong>，completion 从 $1.20/M 降到 <strong>$0.60/M</strong>。同窗口 <strong>Terra / Terra-Pro</strong> 也重新定价到 $1.00/M prompt + $6.00/M completion——比 OpenAI 官方价便宜 60%。<strong>Sol / Sol-Pro</strong> 维持 $5/$30 列表价，无折扣。本指南是速查表：什么时候该走 OpenRouter 渠道、什么时候留 OpenAI 直连、促销结束怎么接住。</p>
+
+<h2 id="pricing-table" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">2026-08 价格矩阵</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">下面所有数字都是 2026-08-03 实时对照 <code>https://openrouter.ai/api/v1/models</code> 和每个模型的 <code>https://openrouter.ai/openai/gpt-5.6-{tier}</code> 页面拿到的。OpenRouter 一列反映当前促销（如有），OpenAI Direct 一列是上游列表价。</p>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">档位</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">OpenRouter（即时）</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">OpenAI 直连（列表）</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">相比 OpenAI</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">推理支持</th>
+</tr>
+</thead>
+<tbody class="text-gray-700">
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Luna</td>
+<td class="border border-gray-200 px-4 py-2">$0.10/M in &middot; $0.60/M out</td>
+<td class="border border-gray-200 px-4 py-2">$1.00/M in &middot; $6.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">9 折（10 倍）</td>
+<td class="border border-gray-200 px-4 py-2">支持（Luna 基础）</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Luna-Pro</td>
+<td class="border border-gray-200 px-4 py-2">$0.10/M in &middot; $0.60/M out</td>
+<td class="border border-gray-200 px-4 py-2">$1.00/M in &middot; $6.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">9 折（10 倍）</td>
+<td class="border border-gray-200 px-4 py-2">支持（更长上下文）</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Terra</td>
+<td class="border border-gray-200 px-4 py-2">$1.00/M in &middot; $6.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">$2.50/M in &middot; $15.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">6 折</td>
+<td class="border border-gray-200 px-4 py-2">支持</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Terra-Pro</td>
+<td class="border border-gray-200 px-4 py-2">$1.00/M in &middot; $6.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">$2.50/M in &middot; $15.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">6 折</td>
+<td class="border border-gray-200 px-4 py-2">支持</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Sol</td>
+<td class="border border-gray-200 px-4 py-2">$5.00/M in &middot; $30.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">$5.00/M in &middot; $30.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">0%（无促销）</td>
+<td class="border border-gray-200 px-4 py-2">支持（max effort）</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">Sol-Pro</td>
+<td class="border border-gray-200 px-4 py-2">$5.00/M in &middot; $30.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">$5.00/M in &middot; $30.00/M out</td>
+<td class="border border-gray-200 px-4 py-2">0%（无促销）</td>
+<td class="border border-gray-200 px-4 py-2">支持（max + ultra subagent）</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="text-gray-700 leading-relaxed my-4">头条数字是 Luna。从 $1.00/M 跌到 $0.10/M，把它推进了 budget tier 的同价位区（Gemini 2.5 Flash $0.075/$0.30、DeepSeek V4 Flash $0.14/$0.28），同时保留 GPT-5.6 这一代的推理控制和 OpenAI Responses API 接口。对已经站在 OpenAI 生态里的团队，把预算吃紧的工作流推到一个更便宜的 tier 不用改 prompt 也不用改合约——这是那种一周就能回本的迁移。</p>
+
+<h2 id="who-should-switch" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">谁该切换、谁不该切换</h2>
+
+<h3 id="switch" class="text-xl font-semibold text-gray-900 mt-8 mb-3">如果你属于这几种场景，迁到 OpenRouter Luna</h3>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>大批量分类 / 抽取 / 路由</strong> — $0.10/M prompt + $0.60/M completion 下，典型 2K 输入 / 200 输出工作流的每千次请求成本降到 $0.001-$0.005。把贵模型的流量路由到 Luna，在任何 gateway 里都是一行配置改动。</li>
+<li><strong>长系统 prompt 的 RAG agent</strong> — Luna 在 OpenRouter 上支持推理和 prompt caching（5-10 分钟 TTL）。30K token 系统 prompt 每小时 100 次调用，缓存命中后实际 prompt 成本压到每百万读 $0.01。</li>
+<li><strong>工具循环的长尾 fallback</strong> — Sol 或 Opus 4.8 调用失败或撞限流时，回落到 OpenRouter Luna，agent 保持响应，单次成本是 Sol 的 1/30。</li>
+<li><strong>评测流水线</strong> — 每天 10K 次评测跑在旗舰模型上，预算烧得最快。开发期路由到 Luna、最终回归扫一遍才上 Sol，是这次促销后便宜得多的常见模式。</li>
+</ul>
+
+<h3 id="stay" class="text-xl font-semibold text-gray-900 mt-8 mb-3">这些场景留在 OpenAI 直连</h3>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>Zero-retention / HIPAA / SOC-2 路径</strong> — OpenAI 的企业数据处理（zero retention、训练退出、EU 数据驻留）只有 OpenAI 直连才有，OpenRouter 不能透传这些合约。</li>
+<li><strong>长 TTL prompt caching（24 小时+）</strong> — 直连 OpenAI 给企业客户扩展了缓存 TTL；OpenRouter 只认 5-10 分钟标准窗口。</li>
+<li><strong>Sol / Sol-Pro 前沿工作</strong> — Sol 没有 OpenRouter 折扣，而且 OpenRouter 通常多几毫秒延迟（一般是单位数 ms 但对延迟敏感路径确实存在）。旗舰 tier 走 OpenAI 直连。</li>
+<li><strong>需要 Microsoft Azure OpenAI Service 合约的工作流</strong> — OpenRouter 只代理公共 OpenAI 端点，不代理 Azure OpenAI 端点。</li>
+</ul>
+
+<h2 id="the-cheat-sheet" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">速查决策表</h2>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">你的工作流</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">对的 tier（2026-08）</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">对的渠道</th>
+</tr>
+</thead>
+<tbody class="text-gray-700">
+<tr>
+<td class="border border-gray-200 px-4 py-2">RAG agent，长 prompt，每天 &lt;500 次</td>
+<td class="border border-gray-200 px-4 py-2">Luna-Pro</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter（带缓存）</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">RAG agent，短 prompt，高并发</td>
+<td class="border border-gray-200 px-4 py-2">Luna</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">分类 / 抽取 / 路由</td>
+<td class="border border-gray-200 px-4 py-2">Luna</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">中等难度代码 agent</td>
+<td class="border border-gray-200 px-4 py-2">Terra</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">前沿推理 / 硬核 agent</td>
+<td class="border border-gray-200 px-4 py-2">Sol-Pro</td>
+<td class="border border-gray-200 px-4 py-2">OpenAI 直连</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">评测扫描，每天 10K+ 调用</td>
+<td class="border border-gray-200 px-4 py-2">Luna 或 DeepSeek V4 Flash</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">企业 zero-retention</td>
+<td class="border border-gray-200 px-4 py-2">Sol 或 Terra</td>
+<td class="border border-gray-200 px-4 py-2">OpenAI 直连</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">预算封顶、能中途切模型</td>
+<td class="border border-gray-200 px-4 py-2">现在用 Luna &rarr; 促销结束切 DeepSeek V4 Flash</td>
+<td class="border border-gray-200 px-4 py-2">OpenRouter + FreeModel 当路由</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="how-to-wire-it" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">怎么接上 failover（不让促销结束打挂）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter 的折扣是促销——某个时间点会回到上游列表价。正确架构是把 Luna 当成分层路由里的一档，而不是硬依赖。三种实现，按工作量排序：</p>
+
+<h3 id="one-portkey" class="text-xl font-semibold text-gray-900 mt-8 mb-3">方案 1 &mdash; Portkey（5 分钟）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey 的 AI Gateway 把 OpenRouter 当虚拟 provider。你写一条配置，今天把 <code>gpt-5.6-luna</code> 映射到 OpenRouter 上的 <code>openai/gpt-5.6-luna</code>，明天映射到 OpenAI 直连（或者 DeepSeek V4 Flash）。客户端代码不变，价格规则不变，促销结束零代码切换。</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-4 my-4 overflow-x-auto text-sm"><code>{
+  "strategy": { "mode": "fallback" },
+  "targets": [
+    {
+      "provider": "openrouter",
+      "model": "openai/gpt-5.6-luna",
+      "weight": 1.0
+    },
+    {
+      "provider": "openai",
+      "model": "gpt-5.6-luna",
+      "weight": 0.5,
+      "conditions": [{ "type": "price_above", "value": 0.20 }]
+    }
+  ]
+}</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Portkey 在每次请求前评估条件——只要 OpenRouter Luna 价格回涨到 $0.20/M prompt 以上，流量就自动回落 OpenAI 直连（或者你列的下一个 fallback）。这是最省力的路径。</p>
+
+<h3 id="two-cloudflare" class="text-xl font-semibold text-gray-900 mt-8 mb-3">方案 2 &mdash; Cloudflare AI Gateway（10 分钟）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Cloudflare AI Gateway 接 OpenRouter 和 OpenAI 作为 provider，请求 payload 里写 fallback。同样的模式，托管在 Workers 上零出口费。适合你的 agent 已经跑在 Cloudflare 上的场景。</p>
+
+<h3 id="three-litellm" class="text-xl font-semibold text-gray-900 mt-8 mb-3">方案 3 &mdash; LiteLLM + 预算守卫（15 分钟）</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你已经在用 LiteLLM 当代理，给每个模型加一个预算守卫，当 Luna 的有效价格超过你设的阈值就抛 429。agent 自动重试路由表里下一个最便宜的 tier。代码多一些，但最显式。</p>
+
+<h2 id="comparison" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Luna 在 2026 budget tier 里排第几</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的 budget tier 价格战已经白热化。Luna $0.10/M 的 prompt 价定下后，它在同级能力档（单步推理、128K-200K 上下文）的位置：</p>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">模型</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Prompt $/M</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Completion $/M</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">推理</th>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">OpenAI 兼容</th>
+</tr>
+</thead>
+<tbody class="text-gray-700">
+<tr>
+<td class="border border-gray-200 px-4 py-2 font-semibold">GPT-5.6 Luna（OpenRouter）</td>
+<td class="border border-gray-200 px-4 py-2">$0.10</td>
+<td class="border border-gray-200 px-4 py-2">$0.60</td>
+<td class="border border-gray-200 px-4 py-2">支持</td>
+<td class="border border-gray-200 px-4 py-2">支持</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">GPT-5.6 Luna（直连）</td>
+<td class="border border-gray-200 px-4 py-2">$1.00</td>
+<td class="border border-gray-200 px-4 py-2">$6.00</td>
+<td class="border border-gray-200 px-4 py-2">支持</td>
+<td class="border border-gray-200 px-4 py-2">支持</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Gemini 2.5 Flash</td>
+<td class="border border-gray-200 px-4 py-2">$0.075</td>
+<td class="border border-gray-200 px-4 py-2">$0.30</td>
+<td class="border border-gray-200 px-4 py-2">有限</td>
+<td class="border border-gray-200 px-4 py-2">支持（仅 REST）</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">DeepSeek V4 Flash</td>
+<td class="border border-gray-200 px-4 py-2">$0.14</td>
+<td class="border border-gray-200 px-4 py-2">$0.28</td>
+<td class="border border-gray-200 px-4 py-2">不支持（instruct）</td>
+<td class="border border-gray-200 px-4 py-2">支持</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Claude Haiku 4.5</td>
+<td class="border border-gray-200 px-4 py-2">$1.00</td>
+<td class="border border-gray-200 px-4 py-2">$5.00</td>
+<td class="border border-gray-200 px-4 py-2">支持</td>
+<td class="border border-gray-200 px-4 py-2">支持（Anthropic API）</td>
+</tr>
+<tr>
+<td class="border border-gray-200 px-4 py-2">Mistral Nemo 13B</td>
+<td class="border border-gray-200 px-4 py-2">$0.04</td>
+<td class="border border-gray-200 px-4 py-2">$0.08</td>
+<td class="border border-gray-200 px-4 py-2">不支持</td>
+<td class="border border-gray-200 px-4 py-2">支持</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p class="text-gray-700 leading-relaxed my-4">纯分类或短抽取，Gemini 2.5 Flash 和 DeepSeek V4 Flash 还是比 Luna 便宜。Luna 折扣最有价值的场景是需要 GPT 级指令遵循、OpenAI Responses API 接口、或者代码已经对接 GPT-5.5 的 drop-in 替换。对于这种工作流，2026-08-03 这一刻它是最便宜的可靠路径。</p>
+
+<h2 id="caveats" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">值得知道的坑</h2>
+
+<ul class="list-disc pl-6 my-4 text-gray-700 leading-relaxed">
+<li><strong>折扣只在 OpenRouter</strong>。同样的 Luna tier 在 OpenAI 直连就是 $1/$6。如果你为了 Luna 把工作流迁到 OpenRouter，等于接受了 OpenRouter 的合约条款、限流策略和路由选择。OpenRouter 自 2023 年起是可靠的代理，但 SLA 显著弱于 OpenAI 直连的企业 tier。</li>
+<li><strong>折扣窗口</strong>。OpenRouter 不公布这些促销的明确结束日期。2025-2026 的规律是：模型发布带 4-8 周促销，然后要么延长要么恢复。正确做法是现在就接 failover，不是促销到期那天才接。</li>
+<li><strong>推理控制可用但细节有差</strong>。Luna 和 Luna-Pro 在 OpenRouter 上都显示 <code>supports_reasoning: true</code>，但推理 effort 枚举和推理 token 计费与 OpenAI 直连略有不同。如果你依赖精确的推理 token 预算，对照你的具体推理 effort 设置验证一下。</li>
+<li><strong>跨区域路由</strong>。OpenRouter 按请求时把 Luna 路由到当时最便宜的 OpenAI 区域。如果你要 EU 数据驻留，这是问题——需要 EU 数据走 OpenAI 直连的 EU 端点，OpenRouter 只留给 Luna / Terra 折扣最有价值的工作流。</li>
+</ul>
+
+<h2 id="verdict" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026-08 这次 OpenRouter Luna 折扣不是价格噱头——它把 GPT-5.6 Luna 推进 budget tier 的同时保留了 GPT-5.6 这一代的推理控制和 OpenAI API 接口。对于已经站在 OpenAI 生态里、想把预算吃紧的工作流推到一个更便宜的 tier、又不想改 prompt 也不改合约的团队，这是今天该做的迁移。<strong>接下来 24 小时的三件具体动作：</strong></p>
+
+<ol class="list-decimal pl-6 my-4 text-gray-700 leading-relaxed">
+<li>搭一条 Portkey 或 Cloudflare AI Gateway 路由，把你的"便宜 tier"映射到 OpenRouter 上的 <code>openai/gpt-5.6-luna</code>。</li>
+<li>在非关键工作流上跑 24 小时 A/B：50% OpenRouter Luna 对 50% 你当前的便宜 tier，对比质量、延迟、成本。</li>
+<li>如果 Luna 在不丢有意义质量的前提下胜出，把它设为默认，把当前 tier 留作 failover——为促销结束那天做准备。</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>在路由 GPT-5.6 Luna 同时也用 Claude / Gemini / DeepSeek，只想一个 key？</strong> 如果你想一个面板看跨 provider 和跨 tier 的 search / generation 成本拆分，<a href="https://freemodel.dev/invite/FRE-7a3b6220" rel="sponsored nofollow" target="_blank" class="text-blue-600 underline">FreeModel</a> 把 OpenRouter、OpenAI 直连、Anthropic、Gemini 收在一个 API key 下，用量拆分能在 Luna 促销结束那一刻告诉你——当 tier 涨价或限流把你的单次预算推到警戒线上时，你得在一小时内决定回落 DeepSeek V4 Flash 还是继续 OpenAI 直连。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl}>
+  <article className="max-w-3xl mx-auto px-4 py-8">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div set:html={zhBody} />
+  </article>
+</BaseLayout>

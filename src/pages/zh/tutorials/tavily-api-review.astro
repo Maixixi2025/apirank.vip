@@ -1,0 +1,316 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'tavily-api-review';
+const date = '2026-07-31';
+const locale = 'zh';
+
+const zhTitle = "Tavily 2026 评测：AI Agent 专用搜索 API";
+const zhDescription = "Tavily 2026 评测：LangChain 默认搜索 API。1,000 calls/月免费、$0.008/credit 起、/research 多步代理、MCP server。vs Jina/Exa/SerpAPI。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Tavily 2026 评测：AI Agent 专用搜索 API", "description": "Tavily 2026 评测：LangChain 默认搜索 API。1,000 calls/月免费、$0.008/credit 起、/research 多步代理、MCP server。vs Jina/Exa/SerpAPI。", "datePublished": "2026-07-31", "dateModified": "2026-07-31", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/tavily-api-review"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Tavily 2026 评测：AI Agent 专用搜索 API", "item": "https://apirank.vip/zh/tutorials/tavily-api-review"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Tavily 是什么？为什么 2026 年它成为默认搜索 API？", "acceptedAnswer": {"@type": "Answer", "text": "Tavily 是专为 AI Agent 设计的搜索 API。与 Google Custom Search、SerpAPI 只返回十条蓝色链接和 sitemap 不同，Tavily 返回的是答案——一个结构化 JSON 对象，包含原始页面内容、相关性评分、AI 生成摘要和引用图谱。Agent 在多步研究任务中只需一次调用就能拿到全部所需信息，工作流从 8 分钟缩短到 8 秒。它是 LangChain/LlamaIndex/AutoGen/CrewAI/smolagents 的默认搜索工具，且是 Trusted by 2M+ developers 的生态默认项。"}}, {"@type": "Question", "name": "Tavily 2026 年的端点目录是什么？", "acceptedAnswer": {"@type": "Answer", "text": "Tavily 暴露 6 个端点加 1 个 MCP server：Search（实时网页搜索+AI 摘要，1,000/月免费，$0.008/次）、Extract（从已知 URL 提取 markdown，1,000/月免费，$0.002/页）、Crawl（从根 URL BFS 遍历所有可达页面，500 页/月免费，$0.001/页）、Map（域名级 sitemap 发现，500/月免费，$0.001/页）、Research（多步搜索+合成，返回结构化研究简报，50/月免费，$0.04/次）、AI Extraction（按 JSON schema 结构化提取，1,000/月免费，$0.005/次）、MCP Server（2026 年 3 月上线，暴露 Search+Extract 作为标准 MCP 工具）。"}}, {"@type": "Question", "name": "Tavily 的免费层是真的免费吗？", "acceptedAnswer": {"@type": "Answer", "text": "是真的。Tavily 免费层提供 1,000 credits/月（滚动 30 天窗口），无信用卡、无功能阉割、无超额计费（超额返 HTTP 429 而非扣费）。Search 占 1,000 credits，Crawl 单独占 500 页配额。20 次/天的 Search 加 3 次/天的 Extract 约 690 credits/月，solo developer 跑生产研究 agent 完全免费。Project $30/月 起步提供 4,000 credits，Growth $200/月 40,000 credits，Pro $1,000/月 250,000 credits，Enterprise 合同制。"}}, {"@type": "Question", "name": "Tavily 的 Research 端点值得 $0.04/次 吗？", "acceptedAnswer": {"@type": "Answer", "text": "对 5+ 步搜索的研究工作流来说，几乎总是值得。Research 单次返回 answer + sources + research_steps（每步的子查询和结果数）+ citations + response_time。/research_steps 数组是审计利器，可直接日志、回放和验证。对比自建 agent 跑 10 次 Search + 5 次 Extract + 1 次合成 LLM（约 $0.15、25-35 秒），Research 是 $0.04、5-15 秒，便宜 4 倍、快 2-3 倍。仅当需要按域名过滤、按时间加权、跳过某些内容类型等细粒度策略时，Research 才不合适——此时用 Search+Extract 自定义。"}}, {"@type": "Question", "name": "Tavily 的 MCP server 怎么用？", "acceptedAnswer": {"@type": "Answer", "text": "Tavily MCP server 于 2026 年 3 月上线，已接入 Databricks MCP Marketplace 和 IBM WatsonX 平台，并与 JetBrains 集成，是 Claude Desktop 和 Cursor 生态中安装量最大的 MCP server。在 Claude Code、Codex、Cursor、Cline 中安装 Tavily MCP server 后重启编辑器，Search 和 Extract 即成为原生 agent 工具，无需写一行集成代码。MCP 与直接 API 同价，无 MCP 加价。唯一限制：MCP server 不暴露 /research 端点，多步研究工作流仍需从 agent 代码调用 Research。"}}, {"@type": "Question", "name": "Tavily 与 Jina AI、Exa、SerpAPI 相比如何？", "acceptedAnswer": {"@type": "Answer", "text": "Tavily 是唯一默认集成在 LangChain/LlamaIndex/AutoGen 中并自带 AI 摘要、Research 端点、MCP server 的方案；Jina AI 优势是 Reader API 便宜（按 token 计费，约 $0.06/M tokens）和更快（0.6s vs 1.4s P50），但 Jina 本质是内容提取 API 不是搜索 API；Exa 神经搜索语义理解更强（理解 papers on RLHF 这种查询），成本约 2x Tavily；SerpAPI 是 Google 结果抓取不是 AI 搜索 API，返回十条蓝色链接，需配合 Jina+LLM 三 API 工作流。决策：RAG agent 默认选 Tavily；纯提取选 Jina；学术/小众领域神经搜索选 Exa；SEO 工具需 Google SERP 选 SerpAPI。"}}, {"@type": "Question", "name": "Tavily 怎么处理速率限制和超额？", "acceptedAnswer": {"@type": "Answer", "text": "免费层超额直接 HTTP 429，无超额计费——agent 停止工作直到滚动窗口重置。付费层有超额计费，Developer $0.008/credit、Pro $0.005/credit。可在仪表板设硬性支出上限，达上限后自动切回 429 行为。这是生产 agent 的最佳默认：失控的 agent 循环在 2026 年制造过几笔惊人账单，硬性上限是最便宜的保险。"}}, {"@type": "Question", "name": "Tavily 能自托管吗？", "acceptedAnswer": {"@type": "Answer", "text": "不能。Tavily 是 hosted-only 服务，搜索索引、提取管道、Research 多步规划全部跑在 Tavily 自己的基础设施上，公司未发布自托管方案。需自托管的最接近替代：SearXNG（开源元搜索，无 AI 摘要、无 Research 端点）、Meilisearch（开源全文搜索，需自带内容）、Exa 企业版（合同制，需销售对接）。对 2026 年大多数生产 agent，hosted-only 是合理权衡——自托管搜索栈的工程时间成本往往高于 API 账单。"}}, {"@type": "Question", "name": "Tavily 的数据保留策略是什么？", "acceptedAnswer": {"@type": "Answer", "text": "Tavily 不保留超出运营所需的搜索查询或结果。query 和 results 载荷在内存中处理、评分、返回，不写入持久存储。唯一持久日志是聚合速率限制计数器和计费记录（含时间戳、端点、credit 消耗元数据），不含查询内容。企业客户可签 'no logs' 合约附加条款，进一步限制聚合元数据——这是医疗、金融、政府等查询内容本身受监管的工作负载的正确层级。"}}, {"@type": "Question", "name": "Tavily 与带浏览能力的 LLM 有什么区别？", "acceptedAnswer": {"@type": "Answer", "text": "OpenAI 带浏览的 GPT 模型、Anthropic 的 web search 工具、Google Gemini with Search Grounding 都返回基于实时网页数据的合成自然语言答案，但不给原始搜索结果、页面内容、引用图谱。LLM+浏览对聊天机器人是正确形态；对需要进一步加工搜索结果的 agent（结构化提取、存入向量数据库、与其他工具调用串联），Tavily 是正确形态。可靠性方面：带浏览的 LLM 偶尔不跟随重定向、被 JavaScript-heavy 页面卡住、返回幻觉引用；Tavily 管道为 agent 场景定制，失败模式不同且更可预测。对需可靠处理广泛网页内容的生产 agent，Tavily 是更可依赖的后端。"}}]};
+const affiliateSidebar = {"title": "试试 FreeModel 多 Provider 路由", "description": "FreeModel 提供跨 OpenAI/Anthropic/DeepSeek/Gemini 等 50+ 模型的无缝路由，注册即得额度、零加价。", "url": "https://freemodel.dev/invite/FRE-7a3b6220", "cta": "免费试用"};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Tavily 2026：被 LangChain/LlamaIndex/AutoGen 默认集成的 AI Agent 搜索 API</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Tavily 是专为 AI Agent 设计的搜索 API。2026-07-31 核对：Tavily 是 LangChain TavilySearchResults、LlamaIndex TavilyToolSpec、AutoGen TavilySearchTool、CrewAI TavilySearchTool、smolagents TavilySearchTool 的默认集成，且 Trusted by 2M+ developers。其 Series A 融资 $25M（2026 H1），是生态默认的 agent-first 搜索层。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">本评测从 2026 年中工程师视角覆盖 Tavily API：Search/Extract/Crawl/Map/Research/AI Extraction 六大端点、按 credit 计费的价格模型、与 MCP server 的集成（Claude Code/Cursor/Codex 即装即用），以及与 Jina AI、Exa、SerpAPI 在相同工作负载下的对比。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li><strong>AI Agent 默认搜索 API</strong>：LangChain/LlamaIndex/AutoGen/CrewAI/smolagents 全部默认集成，开发者在 2026 年写 RAG agent 第一个搜索补全是 Tavily</li>
+<li><strong>1,000 credits/月免费层</strong>：无信用卡、无功能阉割、无超额计费（超额返 HTTP 429），RAG agent 原型阶段零成本</li>
+<li><strong>/research 端点</strong>：5 credits/次，内嵌多步搜索+提取+合成 LLM，单次调用替代 50-100 行 agent 代码</li>
+<li><strong>MCP server（2026-03）</strong>：Databricks MCP Marketplace + IBM WatsonX + JetBrains 集成，Claude Code/Cursor/Codex 零代码集成</li>
+<li><strong>$0.008/credit 起</strong>：Pay-as-you-go，Project $30/月 4,000 credits、Growth $200/月 40,000 credits、Pro $1,000/月 250,000 credits</li>
+<li><strong>Search+Extract 单调用范式</strong>：一次返回 answer + raw_content + 0-1 relevance score，省去后续提取步骤，2-5 秒/研究步骤</li>
+<li><strong>2M+ developers</strong>：2026 H1 Series A $25M 融资，生态默认位置锁定</li>
+<li><strong>最佳场景</strong>：RAG agent/自动化研究 agent、多步研究工作流、预算敏感 solo developer、Claude Code/Cursor MCP 集成</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么 Tavily 在 2026 年重要</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的 AI 推理市场，搜索 API 已经从通用 Google Custom Search + SerpAPI 的传统栈，转向专为 agent 设计的新型 API。Tavily 是这一转型的领跑者，背后是三个与"搜索 API"对比表无关的关键事实：</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第一，它是每个主流 agent 框架的默认项。</strong>LangChain 的 TavilySearchResults、LlamaIndex 的 TavilyToolSpec、AutoGen 的 TavilySearchTool、CrewAI 的 TavilySearchTool、smolagents 的 TavilySearchTool 都调用同一个 API。当 2026 年的开发者写 RAG agent 搜索网页时，第一个自动补全建议就是 Tavily。这种网络效应比任何单独定价层级都重要。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第二，1,000 calls/月免费层是真实的产能配额，不是降级 demo。</strong>无信用卡、无配额审批、无 7 天试用。免费层走的是与付费层完全相同的后端，相同延迟、相同结果质量。solo developer 或小团队可以在免费层上跑 24/7 研究 agent，只在工作流真正起飞时再付费。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第三，Research 模式取代手写多步循环。</strong>Research 端点（2025-12 发布，2026-02 全面 GA）接受单条自然语言查询，自己跑多步规划、搜索、提取、合成循环，返回结构化研究简报。这原本需要 50-100 行 agent 代码，现在是一次 API 调用。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Tavily 端点目录（2026 年 6 月）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Tavily 暴露六个端点，每个为 agent 信息收集循环的特定阶段设计。自 2026 年 2 月 Research GA 以来端点目录稳定，新端点大约每季度发布一次。</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-300 px-3 py-2 text-left">端点</th><th class="border border-gray-300 px-3 py-2 text-left">用途</th><th class="border border-gray-300 px-3 py-2 text-left">免费层配额</th><th class="border border-gray-300 px-3 py-2 text-left">付费单价</th></tr></thead>
+<tbody><tr><td class="border border-gray-300 px-3 py-2"><strong>Search</strong></td><td class="border border-gray-300 px-3 py-2">实时网页搜索 + AI 摘要</td><td class="border border-gray-300 px-3 py-2">1,000/月</td><td class="border border-gray-300 px-3 py-2">$0.008</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2"><strong>Extract</strong></td><td class="border border-gray-300 px-3 py-2">从已知 URL 拉取干净 markdown</td><td class="border border-gray-300 px-3 py-2">1,000/月</td><td class="border border-gray-300 px-3 py-2">$0.002/页</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2"><strong>Crawl</strong></td><td class="border border-gray-300 px-3 py-2">从根 URL BFS，返回所有可达页面</td><td class="border border-gray-300 px-3 py-2">500 页/月</td><td class="border border-gray-300 px-3 py-2">$0.001/页</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2"><strong>Map</strong></td><td class="border border-gray-300 px-3 py-2">域名级 sitemap 发现</td><td class="border border-gray-300 px-3 py-2">500/月</td><td class="border border-gray-300 px-3 py-2">$0.001/页</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2"><strong>Research</strong></td><td class="border border-gray-300 px-3 py-2">多步搜索+合成，返回研究简报</td><td class="border border-gray-300 px-3 py-2">50/月</td><td class="border border-gray-300 px-3 py-2">$0.04</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2"><strong>AI Extraction</strong></td><td class="border border-gray-300 px-3 py-2">按 JSON schema 结构化提取</td><td class="border border-gray-300 px-3 py-2">1,000/月</td><td class="border border-gray-300 px-3 py-2">$0.005</td></tr>
+</tbody></table>
+
+<p class="text-gray-700 leading-relaxed my-4">Search 和 Extract 的分离是刻意的。Search 用于发现（你不知道哪个 URL 有答案）；Extract 用于摄取（你已有 URL，需要内容）。大多数 agent 工作流调用 Search 找候选 URL，再调用 Extract 摄取 top 3，然后循环。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Crawl 是需要摄取整个域名时的更便宜替代——用于从文档站构建知识库。Map 介于 Search 和 Crawl 之间：它给出域名的 URL 拓扑但不取内容，这是构建规划 agent 决定读取哪些子页面时的正确形态。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Research 是最贵的端点，但单价误导：单次 Research 调用替代了 5-10 次 Search 加 2-3 次 Extract 加 1 次合成 LLM。对多步研究工作流，Research 是通向结构化答案的最便宜路径。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Tavily 价格：credits 在实践中如何工作</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Tavily 用 credit 系统，每个端点每次调用消耗不同数量的 credits。免费层 1,000 credits/月，听起来不多，但 Search 1 credit/次、Extract 1 credit/页、Crawl 1 credit/页、Research 5 credit/次。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对 solo developer 跑每日研究 agent（每天 20 次 Search + 3 次 Extract），月度 credit 消耗约 690——免费层足够。小团队三个生产 agent，每个每天 200 次 Search 加每周每个 agent ~5,000 页 Crawl，月度消耗约 50,000 credits，付费层约 $80。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">付费层级（2026 年 6 月）：</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-300 px-3 py-2 text-left">计划</th><th class="border border-gray-300 px-3 py-2 text-left">月费</th><th class="border border-gray-300 px-3 py-2 text-left">包含 credits</th><th class="border border-gray-300 px-3 py-2 text-left">超额</th></tr></thead>
+<tbody><tr><td class="border border-gray-300 px-3 py-2">Free</td><td class="border border-gray-300 px-3 py-2">$0</td><td class="border border-gray-300 px-3 py-2">1,000</td><td class="border border-gray-300 px-3 py-2">无——超额返 429</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Project</td><td class="border border-gray-300 px-3 py-2">$30</td><td class="border border-gray-300 px-3 py-2">4,000</td><td class="border border-gray-300 px-3 py-2">$0.008/credit</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Growth</td><td class="border border-gray-300 px-3 py-2">$200</td><td class="border border-gray-300 px-3 py-2">40,000</td><td class="border border-gray-300 px-3 py-2">$0.006/credit</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Pro</td><td class="border border-gray-300 px-3 py-2">$1,000</td><td class="border border-gray-300 px-3 py-2">250,000</td><td class="border border-gray-300 px-3 py-2">$0.005/credit</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Enterprise</td><td class="border border-gray-300 px-3 py-2">合同制</td><td class="border border-gray-300 px-3 py-2">合同制</td><td class="border border-gray-300 px-3 py-2">合同制</td></tr>
+</tbody></table>
+
+<p class="text-gray-700 leading-relaxed my-4">Project 是大多数生产 agent 的起点。Growth 是量价折扣开始重要的拐点——月耗超过 40,000 credits 后边际价降至 $0.006，比 Developer 超额便宜 25%。月耗超过 250,000 credits 后，Pro 层的 $0.005 边际价对摄取大型文档站的工作流才有意义。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">月耗超过 100 万 credits 的工作流，Enterprise 包含专属搜索索引、自定义速率上限、延迟 SLA。公开案例客户没披露实际费率，Enterprise 大约 $5,000-15,000/月，取决于 SLA 和地理搜索覆盖要求。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Search 端点实际返回什么</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Search 是大多数开发者的起点，响应形态是大多数人抄进 agent 代码却没读的内容。典型 Search 响应查询 "OpenAI moderation API pricing 2026" 看起来是：</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>&#123;
+  "query": "OpenAI moderation API pricing 2026",
+  "follow_up_questions": null,
+  "answer": "OpenAI's moderation API is free for all accounts as of June 2026. The endpoint om-preview costs $0 when called against any tier model. Rate limits depend on the account type, not the model tier.",
+  "images": [],
+  "results": [
+    &#123;
+      "url": "https://platform.openai.com/docs/guides/moderation",
+      "title": "Moderation - OpenAI API",
+      "content": "The moderation endpoint is free to use for all OpenAI API accounts...",
+      "raw_content": "&lt;full extracted markdown of the page&gt;",
+      "score": 0.92
+    &#125;,
+    &#123;
+      "url": "https://openai.com/index/previewing-gpt-5-6-sol",
+      "title": "Previewing GPT-5.6 Sol",
+      "content": "OpenAI's safety team announced on June 25, 2026...",
+      "raw_content": "...",
+      "score": 0.78
+    &#125;
+  ],
+  "response_time": 1.42
+&#125;</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">关键字段是 <code class="bg-gray-100 px-1 rounded text-sm">answer</code>（Tavily 基于搜索结果生成的摘要）、<code class="bg-gray-100 px-1 rounded text-sm">results[].raw_content</code>（源页面的完整提取 markdown，可直接喂给下游 LLM）、<code class="bg-gray-100 px-1 rounded text-sm">results[].score</code>（0-1 相关性评分，agent 可用来决定是提取该页还是跳过）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对 RAG agent，这种响应形态正是你想要的：直接回答用 answer、原始内容用于 grounded synthesis、score 用于过滤。大多数替代品（SerpAPI、Google Custom Search、Bing Search API）只返回标题和摘要；agent 必须再调用 Extract 拿真实内容。Tavily 的单调用设计每次研究步骤节省 2-5 秒。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Tavily 与 Jina AI、Exa、SerpAPI 对比</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">"AI 搜索 API"赛道在 2026 年很拥挤。以下是 Tavily 与工程师最可能对比的三个替代品的对比：</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100"><th class="border border-gray-300 px-3 py-2 text-left">维度</th><th class="border border-gray-300 px-3 py-2 text-left">Tavily</th><th class="border border-gray-300 px-3 py-2 text-left">Jina AI</th><th class="border border-gray-300 px-3 py-2 text-left">Exa</th><th class="border border-gray-300 px-3 py-2 text-left">SerpAPI</th></tr></thead>
+<tbody><tr><td class="border border-gray-300 px-3 py-2">LangChain 默认</td><td class="border border-gray-300 px-3 py-2">✅</td><td class="border border-gray-300 px-3 py-2">✅</td><td class="border border-gray-300 px-3 py-2">✅</td><td class="border border-gray-300 px-3 py-2">❌</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">内置 AI 摘要</td><td class="border border-gray-300 px-3 py-2">✅</td><td class="border border-gray-300 px-3 py-2">❌</td><td class="border border-gray-300 px-3 py-2">✅</td><td class="border border-gray-300 px-3 py-2">❌</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">免费层</td><td class="border border-gray-300 px-3 py-2">1,000/月</td><td class="border border-gray-300 px-3 py-2">1M tokens（read）</td><td class="border border-gray-300 px-3 py-2">1,000/月</td><td class="border border-gray-300 px-3 py-2">100/月</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">搜索单价</td><td class="border border-gray-300 px-3 py-2">$0.008</td><td class="border border-gray-300 px-3 py-2">$0.00006/token</td><td class="border border-gray-300 px-3 py-2">$0.005/结果</td><td class="border border-gray-300 px-3 py-2">$0.01</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">提取单价</td><td class="border border-gray-300 px-3 py-2">$0.002/页</td><td class="border border-gray-300 px-3 py-2">$0.00006/token</td><td class="border border-gray-300 px-3 py-2">$0.025/页</td><td class="border border-gray-300 px-3 py-2">❌</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Crawl 单价</td><td class="border border-gray-300 px-3 py-2">$0.001/页</td><td class="border border-gray-300 px-3 py-2">❌</td><td class="border border-gray-300 px-3 py-2">$0.025/页</td><td class="border border-gray-300 px-3 py-2">❌</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">Research 端点</td><td class="border border-gray-300 px-3 py-2">✅</td><td class="border border-gray-300 px-3 py-2">❌</td><td class="border border-gray-300 px-3 py-2">✅</td><td class="border border-gray-300 px-3 py-2">❌</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">延迟（P50）</td><td class="border border-gray-300 px-3 py-2">1.4s</td><td class="border border-gray-300 px-3 py-2">0.6s</td><td class="border border-gray-300 px-3 py-2">1.1s</td><td class="border border-gray-300 px-3 py-2">1.8s</td></tr>
+<tr><td class="border border-gray-300 px-3 py-2">自托管</td><td class="border border-gray-300 px-3 py-2">❌</td><td class="border border-gray-300 px-3 py-2">❌</td><td class="border border-gray-300 px-3 py-2">❌</td><td class="border border-gray-300 px-3 py-2">❌</td></tr>
+</tbody></table>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs. Jina AI</strong>：Jina 的 Reader API 更便宜（按 token 计费，约 $0.06/M tokens）更快（0.6s vs 1.4s P50），但 Jina 本质是内容提取 API 不是搜索 API。用 Jina 做搜索需要搭配单独搜索后端（通常是 SerpAPI 或 Bing）。已有搜索引擎、只需干净提取内容的工作流，Jina 是正解；想要搜索+提取单调用的工作流，Tavily 胜出。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs. Exa</strong>：Exa 的神经搜索对模糊查询更语义准确（理解 "papers on RLHF" 而不仅是关键词匹配），但同调用量下成本约 2x Tavily，免费层相同。查询语义比调用成本更重要的工作流，Exa 是正解。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>vs. SerpAPI</strong>：SerpAPI 是 Google 结果抓取器，不是 AI 搜索 API。它返回十条蓝色链接和摘要，跟 Google 一样。agent 需要自己做提取和合成时，SerpAPI+Jina+LLM 是三 API 工作流，比单次 Tavily 调用更贵更慢。仅当明确需要 Google 排名数据（SEO 工具）或需要完全跳过 AI 摘要的搜索 API 时，SerpAPI 才是正解。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">生产环境 Tavily：必须知道的运维坑</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">营销页说 "1.4 秒 P50 延迟"。2026 年中的实际运维经验有三个坑值得在上生产 agent 前了解。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>1. 免费层速率限制按滚动 30 天窗口重置，不是日历月。</strong>如果 6 月 15 日注册，免费层 7 月 15 日重置而非 8 月 1 日。25 日开始月的团队，下个月前 10 天仍按旧配额。这比日历重置更友好（月底注册不丢 credits），但预算预测需要跟踪滚动窗口而非日历。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>2. Crawl 和 Search 在免费层有独立配额。</strong>免费层给 1,000 Search credits 加 500 Crawl 页/月。如果第 3 天跑一次大 Crawl 耗尽 Crawl 配额，Search 配额仍在，但 Crawl 要等窗口重置。付费层把这些合并成单一 credit 池。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>3. AI 生成的 <code class="bg-gray-100 px-1 rounded text-sm">answer</code> 字段在多跳查询时可能幻觉。</strong>当用户查询需要跨多个搜索结果推理（如 "Which country has the most regulations on LLM fine-tuning?"），<code class="bg-gray-100 px-1 rounded text-sm">answer</code> 字段可能产生听起来自信但不正确的合成。更安全模式：多跳查询忽略 <code class="bg-gray-100 px-1 rounded text-sm">answer</code>，把原始 <code class="bg-gray-100 px-1 rounded text-sm">results[].raw_content</code> 喂给你自己的 LLM 做合成。Tavily 文档警告了这点，但警告埋在 API 参考里而非 quickstart。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Research 端点：何时用它、何时自建</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Research 是 Tavily 最雄心的产品，也最容易被误判。营销话术——"描述研究问题，获取结构化简报"——准确，但失败模式很微妙。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Research 调用返回：</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>&#123;
+  "query": "Compare the pricing models of the top 5 LLM API providers in 2026",
+  "answer": "...",
+  "sources": [...],
+  "research_steps": [
+    &#123;"step": 1, "query": "top LLM API providers 2026", "results": 5&#125;,
+    &#123;"step": 2, "query": "OpenAI GPT-5.5 pricing 2026", "results": 3&#125;,
+    ...
+  ],
+  "citations": [...],
+  "response_time": 18.3
+&#125;</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><code class="bg-gray-100 px-1 rounded text-sm">research_steps</code> 数组是对 agent 最有用的字段。它展示 Research 端点实际执行的多步计划，意味着你可以日志、审计、甚至在结果错时手动回放。这比大多数 AI 研究工具返回的黑盒 "I researched this for you" 输出显著更好。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Research 单价 $0.04/次，是 Search 的 5 倍。但替代方案——你的 agent 跑 10 次 Search 加 5 次 Extract 加 1 次合成 LLM 加循环编排——约 $0.15、25-35 秒。Research 更便宜更快，结构化结果更好。任何需要 5+ 搜索步骤的研究工作流，用 Research。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">唯一 Research 不适合的场景是需要细粒度控制搜索策略的时候。如果你想按域名过滤源、按时间加权、跳过某些内容类型，Research 太不透明——你最终需要自己用自定义逻辑调 Search 和 Extract。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Tavily MCP server 怎么样？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Tavily 在 2026 年 3 月推出 Model Context Protocol（MCP）server，到 2026 年 6 月已成为 Claude Desktop 和 Cursor 生态中安装量最大的 MCP server。MCP server 把 Search 和 Extract 端点暴露为标准 MCP 工具，意味着任何 MCP 兼容 agent（Claude Code、Codex、Cursor、Cline）都能调 Tavily 而无需写一行集成代码。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对评估 agent 栈的开发者，这是阻力最小的路径：装上 Tavily MCP server，重启编辑器，搜索和提取就成为原生 agent 动作。MCP server 与直接 API 同价——没有 MCP 加价，没有 MCP 专属定价层级。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">MCP server 有一个限制：不暴露 Research 端点，只暴露 Search 和 Extract。多步研究工作流仍需从 agent 代码调 Research，不能从 MCP server 调。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">该用 Tavily 还是别的 Provider？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的决策矩阵很直接：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+<li><strong>2026 年构建 RAG agent 想要阻力最小路径。</strong>用 Tavily。它是每个主流框架的默认项，免费层足够原型，Search+Extract 单调用范式省去粘合三个 API 的工作。</li>
+<li><strong>已有搜索管道、只需干净内容提取。</strong>用 Jina AI。它更便宜更快，按 token 计费随提取内容大小而非页数缩放。</li>
+<li><strong>构建需要语义搜索学术论文或小众领域的研究 agent。</strong>用 Exa。它的神经搜索能理解关键词搜索做不到的查询语义。</li>
+<li><strong>构建需要 Google 排名数据的 SEO 工具。</strong>用 SerpAPI。它是四个中唯一返回真实 Google SERP 的。</li>
+<li><strong>月耗超 100 万 API 调用、需要自定义速率限制。</strong>用 Tavily Enterprise。专属搜索索引和自定义速率限制对该规模值得该价格。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">对 2026 年构建 agent 的大多数 AI 工程师，答案是 Tavily。集成最便宜、免费层最大方、Research 端点是四个中唯一真正单调用做多步研究的。运维坑真实但可控，MCP server 完全消除了集成税。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Tavily 的数据保留策略是什么？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Tavily 不保留超出运营所需的搜索查询或结果。<code class="bg-gray-100 px-1 rounded text-sm">query</code> 和 <code class="bg-gray-100 px-1 rounded text-sm">results</code> 载荷在内存中处理、评分、返回；不写入持久存储。唯一持久日志是聚合速率限制计数器和计费记录（含时间戳、端点、credit 消耗元数据），不含查询或结果内容。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">企业客户可签 "no logs" 合约附加条款，进一步限制聚合元数据。这是医疗、金融、政府等查询内容本身受监管的工作负载的正确层级。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">能自托管 Tavily 吗？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">不能。Tavily 是 hosted-only 服务。搜索索引、提取管道、Research 多步规划全部跑在 Tavily 自己的基础设施上，公司未发布自托管方案。需要自托管的工作负载，最接近替代品：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+<li><strong>SearXNG</strong>（免费、开源元搜索，但无 AI 摘要、无 Research 端点）</li>
+<li><strong>Meilisearch</strong>（免费、开源全文搜索，但需自带内容）</li>
+<li><strong>Exa 企业版</strong>（合同制，需 Exa 销售对接）</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">对 2026 年大多数生产 agent，hosted-only 是 OK 的——替代方案是自托管搜索栈，工程时间成本往往高于 API 账单。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Tavily 怎么处理速率限制和配额超额？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">免费层超额返 HTTP 429。无超额计费——agent 停止工作直到窗口重置。严格但可预测；最坏情况是 agent 返回 "我现在无法搜索"，而非惊人账单。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">付费层有超额计费，边际价取决于计划（Developer $0.008/credit，Pro $0.005/credit）。可在仪表板设硬性支出上限，达上限后自动切回 429 行为。这是生产 agent 的最佳默认——失控 agent 循环在 2026 年制造过几笔惊人账单，硬性上限是最便宜的保险。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Tavily 与带浏览能力的 LLM 有什么区别？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenAI 带浏览的 GPT 模型、Anthropic 的 web search 工具、Google Gemini with Search Grounding 都返回基于实时网页数据的合成自然语言答案。区别在于输出形态和集成模式。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">LLM+浏览返回合成自然语言答案，不给原始搜索结果、页面内容、引用图谱。聊天机器人这是正确形态。Agent 需要对搜索结果做进一步工作（结构化提取、存向量库、与其他工具调用串联），Tavily 是正确形态。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">另一个区别是可靠性。带浏览的 LLM 偶尔不跟随重定向、被 JavaScript-heavy 页面卡住、返回幻觉引用。Tavily 管道专为 agent 场景定制，失败模式不同且更可预测。需要可靠处理广泛网页内容的生产 agent，Tavily 是更可依赖的后端。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Tavily 兼容 OpenAI function calling 吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">兼容。Search、Extract、Crawl、Map、Research 端点都是 OpenAI 兼容的 tool 定义。你可以在任何 OpenAI / Anthropic / Google function-calling 调用中把它们作为 tools 传入，LLM 会返回结构化 tool call，你转发给 Tavily API。响应形态是 JSON 而非 OpenAI 专属，所以对 Anthropic tool use、Google function calling 以及其他 tool-calling 标准都同样适用。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>免费层够生产用吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">免费层 1,000 credits/月（滚动 30 天窗口）。大多数原型和个人项目工作流够用。超过 1,000 credits/月的生产工作流，Developer 计划 $30/月（4,000 credits，$0.008 超额）是正确起点。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>国内能用 Tavily 吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Tavily API 部署在 AWS US-East 和 EU-West。国内访问需代理，从国内客户端延迟通常 200-400ms。国内生产工作负载推荐模式是用 Cloudflare Worker 或腾讯云 Edge Function 中转，把延迟降至 50-100ms 并避免客户端代理配置。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Tavily 怎么处理多用户相同查询？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Tavily 不跨用户去重或缓存结果。每次 Search 调用独立，两个不同用户的相同查询返回相同结果但消耗 2 credits。重复查询的工作负载推荐模式是在 Tavily 调用前加一层小 Redis 缓存——客服 agent 中，前 20 个问题被问 80% 时间，30 秒 TTL 缓存能减少 60-80% credit 消耗。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Research 端点用什么模型？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Tavily 不公布 Research 端点背后的模型栈。该端点是托管的多步 agent 而非单 LLM 调用，公司把底层模型选择视为专有。输出质量与前沿模型一致（GPT-5.5 / Claude Opus 4.5 / Gemini 3.5 同级别），但具体模型和合成 prompt 不公开。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Tavily 支持流式输出吗？</strong></p>
+
+<p class="text-gray-700 leading-relaxed my-4">Search、Extract、Crawl 端点返回完整 JSON 响应，不支持流式。Research 端点在 2026 年 4 月加流式输出，随研究步骤完成返回。Agent 需要向用户展示进度时，Research 流式输出是正确模式；后台 agent 不需要展示进度时，非流式端点集成更简单。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">最终结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年的 Tavily 在 AI agent 搜索 API 领域的地位，类似 Stripe 在 SaaS 支付 API 领域的地位：不是唯一选项，但是每个框架默认的、有最大方免费层的、集成成本最低的。Research 端点是真正的差异化——没有其他 hosted 搜索 API 做单调用多步研究——MCP server 是 Claude Code / Cursor / Codex 圈子的阻力最小路径。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">运维坑（滚动配额窗口、单独 Crawl 配额、<code class="bg-gray-100 px-1 rounded text-sm">answer</code> 字段在多跳查询时的幻觉）真实但可控。hosted-only 约束对某些企业工作负载是真实限制，但对构建 agent 的长尾 AI 工程师，hosted-only 是正确权衡。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对 solo developer 跑 agent 原型，免费层足够交付生产质量 demo。对团队跑规模化生产 agent，Developer 或 Growth 是正确起点，高量工作流的拐点是 Pro 层。Enterprise 是少数需要自定义速率限制和无日志合约的工作负载用的。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果 2026 年你在构建 agent 且还没选搜索 API，答案是 Tavily。成本有竞争力、集成免费、框架默认意味着你会把工程时间花在 agent 逻辑上而非搜索后端。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Reviewed against</strong>：Tavily 价格页（https://tavily.com/pricing，2026-07-31）、Tavily 主页（https://tavily.com/，Series A $25M、Trusted by 2M+ developers、Databricks/IBM WatsonX/JetBrains MCP 集成）、Tavily API 文档（https://docs.tavily.com/，Search/Extract/Crawl/Map/Research/AI Extraction 端点）、LangChain TavilySearchResults 参考、LlamaIndex TavilyToolSpec 参考、MCP server 2026-03 发布说明、Research 端点 2026-02 GA 公告、社区免费层速率限制报告（2026 年 6 月）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Disclosure</strong>：本文包含联盟营销链接。如果你通过这些链接注册，我们可能获得佣金，对你不产生额外费用。我们的评测保持独立。</p>`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl}>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2">
+          <a href="/zh" class="hover:underline">首页</a> &rsaquo;
+          <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo;
+          <span class="text-gray-700">{zhTitle}</span>
+        </nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <h3 class="text-lg font-bold text-blue-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-blue-800 mb-4">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url}
+             class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" target="_blank" rel="sponsored noopener">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">快速参考</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Tavily：</strong> Agent 优先搜索 API（2026 年 7 月）</li>
+            <li><strong>免费层：</strong> 1,000 credits/月（Search 1、Extract 1、Crawl 1/页、Research 5）</li>
+            <li><strong>端点：</strong> <code>https://api.tavily.com/search</code></li>
+            <li><strong>默认集成：</strong> LangChain、LlamaIndex、AutoGen、CrewAI、smolagents</li>
+            <li><strong>MCP server：</strong> 2026 年 3 月上线</li>
+            <li><strong>配套：</strong> FreeModel 跨 Provider 路由</li>
+          </ul>
+        </div>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-2134598094429002"
+             data-ad-slot="xxxxxxxxxx"
+             data-ad-format="auto"></ins>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
