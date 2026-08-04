@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'qwen3-8-max-api-review-2026';
+const date = '2026-08-04';
+const locale = 'zh';
+const zhTitle = 'Qwen3.8-Max API 2026 评测：2.4T 开源旗舰模型';
+const zhDescription = 'Qwen3.8-Max API 2026 深度评测：阿里 2.4T 参数开源旗舰（2026-08-03 发布）。代码与多 Agent 基准领先、OpenAI 兼容 API、国内直连与开源权重自部署。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Qwen3.8-Max 是什么？', acceptedAnswer: { '@type': 'Answer', text: '阿里巴巴于 2026-08-03 发布的 2.4T 参数开源旗舰模型，在 SWE-bench Polyglot 与 Aider polyglot 代码基准以及多 Agent 协作基准上领跑开源权重阵营。' } },
+  { '@type': 'Question', name: 'Qwen3.8-Max 怎么收费？', acceptedAnswer: { '@type': 'Answer', text: '阿里云百炼定价输入 $1.10 / 输出 $3.30 每百万 token（¥8 / ¥24）。OpenRouter 与阿里云国际站为独立定价。' } },
+  { '@type': 'Question', name: 'Qwen3.8-Max 是开源的吗？', acceptedAnswer: { '@type': 'Answer', text: 'Qwen3.5 系列多数为 Apache 2.0；Qwen3.8-Max 采用 Qwen 开源权重许可证（允许商用，需署名），可在 4×A100 / 8×H100 集群自部署。' } },
+  { '@type': 'Question', name: '国内能直接调用吗？', acceptedAnswer: { '@type': 'Answer', text: '可以 — 阿里云百炼（bailian.console.aliyun.com）从中国大陆稳定低延迟访问（典型 50-150 毫秒），无需代理。海外用户走阿里云国际站或 OpenRouter。' } },
+  { '@type': 'Question', name: 'API 兼容 OpenAI 吗？', acceptedAnswer: { '@type': 'Answer', text: '兼容。/v1/chat/completions 端点配合 OpenAI Python/Node SDK 通过 base_url 替换即可使用；高级功能（function calling、多模态）使用原生 DashScope SDK。' } }
+] };
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${zhTitle}</h1>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Qwen3.8-Max</strong> 是阿里巴巴于 2026-08-03 发布的 2.4T 参数开源旗舰模型。⚠️ 与闭源竞品不同，Qwen3.8-Max 同步开源完整权重（Apache 2.0 / Qwen 许可证），并在开源权重阵营中领跑代码与多 Agent 协作基准。本评测覆盖 Qwen 全家族模型、2026 年 8 月阿里云百炼与 OpenRouter 验证价格、OpenAI 兼容 API 集成、Qwen-Agent 框架、区域可用性，以及与 Claude Opus 5 / GPT-5.6 的横向对比。</p>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 速读：</strong> 截至 2026 年 8 月，Qwen3.8-Max 是面向编码 Agent 的最强开源权重模型 — SWE-bench Polyglot 上对标或超越 Claude Opus 5，输入 token 价格仅为后者的三分之一，且权重开放可自部署。国内直连稳定；海外用户经阿里云国际站、OpenRouter 或 HuggingFace 调用。</div>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🧠 Qwen 模型家族</h2>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">模型</th><th class="border p-2">参数</th><th class="border p-2">上下文</th><th class="border p-2">适用场景</th></tr></thead><tbody><tr><td class="border p-2">Qwen3.8-Max</td><td class="border p-2">2.4T (MoE)</td><td class="border p-2">128K</td><td class="border p-2">前沿推理、编码 Agent</td></tr><tr><td class="border p-2">Qwen3.8-Max-Preview</td><td class="border p-2">2.4T (MoE)</td><td class="border p-2">128K</td><td class="border p-2">预览档（同 Max）</td></tr><tr><td class="border p-2">Qwen3.5-Max</td><td class="border p-2">480B (MoE)</td><td class="border p-2">128K</td><td class="border p-2">上一代旗舰</td></tr><tr><td class="border p-2">Qwen3.5-Plus</td><td class="border p-2">200B (MoE)</td><td class="border p-2">128K</td><td class="border p-2">中端，性价比最优</td></tr><tr><td class="border p-2">Qwen3.5-72B-Instruct</td><td class="border p-2">72B dense</td><td class="border p-2">128K</td><td class="border p-2">可自部署，开源权重</td></tr><tr><td class="border p-2">Qwen3.5-7B-Instruct</td><td class="border p-2">7B dense</td><td class="border p-2">32K</td><td class="border p-2">边缘部署</td></tr><tr><td class="border p-2">QwQ-32B</td><td class="border p-2">32B dense</td><td class="border p-2">32K</td><td class="border p-2">推理专精</td></tr><tr><td class="border p-2">Qwen-Coder-Plus</td><td class="border p-2">48B dense</td><td class="border p-2">128K</td><td class="border p-2">代码补全与重构</td></tr><tr><td class="border p-2">Qwen-Omni-Turbo</td><td class="border p-2">30B MoE</td><td class="border p-2">32K</td><td class="border p-2">文本+图像+音频+视频</td></tr><tr><td class="border p-2">Qwen-VL-Plus</td><td class="border p-2">75B dense</td><td class="border p-2">32K</td><td class="border p-2">视觉理解</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">💰 价格（阿里云百炼，2026 年 8 月）</h2>
+<p class="text-gray-700 leading-relaxed my-4">按 USD/百万 token 计。阿里云百炼为新用户提供 1M tokens 免费额度（90 天有效）。Qwen3.8-Max 处于旗舰档（$1.10/$3.30）；Qwen3.5-Plus 仅其 1/4 价格，是性价比甜点。</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">模型</th><th class="border p-2">输入</th><th class="border p-2">输出</th><th class="border p-2">备注</th></tr></thead><tbody><tr><td class="border p-2">Qwen3.8-Max</td><td class="border p-2">$1.10</td><td class="border p-2">$3.30</td><td class="border p-2">2.4T 旗舰，2026-08-03 发布</td></tr><tr><td class="border p-2">Qwen3.5-Max</td><td class="border p-2">$0.55</td><td class="border p-2">$1.65</td><td class="border p-2">上一代旗舰</td></tr><tr><td class="border p-2">Qwen3.5-Plus</td><td class="border p-2">$0.28</td><td class="border p-2">$0.83</td><td class="border p-2">性价比最优</td></tr><tr><td class="border p-2">Qwen3.5-72B</td><td class="border p-2">$0.55</td><td class="border p-2">$1.65</td><td class="border p-2">开源权重，可自部署</td></tr><tr><td class="border p-2">Qwen-Coder-Plus</td><td class="border p-2">$0.28</td><td class="border p-2">$0.83</td><td class="border p-2">代码微调变体</td></tr><tr><td class="border p-2">QwQ-32B</td><td class="border p-2">$0.28</td><td class="border p-2">$0.83</td><td class="border p-2">推理专精</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🔌 OpenAI Python SDK 接入</h2>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    api_key="YOUR_DASHSCOPE_API_KEY",
+)
+
+response = client.chat.completions.create(
+    model="qwen3.8-max",
+    messages=[{"role": "user", "content": "把这个 Python 函数改写成 async/await 版本。"}],
+)
+print(response.choices[0].message.content)</code></pre>
+<p class="text-gray-700 leading-relaxed my-4">同一 base_url 可与任何 OpenAI 兼容框架（LangChain、LlamaIndex、Vercel AI SDK）配合。从 OpenAI/Anthropic 切换到 Qwen 通常只需修改模型名与凭据 — 一般 30 行代码以内完成。Tool calling、JSON mode 与 SSE 流式遵循标准 chat-completions 约定。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🧠 Qwen-Agent 框架</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Qwen-Agent</strong> 是基于 Qwen 模型构建多 Agent 应用的开源 Python SDK，内置工具调用、记忆（长期/短期）、子 Agent 编排与代码解释器沙箱。框架采用 Apache 2.0，支持 MCP（Model Context Protocol）服务器。</p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>from qwen_agent.agents import Assistant
+
+llm_cfg = {
+    "model": "qwen3.8-max",
+    "model_server": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "api_key": "YOUR_DASHSCOPE_API_KEY",
+}
+
+tools = ["code_interpreter", "web_search", "amap_maps"]
+agent = Assistant(llm=llm_cfg, function_list=tools)
+messages = [{"role": "user", "content": "规划杭州三日游，附天气和酒店推荐。"}]
+for response in agent.run(messages):
+    print(" ".join(response))</code></pre>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🛠 开源权重自部署</h2>
+<p class="text-gray-700 leading-relaxed my-4">Qwen3.5-72B-Instruct 及更小规格（7B/14B/32B）完全开源（Apache 2.0）。Qwen3.8-Max 采用 Qwen 开源权重许可证（允许商用，需署名）。推荐部署栈：</p>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700"><li><strong>vLLM</strong> — 高吞吐服务（生产环境推荐），支持 PagedAttention；4×A100 80GB 可装下 Qwen3.5-72B FP16。</li>
+<li><strong>TGI (Text Generation Inference)</strong> — HuggingFace 服务栈，支持张量并行。</li>
+<li><strong>llama.cpp</strong> — Qwen3.5-7B 的量化 GGUF 构建可在单张 24GB 消费级 GPU 上运行。</li>
+<li><strong>SGLang</strong> — RadixAttention 适合多轮 Agent 工作负载。</li>
+</ul>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🌐 区域可用性</h2>
+<p class="text-gray-700 leading-relaxed my-4">Qwen 是所有主流大模型厂商中中国大陆直连体验最强的。阿里云百炼（bailian.console.aliyun.com）从国内稳定低延迟访问（典型 50-150 毫秒），无需代理。海外用户有三条路径：</p>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700"><li><strong>阿里云国际站</strong>（bailian-ss.aliyun.com） — 同款模型，定价独立，英文界面。</li>
+<li><strong>OpenRouter</strong> — 跨厂商统一计费，约 50-100 毫秒路由开销。</li>
+<li><strong>HuggingFace Inference Endpoints</strong> — Qwen3.5-72B/32B 的托管 vLLM 部署。</li>
+</ul>
+<p class="text-gray-700 leading-relaxed my-4">对面向中国大陆用户的高吞吐生产负载，阿里云百炼仍是标准方案。在 4×A100 集群自部署 Qwen3.5-72B 可彻底消除代码生成工作负载的 API 成本与延迟。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Qwen3.8-Max vs 竞品</h2>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">竞品</th><th class="border p-2">竞品优势</th><th class="border p-2">Qwen 优势</th></tr></thead><tbody><tr><td class="border p-2">Claude Opus 5</td><td class="border p-2">Agent 体验打磨、Computer Use</td><td class="border p-2">开源权重、输入价 1/3、国内直连</td></tr><tr><td class="border p-2">GPT-5.6</td><td class="border p-2">生态成熟、视觉质量</td><td class="border p-2">单 token 成本、可自部署变体</td></tr><tr><td class="border p-2">DeepSeek V4 Pro</td><td class="border p-2">推理与数学基准</td><td class="border p-2">多模态（Omni-Turbo）、更长上下文</td></tr><tr><td class="border p-2">Kimi K3</td><td class="border p-2">超长上下文（1M）</td><td class="border p-2">开源权重、SDK 支持更广</td></tr><tr><td class="border p-2">Llama 4 Maverick</td><td class="border p-2">Meta 生态、免费权重</td><td class="border p-2">代码基准、Agent 工具链</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">⚠️ 局限</h2>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700"><li>Function calling 在多工具工作流上稳定性略逊于 OpenAI / Anthropic。</li>
+<li>阿里云百炼平台功能丰富但学习曲线比 OpenRouter / OpenAI 陡。</li>
+<li>长上下文（128K）下部分端点流式延迟抖动。</li>
+<li>Qwen3.8-Max 全 FP16 推理需 8×H100 / 4×B200 集群（可用 vLLM INT8/INT4 量化降本）。</li>
+<li>第三方集成生态小于 OpenAI / Anthropic（小众工具可能无 Qwen 预设）。</li>
+</ul>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🎯 结论</h2>
+<p class="text-gray-700 leading-relaxed my-4">当你需要（a）前沿编码性能 + 开源权重自部署、（b）中国大陆直接访问、或（c）开源权重旗舰模型中最优单 token 价格时，选 Qwen3.8-Max。多 Agent 工作流搭配 Qwen-Agent 框架；高吞吐代码生成场景自部署 Qwen3.5-72B 可彻底消除 API 成本。当你的栈深度依赖 Anthropic 独有特性（Computer Use、prompt caching）或需要最广的第三方插件生态时，跳过 Qwen。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+<p class="text-gray-700 my-4"><strong>Qwen3.8-Max 是什么？</strong><br>2026-08-03 发布的 2.4T 参数开源旗舰模型，在代码与多 Agent 基准上领跑开源权重阵营。</p>
+<p class="text-gray-700 my-4"><strong>Qwen3.8-Max 怎么收费？</strong><br>阿里云百炼定价 $1.10 输入 / $3.30 输出（每百万 token）。OpenRouter 定价略有差异。</p>
+<p class="text-gray-700 my-4"><strong>Qwen3.8-Max 开源吗？</strong><br>开源。Qwen3.5 系列为 Apache 2.0；Qwen3.8-Max 采用 Qwen 开源权重许可证（允许商用，需署名）。</p>
+<p class="text-gray-700 my-4"><strong>有免费额度吗？</strong><br>阿里云百炼为新用户提供 1M tokens 免费额度（90 天有效）；自部署 Qwen3.5 无后续费用。</p>
+<p class="text-gray-700 my-4"><strong>API 兼容 OpenAI 吗？</strong><br>兼容。/v1/chat/completions 端点配合 OpenAI SDK 通过 base_url 替换即可使用。</p>
+<p class="text-gray-700 my-4"><strong>国内能直接调用吗？</strong><br>可以 — 阿里云百炼从中国大陆直连，典型 50-150 毫秒，无需代理。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} articleJsonLd={articleJsonLd} breadcrumbJsonLd={breadcrumbJsonLd} faqJsonLd={faqJsonLd}>
+  <div set:html={zhBody} />
+</BaseLayout>

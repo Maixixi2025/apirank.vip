@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'qwen3-8-max-api-review-2026';
+const date = '2026-08-04';
+const locale = 'en';
+const enTitle = 'Qwen3.8-Max API: 2.4T Open-Source Flagship 2026';
+const enDescription = 'Qwen3.8-Max API 2026 review: 2.4T open-source flagship from Alibaba (released 2026-08-03). Coding benchmarks, OpenAI-compatible API, pricing, China access.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: enTitle, description: enDescription, datePublished: date, dateModified: date, inLanguage: 'en-US', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://apirank.vip/' }, { '@type': 'ListItem', position: 2, name: 'Tutorials', item: 'https://apirank.vip/tutorials' }, { '@type': 'ListItem', position: 3, name: enTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'What is Qwen3.8-Max?', acceptedAnswer: { '@type': 'Answer', text: 'A 2.4T-parameter open-source flagship model released by Alibaba on 2026-08-03. It tops SWE-bench Polyglot and Aider polyglot coding benchmarks and leads multi-agent collaboration benchmarks among open-weight models.' } },
+  { '@type': 'Question', name: 'How much does Qwen3.8-Max cost?', acceptedAnswer: { '@type': 'Answer', text: '$1.10 per million input tokens and $3.30 per million output tokens via Aliyun Bailian (¥8 / ¥24). OpenRouter and Aliyun International have independent pricing.' } },
+  { '@type': 'Question', name: 'Is Qwen3.8-Max open-source?', acceptedAnswer: { '@type': 'Answer', text: 'The Qwen3.5 family is open under Apache 2.0 for most variants (7B/14B/32B/72B). Qwen3.8-Max weights are published under the Qwen open-weights license — self-hostable on 4×A100 / 8×H100 clusters.' } },
+  { '@type': 'Question', name: 'Is Qwen available from mainland China?', acceptedAnswer: { '@type': 'Answer', text: 'Yes — Aliyun Bailian (bailian.console.aliyun.com) provides direct, low-latency access (50-150ms typical) without proxying. Overseas users use Aliyun International or OpenRouter.' } },
+  { '@type': 'Question', name: 'Is the API OpenAI-compatible?', acceptedAnswer: { '@type': 'Answer', text: 'Yes. The /v1/chat/completions surface works with the OpenAI Python/Node SDK via base_url override; advanced features (function calling, multimodal) use the native DashScope SDK.' } }
+] };
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${enTitle}</h1>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Qwen3.8-Max</strong> is Alibaba's 2.4T-parameter open-source flagship released 2026-08-03. ⚠️ Unlike closed-source competitors, Qwen3.8-Max ships with full open weights (Apache 2.0 / Qwen license) and tops both coding and multi-agent collaboration benchmarks among open-weight models. This review covers the full Qwen model family, verified August 2026 pricing on Aliyun Bailian and OpenRouter, OpenAI-compatible API integration, the Qwen-Agent framework, regional availability, and how it compares to Claude Opus 5 / GPT-5.6.</p>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 Quick take:</strong> Qwen3.8-Max is the strongest open-weight model for coding agents as of August 2026 — it matches or beats Claude Opus 5 on SWE-bench Polyglot at one-third the input-token price, with full weights available for self-hosting. Mainland China access is direct; overseas users route via Aliyun International, OpenRouter or HuggingFace.</div>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🧠 Qwen model family</h2>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">Model</th><th class="border p-2">Parameters</th><th class="border p-2">Context</th><th class="border p-2">Best use</th></tr></thead><tbody><tr><td class="border p-2">Qwen3.8-Max</td><td class="border p-2">2.4T (MoE)</td><td class="border p-2">128K</td><td class="border p-2">Frontier reasoning, coding agents</td></tr><tr><td class="border p-2">Qwen3.8-Max-Preview</td><td class="border p-2">2.4T (MoE)</td><td class="border p-2">128K</td><td class="border p-2">Preview tier (same as Max)</td></tr><tr><td class="border p-2">Qwen3.5-Max</td><td class="border p-2">480B (MoE)</td><td class="border p-2">128K</td><td class="border p-2">Previous-gen flagship</td></tr><tr><td class="border p-2">Qwen3.5-Plus</td><td class="border p-2">200B (MoE)</td><td class="border p-2">128K</td><td class="border p-2">Mid-tier, best $/perf</td></tr><tr><td class="border p-2">Qwen3.5-72B-Instruct</td><td class="border p-2">72B dense</td><td class="border p-2">128K</td><td class="border p-2">Self-hostable, open weight</td></tr><tr><td class="border p-2">Qwen3.5-7B-Instruct</td><td class="border p-2">7B dense</td><td class="border p-2">32K</td><td class="border p-2">Edge deployable</td></tr><tr><td class="border p-2">QwQ-32B</td><td class="border p-2">32B dense</td><td class="border p-2">32K</td><td class="border p-2">Reasoning specialist</td></tr><tr><td class="border p-2">Qwen-Coder-Plus</td><td class="border p-2">48B dense</td><td class="border p-2">128K</td><td class="border p-2">Code completion / refactoring</td></tr><tr><td class="border p-2">Qwen-Omni-Turbo</td><td class="border p-2">30B MoE</td><td class="border p-2">32K</td><td class="border p-2">Text + image + audio + video</td></tr><tr><td class="border p-2">Qwen-VL-Plus</td><td class="border p-2">75B dense</td><td class="border p-2">32K</td><td class="border p-2">Vision-language</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">💰 Pricing (Aliyun Bailian, August 2026)</h2>
+<p class="text-gray-700 leading-relaxed my-4">Token rates are USD per million tokens. Aliyun Bailian offers new users 1M tokens free (90-day validity). Qwen3.8-Max is priced at flagship tier ($1.10/$3.30); Qwen3.5-Plus at one-quarter that rate remains the $/perf sweet spot.</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">Model</th><th class="border p-2">Input</th><th class="border p-2">Output</th><th class="border p-2">Notes</th></tr></thead><tbody><tr><td class="border p-2">Qwen3.8-Max</td><td class="border p-2">$1.10</td><td class="border p-2">$3.30</td><td class="border p-2">Flagship 2.4T, 2026-08-03 launch</td></tr><tr><td class="border p-2">Qwen3.5-Max</td><td class="border p-2">$0.55</td><td class="border p-2">$1.65</td><td class="border p-2">Previous-gen flagship</td></tr><tr><td class="border p-2">Qwen3.5-Plus</td><td class="border p-2">$0.28</td><td class="border p-2">$0.83</td><td class="border p-2">Best $/perf</td></tr><tr><td class="border p-2">Qwen3.5-72B</td><td class="border p-2">$0.55</td><td class="border p-2">$1.65</td><td class="border p-2">Open-weight, self-hostable</td></tr><tr><td class="border p-2">Qwen-Coder-Plus</td><td class="border p-2">$0.28</td><td class="border p-2">$0.83</td><td class="border p-2">Code-tuned variant</td></tr><tr><td class="border p-2">QwQ-32B</td><td class="border p-2">$0.28</td><td class="border p-2">$0.83</td><td class="border p-2">Reasoning specialist</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🔌 OpenAI Python SDK</h2>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    api_key="YOUR_DASHSCOPE_API_KEY",
+)
+
+response = client.chat.completions.create(
+    model="qwen3.8-max",
+    messages=[{"role": "user", "content": "Refactor this Python function to use async/await."}],
+)
+print(response.choices[0].message.content)</code></pre>
+<p class="text-gray-700 leading-relaxed my-4">The same base URL works with any OpenAI-compatible framework (LangChain, LlamaIndex, Vercel AI SDK). Switching from OpenAI/Anthropic to Qwen is a model-name and credential change — typically under 30 lines of code. Tool calling, JSON mode and SSE streaming follow standard chat-completions conventions.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🧠 Qwen-Agent framework</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Qwen-Agent</strong> is the open-source Python SDK for building multi-agent applications on top of Qwen models. It ships with built-in tool use, memory (long-term / short-term), sub-agent orchestration, and a code-interpreter sandbox. The framework is Apache 2.0 and integrates with MCP (Model Context Protocol) servers.</p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>from qwen_agent.agents import Assistant
+
+llm_cfg = {
+    "model": "qwen3.8-max",
+    "model_server": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+    "api_key": "YOUR_DASHSCOPE_API_KEY",
+}
+
+tools = ["code_interpreter", "web_search", "amap_maps"]
+agent = Assistant(llm=llm_cfg, function_list=tools)
+messages = [{"role": "user", "content": "Plan a 3-day trip to Hangzhou with weather and hotel recommendations."}]
+for response in agent.run(messages):
+    print(" ".join(response))</code></pre>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🛠 Self-hosting open weights</h2>
+<p class="text-gray-700 leading-relaxed my-4">Qwen3.5-72B-Instruct and smaller variants (7B/14B/32B) are fully open under Apache 2.0. Qwen3.8-Max weights are published under the Qwen open-weights license (commercial use allowed with attribution). Recommended deployment stacks:</p>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700"><li><strong>vLLM</strong> — high-throughput serving (recommended for production), supports PagedAttention, 4×A100 80GB fits Qwen3.5-72B at FP16.</li><li><strong>TGI (Text Generation Inference)</strong> — HuggingFace's serving stack with tensor parallelism.</li><li><strong>llama.cpp</strong> — quantized GGUF builds for Qwen3.5-7B run on a single 24GB consumer GPU.</li><li><strong>SGLang</strong> — RadixAttention for multi-turn agent workloads.</li></ul>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🌐 Regional availability</h2>
+<p class="text-gray-700 leading-relaxed my-4">Qwen has the strongest mainland-China access of any major lab. Aliyun Bailian (bailian.console.aliyun.com) provides stable, low-latency access from China with 50-150ms typical response times — no proxy required. For overseas users, three routes exist:</p>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700"><li><strong>Aliyun International</strong> (bailian-ss.aliyun.com) — same models, independent pricing, English UI.</li><li><strong>OpenRouter</strong> — unified billing across providers, ~50-100ms routing overhead.</li><li><strong>HuggingFace Inference Endpoints</strong> — managed vLLM deployments of Qwen3.5-72B/32B.</li></ul>
+<p class="text-gray-700 leading-relaxed my-4">For high-volume production workloads serving China-based users, Aliyun Bailian is the standard. Self-hosting Qwen3.5-72B on a 4×A100 cluster eliminates API cost and latency entirely for code generation workloads.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Qwen3.8-Max vs competitors</h2>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">Provider</th><th class="border p-2">Where it wins</th><th class="border p-2">Where Qwen wins</th></tr></thead><tbody><tr><td class="border p-2">Claude Opus 5</td><td class="border p-2">Agent polish, Computer Use</td><td class="border p-2">Open weights, 1/3 input price, China access</td></tr><tr><td class="border p-2">GPT-5.6</td><td class="border p-2">Ecosystem, Vision quality</td><td class="border p-2">Cost-per-token, self-hostable variants</td></tr><tr><td class="border p-2">DeepSeek V4 Pro</td><td class="border p-2">Reasoning, math benchmarks</td><td class="border p-2">Multimodal (Omni-Turbo), wider context</td></tr><tr><td class="border p-2">Kimi K3</td><td class="border p-2">Long context (1M)</td><td class="border p-2">Open weights, broader SDK support</td></tr><tr><td class="border p-2">Llama 4 Maverick</td><td class="border p-2">Meta ecosystem, free weights</td><td class="border p-2">Coding benchmarks, agent tooling</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">⚠️ Limitations</h2>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700"><li>Function calling less stable than OpenAI / Anthropic for multi-tool workflows.</li><li>Aliyun Bailian platform is feature-rich but has a steeper learning curve than OpenRouter / OpenAI.</li><li>Stream-mode latency jitter at long context (128K) on some endpoints.</li><li>Qwen3.8-Max weights require 8×H100 / 4×B200 cluster for full FP16 inference (use vLLM with INT8/INT4 quant for cost reduction).</li><li>Smaller third-party integration ecosystem than OpenAI / Anthropic (some niche tools may not have Qwen-specific presets).</li></ul>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🎯 Verdict</h2>
+<p class="text-gray-700 leading-relaxed my-4">Choose Qwen3.8-Max when you need (a) frontier-tier coding performance with open weights for self-hosting, (b) direct mainland China access, or (c) the best price-per-token among open-weight flagship models. Pair it with the Qwen-Agent framework for multi-agent workflows, or use Qwen3.5-72B for self-hosted deployments that eliminate API cost entirely. Skip it when your stack relies on Anthropic-specific features (Computer Use, prompt caching) or when you need the absolute largest third-party plugin ecosystem.</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+<p class="text-gray-700 my-4"><strong>What is Qwen3.8-Max?</strong><br>A 2.4T-parameter open-source flagship model released 2026-08-03, topping coding and multi-agent benchmarks among open-weight models.</p>
+<p class="text-gray-700 my-4"><strong>How much does Qwen3.8-Max cost?</strong><br>$1.10 per million input tokens and $3.30 per million output tokens via Aliyun Bailian. OpenRouter pricing differs slightly.</p>
+<p class="text-gray-700 my-4"><strong>Is Qwen3.8-Max open-source?</strong><br>Yes — Qwen3.5 family is Apache 2.0; Qwen3.8-Max is published under the Qwen open-weights license (commercial OK with attribution).</p>
+<p class="text-gray-700 my-4"><strong>Is there a free tier?</strong><br>Aliyun Bailian grants 1M tokens free to new users (90-day validity). Self-hosted Qwen3.5 has no recurring cost.</p>
+<p class="text-gray-700 my-4"><strong>Is the API OpenAI-compatible?</strong><br>Yes — the /v1/chat/completions endpoint works with the OpenAI SDK via base_url override.</p>
+<p class="text-gray-700 my-4"><strong>Can Qwen be used from mainland China?</strong><br>Yes — Aliyun Bailian provides direct, low-latency access (50-150ms) without proxying.</p>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} articleJsonLd={articleJsonLd} breadcrumbJsonLd={breadcrumbJsonLd} faqJsonLd={faqJsonLd}>
+  <div set:html={enBody} />
+</BaseLayout>
