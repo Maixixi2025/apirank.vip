@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'stepfun-api-review';
+const date = '2026-08-05';
+const locale = 'zh';
+const zhTitle = '阶跃星辰 Step-2 API 测评 2026:多模态旗舰与定价';
+const zhDescription = '阶跃星辰 Step-2 API 2026 深度测评:1.2T 多模态旗舰、Step-R 推理、OpenAI 兼容端点、国内直连、按量计费价格明细。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: '阶跃星辰 API 是什么？', acceptedAnswer: { '@type': 'Answer', text: '托管的 OpenAI 兼容接口,提供 Step-2、Step-2-mini、Step-1、Step-R 推理、Step-CC 代码补全、Step-1.5V 视觉,全部从 platform.stepfun.com 提供,中国大陆可直接访问。' } },
+  { '@type': 'Question', name: '阶跃星辰如何计费？', acceptedAnswer: { '@type': 'Answer', text: 'Step-2 输入 ¥6/输出 ¥18 每百万 token(约 $0.83 / $2.50);Step-2-mini 起价 ¥1 / ¥3;Step-R 推理 ¥8 / ¥24,大约是 OpenAI o1 价格的 1/5。' } },
+  { '@type': 'Question', name: '阶跃星辰有免费额度吗？', acceptedAnswer: { '@type': 'Answer', text: '有。新注册账户可获得 100 万 token 免费额度,有效期 30 天,之后转为预充值按量计费。' } },
+  { '@type': 'Question', name: '国内能直接使用阶跃星辰吗？', acceptedAnswer: { '@type': 'Answer', text: '可以。platform.stepfun.com 走国内 BGP 路由,典型 TTFT 200-400ms,无需代理;国际流量由香港 PoP 承载。' } },
+  { '@type': 'Question', name: 'Step-2 支持多模态吗？', acceptedAnswer: { '@type': 'Answer', text: '支持。Step-2 通过单一 /v1/chat/completions 端点接受文本、图像、音频、视频,无需额外的视觉 API。' } },
+  { '@type': 'Question', name: 'Step-R 用来做什么？', acceptedAnswer: { '@type': 'Answer', text: 'Step-R 是阶跃星辰的推理模型(对标 o1 / DeepSeek R1),链式思考通过流式接口暴露,适用于数学、代码审查、多步骤规划。' } }
+] };
+const affiliateSidebar = { title: '试试 FreeModel 多厂商路由', description: '一个密钥路由 DeepSeek、阶跃星辰、OpenAI、Anthropic、Google — 跨区域生产环境理想的回退方案。', url: 'https://freemodel.dev/invite/FRE-7a3b6220', cta: '免费试用' };
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${zhTitle}</h1>
+<p class="text-gray-700 leading-relaxed my-4"><strong>阶跃星辰(Stepfun)</strong>是一家上海 AI 实验室,其<strong>Step-2</strong>模型是 1.2 万亿参数的多模态旗舰,通过单一 OpenAI 兼容端点接受文本、图像、音频与视频输入。⚠️ 与多数按模态分别计费、需独立视觉 API 的中国 LLM 栈不同,Step-2 把所有输入都视为 content part — 视频理解调用与文本对话走同一条计费路径。本文完整评测模型、2026 年 8 月价格、API 接入、Step-R 推理、区域可用性、竞品对比与真实局限。</p>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 简要结论:</strong>阶跃星辰是国内多模态生产负载下,最强的 OpenAI 兼容一线替代,比 Reka AI 更适合国内场景;Step-R 是 OpenAI o1 / DeepSeek R1 的 1/5 价格替代。128K 上下文窗口落后于 Kimi K3(1M)与 Qwen3.8-Max(1M)。</div>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🧠 模型列表</h2>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">模型</th><th class="border p-2">档位</th><th class="border p-2">上下文</th><th class="border p-2">适用场景</th></tr></thead><tbody><tr><td class="border p-2">Step-2</td><td class="border p-2">多模态旗舰</td><td class="border p-2">128K</td><td class="border p-2">单一端点的文本+图像+音频+视频</td></tr><tr><td class="border p-2">Step-2-mini</td><td class="border p-2">快速多模态</td><td class="border p-2">32K</td><td class="border p-2">低成本高吞吐多模态 Agent</td></tr><tr><td class="border p-2">Step-1</td><td class="border p-2">上代旗舰</td><td class="border p-2">32K</td><td class="border p-2">稳定、文档完善的多模态对话</td></tr><tr><td class="border p-2">Step-1.5V</td><td class="border p-2">视觉调优</td><td class="border p-2">32K</td><td class="border p-2">图像重 OCR、文档推理</td></tr><tr><td class="border p-2">Step-R</td><td class="border p-2">推理</td><td class="border p-2">64K</td><td class="border p-2">o1 / R1 同级,价格 1/5</td></tr><tr><td class="border p-2">Step-CC</td><td class="border p-2">代码补全</td><td class="border p-2">16K</td><td class="border p-2">IDE 补全、内联建议</td></tr><tr><td class="border p-2">Step-Embed</td><td class="border p-2">嵌入</td><td class="border p-2">8K</td><td class="border p-2">1024 维文本嵌入,适用 RAG</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">💰 定价(2026-08-05 验证)</h2>
+<p class="text-gray-700 leading-relaxed my-4">词元价格单位为人民币每百万 token。30 天免费窗口结束后,阶跃星辰按预充值按量计费。</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">模型</th><th class="border p-2">输入(¥/M)</th><th class="border p-2">输出(¥/M)</th><th class="border p-2">美元等值</th><th class="border p-2">备注</th></tr></thead><tbody><tr><td class="border p-2">Step-2</td><td class="border p-2">¥6</td><td class="border p-2">¥18</td><td class="border p-2">$0.83 / $2.50</td><td class="border p-2">万亿参数多模态旗舰</td></tr><tr><td class="border p-2">Step-2-mini</td><td class="border p-2">¥1</td><td class="border p-2">¥3</td><td class="border p-2">$0.14 / $0.42</td><td class="border p-2">Step-2 快速版,200B</td></tr><tr><td class="border p-2">Step-1</td><td class="border p-2">¥4</td><td class="border p-2">¥12</td><td class="border p-2">$0.56 / $1.67</td><td class="border p-2">300B 多模态,上代</td></tr><tr><td class="border p-2">Step-1.5V</td><td class="border p-2">¥3</td><td class="border p-2">¥9</td><td class="border p-2">$0.42 / $1.25</td><td class="border p-2">视觉调优 200B</td></tr><tr><td class="border p-2">Step-R</td><td class="border p-2">¥8</td><td class="border p-2">¥24</td><td class="border p-2">$1.11 / $3.33</td><td class="border p-2">推理,o1 / R1 同级</td></tr><tr><td class="border p-2">Step-CC</td><td class="border p-2">¥1</td><td class="border p-2">¥2</td><td class="border p-2">$0.14 / $0.28</td><td class="border p-2">代码补全</td></tr></tbody></table>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🔌 OpenAI Python SDK 接入</h2>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>from openai import OpenAI
+client = OpenAI(
+    base_url="https://platform.stepfun.com/v1",
+    api_key="YOUR_STEPFUN_API_KEY"
+)
+response = client.chat.completions.create(
+    model="step-2",
+    messages=[
+        {"role": "user", "content": [
+            {"type": "text", "text": "总结这个视频片段。"},
+            {"type": "video_url", "video_url": {"url": "https://example.com/clip.mp4"}}
+        ]}
+    ]
+)
+print(response.choices[0].message.content)</code></pre>
+<p class="text-gray-700 leading-relaxed my-4">同一 <code>base_url</code> 适用于任何 OpenAI 兼容框架适配器。阶跃星辰同时提供官方 Python SDK(含多模态辅助),仓库 <code>github.com/stepfun-ai</code> — 适合需要流式 token 用量统计、图像感知缓存、Step-CC completions 端点的调用方。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">⚡ Step-R 推理:¥8/M 的 o1 替代</h2>
+<p class="text-gray-700 leading-relaxed my-4">Step-R 是阶跃星辰对标 OpenAI o1 与 DeepSeek R1 的推理模型,链式思考通过标准流式接口暴露。关键数字:输入 ¥8 / 输出 ¥24 每百万 token。OpenAI o1 定价 $15 / $60,DeepSeek R1 是 ¥4 / ¥16 — Step-R 大约是 o1 的 1/5、R1 的 2 倍,但在与 Step-2 配对时具备显著更强的多模态上下文继承(Step-R 在 Step-2 的多模态输入上做推理时,图像/视频上下文不会丢失)。</p>
+<p class="text-gray-700 leading-relaxed my-4">生产数学 / 代码负载上,Step-R 在 MATH-500 与 HumanEval 上与 R1 持平,推理过程可在最终答案前被检查,便于调试或审计。代价:无原生 tool calling — Step-R 纯文本,工具型 agent 需把它包在规划模型(通常 Step-2)中做串联调用。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🆚 对比 DeepSeek V3.2 / Qwen3.5-Max / Kimi K3</h2>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">厂商</th><th class="border p-2">旗舰</th><th class="border p-2">上下文</th><th class="border p-2">输入/输出(每 M)</th><th class="border p-2">多模态</th><th class="border p-2">国内直连</th></tr></thead><tbody><tr><td class="border p-2">阶跃星辰</td><td class="border p-2">Step-2</td><td class="border p-2">128K</td><td class="border p-2">¥6 / ¥18</td><td class="border p-2">✅ 单一端点</td><td class="border p-2">✅</td></tr><tr><td class="border p-2">DeepSeek</td><td class="border p-2">V3.2</td><td class="border p-2">64K</td><td class="border p-2">¥0.14 / ¥0.28</td><td class="border p-2">❌ 纯文本</td><td class="border p-2">✅</td></tr><tr><td class="border p-2">阿里 Qwen</td><td class="border p-2">Qwen3.5-Max</td><td class="border p-2">1M</td><td class="border p-2">¥4 / ¥12</td><td class="border p-2">✅ 独立 VL</td><td class="border p-2">✅</td></tr><tr><td class="border p-2">月之暗面 Kimi</td><td class="border p-2">K3</td><td class="border p-2">1M</td><td class="border p-2">¥2 / ¥20</td><td class="border p-2">✅ 原生</td><td class="border p-2">✅</td></tr><tr><td class="border p-2">OpenAI</td><td class="border p-2">GPT-5</td><td class="border p-2">128K</td><td class="border p-2">$1.25 / $10</td><td class="border p-2">✅ 走 GPT-4o</td><td class="border p-2">❌ 需代理</td></tr></tbody></table>
+<p class="text-gray-700 leading-relaxed my-4">Step-2 的主要优势是单一端点多模态流水线 — 一次 chat-completions 调用即可处理任意组合的文本/图像/音频/视频。DeepSeek V3.2 在裸价上胜出(输入便宜 40 倍),但仅文本且需调用方额外集成视觉 API。Qwen3.5-Max 与 Kimi K3 在上下文窗口(1M token)上领先,更适合代码仓库或长文档 RAG。OpenAI GPT-5 仍主导生态成熟度与 tool calling,但中国大陆无法直接访问。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">⚠️ 已知限制</h2>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700"><li>128K 上下文落后于 Kimi K3 与 Qwen3.8-Max(均为 1M)。</li><li>国际端点仅香港,美/欧延迟高于国内。</li><li>Function Calling 处于 Beta,生产调用方需在 Step-2 外面包一层规划器做工具路由。</li><li>官网无 SOC 2 / HIPAA 文档,部署医疗或金融负载前需在合同中确认企业合规条款。</li><li>模型发布节奏中等,部分新模型 Beta 周期长于竞品。</li><li>除标准预充值档位外,无批量或量级折扣。</li></ul>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">🎯 选型建议</h2>
+<p class="text-gray-700 leading-relaxed my-4">当你需要在中国大陆以单一 OpenAI 兼容端点获得一线多模态 LLM 接入,或以 o1 / R1 1/5 价格获得推理替代(Step-R)时,选阶跃星辰;长文档 RAG 场景,1M 上下文的 Kimi K3 与 Qwen3.8-Max 不可替代;纯文本 + 极致成本的场景,DeepSeek V3.2 是首选。国内多模态生产负载,Step-2 是当前开源权重阵营中接口最干净的方案。</p>
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+<p class="text-gray-700 my-4"><strong>阶跃星辰兼容 OpenAI 吗？</strong><br>兼容。把 OpenAI 客户端的 base URL 设为 https://platform.stepfun.com/v1 即可。</p><p class="text-gray-700 my-4"><strong>支持哪些输入？</strong><br>Step-2 与 Step-2-mini 在单一 chat-completions 接口中接受文本、图像、音频、视频;老模型(Step-1、Step-1V)仅文本+图像。</p><p class="text-gray-700 my-4"><strong>有免费额度吗？</strong><br>有 — 注册后 30 天内赠送 100 万 token,之后转为预充值按量计费。</p><p class="text-gray-700 my-4"><strong>Step-R 用来做什么？</strong><br>推理(数学、代码审查、多步骤规划),价格为 OpenAI o1 的 1/5。</p><p class="text-gray-700 my-4"><strong>国内能直接用吗？</strong><br>可以 — platform.stepfun.com 走国内 BGP 路由,典型 TTFT 200-400ms,无需代理或跨境路由。</p>`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">快速参考</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>端点:</strong> platform.stepfun.com/v1</li><li><strong>旗舰:</strong> Step-2(1.2T 多模态)</li><li><strong>模态:</strong> 文本、图像、音频、视频</li><li><strong>免费额度:</strong> 100 万 token / 30 天</li><li><strong>上下文:</strong> 128K(Step-2)</li><li><strong>国内直连:</strong> ✅ 无需代理</li></ul></div><div class="bg-blue-50 border border-blue-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">{affiliateSidebar.title}</h3><p class="text-sm text-gray-700 mb-2">{affiliateSidebar.description}</p><a href={affiliateSidebar.url} class="inline-block bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700">{affiliateSidebar.cta}</a></div></aside>
+    </div>
+  </main>
+</BaseLayout>

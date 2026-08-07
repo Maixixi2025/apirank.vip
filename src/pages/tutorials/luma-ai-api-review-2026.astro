@@ -1,0 +1,222 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'luma-ai-api-review-2026';
+const date = '2026-08-07';
+const locale = 'en';
+const enTitle = 'Luma AI API 2026 Review: Ray 3.2 Video & Uni-1 Image';
+const enDescription = 'Luma AI API 2026 review: Ray 3.2 video with multi-keyframe control, Uni-1 image model, V2V to 20s, credit pricing from $30/mo vs Runway, Veo, Kling.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: enTitle, description: enDescription, datePublished: date, dateModified: date, inLanguage: 'en-US', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://apirank.vip' }, { '@type': 'ListItem', position: 2, name: 'Tutorials', item: 'https://apirank.vip/tutorials' }, { '@type': 'ListItem', position: 3, name: enTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Does Luma AI have a public API?', acceptedAnswer: { '@type': 'Answer', text: "Yes - the Luma Agents API (docs.agents.lumalabs.ai) is a single async REST surface. Submit via POST /v1/generations, poll GET /v1/generations/{id}, then download from presigned URLs once the state reaches completed." } },
+  { '@type': 'Question', name: 'Is there a free tier for the Luma API?', acceptedAnswer: { '@type': 'Answer', text: "No permanent free API tier. New users get a small one-time credit grant on the platform, but sustained use requires the Plus plan at $30/month (10,000 credits)." } },
+  { '@type': 'Question', name: 'What is the best Luma video model in 2026?', acceptedAnswer: { '@type': 'Answer', text: "Ray 3.2 is the flagship: 1080p output, up to 16 keyframes per clip, video-to-video up to 20 seconds, with native HDR generation and 16-bit EXR export for post-production." } },
+  { '@type': 'Question', name: 'Can Luma generate video from an existing video?', acceptedAnswer: { '@type': 'Answer', text: "Yes - video-to-video (V2V) on Ray 3.2 runs up to 20 seconds, letting you restyle, extend, or reframe an existing clip while keeping motion and content." } },
+  { '@type': 'Question', name: 'How does Luma pricing compare to Runway?', acceptedAnswer: { '@type': 'Answer', text: "Luma is subscription plus credits (Plus $30/mo, 10,000 credits). Runway uses prepaid credit packs from $12. Per clip, a 5-second 720p Luma clip costs roughly 100 credits (~$0.30 at Pro), while a Runway Gen-4 Turbo 5s clip is about $0.50." } },
+  { '@type': 'Question', name: 'Does the Luma API work from China?', acceptedAnswer: { '@type': 'Answer', text: "Only via a stable overseas proxy. Luma has no mainland China direct endpoints or official China access program, so production access from China requires proxy infrastructure." } },
+  { '@type': 'Question', name: 'Which third-party models does Luma serve?', acceptedAnswer: { '@type': 'Answer', text: "Veo 3.1, Kling 3.0 / Kling Omni / Kling 2.6, Seedance 2.0, MiniMax H3, Flux 3, GPT Image 2, Nano Banana, and Seedream, plus ElevenLabs v3 TTS and SFX audio." } },
+  { '@type': 'Question', name: 'Is the Luma API OpenAI-compatible?', acceptedAnswer: { '@type': 'Answer', text: "No. The Luma Agents API is a generation API with its own async REST shape (POST /v1/generations). It is not a chat API and does not expose an OpenAI-compatible chat completions endpoint." } }
+] };
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${enTitle}</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Luma AI</strong> has completed the transition from a consumer creative app into an API-first media generation platform. The Luma Agents API exposes a single asynchronous REST surface - <code>POST /v1/generations</code>, poll, download from presigned URLs - that covers image generation (Uni-1), video generation (Ray 3.2), third-party frontier video models (Veo 3.1, Kling 3.0, Seedance 2.0), and even audio. If you want production-grade video generation with frame-level control, or a single API to reach the best video models without separate integrations, Luma is now a serious candidate.</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 Quick take:</strong> Luma AI's Ray 3.2 is one of the strongest video-generation APIs in 2026 - 1080p with up to 16 keyframes per clip, V2V to 20 seconds, native HDR and EXR export, plus aggregation of Veo 3.1, Kling 3.0 and Seedance 2.0 behind one async REST surface. Pricing is credit-based from $30/mo (Plus). China access requires a stable overseas proxy.</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Luma AI, and why does the API matter in 2026?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Luma Labs (San Francisco, founded 2021) is best known for Dream Machine, the video generator that made cinematic AI clips mainstream. Through 2025 and 2026 the company consolidated its models behind an API-first product: the <strong>Luma Agents API</strong>, documented at <code>docs.agents.lumalabs.ai</code>. The pitch to an engineer evaluating it in August 2026 is three-fold:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>One async interface, many model families.</strong> Text-to-video, image-to-video, video-to-video, image generation, and audio all flow through the same POST /v1/generations endpoint. You do not learn a different SDK for each model.</li>
+  <li><strong>Multi-keyframe video control.</strong> Ray 3.2 accepts up to 16 keyframes inside a single clip. Instead of prompting once and hoping the model keeps the sequence straight, you direct the cut frame by frame.</li>
+  <li><strong>Third-party model aggregation.</strong> Beyond Luma's own Ray and Uni models, the API serves Veo 3.1, Kling 3.0 / Kling Omni / Kling 2.6, Seedance 2.0, MiniMax H3, Flux 3, GPT Image 2, and Nano Banana - the same multi-model gateway pattern OpenRouter applies to text.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">This review covers the Luma AI API from the perspective of an engineer integrating it in mid-2026: the Ray 3.2 and Uni-1 model lineup, the Plus / Pro / Ultra credit structure, the multi-keyframe and V2V workflows, the third-party model gateway, pricing math, and how Luma compares to Runway, Google Veo 3.1, Kuaishou Kling, and ByteDance Seedance for the same production workloads.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Luma model lineup in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Luma's current production line splits into first-party and third-party models, all served through the same Luma Agents API:</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">Model</th>
+<th class="border p-2">Kind</th>
+<th class="border p-2">Output</th>
+<th class="border p-2">Best for</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Ray 3.2</strong></td><td class="border p-2">Video (first-party flagship)</td><td class="border p-2">1080p, up to 16 keyframes, V2V to 20s</td><td class="border p-2">Cinematic clips, frame-controlled production</td></tr>
+<tr><td class="border p-2"><strong>Ray 3.14</strong></td><td class="border p-2">Video (previous gen)</td><td class="border p-2">SDR / HDR</td><td class="border p-2">Lower-cost video where 3.2 is overkill</td></tr>
+<tr><td class="border p-2"><strong>Uni-1 / Uni-1-Max</strong></td><td class="border p-2">Image (first-party)</td><td class="border p-2">1K - 4K</td><td class="border p-2">Reasoning + generation, brand-consistent images</td></tr>
+<tr><td class="border p-2"><strong>Veo 3.1</strong></td><td class="border p-2">Video (Google)</td><td class="border p-2">720p / 1080p</td><td class="border p-2">High-end cinematic video</td></tr>
+<tr><td class="border p-2"><strong>Kling 3.0 / Omni / 2.6</strong></td><td class="border p-2">Video (Kuaishou)</td><td class="border p-2">720p - 4K</td><td class="border p-2">Character + scene consistency</td></tr>
+<tr><td class="border p-2"><strong>Seedance 2.0</strong></td><td class="border p-2">Video (ByteDance)</td><td class="border p-2">480p - 4K</td><td class="border p-2">Short-video format, 4K quality</td></tr>
+<tr><td class="border p-2"><strong>GPT Image 2 / 1.5</strong></td><td class="border p-2">Image (OpenAI)</td><td class="border p-2">1K - 4K</td><td class="border p-2">Photorealistic image generation</td></tr>
+<tr><td class="border p-2"><strong>Nano Banana / Pro / 2</strong></td><td class="border p-2">Image (Gemini)</td><td class="border p-2">512 - 4K</td><td class="border p-2">Versatile image creation</td></tr>
+</tbody>
+</table>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Luma pricing: how the credit system works in practice</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Luma is credit-based, not token-based. You subscribe to a plan and each generation consumes credits. The subscription tiers:</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">Plan</th>
+<th class="border p-2">Monthly</th>
+<th class="border p-2">Credits</th>
+<th class="border p-2">Notes</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Plus</strong></td><td class="border p-2">$30</td><td class="border p-2">10,000</td><td class="border p-2">Hobbyists, evaluation</td></tr>
+<tr><td class="border p-2"><strong>Pro</strong></td><td class="border p-2">$90</td><td class="border p-2">40,000</td><td class="border p-2">4x usage, freelancers / agencies</td></tr>
+<tr><td class="border p-2"><strong>Ultra</strong></td><td class="border p-2">$300</td><td class="border p-2">150,000</td><td class="border p-2">15x usage, studios</td></tr>
+<tr><td class="border p-2"><strong>Team / Enterprise</strong></td><td class="border p-2">Custom</td><td class="border p-2">Shared</td><td class="border p-2">SSO, analytics, fine-tuning</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">Video is metered per second (or per 5-second clip for Ray 3.2). Representative credit costs verified 2026-08-07:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>Ray 3.2</strong> text-to-video: Draft 20 credits/5s, 540p 50/5s, 720p 100/5s, 1080p 400/5s.</li>
+  <li><strong>Seedance 2.0</strong>: 1080p 240 credits/sec, 4K 959 credits/sec.</li>
+  <li><strong>Veo 3.1</strong>: 720p and 1080p at 140 credits/sec (280/sec with audio).</li>
+  <li><strong>Kling 3.0</strong>: 720p 30 credits/sec, 1080p 40 credits/sec, 4K 147 credits/sec.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Images are charged per image: <strong>Uni-1</strong> 30 credits, <strong>Seedream</strong> 1-3 credits (up to 4K), <strong>GPT Image 2</strong> from 3 (Low-1K) to 255 (High-4K) credits. Audio: <strong>ElevenLabs v3</strong> TTS 21 credits per 1,000 characters and SFX v2 25 credits/min.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The math that matters: at Pro's 40,000 credits, a 10-second 1080p Ray 3.2 clip (800 credits) yields roughly 50 clips per month. High-resolution long video (Seedance 4K at 959 credits/sec) burns credits very fast - budget for 720p unless 4K is a hard requirement. Yearly billing on the individual plans saves up to 20%.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How the Luma Agents API actually works</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The Luma Agents API workflow is three steps, the same shape in Python, TypeScript, or Go:</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>from luma_agents import Luma
+client = Luma()  # reads LUMA_AGENTS_API_KEY from env
+
+# 1. Submit a generation
+g = client.generations.create(
+    prompt="A glass of iced coffee on a marble countertop, morning light",
+    model="ray-3.2",
+    resolution="1080p",
+)
+
+# 2. Poll until completed
+result = g.wait()  # or poll GET /v1/generations/{id} yourself
+
+# 3. Download from the presigned URL
+open("clip.mp4", "wb").write(requests.get(result.assets.video).content)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Three things to know that the docs do not shout about:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>Everything is async.</strong> Submission acknowledgment is fast, but a 5-second 1080p Ray 3.2 clip completes in 30-120 seconds depending on plan tier and queue depth. This is a batch-generation API, not a low-latency chat API.</li>
+  <li><strong>Multi-Keyframe costs more.</strong> Each keyframe adds control quality but also generation time and credits. Design to the minimum keyframe count your shot actually needs.</li>
+  <li><strong>HDR and EXR are the professional differentiator.</strong> Native HDR generation and 16-bit EXR export let AI clips composite beside live-action plates in DaVinci Resolve or Nuke without tone-mapping friction - rare among video APIs.</li>
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Luma vs Runway vs Veo vs Kling</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">For an engineer choosing between video and image generation APIs in August 2026, the comparison looks like this:</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">Provider</th>
+<th class="border p-2">Flagship</th>
+<th class="border p-2">Output</th>
+<th class="border p-2">Pricing</th>
+<th class="border p-2">China direct</th>
+<th class="border p-2">Best for</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Luma AI</strong></td><td class="border p-2">Ray 3.2</td><td class="border p-2">1080p, 16 keyframes, V2V 20s</td><td class="border p-2">$30/mo Plus, credits</td><td class="border p-2">proxy required</td><td class="border p-2">Multi-model video gateway, frame control</td></tr>
+<tr><td class="border p-2"><strong>Runway</strong></td><td class="border p-2">Gen-4 Turbo</td><td class="border p-2">5s clips, ~$0.50/clip</td><td class="border p-2">credit packs from $12</td><td class="border p-2">proxy required</td><td class="border p-2">Video ad production</td></tr>
+<tr><td class="border p-2"><strong>Google Veo 3.1</strong></td><td class="border p-2">Veo 3.1</td><td class="border p-2">720p - 1080p</td><td class="border p-2">via Luma or Vertex</td><td class="border p-2">proxy required</td><td class="border p-2">Cinematic quality</td></tr>
+<tr><td class="border p-2"><strong>Kuaishou Kling</strong></td><td class="border p-2">Kling 3.0</td><td class="border p-2">720p - 4K</td><td class="border p-2">via Luma or direct</td><td class="border p-2">proxy required</td><td class="border p-2">Character consistency</td></tr>
+<tr><td class="border p-2"><strong>ByteDance Seedance</strong></td><td class="border p-2">Seedance 2.0</td><td class="border p-2">480p - 4K</td><td class="border p-2">via Luma or Doubao</td><td class="border p-2">direct (CN)</td><td class="border p-2">Short-video format</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Luma wins</strong> on breadth - one API for video, image, audio, and the strongest third-party models. The multi-keyframe control on Ray 3.2 (up to 16 keyframes per clip) is a genuine differentiator for directed, shot-by-shot production that most video APIs cannot match.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Runway</strong> remains strong for turnkey ad-production workflows and its Gen-4 Turbo cost-per-clip economics. <strong>Seedance / Doubao</strong> wins for China-direct short-video distribution. <strong>Veo 3.1</strong> and <strong>Kling 3.0</strong> are accessible both through Luma's aggregation and directly from their owners.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For most Western-market production workloads in August 2026, the default recommendation is Luma Plus at $30/mo for evaluation and light production, escalating to Pro at $90/mo for active pipelines. The China-direct alternative path for short-video is ByteDance Doubao.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Limitations to know</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>No permanent free API tier.</strong> Entry at Plus $30/mo; a small one-time credit grant for new users only.</li>
+  <li><strong>China access requires a stable overseas proxy.</strong> No mainland direct endpoints or official China access program.</li>
+  <li><strong>Credit-based billing is complex.</strong> Many model x resolution combinations; track credits, not dollars, when budgeting.</li>
+  <li><strong>High-resolution long video is expensive.</strong> Seedance 4K approaches 1,000 credits per clip.</li>
+  <li><strong>Async only.</strong> Not suitable for low-latency or interactive use; generation takes 30-120 seconds even at 1080p.</li>
+  <li><strong>No function calling / tool use.</strong> Pure generation API, not suited for agent orchestration.</li>
+  <li><strong>No affiliate program.</strong></li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verdict</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Choose <strong>Luma AI</strong> when you need production-grade video generation with frame-level control, or a single API that reaches the best image and video models (Veo, Kling, Seedance, GPT Image 2) without separate integrations. Plus at $30/mo is the right evaluation tier; Pro at $90/mo suits active production; Ultra at $300/mo fits studios and high-volume pipelines.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Skip Luma if you need China-direct short-video distribution (use ByteDance Doubao or MiniMax), turnkey ad-production recipes (use Runway), or low-latency interactive generation (use a chat-model API).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The pragmatic recommendation: start with the Plus tier to validate that Ray 3.2's multi-keyframe output fits your pipeline, then move to Pro once a production shot format is established, and to Ultra only when studio-scale throughput or custom fine-tuning becomes a real need.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<p class="text-gray-700 my-4"><strong>Does Luma AI have a public API?</strong><br>Yes - the Luma Agents API (docs.agents.lumalabs.ai) is a single async REST surface. Submit via POST /v1/generations, poll GET /v1/generations/{id}, then download from presigned URLs once the state reaches completed.</p>
+
+<p class="text-gray-700 my-4"><strong>Is there a free tier for the Luma API?</strong><br>No permanent free API tier. New users get a small one-time credit grant on the platform, but sustained use requires the Plus plan at $30/month (10,000 credits).</p>
+
+<p class="text-gray-700 my-4"><strong>What is the best Luma video model in 2026?</strong><br>Ray 3.2 is the flagship: 1080p output, up to 16 keyframes per clip, video-to-video up to 20 seconds, with native HDR generation and 16-bit EXR export for post-production.</p>
+
+<p class="text-gray-700 my-4"><strong>Can Luma generate video from an existing video?</strong><br>Yes - video-to-video (V2V) on Ray 3.2 runs up to 20 seconds, letting you restyle, extend, or reframe an existing clip while keeping motion and content.</p>
+
+<p class="text-gray-700 my-4"><strong>How does Luma pricing compare to Runway?</strong><br>Luma is subscription plus credits (Plus $30/mo, 10,000 credits). Runway uses prepaid credit packs from $12. Per clip, a 5-second 720p Luma clip costs roughly 100 credits (~$0.30 at Pro), while a Runway Gen-4 Turbo 5s clip is about $0.50.</p>
+
+<p class="text-gray-700 my-4"><strong>Does the Luma API work from China?</strong><br>Only via a stable overseas proxy. Luma has no mainland China direct endpoints or official China access program, so production access from China requires proxy infrastructure.</p>
+
+<p class="text-gray-700 my-4"><strong>Which third-party models does Luma serve?</strong><br>Veo 3.1, Kling 3.0 / Kling Omni / Kling 2.6, Seedance 2.0, MiniMax H3, Flux 3, GPT Image 2, Nano Banana, and Seedream, plus ElevenLabs v3 TTS and SFX audio.</p>
+
+<p class="text-gray-700 my-4"><strong>Is the Luma API OpenAI-compatible?</strong><br>No. The Luma Agents API is a generation API with its own async REST shape (POST /v1/generations). It is not a chat API and does not expose an OpenAI-compatible chat completions endpoint.</p>
+
+<hr class="my-8 border-gray-200">
+
+<p class="text-gray-500 text-sm my-4"><strong>Sources verified 2026-08-07:</strong> Luma pricing and plan details from lumalabs.ai/pricing; API workflow, models, and SDKs from docs.agents.lumalabs.ai (llms.txt index and quickstart). No affiliate relationship with Luma AI.</p>`;
+
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={zhCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/" class="hover:underline">Home</a> &rsaquo; <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo; <span class="text-gray-700">{enTitle}</span></nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Reference</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Endpoint:</strong> api.lumalabs.ai</li>
+            <li><strong>Flagship:</strong> Ray 3.2 (1080p, 16 keyframes)</li>
+            <li><strong>Plus tier:</strong> $30/mo, 10,000 credits</li>
+            <li><strong>Pro tier:</strong> $90/mo, 40,000 credits</li>
+            <li><strong>Image:</strong> Uni-1 (30 credits/img)</li>
+            <li><strong>Direct CN:</strong> proxy required</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

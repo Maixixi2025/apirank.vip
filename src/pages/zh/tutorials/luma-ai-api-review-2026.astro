@@ -1,0 +1,222 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'luma-ai-api-review-2026';
+const date = '2026-08-07';
+const locale = 'zh';
+const zhTitle = 'Luma AI API 2026 评测：Ray 3.2 视频生成与 Uni-1 图像';
+const zhDescription = 'Luma AI API 2026 深度评测：Ray 3.2 旗舰视频模型支持最多 16 关键帧控制、Uni-1 图像推理模型、V2V 最长 20 秒、$30/月起积分计费，对比 Runway、Veo、Kling、GPT Image 2。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Luma AI 有公开 API 吗？', acceptedAnswer: { '@type': 'Answer', text: "有——Luma Agents API（docs.agents.lumalabs.ai）是单一异步 REST 接口。POST /v1/generations 提交，GET /v1/generations/{id} 轮询，state 达到 completed 后从预签名 URL 下载。" } },
+  { '@type': 'Question', name: 'Luma API 有免费层吗？', acceptedAnswer: { '@type': 'Answer', text: "无永久免费 API 层。新用户在平台有少量一次性积分，但持续使用需要 Plus 方案 $30/月（10,000 积分）。" } },
+  { '@type': 'Question', name: '2026 年 Luma 最好的视频模型是什么？', acceptedAnswer: { '@type': 'Answer', text: "Ray 3.2 是旗舰：1080p 输出、单片段最多 16 关键帧、V2V 最长 20 秒，支持原生 HDR 生成与 16-bit EXR 导出用于后期制作。" } },
+  { '@type': 'Question', name: 'Luma 能用已有视频生成视频吗？', acceptedAnswer: { '@type': 'Answer', text: "能——Ray 3.2 的 V2V（视频到视频）最长 20 秒，可在保持运动与内容的同时重风格、延伸或重构现有片段。" } },
+  { '@type': 'Question', name: 'Luma 定价对比 Runway 如何？', acceptedAnswer: { '@type': 'Answer', text: "Luma 是订阅 + 积分（Plus $30/月，10,000 积分）；Runway 是 $12 起预付积分包。按片段，Luma 5 秒 720p 约 100 积分（Pro 下约 $0.30），Runway Gen-4 Turbo 5 秒约 $0.50。" } },
+  { '@type': 'Question', name: 'Luma API 能从中国用吗？', acceptedAnswer: { '@type': 'Answer', text: "只能通过稳定海外代理。Luma 无中国大陆直连端点或官方中国访问计划，中国生产环境需要代理基础设施。" } },
+  { '@type': 'Question', name: 'Luma 聚合了哪些第三方模型？', acceptedAnswer: { '@type': 'Answer', text: "Veo 3.1、Kling 3.0 / Kling Omni / Kling 2.6、Seedance 2.0、MiniMax H3、Flux 3、GPT Image 2、Nano Banana、Seedream，以及 ElevenLabs v3 TTS 与 SFX 音频。" } },
+  { '@type': 'Question', name: 'Luma API 是 OpenAI 兼容的吗？', acceptedAnswer: { '@type': 'Answer', text: "不是。Luma Agents API 是生成类 API，使用自己的异步 REST 形态（POST /v1/generations），不是聊天 API，也不暴露 OpenAI 兼容的 chat completions 端点。" } }
+] };
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${zhTitle}</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Luma AI</strong> 已从消费级创意应用转型为 API 优先的媒体生成平台。Luma Agents API 通过一个异步 REST 接口（<code>POST /v1/generations</code> → 轮询 → 预签名 URL 下载）统一覆盖图像生成（Uni-1）、视频生成（Ray 3.2）、第三方前沿视频模型（Veo 3.1、Kling 3.0、Seedance 2.0）乃至音频。如果你需要生产级视频生成并追求逐帧镜头控制，或希望用一个 API 触达最强的视频模型而无需分别接入，Luma 现在是严肃的候选。</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 快速结论：</strong>Luma AI 的 Ray 3.2 是 2026 年最强的视频生成 API 之一——1080p 输出、单片段最多 16 关键帧、V2V 最长 20 秒、原生 HDR 与 EXR 导出，并在一个异步 REST 接口背后聚合了 Veo 3.1、Kling 3.0、Seedance 2.0。定价为积分制，Plus $30/月起。国内访问需稳定海外代理。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Luma AI 是什么？2026 年它的 API 为什么重要？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Luma Labs（旧金山，2021 年创立）以 Dream Machine 闻名，这款视频生成器让电影感 AI 短片走向主流。2025-2026 年公司把模型整合到 API 优先的产品后：<strong>Luma Agents API</strong>，文档在 <code>docs.agents.lumalabs.ai</code>。对 2026 年 8 月评估它的工程师而言，核心卖点有三：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>一个异步接口，覆盖多个模型家族。</strong> 文生视频、图生视频、视频到视频、图像生成、音频都走同一个 POST /v1/generations 端点，无需为每个模型学一套 SDK。</li>
+  <li><strong>多关键帧视频控制。</strong> Ray 3.2 在单个片段内接受最多 16 个关键帧，逐帧执导镜头，而非寄希望于模型一次把序列做对。</li>
+  <li><strong>第三方模型聚合。</strong> 除自研 Ray / Uni 外，接口还服务 Veo 3.1、Kling 3.0 / Kling Omni / Kling 2.6、Seedance 2.0、MiniMax H3、Flux 3、GPT Image 2、Nano Banana——与 OpenRouter 之于文本相同的多模型网关模式。</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">本评测从中期集成 Luma AI API 的工程师视角展开：Ray 3.2 与 Uni-1 模型阵容、Plus/Pro/Ultra 积分结构、Multi-Keyframe 与 V2V 工作流、第三方模型网关、定价账目，以及 Luma 在相同生产负载下与 Runway、Google Veo 3.1、快手 Kling、字节 Seedance 的对比。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">2026 年 Luma 模型阵容</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Luma 当前产品线分为自研与第三方，全部通过同一个 Luma Agents API 服务：</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">模型</th>
+<th class="border p-2">类型</th>
+<th class="border p-2">输出</th>
+<th class="border p-2">适用</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Ray 3.2</strong></td><td class="border p-2">视频（自研旗舰）</td><td class="border p-2">1080p、最多 16 关键帧、V2V 20s</td><td class="border p-2">电影感短片、逐帧控制生产</td></tr>
+<tr><td class="border p-2"><strong>Ray 3.14</strong></td><td class="border p-2">视频（上一代）</td><td class="border p-2">SDR / HDR</td><td class="border p-2">低成本、无需 3.2 的场景</td></tr>
+<tr><td class="border p-2"><strong>Uni-1 / Uni-1-Max</strong></td><td class="border p-2">图像（自研）</td><td class="border p-2">1K - 4K</td><td class="border p-2">推理+生成、品牌一致图像</td></tr>
+<tr><td class="border p-2"><strong>Veo 3.1</strong></td><td class="border p-2">视频（Google）</td><td class="border p-2">720p / 1080p</td><td class="border p-2">高端电影感视频</td></tr>
+<tr><td class="border p-2"><strong>Kling 3.0 / Omni / 2.6</strong></td><td class="border p-2">视频（快手）</td><td class="border p-2">720p - 4K</td><td class="border p-2">角色与场景一致性</td></tr>
+<tr><td class="border p-2"><strong>Seedance 2.0</strong></td><td class="border p-2">视频（字节）</td><td class="border p-2">480p - 4K</td><td class="border p-2">短视频格式、4K 质量</td></tr>
+<tr><td class="border p-2"><strong>GPT Image 2 / 1.5</strong></td><td class="border p-2">图像（OpenAI）</td><td class="border p-2">1K - 4K</td><td class="border p-2">写实图像生成</td></tr>
+<tr><td class="border p-2"><strong>Nano Banana / Pro / 2</strong></td><td class="border p-2">图像（Gemini）</td><td class="border p-2">512 - 4K</td><td class="border p-2">通用图像创作</td></tr>
+</tbody>
+</table>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Luma 定价：积分制如何运作</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Luma 是积分制而非 token 制。订阅一个方案，每次生成消耗积分。订阅档位：</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">方案</th>
+<th class="border p-2">月付</th>
+<th class="border p-2">积分</th>
+<th class="border p-2">说明</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Plus</strong></td><td class="border p-2">$30</td><td class="border p-2">10,000</td><td class="border p-2">爱好者、评估</td></tr>
+<tr><td class="border p-2"><strong>Pro</strong></td><td class="border p-2">$90</td><td class="border p-2">40,000</td><td class="border p-2">4 倍用量、自由职业/代理</td></tr>
+<tr><td class="border p-2"><strong>Ultra</strong></td><td class="border p-2">$300</td><td class="border p-2">150,000</td><td class="border p-2">15 倍用量、工作室</td></tr>
+<tr><td class="border p-2"><strong>Team / Enterprise</strong></td><td class="border p-2">定制</td><td class="border p-2">共享</td><td class="border p-2">SSO、分析、微调</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">视频按秒（或 Ray 3.2 按 5 秒片段）计费。2026-08-07 核验的代表性积分成本：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>Ray 3.2</strong> 文生视频：Draft 20 积分/5s，540p 50/5s，720p 100/5s，1080p 400/5s。</li>
+  <li><strong>Seedance 2.0</strong>：1080p 240 积分/秒，4K 959 积分/秒。</li>
+  <li><strong>Veo 3.1</strong>：720p 与 1080p 均为 140 积分/秒（带音频 280/秒）。</li>
+  <li><strong>Kling 3.0</strong>：720p 30 积分/秒，1080p 40 积分/秒，4K 147 积分/秒。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">图像按张计费：<strong>Uni-1</strong> 30 积分，<strong>Seedream</strong> 1-3 积分（最高 4K），<strong>GPT Image 2</strong> 从 3（Low-1K）到 255（High-4K）积分。音频：<strong>ElevenLabs v3</strong> TTS 21 积分/1,000 字符，SFX v2 25 积分/分钟。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">关键账目：Pro 的 40,000 积分下，一段 10 秒 1080p Ray 3.2 片段（800 积分）约可生成 50 段/月。高分辨率长视频（Seedance 4K 959 积分/秒）烧积分非常快——除非硬性要求 4K，否则预算按 720p 规划。个人方案年付最高省 20%。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Luma Agents API 实际怎么用</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Luma Agents API 工作流三步走，Python / TypeScript / Go 形态相同：</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>from luma_agents import Luma
+client = Luma()  # 从环境变量读取 LUMA_AGENTS_API_KEY
+
+# 1. 提交一次生成
+g = client.generations.create(
+    prompt="A glass of iced coffee on a marble countertop, morning light",
+    model="ray-3.2",
+    resolution="1080p",
+)
+
+# 2. 轮询直到完成
+result = g.wait()  # 或自行轮询 GET /v1/generations/{id}
+
+# 3. 从预签名 URL 下载
+open("clip.mp4", "wb").write(requests.get(result.assets.video).content)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">三个文档没明说但要知道的点：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>一切都是异步的。</strong> 提交确认很快，但一段 5 秒 1080p Ray 3.2 片段需要 30-120 秒完成，取决于方案档位与队列深度。这是批量生成 API，不是低延迟聊天 API。</li>
+  <li><strong>Multi-Keyframe 更贵。</strong> 每个关键帧提升控制质量，也增加生成时间与积分。按镜头实际需要设计最少关键帧数。</li>
+  <li><strong>HDR 与 EXR 是专业级差异点。</strong> 原生 HDR 生成与 16-bit EXR 导出让 AI 片段可在 DaVinci Resolve 或 Nuke 中与实拍无色调映射摩擦地合成——这在视频 API 中很罕见。</li>
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Luma vs Runway vs Veo vs Kling</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">对 2026 年 8 月在视频与图像生成 API 之间做选择的工程师，对比矩阵如下：</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">厂商</th>
+<th class="border p-2">旗舰</th>
+<th class="border p-2">输出</th>
+<th class="border p-2">定价</th>
+<th class="border p-2">国内直连</th>
+<th class="border p-2">适用</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Luma AI</strong></td><td class="border p-2">Ray 3.2</td><td class="border p-2">1080p、16 关键帧、V2V 20s</td><td class="border p-2">$30/月 Plus，积分制</td><td class="border p-2">需代理</td><td class="border p-2">多模型视频网关、逐帧控制</td></tr>
+<tr><td class="border p-2"><strong>Runway</strong></td><td class="border p-2">Gen-4 Turbo</td><td class="border p-2">5s 片段、约 $0.50/段</td><td class="border p-2">积分包 $12 起</td><td class="border p-2">需代理</td><td class="border p-2">视频广告生产</td></tr>
+<tr><td class="border p-2"><strong>Google Veo 3.1</strong></td><td class="border p-2">Veo 3.1</td><td class="border p-2">720p - 1080p</td><td class="border p-2">经 Luma 或 Vertex</td><td class="border p-2">需代理</td><td class="border p-2">电影感质量</td></tr>
+<tr><td class="border p-2"><strong>快手 Kling</strong></td><td class="border p-2">Kling 3.0</td><td class="border p-2">720p - 4K</td><td class="border p-2">经 Luma 或直连</td><td class="border p-2">需代理</td><td class="border p-2">角色一致性</td></tr>
+<tr><td class="border p-2"><strong>字节 Seedance</strong></td><td class="border p-2">Seedance 2.0</td><td class="border p-2">480p - 4K</td><td class="border p-2">经 Luma 或豆包</td><td class="border p-2">国内直连</td><td class="border p-2">短视频格式</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Luma 胜在广度</strong>——一个 API 集视频、图像、音频与最强的第三方模型。Ray 3.2 的 Multi-Keyframe 控制（单片段最多 16 关键帧）是真正差异点，支持逐镜头执导的生产流程，多数视频 API 无法匹敌。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Runway</strong> 在开箱即用的广告生产工作流与 Gen-4 Turbo 每片段成本上依然强势。<strong>Seedance / 豆包</strong> 在国内直连短视频分发上占优。<strong>Veo 3.1</strong> 与 <strong>Kling 3.0</strong> 既可通过 Luma 聚合访问，也可从各自厂商直连。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 8 月多数西方市场生产负载的默认建议：Luma Plus $30/月用于评估与轻量生产，活跃管线升级到 Pro $90/月。国内直连短视频的替代路径是字节豆包。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">需要知道的限制</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>无永久免费 API 层。</strong> 入门 Plus $30/月；新用户仅少量一次性积分。</li>
+  <li><strong>国内访问需稳定海外代理。</strong> 无大陆直连端点或官方中国访问计划。</li>
+  <li><strong>积分计费复杂。</strong> 多模型 x 分辨率组合，预算时按积分而非美元跟踪。</li>
+  <li><strong>高分辨率长视频昂贵。</strong> Seedance 4K 每段接近 1,000 积分。</li>
+  <li><strong>仅异步。</strong> 不适合低延迟或交互场景；即使 1080p 生成也需 30-120 秒。</li>
+  <li><strong>无函数调用 / 工具使用。</strong> 纯生成 API，不适合 Agent 编排。</li>
+  <li><strong>无联盟推广计划。</strong></li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">当需要生产级视频生成并追求逐帧控制，或希望用一个 API 触达最强图像与视频模型（Veo、Kling、Seedance、GPT Image 2）而无需分别接入时，选择 <strong>Luma AI</strong>。Plus $30/月适合评估；Pro $90/月适合活跃生产；Ultra $300/月适合工作室与高产量管线。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">需要国内直连短视频分发（用字节豆包或 MiniMax）、开箱即用的广告生产方案（用 Runway）、或低延迟交互生成（用聊天模型 API）时，跳过 Luma。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">务实建议：先用 Plus 档验证 Ray 3.2 的 Multi-Keyframe 输出是否符合你的管线，生产镜头格式建立后再升 Pro，仅在需要工作室级吞吐或自定义微调时才升级 Ultra。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+<p class="text-gray-700 my-4"><strong>Luma AI 有公开 API 吗？</strong><br>有——Luma Agents API（docs.agents.lumalabs.ai）是单一异步 REST 接口。POST /v1/generations 提交，GET /v1/generations/{id} 轮询，state 达到 completed 后从预签名 URL 下载。</p>
+
+<p class="text-gray-700 my-4"><strong>Luma API 有免费层吗？</strong><br>无永久免费 API 层。新用户在平台有少量一次性积分，但持续使用需要 Plus 方案 $30/月（10,000 积分）。</p>
+
+<p class="text-gray-700 my-4"><strong>2026 年 Luma 最好的视频模型是什么？</strong><br>Ray 3.2 是旗舰：1080p 输出、单片段最多 16 关键帧、V2V 最长 20 秒，支持原生 HDR 生成与 16-bit EXR 导出用于后期制作。</p>
+
+<p class="text-gray-700 my-4"><strong>Luma 能用已有视频生成视频吗？</strong><br>能——Ray 3.2 的 V2V（视频到视频）最长 20 秒，可在保持运动与内容的同时重风格、延伸或重构现有片段。</p>
+
+<p class="text-gray-700 my-4"><strong>Luma 定价对比 Runway 如何？</strong><br>Luma 是订阅 + 积分（Plus $30/月，10,000 积分）；Runway 是 $12 起预付积分包。按片段，Luma 5 秒 720p 约 100 积分（Pro 下约 $0.30），Runway Gen-4 Turbo 5 秒约 $0.50。</p>
+
+<p class="text-gray-700 my-4"><strong>Luma API 能从中国用吗？</strong><br>只能通过稳定海外代理。Luma 无中国大陆直连端点或官方中国访问计划，中国生产环境需要代理基础设施。</p>
+
+<p class="text-gray-700 my-4"><strong>Luma 聚合了哪些第三方模型？</strong><br>Veo 3.1、Kling 3.0 / Kling Omni / Kling 2.6、Seedance 2.0、MiniMax H3、Flux 3、GPT Image 2、Nano Banana、Seedream，以及 ElevenLabs v3 TTS 与 SFX 音频。</p>
+
+<p class="text-gray-700 my-4"><strong>Luma API 是 OpenAI 兼容的吗？</strong><br>不是。Luma Agents API 是生成类 API，使用自己的异步 REST 形态（POST /v1/generations），不是聊天 API，也不暴露 OpenAI 兼容的 chat completions 端点。</p>
+
+<hr class="my-8 border-gray-200">
+
+<p class="text-gray-500 text-sm my-4"><strong>资料来源（2026-08-07 核验）：</strong>Luma 定价与方案来自 lumalabs.ai/pricing；API 工作流、模型与 SDK 来自 docs.agents.lumalabs.ai（llms.txt 索引与 quickstart）。与 Luma AI 无联盟关系。</p>`;
+
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">快速参考</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>端点：</strong> api.lumalabs.ai</li>
+            <li><strong>旗舰：</strong> Ray 3.2（1080p，16 关键帧）</li>
+            <li><strong>Plus 档：</strong> $30/月，10,000 积分</li>
+            <li><strong>Pro 档：</strong> $90/月，40,000 积分</li>
+            <li><strong>图像：</strong> Uni-1（30 积分/张）</li>
+            <li><strong>国内直连：</strong> 需代理</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

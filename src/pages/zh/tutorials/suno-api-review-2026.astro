@@ -1,0 +1,217 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'suno-api-review-2026';
+const date = '2026-08-06';
+const locale = 'zh';
+const zhTitle = 'Suno API 2026 评测：v5.5 音乐生成、Suno Studio 多轨编辑器与价格';
+const zhDescription = 'Suno API 2026 深度评测：v5.5 旗舰音乐生成模型、Suno Studio 多轨 DAW、Persona 声音、Cover/Extend 工作流，按积分计费的价格 vs MiniMax Music-01 与 Udio。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Suno 比雇佣现场乐手更便宜吗？', acceptedAnswer: { '@type': 'Answer', text: "对背景音乐、播客 intro、YouTube BGM 来说是的——Suno Pro $10/月每月生成 500 首商用级输出。对需要独特人声演绎的重头曲目，现场乐手仍是正确答案。" } },
+  { '@type': 'Question', name: '可以在 YouTube 用 Suno 生成的歌不遭版权投诉吗？', acceptedAnswer: { '@type': 'Answer', text: "Pro 和 Premier 档可以。Suno 的商用授权覆盖 YouTube 变现、播客、广告、专辑。免费层仅限个人使用。" } },
+  { '@type': 'Question', name: 'Suno 有公开 API 吗？', acceptedAnswer: { '@type': 'Answer', text: "有——Suno 在 api.suno.ai 提供官方 REST API。API 价格与 Studio 订阅（Pro 或 Premier）相同，限速按订阅档调整。文档在 suno.com/api。" } },
+  { '@type': 'Question', name: 'Suno 能克隆真实歌手的声音吗？', acceptedAnswer: { '@type': 'Answer', text: "不能。Suno 的内容审核拒绝引用实名艺人的 prompt 与可识别公众人物的音频上传。Persona 声音只能从你自己的录音或 Suno 生成的音频训练。" } },
+  { '@type': 'Question', name: '如果取消订阅会怎样？', acceptedAnswer: { '@type': 'Answer', text: "生成的歌曲永远归你——商用授权对订阅期间创建的歌曲不可撤销。你失去 Studio 编辑界面与 Persona 声音的访问，但已下载的 WAV/MP3 文件不受影响。" } },
+  { '@type': 'Question', name: 'Suno 给开发者免费层吗？', acceptedAnswer: { '@type': 'Answer', text: "有——每天 50 积分，足够约 10 首 simple-mode 歌曲。免费层仅限个人使用，音质封顶在 v4 时代。" } },
+  { '@type': 'Question', name: 'Suno 比 Udio 好吗？', acceptedAnswer: { '@type': 'Answer', text: "Udio 是最接近的直接竞品。Suno 在 2026 年 8 月的优势是 Studio 多轨编辑器与 Persona 人声一致性，都是 Udio 没有等价品的 Premier 档特性。Udio 在爵士与古典等人声流派有时更逼真。" } },
+  { '@type': 'Question', name: 'Suno 支持英语以外的语言吗？', acceptedAnswer: { '@type': 'Answer', text: "支持——v5.5 支持 50+ 语言歌词，英语、西班牙语、葡萄牙语、普通话、日语、韩语质量最强。生成 prompt 可以是任意语言。" } },
+  { '@type': 'Question', name: 'Suno 能只生成纯器乐吗？', acceptedAnswer: { '@type': 'Answer', text: "可以。在生成请求中设置 make_instrumental: true。输出是无人声、全编曲的轨道。" } }
+] };
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${zhTitle}</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Suno</strong> 是把"用一句话描述一首歌曲"变成可发布成品轨道的 AI 音乐生成器。Stable Diffusion 1.5 让图像生成商品化，GPT-4 让文本生成商品化，Suno 的 v5.5 系列正在对音乐做同样的事：一次 REST API 调用返回一首完整的原创歌曲——歌词、旋律、编曲、人声演绎——不是从预制 loop 拼接，而是由单一模型在三年精心策划的音乐语料库上端到端生成。</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 速读：</strong> Suno v5.5 是 2026 年最强的端到端 AI 音乐生成器——8 分钟连贯歌曲、Suno Studio 多轨编辑、Persona 人声一致性，$10/月起享完整商用授权。最直接的竞争对手是 Udio，但 Suno 的 Studio 与 Persona 功能广度无出其右。国内访问需稳定海外代理。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">什么是 Suno？为什么 API 在 2026 年仍然重要？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 8 月评估 Suno API 的工程师，关心的是四个超越"AI 音乐生成器"标准对比表的理由：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>v5.5 是首个能生成超过 4 分钟连贯歌曲的模型。</strong>早期模型最多撑到 90 秒就结构崩塌；v5.5 在 verse-chorus-bridge 结构上保持连贯直到 8 分钟——这是流行曲的格式上限，也是大多数播客 intro/outro 片段的结构上限。</li>
+  <li><strong>Suno Studio（Premier 订阅）是首个 Web 原生生成式 DAW。</strong>多轨编辑、MIDI 导出、Persona 声音在 Studio 中是一等公民功能，不是事后补丁。拖放时间线对用过 Ableton 或 Logic 的人来说很熟悉，但时间线上的每个片段都能从生成它的 prompt 重新生成。</li>
+  <li><strong>Cover 与 Extend 工作流让 Suno 成为二次创作工具，不只是生成器。</strong>上传参考片段，Suno 在保留原旋律或节奏的同时重新生成人声与编曲；串联 Extend 调用把短片段拼成更长作品。</li>
+  <li><strong>商用授权从 Pro（$10/月）起覆盖 YouTube、播客、广告、专辑。</strong>免费层仅限个人使用，但 Pro 的商用授权范围很宽——这很关键，因为大多数"AI 音乐"竞品要么限制商用，要么把商用推到顶层企业套餐。</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">本评测从 2026 年中工程师集成视角覆盖 Suno API：v5.5 与 v5 模型线、Pro/Premier 订阅结构、Cover/Extend/Persona/Studio 功能面、按积分计费的价格数学、与 MiniMax Music-01、字节豆包音频、ElevenLabs Sound、Replicate 在相同生产负载下的对比。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Suno 2026 模型线</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Suno 当前的产线是 <strong>v5.5 → v5 → v4</strong> 生成阶梯，加上四个叠加在生成 API 之上的功能端点：<strong>Cover</strong>（重编曲）、<strong>Extend</strong>（续写）、<strong>Stem Separation</strong>（人声/鼓/贝斯/other 分轨）、<strong>Persona voices</strong>（Premier 订阅的人声身份训练）。</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">模型 / 功能</th>
+<th class="border p-2">所需订阅</th>
+<th class="border p-2">输出</th>
+<th class="border p-2">最佳用途</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>v5.5</strong></td><td class="border p-2">Pro / Premier</td><td class="border p-2">最长 8 分钟，最高保真度</td><td class="border p-2">旗舰歌曲生成，最长连贯输出</td></tr>
+<tr><td class="border p-2"><strong>v5</strong></td><td class="border p-2">Pro / Premier</td><td class="border p-2">最长 4 分钟，生成更快</td><td class="border p-2">对延迟敏感的高产量生产</td></tr>
+<tr><td class="border p-2"><strong>v4</strong></td><td class="border p-2">免费层</td><td class="border p-2">~90 秒，v4 时代音质</td><td class="border p-2">业余尝试，无商用授权</td></tr>
+<tr><td class="border p-2"><strong>Persona 声音</strong></td><td class="border p-2">Premier</td><td class="border p-2">跨生成训练的人声身份</td><td class="border p-2">系列/品牌的人声一致性</td></tr>
+<tr><td class="border p-2"><strong>Suno Studio</strong></td><td class="border p-2">Premier</td><td class="border p-2">多轨时间线 + MIDI 导出</td><td class="border p-2">严肃音乐制作与编辑</td></tr>
+<tr><td class="border p-2"><strong>分轨分离</strong></td><td class="border p-2">Pro / Premier</td><td class="border p-2">人声/鼓/贝斯/other 独立 WAV</td><td class="border p-2">导入 Ableton/Logic 进一步混音</td></tr>
+</tbody>
+</table>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Suno 价格：积分系统怎么算</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Suno 采用订阅模式，每档有积分配额，加可选积分加购应对高用量月份。没有按秒计费——预购积分，每次调用按固定积分消耗。</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">方案</th>
+<th class="border p-2">月付</th>
+<th class="border p-2">年付</th>
+<th class="border p-2">积分</th>
+<th class="border p-2">商用</th>
+<th class="border p-2">Studio</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>免费</strong></td><td class="border p-2">$0</td><td class="border p-2">$0</td><td class="border p-2">50/天 (~10 首)</td><td class="border p-2">仅限个人使用</td><td class="border p-2">否</td></tr>
+<tr><td class="border p-2"><strong>Pro</strong></td><td class="border p-2">$10</td><td class="border p-2">$96（年付省 20%）</td><td class="border p-2">2,500/月 (~500 首)</td><td class="border p-2">完整商用授权</td><td class="border p-2">否</td></tr>
+<tr><td class="border p-2"><strong>Premier</strong></td><td class="border p-2">$30</td><td class="border p-2">$288（年付省 20%）</td><td class="border p-2">10,000/月 (~2,000 首)</td><td class="border p-2">完整商用授权</td><td class="border p-2">Studio + MIDI + Persona</td></tr>
+<tr><td class="border p-2"><strong>积分加购</strong></td><td class="border p-2">灵活</td><td class="border p-2">—</td><td class="border p-2">+ 积分</td><td class="border p-2">订阅有效期内</td><td class="border p-2">—</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">关键数学：Pro 的 2,500 积分/月、Premier 的 10,000 积分/月下，每首 simple-mode 歌曲约 5 积分，每首 custom-mode（带较长歌词）约 8-10 积分。免费层 50 积分/天对业余尝试足够，但消费不了一首 8 分钟 custom-mode 歌曲（custom-mode 比 simple-mode 烧更多积分）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">生产工程师在 2026 年 8 月的决策树：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>业余 / 个人尝试</strong> — 免费层够用，接受 v4 时代音质与非商用许可。</li>
+  <li><strong>独立创作者发 YouTube 或播客</strong> — Pro $10/月享商用授权、v5/v5.5 访问、500 首/月余量。</li>
+  <li><strong>音乐制作人或工作室</strong> — Premier $30/月解锁 Studio、MIDI 导出、Persona 声音、2,000 首/月。仅 Persona 一项对每月产出多首曲子的制作人即值回票价。</li>
+  <li><strong>企业或唱片厂牌规模</strong> — 联系 Suno 销售获取 API 独享 Enterprise 套餐；按量计费，含定制 SLA。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Suno API 实际怎么用</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Suno REST API（在 api.suno.ai 与 studio.suno.com）按设计是异步的。Python 典型集成：</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>import requests
+import time
+
+API = "https://api.suno.ai/v1"
+HEADERS = {"Authorization": f"Bearer {SUNO_API_KEY}"}
+
+# 1. 启动生成
+r = requests.post(f"{API}/generate", headers=HEADERS, json={
+    "prompt": "Lo-fi hip hop, melancholic piano, vinyl crackle",
+    "lyrics": "[Verse]\nEmpty streets at 4am...",
+    "title": "4am Drive",
+    "model": "v5.5",
+    "make_instrumental": False,
+})
+clip_id = r.json()["clip_id"]
+
+# 2. 轮询直到完成
+while True:
+    r = requests.get(f"{API}/clips/{clip_id}", headers=HEADERS)
+    if r.json()["status"] == "complete":
+        audio_url = r.json()["audio_url"]
+        break
+    time.sleep(5)
+
+# 3. 下载
+audio = requests.get(audio_url).content
+open("output.mp3", "wb").write(audio)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">API 接口的三件不太明显的事：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>生成是非确定性的——没有 seed 参数。</strong>同一 prompt 调用两次返回两首不同的歌。对商用一致性工作流（系列播客 intro、品牌 jingle），标准做法是先跑 20-50 次生成，挑最佳，把那次生成的精确 prompt + lyrics + 模型参数存为后续 Cover 的模板。</li>
+  <li><strong>Custom-mode 比 simple-mode 烧更多积分。</strong>带结构化歌词的 custom-mode 调用通常 8 积分；单一 prompt 的 simple-mode 通常 5 积分。Custom-mode 在需要控制歌曲结构（歌词里的 intro/verse/chorus/bridge 标签）时是正确选择，但每段贵 60%。</li>
+  <li><strong>分轨分离是独立端点，不是生成调用上的 flag。</strong>用原 clip_id 调用 /separate_stems；Suno 返回四个 WAV URL（vocals/drums/bass/other）。分轨分离消耗约等于一次生成调用，但每个 clip 一次性。</li>
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Suno vs MiniMax Music-01 vs ElevenLabs Sound vs Replicate</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 8 月选 AI 音乐生成 API 的工程师，对比矩阵：</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">提供商</th>
+<th class="border p-2">旗舰</th>
+<th class="border p-2">输出</th>
+<th class="border p-2">价格</th>
+<th class="border p-2">国内直连</th>
+<th class="border p-2">最佳用途</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Suno</strong></td><td class="border p-2">v5.5</td><td class="border p-2">完整歌曲，8 分钟，分轨分离</td><td class="border p-2">$10/月 Pro（500 首）</td><td class="border p-2">需代理</td><td class="border p-2">独立创作者、播客 BGM、商用 jingle</td></tr>
+<tr><td class="border p-2"><strong>MiniMax Music-01</strong></td><td class="border p-2">Music-01</td><td class="border p-2">背景音乐，60-180 秒</td><td class="border p-2">¥0.1-0.5/M token（音频 token）</td><td class="border p-2">直连</td><td class="border p-2">国内优先应用、短视频 BGM</td></tr>
+<tr><td class="border p-2"><strong>ElevenLabs Sound</strong></td><td class="border p-2">ElevenSound</td><td class="border p-2">音效 + 环境音，≤22 秒</td><td class="border p-2">$0.04/请求 + TTS 套餐</td><td class="border p-2">需代理</td><td class="border p-2">音效、人声 + 音乐组合</td></tr>
+<tr><td class="border p-2"><strong>Replicate</strong></td><td class="border p-2">开源权重（MusicGen、Riffusion）</td><td class="border p-2">可变，取决于模型</td><td class="border p-2">$0.05-0.50/运行</td><td class="border p-2">需代理</td><td class="border p-2">定制开源权重托管、自带模型</td></tr>
+<tr><td class="border p-2"><strong>字节豆包音频</strong></td><td class="border p-2">豆包音乐</td><td class="border p-2">30-60 秒片段</td><td class="border p-2">按 token 计费（CN）</td><td class="border p-2">直连</td><td class="border p-2">国内短视频平台</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Suno 胜出</strong>在端到端歌曲生成质量与功能面的广度（Cover、Extend、Studio、Persona）。v5.5 在全长、全编曲歌曲生成上是标杆模型。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>MiniMax Music-01 胜出</strong>在国内直连与适配现有 LLM 预算模式的 token 计费。对构建国内优先应用、需环境/背景音乐的团队，MiniMax 是最低摩擦的选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>ElevenLabs Sound 胜出</strong>在负载是音效或短环境音、不是完整歌曲的场景。$0.04/请求的音效生成是游戏/应用音效库的最便宜选项。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Replicate 胜出</strong>在需要开源权重托管的场景——MusicGen、Riffusion、社区微调都能在 Replicate 基础设施上跑，没有 Suno 风格的许可约束。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>字节豆包胜出</strong>在面向国内分发的短视频平台。豆包的音乐输出针对抖音/TikTok 格式做了调优。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 8 月大多数西方市场英语生产负载，默认推荐 Suno Pro $10/月作为创作者档，升级到 Premier $30/月用于 Studio 和 Persona。国内直连的替代路径是 MiniMax Music-01。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">使用须知</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>国内访问需要稳定海外代理。</strong>Suno 目前没有公开区域端点地图或企业中国访问计划；配置良好的代理下，预期在生成时间之外额外 1-3 秒延迟。</li>
+  <li><strong>生成是非确定性的。</strong>没有 seed 参数；相同 prompt 生成不同歌曲。商用一致性工作流在选定片段前需要 20-50 次生成抽样。</li>
+  <li><strong>严格的内容审核。</strong>引用实名艺人、露骨内容、某些政治主题的歌词会被拒绝。审核模型比多数 LLM API 更激进。</li>
+  <li><strong>按积分计费，不是按 token。</strong>与 LLM API 直接成本对比很麻烦——预算时跟踪消耗的积分，不是 token。</li>
+  <li><strong>无函数调用/工具使用。</strong>Suno 是纯生成 API；不适合需要工具调用端点的 agent 框架。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">在需要为播客、YouTube BGM、广告 jingle、独立音乐制作或商用内容生成全长原创 AI 歌曲，并享有清晰权利授权时，选择 <strong>Suno</strong>。$10/月 Pro 是大多数独立创作者的正确起步档；$30/月 Premier 是工作室与 Persona 训练重复人声身份的正确档。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">在以下场景跳过 Suno：需要国内直连（用 MiniMax Music-01）；需要音效而非完整歌曲（用 ElevenLabs Sound）；需要开源权重托管（用 Replicate）；需要短视频格式音乐并有原生分发（国内用字节豆包，其他地区用 Suno）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">务实建议：先用免费层验证 Suno v5.5 的输出是否符合你的负载，歌曲格式确定后升级到 Pro，只有当 Studio 多轨编辑或 Persona 人声一致性成为真实生产需求时才升级到 Premier。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+<p class="text-gray-700 my-4"><strong>Suno 比雇佣现场乐手更便宜吗？</strong><br>对背景音乐、播客 intro、YouTube BGM 来说是的——Suno Pro $10/月每月生成 500 首商用级输出。对需要独特人声演绎的重头曲目，现场乐手仍是正确答案。成本对比不是"AI 对人类"，而是"AI 负责量、人类负责旗舰"。</p>
+
+<p class="text-gray-700 my-4"><strong>我可以在 YouTube 用 Suno 生成的歌不遭版权投诉吗？</strong><br>Pro 和 Premier 档可以。Suno 的商用授权覆盖 YouTube 变现、播客、广告、专辑。免费层仅限个人使用——把免费层的歌上传到变现的 YouTube 频道违反许可。</p>
+
+<p class="text-gray-700 my-4"><strong>Suno 有公开 API 吗？还是要爬网站？</strong><br>Suno 在 api.suno.ai 提供官方 REST API。API 价格与 Studio 订阅（Pro 或 Premier）相同，限速按订阅档调整。文档在 suno.com/api。</p>
+
+<p class="text-gray-700 my-4"><strong>Suno 能克隆真实歌手的声音吗？</strong><br>不能。Suno 的内容审核拒绝引用实名艺人的 prompt 与可识别公众人物的音频上传。Persona 声音只能从你自己的录音或 Suno 生成的音频训练——不能从有版权的源材料。</p>
+
+<p class="text-gray-700 my-4"><strong>如果取消订阅会怎样？</strong><br>生成的歌曲永远归你——商用授权对订阅期间创建的歌曲不可撤销。你失去 Studio 编辑界面与 Persona 声音的访问，但已下载的 WAV/MP3 文件不受影响。</p>
+
+<p class="text-gray-700 my-4"><strong>Suno 给开发者免费层吗？</strong><br>有——每天 50 积分，足够约 10 首 simple-mode 歌曲。免费层仅限个人使用，音质封顶在 v4 时代。在付费 Pro 之前评估 Suno 是否适合你的负载，免费层是正确的选择。</p>
+
+<p class="text-gray-700 my-4"><strong>Suno 比 Udio 好吗？</strong><br>Udio 是最接近的直接竞品（同样端到端歌曲生成，同样按积分计费）。Suno 在 2026 年 8 月的优势是 Studio 多轨编辑器与 Persona 人声一致性，都是 Udio 没有等价品的 Premier 档特性。Udio 的优势有时在某些流派（特别是爵士与古典）人声更逼真，而 Suno v5.5 在这些流派偶尔仍有连贯性问题。</p>
+
+<p class="text-gray-700 my-4"><strong>Suno 支持英语以外的语言吗？</strong><br>支持——v5.5 支持 50+ 语言歌词，英语、西班牙语、葡萄牙语、普通话、日语、韩语质量最强。生成 prompt 可以是任意语言；模型按此选择人声风格。</p>
+
+<p class="text-gray-700 my-4"><strong>Suno 能只生成纯器乐吗？</strong><br>可以。在生成请求中设置 make_instrumental: true。输出是无人声、全编曲的轨道——适合播客背景音乐、YouTube BGM，以及任何人声会干扰旁白的商用场景。</p>
+
+<hr class="my-8 border-gray-200">
+
+<p class="text-gray-500 text-sm my-4"><strong>资料验证于 2026-08-06：</strong>Suno 价格见 suno.com/pricing 与 suno.com/api/pricing；模型线见 suno.com/api；商用许可条款见 suno.com/terms。API 端点形态从公开 REST API 文档确认。撰写本文时与 Suno 无任何联盟关系。</p>`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} articleJsonLd={articleJsonLd} breadcrumbJsonLd={breadcrumbJsonLd} faqJsonLd={faqJsonLd}>
+  <div set:html={zhBody} />
+</BaseLayout>
