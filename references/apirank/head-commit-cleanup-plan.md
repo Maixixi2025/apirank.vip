@@ -2,7 +2,15 @@
 
 ## Status
 
-**DRAFTED, NOT EXECUTED.** Written when Jazfox offloaded the cleanup task with "你自己处理一下" but the analysis surfaced 3 separate concerns that cross live-production boundaries. Following the `apirank-data-catalog` §0 "PRD-切片+暂停" decision pattern (verified 2026-07-27): when a task touches >3 files OR crosses the deploy boundary, write a plan first, then pause for review.
+**DRAFTED, NOT EXECUTED — DEFERRED UNTIL POST-ADSENSE-REVIEW.**
+
+Jazfox decision 2026-08-04 (post-cleanup-task): "等 AdSense 审核通过了再来改,改动动作有点大."
+
+Reason: while the 8 files don't block AdSense review, three of them have live URLs (`reka-ai-api-review`, `tavily-api-review`, `kimi-k3-api-review` not yet live) and any cleanup involves either `git push --force` (rewrites history) or deletion-with-301 (new URLs visible to AdSense reviewer). Best to wait for review outcome first.
+
+Trigger to re-pick-up this plan: AdSense sends `pub-2134598094429002` a "your site is approved" notification OR 7 days pass without rejection (assume approved). Either way, re-read this file before touching the 8 files.
+
+Originally written when Jazfox offloaded the cleanup task with "你自己处理一下" but the analysis surfaced 3 separate concerns that cross live-production boundaries. Following the `apirank-data-catalog` §0 "PRD-切片+暂停" decision pattern (verified 2026-07-27): when a task touches >3 files OR crosses the deploy boundary, write a plan first, then pause for review.
 
 **Verified state at 2026-08-04 22:50+ (commit e8a20df already on `main` + CF Pages production):**
 
