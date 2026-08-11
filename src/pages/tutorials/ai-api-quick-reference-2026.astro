@@ -1,0 +1,717 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'ai-api-quick-reference-2026';
+const date = '2026-08-11';
+const locale = 'en';
+
+const enTitle = 'AI API Quick Reference 2026: One-Page Documentation for All Major Providers';
+const enDescription = 'Complete quick reference for 20+ AI APIs: endpoints, authentication, SDK examples, pricing, and migration guide. OpenAI, Anthropic, DeepSeek, Together AI, and more.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": `https://apirank.vip/tutorials/${slug}`
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Which AI API is cheapest for production use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For open-weight models, Together AI (Llama 4 at $0.20/M input), DeepSeek (V3 at $0.27/M), and FreeModel (aggregated pricing) are the cheapest. For closed models, xAI Grok-3 at $0.30/M is best value."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do all APIs use the same authentication format?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Most use Bearer token in HTTP Authorization header (e.g., `Authorization: Bearer YOUR_API_KEY`), but some like Cloudflare Workers AI use API keys in headers. Check each provider's docs for exact format."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I switch between providers without changing my code?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, if you use an aggregator like FreeModel, OpenRouter, or Block.AI. They normalize all provider APIs behind a single OpenAI-compatible endpoint, so you only change the base URL and API key."
+      }
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={`${enTitle} | APIRank`}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  articleJsonLd={articleJsonLd}
+  breadcrumbJsonLd={breadcrumbJsonLd}
+  faqJsonLd={faqJsonLd}
+>
+
+# AI API Quick Reference 2026
+
+**Last updated:** August 11, 2026  
+**Coverage:** 20+ major AI providers with endpoints, authentication, code examples, and pricing
+
+This is your one-stop reference for AI API integration in 2026. Whether you're building with OpenAI, Anthropic, DeepSeek, Together AI, or any of the other major providers, you'll find everything you need here.
+
+---
+
+## 📋 Table of Contents
+
+1. [OpenAI](#openai)
+2. [Anthropic](#anthropic)
+3. [DeepSeek](#deepseek)
+4. [Together AI](#together-ai)
+5. [xAI (Grok)](#xai-grok)
+6. [Fireworks AI](#fireworks-ai)
+7. [Groq](#groq)
+8. [Hugging Face](#hugging-face)
+9. [Cerebras](#cerebras)
+10. [Sambanova](#sambanova)
+11. [Aggregators (FreeModel, OpenRouter, Block.AI)](#aggregators)
+
+---
+
+## OpenAI
+
+**Best for:** Production-grade models, best English performance, mature ecosystem
+
+### Endpoint
+```
+https://api.openai.com/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Python SDK
+```python
+from openai import OpenAI
+
+client = OpenAI(api_key="sk-xxxxx")
+
+response = client.chat.completions.create(
+  model="gpt-5.6",
+  messages=[
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "Hello!"}
+  ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### Pricing (per 1M tokens)
+- **GPT-5.6:** $2.50 input / $15.00 output
+- **GPT-5.5:** $1.25 input / $7.50 output
+- **GPT-4o:** $2.50 input / $10.00 output
+- **o1-pro:** $15.00 input / $60.00 output
+
+### China Access
+❌ Not directly accessible from mainland China. Use aggregator (FreeModel/OpenRouter) or proxy.
+
+---
+
+## Anthropic
+
+**Best for:** Complex reasoning, long context (200K tokens), Claude Code integration
+
+### Endpoint
+```
+https://api.anthropic.com/v1/messages
+```
+
+### Authentication
+```bash
+x-api-key: sk-ant-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Anthropic-Version: 2023-06-01
+```
+
+### Python SDK
+```python
+import anthropic
+
+client = anthropic.Anthropic(api_key="sk-ant-xxxxx")
+
+message = client.messages.create(
+    model="claude-sonnet-5",
+    max_tokens=1024,
+    messages=[
+        {"role": "user", "content": "Hello, Claude!"}
+    ]
+)
+
+print(message.content[0].text)
+```
+
+### Pricing (per 1M tokens)
+- **Claude 3.7 Sonnet:** $3.00 input / $15.00 output
+- **Claude 3.5 Sonnet:** $3.00 input / $15.00 output
+- **Claude 3 Haiku:** $0.25 input / $1.25 output
+
+### China Access
+❌ Not directly accessible. Use aggregator or proxy.
+
+---
+
+## DeepSeek
+
+**Best for:** China access, cheap production use, bilingual (EN/CN)
+
+### Endpoint
+```
+https://api.deepseek.com/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Python SDK
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-xxxxx",
+    base_url="https://api.deepseek.com/v1"
+)
+
+response = client.chat.completions.create(
+  model="deepseek-chat",
+  messages=[
+    {"role": "user", "content": "你好！"}
+  ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### Pricing (per 1M tokens)
+- **DeepSeek-V3:** $0.27 input / $1.10 output
+- **DeepSeek-R1:** $2.19 input / $8.75 output
+- **Free tier:** $2 credit on signup
+
+### China Access
+✅ Fully accessible from mainland China. No VPN needed.
+
+---
+
+## Together AI
+
+**Best for:** Open-weight models (Llama 4, Qwen, Mistral), high throughput
+
+### Endpoint
+```
+https://api.together.xyz/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer your_api_key_here
+```
+
+### Python SDK
+```python
+from together import Together
+
+client = Together(api_key="your_api_key")
+
+response = client.chat.completions.create(
+  model="meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+  messages=[
+    {"role": "user", "content": "Hello from Together AI!"}
+  ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### Pricing (per 1M tokens)
+- **Llama 4 Maverick:** $0.20 input / $0.60 output
+- **Qwen 3.5 9B:** $0.06 input / $0.09 output
+- **DeepSeek V4 Pro:** $0.30 input / $0.62 output
+
+### China Access
+❌ US-based, needs proxy/aggregator for China access.
+
+---
+
+## xAI (Grok)
+
+**Best for:** Real-time news, X/Twitter integration, cost-effective frontier model
+
+### Endpoint
+```
+https://api.x.ai/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer xai-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Python SDK
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="xai-xxxxx",
+    base_url="https://api.x.ai/v1"
+)
+
+response = client.chat.completions.create(
+  model="grok-3-beta",
+  messages=[
+    {"role": "user", "content": "What's trending on X?"}
+  ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### Pricing (per 1M tokens)
+- **Grok-3-beta:** $0.30 input / $1.50 output
+- **Grok-3-mini:** $0.05 input / $0.20 output
+
+### China Access
+❌ Not directly accessible. Use aggregator.
+
+---
+
+## Fireworks AI
+
+**Best for:** Fine-tuned models, fast inference, China-optimized
+
+### Endpoint
+```
+https://api.fireworks.ai/inference/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer your_api_key
+```
+
+### Python SDK
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="fw-xxxxx",
+    base_url="https://api.fireworks.ai/inference/v1"
+)
+
+response = client.chat.completions.create(
+  model="fireworks-llama-3.1-70b-instruct",
+  messages=[
+    {"role": "user", "content": "Hello from Fireworks AI!"}
+  ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### Pricing (per 1M tokens)
+- **Llama 3.1 405B:** $3.00 input / $15.00 output
+- **Qwen 2.5 72B:** $0.60 input / $0.60 output
+- **Mixtral 8x7B:** $0.50 input / $0.50 output
+
+### China Access
+✅ Has China-optimized endpoints (cn region).
+
+---
+
+## Groq
+
+**Best for:** Ultra-low latency, real-time applications, LPU inference
+
+### Endpoint
+```
+https://api.groq.com/openai/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Python SDK
+```python
+from groq import Groq
+
+client = Groq(api_key="gsk-xxxxx")
+
+response = client.chat.completions.create(
+  model="llama-3.3-70b-versatile",
+  messages=[
+    {"role": "user", "content": "Fast response please!"}
+  ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### Pricing (per 1M tokens)
+- **Llama 3.3 70B:** $0.59 input / $0.79 output
+- **Mixtral 8x7B:** $0.20 input / $0.20 output
+- **Free tier:** Available for testing
+
+### China Access
+❌ US-based, needs proxy.
+
+---
+
+## Hugging Face
+
+**Best for:** Open-source models, experimentation, free tier
+
+### Endpoint
+```
+https://api-inference.huggingface.co/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Python SDK
+```python
+from huggingface_hub import InferenceClient
+
+client = InferenceClient(
+    token="hf_xxxxxx",
+    model="meta-llama/Llama-3.3-70B-Instruct"
+)
+
+response = client.chat.completions.create(
+    messages=[
+        {"role": "user", "content": "Hello!"}
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### Pricing
+- **Free tier:** Limited, good for testing
+- **Pro tier:** $9/month for priority access
+- **Inference API:** Pay-as-you-go for enterprise
+
+### China Access
+❌ Accessible but slow from China.
+
+---
+
+## Cerebras
+
+**Best for:** Wafer-scale inference, ultra-fast 200B+ models
+
+### Endpoint
+```
+https://api.cerebras.ai/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer cs-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Python SDK
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="cs-xxxxx",
+    base_url="https://api.cerebras.ai/v1"
+)
+
+response = client.chat.completions.create(
+  model="llama3.3-70b",
+  messages=[
+    {"role": "user", "content": "Hello Cerebras!"}
+  ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### Pricing (per 1M tokens)
+- **Llama 3.3 70B:** $0.59 input / $0.79 output
+- **WaifuLM (Chinese-optimized):** Custom pricing
+
+### China Access
+❌ US-based.
+
+---
+
+## Sambanova
+
+**Best for:** High-performance inference, open-weight models
+
+### Endpoint
+```
+https://api.sambanova.ai/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer your_api_key
+```
+
+### Python SDK
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sn-xxxxx",
+    base_url="https://api.sambanova.ai/v1"
+)
+
+response = client.chat.completions.create(
+  model="Meta-Llama-3.1-70B-Instruct",
+  messages=[
+    {"role": "user", "content": "Hello Sambanova!"}
+  ]
+)
+
+print(response.choices[0].message.content)
+```
+
+### Pricing
+- Contact sales for custom pricing
+- Volume discounts available
+
+### China Access
+❌ US-based.
+
+---
+
+## Aggregators
+
+### FreeModel
+
+**Best for:** Cost optimization, multi-provider routing, China access
+
+### Endpoint
+```
+https://api.freemodel.dev/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer fm-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Features
+- Routes to 6+ providers (OpenAI, Anthropic, DeepSeek, xAI, Groq, Together AI)
+- Automatic cost optimization
+- $100 free credit + 1:1 match on first deposit
+- China-accessible
+
+### Pricing
+- Dynamic pricing based on selected provider
+- Average savings: 50-70% vs direct provider rates
+
+### Python SDK
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="fm-xxxxx",
+    base_url="https://api.freemodel.dev/v1"
+)
+
+response = client.chat.completions.create(
+  model="gpt-5.6",  # Will route to cheapest provider with GPT-5.6
+  messages=[
+    {"role": "user", "content": "Hello from FreeModel!"}
+  ]
+)
+
+print(response.choices[0].message.content)
+```
+
+---
+
+### OpenRouter
+
+**Best for:** Model experimentation, advanced routing, analytics
+
+### Endpoint
+```
+https://openrouter.ai/api/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer or-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Features
+- 100+ models
+- Provider-level routing
+- Usage analytics
+- Caching to reduce costs
+
+### Pricing
+- Pay provider price + 20% markup (customizable)
+- Free tier available for testing
+
+---
+
+### Block.AI (BAI)
+
+**Best for:** Crypto payments, x402 protocol, agent autonomy
+
+### Endpoint
+```
+https://api.block.ai/v1/chat/completions
+```
+
+### Authentication
+```bash
+Authorization: Bearer bai-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Features
+- x402 native crypto payments
+- 50+ models
+- A2A settlement for multi-agent economies
+- CNY/crypto settlement options
+- $100 free tier with deposit match
+
+### Pricing
+- Transparent: `(Official Price × Plan Multiplier ÷ 7)`
+- Plan multiplier disclosed after registration
+
+---
+
+## 🔄 Migration Guide
+
+### From OpenAI to DeepSeek
+```python
+# Before (OpenAI)
+client = OpenAI(api_key="sk-xxxxx")
+
+# After (DeepSeek)
+client = OpenAI(
+    api_key="sk-xxxxx",
+    base_url="https://api.deepseek.com/v1"
+)
+```
+
+### From OpenAI to Together AI
+```python
+# Before (OpenAI)
+client = OpenAI(api_key="sk-xxxxx")
+
+# After (Together AI)
+client = OpenAI(
+    api_key="together_xxxxx",
+    base_url="https://api.together.xyz/v1"
+)
+```
+
+### From OpenAI to FreeModel (Aggregator)
+```python
+# Before (OpenAI)
+client = OpenAI(api_key="sk-xxxxx")
+
+# After (FreeModel)
+client = OpenAI(
+    api_key="fm-xxxxx",
+    base_url="https://api.freemodel.dev/v1"
+)
+```
+
+---
+
+## 📊 Quick Comparison Table
+
+| Provider | Best Use Case | China Access | Avg. Cost | Latency |
+|----------|--------------|--------------|-----------|---------|
+| OpenAI | Production-grade | ❌ | $$$$ | Medium |
+| Anthropic | Complex reasoning | ❌ | $$$$ | Medium |
+| DeepSeek | China + cost | ✅ | $ | Low |
+| Together AI | Open-weight models | ❌ | $ | Low |
+| xAI (Grok) | Real-time + news | ❌ | $$ | Medium |
+| Fireworks AI | Fine-tuned models | ✅ | $$ | Low |
+| Groq | Ultra-fast inference | ❌ | $$ | Ultra-low |
+| FreeModel | Cost optimization | ✅ | $ | Low |
+
+---
+
+## 🔍 FAQ
+
+### Q: Which API is best for production?
+A: **OpenAI** for English quality, **DeepSeek** for China/cost, **Together AI** for open-weight models.
+
+### Q: Can I avoid lock-in?
+A: Yes. Use **FreeModel** or **OpenRouter** to route to any provider through one API.
+
+### Q: How much do I need to budget?
+A: **$0.27-$2.50 per 1M input tokens** depending on provider. For typical usage (1000 calls/month), expect $10-$50/month.
+
+### Q: Are there free tiers?
+A: **DeepSeek** ($2), **Groq** (limited), **Hugging Face** (limited), **FreeModel** ($100 + match).
+
+---
+
+## 🔗 Related Articles
+
+- [DeepSeek API Review 2026](/tutorials/deepseek-api-review)
+- [OpenRouter Review](/tutorials/openrouter-review)
+- [Together AI API Review](/tutorials/together-ai-api-review)
+- [FreeModel API Review](/tutorials/freemodel-api-review)
+- [AI API Code Generation Guide](/tutorials/ai-api-code-generation-2026)
+
+---
+
+*This reference is updated regularly. Last verified: August 11, 2026.*
+
+</BaseLayout>
