@@ -1,0 +1,252 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'deepseek-v4-pro-peak-valley-pricing-2026';
+const date = '2026-08-16';
+const locale = 'en';
+const enTitle = 'DeepSeek V4 Pro API 2026: Peak-Valley Pricing';
+const enDescription = 'DeepSeek V4 Pro API released 2026-08-13 with peak/off-peak pricing (off-peak half price) effective Aug 16. HLE 42.7 with tools, Responses API, 1M context.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is DeepSeek V4 Pro?",
+      "acceptedAnswer": { "@type": "Answer", "text": "DeepSeek V4 Pro (model name deepseek-v4-pro, version DeepSeek-V4-Pro-0813) is the flagship agent-optimized API that reached its official release on 2026-08-13. It offers a 1M context window, 384K max output, native OpenAI Responses API and Anthropic API support, and a low/high/max thinking-mode selector." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does DeepSeek peak-valley pricing work?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Starting 16:00 UTC on August 16, 2026, DeepSeek moves both V4 models to peak/off-peak billing. Off-peak rates are half of peak rates. Peak hours are 01:00-04:00 and 06:00-10:00 UTC (09:00-12:00 and 14:00-18:00 Beijing time); all other hours are off-peak." }
+    },
+    {
+      "@type": "Question",
+      "name": "What does DeepSeek V4 Pro cost per million tokens?",
+      "acceptedAnswer": { "@type": "Answer", "text": "At peak, deepseek-v4-pro is $0.044 (cache hit), $1.32 (cache miss input), and $3.96 (output) per 1M tokens. Off-peak these prices are halved to $0.022 / $0.66 / $1.98. The old flat prices were $0.003625 / $0.435 / $0.87." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does DeepSeek V4 Pro support the OpenAI Responses API?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. As of the 2026-08-13 update, deepseek-v4-pro natively supports the OpenAI Responses API format and is specifically adapted for OpenAI Codex with a one-script configuration installer. This closes the gap that existed at the V4 Flash launch, when Responses API was Flash-only." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the DeepSeek V4 Pro concurrency limit?",
+      "acceptedAnswer": { "@type": "Answer", "text": "deepseek-v4-pro supports 500 concurrent in-flight requests, compared with 2,500 for deepseek-v4-flash. The Pro tier's lower ceiling is one reason agent frameworks that fan out many parallel tool calls often default to V4 Flash." }
+    },
+    {
+      "@type": "Question",
+      "name": "When do the peak and off-peak hours apply?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Peak hours are 01:00-04:00 UTC and 06:00-10:00 UTC daily, which corresponds to 09:00-12:00 and 14:00-18:00 Beijing time. Scheduling batch or overnight agent jobs outside these windows earns the 50% off-peak discount." }
+    }
+  ]
+};
+
+const enBody = `
+<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">DeepSeek V4 Pro API 2026: Peak-Valley Pricing &amp; the New Agent Flagship</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">On <strong>2026-08-13</strong>, DeepSeek pushed <strong>DeepSeek-V4-Pro-0813</strong> to its official release across the app, web, and API &mdash; and it came with a pricing change that every heavy API user will feel within hours. Starting <strong>16:00 UTC on August 16, 2026</strong> (that&rsquo;s 00:00 Beijing time on August 17), DeepSeek moves the whole V4 line to <strong>peak / off-peak billing</strong>: run your agents during off-peak windows and you pay half the peak rate.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This is the story to read before your next batch job, because it changes how you should schedule DeepSeek workloads &mdash; and because V4 Pro finally closes the agent gap that kept it one step behind V4 Flash. Here&rsquo;s what shipped, what the new price table actually looks like, and how to route around peak hours. Everything here is verified against DeepSeek&rsquo;s <a href="https://api-docs.deepseek.com/quick_start/pricing" target="_blank" rel="noopener" class="text-blue-600 underline">official pricing page</a> and the <a href="https://api-docs.deepseek.com/updates" target="_blank" rel="noopener" class="text-blue-600 underline">official releases changelog</a>.</p>
+
+<h2 id="what-shipped" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">What 2026-08-13 Actually Shipped</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The official <code>deepseek-v4-pro</code> model (version <code>DeepSeek-V4-Pro-0813</code>) is the flagship of DeepSeek&rsquo;s V4 line. Calling it is unchanged &mdash; set <code>model="deepseek-v4-pro"</code> and you get the latest version. Beyond the version bump, three changes matter to developers:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700 leading-relaxed">
+<li><strong>Agent capability jump.</strong> DeepSeek says the production agent performance of the official build is &ldquo;significantly improved&rdquo; over the preview. The headline numbers: <strong>HLE 42.7/60.0 with tools</strong> (and 42.7 without), <strong>Terminal Bench 2.1 at 87.9</strong>, NL2Repo 61.5, Cybergym 83.3, DeepSWE 62.7, Toolathlon-Verified 74.1, Agents&rsquo; Last Exam 25.7, AutomationBench (Public) 31.8, DSBench-FullStack 71.1, and DSBench-Hard 67.2.</li>
+<li><strong>Native Responses API + Codex.</strong> deepseek-v4-pro now natively supports the <strong>OpenAI Responses API</strong> format and is &ldquo;specifically adapted for Codex,&rdquo; with a one-script configuration installer. This closes the exact gap we flagged at the V4 Flash launch, when Responses API was Flash-only.</li>
+<li><strong>Three thinking intensities.</strong> Both V4-Pro and V4-Flash now support <code>low</code> / <code>high</code> / <code>max</code> thinking modes, so you can pick the reasoning budget per task &mdash; <code>low</code> for simple tasks, <code>high</code> for daily agent work, <code>max</code> for the hardest problems.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The model spec sheet keeps the same generous ceiling as the rest of the V4 line: <strong>1M input context</strong>, <strong>384K max output</strong>, JSON output, tool calls, Anthropic API format, chat prefix completion (Beta), and FIM completion (Beta, non-thinking mode only).</p>
+
+<h2 id="peak-valley-pricing" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">The Big One: Peak-Valley Pricing Starts Today</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">DeepSeek&rsquo;s pricing page now carries a prominent notice: <em>&ldquo;DeepSeek API pricing will be updated to peak / off-peak billing, with off-peak rates at half the peak rates.&rdquo;</em> The change is effective <strong>16:00 UTC on August 16, 2026</strong> (00:00 Beijing time, August 17), so the table below is live as of today.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Peak hours are <strong>01:00&ndash;04:00 UTC and 06:00&ndash;10:00 UTC</strong> each day, which corresponds to <strong>09:00&ndash;12:00 and 14:00&ndash;18:00 Beijing time</strong>. Every other hour is off-peak &mdash; and off-peak is half the peak price. Here is the full table:</p>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Per 1M tokens</th>
+<th class="border border-gray-200 px-4 py-2 text-right font-semibold">V4-Flash off-peak</th>
+<th class="border border-gray-200 px-4 py-2 text-right font-semibold">V4-Flash peak</th>
+<th class="border border-gray-200 px-4 py-2 text-right font-semibold">V4-Pro off-peak</th>
+<th class="border border-gray-200 px-4 py-2 text-right font-semibold">V4-Pro peak</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">Input (cache hit)</td><td class="border border-gray-200 px-4 py-2 text-right">$0.007</td><td class="border border-gray-200 px-4 py-2 text-right">$0.014</td><td class="border border-gray-200 px-4 py-2 text-right">$0.022</td><td class="border border-gray-200 px-4 py-2 text-right">$0.044</td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">Input (cache miss)</td><td class="border border-gray-200 px-4 py-2 text-right">$0.22</td><td class="border border-gray-200 px-4 py-2 text-right">$0.44</td><td class="border border-gray-200 px-4 py-2 text-right">$0.66</td><td class="border border-gray-200 px-4 py-2 text-right">$1.32</td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">Output</td><td class="border border-gray-200 px-4 py-2 text-right">$0.66</td><td class="border border-gray-200 px-4 py-2 text-right">$1.32</td><td class="border border-gray-200 px-4 py-2 text-right">$1.98</td><td class="border border-gray-200 px-4 py-2 text-right">$3.96</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="text-gray-700 leading-relaxed my-4">Compare that with the flat prices that applied until <strong>today</strong>: deepseek-v4-pro was $0.003625 (cache hit) / $0.435 (cache miss input) / $0.87 (output) per 1M, and deepseek-v4-flash was $0.0028 / $0.14 / $0.28. The new off-peak Pro price is materially higher than the old flat rate, while <strong>peak Pro output jumps to $3.96/M &mdash; more than 4.5x the old $0.87</strong>. The 50% discount is real, but it applies to a re-tiered baseline, not to last week&rsquo;s prices.</p>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">What changed</th>
+<th class="border border-gray-200 px-4 py-2 text-right font-semibold">deepseek-v4-pro</th>
+<th class="border border-gray-200 px-4 py-2 text-right font-semibold">deepseek-v4-flash</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">Old flat output per 1M</td><td class="border border-gray-200 px-4 py-2 text-right">$0.87</td><td class="border border-gray-200 px-4 py-2 text-right">$0.28</td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">New off-peak output</td><td class="border border-gray-200 px-4 py-2 text-right">$1.98 (2.3x old)</td><td class="border border-gray-200 px-4 py-2 text-right">$0.66 (2.4x old)</td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">New peak output</td><td class="border border-gray-200 px-4 py-2 text-right">$3.96 (4.5x old)</td><td class="border border-gray-200 px-4 py-2 text-right">$1.32 (4.7x old)</td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">Concurrency limit</td><td class="border border-gray-200 px-4 py-2 text-right">500</td><td class="border border-gray-200 px-4 py-2 text-right">2,500</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="schedule-strategy" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">The Off-Peak Playbook: Cut AI API Spend by 50%</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The new billing model turns <em>when</em> you run a DeepSeek workload into a first-class cost lever. If an agent job is not latency-sensitive, moving it out of the peak windows (01:00&ndash;04:00 and 06:00&ndash;10:00 UTC) halves the token bill.</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700 leading-relaxed">
+<li><strong>Nightly re-indexing and embedding backfills</strong> &mdash; schedule for off-peak and take the 50% discount for free.</li>
+<li><strong>Batch evaluation / regression suites</strong> &mdash; off-peak Pro output at $1.98/M instead of $3.96/M compounds on long eval runs.</li>
+<li><strong>Code review and diff-analysis agents</strong> &mdash; queue them overnight so the morning starts with results at half price.</li>
+<li><strong>Cache-hit traffic</strong> stays cheap (Pro $0.022/M off-peak) &mdash; keep prompt prefixing on to maximize cache hits.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The one catch: DeepSeek&rsquo;s peak windows overlap the <em>US evening / EU business morning</em> for many teams, so &ldquo;real-time&rdquo; multi-region products will frequently land in peak hours. For those, model selection (Flash vs Pro) and cache-hit engineering matter more than scheduling.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">There is also a strategic angle worth naming: peak-hour pricing is a polite way to <strong>shape demand toward off-peak capacity</strong>. DeepSeek is effectively publishing a time-of-use tariff &mdash; the same lever cloud GPU providers increasingly use to smooth load. For API consumers the takeaway is that <em>latency-insensitive</em> workloads should be treated as schedulable batch, and your orchestration layer should be able to move a job across the peak boundary automatically rather than paying the 2x surcharge by default.</p>
+
+<h2 id="responses-api-codex" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">V4 Pro Now Drives Responses API &amp; Codex</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">At the V4 Flash launch in late July, native <strong>Responses API</strong> support was Flash-only &mdash; V4 Pro trailed. The 08-13 update removes that gap: deepseek-v4-pro now natively supports the OpenAI Responses API format, and DeepSeek has tailored it for <strong>OpenAI Codex</strong> with a one-script configuration installer (curl the setup script, and Codex CLI, the ChatGPT desktop app, and the VS Code Codex extension all point at deepseek-v4-pro). If you&rsquo;ve been running Codex-style agent loops, Pro is now a first-class citizen instead of a workaround.</p>
+
+<h2 id="thinking-modes" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Thinking Mode: low / high / max</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Both V4 models now expose three thinking intensities. The practical guidance from DeepSeek itself: use <code>low</code> for simple tasks (faster, cheaper), <code>high</code> for everyday agent work, and <code>max</code> for complex, multi-step reasoning. Because thinking effort directly trades cost against reasoning depth &mdash; and now rides on top of peak/off-peak pricing &mdash; pairing <code>thinking</code> level with <em>time-of-day</em> gives you two independent cost dials on the same job.</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-md p-4 overflow-x-auto text-sm my-4"><code># OpenAI Chat Completions — thinking mode + model
+curl https://api.deepseek.com/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer $DEEPSEEK_API_KEY" \\
+  -d '{
+    "model": "deepseek-v4-pro",
+    "messages": [{"role": "user", "content": "Refactor this diff and explain the trade-offs."}],
+    "thinking": { "type": "max" }
+  }'</code></pre>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-md p-4 overflow-x-auto text-sm my-4"><code># Responses API (OpenAI format) — near-identical payload
+from openai import OpenAI
+client = OpenAI(api_key="your-key", base_url="https://api.deepseek.com")
+
+resp = client.responses.create(
+    model="deepseek-v4-pro",
+    input="Review this pull request: " + open("pr.diff").read(),
+    reasoning={"effort": "high"},
+)
+print(resp.output_text)</code></pre>
+
+<h2 id="cost-calculation" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Worked Cost Calculation</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">A typical agentic code-review pass over a large repository might consume <strong>~900K input tokens</strong> (750K cache-hit + 150K cache-miss) and <strong>80K output tokens</strong>. Here&rsquo;s what that costs on deepseek-v4-pro under the new schedule:</p>
+
+<div class="overflow-x-auto my-6">
+<table class="min-w-full border-collapse border border-gray-200 text-sm">
+<thead class="bg-gray-50">
+<tr>
+<th class="border border-gray-200 px-4 py-2 text-left font-semibold">Scenario</th>
+<th class="border border-gray-200 px-4 py-2 text-right font-semibold">Input (hit)</th>
+<th class="border border-gray-200 px-4 py-2 text-right font-semibold">Input (miss)</th>
+<th class="border border-gray-200 px-4 py-2 text-right font-semibold">Output</th>
+<th class="border border-gray-200 px-4 py-2 text-right font-semibold">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">Off-peak</td><td class="border border-gray-200 px-4 py-2 text-right">$0.017</td><td class="border border-gray-200 px-4 py-2 text-right">$0.099</td><td class="border border-gray-200 px-4 py-2 text-right">$0.158</td><td class="border border-gray-200 px-4 py-2 text-right"><strong>$0.27</strong></td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">Peak</td><td class="border border-gray-200 px-4 py-2 text-right">$0.033</td><td class="border border-gray-200 px-4 py-2 text-right">$0.198</td><td class="border border-gray-200 px-4 py-2 text-right">$0.317</td><td class="border border-gray-200 px-4 py-2 text-right"><strong>$0.55</strong></td></tr>
+<tr class="border-b border-gray-200"><td class="border border-gray-200 px-4 py-2 font-medium">Old flat price</td><td class="border border-gray-200 px-4 py-2 text-right">$0.003</td><td class="border border-gray-200 px-4 py-2 text-right">$0.065</td><td class="border border-gray-200 px-4 py-2 text-right">$0.070</td><td class="border border-gray-200 px-4 py-2 text-right">$0.14</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="text-gray-700 leading-relaxed my-4">The same job that cost about <strong>$0.14</strong> on the old flat rate now runs <strong>$0.27 off-peak</strong> (roughly 2x) and <strong>$0.55 at peak</strong> (roughly 4x). The discount is real, but the new baseline is higher &mdash; which is why teams with large DeepSeek bills should re-budget now rather than assume &ldquo;off-peak = cheaper than before.&rdquo;</p>
+
+<h2 id="pro-vs-flash" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">V4 Pro vs V4 Flash: Which One, When?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">With both models under peak/off-peak pricing and both now supporting Responses API and three thinking modes, the Pro-vs-Flash decision is purely about capability vs throughput:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700 leading-relaxed">
+<li><strong>Choose V4 Pro</strong> for the hardest agent tasks &mdash; complex software engineering, multi-step reasoning, anything where DeepSWE 62.7 / DSBench-Hard 67.2 / HLE 42.7-with-tools headroom pays off. You get 500 concurrency, which is plenty for sequential agent loops.</li>
+<li><strong>Choose V4 Flash</strong> for high-fan-out parallelism and latency-sensitive calls &mdash; 2,500 concurrency and the one-third cost of Pro (off-peak Flash output $0.66 vs Pro $1.98) make it the default for batch and pipeline work.</li>
+<li><strong>Hybrid pattern:</strong> run the orchestrator on V4 Pro (deep reasoning) and farm out mechanical sub-tasks to V4 Flash (cheap, parallel). This is the same split teams have used since the V4 Flash launch.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For context against the wider 2026 agent-API landscape, DeepSeek&rsquo;s V4 line now brackets the same terrain as <a href="/tutorials/kimi-k3-api-review-2026/" class="text-blue-600 underline">Kimi K3</a> (Moonshot&rsquo;s 1M-context agent model) and the GPT-5.6/Claude pricing tiers we reviewed in our <a href="/tutorials/deepseek-v4-flash-api-2026/" class="text-blue-600 underline">V4 Flash launch deep-dive</a>. DeepSeek&rsquo;s edge is the peak/off-peak lever: no Western provider currently lets you literally half your bill by shifting hours.</p>
+
+<h2 id="faq" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Frequently Asked Questions</h2>
+
+<details class="my-3 border border-gray-200 rounded-md p-4"><summary class="font-medium text-gray-900 cursor-pointer">Is the pricing change retroactive or forward-looking?</summary>
+<p class="text-gray-700 leading-relaxed mt-2">Forward-looking. It takes effect at 16:00 UTC on August 16, 2026. Usage before that is still billed at the old flat rates; anything after is priced under the new peak/off-peak table.</p></details>
+
+<details class="my-3 border border-gray-200 rounded-md p-4"><summary class="font-medium text-gray-900 cursor-pointer">Which hours count as off-peak?</summary>
+<p class="text-gray-700 leading-relaxed mt-2">All hours outside 01:00&ndash;04:00 UTC and 06:00&ndash;10:00 UTC are off-peak. In Beijing time those peak windows are 09:00&ndash;12:00 and 14:00&ndash;18:00.</p></details>
+
+<details class="my-3 border border-gray-200 rounded-md p-4"><summary class="font-medium text-gray-900 cursor-pointer">Does cache-hit pricing also get the 50% discount?</summary>
+<p class="text-gray-700 leading-relaxed mt-2">Yes &mdash; cache-hit input is $0.007/$0.014 for Flash and $0.022/$0.044 for Pro (off-peak/peak). Cache hits were always cheap; they stay the cheapest tier under the new schedule.</p></details>
+
+<details class="my-3 border border-gray-200 rounded-md p-4"><summary class="font-medium text-gray-900 cursor-pointer">Can I still call deepseek-chat and deepseek-reasoner?</summary>
+<p class="text-gray-700 leading-relaxed mt-2">For now, yes, but DeepSeek has said the legacy names will be retired three months after the V4 announcement. Point new code at <code>deepseek-v4-pro</code> or <code>deepseek-v4-flash</code> to avoid a breaking switch later.</p></details>
+
+<details class="my-3 border border-gray-200 rounded-md p-4"><summary class="font-medium text-gray-900 cursor-pointer">Does deepseek-v4-pro support the Anthropic API format too?</summary>
+<p class="text-gray-700 leading-relaxed mt-2">Yes. Alongside the OpenAI Chat Completions and Responses formats, DeepSeek exposes Pro at the Anthropic-format endpoint (https://api.deepseek.com/anthropic), so Claude SDKs and agent frameworks that speak the Anthropic protocol can target deepseek-v4-pro with minimal changes.</p></details>
+
+<details class="my-3 border border-gray-200 rounded-md p-4"><summary class="font-medium text-gray-900 cursor-pointer">Why is Flash capped at a higher concurrency than Pro?</summary>
+<p class="text-gray-700 leading-relaxed mt-2">DeepSeek limits deepseek-v4-pro to 500 concurrent in-flight requests versus 2,500 for deepseek-v4-flash. The higher Pro ceiling is reserved for the most demanding agent loops; Flash&rsquo;s larger concurrency budget and one-third cost make it the default for fan-out-heavy pipeline work.</p></details>
+
+<h2 id="verdict" class="text-2xl font-semibold text-gray-900 mt-10 mb-4">Verdict: Re-Budget Now, Schedule Around Peak Hours</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">DeepSeek V4 Pro&rsquo;s official release is a genuine agent-capability step up &mdash; HLE 42.7 with tools, Terminal Bench 87.9, native Responses API and Codex support, and three thinking intensities on a 1M-context flagship. But the news that changes your bill <strong>today</strong> is the peak/off-peak restructure: off-peak output is 2.3x the old flat rate, and peak is 4.5x. That&rsquo;s not a &ldquo;coming soon&rdquo; footnote &mdash; it lands at 16:00 UTC on August 16.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Act this week: (1) re-budget any DeepSeek spend you currently forecast at the old flat numbers, (2) move batch and overnight agent workloads into off-peak windows to lock in the 50% discount, and (3) for latency-sensitive peak-hour traffic, keep the Flash-vs-Pro split sharp (Flash at 1/3 the cost and 5x the concurrency is the sensible default).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you prefer not to manage DeepSeek direct billing alongside OpenAI, Anthropic, and Google traffic, <a href="https://freemodel.dev/invite/FRE-7a3b6220" rel="sponsored nofollow" target="_blank" class="text-blue-600 underline">FreeModel</a> exposes deepseek-v4-pro (and V4 Flash, Kimi K3, Claude, and GPT-5.6 models) through a single API key, with usage dashboards that surface cost-per-task so you can see exactly what the peak/off-peak change does to each workload.</p>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl}>
+  <article className="max-w-3xl mx-auto px-4 py-8">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div set:html={enBody} />
+  </article>
+</BaseLayout>
