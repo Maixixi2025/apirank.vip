@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'cf-workers-ai-deepseek-v4-edge-inference-2026';
+const date = '2026-08-16';
+const locale = 'zh';
+const zhTitle = 'Cloudflare Workers AI 上线 DeepSeek V4：边缘推理走向 100 万上下文';
+const zhDescription = '2026-08-14 Cloudflare Workers AI 上线 DeepSeek V4 Flash 与 Pro，成为平台首批支持完整 100 万 token 上下文的模型。边缘定价、Agent 场景与对比解析。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Cloudflare Workers AI 何时上线 DeepSeek V4 Flash 与 Pro？', acceptedAnswer: { '@type': 'Answer', text: 'Cloudflare 于 2026 年 8 月 14 日在 Workers AI 上线 DeepSeek V4 Flash 与 Pro，模型句柄为 @cf/deepseek-ai/deepseek-v4-pro-0813 与 @cf/deepseek-ai/deepseek-v4-flash-0731。' } },
+  { '@type': 'Question', name: 'Cloudflare Workers AI 上的 DeepSeek V4 价格是多少？', acceptedAnswer: { '@type': 'Answer', text: 'Workers AI 将 V4 Pro 定价为每百万输入 token $1.32、输出 $3.96、缓存输入 $0.044；V4 Flash 为输入 $0.44、输出 $1.32、缓存输入 $0.014。两者都需要 Workers Paid 计划或预付 AI Gateway 额度。' } },
+  { '@type': 'Question', name: 'Workers AI 的 DeepSeek V4 支持 100 万 token 上下文吗？', acceptedAnswer: { '@type': 'Answer', text: '支持。DeepSeek V4 Flash 与 Pro 是 Workers AI 平台首批支持完整 1,048,576（100 万）token 上下文的模型，两者都具备思维链推理与函数调用能力。' } },
+  { '@type': 'Question', name: '如何在 Workers AI 上调用 DeepSeek V4？', acceptedAnswer: { '@type': 'Answer', text: '可通过 Workers AI 绑定（env.AI.run()）、REST API、OpenAI 兼容端点或 AI Gateway 四种方式调用，Cloudflare 均提供官方文档。' } },
+  { '@type': 'Question', name: 'Workers AI 的 DeepSeek V4 比直连 DeepSeek API 便宜吗？', acceptedAnswer: { '@type': 'Answer', text: '视情况而定。Workers AI 的 V4 Pro 定价与 DeepSeek 高峰价持平（$1.32/$3.96），而直连 API 在低谷时段约为其一半。需要边缘就近与 1M 上下文选 Workers AI；低频批量负载选直连 API 低谷价更划算。' } },
+  { '@type': 'Question', name: '国内能在 Workers AI 上用 DeepSeek V4 吗？', acceptedAnswer: { '@type': 'Answer', text: '对多数团队可以。Workers AI 推理运行在 Cloudflare 全球边缘节点上，很多团队经由 Cloudflare 的 API 或 AI Gateway 路由，而非直连 DeepSeek 的中国托管端点。' } }
+] };
+const affiliateSidebar = { title: '试试 FreeModel 多厂商路由', description: '一个 API Key 打通 DeepSeek、Qwen、OpenAI、Anthropic、Google 等——OpenAI 兼容的跨区域故障转移备选。', url: 'https://freemodel.dev/invite/FRE-7a3b6220', cta: '免费试用' };
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Cloudflare Workers AI 上线 DeepSeek V4 Flash 与 Pro：边缘推理走向 100 万上下文</h1>
+<p class="text-gray-700 leading-relaxed my-4"><strong>2026 年 8 月 14 日</strong>，Cloudflare 在 <strong>Workers AI</strong> 上新增 <strong>DeepSeek V4 Flash</strong> 与 <strong>DeepSeek V4 Pro</strong>——这是该平台首批支持 <strong>完整 1,048,576（100 万）token 上下文窗口</strong> 的两个模型。此举把 Cloudflare 的全球边缘网络变成了 DeepSeek 开源权重一代的分发渠道，落地时间距 DeepSeek V4 Pro 官方发布仅一天、距 V4 Flash 预览仅数周。本文梳理真正上线了什么、核实后的边缘定价、100 万上下文的 Agent 场景，以及 Worker AI 与直连 DeepSeek、经 OpenRouter 等聚合商调用的对比。</p>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 快速结论：</strong>Workers AI 的 DeepSeek V4 是让 1M 上下文的 DeepSeek <em>就近运行在现有 Worker 旁</em> 的最快方式——零基础设施、自带 AI Gateway 观测与 Cloudflare 全球覆盖。代价是：Workers AI 的 V4 Pro 按 DeepSeek <em>高峰</em>价计费，低频重负载仍以直连 API 更划算。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">8 月 14 日上线了什么</h2>
+<p class="text-gray-700 leading-relaxed my-4">Cloudflare 2026 年 8 月 14 日更新日志确认两个模型已上线，句柄为 <code class="bg-gray-100 px-1 rounded text-sm">@cf/deepseek-ai/deepseek-v4-pro-0813</code> 与 <code class="bg-gray-100 px-1 rounded text-sm">@cf/deepseek-ai/deepseek-v4-flash-0731</code>。核心亮点是上下文窗口：<strong>1,048,576 token</strong>，它们是 Workers AI 平台首批能在单次请求中容纳大型代码库、长程多步 Agent 轨迹或全书级推理内容的模型，超过此前平台上任何其他模型的上下文上限。</p>
+<p class="text-gray-700 leading-relaxed my-4">两个模型都支持 <strong>思考模式（思维链推理）</strong> 用于逐步解题，以及 <strong>函数调用</strong>，让 Agent 能在多轮对话中调用工具与 API。Cloudflare 将 DeepSeek V4 Flash 描述为「更快、更低成本的孪生模型」，本次发布取代了此前的预览版，并「显著增强了 Agent 能力」。官方定位的场景是长程 Agent 工作流、大型代码库推理与多步分析——正是会让较小上下文窗口失灵的任务。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">核实后的 Workers AI 边缘定价</h2>
+<table class="table-token my-4">
+  <thead><tr><th>模型</th><th>输入 ($/百万)</th><th>输出 ($/百万)</th><th>缓存输入 ($/百万)</th><th>上下文</th></tr></thead>
+  <tbody>
+    <tr><td>DeepSeek V4 Pro 0813</td><td>$1.32</td><td>$3.96</td><td>$0.044</td><td>1M</td></tr>
+    <tr><td>DeepSeek V4 Flash 0731</td><td>$0.44</td><td>$1.32</td><td>$0.014</td><td>1M</td></tr>
+  </tbody>
+</table>
+<p class="text-gray-700 leading-relaxed my-4">以上为 Cloudflare Workers AI 模型页的官方费率（2026-08-16 核实）。两个模型都要求 <strong>Workers Paid 计划或预付 AI Gateway 额度</strong>，不适用于标准 Workers Free 计费档。<strong>缓存输入折扣</strong>值得单独一提：Pro 的缓存输入低至 $0.044/M、Flash 低至 $0.014/M，提示词缓存能大幅压降低成本在长上下文、多轮 Agent 循环中的大头。Workers AI 按 token 计推理费，AI Gateway 的观测功能叠加在上；具体 Gateway 转嫁费用取决于账户请求量，详见 <a href="https://developers.cloudflare.com/workers-ai/platform/pricing/" class="text-blue-600 hover:underline" rel="noopener">Workers AI 定价页</a>。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">100 万上下文：真正重要的 Agent 场景</h2>
+<p class="text-gray-700 leading-relaxed my-4">这里的核心是 100 万 token 的上下文，而非价格。过去要把单体仓库分块成数百次检索调用的代码库 Agent，现在可以在一次请求里传入相关文件、甚至整个模块依赖图；研究型 Agent 可以同时保留完整语料、笔记与长分析链而不必淘汰早期上下文；需要循环调用大量函数的长程 Agent 也不再为了压到 128K/200K 上限而做激进的摘要压缩。</p>
+<p class="text-gray-700 leading-relaxed my-4">对已在运行 Worker 的团队，绑定是最简单的集成路径：在 Worker 里写 <code class="bg-gray-100 px-1 rounded text-sm">env.AI.run("@cf/deepseek-ai/deepseek-v4-pro-0813", { messages })</code>，无需虚拟机、网关或额外的密钥管理。同一批模型也可通过 <strong>REST API</strong>、<strong>OpenAI 兼容端点</strong> 与 <strong>AI Gateway</strong> 调用（后者提供跨厂商缓存、限流、重试与观测）。想要完全可移植的 OpenAI 风格接口，可参考我们的 <a href="/tutorials/cloudflare-ai-gateway-review" class="text-blue-600 hover:underline">Cloudflare AI Gateway 评测</a>。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">提示词缓存才是真正的成本杠杆</h2>
+<p class="text-gray-700 leading-relaxed my-4">有了 100 万 token 的上下文窗口，账单的 <em>输入</em> 一侧会很快成为大头。一个长程 Agent 如果每轮都重发 40 万 token 的仓库上下文，在没有缓存的情况下每走一步都要为这段上下文付全价。Cloudflare 的缓存输入定价正是为化解这一问题而设：DeepSeek V4 Pro 缓存输入从 $1.32 降到 <strong>每百万 $0.044</strong>（约 30 倍折扣），V4 Flash 从 $0.44 降到 <strong>每百万 $0.014</strong>（同样约 30 倍）。实际效果是：带大段稳定前缀的多轮 Agent 循环，成本接近一个小得多的请求——因为只有每一轮追加的新增量（新的工具结果与新指令）按全价输入计费。</p>
+<p class="text-gray-700 leading-relaxed my-4">用一个成本模型让它具体化。假设一个代码库分析 Agent 每任务跑 200 轮，稳定上下文 30 万 token，每轮追加约 2K 新 token，每轮输出约 1K token。无缓存时，一个任务约 200 &times; 300K = 6000 万输入 token，按 $1.32/M 计，仅 V4 Pro 的输入就约 <strong>$79</strong>。启用提示词缓存后，每轮的缓存部分（300K 中的 298K）按 $0.044/M 计费，只有 2K 增量按全价：输入成本降至每任务约 $2.90，降幅超过 25 倍。这一开关（在 Workers AI 的 OpenAI 兼容端点配合正确的缓存键默认开启）正是「100 万上下文的 Agent 从经济上不可行到真正可跑」的分水岭。DeepSeek 与 OpenRouter 也提供各自的提示缓存优惠；Workers AI 的不同在于折扣已内置在平台的固定费率卡中，而不是另开一个套餐开关。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Workers AI vs 直连 DeepSeek API vs OpenRouter</h2>
+<table class="table-token my-4">
+  <thead><tr><th>路线</th><th>V4 Pro $/百万 (入/出)</th><th>V4 Flash $/百万 (入/出)</th><th>适合</th></tr></thead>
+  <tbody>
+    <tr><td>Workers AI（本次发布）</td><td>$1.32 / $3.96</td><td>$0.44 / $1.32</td><td>与 Worker 边缘就近、AI Gateway、免基础设施的 1M 上下文</td></tr>
+    <tr><td>直连 DeepSeek API（高峰）</td><td>$1.32 / $3.96</td><td>约 $0.14–$0.28</td><td>最简单的直连计费；中国托管源站</td></tr>
+    <tr><td>直连 DeepSeek API（低谷）</td><td>约 $0.66 / $1.98</td><td>约 $0.07–$0.14</td><td>可安排到低谷时段执行的批量任务——半价</td></tr>
+    <tr><td>OpenRouter（digitalocean / deepseek 等厂商）</td><td>随厂商而异</td><td>随厂商而异</td><td>单钥匙多厂商路由与故障转移</td></tr>
+  </tbody>
+</table>
+<p class="text-gray-700 leading-relaxed my-4">最醒目的对比是：Workers AI 把 <strong>DeepSeek V4 Pro 定在恰好等于 DeepSeek 自己高峰时段的费率</strong>（$1.32/$3.96），而直连 API 在低谷时段约为其一半（V4 Pro 随正式版上线的峰谷计费详见我们的 <a href="/tutorials/deepseek-v4-pro-peak-valley-pricing-2026" class="text-blue-600 hover:underline">DeepSeek V4 Pro 峰谷定价文章</a>）。因此，如果流量突发且对延迟敏感，Workers AI 的固定费率与边缘就近占优；如果能把重负载排进低谷窗口，直连 API 约 50% 的折扣极具吸引力。</p>
+<p class="text-gray-700 leading-relaxed my-4">V4 Flash 的情况则相反：Workers AI 的 $0.44/$1.32 高于直连 API 约 $0.14–$0.28 的缓存未命中区间，但多出来的价格换来的是 <em>100 万上下文</em>（直连 API 上预览版更受限）加边缘就近。想先对比再决定，可参考我们的 <a href="/tutorials/deepseek-v4-flash-api-2026" class="text-blue-600 hover:underline">DeepSeek V4 Flash API 评测</a> 与 <a href="/tutorials/deepseek-v4-openrouter-agentic-token-share-2026" class="text-blue-600 hover:underline">OpenRouter Agent Token 份额分析</a>。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">对 2026 年 API 采购者的意义</h2>
+<p class="text-gray-700 leading-relaxed my-4">DeepSeek V4 登上 Workers AI，是 2026 年推理市场分层的最新证据：前沿实验室卖高端闭源模型，开源权重运营商（DeepSeek、Qwen、Llama、Mistral）卖性价比推理，而 <em>分发层</em>——Cloudflare、OpenRouter、Vercel、AI Gateway——是路由、上下文窗口与故障转移决策发生的地方。从 Cloudflare 网络按 token 计费提供 1M 上下文的开源权重模型，并带提示缓存折扣与 AI Gateway 观测，等于把长上下文 Agent 推理商品化的方式，与 Workers 当年把无服务器计算商品化如出一辙。</p>
+<p class="text-gray-700 leading-relaxed my-4">对成本敏感的 Agent 团队，实操打法：把对延迟敏感、缓存密集的 Agent 回合放到 Workers AI DeepSeek V4（Pro 或 Flash）上，换取 1M 上下文与边缘就近；把批量与非交互式通过放到直连 DeepSeek API 的低谷时段窗口（约 5 折）；并在前方保一个 OpenAI 兼容聚合商 Key 做故障转移——即我们在本站反复讲的「多厂商」架构。若想用一把 Key 前置多家厂商并简化跨区域故障转移，<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline" rel="noopener">FreeModel 的多厂商路由</a>是干净的起点。</p>
+<p class="text-gray-700 leading-relaxed my-4">一点提醒：边缘推理延迟随区域与流量变化，且 1M 上下文模型在平台上仍标记为 Beta（Cloudflare 将 V4 Pro 列为 Beta）。生产环境请把 Worker 固定到离用户近的区域，并用 AI Gateway 缓存。另外，Cloudflare 与 DeepSeek 的联手，也让大陆连接的团队多了一条不必硬磕 DeepSeek 中国托管源站的路由——相关背景见我们的 <a href="/tutorials/cloudflare-workers-ai-china-models-2026" class="text-blue-600 hover:underline">Workers AI 中国模型文章</a>。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">2026 年的 100 万上下文格局</h2>
+<p class="text-gray-700 leading-relaxed my-4">Workers AI 加入 100 万上下文俱乐部值得关注，因为真正能容纳百万 token 的提供商仍然不多，而且代价差异很大。DeepSeek 自家 API 以约 100 万上下文服务 V4 Pro 与 Flash，并开创了峰谷定价（低谷时费率减半）。Google 的 Gemini 家族多年支持 100 万以上上下文，在多模态 1M 任务上领先。xAI 的 Grok 与阿里的 Qwen 也推进到了数十万乃至 100 万 token 级别，Nebius、DigitalOcean Gradient 等开源权重托管商正在把 100 万上下文的 DeepSeek 级模型放到 OpenAI 兼容端点之后。Cloudflare 的不同在于推理 <em>运行在哪里</em>：在距离你的 Worker 一跳之遥的边缘节点上，内置 AI Gateway 观测与提示缓存定价，而不是需要你走公网访问的云区域虚拟机。</p>
+<p class="text-gray-700 leading-relaxed my-4">对已经跑在 Cloudflare 上的 Agent 平台——一个 Worker、一个 Pages 函数、一个 D1 支撑的任务队列——这种就近正是全部意义所在。你无需管理旁路推理客户端、第二个厂商账号或某个区域端点；模型只是另一个绑定，AI Gateway 提供缓存、限流与统一的分析面板。代价是你把推理与单一平台耦合，因此想要可移植性的团队会保留一条 OpenAI 兼容路线（直连 DeepSeek、OpenRouter 或另一家开源托管商）作为兜底——即聚合商们自己也在鼓励的故障转移模式。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">一段代码上手</h2>
+<p class="text-gray-700 leading-relaxed my-4">最快的路径是 OpenAI 兼容端点，从 Worker 或任意 HTTP 客户端调用。一段最小的边缘模型聊天补全如下：</p>
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>fetch("https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/ai/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer {API_TOKEN}",
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    model: "@cf/deepseek-ai/deepseek-v4-pro-0813",
+    messages: [{ "role": "user", "content": "总结这份 50 万 token 的代码库审计，列出最优先的重构风险。" }]
+  })
+}).then(r =&gt; r.json()).then(console.log);</code></pre>
+<p class="text-gray-700 leading-relaxed my-4">把模型句柄换成 <code class="bg-gray-100 px-1 rounded text-sm">@cf/deepseek-ai/deepseek-v4-flash-0731</code> 即得更便宜、更快的兄弟模型。Worker 原生用法则是 <code class="bg-gray-100 px-1 rounded text-sm">env.AI.run("...", { messages })</code> 并流式返回。按 Cloudflare 文档，两种方式都需要 Workers Paid 计划或预付 AI Gateway 额度。</p>
+
+<section class="faq mt-10">
+  <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Cloudflare Workers AI DeepSeek V4 常见问题</h2>
+  <div class="faq-item border-b py-4"><h3 class="font-semibold text-gray-900">Cloudflare Workers AI 何时上线 DeepSeek V4 Flash 与 Pro？</h3><p class="text-gray-700 my-2">Cloudflare 于 2026 年 8 月 14 日上线，模型句柄为 @cf/deepseek-ai/deepseek-v4-pro-0813 与 @cf/deepseek-ai/deepseek-v4-flash-0731。</p></div>
+  <div class="faq-item border-b py-4"><h3 class="font-semibold text-gray-900">Workers AI 上 DeepSeek V4 价格是多少？</h3><p class="text-gray-700 my-2">V4 Pro 为每百万输入 $1.32、输出 $3.96、缓存输入 $0.044；V4 Flash 为输入 $0.44、输出 $1.32、缓存输入 $0.014。均需 Workers Paid 计划或预付 AI Gateway 额度。</p></div>
+  <div class="faq-item border-b py-4"><h3 class="font-semibold text-gray-900">Workers AI 的 DeepSeek V4 支持 100 万 token 上下文吗？</h3><p class="text-gray-700 my-2">支持。两者是 Workers AI 平台首批支持完整 1,048,576 token 上下文的模型，均具备思维链推理与函数调用。</p></div>
+  <div class="faq-item border-b py-4"><h3 class="font-semibold text-gray-900">如何在 Workers AI 上调用 DeepSeek V4？</h3><p class="text-gray-700 my-2">通过 Workers AI 绑定（env.AI.run()）、REST API、OpenAI 兼容端点或 AI Gateway 四种方式，Cloudflare 均提供官方文档。</p></div>
+  <div class="faq-item py-4"><h3 class="font-semibold text-gray-900">Workers AI 的 DeepSeek V4 比直连 API 便宜吗？</h3><p class="text-gray-700 my-2">视情况而定。Workers AI V4 Pro 与 DeepSeek 高峰价持平（$1.32/$3.96），直连 API 低谷约为其一半。选 Workers AI 是为边缘就近与 1M 上下文；选低谷直连是为便宜的批量负载。</p></div>
+</section>
+`;
+
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">快速参考</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>发布时间:</strong> 2026-08-14</li><li><strong>模型:</strong> @cf/deepseek-ai/deepseek-v4-pro-0813 &amp; deepseek-v4-flash-0731</li><li><strong>上下文:</strong> 1,048,576 token（Workers AI 首批）</li><li><strong>Pro 价格:</strong> $1.32 / $3.96 每百万（缓存 $0.044）</li><li><strong>Flash 价格:</strong> $0.44 / $1.32 每百万（缓存 $0.014）</li><li><strong>能力:</strong> 思考模式 + 函数调用</li><li><strong>计划:</strong> 需 Workers Paid（或 AI Gateway 额度）</li><li><strong>接入:</strong> 绑定、REST、OpenAI 兼容、AI Gateway</li></ul></div><div class="bg-blue-50 border border-blue-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">{affiliateSidebar.title}</h3><p class="text-sm text-gray-700 mb-2">{affiliateSidebar.description}</p><a href={affiliateSidebar.url} class="inline-block bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700">{affiliateSidebar.cta}</a></div></aside>
+    </div>
+  </main>
+</BaseLayout>
