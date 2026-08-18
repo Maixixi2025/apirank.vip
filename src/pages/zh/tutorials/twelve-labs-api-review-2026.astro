@@ -1,0 +1,186 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'twelve-labs-api-review-2026';
+const date = '2026-08-18';
+const locale = 'zh';
+const zhTitle = 'TwelveLabs API 2026 评测：视频理解与 Marengo 检索';
+const zhDescription = 'TwelveLabs API 2026 深度评测：Pegasus 1.5 多模态视频理解、Marengo 3.0 嵌入模型、免费 600 分钟额度、按分钟计费、MCP 服务器；与 Kling、Luma、Runway 等生成 API 的定位差异。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'TwelveLabs 有公开 API 吗？', acceptedAnswer: { '@type': 'Answer', text: "有。TwelveLabs 暴露 RESTful JSON API，地址 https://api.twelvelabs.io/v1.3，覆盖索引（POST /tasks）、检索（POST /search）、嵌入（POST /embed）、分析（POST /analyze）和摘要生成（POST /gist）。官方 SDK 覆盖 Python / Node.js / Go / Java；MCP 服务器 https://docs.twelvelabs.io/_mcp/server 让 Claude Code 和 Cursor 等 AI 智能体可以直接调用。" } },
+  { '@type': 'Question', name: 'Pegasus 1.5 和 Pegasus 1.2 的区别是什么？', acceptedAnswer: { '@type': 'Answer', text: "Pegasus 1.5 是当前旗舰版本，相比 1.2 在多模态融合上做了关键升级 —— 1.5 在一次 transformer 前向中联合编码画面帧、时间序列、语音和屏幕文字，而 1.2 是后期拼接。实际效果差距是「描述场景」与「描述发生了什么、为什么发生」之间的差距。两者采用相同的按分钟计费结构。" } },
+  { '@type': 'Question', name: 'TwelveLabs API 免费吗？', acceptedAnswer: { '@type': 'Answer', text: "免费。免费计划注册即获 600 分钟累计视频索引额度，无需信用卡。免费层级开放全部 API（Pegasus 1.2 / 1.5、Marengo 3.0、Search、Embed、Analyze & Segment），但索引保留期 90 天。Developer 计划把保留期改为无限并解锁更高限速，按用量付费。" } },
+  { '@type': 'Question', name: 'TwelveLabs API 每分钟多少钱？', acceptedAnswer: { '@type': 'Answer', text: "Pegasus 1.2 视频索引 $0.042/分钟（索引时一次性收取）；输入视频 $0.021/分钟；输出文本 $0.0075/千 tokens；Marengo embedding 基础设施 $0.0015/已索引分钟/月。Developer 计划无月费，仅按用量计费；Enterprise 大客户可申请批量折扣。" } },
+  { '@type': 'Question', name: 'Marengo 和 Pegasus 有什么不同？', acceptedAnswer: { '@type': 'Answer', text: "Marengo 是 TwelveLabs 的视频基础模型（Marengo 3.0 27B 参数），产出多模态 embeddings（视觉/音频/语音/屏幕文字）；Pegasus 是生成/分析层，把这些 embeddings 转成自然语言描述与回答。检索用 Marengo（RAG、跨索引 any-to-any 搜索），分析用 Pegasus（gist、摘要、分段）。" } },
+  { '@type': 'Question', name: 'TwelveLabs 能处理长视频吗？', acceptedAnswer: { '@type': 'Answer', text: "可以但有延迟。索引一小时视频通常需要数分钟；索引完成后，Search 与 Analyze 调用返回结果的时间为 1-3 秒网络往返 + 模型推理时间。Pegasus 整体理解视频（不是逐帧），所以 90 分钟课程可以用「教授提到递归那一刻」这样的自然语言查询搜索。实时亚秒级响应场景需配合流式 LLM 和预分块索引。" } },
+  { '@type': 'Question', name: 'TwelveLabs 在中国大陆能用吗？', acceptedAnswer: { '@type': 'Answer', text: "不能直连。TwelveLabs 公共 API 托管在 AWS us-west-2 与 us-east-1，没有中国大陆区域节点，也没有官方中国接入方案。中国生产环境的流量需要海外代理，或在 Enterprise 合同下在客户选择的 AWS 区域部署私有实例。截至 2026 年 8 月没有 ICP 备案的中国端点。" } },
+  { '@type': 'Question', name: 'TwelveLabs 与 OpenAI / Gemini / Anthropic 相比如何？', acceptedAnswer: { '@type': 'Answer', text: "TwelveLabs 是专门为视频理解打造的；OpenAI GPT-4o 和 Google Gemini 2.5 Pro 把视频输入作为更广泛的多模态表面的一部分。在小时级课程检索和屏幕文字感知搜索的对比测试中，TwelveLabs Pegasus 通常返回时间精度更高的答案，因为它在一次前向中融合了画面+音频+语音+文字。对于视频是多种数据源之一的多模态 RAG，TwelveLabs 是专家选择；对于视频只是偶发输入的通用多模态对话，GPT-4o 或 Gemini 已经够用。" } },
+  { '@type': 'Question', name: 'TwelveLabs 兼容 OpenAI 接口吗？', acceptedAnswer: { '@type': 'Answer', text: "不兼容。TwelveLabs 是专用的视频理解 API，有自己的 REST 接口，不是 chat completions 端点。在 OpenAI 兼容工作流中使用时，先调用 TwelveLabs 检索相关片段（Search）或生成摘要（Analyze / Gist），再把文本作为常规 prompt 喂给 OpenAI / Anthropic / 本地 LLM。TwelveLabs Python 与 Node SDK 就是为这种两步模式设计的。" } }
+] };
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${zhTitle}</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>TwelveLabs</strong>（twelvelabs.io）是一家位于美国旧金山的 AI 创业公司，专注于构建专用视频理解 API。公司 2026 年完成 1 亿美元 B 轮融资，是全球融资规模最大的纯视频 AI 公司之一。旗舰产品是 Pegasus 模型家族（Pegasus 1.5 在产，Pegasus 1.2 作为低成本前代版本）和 Marengo 视频基础模型（Marengo 3.0，27B 参数），两层叠加覆盖了从「这段视频里有什么」到「找到演讲者提到 X 的那一刻」的完整链路。对于 2026 年 8 月评估视频理解 API 的工程师，TwelveLabs 的关键价值在于：它是目前唯一一家把画面帧、时间序列、语音音频和屏幕文字在一次前向中联合编码并输出自然语言描述的第一方供应商，而且免费 600 分钟额度足以跑通中型 PoC，无需信用卡。完整对比见 <a href="/zh/providers/twelve-labs">TwelveLabs 厂商页面</a>。</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 速览：</strong>TwelveLabs 是 2026 年视频理解 API 的领跑者。Pegasus 1.5 通过画面+音频+语音+屏幕文字的联合编码返回连贯的视频摘要；Marengo 3.0 生成多模态 embeddings 支持 any-to-any 检索。免费 600 分钟额度（无需信用卡），Developer 计划按量计费、无月费。按分钟计费（非 token）意味着成本模型需要按视频重新建模。没有中国大陆直连端点。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TwelveLabs 是什么？2026 年为什么重要？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">TwelveLabs 是一家 2021 年成立于旧金山的 AI 创业公司，专注于视频理解（不是视频生成）。通过 REST API（<code>api.twelvelabs.io/v1.3</code>），开发者可以提交视频、获取索引，然后对索引运行四类核心操作：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>Search</strong> —— 跨索引的自然语言或示例检索（找出匹配「演讲者提到定价的那一刻」的片段）；</li>
+  <li><strong>Embed</strong> —— 生成 Marengo 多模态 embeddings 供下游 RAG 管线使用；</li>
+  <li><strong>Analyze</strong> —— 调用 Pegasus 对视频做分类、分段或结构化信息抽取；</li>
+  <li><strong>Gist</strong> —— 调用 Pegasus 生成视频的自然语言摘要。</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">它在 2026 年视频 AI 市场中的定位：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>多模态融合是核心卖点。</strong>Pegasus 1.5 在一次 transformer 前向中联合编码画面帧、时间序列、语音音频和屏幕文字。竞品往往采用后期拼接方案，会丢失语音与画面变化之间的因果关系。</li>
+  <li><strong>Marengo 是底层基础。</strong>Marengo 3.0 是 27B 参数的视频基础模型，产出的 embeddings 覆盖全部四种模态，支持 any-to-any 检索：text-to-video、video-to-video、image-to-video、audio-to-video。</li>
+  <li><strong>开发者生态成熟。</strong>官方 SDK 覆盖 Python / Node / Go / Java，OpenAPI 3 规范，AI 智能体可用的 MCP 服务器（Claude Code、Cursor），Playground，以及 2026 年 1 亿美元 B 轮融资带来的企业级稳定性。</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">本文从 2026 年 8 月工程师集成视角覆盖 TwelveLabs API：Pegasus 1.5 / 1.2 模型系列、Marengo 3.0 嵌入模型、按分钟计费结构、索引与 Search / Embed / Analyze 工作流，以及与 OpenAI GPT-4o、Google Gemini 2.5 Pro 视频输入、生成类 API（<a href="/zh/tutorials/kling-ai-api-review-2026">Kling</a>、<a href="/zh/tutorials/luma-ai-api-review-2026">Luma</a>、<a href="/zh/tutorials/runway-api-review">Runway</a>）的对比。需要横向对比表的话，<a href="/zh/tutorials/ai-api-visual-understanding-2026">视觉理解对比</a> 列出了 TwelveLabs 与 GPT-4o、Gemini、Claude 在图像+视频任务上的位置关系。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TwelveLabs 模型矩阵（2026）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">TwelveLabs 当前在两个层级共生产 3 个模型：</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">模型</th>
+<th class="border p-2">层级</th>
+<th class="border p-2">输出</th>
+<th class="border p-2">适用场景</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Pegasus 1.5</strong></td><td class="border p-2">生成 / 分析（旗舰）</td><td class="border p-2">自然语言 gist、分类、结构化抽取</td><td class="border p-2">多模态融合要求高的生产环境视频理解</td></tr>
+<tr><td class="border p-2"><strong>Pegasus 1.2</strong></td><td class="border p-2">生成 / 分析（前代）</td><td class="border p-2">与 1.5 相同，融合精度较低</td><td class="border p-2">对成本敏感的工作负载；相同 API 表面，单价更低</td></tr>
+<tr><td class="border p-2"><strong>Marengo 3.0</strong></td><td class="border p-2">嵌入基础模型（27B 参数）</td><td class="border p-2">多模态 embeddings（画面/音频/语音/文字）</td><td class="border p-2">RAG、any-to-any 检索、跨视频搜索</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">Pegasus 1.5 与 Pegasus 1.2 共用同一 API 表面和按分钟计费结构 —— 差距在多模态融合质量。Marengo 3.0 是独立模型用于检索：对已索引视频调用 <code>POST /embed</code> 即可获得 embedding 向量，可存入任何向量数据库（Pinecone、Weaviate、Qdrant、Chroma，或者内存 numpy 数组）。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TwelveLabs 计费：按视频分钟，按文本 token</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">TwelveLabs 在视频 AI API 中比较独特 —— 它按输入视频的分钟数计费，不是按 token。这更符合人类对视频成本的直觉（10 分钟视频成本是 1 分钟视频的 10 倍），也比 token 模型更容易预测。价格核验时间 2026-08-18，来源：<a href="https://twelvelabs.io/pricing">twelvelabs.io/pricing</a>：</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">组件</th>
+<th class="border p-2">价格</th>
+<th class="border p-2">计费时机</th>
+<th class="border p-2">备注</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>视频索引</strong></td><td class="border p-2">$0.042/分钟</td><td class="border p-2">索引时一次性</td><td class="border p-2">Pegasus 1.2 / 1.5 共用同一索引价</td></tr>
+<tr><td class="border p-2"><strong>输入视频</strong></td><td class="border p-2">$0.021/分钟</td><td class="border p-2">每次 API 调用</td><td class="border p-2">Search、Analyze、Segment、RAG 调用</td></tr>
+<tr><td class="border p-2"><strong>输出文本</strong></td><td class="border p-2">$0.0075/千 tokens</td><td class="border p-2">每次调用</td><td class="border p-2">Pegasus 自然语言生成</td></tr>
+<tr><td class="border p-2"><strong>Marengo embedding 基础设施</strong></td><td class="border p-2">$0.0015/已索引分钟/月</td><td class="border p-2">月度循环</td><td class="border p-2">索引存储费用 —— 与一次性索引费分开</td></tr>
+<tr><td class="border p-2"><strong>注册免费额度</strong></td><td class="border p-2">600 分钟</td><td class="border p-2">累计</td><td class="border p-2">足够跑通中型项目，无需信用卡</td></tr>
+<tr><td class="border p-2"><strong>Developer 计划订阅</strong></td><td class="border p-2">$0/月</td><td class="border p-2">—</td><td class="border p-2">超出免费额度后按用量计费，无最低消费</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">具体成本示例：100 小时视频档案，索引一次（$0.042 × 6,000 = $252），每月 1,000 次 5 秒片段查询（$0.021 × ~83 小时输入 = $1.74）+ 输出文本按 $0.0075/千 tokens。存储 $0.0015/已索引分钟/月 = $9/月。所以 100 小时档案每月 1,000 次查询的总成本约为 $263 一次性 + $10/月循环。比起用 GPT-4o 视频输入（按帧 token + 调用次数计费）搭同样的管线，TwelveLabs 在长视频反复查询同一档案的场景下通常更便宜。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TwelveLabs API 实际工作流</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">TwelveLabs API 采用异步索引任务模型：提交视频（或引用已有资产）→ 轮询索引状态 → 对索引调用 Search / Embed / Analyze。MCP 服务器 <code>https://docs.twelvelabs.io/_mcp/server</code> 让 Claude Code 和 Cursor 可以直接调用 Search / Analyze / Embed，无需写集成代码。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第一步：索引视频。</strong>POST 视频文件或 URL 到 <code>/v1.3/tasks</code>，API 返回 task ID；轮询 <code>GET /v1.3/tasks/{task_id}</code> 直到状态为 <code>ready</code>。典型索引延迟：5 分钟片段 30 秒，1 小时视频数分钟。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第二步：检索索引。</strong>索引就绪后，POST 文本或图像查询到 <code>/v1.3/search</code>，API 返回按相关度排序的匹配片段（带时间戳）。例如对已索引的产品演示查询「演讲者提到定价的那一刻」，即便画面上没有任何视觉提示，也能返回精确的 12 秒片段。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第三步：生成 embeddings。</strong>对已索引视频调用 <code>POST /v1.3/embed</code>，获得 Marengo 3.0 多模态 embeddings。存入任意向量数据库，与文本 embeddings 结合做混合检索。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>第四步：运行分析。</strong>调用 <code>POST /v1.3/analyze</code> 做结构化抽取（分类、命名实体、按时间戳的情感），或调用 <code>POST /v1.3/gist</code> 让 Pegasus 生成自然语言摘要。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">官方 Python SDK（PyPI 上的 <code>twelvelabs</code>）把四步封装成单个客户端类，并提供常见模式的辅助方法。例如 <code>client.task.index(video_file="demo.mp4")</code> 启动索引，<code>client.search.query(index_id=..., query="演讲者提到定价的那一刻")</code> 返回排序后的片段。完整 API 参考见 <a href="https://docs.twelvelabs.io/api-reference">docs.twelvelabs.io/api-reference</a>。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TwelveLabs vs OpenAI vs Gemini vs 视频生成 API</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">TwelveLabs 占据视频理解这一专门细分赛道，与通用多模态 LLM（OpenAI GPT-4o、Google Gemini 2.5 Pro）有重叠，与视频生成 API（Kling、Luma、Runway、Veo）是互补关系。各类别定位如下：</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">能力</th>
+<th class="border p-2">TwelveLabs</th>
+<th class="border p-2">OpenAI GPT-4o</th>
+<th class="border p-2">Gemini 2.5 Pro</th>
+<th class="border p-2">Kling / Luma / Runway</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>生成视频</strong></td><td class="border p-2">否</td><td class="border p-2">否</td><td class="border p-2">否</td><td class="border p-2">是（主营）</td></tr>
+<tr><td class="border p-2"><strong>理解小时级长视频</strong></td><td class="border p-2">是（专长）</td><td class="border p-2">有限（抽帧）</td><td class="border p-2">是（最长 2h）</td><td class="border p-2">N/A</td></tr>
+<tr><td class="border p-2"><strong>时间精确的片段检索</strong></td><td class="border p-2">是（核心）</td><td class="border p-2">近似</td><td class="border p-2">是</td><td class="border p-2">N/A</td></tr>
+<tr><td class="border p-2"><strong>多模态 embeddings（画面+音频+语音+文字）</strong></td><td class="border p-2">是（Marengo 3.0）</td><td class="border p-2">否（仅文字+图像）</td><td class="border p-2">部分</td><td class="border p-2">否</td></tr>
+<tr><td class="border p-2"><strong>语音感知搜索</strong></td><td class="border p-2">是（原生）</td><td class="border p-2">需独立 ASR</td><td class="border p-2">是（原生）</td><td class="border p-2">N/A</td></tr>
+<tr><td class="border p-2"><strong>免费层</strong></td><td class="border p-2">600 分钟</td><td class="border p-2">有限 API 额度</td><td class="border p-2">有限免费层</td><td class="border p-2">有限免费积分</td></tr>
+<tr><td class="border p-2"><strong>中国接入</strong></td><td class="border p-2">需代理</td><td class="border p-2">需代理</td><td class="border p-2">需代理 / Vertex AI</td><td class="border p-2">Kling 可中国直连</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年生产级视频 AI 栈的常见组合是：TwelveLabs 做理解 + 生成 API（Kling、Luma、Runway）做生成。两端互补：生成 API 用文本或图像产出新视频；TwelveLabs 把已有视频变得可检索、可结构化、可问答。TwelveLabs 与 <a href="/zh/providers/openai">OpenAI</a> 或 <a href="/zh/providers/anthropic">Anthropic</a> 是专家预处理器的关系 —— 先用 TwelveLabs 找到相关片段或生成 gist，再把文本喂给通用 LLM 做下游推理。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">需要注意的限制</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>按分钟计费要求视频感知成本模型。</strong>1,000 小时监控档案与 1,000 小时文本语料在经济上不可类比；TwelveLabs 按分钟计费，账要重算。</li>
+  <li><strong>索引是异步的。</strong>5 分钟片段典型 30 秒，小时级视频数分钟。不适合实时生成场景（这类请用 Kling / Luma）。</li>
+  <li><strong>无中国大陆端点。</strong>中国生产部署需要代理或 Enterprise 私有部署。</li>
+  <li><strong>Pegasus 1.5 vs 1.2 边际收益有限。</strong>纯文本或纯画面任务上 1.5 优势不明显；1.5 的优势在多模态联合场景。</li>
+  <li><strong>Knowledge Store / Agents 仍在研究预览。</strong>跨视频问答 API 表面可能在正式发布前变动。</li>
+  <li><strong>无函数调用 / 工具使用。</strong>TwelveLabs 是专家理解 API，不是 LLM。下游推理需配合 GPT-4o / Claude / 本地 LLM。</li>
+  <li><strong>无联盟推广计划。</strong>不像 Cloudflare、OpenRouter 或其他一些厂商，没有分成机制。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">TwelveLabs 是「视频理解是主要任务」场景下的首选 —— 课程搜索、监控档案检索、广告素材问答、体育素材索引、培训视频导航。600 分钟免费额度慷慨到可以先验证用例再付费。视频是多源之一的多模态 RAG 场景，TwelveLabs + 通用 LLM 是 2026 年的标准模式。纯视频生成请用 Kling、Luma 或 Runway。纯文本 LLM 场景，TwelveLabs 不适用。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>优势：</strong>长视频的时间精确片段检索、画面+音频+语音+文字联合融合、PoC 阶段 600 分钟免费额度、SDK 与 MCP 服务器成熟。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>短板：</strong>无中国大陆端点、不支持实时响应、按分钟计费要求新成本模型、无函数调用做下游工具调用。</p>
+
+<hr class="my-8 border-gray-200">
+
+<p class="text-gray-500 text-sm my-4"><strong>数据核验 2026-08-18：</strong>TwelveLabs 价格与模型系列来源官方 <a href="https://twelvelabs.io/pricing">twelvelabs.io/pricing</a>（Pegasus 1.2 / 1.5、Marengo 3.0）；API 表面与端点列表来源 <a href="https://docs.twelvelabs.io/api-reference">docs.twelvelabs.io/api-reference</a>（v1.3 REST API）；免费计划 600 分钟细节来源 twelvelabs.io/pricing FAQ；B 轮融资消息来源 twelvelabs.io 首页。与 TwelveLabs 无联盟关系。</p>`;
+
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">速查</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>平台：</strong> api.twelvelabs.io/v1.3</li>
+            <li><strong>旗舰：</strong> Pegasus 1.5（多模态）</li>
+            <li><strong>基础模型：</strong> Marengo 3.0（27B embeddings）</li>
+            <li><strong>索引：</strong> $0.042/分钟（一次性）</li>
+            <li><strong>检索：</strong> $0.021/分钟输入</li>
+            <li><strong>免费：</strong> 600 分钟，无需信用卡</li>
+            <li><strong>中国接入：</strong> 需代理</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

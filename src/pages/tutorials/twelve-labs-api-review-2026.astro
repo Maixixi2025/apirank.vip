@@ -1,0 +1,186 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'twelve-labs-api-review-2026';
+const date = '2026-08-18';
+const locale = 'en';
+const enTitle = 'TwelveLabs API Review 2026: Pegasus & Marengo';
+const enDescription = 'TwelveLabs API 2026 review: Pegasus 1.5 video understanding, Marengo 3.0 embeddings, free 600-minute tier, per-minute pricing, MCP server.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: enTitle, description: enDescription, datePublished: date, dateModified: date, inLanguage: 'en-US', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://apirank.vip' }, { '@type': 'ListItem', position: 2, name: 'Tutorials', item: 'https://apirank.vip/tutorials' }, { '@type': 'ListItem', position: 3, name: enTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Does TwelveLabs have a public API?', acceptedAnswer: { '@type': 'Answer', text: "Yes. TwelveLabs exposes a RESTful JSON API at https://api.twelvelabs.io/v1.3 covering indexing (POST /tasks), search (POST /search), embeddings (POST /embed), analyze (POST /analyze), and gist generation (POST /gist). Official Python, Node.js, Go, and Java SDKs are published; an MCP server at https://docs.twelvelabs.io/_mcp/server lets AI agents like Claude Code and Cursor call the API directly." } },
+  { '@type': 'Question', name: 'What is the difference between Pegasus 1.5 and Pegasus 1.2?', acceptedAnswer: { '@type': 'Answer', text: "Pegasus 1.5 is the current flagship and improves multimodal fusion over 1.2 by jointly encoding visual frames, temporal sequence, speech audio, and on-screen text in one transformer pass rather than stitching them post-hoc. The practical difference is the gap between 'describe the scene' and 'describe what is happening and why.' Pegasus 1.5 uses the same per-minute billing structure as Pegasus 1.2." } },
+  { '@type': 'Question', name: 'Is the TwelveLabs API free?', acceptedAnswer: { '@type': 'Answer', text: "Yes. The Free plan grants 600 minutes of cumulative video indexing on signup, with no credit card required. The Free tier exposes the full API surface (Pegasus 1.2 / 1.5, Marengo 3.0, Search, Embed, Analyze & Segment), but indexes expire after 90 days. The Developer plan lifts that retention to unlimited and unlocks higher rate limits, billed pay-as-you-go per usage." } },
+  { '@type': 'Question', name: 'How much does the TwelveLabs API cost per minute?', acceptedAnswer: { '@type': 'Answer', text: "Pegasus 1.2 video indexing is $0.042 per minute (charged once at index time). Input video during a Search or Analyze call is $0.021 per minute. Output text is $0.0075 per 1,000 tokens. Marengo embedding infrastructure costs $0.0015 per indexed minute per month. There is no monthly subscription fee on Developer plan; Enterprise volume discounts are available on contract." } },
+  { '@type': 'Question', name: 'What is Marengo and how does it differ from Pegasus?', acceptedAnswer: { '@type': 'Answer', text: "Marengo is TwelveLabs' video foundation model (27B parameters in the current Marengo 3.0 release) that produces multimodal embeddings covering visual appearance, audio, speech, and on-screen text. Pegasus is the generative / analytic layer that turns those embeddings into natural-language descriptions and answers. Use Marengo for retrieval (RAG, any-to-any search across indexes) and Pegasus for analysis (gist, summarize, segment)." } },
+  { '@type': 'Question', name: 'Can TwelveLabs understand long videos like lectures or films?', acceptedAnswer: { '@type': 'Answer', text: "Yes, with caveats. Indexing an hour of video typically takes several minutes; once indexed, Search and Analyze calls return results in 1-3 seconds plus inference time. Pegasus handles the full video holistically (not frame-by-frame), so a 90-minute lecture can be searched with natural-language queries like 'the moment the professor mentions recursion.' For real-time or sub-second response, pair TwelveLabs with a streaming LLM and pre-chunked indexes." } },
+  { '@type': 'Question', name: 'Does TwelveLabs work from mainland China?', acceptedAnswer: { '@type': 'Answer', text: "Not directly. TwelveLabs hosts the public API on AWS us-west-2 and us-east-1 with no mainland China regional endpoint or official China access program. Production traffic from China must proxy through overseas nodes, or customers can run TwelveLabs on a private AWS deployment through an Enterprise contract. There is no ICP-licensed Chinese endpoint as of August 2026." } },
+  { '@type': 'Question', name: 'How does TwelveLabs compare to OpenAI, Google Gemini video, or Anthropic?', acceptedAnswer: { '@type': 'Answer', text: "TwelveLabs is purpose-built for video understanding, while OpenAI GPT-4o and Google Gemini 2.5 Pro accept video input as part of a broader multimodal surface. In side-by-side tests on hour-long lecture retrieval and on-screen-text-aware search, TwelveLabs Pegasus typically returns more temporally precise answers because it fuses frames + audio + speech + text in one pass. For multimodal RAG where video is one of several data sources, TwelveLabs is the specialist choice; for general multimodal chat where video is occasional input, GPT-4o or Gemini is sufficient." } },
+  { '@type': 'Question', name: 'Is TwelveLabs OpenAI-compatible?', acceptedAnswer: { '@type': 'Answer', text: "No. TwelveLabs is a specialized video understanding API with its own REST surface, not a chat completions endpoint. To use it inside an OpenAI-compatible workflow, call TwelveLabs to retrieve the relevant clip (Search) or generate a gist (Analyze / Gist), then feed that text to OpenAI, Anthropic, or a local LLM as a regular prompt. The TwelveLabs Python and Node SDKs are designed for this two-step pattern." } }
+] };
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${enTitle}</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>TwelveLabs</strong> (twelvelabs.io) is a San Francisco-based AI startup that builds a dedicated video-understanding API. The company raised a $100M Series B in 2026 and is one of the top-funded pure-play video-AI companies in the world. Its flagship product is the Pegasus model family (Pegasus 1.5 in production, Pegasus 1.2 as a lower-cost previous-generation option) and the Marengo video foundation model (Marengo 3.0, 27B parameters), which together cover the full stack from "what is in this video" to "find the moment the speaker mentions X." For an engineer evaluating a video understanding API in August 2026, TwelveLabs matters because it is the only first-party provider that fuses visual frames, temporal sequence, speech audio, and on-screen text into a single natural-language description — and it ships a free 600-minute tier that is enough to PoC a mid-size project without a credit card. Read the full <a href="/providers/twelve-labs">TwelveLabs provider page</a> for the structured comparison table.</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 Quick take:</strong> TwelveLabs is the leading dedicated video-understanding API in 2026. Pegasus 1.5 returns a coherent natural-language gist of any video by fusing frames + audio + speech + on-screen text. Marengo 3.0 produces multimodal embeddings for any-to-any retrieval. Free 600 minutes, no credit card; Developer plan is pay-as-you-go per minute with no monthly fee. Per-minute billing (not per-token) means cost models need a video-aware recalculation versus text LLMs. No mainland China direct endpoint.</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is TwelveLabs, and why does its API matter in 2026?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">TwelveLabs is the AI arm of a 2021-founded San Francisco startup focused exclusively on video understanding — not generation. Through its REST API at <code>api.twelvelabs.io/v1.3</code>, developers can submit videos, get them indexed, then run four core operations against the index:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>Search</strong> — natural-language or example-based retrieval across an index (find clips matching "the moment the speaker mentions pricing");</li>
+  <li><strong>Embed</strong> — generate Marengo multimodal embeddings for downstream RAG pipelines;</li>
+  <li><strong>Analyze</strong> — run Pegasus to classify, segment, or extract structured information from a video;</li>
+  <li><strong>Gist</strong> — generate a Pegasus natural-language summary of a video.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">Its positioning in the 2026 video AI market:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>Multimodal fusion is the headline.</strong> Pegasus 1.5 jointly encodes visual frames + temporal sequence + speech audio + on-screen text in a single transformer pass. Competing models often stitch modalities post-hoc, which loses causal relationships between speech and visual change.</li>
+  <li><strong>Marengo is the foundation.</strong> Marengo 3.0 is a 27B-parameter video foundation model producing embeddings that span all four modalities, enabling any-to-any retrieval: text-to-video, video-to-video, image-to-video, audio-to-video.</li>
+  <li><strong>Developer surface is mature.</strong> Official SDKs for Python / Node / Go / Java, OpenAPI 3 spec, an MCP server for AI agents (Claude Code, Cursor), Playground, and a $100M Series B funding round that puts the company on solid enterprise footing.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">This review covers the TwelveLabs API from the perspective of an engineer integrating it in August 2026: the Pegasus 1.5 / 1.2 model lineup, the Marengo 3.0 embedding model, the per-minute pricing system, the indexing and Search / Embed / Analyze workflows, and how TwelveLabs compares to OpenAI GPT-4o, Google Gemini 2.5 Pro video, and the generation APIs (<a href="/tutorials/kling-ai-api-review-2026">Kling</a>, <a href="/tutorials/luma-ai-api-review-2026">Luma</a>, <a href="/tutorials/runway-api-review">Runway</a>) for video AI tasks. If you need a side-by-side view, the <a href="/tutorials/ai-api-visual-understanding-2026">visual understanding comparison</a> lists how TwelveLabs stacks up against GPT-4o, Gemini, and Claude for image + video tasks.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The TwelveLabs model lineup in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">TwelveLabs currently ships three production models across two layers:</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">Model</th>
+<th class="border p-2">Layer</th>
+<th class="border p-2">Output</th>
+<th class="border p-2">Best for</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Pegasus 1.5</strong></td><td class="border p-2">Generative / analytic (flagship)</td><td class="border p-2">Natural-language gist, classification, structured extraction</td><td class="border p-2">Production video understanding where multimodal fusion matters</td></tr>
+<tr><td class="border p-2"><strong>Pegasus 1.2</strong></td><td class="border p-2">Generative / analytic (previous gen)</td><td class="border p-2">Same as 1.5, lower-fidelity fusion</td><td class="border p-2">Cost-sensitive workloads; same API surface, lower cost-per-minute</td></tr>
+<tr><td class="border p-2"><strong>Marengo 3.0</strong></td><td class="border p-2">Embedding foundation (27B params)</td><td class="border p-2">Multimodal embeddings (frame / audio / speech / text)</td><td class="border p-2">RAG, any-to-any retrieval, cross-video search</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">Pegasus 1.5 and Pegasus 1.2 share the same API surface and per-minute billing structure — the difference is the quality of the multimodal fusion. Marengo 3.0 is a separate model used for retrieval; you call it via <code>POST /embed</code> on an indexed video and get back an embedding vector that can be stored in any vector database (Pinecone, Weaviate, Qdrant, Chroma, or even an in-memory numpy array).</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TwelveLabs pricing: per-minute video, per-token text</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">TwelveLabs is unusual among video AI APIs in that it bills per minute of input video, not per token. This is closer to how humans think about video cost (a 10-minute clip costs 10x a 1-minute clip) and easier to forecast than a token-metered model. Pricing verified 2026-08-18 from the official <a href="https://twelvelabs.io/pricing">twelvelabs.io/pricing</a> page:</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">Component</th>
+<th class="border p-2">Price</th>
+<th class="border p-2">Billed</th>
+<th class="border p-2">Notes</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Video indexing</strong></td><td class="border p-2">$0.042/min</td><td class="border p-2">One-time at index time</td><td class="border p-2">Pegasus 1.2 / 1.5 — both models share the same indexing cost</td></tr>
+<tr><td class="border p-2"><strong>Input video</strong></td><td class="border p-2">$0.021/min</td><td class="border p-2">Per API call</td><td class="border p-2">Search, Analyze, Segment, RAG calls</td></tr>
+<tr><td class="border p-2"><strong>Output text</strong></td><td class="border p-2">$0.0075/1k tokens</td><td class="border p-2">Per call</td><td class="border p-2">Pegasus natural-language generation</td></tr>
+<tr><td class="border p-2"><strong>Marengo embedding infrastructure</strong></td><td class="border p-2">$0.0015/indexed minute/month</td><td class="border p-2">Monthly recurring</td><td class="border p-2">Storage cost for the index — separate from indexing one-time fee</td></tr>
+<tr><td class="border p-2"><strong>Free signup credit</strong></td><td class="border p-2">600 minutes</td><td class="border p-2">Cumulative</td><td class="border p-2">Enough to PoC a mid-size project; no credit card required</td></tr>
+<tr><td class="border p-2"><strong>Developer plan subscription</strong></td><td class="border p-2">$0/month</td><td class="border p-2">—</td><td class="border p-2">Pay-as-you-go beyond the free tier; no monthly minimum</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">For a concrete cost example: a 100-hour video archive indexed once ($0.042 × 6,000 = $252) and queried 1,000 times for 5-second clips ($0.021 × ~83 hours of input = $1.74) plus $0.0075 per 1k tokens for any text output. Storage at $0.0015/indexed minute/month = $9/month. So a 100-hour archive that gets 1,000 searches a month costs roughly $263 upfront + $10/month recurring. Compared to building the same pipeline with GPT-4o video input (which charges per token on input frames and per call), TwelveLabs is usually cheaper for long-form video where you repeatedly query the same archive.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How the TwelveLabs API actually works</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The TwelveLabs API uses an asynchronous indexing task model: submit a video (or reference an existing asset) → poll for the index to be ready → call Search / Embed / Analyze against the index. The MCP server at <code>https://docs.twelvelabs.io/_mcp/server</code> lets Claude Code and Cursor call Search / Analyze / Embed directly without writing integration code.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Step 1: Index a video.</strong> POST a video file or a URL to <code>/v1.3/tasks</code>. The API returns a task ID; poll <code>GET /v1.3/tasks/{task_id}</code> until status is <code>ready</code>. Typical indexing latency is 30 seconds for a 5-minute clip, several minutes for an hour-long video.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Step 2: Search the index.</strong> Once indexed, POST a text or image query to <code>/v1.3/search</code>. The API returns ranked matching clips with timestamps. For example, querying an indexed product demo for "the moment the speaker mentions pricing" returns the precise 12-second clip where pricing is discussed, even if nothing visual signals the topic.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Step 3: Generate embeddings.</strong> Call <code>POST /v1.3/embed</code> on an indexed video to get back Marengo 3.0 multimodal embeddings. Store these in your vector database of choice; combine with text embeddings for hybrid retrieval.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Step 4: Run analysis.</strong> Call <code>POST /v1.3/analyze</code> for structured extraction (classification, named entities, sentiment by timestamp) or <code>POST /v1.3/gist</code> for a Pegasus-generated natural-language summary.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The official Python SDK (<code>twelvelabs</code> on PyPI) wraps all four steps in a single client class with helper methods for the common patterns. Example: <code>client.task.index(video_file="demo.mp4")</code> starts the index, <code>client.search.query(index_id=..., query="the moment the speaker mentions pricing")</code> returns ranked clips.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TwelveLabs vs OpenAI vs Google Gemini vs video generation APIs</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">TwelveLabs occupies a specific niche — video understanding — that overlaps with general multimodal LLMs (OpenAI GPT-4o, Google Gemini 2.5 Pro) and complements video generation APIs (Kling, Luma, Runway, Veo). Here is how the categories break down:</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">Capability</th>
+<th class="border p-2">TwelveLabs</th>
+<th class="border p-2">OpenAI GPT-4o</th>
+<th class="border p-2">Gemini 2.5 Pro</th>
+<th class="border p-2">Kling / Luma / Runway</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Generate video</strong></td><td class="border p-2">No</td><td class="border p-2">No</td><td class="border p-2">No</td><td class="border p-2">Yes (primary)</td></tr>
+<tr><td class="border p-2"><strong>Understand hour-long video</strong></td><td class="border p-2">Yes (specialty)</td><td class="border p-2">Limited (frame sampling)</td><td class="border p-2">Yes (up to 2h)</td><td class="border p-2">N/A</td></tr>
+<tr><td class="border p-2"><strong>Temporal-precise clip retrieval</strong></td><td class="border p-2">Yes (core)</td><td class="border p-2">Approximate</td><td class="border p-2">Yes</td><td class="border p-2">N/A</td></tr>
+<tr><td class="border p-2"><strong>Multimodal embeddings (frame+audio+speech+text)</strong></td><td class="border p-2">Yes (Marengo 3.0)</td><td class="border p-2">No (text + image only)</td><td class="border p-2">Partial</td><td class="border p-2">No</td></tr>
+<tr><td class="border p-2"><strong>Speech-aware search</strong></td><td class="border p-2">Yes (native)</td><td class="border p-2">Requires separate ASR</td><td class="border p-2">Yes (native)</td><td class="border p-2">N/A</td></tr>
+<tr><td class="border p-2"><strong>Free tier</strong></td><td class="border p-2">600 minutes</td><td class="border p-2">Limited API credits</td><td class="border p-2">Free tier with limits</td><td class="border p-2">Limited free credits</td></tr>
+<tr><td class="border p-2"><strong>China access</strong></td><td class="border p-2">Proxy required</td><td class="border p-2">Proxy required</td><td class="border p-2">Proxy / Vertex AI</td><td class="border p-2">Kling is China-direct</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">The right combination for a production video AI stack in 2026 is usually TwelveLabs for understanding + a generation API (Kling, Luma, Runway) for creation. The two halves complement each other: generation APIs make new video from text or images; TwelveLabs makes existing video searchable, structured, and retrievable. TwelveLabs sits cleanly alongside <a href="/providers/openai">OpenAI</a> or <a href="/providers/anthropic">Anthropic</a> as a specialist preprocessor — call TwelveLabs first to find the relevant clip or extract a gist, then feed that text to a general LLM for downstream reasoning. For the full pricing table and SDK install instructions, see the official <a href="https://docs.twelvelabs.io/api-reference">TwelveLabs API reference</a>.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Limitations to know</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>Per-minute billing requires video-aware cost models.</strong> A 1,000-hour surveillance archive is not economically comparable to a 1,000-hour text corpus; TwelveLabs bills per minute, so the math needs to be redone.</li>
+  <li><strong>Indexing is async.</strong> Typical 30 seconds for a 5-minute clip, several minutes for an hour-long video. Not suitable for real-time generation use cases (use Kling / Luma for those).</li>
+  <li><strong>No mainland China endpoint.</strong> Production deployment from China requires a proxy or Enterprise private deployment.</li>
+  <li><strong>Pegasus 1.5 vs 1.2 marginal gain.</strong> On pure-text or pure-frame tasks, the gain over Pegasus 1.2 is small; the 1.5 advantage is in joint multimodal scenarios.</li>
+  <li><strong>Knowledge Store / Agents still in research preview.</strong> The cross-video Q&A API surface may change before general availability.</li>
+  <li><strong>No function calling or tool use.</strong> TwelveLabs is a specialist understanding API, not an LLM. Pair with GPT-4o, Claude, or a local LLM for downstream reasoning.</li>
+  <li><strong>No affiliate program.</strong> Unlike Cloudflare, OpenRouter, or some others, there is no partner revenue share.</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verdict</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">TwelveLabs is the right choice when video understanding is the primary task — lecture search, surveillance archive retrieval, ad library Q&A, sports footage indexing, training video navigation. The 600-minute free tier is generous enough to validate a use case before paying. For multimodal RAG where video is one of several sources, TwelveLabs + a general LLM is the standard 2026 pattern. For pure video generation, use Kling, Luma, or Runway instead. For pure text LLMs, TwelveLabs is irrelevant.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Where it wins:</strong> temporally-precise clip retrieval on long-form video, joint frame+audio+speech+text fusion, free 600 minutes for PoC work, mature SDKs and MCP server for AI agents.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Where it loses:</strong> no mainland China endpoint, no real-time response, per-minute billing requires new cost models, no function calling for downstream tool use.</p>
+
+<hr class="my-8 border-gray-200">
+
+<p class="text-gray-500 text-sm my-4"><strong>Sources verified 2026-08-18:</strong> TwelveLabs pricing and model lineup from the official twelvelabs.io/pricing page (Pegasus 1.2 / 1.5, Marengo 3.0); API surface and endpoint list from docs.twelvelabs.io/api-reference (v1.3 REST API); Free plan 600-minute detail from twelvelabs.io/pricing FAQ; Series B funding announcement on twelvelabs.io homepage. No affiliate relationship with TwelveLabs.</p>`;
+
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={zhCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/" class="hover:underline">Home</a> &rsaquo; <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo; <span class="text-gray-700">{enTitle}</span></nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Reference</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Platform:</strong> api.twelvelabs.io/v1.3</li>
+            <li><strong>Flagship:</strong> Pegasus 1.5 (multimodal)</li>
+            <li><strong>Foundation:</strong> Marengo 3.0 (27B embeddings)</li>
+            <li><strong>Index:</strong> $0.042/min one-time</li>
+            <li><strong>Search:</strong> $0.021/min input</li>
+            <li><strong>Free:</strong> 600 minutes, no card</li>
+            <li><strong>China:</strong> proxy required</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
