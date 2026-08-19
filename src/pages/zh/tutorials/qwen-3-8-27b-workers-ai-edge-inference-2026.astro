@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'qwen-3-8-27b-workers-ai-edge-inference-2026';
+const date = '2026-08-19';
+const locale = 'zh';
+const zhTitle = 'Cloudflare Workers AI 上线 Qwen 3.8 27B：边缘视觉、推理与 262K 上下文';
+const zhDescription = '2026-08-17 Workers AI 新增阿里 27B 视觉语言模型 Qwen 3.8 27B，每百万输入 $0.45、输出 $3.20，262K 上下文，函数调用。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Cloudflare Workers AI 何时上线 Qwen 3.8 27B？', acceptedAnswer: { '@type': 'Answer', text: 'Cloudflare 于 2026 年 8 月 17 日在 Workers AI 上线 Qwen 3.8 27B（句柄 @cf/qwen/qwen3.8-27b），距离 DeepSeek V4 Pro 与 Flash 上线仅三天。' } },
+  { '@type': 'Question', name: 'Qwen 3.8 27B 在 Workers AI 上价格是多少？', acceptedAnswer: { '@type': 'Answer', text: 'Workers AI 将 Qwen 3.8 27B 定价为每百万输入 token $0.45、输出 $3.20。当前模型没有公开的缓存输入价，重复 system prompt 场景下没有 prompt-cache 折扣。' } },
+  { '@type': 'Question', name: 'Qwen 3.8 27B 的上下文窗口与能力集是什么？', acceptedAnswer: { '@type': 'Answer', text: '262,144 token 上下文，支持视觉（图+文输入）、推理（thinking 模式）与函数调用，可用于 Agent 工作流。它被定位为指令微调的视觉语言模型。' } },
+  { '@type': 'Question', name: '调用 Qwen 3.8 27B 是否需要付费 Workers 计划？', acceptedAnswer: { '@type': 'Answer', text: '不需要。Qwen 3.8 27B 不在受限 frontier 模型清单（kimi-k2.6、kimi-k2.7-code、glm-5.2、deepseek-v4-flash-0731、deepseek-v4-pro-0813）上，沿用 Text Generation 默认的 300 req/min 限速，Workers Free 套餐的每日 10,000 Neurons 免费额度也可用。' } },
+  { '@type': 'Question', name: '在 Workers AI 上如何调用 Qwen 3.8 27B？', acceptedAnswer: { '@type': 'Answer', text: '三种调用路径：Workers AI 绑定 env.AI.run("@cf/qwen/qwen3.8-27b", ...)、REST API（/ai/run）、OpenAI 兼容端点（/ai/v1/chat/completions）。三种方式都可以把 AI Gateway 串在前面做缓存、日志与限速。' } },
+  { '@type': 'Question', name: 'Workers AI 上的 Qwen 3.8 27B 与阿里百炼直连相比如何？', acceptedAnswer: { '@type': 'Answer', text: 'Workers AI 上的 Qwen 3.8 27B 与百炼版本为同一类模型（视觉+工具+262K 上下文）。百炼是 Qwen 系列的官方首发渠道，新变种先发；Workers AI 是当你已用 Cloudflare Workers、需要 AI Gateway 可观测性或希望避开第三方中国云路由时的最佳选择。' } }
+] };
+const affiliateSidebar = { title: '试试 FreeModel 多厂商路由', description: '一个 API Key 打通 Qwen、DeepSeek、OpenAI、Anthropic、Google 等多厂商，OpenAI 兼容，省去跨区切换的繁琐。', url: 'https://freemodel.dev/invite/FRE-7a3b6220', cta: '免费试用' };
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Qwen 3.8 27B 落地 Cloudflare Workers AI：边缘视觉、推理与 262K 上下文</h1>
+<p class="text-gray-700 leading-relaxed my-4">2026 年 <strong>8月17日</strong> &mdash; 在 Cloudflare 上线 <a href="/zh/tutorials/cf-workers-ai-deepseek-v4-edge-inference-2026/">DeepSeek V4 Flash 与 Pro</a> 仅三天之后 &mdash; Workers AI 又新增了 <strong>Qwen 3.8 27B</strong>，模型句柄 <code class="bg-gray-100 px-1 rounded text-sm">@cf/qwen/qwen3.8-27b</code>。这是阿里通义千问家族的 <strong>270 亿参数视觉语言模型</strong>，具备推理、函数调用与 <strong>262,144 token 上下文窗口</strong>，定价为每百万输入 token <strong>$0.45</strong>、输出 <strong>$3.20</strong>。本文围绕实际发布的特性、可验证的边缘定价、典型 Agent 场景，以及 Workers AI 与阿里百炼直连、FreeModel 这类聚合器之间的取舍展开。</p>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 一句话结论:</strong> 当你已经在用 Cloudflare Workers、需要视觉+推理+函数调用、且不需要 1M 上下文或 prompt-cache 折扣时，Workers AI Qwen 3.8 27B 是同档位中最省心的入口。它的局限在于：价位介于 Workers AI 上的纯文本 Llama 与较贵的 DeepSeek V4 Pro 之间，且阿里仍优先在百炼首发 Qwen 新变种。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">8 月 17 日发生了什么</h2>
+<p class="text-gray-700 leading-relaxed my-4">Cloudflare 的 8 月 17 日 changelog 确认只有一个新模型 id：<code class="bg-gray-100 px-1 rounded text-sm">@cf/qwen/qwen3.8-27b</code>，标签为 "Cloudflare-hosted" 并具备视觉、函数调用、推理三项徽章。模型页面将其描述为「a 27-billion-parameter instruction-tuned language model from Alibaba's Qwen family, designed for vision, efficient general-purpose text generation and agentic workloads」。与 frontier 限速清单（Kimi K2.6 / GLM-5.2 / DeepSeek V4 那一档）不同，<strong>Qwen 3.8 27B 不在受限名单</strong> &mdash; 它沿用默认的 Text Generation 300 req/min 限速，并可以使用 <strong>Workers Free 套餐每日 10,000 Neurons 免费额度</strong>。</p>
+<p class="text-gray-700 leading-relaxed my-4">模型同时接受文本与图像输入（在 Cloudflare 分类里叫 Image-Text-to-Text），支持 thinking/reasoning 模式做逐步推理，并提供 function calling 让 Agent 在多轮会话里调用工具。262K 上下文与 Workers AI 上的 Mistral Small 3.1、GLM 4.7 Flash 同档 &mdash; 足以容纳一整块代码库、较长的 Agent 轨迹，或者多章节 RAG 段落，但远不及同平台 DeepSeek V4 Pro/Flash 的 1M。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">美元与 Neurons 双轨定价</h2>
+<p class="text-gray-700 leading-relaxed my-4">Workers AI 展示按模型的单位定价，但内部仍以 Neurons 计费。2026 年 8 月 18 日官方定价表中 Qwen 3.8 27B 的条目:</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">档位</th><th class="px-3 py-2 text-left">每百万 token</th><th class="px-3 py-2 text-left">每百万 Neurons</th></tr></thead><tbody><tr><td class="px-3 py-2 border-t">输入</td><td class="px-3 py-2 border-t font-mono">$0.45</td><td class="px-3 py-2 border-t font-mono">40,909</td></tr><tr><td class="px-3 py-2 border-t">输出</td><td class="px-3 py-2 border-t font-mono">$3.20</td><td class="px-3 py-2 border-t font-mono">290,909</td></tr></tbody></table>
+<p class="text-gray-700 leading-relaxed my-4">两点值得注意:</p>
+<ol class="list-decimal pl-6 my-4 space-y-2 text-gray-700"><li><strong>没有缓存输入行。</strong> 与 DeepSeek V4 Pro（$0.044/M 缓存）、Kimi K2.6（$0.10/M 缓存）、GLM-5.2（$0.26/M 缓存）不同，Qwen 3.8 27B 没有公开的 prompt-cache 价。如果你主要做的是大量重复 system prompt 的请求，缓存缺失会主导成本 &mdash; 这时候开启缓存的 DeepSeek V4 Pro 在 Workers AI 上的实际成本反而可能更划算。</li><li><strong>免费额度够小。</strong> 10,000 Neurons/天大约对应 244K 输入 token 或 34K 输出 token &mdash; 够几次开发测试，撑不住生产流量。超过免费额度后按 $0.011 / 1,000 Neurons 收费。</li></ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Qwen 3.8 27B 在 Workers AI 模型矩阵中的位置</h2>
+<p class="text-gray-700 leading-relaxed my-4">对比 2026 年 8 月 18 日 Workers AI 上视觉/推理类模型的每百万输入价:</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">模型</th><th class="px-3 py-2 text-left">输入 / M</th><th class="px-3 py-2 text-left">输出 / M</th><th class="px-3 py-2 text-left">上下文</th><th class="px-3 py-2 text-left">备注</th></tr></thead><tbody><tr><td class="px-3 py-2 border-t">@cf/qwen/qwen3.8-27b</td><td class="px-3 py-2 border-t font-mono">$0.45</td><td class="px-3 py-2 border-t font-mono">$3.20</td><td class="px-3 py-2 border-t">262K</td><td class="px-3 py-2 border-t">视觉 + 推理 + 工具</td></tr><tr><td class="px-3 py-2 border-t">@cf/deepseek-ai/deepseek-v4-flash-0731</td><td class="px-3 py-2 border-t font-mono">$0.44</td><td class="px-3 py-2 border-t font-mono">$1.32</td><td class="px-3 py-2 border-t">1M</td><td class="px-3 py-2 border-t">缓存 $0.014，需付费</td></tr><tr><td class="px-3 py-2 border-t">@cf/deepseek-ai/deepseek-v4-pro-0813</td><td class="px-3 py-2 border-t font-mono">$1.32</td><td class="px-3 py-2 border-t font-mono">$3.96</td><td class="px-3 py-2 border-t">1M</td><td class="px-3 py-2 border-t">缓存 $0.044，需付费</td></tr><tr><td class="px-3 py-2 border-t">@cf/zai-org/glm-4.7-flash</td><td class="px-3 py-2 border-t font-mono">$0.06</td><td class="px-3 py-2 border-t font-mono">$0.40</td><td class="px-3 py-2 border-t">128K</td><td class="px-3 py-2 border-t">低价纯文本</td></tr><tr><td class="px-3 py-2 border-t">@cf/mistralai/mistral-small-3.1-24b-instruct</td><td class="px-3 py-2 border-t font-mono">$0.35</td><td class="px-3 py-2 border-t font-mono">$0.55</td><td class="px-3 py-2 border-t">128K</td><td class="px-3 py-2 border-t">无视觉</td></tr><tr><td class="px-3 py-2 border-t">@cf/meta/llama-3.2-11b-vision-instruct</td><td class="px-3 py-2 border-t font-mono">$0.049</td><td class="px-3 py-2 border-t font-mono">$0.676</td><td class="px-3 py-2 border-t">128K</td><td class="px-3 py-2 border-t">最便宜视觉</td></tr></tbody></table>
+<p class="text-gray-700 leading-relaxed my-4">2026 年 8 月的 Agent 负载在 Workers AI 上的决策树大致收敛到三条: (a) <strong>Llama 3.2 11B Vision ($0.049 / $0.676 每百万)</strong> &mdash; 如果你能接受更小上下文和 11B 参数且不需要 thinking 模式; (b) <strong>Qwen 3.8 27B ($0.45 / $3.20 每百万)</strong> &mdash; 当你需要视觉 + 推理 + 函数调用 + 262K 上下文四合一; (c) <strong>DeepSeek V4 Flash ($0.44 / $1.32 每百万)</strong> &mdash; 当你能放弃视觉但需要 1M 上下文以及 prompt-cache 来支撑重复 system prompt 的 Agent。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">三种调用方式</h2>
+<p class="text-gray-700 leading-relaxed my-4">三种调用面均被 Cloudflare 官方文档化。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>1. Workers AI 绑定 (Worker 内代码首选)。</strong></p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>export default {
+  async fetch(request, env) {
+    const response = await env.AI.run('@cf/qwen/qwen3.8-27b', {
+      messages: [
+        { role: 'system', content: '你是一个具备视觉能力的 Agent，需要时调用工具。' },
+        { role: 'user', content: [
+          { type: 'text', text: '图里有什么？我下一步该做什么？' },
+          { type: 'image_url', image_url: { url: 'https://example.com/upload/photo.jpg' } }
+        ]}
+      ],
+      max_tokens: 800,
+    });
+    return Response.json(response);
+  }
+};</code></pre>
+<p class="text-gray-700 leading-relaxed my-4"><strong>2. REST API (/ai/run)。</strong></p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>curl -X POST "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/ai/run/@cf/qwen/qwen3.8-27b" \\
+  -H "Authorization: Bearer *** \\
+  -H "Content-Type: application/json" \\
+  -d '{"messages":[{"role":"user","content":"总结代码库的第三章内容。"}],"max_tokens":512}'</code></pre>
+<p class="text-gray-700 leading-relaxed my-4"><strong>3. OpenAI 兼容端点 (/ai/v1/chat/completions)。</strong> 与 OpenAI Chat Completions API 同形 &mdash; 当你已经接入 OpenAI SDK 或想把 Qwen 3.8 27B 直接塞进 Vercel AI SDK、LangChain、LlamaIndex 时几乎不用改代码:</p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>import OpenAI from 'openai';
+const client = new OpenAI({
+  apiKey: process.env.CF_API_TOKEN,
+  baseURL: \`https://api.cloudflare.com/client/v4/accounts/\${'$'}{process.env.CF_ACCOUNT_ID}/ai/v1\`,
+});
+const resp = await client.chat.completions.create({
+  model: '@cf/qwen/qwen3.8-27b',
+  messages: [{ role: 'user', content: '为什么 Workers AI 免费额度是每天 10,000 Neurons？' }],
+});
+console.log(resp.choices[0].message.content);</code></pre>
+<p class="text-gray-700 leading-relaxed my-4">三种调用面前都可以再串一层 <strong>AI Gateway</strong> &mdash; gateway 的统一计费模式让你一次性购买 Neurons 或预付额度然后路由到任意模型，同时拿到日志、缓存与限速控制。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Qwen 3.8 27B 真正擅长的场景</h2>
+<p class="text-gray-700 leading-relaxed my-4">270 亿参数 + 指令微调让 Qwen 3.8 27B 落在「带视觉的通用模型」档位 &mdash; 它不是 Kimi K2.6 / GLM-5.2 / DeepSeek V4 Pro 那种 frontier 推理怪物，但在生产 Agent 实际打交道的多数负载上是有竞争力的:</p>
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700"><li><strong>图像锚定的对话和 OCR 重负载。</strong> 视觉 + 262K 上下文意味着一次请求就能塞下截图、PDF 渲染图加长篇指令集，不会被截断。更便宜的 Llama 3.2 11B Vision 也具备这个形态，但在多步指令上的推理深度稍逊。</li><li><strong>小工具集的函数调用 Agent。</strong> 5-10 个工具、结构化 JSON 输出、会话级修复。函数调用 API 复刻 OpenAI 的工具 schema，因此任何支持 OpenAI 工具的 Agent 框架都可以直接接 Qwen 3.8 27B 而无需胶水代码。</li><li><strong>不付 DeepSeek 1M 价格的长上下文 RAG。</strong> 262K 足以容纳 150K token 的代码 chunk + 多页规范; 你放弃了 DeepSeek V4 Flash 的 prompt-cache 折扣，但也避开了 DeepSeek 的受限名单。</li><li><strong>逐步工具链的 thinking 模式。</strong> Cloudflare 模型页面写着 "Reasoning: Yes" 并支持 thinking 模式 &mdash; 当 Agent 需要在调用工具前先思考时很有用，但代价远低于 Kimi K2.6 或 DeepSeek V4 Pro。</li></ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Workers AI Qwen 3.8 27B vs 阿里百炼直连</h2>
+<p class="text-gray-700 leading-relaxed my-4">阿里的官方 <strong>百炼 (Model Studio)</strong> 平台 &mdash; 完整端点参考可以看我们的<a href="/zh/tutorials/qwen3-bailian-api-guide-2026/">百炼 API 指南</a> &mdash; 也售卖 Qwen 3.8 接入，而且 Qwen 本就是阿里自家的模型家族，百炼一般会首发新变种。两条路线之间的取舍很直白:</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">维度</th><th class="px-3 py-2 text-left">Workers AI @cf/qwen/qwen3.8-27b</th><th class="px-3 py-2 text-left">阿里百炼 Qwen 3.8</th></tr></thead><tbody><tr><td class="px-3 py-2 border-t">定价</td><td class="px-3 py-2 border-t">$0.45 / $3.20 每百万</td><td class="px-3 py-2 border-t">百炼按 token 计费; Qwen 3.8 免费 + 付费档</td></tr><tr><td class="px-3 py-2 border-t">上下文</td><td class="px-3 py-2 border-t">262,144 token</td><td class="px-3 py-2 border-t">同 Qwen 3.8 上下文</td></tr><tr><td class="px-3 py-2 border-t">视觉 / 工具</td><td class="px-3 py-2 border-t">是 / 是</td><td class="px-3 py-2 border-t">是 / 是</td></tr><tr><td class="px-3 py-2 border-t">免费额度</td><td class="px-3 py-2 border-t">10K Neurons/天 (≈ 244K 输入 token)</td><td class="px-3 py-2 border-t">百炼免费额度 + DashScope 试用金</td></tr><tr><td class="px-3 py-2 border-t">可观测性</td><td class="px-3 py-2 border-t">AI Gateway 日志、缓存、限速</td><td class="px-3 py-2 border-t">百炼控制台 + DashScope 调用链</td></tr><tr><td class="px-3 py-2 border-t">中国路由</td><td class="px-3 py-2 border-t">Cloudflare 边缘 (从中国周边可用)</td><td class="px-3 py-2 border-t">原生国内 + 全球端点</td></tr><tr><td class="px-3 py-2 border-t">首发新变种</td><td class="px-3 py-2 border-t">比百炼晚约 1-3 周</td><td class="px-3 py-2 border-t">是 (Qwen 家族)</td></tr><tr><td class="px-3 py-2 border-t">适合</td><td class="px-3 py-2 border-t">Workers + AI Gateway 流水线</td><td class="px-3 py-2 border-t">最新 Qwen 变种、国内原生、最便宜 ¥/$</td></tr></tbody></table>
+<p class="text-gray-700 leading-relaxed my-4">如果已经在 Cloudflare Workers 上跑业务，并且要的是视觉 + 推理 + 工具三合一，Workers AI Qwen 3.8 27B 是阻力最小的入口：绑定一行引入、AI Gateway 免费提供日志与缓存、模型跑在默认 300 req/min 上没有 frontier-model 的摩擦。如果你要的是最新 Qwen 变种、最便宜的 CNY/USD 定价，或希望模型本身就在国内独立部署，选百炼。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">限速与摩擦</h2>
+<p class="text-gray-700 leading-relaxed my-4">把 Qwen 3.8 27B 接进生产 Worker 之前有三个限速要了解:</p>
+<ol class="list-decimal pl-6 my-4 space-y-2 text-gray-700"><li><strong>默认 300 req/min 文本生成限速。</strong> 既没有 frontier-model 那种 50 req/min 收紧，也没有大幅放宽 &mdash; 就是平台默认的 300 req/min。超过会 429；用 AI Gateway 的限速规则前置一层可以平滑毛刺。</li><li><strong>免费额度太小。</strong> 10,000 Neurons/天 大约等于 244K 输入 token ($0.45/M) &mdash; 够几次开发测试，不够 staging 流量。上生产前先升级到 Workers Paid 计划 ($0.011 / 1,000 Neurons)。</li><li><strong>没有缓存输入价。</strong> Workers AI 上的 DeepSeek V4 与 Kimi K2.6 都有 prompt-cache 折扣，Qwen 3.8 27B 还没有。重复 system prompt 的 Agent 每次都要按 $0.45/M 全价输入 &mdash; 这是同场景下偏向 DeepSeek V4 Flash 的最重要理由。</li></ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Qwen 3.8 27B 跟 Qwen 3 Max 旗舰是同一个吗？</strong> 不是。Qwen 3.8 27B 是 270 亿参数指令微调的视觉语言模型; Qwen 3 Max (以及 Qwen 3.8 Max) 旗舰是数千亿参数。Qwen 3.8 27B 是边缘档模型，单卡可跑，配视觉+推理+工具; Max 旗舰处理最重负载，仅在百炼和合作云上线。Qwen 3.8 家族在 2026-07-19 于百炼首发，Workers AI 在 8 月 17 日拿下 27B 这一档。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>能在 Qwen 3.8 27B 上用 AI Gateway 缓存吗？</strong> 可以 &mdash; AI Gateway 的通用缓存层放在任何 Workers AI 模型前都生效，无论该模型自身有没有缓存输入价。你仍然按模型价 ($0.45 / $3.20) 付费，但缓存命中时省掉了重复 token 的费用，主要收益在长 system prompt 场景。想要进一步省钱，可以把模型接到开启统一计费的 gateway 上。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Qwen 3.8 27B 支持 JSON 模式与结构化输出吗？</strong> 支持。Workers AI 提供跨模型的 JSON Mode beta，与函数调用搭配可以做严格 schema 的 Agent 输出。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Cloudflare 之后会加缓存输入价吗？</strong> Workers AI 8 月 18 日定价表里只有 DeepSeek V4 Pro / Flash、GLM-5.2、Kimi K2.6 / K2.7-code 列出了缓存输入行。新的 Qwen 变种后续可能补上缓存价; 在那之前，按全额输入价预算即可。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>对于不需要 1M 上下文或 DeepSeek V4 prompt-cache 折扣的负载，Workers AI Qwen 3.8 27B 是当前平台上视觉 + 推理 + 函数调用三合一的最低价入口。</strong> $0.45 / $3.20 每百万，价位低于 DeepSeek V4 Pro ($1.32 / $3.96)，远高于 Llama 3.2 11B Vision ($0.049 / $0.676)。262K 上下文与免费 Neurons 额度让它成为已经会 OpenAI Chat Completions、又不想为 Agent 引入新基础设施的 Worker 内代码默认选择。在 Workers AI Qwen 3.8 27B 与百炼直连之间取舍很简单：留在 Cloudflare 生态选 Workers AI; 要最新 Qwen 变种或最便宜 CNY/USD 选百炼。Cloudflare 官方的 <a href="https://developers.cloudflare.com/workers-ai/models/qwen3.8-27b/">Qwen 3.8 27B 模型页面</a> 上有实时定价、Neurons 换算与 OpenAI 兼容端点参考。如果想要一个已经帮你把 Qwen、DeepSeek、OpenAI、Anthropic、Google 接在同一个 OpenAI 兼容 Key 后面的多厂商抽象，FreeModel 是最简单的入口：一个后台、一个账单、没有跨厂商的胶水代码。</p>`;
+
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">快速参考</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>发布时间:</strong> 2026-08-17</li><li><strong>模型:</strong> @cf/qwen/qwen3.8-27b</li><li><strong>上下文:</strong> 262,144 token</li><li><strong>输入:</strong> 每百万 token $0.45</li><li><strong>输出:</strong> 每百万 token $3.20</li><li><strong>能力:</strong> 视觉 + 推理 + 函数调用</li><li><strong>计划:</strong> Workers Free 可用 (10K Neurons/天); 生产用 Paid</li><li><strong>限速:</strong> 300 req/min (text-gen 默认)</li><li><strong>接入:</strong> 绑定、REST、OpenAI 兼容、AI Gateway</li></ul></div><div class="bg-blue-50 border border-blue-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">{affiliateSidebar.title}</h3><p class="text-sm text-gray-700 mb-2">{affiliateSidebar.description}</p><a href={affiliateSidebar.url} class="inline-block bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700">{affiliateSidebar.cta}</a></div></aside>
+    </div>
+  </main>
+</BaseLayout>
