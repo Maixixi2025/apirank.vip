@@ -1,0 +1,263 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'crusoe-managed-inference-api-review-2026';
+const date = '2026-08-19';
+const locale = 'zh';
+const zhTitle = 'Crusoe 托管推理 API 2026 评测：MemoryAlloy™ 集群 KV 缓存';
+const zhDescription = 'Crusoe 托管推理 2026 评测：17+ 开源模型、MemoryAlloy™ 集群 KV 缓存、4 档 $0.40-$10/M 统一价、OpenAI 兼容 API。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Crusoe 提供 OpenAI 兼容 API 吗？', acceptedAnswer: { '@type': 'Answer', text: "有。Crusoe 的托管推理在 https://inference.crusoe.ai/v1 暴露 OpenAI 兼容 REST API（POST /v1/chat/completions、/v1/completions、/v1/embeddings）。现有 OpenAI 或 Anthropic SDK 客户端只需修改 base URL 和 API key 即可指向 Crusoe，无需重写代码。截至 2026 年 8 月 12 日，Pydantic AI 将 Crusoe 列为原生一级模型提供商。" } },
+  { '@type': 'Question', name: 'MemoryAlloy™ 是什么？为什么能影响推理成本？', acceptedAnswer: { '@type': 'Answer', text: "MemoryAlloy™ 是 Crusoe 专有的集群编排层，跨节点持久化集群级 KV 缓存。当多个请求共享系统提示词或前缀时，MemoryAlloy 将它们路由到已加载相关 KV 缓存的节点，消除冗余的 prefill 计算。Crusoe 报告相比朴素单实例部署首 token 时间最多快 9.9 倍、吞吐量高 5 倍。对于长共享上下文的多 agent 或 RAG 系统，prefix-cache 命中率直接降低单 token 成本 — 同样的工作负载在 Together AI 或 Fireworks AI 上每次请求都要支付完整 prefill 成本。" } },
+  { '@type': 'Question', name: 'Crusoe 的 4 档托管推理定价如何运作？', acceptedAnswer: { '@type': 'Answer', text: "Crusoe 将开源权重模型按参数量分为 4 档，按每 1M tokens 统一收费：<16B 参数 $0.40、16B-70B $2.50、70B-300B $6.00、>300B $10.00。这意味着开发者只需知道模型的参数量就能估算成本 — 无需对比 17+ 单独的模型价格表。缓存输入 token 按 $0.03-$1.50 每 1M 另行计费。部分模型有特定价格：DeepSeek V4 Pro $1.74/$3.48 每 1M（缓存 $0.15）；DeepSeek V4 Flash $0.14/$0.28 每 1M（缓存 $0.03）。" } },
+  { '@type': 'Question', name: 'Crusoe 托管推理上最便宜的开源权重模型是什么？', acceptedAnswer: { '@type': 'Answer', text: "按参数量档位，最便宜的模型在 <16B 档 $0.40 每 1M tokens（如 Qwen3.5 2B/9B、Llama 3.1 8B Instruct、Qwen3 8B）。在 70B+ 模型中，GPT-OSS 120B 和 DeepSeek V4 Flash 是最便宜的列表条目，分别 $0.05/$0.20 和 $0.14/$0.28 每 1M。相比之下，Together AI 对 Llama 3.1 8B 收费约 $0.18/M — 比 Crusoe 的 $0.40/M 档便宜 2 倍多。所以 Crusoe 在小模型端不是最便宜的，价值点在于集群缓存复用和统一计费。" } },
+  { '@type': 'Question', name: '能在 Crusoe GPU 实例上自托管开源权重模型吗？', acceptedAnswer: { '@type': 'Answer', text: "能。Crusoe 的 Self-Serve Deployments 让你在几分钟内为任意开源或微调模型启动专属端点，无需销售参与。NVIDIA H100 80GB HGX 实例 $5.50 每 GPU-小时；NVIDIA H200 141GB HGX $6.00 每 GPU-小时。更高层级的优化（Tailored Deployments）或保证吞吐量（Provisioned Throughput via AI Model Units）需要直接和 Crusoe 销售谈 — 无公开列表价。托管 Kubernetes $0.10 每集群-小时，对象存储 $0.06 每 GiB-月用于模型权重和数据集。" } },
+  { '@type': 'Question', name: 'Crusoe 有免费层或试用吗？', acceptedAnswer: { '@type': 'Answer', text: "Crusoe 没有永久免费的托管推理层。定价严格按使用量，从第一个 token 开始计费。新客户必须先给 API key 充值才能发起任何请求。Serverless 微调（2026 年 7 月推出）也是从 sub-16B 模型 $0.40 每 1M tokens 起 — 没有免费微调档。" } },
+  { '@type': 'Question', name: 'Crusoe 在中国或亚太区域可用吗？', acceptedAnswer: { '@type': 'Answer', text: "截至 2026 年 8 月，Crusoe 的托管推理公共 API 仅由美国数据中心提供（科罗拉多、得克萨斯和其他美国 Crusoe AI 工厂节点）。没有中国大陆直连端点，没有宣布的亚太区域扩张，也没有 EU 区域扩张。从亚洲跨太平洋请求美国 Crusoe 区域通常首字节延迟 150-250ms，而 Cloudflare Workers AI、阿里云百炼或字节火山引擎等区域提供商约 50-80ms。基于中国的生产部署应使用区域提供商或海外代理。" } },
+  { '@type': 'Question', name: 'Crusoe 与 Together AI、Fireworks AI、OpenRouter 相比如何？', acceptedAnswer: { '@type': 'Answer', text: "对比 Together AI 和 Fireworks AI（最大的两个开源模型推理商）：Crusoe 在小模型端每 token 更贵（Together AI Llama 3.1 8B ~$0.18/M vs Crusoe $0.40/M 档），但提供集群级 KV 缓存复用（MemoryAlloy）和 4 档统一计费，简化 RAG/多 agent 成本建模。对比 OpenRouter（最大的聚合器）：Crusoe 是有主 SLA 的直接提供商，OpenRouter 是聚合器在 Crusoe 等提供商之间调度（OpenRouter 在 2025 年末加入了对 Crusoe 的支持），但不能给你集群缓存收益。对于运行长上下文 RAG / agent 系统使用 DeepSeek V4 或 Qwen3 235B 的团队，Crusoe 的 MemoryAlloy 是最强的技术差异化点；论小模型裸价 Together AI 仍胜。" } }
+] };
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+
+        <h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">{zhTitle}</h1>
+
+        <p class="text-gray-700 leading-relaxed my-4"><strong>Crusoe</strong>（crusoe.ai）是一家总部位于旧金山的 AI 基础设施公司，在 2025 年之前以「能源优先」数据中心闻名 — 专为把搁置天然气和可再生能源转化为 GPU 算力而设计的设施。2026 年公司正在谈以 $30B 估值融资 $30 亿（Bloomberg 2026-07-02；SiliconANGLE 确认），并积极转型到<strong>开源权重模型托管推理</strong>：一个 serverless API，在统一的 OpenAI 兼容 API 后面运行 17+ 开源前沿 LLM —— DeepSeek V4 Pro、GPT-OSS 120B、Qwen3 235B A22B Instruct、GLM 5.2、Kimi K2.6，加上完整的 Llama 3.x、Gemma 4 和 Nemotron 3 系列，按参数数量分 4 档定价。核心的技术差异化是 <strong>MemoryAlloy™</strong>，一个跨节点持久化的集群原生 KV 缓存结构，可跨请求复用 prefix cache，Crusoe 报告相比朴素单实例部署首 token 时间最多快 <strong>9.9 倍</strong>，吞吐量高 <strong>5 倍</strong>。对于 2026 年 8 月选择开源模型推理提供商的工程师，Crusoe 的关键价值在于：它是唯一一家把集群级 prefix 缓存、OpenAI API 兼容和统一按档计费规则同时结合在一起的第一方开源模型 API，并且 Pydantic AI 在 8 月 12 日将 Crusoe 列为原生一级模型提供商。完整对比见 <a href="/zh/providers/crusoe">Crusoe 厂商页面</a>。</p>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 速览：</strong>Crusoe 是 2026 年开源权重 LLM 推理最强技术选择 —— 如果你的工作负载受益于 prefix 缓存复用（多 agent 系统、长共享上下文的 RAG、agentic 编程工具）。4 档定价规则（$0.40/$2.50/$6.00/$10.00 每 1M tokens）简化成本建模，但比 Together AI 最便宜档在小模型端贵约 2 倍。OpenAI 兼容 API + MemoryAlloy 集群 KV 缓存 = 直接切换 OpenAI 客户端，自动 prefix 缓存命中。无中国大陆直连端点；亚太延迟 150-250ms。DeepSeek V4 Pro $1.74/$3.48 每 1M 是 agent 旗舰价；DeepSeek V4 Flash $0.14/$0.28 是 70B+ 最便宜档。</div>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Crusoe Cloud 是什么？2026 年为什么重要？</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe 是一家美国基础设施公司的 AI 云部门，最初建设模块化数据中心用于搁置能源场地。通过其 <a href="https://crusoe.ai/cloud/managed-inference">Managed Inference 产品</a>（由 MemoryAlloy™ 编排层驱动），Crusoe 以 serverless 方式运行开源权重 LLM，按 token 计费。截至 2026 年 8 月，模型目录覆盖完整的开源权重前沿：</p>
+
+        <ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>&lt;16B 参数（$0.40/M）：</strong>Qwen3.5 2B、Qwen3.5 9B、Meta Llama 3.1 8B Instruct、Qwen3 8B；</li>
+          <li><strong>16B-70B 参数（$2.50/M）：</strong>NVIDIA Nemotron 3.5 Lightning、OpenAI gpt-oss 20b、Qwen3.6 35B A3B、Google Gemma 4 31B-it；</li>
+          <li><strong>70B-300B 参数（$6.00/M）：</strong>Meta Llama 3.3 70B Instruct、OpenAI gpt-oss 120b、Qwen3 235B A22B Instruct 2507、DeepSeek V4 Flash；</li>
+          <li><strong>&gt;300B 参数（$10.00/M）：</strong>GLM 5.2；</li>
+          <li><strong>特定价格覆盖：</strong>DeepSeek V4 Pro $1.74 输入 / $3.48 输出 每 1M（缓存 $0.15）；DeepSeek V4 Flash $0.14 / $0.28 / $0.03；Kimi K2.6 $0.70 / $3.50；GPT-OSS 120B $0.05 / $0.20；Gemma 4 31B-it $0.14 / $0.40；GLM 5.1 $1.20 / $4.40；Llama 3.3 70B Instruct $0.25 / $0.75。</li>
+        </ul>
+
+        <p class="text-gray-700 leading-relaxed my-4">其在 2026 年开源模型推理市场的定位：</p>
+
+        <ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>集群原生 KV 缓存是核心亮点。</strong>MemoryAlloy™ 跨节点持久化 KV 缓存，并把 prefix 共享请求路由到同一集群分片，消除冗余 prefill。Together AI、Fireworks AI 和 OpenRouter 都没有等价的集群级缓存层 —— 它们独立处理每个请求。对于 100K-token 文档的 RAG 或每轮重读同一工具定义的 agent 循环，prefix 缓存命中率将单 token 成本降低 50-80%。</li>
+          <li><strong>4 档定价是开发者体验亮点。</strong>大多数开源模型提供商发布一个有 30+ 条目的逐模型价格表，每月变化。Crusoe 发布一条规则：按参数量选档位，同档位的任何模型价格相同。从模型名称估算花费只需知道参数量。</li>
+          <li><strong>OpenAI 兼容 API + 原生 SDK 支持。</strong>现有 OpenAI / Anthropic SDK 客户端可以通过修改 base URL 和 API key 指向 Crusoe。Pydantic AI 在 2026 年 8 月 12 日将 Crusoe 列为原生一级模型提供商 —— 因此 PydanticAI agent 代码可以直接调用 <code>infer_with('crusoe:deepseek-v4-pro')</code>。</li>
+          <li><strong>Self-Serve Deployments 提供专属容量。</strong>对于需要可基准测试、可复现延迟的 AI 实验室，Crusoe 提供 Self-Serve Deployments，H100 80GB HGX $5.50/GPU-小时、H200 141GB HGX $6.00/GPU-小时 —— 与 RunPod、Lambda、Vast.ai 在 GPU 裸价上可比，但有 Crusoe 的网络栈。</li>
+          <li><strong>Serverless Fine-Tuning（2026 年 7 月）。</strong>Crusoe 在同一 4 档定价规则上推出 Serverless 微调 —— 根据参数量 $0.40-$10.00 每 1M tokens。在专有数据上定制开源模型，无需搭建自己的 GPU 集群。</li>
+        </ol>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Crusoe 的 4 档托管推理定价实际如何对比？</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">4 档定价规则是成本建模最重要的细节。这是档位价格与其他开源模型推理提供商在相同或相似模型上的对比（每 1M tokens，列表价，美元，2026 年 8 月）：</p>
+
+        <div class="overflow-x-auto my-4">
+          <table class="min-w-full bg-white border border-gray-200">
+            <thead><tr><th class="px-4 py-2 text-left">模型</th><th class="px-4 py-2 text-left">Crusoe（每 1M）</th><th class="px-4 py-2 text-left">Together AI</th><th class="px-4 py-2 text-left">Fireworks AI</th><th class="px-4 py-2 text-left">OpenRouter（区间）</th></tr></thead>
+            <tbody>
+              <tr><td class="px-4 py-2">Qwen3.5 2B（sub-16B）</td><td class="px-4 py-2">$0.40</td><td class="px-4 py-2">$0.18</td><td class="px-4 py-2">$0.20</td><td class="px-4 py-2">$0.04-$0.20</td></tr>
+              <tr><td class="px-4 py-2">Llama 3.1 8B Instruct（sub-16B）</td><td class="px-4 py-2">$0.40</td><td class="px-4 py-2">$0.18</td><td class="px-4 py-2">$0.20</td><td class="px-4 py-2">$0.05-$0.20</td></tr>
+              <tr><td class="px-4 py-2">GPT-OSS 20B（16B-70B）</td><td class="px-4 py-2">$2.50</td><td class="px-4 py-2">n/a</td><td class="px-4 py-2">$0.30</td><td class="px-4 py-2">$0.10-$0.30</td></tr>
+              <tr><td class="px-4 py-2">Qwen3 235B A22B（70B-300B）</td><td class="px-4 py-2">$6.00</td><td class="px-4 py-2">$0.30（输入）/ $0.90（输出）每 1M，MoE 更低</td><td class="px-4 py-2">$0.45</td><td class="px-4 py-2">$0.20-$0.45</td></tr>
+              <tr><td class="px-4 py-2">DeepSeek V4 Pro（特定价格）</td><td class="px-4 py-2">$1.74 / $3.48</td><td class="px-4 py-2">$1.25 / $5.00</td><td class="px-4 py-2">$0.75 / $3.00</td><td class="px-4 py-2">$0.50-$3.00</td></tr>
+              <tr><td class="px-4 py-2">DeepSeek V4 Flash（特定价格）</td><td class="px-4 py-2">$0.14 / $0.28</td><td class="px-4 py-2">$0.20 / $0.40</td><td class="px-4 py-2">$0.10 / $0.30</td><td class="px-4 py-2">$0.05-$0.30</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-gray-700 leading-relaxed my-4">阅读表格：Crusoe 在小模型端<strong>不是最便宜</strong>的 —— Together AI 的 Llama 3.1 8B $0.18/M 比 Crusoe 的 $0.40/M 档便宜 2 倍多。Crusoe 的价值在于 MemoryAlloy 集群缓存结构、OpenAI 兼容 API 表面和统一计费模型。对于 prefix 缓存命中率超过 60% 的工作负载（多轮 agent、RAG 长系统提示、持续工具定义的代码生成），Crusoe 缓存命中后的实际单 token 成本常常击败竞争对手的列表价单 token 成本。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">MemoryAlloy™ 怎么工作？什么时候真省钱？</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">MemoryAlloy™ 是核心技术差异化点，也是 Crusoe Managed Inference 作为独立产品存在的理由，区别于「带 OpenAI 包装器的 GPU 计算」。机制：</p>
+
+        <ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>集群级 KV 缓存。</strong>当模型在 Crusoe Managed Inference 上运行时，prompt 的 KV 缓存在集群级结构中存储（而不是在处理请求的实例本地 GPU 内存中）。共享同一前缀的多个请求 —— 例如每个回合重读同一 20K-token 系统提示词的 agent 循环 —— 可以路由到同一集群分片，缓存已热。</li>
+          <li><strong>智能路由。</strong>MemoryAlloy 的路由层跟踪哪个集群分片加载了哪些前缀。一个与已热分片共享 80% 前缀的请求被路由到那里而不是从零开始。</li>
+          <li><strong>推测解码。</strong>MemoryAlloy 将 prefix 缓存与推测解码配对 —— 用更小更快的模型起草 token、用更大的模型验证 —— 把有效 token 吞吐量推得更高。</li>
+          <li><strong>动态 batching。</strong>请求在集群上动态 batching，最大化 GPU 利用率而不超过延迟 SLO。</li>
+        </ol>
+
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe 发布的数字（来自 <a href="https://crusoe.ai/cloud/managed-inference">managed-inference 产品页面</a>）：相比朴素单实例部署首 token 时间最多快 <strong>9.9 倍</strong>、吞吐量高 <strong>5 倍</strong>。TTFT 数字对 agent 和 RAG 工作负载最相关 —— 用户感知的延迟由长共享 prompt 的首 token 延迟主导。</p>
+
+        <p class="text-gray-700 leading-relaxed my-4">MemoryAlloy 什么时候省钱什么时候不：</p>
+
+        <ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>赢：</strong>多 agent 系统有持久化的 10K+ token 系统提示词在每个回合重读；RAG 管道中检索上下文被一个长文档前缀主导；编程 agent 工具定义 30K+ token；批量评估工作负载共享固定的 prompt 模板。</li>
+          <li><strong>中性：</strong>单轮 chat 每个请求是唯一 prompt —— 缓存命中率近零，你支付 Crusoe 每 token 列表价。</li>
+          <li><strong>输：</strong>延迟敏感的工作负载，额外的路由跳增加 20-50ms TTFT —— 对某些 chat 工作负载，单实例 Fireworks AI 端到端更快。</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Crusoe vs Together AI vs Fireworks AI vs OpenRouter vs DeepInfra</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">2026 年开源模型推理市场有 5 家严肃的第一方或聚合提供商。这是 Crusoe 与各家对比：</p>
+
+        <div class="overflow-x-auto my-4">
+          <table class="min-w-full bg-white border border-gray-200">
+            <thead><tr><th class="px-4 py-2 text-left">提供商</th><th class="px-4 py-2 text-left">目录规模</th><th class="px-4 py-2 text-left">定价模型</th><th class="px-4 py-2 text-left">集群 KV 缓存</th><th class="px-4 py-2 text-left">OpenAI 兼容</th><th class="px-4 py-2 text-left">自助 GPU</th></tr></thead>
+            <tbody>
+              <tr><td class="px-4 py-2"><strong>Crusoe</strong></td><td class="px-4 py-2">17+</td><td class="px-4 py-2">按参数量 4 档</td><td class="px-4 py-2">✅ MemoryAlloy™</td><td class="px-4 py-2">✅</td><td class="px-4 py-2">✅ $5.50-$6.00/GPU-小时</td></tr>
+              <tr><td class="px-4 py-2"><strong>Together AI</strong></td><td class="px-4 py-2">200+</td><td class="px-4 py-2">逐模型列表价</td><td class="px-4 py-2">❌（per-instance）</td><td class="px-4 py-2">✅</td><td class="px-4 py-2">✅ 通过专属端点</td></tr>
+              <tr><td class="px-4 py-2"><strong>Fireworks AI</strong></td><td class="px-4 py-2">100+</td><td class="px-4 py-2">逐模型列表价</td><td class="px-4 py-2">❌</td><td class="px-4 py-2">✅</td><td class="px-4 py-2">✅ 按需 + 预留</td></tr>
+              <tr><td class="px-4 py-2"><strong>OpenRouter</strong></td><td class="px-4 py-2">300+（聚合）</td><td class="px-4 py-2">逐模型，路由到多提供商</td><td class="px-4 py-2">❌（无法控制）</td><td class="px-4 py-2">✅</td><td class="px-4 py-2">❌ 仅聚合</td></tr>
+              <tr><td class="px-4 py-2"><strong>DeepInfra</strong></td><td class="px-4 py-2">50+</td><td class="px-4 py-2">按秒 GPU + 托管按 token</td><td class="px-4 py-2">❌</td><td class="px-4 py-2">✅</td><td class="px-4 py-2">✅</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-gray-700 leading-relaxed my-4">实际选择框架：</p>
+
+        <ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>选 Crusoe</strong>如果你跑多 agent / 长共享上下文的 RAG 并想要 OpenAI API 兼容加集群缓存复用。MemoryAlloy 收益随系统提示词大小复利。</li>
+          <li><strong>选 Together AI</strong>如果裸小模型价是主要标准且不需要 prefix 缓存复用 —— Together AI 的 Llama 3.1 8B $0.18/M 比 Crusoe 的 $0.40/M 档便宜 2 倍多。</li>
+          <li><strong>选 Fireworks AI</strong>如果你需要快速单实例推理加细粒度延迟调优 —— Fireworks 的逐模型调优比 Crusoe 的档位方法更成熟。</li>
+          <li><strong>选 OpenRouter</strong>如果你需要在 300+ 模型间路由并想要一个 API key 处理全部 —— 但要明白 OpenRouter 是聚合器（你也可以通过 OpenRouter 路由到 Crusoe，如果你想要带 OpenRouter 故障转移逻辑的 Crusoe）。</li>
+          <li><strong>选 DeepInfra</strong>如果你想要 serverless 推理和裸 GPU 租赁在一张账单 —— DeepInfra 的按秒 GPU 计费比 Crusoe 的按分钟计费更细。</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">如何在代码中调用 Crusoe Managed Inference</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">因为 API 是 OpenAI 兼容的，集成方式和调用 OpenAI 一样，只需修改 base URL。用 Python 和官方 <code>openai</code> SDK：</p>
+
+        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://inference.crusoe.ai/v1",
+    api_key="crusoe-...",
+)
+
+resp = client.chat.completions.create(
+    model="deepseek-v4-pro",  # 或 17+ 模型中的任何一个
+    messages=[
+        {"role": "system", "content": "You are a coding assistant..."},
+        {"role": "user", "content": "Write a Python function to ..."},
+    ],
+    temperature=0.7,
+)
+
+print(resp.choices[0].message.content)
+print(f"Tokens: {resp.usage.total_tokens}, cost estimate: ${resp.usage.total_tokens * 1.74 / 1e6:.4f}")</code></pre>
+
+        <p class="text-gray-700 leading-relaxed my-4">或在 TypeScript / Node：</p>
+
+        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code>import OpenAI from 'openai';
+
+const client = new OpenAI({
+  baseURL: 'https://inference.crusoe.ai/v1',
+  apiKey: process.env.CRUSOE_API_KEY,
+});
+
+const completion = await client.chat.completions.create({
+  model: 'qwen3-235b-a22b-instruct-2507',
+  messages: [
+    { role: 'system', content: '...' },
+    { role: 'user', content: '...' },
+  ],
+});
+
+console.log(completion.choices[0].message.content);</code></pre>
+
+        <p class="text-gray-700 leading-relaxed my-4">Pydantic AI 集成（自 2026 年 8 月 12 日起） —— Crusoe 被列为原生提供商：</p>
+
+        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code>from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
+
+model = OpenAIModel(
+    'deepseek-v4-pro',
+    base_url='https://inference.crusoe.ai/v1',
+    api_key='crusoe-...',
+)
+
+agent = Agent(model, system_prompt='You are a research assistant...')
+result = await agent.run('Summarize the latest paper on MemoryAlloy KV cache reuse.')
+print(result.data)</code></pre>
+
+        <p class="text-gray-700 leading-relaxed my-4">流式响应（聊天 UX）Crusoe 像 OpenAI 一样支持 server-sent events。embeddings 的 <code>/v1/embeddings</code> 端点接受相同的请求格式，按模型返回 1536-dim 或 3072-dim embeddings。限速随月花费调整 —— 免费层未明确文档化，高消费客户显然通过 Tailored Deployments 路由。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">什么时候选 Crusoe 而非超大规模 LLM 端点</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe <strong>不是</strong>每个开源模型工作负载的正确选择。具体说：</p>
+
+        <ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>OpenAI / Anthropic API 优先的工作负载。</strong>如果你的系统已经深度集成 OpenAI 或 Anthropic API（工具使用、结构化输出、视觉等）且月花费低于 $10K，坚持用闭源提供商 —— 单 token 价格和生态成熟度不值得为 Crusoe 的开源模型广度去交换。</li>
+          <li><strong>严格的亚太延迟要求。</strong>Crusoe 仅在美国数据中心意味着从亚洲 150-250ms TTFT。对于 sub-100ms 区域延迟，改用 Cloudflare Workers AI、阿里云百炼或字节火山引擎。</li>
+          <li><strong>中国大陆生产部署。</strong>Crusoe 没有中国端点。要么用区域提供商，要么用海外代理。</li>
+          <li><strong>无 prefix 复用的小模型批量推理。</strong>如果你在无共享系统提示的小模型上跑单次补全（例如简单分类），Together AI 或 Fireworks AI 单 token 便宜 2 倍。</li>
+        </ul>
+
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe <strong>是</strong>正确选择当：</p>
+
+        <ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+          <li>你想要 OpenAI API 接入，但接入多个开源权重前沿模型（DeepSeek V4 Pro、Qwen3 235B、GLM 5.2、Kimi K2.6）在一个 key 后面。</li>
+          <li>你的工作负载受益于 prefix 缓存复用 —— agent 循环、长文档 RAG、持续工具定义的代码生成。</li>
+          <li>你想要一个统一的按档定价规则，而非对比每月变化的 30+ 逐模型价格。</li>
+          <li>你需要 Self-Serve Deployments 做 AI 实验室研究 / 基准测试（H100 $5.50/hr、H200 $6.00/hr）。</li>
+          <li>你在用 Pydantic AI 构建且想要原生 Crusoe 提供商支持（自 8 月 12 日起）。</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">Crusoe 提供 OpenAI 兼容 API 吗？</h3>
+        <p class="text-gray-700 leading-relaxed my-4">有。Managed Inference 在 <code>https://inference.crusoe.ai/v1</code> 暴露 OpenAI 兼容 REST API，含 <code>/v1/chat/completions</code>、<code>/v1/completions</code> 和 <code>/v1/embeddings</code>。现有 OpenAI 或 Anthropic SDK 客户端只需修改 base URL 和 API key 即可指向 Crusoe。截至 2026 年 8 月 12 日，Pydantic AI 将 Crusoe 列为原生一级模型提供商。</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">MemoryAlloy™ 是什么？为什么能影响推理成本？</h3>
+        <p class="text-gray-700 leading-relaxed my-4">MemoryAlloy™ 是 Crusoe 的集群编排层，跨节点持久化集群级 KV 缓存。当多个请求共享前缀（多 agent 循环、长系统提示的 RAG）时，MemoryAlloy 将它们路由到 KV 缓存已热的节点，消除冗余 prefill 计算。Crusoe 报告 TTFT 最多快 9.9 倍、吞吐量高 5 倍 —— 对于缓存命中的工作负载，实际成本比每次请求支付完整 prefill 的竞争对手下降 50-80%。</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">Crusoe 的 4 档定价规则怎么运作？</h3>
+        <p class="text-gray-700 leading-relaxed my-4">模型按参数量分组：&lt;16B $0.40/M，16B-70B $2.50/M，70B-300B $6.00/M，&gt;300B $10.00/M。缓存输入 token 按 $0.03-$1.50/M 另行计费。部分模型有特定价格 —— DeepSeek V4 Pro $1.74/$3.48/M 缓存 $0.15，DeepSeek V4 Flash $0.14/$0.28/M 缓存 $0.03，GPT-OSS 120B $0.05/$0.20/M。规则是：按参数量选档，同档任何模型价格相同。</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">Crusoe 上最便宜的开源权重模型是什么？</h3>
+        <p class="text-gray-700 leading-relaxed my-4">在参数量档位模型中，最便宜档是 &lt;16B $0.40/M（Qwen3.5 2B/9B、Llama 3.1 8B、Qwen3 8B）。在 70B+ 模型中，GPT-OSS 120B $0.05/$0.20/M 和 DeepSeek V4 Flash $0.14/$0.28/M 是最便宜条目。相比之下，Together AI 对 Llama 3.1 8B 收 ~$0.18/M —— 在小模型端便宜 2 倍。</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">能在 Crusoe GPU 实例上自托管开源权重模型吗？</h3>
+        <p class="text-gray-700 leading-relaxed my-4">能。Self-Serve Deployments 支持 NVIDIA H100 80GB HGX $5.50/GPU-小时和 NVIDIA H200 141GB HGX $6.00/GPU-小时，无需销售参与。Tailored Deployments 或 Provisioned Throughput（AMUs）需要直接和 Crusoe 销售谈。</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">Crusoe 有免费层吗？</h3>
+        <p class="text-gray-700 leading-relaxed my-4">没有。Managed Inference 严格按使用量，从第一个 token 计费。Serverless Fine-Tuning 从 sub-16B 模型 $0.40/M tokens 起。新客户必须先给 API key 充值才能发起任何请求。</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">Crusoe 在中国或亚太可用吗？</h3>
+        <p class="text-gray-700 leading-relaxed my-4">没有。Managed Inference 仅由美国数据中心提供（科罗拉多、得州和其他 Crusoe AI 工厂节点）。截至 2026 年 8 月没有中国大陆直连端点、没有宣布的亚太或 EU 区域扩张。跨太平洋延迟 150-250ms TTFT。基于中国的生产部署应使用区域提供商或海外代理。</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">Crusoe 与 Together AI、Fireworks AI、OpenRouter 相比如何？</h3>
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe 是 prefix 缓存复用工作负载的最强技术选。Together AI 在小模型端更便宜。Fireworks AI 提供更细粒度的单实例调优。OpenRouter 是覆盖 300+ 模型的聚合器（也可以路由到 Crusoe）。DeepInfra 把 serverless + GPU 租赁合并到一张账单。对于在 DeepSeek V4 或 Qwen3 235B 上跑长上下文 RAG / 多 agent 系统的团队，选 Crusoe。论小模型裸价，选 Together AI。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe Managed Inference 是 2026 年开源权重 LLM 推理最强技术选择 —— 如果你的工作负载受益于 prefix 缓存复用。4 档定价规则简化成本建模，但比 Together AI 最便宜档在小模型端贵约 2 倍 —— 价值点是 <strong>MemoryAlloy™ 集群 KV 缓存复用</strong>、OpenAI API 兼容和 17+ 开源权重前沿模型的统一计费。DeepSeek V4 Pro 是旗舰 agent 价 $1.74/$3.48/M；DeepSeek V4 Flash 是 70B+ 最便宜档 $0.14/$0.28/M。没有中国大陆端点，没有亚太区域扩张 —— 如果你需要 sub-100ms 亚太延迟，选区域提供商。对于已经在 Pydantic AI 上构建（自 8 月 12 日起的原生 Crusoe 提供商）或跑长上下文 agentic 系统的团队，Crusoe 是市场上架构最契合的提供商。</p>
+
+      </div>
+
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">速查参考</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Base URL：</strong>https://inference.crusoe.ai/v1</li>
+            <li><strong>风格：</strong>OpenAI 兼容</li>
+            <li><strong>模型数：</strong>17+ 开源权重前沿</li>
+            <li><strong>档位规则：</strong>按参数量 4 档</li>
+            <li><strong>最便宜档：</strong>&lt;16B @ $0.40/M</li>
+            <li><strong>agent 旗舰：</strong>DeepSeek V4 Pro $1.74/$3.48</li>
+            <li><strong>70B+ 最便宜：</strong>DeepSeek V4 Flash $0.14/$0.28</li>
+            <li><strong>集群缓存：</strong>MemoryAlloy™（9.9x TTFT、5x 吞吐）</li>
+            <li><strong>自托管 GPU：</strong>H100 $5.50/hr、H200 $6.00/hr</li>
+            <li><strong>Pydantic AI：</strong>自 2026-08-12 起原生提供商</li>
+            <li><strong>估值：</strong>$30B（2026 年 7 月融资）</li>
+            <li><strong>中国：</strong>❌ 需代理</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

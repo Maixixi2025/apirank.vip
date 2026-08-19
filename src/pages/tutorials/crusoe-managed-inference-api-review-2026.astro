@@ -1,0 +1,262 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'crusoe-managed-inference-api-review-2026';
+const date = '2026-08-19';
+const locale = 'en';
+const enTitle = 'Crusoe Managed Inference API Review 2026: MemoryAlloy™';
+const enDescription = 'Crusoe Cloud Managed Inference review 2026: 17+ open models, MemoryAlloy KV cache, 4-tier $0.40-$10/M pricing, OpenAI-compatible API.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: enTitle, description: enDescription, datePublished: date, dateModified: date, inLanguage: 'en-US', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://apirank.vip' }, { '@type': 'ListItem', position: 2, name: 'Tutorials', item: 'https://apirank.vip/tutorials' }, { '@type': 'ListItem', position: 3, name: enTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Does Crusoe have an OpenAI-compatible API?', acceptedAnswer: { '@type': 'Answer', text: "Yes. Crusoe's Managed Inference exposes an OpenAI-compatible REST API at https://inference.crusoe.ai/v1 (POST /v1/chat/completions, /v1/completions, /v1/embeddings). Existing OpenAI or Anthropic SDK clients can target Crusoe by swapping the base URL and API key — no code rewrite. As of August 12, 2026, Pydantic AI lists Crusoe as a native first-class model provider in the PydanticAI SDK." } },
+  { '@type': 'Question', name: 'What is MemoryAlloy™ and why does it matter for inference cost?', acceptedAnswer: { '@type': 'Answer', text: "MemoryAlloy™ is Crusoe's proprietary cluster-orchestration layer that persists a cluster-wide KV cache across nodes. When multiple requests share a system prompt or prefix, MemoryAlloy routes them to nodes that already have the relevant KV cache loaded — eliminating redundant prefill computation. Crusoe reports up to 9.9x faster time-to-first-token and 5x higher throughput versus a naive single-instance deployment. For multi-agent or RAG systems with long shared contexts, the prefix-cache hit rate directly drives down per-token cost — the same workload on Together AI or Fireworks AI pays full prefill cost on every request." } },
+  { '@type': 'Question', name: 'How does Crusoe's 4-tier Managed Inference pricing work?', acceptedAnswer: { '@type': 'Answer', text: "Crusoe groups open-weight models into four parameter-count tiers and charges a flat rate per 1M tokens per tier: <16B parameters at $0.40, 16B-70B at $2.50, 70B-300B at $6.00, and >300B at $10.00. This means a developer only needs to know a model's parameter count to estimate cost — no need to compare 17+ separate per-model price lists. Cached input tokens are billed separately at $0.03-$1.50 per 1M. Some models have specific overrides: DeepSeek V4 Pro is $1.74/$3.48 per 1M (input/output) with $0.15 cached; DeepSeek V4 Flash is $0.14/$0.28 with $0.03 cached." } },
+  { '@type': 'Question', name: 'What is the cheapest open-weight model on Crusoe Managed Inference?', acceptedAnswer: { '@type': 'Answer', text: "On the parameter-count tier list, the cheapest models are in the <16B tier at $0.40 per 1M tokens (e.g. Qwen3.5 2B/9B, Llama 3.1 8B Instruct, Qwen3 8B). Among 70B+ models, GPT-OSS 120B and DeepSeek V4 Flash are the cheapest list entries at $0.05/$0.20 and $0.14/$0.28 per 1M respectively. By comparison, Together AI charges roughly $0.18-$0.20 per 1M for Llama 3.1 8B and Fireworks AI charges around $0.20 per 1M for similar small models — so Crusoe's <16B tier is roughly 2x more expensive than the cheapest per-model competitors, but the value proposition is cluster-cache reuse and unified billing rather than minimum price." } },
+  { '@type': 'Question', name: 'Can I self-host open-weight models on Crusoe GPU instances?', acceptedAnswer: { '@type': 'Answer', text: "Yes. Crusoe's Self-Serve Deployments lets you spin up dedicated endpoints for any open or fine-tuned model in minutes, with no sales engagement required. NVIDIA H100 80GB HGX instances bill at $5.50 per GPU-hour; NVIDIA H200 141GB HGX at $6.00 per GPU-hour. For higher-level optimization (Tailored Deployments) or guaranteed throughput (Provisioned Throughput via AI Model Units), you negotiate directly with Crusoe sales — no public list pricing. Managed Kubernetes is $0.10 per cluster-hour and Object Storage is $0.06 per GiB-month for model artifacts and datasets." } },
+  { '@type': 'Question', name: 'Does Crusoe have a free tier or trial?', acceptedAnswer: { '@type': 'Answer', text: "Crusoe does not advertise a permanent free Managed Inference tier. Pricing is strictly pay-as-you-go from the first token. New customers should expect to load an API key with credit before any request. For benchmarks, research labs typically use Self-Serve Deployments with H100 or H200 instances billed per-minute. Serverless Fine-Tuning (launched July 2026) also starts at $0.40 per 1M tokens for sub-16B models — there is no free fine-tuning tier." } },
+  { '@type': 'Question', name: 'How does Crusoe compare to Together AI, Fireworks AI, and OpenRouter?', acceptedAnswer: { '@type': 'Answer', text: "Compared to Together AI and Fireworks AI (the two largest open-model inference specialists): Crusoe is more expensive per token at the small-model end (Together AI Llama 3.1 8B at ~$0.18/M vs Crusoe's $0.40/M tier), but offers cluster-level KV cache reuse (MemoryAlloy) and 4-tier unified billing that simplify RAG/multi-agent cost modeling. Compared to OpenRouter (the largest aggregator): Crusoe is a direct provider with primary SLAs and MemoryAlloy caching — OpenRouter is an aggregator that routes between providers including Crusoe (since OpenRouter added Crusoe support in late 2025) but does not give you the cluster-cache benefit. For teams running long-context RAG / agent systems on DeepSeek V4 or Qwen3 235B, Crusoe's MemoryAlloy is the strongest technical differentiator; for raw small-model price, Together AI still wins." } }
+  ] };
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+
+        <h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">{enTitle}</h1>
+
+        <p class="text-gray-700 leading-relaxed my-4"><strong>Crusoe</strong> (crusoe.ai) is a San Francisco-based AI infrastructure company best known until 2025 for its "energy-first" data centers — facilities purpose-built to convert stranded flare gas and renewable energy into GPU compute. In 2026 the company is in talks to raise a $3 billion round at a $30 billion valuation (Bloomberg, July 2, 2026; SiliconANGLE confirmation) and has pivoted aggressively into <strong>Managed Inference for open-weight models</strong>: a serverless API that runs 17+ open-source frontier LLMs — DeepSeek V4 Pro, GPT-OSS 120B, Qwen3 235B A22B Instruct, GLM 5.2, Kimi K2.6, and the full Llama 3.x, Gemma 4, and Nemotron 3 families — behind a unified OpenAI-compatible API and a 4-tier pricing rule keyed to parameter count. The headline technical differentiator is <strong>MemoryAlloy™</strong>, a cluster-native KV cache fabric that persists across nodes and reuses prefix cache across requests, which Crusoe reports gives up to <strong>9.9x faster time-to-first-token</strong> and <strong>5x higher throughput</strong> versus a naive single-instance deployment. For an engineer choosing an open-model inference provider in August 2026, Crusoe matters because it is the only first-party open-model API that combines cluster-level prefix caching, OpenAI API parity, and a single per-tier pricing rule — and Pydantic AI made Crusoe a native first-class model provider on August 12. Read the full <a href="/providers/crusoe">Crusoe provider page</a> for the structured comparison table, or compare with <a href="/providers/together-ai">Together AI</a>, <a href="/providers/fireworks-ai">Fireworks AI</a>, <a href="/providers/openrouter">OpenRouter</a>, and <a href="/providers/deepinfra">DeepInfra</a> on the providers index.</p>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 Quick take:</strong> Crusoe is the strongest technical choice for open-weight LLM inference in 2026 if your workload benefits from prefix-cache reuse — multi-agent systems, RAG over long shared contexts, agentic coding tools. The 4-tier pricing rule ($0.40/$2.50/$6.00/$10.00 per 1M tokens) simplifies cost modeling but is roughly 2x more expensive than Together AI's cheapest tier for small models. OpenAI-compatible API + MemoryAlloy cluster KV cache = drop-in OpenAI client with automatic prefix-cache hits. No mainland China direct endpoint; APAC latency is 150-250ms. DeepSeek V4 Pro $1.74/$3.48 per 1M is the flagship agent price; DeepSeek V4 Flash $0.14/$0.28 is the cheapest 70B+ entry.</div>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Crusoe Cloud, and why does its Managed Inference matter in 2026?</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe is the AI cloud arm of a US-based infrastructure company that began life building modular data centers on stranded-energy sites. Through its <a href="https://crusoe.ai/cloud/managed-inference">Managed Inference product</a> (powered by the MemoryAlloy™ orchestration layer), Crusoe runs open-weight LLMs serverless and bills per token. The model catalog as of August 2026 covers the full open-weight frontier:</p>
+
+        <ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>&lt;16B parameters ($0.40/M):</strong> Qwen3.5 2B, Qwen3.5 9B, Meta Llama 3.1 8B Instruct, Qwen3 8B;</li>
+          <li><strong>16B-70B parameters ($2.50/M):</strong> NVIDIA Nemotron 3.5 Lightning, OpenAI gpt-oss 20b, Qwen3.6 35B A3B, Google Gemma 4 31B-it;</li>
+          <li><strong>70B-300B parameters ($6.00/M):</strong> Meta Llama 3.3 70B Instruct, OpenAI gpt-oss 120b, Qwen3 235B A22B Instruct 2507, DeepSeek V4 Flash;</li>
+          <li><strong>&gt;300B parameters ($10.00/M):</strong> GLM 5.2;</li>
+          <li><strong>Specific overrides:</strong> DeepSeek V4 Pro $1.74 input / $3.48 output per 1M (with $0.15 cached); DeepSeek V4 Flash $0.14 / $0.28 / $0.03; Kimi K2.6 $0.70 / $3.50; GPT-OSS 120B $0.05 / $0.20; Gemma 4 31B-it $0.14 / $0.40; GLM 5.1 $1.20 / $4.40; Llama 3.3 70B Instruct $0.25 / $0.75.</li>
+        </ul>
+
+        <p class="text-gray-700 leading-relaxed my-4">Its positioning in the 2026 open-model inference market:</p>
+
+        <ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>Cluster-native KV cache is the headline.</strong> MemoryAlloy™ persists the KV cache across nodes and routes prefix-sharing requests to the same cluster shard, eliminating redundant prefill. Together AI, Fireworks AI, and OpenRouter do not have an equivalent cluster-wide cache layer — they treat each request independently. For RAG over 100K-token documents or agent loops that re-read the same tool definitions on every turn, the prefix-cache hit rate drives per-token cost down by 50-80%.</li>
+          <li><strong>4-tier pricing is the developer experience.</strong> Most open-model providers publish a per-model price table with 30+ entries that change monthly. Crusoe publishes one rule: pick your tier by parameter count, then any model in that tier costs the same. Estimating spend from a model name only requires knowing its parameter count.</li>
+          <li><strong>OpenAI-compatible API + native SDK support.</strong> Existing OpenAI / Anthropic SDK clients can target Crusoe by swapping the base URL and API key. Pydantic AI made Crusoe a native first-class model provider on August 12, 2026 — so PydanticAI agent code can call <code>infer_with('crusoe:deepseek-v4-pro')</code> directly.</li>
+          <li><strong>Self-Serve Deployments for dedicated capacity.</strong> For AI labs that need benchmarked, reproducible latency, Crusoe offers Self-Serve Deployments at $5.50/GPU-hour for H100 80GB HGX and $6.00/GPU-hour for H200 141GB HGX — comparable to RunPod, Lambda, and Vast.ai on raw GPU price, but with the Crusoe networking stack.</li>
+          <li><strong>Serverless Fine-Tuning (July 2026).</strong> Crusoe launched Serverless Fine-Tuning on the same 4-tier pricing rule — $0.40-$10.00 per 1M tokens depending on parameter count. Customize open models on proprietary data without standing up your own GPU cluster.</li>
+        </ol>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How does Crusoe's 4-tier Managed Inference pricing actually compare?</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">The 4-tier pricing rule is the single most important detail for cost modeling. Here is how the tier prices compare to other open-model inference providers on the same or similar models (per 1M tokens, list price, USD, August 2026):</p>
+
+        <div class="overflow-x-auto my-4">
+          <table class="min-w-full bg-white border border-gray-200">
+            <thead><tr><th class="px-4 py-2 text-left">Model</th><th class="px-4 py-2 text-left">Crusoe (per 1M)</th><th class="px-4 py-2 text-left">Together AI</th><th class="px-4 py-2 text-left">Fireworks AI</th><th class="px-4 py-2 text-left">OpenRouter (range)</th></tr></thead>
+            <tbody>
+              <tr><td class="px-4 py-2">Qwen3.5 2B (sub-16B)</td><td class="px-4 py-2">$0.40</td><td class="px-4 py-2">$0.18</td><td class="px-4 py-2">$0.20</td><td class="px-4 py-2">$0.04-$0.20</td></tr>
+              <tr><td class="px-4 py-2">Llama 3.1 8B Instruct (sub-16B)</td><td class="px-4 py-2">$0.40</td><td class="px-4 py-2">$0.18</td><td class="px-4 py-2">$0.20</td><td class="px-4 py-2">$0.05-$0.20</td></tr>
+              <tr><td class="px-4 py-2">GPT-OSS 20B (16B-70B)</td><td class="px-4 py-2">$2.50</td><td class="px-4 py-2">n/a</td><td class="px-4 py-2">$0.30</td><td class="px-4 py-2">$0.10-$0.30</td></tr>
+              <tr><td class="px-4 py-2">Qwen3 235B A22B (70B-300B)</td><td class="px-4 py-2">$6.00</td><td class="px-4 py-2">$0.30 (input) / $0.90 (output) per 1M for active tier, lower for MoE</td><td class="px-4 py-2">$0.45</td><td class="px-4 py-2">$0.20-$0.45</td></tr>
+              <tr><td class="px-4 py-2">DeepSeek V4 Pro (specific override)</td><td class="px-4 py-2">$1.74 / $3.48</td><td class="px-4 py-2">$1.25 / $5.00</td><td class="px-4 py-2">$0.75 / $3.00</td><td class="px-4 py-2">$0.50-$3.00</td></tr>
+              <tr><td class="px-4 py-2">DeepSeek V4 Flash (specific override)</td><td class="px-4 py-2">$0.14 / $0.28</td><td class="px-4 py-2">$0.20 / $0.40</td><td class="px-4 py-2">$0.10 / $0.30</td><td class="px-4 py-2">$0.05-$0.30</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-gray-700 leading-relaxed my-4">Reading the table: Crusoe is <strong>not the cheapest</strong> at the small-model end — Together AI's Llama 3.1 8B at $0.18/M is more than 2x cheaper than Crusoe's $0.40/M tier price. The value of Crusoe is the MemoryAlloy cluster-cache fabric, the OpenAI-compatible API surface, and the unified billing model. For workloads where prefix-cache hit rate exceeds 60% (multi-turn agents, RAG over long system prompts, code generation with persistent tool definitions), Crusoe's effective per-token cost after cache hits often beats the per-token list price on competitors.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How does MemoryAlloy™ work, and when does it actually save money?</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">MemoryAlloy™ is the central technical differentiator and the reason Crusoe's Managed Inference exists as a separate product from "GPU compute with an OpenAI wrapper." The mechanism:</p>
+
+        <ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>Cluster-wide KV cache.</strong> When a model runs on Crusoe's Managed Inference, the KV cache for the prompt is stored in a cluster-level fabric (rather than in the local GPU memory of the instance handling the request). Multiple requests sharing the same prefix — for example, an agent loop calling the same 20K-token system prompt on every turn — can be routed to the same cluster shard where the cache is already warm.</li>
+          <li><strong>Intelligent routing.</strong> MemoryAlloy's routing layer tracks which cluster shards have which prefixes loaded. A request that shares 80% of its prefix with a warm shard gets routed there instead of starting from scratch on a cold shard.</li>
+          <li><strong>Speculative decoding.</strong> MemoryAlloy pairs prefix caching with speculative decoding — drafting tokens with a smaller, faster model and verifying with the larger one — to push effective token throughput higher.</li>
+          <li><strong>Dynamic batching.</strong> Requests are dynamically batched across the cluster to maximize GPU utilization without exceeding latency SLOs.</li>
+        </ol>
+
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe's published numbers (from the <a href="https://crusoe.ai/cloud/managed-inference">managed-inference product page</a>): up to <strong>9.9x faster time-to-first-token</strong> and <strong>5x higher throughput</strong> versus a naive single-instance deployment. The TTFT number is most relevant for agent and RAG workloads where the user-perceived latency is dominated by the first-token delay on a long shared prompt.</p>
+
+        <p class="text-gray-700 leading-relaxed my-4">When MemoryAlloy saves money vs when it does not:</p>
+
+        <ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>Wins:</strong> Multi-agent systems with a persistent 10K+ token system prompt re-read on every turn; RAG pipelines where the retrieved context is dominated by a long document prefix; coding agents where the tool definitions are 30K+ tokens; batch evaluation workloads that share a fixed prompt template.</li>
+          <li><strong>Neutral:</strong> Single-turn chat with unique prompts per request — the cache hit rate is near zero, and you pay Crusoe's per-token list price.</li>
+          <li><strong>Losses:</strong> Latency-sensitive workloads where the additional routing hop adds 20-50ms TTFT — for some chat workloads, single-instance Fireworks AI is faster end-to-end.</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Crusoe vs Together AI vs Fireworks AI vs OpenRouter vs DeepInfra</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">The open-model inference market in 2026 has five serious first-party or aggregator providers. Here is how Crusoe stacks up against each:</p>
+
+        <div class="overflow-x-auto my-4">
+          <table class="min-w-full bg-white border border-gray-200">
+            <thead><tr><th class="px-4 py-2 text-left">Provider</th><th class="px-4 py-2 text-left">Catalog size</th><th class="px-4 py-2 text-left">Pricing model</th><th class="px-4 py-2 text-left">Cluster KV cache</th><th class="px-4 py-2 text-left">OpenAI-compatible</th><th class="px-4 py-2 text-left">Self-serve GPU</th></tr></thead>
+            <tbody>
+              <tr><td class="px-4 py-2"><strong>Crusoe</strong></td><td class="px-4 py-2">17+</td><td class="px-4 py-2">4 tiers by parameter count</td><td class="px-4 py-2">✅ MemoryAlloy™</td><td class="px-4 py-2">✅</td><td class="px-4 py-2">✅ $5.50-$6.00/GPU-hr</td></tr>
+              <tr><td class="px-4 py-2"><strong>Together AI</strong></td><td class="px-4 py-2">200+</td><td class="px-4 py-2">Per-model list price</td><td class="px-4 py-2">❌ (per-instance)</td><td class="px-4 py-2">✅</td><td class="px-4 py-2">✅ via dedicated endpoints</td></tr>
+              <tr><td class="px-4 py-2"><strong>Fireworks AI</strong></td><td class="px-4 py-2">100+</td><td class="px-4 py-2">Per-model list price</td><td class="px-4 py-2">❌</td><td class="px-4 py-2">✅</td><td class="px-4 py-2">✅ on-demand + reserved</td></tr>
+              <tr><td class="px-4 py-2"><strong>OpenRouter</strong></td><td class="px-4 py-2">300+ (aggregator)</td><td class="px-4 py-2">Per-model, routes to multiple providers</td><td class="px-4 py-2">❌ (no control)</td><td class="px-4 py-2">✅</td><td class="px-4 py-2">❌ aggregator only</td></tr>
+              <tr><td class="px-4 py-2"><strong>DeepInfra</strong></td><td class="px-4 py-2">50+</td><td class="px-4 py-2">Per-second GPU + per-token for managed</td><td class="px-4 py-2">❌</td><td class="px-4 py-2">✅</td><td class="px-4 py-2">✅</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-gray-700 leading-relaxed my-4">Practical selection framework:</p>
+
+        <ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>Pick Crusoe</strong> if you run multi-agent / RAG over long shared contexts and want OpenAI API parity with cluster-cache reuse. The MemoryAlloy benefit compounds as your system prompt size grows.</li>
+          <li><strong>Pick Together AI</strong> if raw small-model price is the primary criterion and you do not need prefix-cache reuse — Together AI's Llama 3.1 8B at $0.18/M beats Crusoe's $0.40/M tier by more than 2x.</li>
+          <li><strong>Pick Fireworks AI</strong> if you need fast single-instance inference with fine-grained latency tuning — Fireworks' per-model tuning is more mature than Crusoe's tier-based approach.</li>
+          <li><strong>Pick OpenRouter</strong> if you need to route between 300+ models and want a single API key for all of them — but understand that OpenRouter aggregates (and you can route to Crusoe through OpenRouter if you want Crusoe with OpenRouter's failover logic).</li>
+          <li><strong>Pick DeepInfra</strong> if you want both serverless inference AND raw GPU rental under one bill — DeepInfra's per-second GPU billing is more granular than Crusoe's per-minute billing.</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How to call Crusoe Managed Inference from your code</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Because the API is OpenAI-compatible, the integration is the same as calling OpenAI with a base URL change. In Python with the official <code>openai</code> SDK:</p>
+
+        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://inference.crusoe.ai/v1",
+    api_key="crusoe-...",
+)
+
+resp = client.chat.completions.create(
+    model="deepseek-v4-pro",  # or any of the 17+ models
+    messages=[
+        {"role": "system", "content": "You are a coding assistant..."},
+        {"role": "user", "content": "Write a Python function to ..."},
+    ],
+    temperature=0.7,
+)
+
+print(resp.choices[0].message.content)
+print(f"Tokens: {resp.usage.total_tokens}, cost estimate: ${resp.usage.total_tokens * 1.74 / 1e6:.4f}")</code></pre>
+
+        <p class="text-gray-700 leading-relaxed my-4">Or in TypeScript / Node:</p>
+
+        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code>import OpenAI from 'openai';
+
+const client = new OpenAI({
+  baseURL: 'https://inference.crusoe.ai/v1',
+  apiKey: process.env.CRUSOE_API_KEY,
+});
+
+const completion = await client.chat.completions.create({
+  model: 'qwen3-235b-a22b-instruct-2507',
+  messages: [
+    { role: 'system', content: '...' },
+    { role: 'user', content: '...' },
+  ],
+});
+
+console.log(completion.choices[0].message.content);</code></pre>
+
+        <p class="text-gray-700 leading-relaxed my-4">Pydantic AI integration (since August 12, 2026) — Crusoe is listed as a native provider:</p>
+
+        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code>from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
+
+model = OpenAIModel(
+    'deepseek-v4-pro',
+    base_url='https://inference.crusoe.ai/v1',
+    api_key='crusoe-...',
+)
+
+agent = Agent(model, system_prompt='You are a research assistant...')
+result = await agent.run('Summarize the latest paper on MemoryAlloy KV cache reuse.')
+print(result.data)</code></pre>
+
+        <p class="text-gray-700 leading-relaxed my-4">For streaming responses (chat UX), Crusoe supports server-sent events exactly like OpenAI. For embeddings, the <code>/v1/embeddings</code> endpoint accepts the same request shape and returns 1536-dim or 3072-dim embeddings depending on the model. Rate limits scale with monthly spend — the free tier is undocumented but high-volume customers are clearly being routed through Tailored Deployments.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">When to choose Crusoe over a hyperscaler LLM endpoint</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe is <strong>not</strong> the right choice for every open-model workload. Specifically:</p>
+
+        <ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+          <li><strong>OpenAI / Anthropic API-first workloads.</strong> If your system is already deeply integrated with the OpenAI or Anthropic API (tool use, structured outputs, vision, etc.) and your monthly spend is under $10K, stick with the closed-source providers — the per-token price and ecosystem maturity are not worth trading for Crusoe's open-model breadth.</li>
+          <li><strong>Strict APAC latency requirements.</strong> Crusoe's US-only data centers mean 150-250ms TTFT from Asia. For sub-100ms regional latency, use Cloudflare Workers AI, Alibaba Bailian, or ByteDance Volcano instead.</li>
+          <li><strong>Mainland China production deployments.</strong> Crusoe has no China endpoint. Either use a regional provider or an overseas proxy.</li>
+          <li><strong>Tiny-model bulk inference with zero prefix reuse.</strong> If you are running one-shot completions on small models with no shared system prompt (e.g. simple classification), Together AI or Fireworks AI are 2x cheaper per token.</li>
+        </ul>
+
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe <strong>is</strong> the right choice when:</p>
+
+        <ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+          <li>You want OpenAI API access but to multiple open-weight frontier models (DeepSeek V4 Pro, Qwen3 235B, GLM 5.2, Kimi K2.6) behind one key.</li>
+          <li>Your workload benefits from prefix-cache reuse — agent loops, RAG over long documents, code generation with persistent tool definitions.</li>
+          <li>You want a single per-tier pricing rule instead of comparing 30+ per-model prices that change monthly.</li>
+          <li>You need Self-Serve Deployments for AI lab research / benchmarking (H100 at $5.50/hr, H200 at $6.00/hr).</li>
+          <li>You are building with Pydantic AI and want native Crusoe provider support (since August 12).</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">Does Crusoe have an OpenAI-compatible API?</h3>
+        <p class="text-gray-700 leading-relaxed my-4">Yes. Managed Inference exposes an OpenAI-compatible REST API at <code>https://inference.crusoe.ai/v1</code> with <code>/v1/chat/completions</code>, <code>/v1/completions</code>, and <code>/v1/embeddings</code>. Existing OpenAI or Anthropic SDK clients can target Crusoe by swapping the base URL and API key. As of August 12, 2026, Pydantic AI lists Crusoe as a native first-class model provider.</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">What is MemoryAlloy™ and why does it matter for inference cost?</h3>
+        <p class="text-gray-700 leading-relaxed my-4">MemoryAlloy™ is Crusoe's cluster-orchestration layer that persists a cluster-wide KV cache across nodes. When multiple requests share a prefix (multi-agent loops, RAG with a long system prompt), MemoryAlloy routes them to nodes where the KV cache is already warm, eliminating redundant prefill computation. Crusoe reports up to 9.9x faster TTFT and 5x higher throughput — and for cache-hit workloads, effective cost drops by 50-80% versus competitors that pay full prefill cost on every request.</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">How does Crusoe's 4-tier pricing rule work?</h3>
+        <p class="text-gray-700 leading-relaxed my-4">Models are grouped by parameter count: <16B at $0.40/M, 16B-70B at $2.50/M, 70B-300B at $6.00/M, >300B at $10.00/M. Cached input tokens are billed at $0.03-$1.50/M separately. Some models have specific overrides — DeepSeek V4 Pro $1.74/$3.48/M with $0.15 cached, DeepSeek V4 Flash $0.14/$0.28/M with $0.03 cached, GPT-OSS 120B $0.05/$0.20/M. The rule is: pick your tier by parameter count, then any model in that tier costs the same.</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">What is the cheapest open-weight model on Crusoe?</h3>
+        <p class="text-gray-700 leading-relaxed my-4">In the parameter-count tier model, the cheapest tier is <16B at $0.40/M (Qwen3.5 2B/9B, Llama 3.1 8B, Qwen3 8B). Among 70B+ models, GPT-OSS 120B at $0.05/$0.20/M and DeepSeek V4 Flash at $0.14/$0.28/M are the cheapest entries. By comparison, Together AI charges ~$0.18/M for Llama 3.1 8B — roughly 2x cheaper at the small-model end.</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">Can I self-host open-weight models on Crusoe GPU instances?</h3>
+        <p class="text-gray-700 leading-relaxed my-4">Yes. Self-Serve Deployments supports NVIDIA H100 80GB HGX at $5.50/GPU-hour and NVIDIA H200 141GB HGX at $6.00/GPU-hour, no sales engagement required. For Tailored Deployments or Provisioned Throughput (AMUs), you negotiate directly with Crusoe sales.</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">Does Crusoe have a free tier?</h3>
+        <p class="text-gray-700 leading-relaxed my-4">No. Managed Inference is strictly pay-as-you-go from the first token. Serverless Fine-Tuning starts at $0.40/M tokens for sub-16B models. New customers must load an API key with credit before any request.</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">Is Crusoe available in China or APAC?</h3>
+        <p class="text-gray-700 leading-relaxed my-4">No. Managed Inference is served from US data centers only (Colorado, Texas, and other Crusoe AI factory locations). There is no mainland China direct endpoint, no announced APAC or EU regional expansion as of August 2026. Cross-Pacific latency is 150-250ms TTFT. China-based production deployments should use a regional provider or an overseas proxy.</p>
+
+        <h3 class="text-xl font-bold text-gray-900 mt-6 mb-2">How does Crusoe compare to Together AI, Fireworks AI, and OpenRouter?</h3>
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe is the strongest technical pick for prefix-cache-reuse workloads. Together AI is cheaper at the small-model end. Fireworks AI offers finer-grained single-instance tuning. OpenRouter is an aggregator covering 300+ models (and can route to Crusoe). DeepInfra combines serverless + GPU rental under one bill. For long-context RAG / multi-agent systems on DeepSeek V4 or Qwen3 235B, pick Crusoe. For raw small-model price, pick Together AI.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Bottom line</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Crusoe Managed Inference is the strongest technical choice in 2026 for open-weight LLM inference if your workload benefits from prefix-cache reuse. The 4-tier pricing rule simplifies cost modeling but is roughly 2x more expensive than Together AI's cheapest tier for small models — the value proposition is <strong>MemoryAlloy™ cluster KV cache reuse</strong>, OpenAI API parity, and unified billing across 17+ open-weight frontier models. DeepSeek V4 Pro is the flagship agent price at $1.74/$3.48/M; DeepSeek V4 Flash is the cheapest 70B+ entry at $0.14/$0.28/M. No mainland China endpoint, no APAC regional expansion — pick a regional provider if you need sub-100ms APAC latency. For teams already building on Pydantic AI (native Crusoe provider since August 12) or running long-context agentic systems, Crusoe is the most architecturally aligned provider in the market.</p>
+
+      </div>
+
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Reference</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Base URL:</strong> https://inference.crusoe.ai/v1</li>
+            <li><strong>Style:</strong> OpenAI-compatible</li>
+            <li><strong>Models:</strong> 17+ open-weight frontier</li>
+            <li><strong>Tier rule:</strong> 4 by parameter count</li>
+            <li><strong>Cheapest tier:</strong> &lt;16B @ $0.40/M</li>
+            <li><strong>Flagship agent:</strong> DeepSeek V4 Pro $1.74/$3.48</li>
+            <li><strong>Cheapest 70B+:</strong> DeepSeek V4 Flash $0.14/$0.28</li>
+            <li><strong>Cluster cache:</strong> MemoryAlloy™ (9.9x TTFT, 5x throughput)</li>
+            <li><strong>GPU self-serve:</strong> H100 $5.50/hr, H200 $6.00/hr</li>
+            <li><strong>Pydantic AI:</strong> native provider since Aug 12, 2026</li>
+            <li><strong>Valuation:</strong> $30B (Jul 2026 raise)</li>
+            <li><strong>China:</strong> ❌ proxy required</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
