@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'coreweave-cloud-api-review-2026';
+const date = '2026-08-20';
+const locale = 'zh';
+const zhTitle = 'CoreWeave Cloud API 2026 评测：GPU 原生推理云';
+const zhDescription = 'CoreWeave 2026 评测：OpenAI 兼容 Serverless/Dedicated/CKS 推理、GPU 定价（H100 $49.24/hr）、MLPerf 纪录、英伟达持股的 neocloud。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'CoreWeave 提供 OpenAI 兼容 API 吗？', acceptedAnswer: { '@type': 'Answer', text: "有。CoreWeave 的三大推理产品——Serverless Inference（通过 W&B Inference 交付）、Dedicated Inference 和 CKS 上推理——都暴露 OpenAI API 兼容端点。现有 OpenAI 客户端库、agent 和工具链只需最小改动即可接入。Dedicated Inference 通过 CoreWeave Inference 管理 API 配置（api.coreweave.com 上的 REST/JSON、HTTP/2 上的 gRPC，以及 Terraform provider）。" } },
+  { '@type': 'Question', name: 'CoreWeave GPU 实例价格如何？', acceptedAnswer: { '@type': 'Answer', text: "CoreWeave 按 GPU-小时计费：NVIDIA HGX H100 $49.24/hr、HGX H200 $50.44/hr、HGX B200 $68.80/hr、A100 80GB $21.60/hr、L40S $18.00/hr、L40 $10.00/hr、GB200 NVL72 $42.00/hr。Spot 折扣约 40-60%（H100 spot $19.71/hr、H200 $20.93/hr、B200 $34.11/hr、A100 $9.65/hr）。Serverless Inference 通过 W&B 目录按 token 付费；Dedicated Inference 按 GPU-小时或节点合同计费。" } },
+  { '@type': 'Question', name: 'CoreWeave 的 Serverless、Dedicated 和 CKS 推理有什么区别？', acceptedAnswer: { '@type': 'Answer', text: "Serverless Inference 运行 CoreWeave 托管的模型目录（GLM 5.2、Kimi K2.6/K2.7、DeepSeek R1/V3、Llama 3.x、Qwen），自动完成供给、扩缩容和路由——无需管理基础设施，按 token 付费。Dedicated Inference 让你自带模型权重，部署在专属 GPU 基础设施上，完整控制 gateway、扩缩容和容量预留，按 GPU-小时或节点计费。CKS 上推理让你在 CoreWeave Kubernetes Service 上完全掌控 serving 栈、运行时和网络。三者都 OpenAI 兼容。" } },
+  { '@type': 'Question', name: '能在 CoreWeave 上训练/微调模型然后用 API serve 吗？', acceptedAnswer: { '@type': 'Answer', text: "能——这是 CoreWeave 与纯推理中转站的核心区别。你按需租用或预留 NVIDIA H100/H200/B200 实例，在 CoreWeave Kubernetes Service（CKS）上用 Mission Control 可观测性训练或微调，然后用 OpenAI 兼容端点（Dedicated Inference 或 CKS 上推理）serve 同一个模型。这缩小了 OpenRouter 或 Portkey 等中转站无法提供的训练到推理闭环，因为 serve 发生在构建权重的同一 GPU 集群上。" } },
+  { '@type': 'Question', name: 'CoreWeave 有免费层吗？', acceptedAnswer: { '@type': 'Answer', text: "CoreWeave 没有永久免费层。Serverless Inference 按 token 计费，GPU 实例从第一次使用开始按小时计费。最接近降本计划的是 0EM（零出口费迁移），在迁移进 CoreWeave 期间免除出口费且无锁定。对成本敏感的做原型，spot GPU 实例提供约 40-60% 折扣。截至 2026 年 8 月没有免费微调或免费额度档。" } },
+  { '@type': 'Question', name: 'CoreWeave 与其他 GPU 云（Nebius、RunPod、Hyperbolic）相比如何？', acceptedAnswer: { '@type': 'Answer', text: "相比 Nebius（带 AI 原生栈的 GPU 云）、RunPod（开发者友好的 serverless GPU pods）和 Hyperbolic（去中心化 GPU 市场）：CoreWeave 最具企业规模且与英伟达深度绑定——它纳斯达克上市（CRWV）、英伟达持股约 11%、首个部署 Vera Rubin NVL72 和 GB300 NVL72、并保持 MLPerf 训练与推理性价比纪录。它价格偏高：H100 按需 $49.24/hr 高于 RunPod 或 Hyperbolic 的入门 GPU 价，反映的是预留的企业级容量。CoreWeave 适合企业级训练到推理和新 NVIDIA 平台抢先；RunPod/Hyperbolic 适合低成本、开发者友好的 spot GPU 突发。" } },
+  { '@type': 'Question', name: 'CoreWeave 在中国或亚太区域可用吗？', acceptedAnswer: { '@type': 'Answer', text: "没有中国大陆直连端点。CoreWeave 数据中心集中在美国；2026 年进行国际扩张——两个英国数据中心运营中、印尼作为首个亚太节点、通过 Conapto 合作提供瑞典容量。基于中国的生产部署需要代理或选择有本地存在的区域提供商。对面向亚洲的流量，到美国区域的跨太平洋延迟通常增加 150-250ms 首字节延迟，因此延迟敏感用户更适合区域提供商。" } },
+  { '@type': 'Question', name: '谁在用 CoreWeave？', acceptedAnswer: { '@type': 'Answer', text: "CoreWeave 披露的客户包括 OpenAI（追加协议最高 $6.5B）、Anthropic（多年协议）、Meta（$21B 扩展 AI 基础设施协议）、Perplexity（推理工作负载）、Runway（下一代 AI 视频模型）、Jane Street（$6B AI 云协议）、Flow Traders（基础模型训练）和 MasterClass（通过 W&B Weave 追踪 AI 教学 agent，2026 年 8 月宣布）。这些前沿实验室和企业 AI 客户集群印证了它的定位：主流的 AI 基础设施云，而非轻量 API 中转站。" } }
+]};
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+
+        <h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">{zhTitle}</h1>
+
+        <p class="text-gray-700 leading-relaxed my-4"><strong>CoreWeave</strong>（coreweave.com）是一家总部位于美国的 AI 云（纳斯达克：CRWV），也是「neocloud」这个概念的典型代表——专为大规模 AI 训练和推理而建的算力提供商，而非通用 Web 负载云。与 OpenRouter 或 Portkey 这类纯推理中转站不同，CoreWeave 是 <strong>GPU 原生云</strong>：你可以按需租用（或预留）NVIDIA H100、H200、B200、A100、L40S 或 GB200 NVL72 实例，在 CoreWeave Kubernetes Service（CKS）上训练或微调模型，然后用 <strong>OpenAI 兼容端点</strong> serve 同一个模型——Serverless Inference（托管目录）、Dedicated Inference（自带权重）或 CKS 上推理（完全掌控 serving 栈）。CoreWeave 在 MLPerf 训练与推理两端都领先（约 2 分钟训练 DeepSeek V3；Kimi K2.6 推理性价比第一），并且是首个部署 NVIDIA Vera Rubin NVL72 和 GB300 NVL72 的云。英伟达本身持有该公司约 11% 的股份。对 2026 年 8 月选择 AI 推理平台的工程师而言，CoreWeave 的关键价值在于：它是唯一在 OpenAI 兼容界面背后闭合 <strong>训练到推理闭环</strong>的主流云。完整对比见 <a href="/zh/providers/coreweave">CoreWeave 厂商页面</a>，或对比 <a href="/zh/providers/nebius">Nebius</a>、<a href="/zh/providers/runpod">RunPod</a>、<a href="/zh/providers/hyperbolic">Hyperbolic</a>。</p>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 速览：</strong>如果你的工作负载是 GPU 原生——想在 OpenAI 兼容 API 背后训练/微调并 serve 模型，或需要抢先使用英伟达最新平台（Vera Rubin NVL72、GB300）——CoreWeave 是 2026 年最强选择。它价格偏高（H100 按需 $49.24/hr；spot 约省 40-60%）、企业级规模、纳斯达克上市且英伟达持股约 11%。Serverless Inference 通过 W&B 按 token 付费；Dedicated Inference 按 GPU-小时计费。无中国大陆端点；到美国区域的亚太延迟 150-250ms。OpenAI/Anthropic/Meta/Jane Street 都是客户——这是主流的 AI 基础设施，不是廉价中转站。</div>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">CoreWeave 是什么？2026 年为什么 GPU 原生推理重要？</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">CoreWeave 最初是加密货币挖矿业务，在 AI 需求爆发时将 GPU 集群改用于 AI，成长为最大的独立 AI 云之一。它通过 IPO 上市，现以 CRWV 交易，英伟达持有约 11% 股份并深度绑定平台合作。公司的定位「The Essential Cloud for AI」反映了一个刻意的选择：不与超大规模云在通用云服务上竞争，而是专注于大规模 GPU 集群——H100、H200、B200、GB200 NVL72，以及即将到来的 Vera Rubin NVL72 和 GB300——加上运行前沿规模 AI 所需的存储、Kubernetes 编排（CKS）和可观测性（Mission Control）层。本文数据主要来自其 <a href="https://www.coreweave.com/pricing">GPU 定价页</a> 和 <a href="https://docs.coreweave.com/products/inference.md">CoreWeave Inference 文档</a>。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">CoreWeave Inference：三种 OpenAI 兼容的模型 serve 方式</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">CoreWeave 的推理家族刻意分层，三个选项都暴露 OpenAI API 兼容端点，现有工具和 agent 只需最小代码改动即可接入：</p>
+
+        <ul class="list-disc list-inside text-gray-700 leading-relaxed my-4">
+          <li><strong>Serverless Inference（W&B）：</strong>CoreWeave 通过 W&B Inference 交付 Serverless（CoreWeave 于 2025 年收购 Weights &amp; Biases）。你从托管目录选模型——GLM 5.2、Kimi K2.6/K2.7、DeepSeek R1/V3、Llama 3.x、Qwen——CoreWeave 自动处理供给、扩缩容、路由和资源分配。按 token 以 W&B 目录价计费。</li>
+          <li><strong>Dedicated Inference：</strong>自带模型权重，部署在专属 GPU 基础设施上。你保留对 gateway、扩缩容和容量预留的完整控制，CoreWeave 管理底层集群。按 GPU-小时或节点合同计费。</li>
+          <li><strong>CKS 上推理：</strong>在 CoreWeave Kubernetes Service 上运行推理工作负载，完全掌控部署栈、运行时和网络。标准 CKS 计费（GPU-小时或预留节点）。</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">CoreWeave GPU 定价：按需、spot 与推理价</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">CoreWeave 按 GPU-小时对实例计费。按需列表价与 spot 折扣（2026 年 8 月公开定价页核实）：</p>
+
+        <table class="table-token">
+          <thead><tr><th>GPU</th><th>按需（$/hr）</th><th>Spot（$/hr）</th><th>推理单 GPU（$/hr）</th></tr></thead>
+          <tbody>
+            <tr><td>NVIDIA HGX H100</td><td>$49.24</td><td>$19.71</td><td>$6.16</td></tr>
+            <tr><td>NVIDIA HGX H200</td><td>$50.44</td><td>$20.93</td><td>$6.31</td></tr>
+            <tr><td>NVIDIA HGX B200</td><td>$68.80</td><td>$34.11</td><td>$8.60</td></tr>
+            <tr><td>NVIDIA A100 80GB</td><td>$21.60</td><td>$9.65</td><td>$2.70</td></tr>
+            <tr><td>NVIDIA L40S</td><td>$18.00</td><td>$7.88</td><td>$2.25</td></tr>
+            <tr><td>NVIDIA L40</td><td>$10.00</td><td>$6.27</td><td>$1.25</td></tr>
+            <tr><td>NVIDIA GB200 NVL72</td><td>$42.00</td><td>N/A</td><td>—</td></tr>
+          </tbody>
+        </table>
+
+        <p class="text-gray-700 leading-relaxed my-4">几点定价说明。按需 H100 $49.24/hr 是溢价，高于开发者友好的 GPU 云：RunPod 和 Hyperbolic 的 H100 突发/spot 价通常远低于此，L40/A100 是预算工作负载的落点。Spot 折扣约 40-60%（H100 $19.71/hr、H200 $20.93/hr、B200 $34.11/hr）让容量灵活的推理和训练便宜得多。Serverless Inference 没有按 GPU 的价格——通过 W&B 目录按 token 付费，CoreWeave 的 MLPerf 推理领先（Kimi K2.6 最快）意味着目录模型有领先的性价比。0EM（零出口费迁移）计划在迁移进 CoreWeave 时免除出口费且无锁定——对迁移大数据集或模型权重的团队是重要的成本杠杆。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">对 API 调用方为何重要：训练到推理闭环</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">API 调用方应该了解 CoreWeave 的最强理由是 <strong>训练到推理闭环</strong>。纯中转站（OpenRouter、Portkey）只能把 token 路由到别人运行的模型。CoreWeave 让团队租用 GPU 容量、在 CKS 上训练或微调，然后用 OpenAI 兼容端点 serve 成品权重——Dedicated 用于可调度的预留部署，CKS 上推理用于完整栈控制。OpenAI 兼容界面意味着你可以先在 Serverless 上对托管目录模型做原型，之后零客户端改动切换到运行自己微调的 Dedicated 端点。这就是自主 agent 和前沿实验室团队（OpenAI、Anthropic、Meta、Jane Street、Flow Traders、做 AI 教学 agent 的 MasterClass）锚定 CoreWeave 的原因：做训练的同一 GPU 集群也做 serve，消除了把权重搬到独立推理提供商的数传和冷启动开销。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">谁在 CoreWeave 上运行？对 API 团队意味着什么</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">客户列表是判断 CoreWeave 在 AI 栈中位置的清晰信号。OpenAI 把协议追加最高 <strong>$65 亿</strong>，说明连最大的前沿实验室也会考虑多元化的专属 AI 容量而不仅是超大规模云。Anthropic 签了多年协议；Meta 宣布 <strong>$21 亿</strong>扩展 AI 基础设施协议；Jane Street 承诺 <strong>$60 亿</strong> AI 云协议；Perplexity 用 CoreWeave 跑推理；Runway 依赖它跑下一代 AI 视频模型；Flow Traders 为量化交易跑基础模型训练；MasterClass（2026 年 8 月宣布）用 CoreWeave Cloud 加 W&B Weave 追踪、监控和改进 AI 教学 agent。对 API 调用方这有两层意义：第一，它验证了 CoreWeave 是持久、资金充足的基础设施——可以托付生产负载，而不是会消失的项目；第二，前沿实验室和企业的高度集中意味着 CoreWeave 的 OpenAI 兼容界面在极端规模下经过了实战检验——从训练运行到高流量推理端点。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">开发者体验：在 CoreWeave 上构建是什么感觉</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">开发者体验与零配置推理中转站差异巨大。因为 CoreWeave 是 Kubernetes 原生云，心智模型是「<strong>运维优先</strong>」：你供给 GPU 节点、管理集群（CKS）、配置网络和对象存储、用 Mission Control 做可观测性和节点生命周期。Serverless Inference 的体验则正常化——选目录模型、调 OpenAI 兼容端点、按 token 付费——这是大多数 API 调用方最合适的入口。但一旦你想跑自己的微调，就进入 Kubernetes 领域：启动 Dedicated Inference 部署或 CKS 工作负载、配置 gateway、考虑容量预留。这比中转站更强大、更灵活，但也带来真实的运维开销。Dedicated 或 CKS 没有超出按 GPU 按需价之外的公开列表价；企业定价是商谈的，高需求 GPU 如 GB200 可能需要等待名单或 Capacity Plans。Terraform provider 和 gRPC API 对以基础设施即代码方式管理 GPU 集群的团队是强信号。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">谁该选 CoreWeave——谁不该</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">CoreWeave 不是每个 AI API 调用方的默认选择。选它如果：(a) 你训练或微调自己的模型，并想在同一个按 OpenAI 兼容端点 serve 的 GPU 集群上完成；(b) 你需要保证容量、最新英伟达平台（Vera Rubin NVL72、GB300）和 MLPerf 级性能的企业；(c) 你有 Kubernetes 专长，想要对 serving 栈和可观测性的第一方控制。跳过它如果：(a) 你只想用最少设置调用前沿或开源模型——纯消费场景 OpenRouter 或托管模型 API 更简单、按 token 更便宜；(b) 你需要低成本、开发者友好的 GPU 突发——RunPod 或 Hyperbolic 提供便宜得多的入门 H100/L40 价和按秒计费；(c) 你服务中国大陆的延迟敏感流量或需要区域端点——没有中国节点，跨太平洋延迟 150-250ms。CoreWeave 是溢价、企业级、GPU 原生的基础设施档位，不是廉价中转站的一行式替代品。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">CoreWeave vs. Nebius、RunPod、Hyperbolic</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">这三个竞品从不同角度覆盖 GPU 云光谱。<a href="/zh/providers/nebius">Nebius</a> 也是带托管推理和训练栈的 AI 原生云，定位「AI 原生云」，欧美都有较强存在——比 CoreWeave 更接近企业抱负但规模更小、英伟达股权绑定没那么紧。<a href="/zh/providers/runpod">RunPod</a> 是开发者友好选项：serverless GPU pods、市场、按秒计费，突发任务比 CoreWeave 的按小时按需价便宜得多。<a href="/zh/providers/hyperbolic">Hyperbolic</a> 是聚合闲置 GPU 的去中心化市场，入门价最低，但容量和企 业保证的可预测性较弱。CoreWeave 的定位是企业级、与英伟达对齐、抢先最新平台（Vera Rubin NVL72、GB300）、创 MLPerf 纪录——溢价档。重视保证容量、最新 NVIDIA 芯片和第一方训练到推理栈时选 CoreWeave；成本和突发灵活性主导时选 RunPod 或 Hyperbolic。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">区域可用性与延迟</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">CoreWeave 的数据中心集中在美国，2026 年进行国际扩张——英国（两个运营中的数据中心）、印尼作为首个亚太节点、通过 Conapto 合作的瑞典。没有中国大陆直连端点。对于基于中国的生产，你需要代理或选择有本地存在的区域提供商。对延迟敏感的亚洲流量，到美国区域的跨太平洋请求通常增加 150-250ms 首字节延迟，而阿里云百炼、字节火山引擎或 Cloudflare Workers AI 等区域提供商约 50-80ms。服务亚太用户的团队应关注 CoreWeave 的印尼建设，但中国大陆延迟仍是决策因素。CoreWeave 最适合锚定美国/欧洲的训练到推理工作负载；面向亚洲、延迟关键的流量选择区域提供商。</p>
+
+        <section class="faq">
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">CoreWeave 常见问题</h2>
+          <div class="faq-item"><strong>Q：CoreWeave 是 API 提供商还是 GPU 云？</strong><p>A：两者都是。它是 GPU 原生云，但推理家族（Serverless、Dedicated、CKS）都暴露 OpenAI 兼容端点，所以既作为 AI API 提供商服务目录模型，也出租原始 GPU 容量用于训练和微调。</p></div>
+          <div class="faq-item"><strong>Q：在 CoreWeave 上做推理最便宜的方式是什么？</strong><p>A：目录模型用 Serverless Inference 按 token 付费——无闲置 GPU 成本，CoreWeave 的 MLPerf 推理领先让 Kimi K2.6 等模型有很强的性价比。自有权重用 Dedicated 或 CKS 上的 spot GPU 实例（比按需省 40-60%）最便宜。</p></div>
+          <div class="faq-item"><strong>Q：CoreWeave 收出口费吗？</strong><p>A：CoreWeave 的 0EM（零出口费迁移）计划在迁移进平台时免除出口费且无锁定，AI 对象存储包含原生高吞吐访问。这与按 GB 收出口费的云不同，是一个差异点。</p></div>
+          <div class="faq-item"><strong>Q：CoreWeave 上有哪些 NVIDIA GPU？</strong><p>A：H100、H200、B200、A100 80GB、L40S、L40 和 GB200 NVL72 按需提供并可 spot 折扣；另有抢先的 NVIDIA Vera Rubin NVL72 和 GB300 NVL72——CoreWeave 是首个部署这两者的云。</p></div>
+          <div class="faq-item"><strong>Q：CoreWeave 适合微调吗？</strong><p>A：适合。在 CKS 上用 Mission Control 可观测性训练或微调，然后用 OpenAI 兼容的 Dedicated 或 CKS 端点 serve 结果——无需模型迁移步骤，在同一 GPU 集群上闭合训练到推理闭环。</p></div>
+        </section>
+
+      </div>
+      <aside class="hidden lg:block">
+        <div class="bg-gray-50 rounded-xl border border-gray-200 p-4 sticky top-24">
+          <h3 class="font-bold text-gray-900 mb-3">关键事实</h3>
+          <ul class="text-sm text-gray-600 space-y-2">
+            <li><strong>类型：</strong>GPU 原生 AI 云（neocloud）</li>
+            <li><strong>股票：</strong>纳斯达克 CRWV；英伟达约 11%</li>
+            <li><strong>按需：</strong>H100 $49.24/hr、H200 $50.44/hr</li>
+            <li><strong>Spot：</strong>H100 $19.71/hr（省 60%）</li>
+            <li><strong>Serverless：</strong>通过 W&B 按 token 付费</li>
+            <li><strong>推理 API：</strong>OpenAI 兼容</li>
+            <li><strong>客户：</strong>OpenAI、Anthropic、Meta、Jane Street</li>
+            <li><strong>中国：</strong>❌ 需代理</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>

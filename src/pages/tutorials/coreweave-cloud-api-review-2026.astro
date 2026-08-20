@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'coreweave-cloud-api-review-2026';
+const date = '2026-08-20';
+const locale = 'en';
+const enTitle = 'CoreWeave Cloud API Review 2026: GPU-Native Inference';
+const enDescription = 'CoreWeave review 2026: OpenAI-compatible Serverless/Dedicated/CKS inference, GPU pricing (H100 $49.24/hr), MLPerf records, NVIDIA-backed neocloud.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: enTitle, description: enDescription, datePublished: date, dateModified: date, inLanguage: 'en-US', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://apirank.vip' }, { '@type': 'ListItem', position: 2, name: 'Tutorials', item: 'https://apirank.vip/tutorials' }, { '@type': 'ListItem', position: 3, name: enTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Does CoreWeave have an OpenAI-compatible API?', acceptedAnswer: { '@type': 'Answer', text: "Yes. All three of CoreWeave's inference products — Serverless Inference (delivered through W&B Inference), Dedicated Inference, and Inference on CKS — expose OpenAI API-compatible endpoints. Existing OpenAI client libraries, agents, and tooling connect with minimal changes. Dedicated Inference is configured through the CoreWeave Inference management API (REST/JSON at api.coreweave.com, gRPC over HTTP/2, and a Terraform provider)." } },
+  { '@type': 'Question', name: 'How much does CoreWeave cost for GPU instances?', acceptedAnswer: { '@type': 'Answer', text: "CoreWeave bills GPU instances per GPU-hour on demand: NVIDIA HGX H100 at $49.24/hr, HGX H200 at $50.44/hr, HGX B200 at $68.80/hr, A100 80GB at $21.60/hr, L40S at $18.00/hr, L40 at $10.00/hr, and GB200 NVL72 at $42.00/hr. Spot discounts range from roughly 40-60% off (H100 spot $19.71/hr, H200 $20.93/hr, B200 $34.11/hr, A100 $9.65/hr). Serverless Inference bills per token via the W&B catalog; Dedicated Inference bills on GPU-hour or node contracts." } },
+  { '@type': 'Question', name: 'What is the difference between Serverless, Dedicated, and CKS inference on CoreWeave?', acceptedAnswer: { '@type': 'Answer', text: "Serverless Inference runs a CoreWeave-managed catalog of models (GLM 5.2, Kimi K2.6/K2.7, DeepSeek R1/V3, Llama 3.x, Qwen) with automatic provisioning, scaling, and routing — no infrastructure to manage, pay-per-token. Dedicated Inference lets you bring your own model weights and deploy on dedicated GPU infrastructure with full control over gateways, scaling, and capacity reservations, billed on GPU-hour or node. Inference on CKS gives you complete control over the serving stack, runtimes, and networking on CoreWeave Kubernetes Service. All three are OpenAI-compatible." } },
+  { '@type': 'Question', name: 'Can I train or fine-tune a model on CoreWeave and then serve it via API?', acceptedAnswer: { '@type': 'Answer', text: "Yes — this is CoreWeave's core differentiator versus a pure inference relay. You rent an NVIDIA H100/H200/B200 instance on demand or reserve capacity, train or fine-tune on CoreWeave Kubernetes Service (CKS) with Mission Control observability, then serve the same model through an OpenAI-compatible endpoint via Dedicated Inference or Inference on CKS. This closes the training-to-inference loop that relays like OpenRouter or Portkey cannot offer, because serving happens on the same GPU fleet that built the weights." } },
+  { '@type': 'Question', name: 'Does CoreWeave have a free tier?', acceptedAnswer: { '@type': 'Answer', text: "CoreWeave does not advertise a permanent free tier. Serverless Inference bills per token and GPU instances bill hourly from the first use. The closest cost-lowering program is 0EM (Zero Egress Migration), which waives egress fees during migration into CoreWeave with no lock-in, plus native AI Object Storage. For cost-sensitive prototyping, spot GPU instances offer roughly 40-60% discounts. There is no free fine-tuning or free credit tier as of August 2026." } },
+  { '@type': 'Question', name: 'How does CoreWeave compare to other GPU clouds like Nebius, RunPod, or Hyperbolic?', acceptedAnswer: { '@type': 'Answer', text: "Compared to Nebius (GPU cloud with an AI-native stack), RunPod (developer-friendly serverless GPU pods), and Hyperbolic (decentralized GPU marketplace): CoreWeave is the most enterprise-scale and NVIDIA-aligned — it is Nasdaq-listed (CRWV) with NVIDIA owning ~11%, was first to deploy Vera Rubin NVL72 and GB300 NVL72, and holds MLPerf training and inference records. It is also price-premium: H100 at $49.24/hr on demand is higher than RunPod's or Hyperbolic's entry GPU rates, reflecting reserved enterprise capacity. CoreWeave wins for enterprise training-to-inference and newest-NVIDIA-platform access; RunPod/Hyperbolic win for low-cost, developer-friendly spot GPU bursts." } },
+  { '@type': 'Question', name: 'Is CoreWeave available in China or Asia-Pacific?', acceptedAnswer: { '@type': 'Answer', text: "No mainland China direct endpoint. CoreWeave data centers are concentrated in the US; in 2026 it expanded internationally — two UK data centers operational, Indonesia as its first Asia-Pacific node, and Sweden capacity via a Conapto partnership. China-based production deployments require a proxy or a regional provider with local presence. For Asia-facing traffic, cross-Pacific latency to US regions typically adds 150-250ms of first-byte delay, so a regional provider is often better for latency-sensitive users." } },
+  { '@type': 'Question', name: 'Who uses CoreWeave?', acceptedAnswer: { '@type': 'Answer', text: "CoreWeave's disclosed customers include OpenAI (expanded its agreement by up to $6.5B), Anthropic (multi-year agreement), Meta ($2.1B expanded AI infrastructure agreement), Perplexity (inference workloads), Runway (next-gen AI video models), Jane Street ($6B AI cloud agreement), Flow Traders (foundation-model training), and MasterClass (AI teaching agents via W&B Weave, announced August 2026). This cluster of frontier-lab and enterprise AI customers underlines its position as a primary AI-infrastructure cloud rather than a lightweight API relay." } }
+]};
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+
+        <h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">{enTitle}</h1>
+
+        <p class="text-gray-700 leading-relaxed my-4"><strong>CoreWeave</strong> (coreweave.com) is a US-headquartered AI cloud (Nasdaq: CRWV) and the defining example of a "neocloud" — a compute provider purpose-built to run AI training and inference at scale, not general web workloads. Unlike a pure inference relay such as OpenRouter or Portkey, CoreWeave is a <strong>GPU-native cloud</strong>: you can rent NVIDIA H100, H200, B200, A100, L40S, or GB200 NVL72 instances on demand (or reserve capacity), train or fine-tune a model on CoreWeave Kubernetes Service (CKS), then serve that same model through an <strong>OpenAI-compatible endpoint</strong> — Serverless Inference (managed catalog), Dedicated Inference (bring-your-own weights), or Inference on CKS (full control of the serving stack). CoreWeave leads MLPerf on both training (it trained DeepSeek V3 in roughly two minutes) and inference price-performance (Kimi K2.6), and was the first cloud to deploy NVIDIA Vera Rubin NVL72 and GB300 NVL72. NVIDIA itself owns about 11% of the company. For an engineer choosing an AI inference platform in August 2026, CoreWeave matters because it is the only major provider that closes the <strong>training-to-inference loop</strong> behind an OpenAI-compatible surface. Read the full <a href="/providers/coreweave">CoreWeave provider page</a> for the pricing table and 4-section breakdown, or compare with <a href="/providers/nebius">Nebius</a>, <a href="/providers/runpod">RunPod</a>, and <a href="/providers/hyperbolic">Hyperbolic</a> on the providers index.</p>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 Quick take:</strong> CoreWeave is the strongest choice in 2026 if your workload is GPU-native — you want to train or fine-tune a model and serve it through an OpenAI-compatible API, or you need early access to NVIDIA's newest platforms (Vera Rubin NVL72, GB300). It is price-premium (H100 $49.24/hr on demand; spot ~40-60% off), enterprise-scale, and Nasdaq-listed with NVIDIA owning ~11%. Serverless Inference is pay-per-token via W&B; Dedicated Inference bills per GPU-hour. No mainland China endpoint; APAC latency to US regions runs 150-250ms. OpenAI/Anthropic/Meta/Jane Street are customers — this is primary AI infrastructure, not a cheap relay.</div>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is CoreWeave, and why does its GPU-native inference matter in 2026?</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">CoreWeave began as a cryptocurrency-mining operation that reconfigured its GPU fleet for AI as demand surged, and it grew into one of the largest independent AI clouds. It went public via an IPO and now trades as CRWV, with NVIDIA holding roughly an 11% stake and a deep platform partnership. The company's positioning, "The Essential Cloud for AI," reflects a deliberate choice: instead of competing with hyperscalers on general-purpose cloud services, CoreWeave concentrates on massive GPU fleets — H100, H200, B200, GB200 NVL72, and soon Vera Rubin NVL72 and GB300 — plus the storage, Kubernetes orchestration (CKS), and observability (Mission Control) layer needed to run frontier-scale AI. Its <a href="https://www.coreweave.com/pricing">GPU pricing page</a> and the <a href="https://docs.coreweave.com/products/inference.md">CoreWeave Inference documentation</a> are the primary sources for the data in this review.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">CoreWeave Inference: three OpenAI-compatible ways to serve a model</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">CoreWeave's inference family is deliberately layered, and all three options expose OpenAI API-compatible endpoints so existing tools and agents connect with minimal code changes:</p>
+
+        <ul class="list-disc list-inside text-gray-700 leading-relaxed my-4">
+          <li><strong>Serverless Inference (W&B):</strong> CoreWeave delivers Serverless Inference through W&B Inference (CoreWeave acquired Weights & Biases in 2025). You pick a model from the managed catalog — GLM 5.2, Kimi K2.6/K2.7, DeepSeek R1/V3, Llama 3.x, Qwen — and CoreWeave handles provisioning, scaling, routing, and resource allocation automatically. Billing is pay-per-token at the W&B catalog rates.</li>
+          <li><strong>Dedicated Inference:</strong> Bring your own model weights and deploy on dedicated GPU infrastructure. You keep full control over gateways, scaling, and capacity reservations while CoreWeave manages the underlying clusters. Billing is GPU-hour or node-based depending on the contract.</li>
+          <li><strong>Inference on CKS:</strong> Run inference workloads on CoreWeave Kubernetes Service with complete control over your deployment stack, runtimes, and networking. Standard CKS billing (GPU-hour or reserved node).</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">CoreWeave GPU pricing: on-demand, spot, and inference rates</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">CoreWeave bills GPU instances per GPU-hour. On-demand list prices and spot discounts (verified from the public pricing page, August 2026):</p>
+
+        <table class="table-token">
+          <thead><tr><th>GPU</th><th>On-Demand ($/hr)</th><th>Spot ($/hr)</th><th>Inference single-GPU ($/hr)</th></tr></thead>
+          <tbody>
+            <tr><td>NVIDIA HGX H100</td><td>$49.24</td><td>$19.71</td><td>$6.16</td></tr>
+            <tr><td>NVIDIA HGX H200</td><td>$50.44</td><td>$20.93</td><td>$6.31</td></tr>
+            <tr><td>NVIDIA HGX B200</td><td>$68.80</td><td>$34.11</td><td>$8.60</td></tr>
+            <tr><td>NVIDIA A100 80GB</td><td>$21.60</td><td>$9.65</td><td>$2.70</td></tr>
+            <tr><td>NVIDIA L40S</td><td>$18.00</td><td>$7.88</td><td>$2.25</td></tr>
+            <tr><td>NVIDIA L40</td><td>$10.00</td><td>$6.27</td><td>$1.25</td></tr>
+            <tr><td>NVIDIA GB200 NVL72</td><td>$42.00</td><td>N/A</td><td>—</td></tr>
+          </tbody>
+        </table>
+
+        <p class="text-gray-700 leading-relaxed my-4">A few notes on pricing. On-demand H100 at $49.24/hr is a premium versus developer-friendly GPU clouds: RunPod and Hyperbolic commonly price H100 burst/spot well below that, and L40/A100 classes are where budget workloads land. Spot discounts of roughly 40-60% (H100 $19.71/hr, H200 $20.93/hr, B200 $34.11/hr) make capacity-flexible training and inference far cheaper. Serverless Inference has no per-GPU price — you pay per token via W&B's catalog, and CoreWeave's MLPerf inference leadership (fastest Kimi K2.6) means you get leading price-performance for catalog models. The 0EM (Zero Egress Migration) program waives egress fees when migrating into CoreWeave, with no lock-in — a meaningful cost lever for teams moving large datasets or model artifacts.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Why CoreWeave matters for API consumers: the training-to-inference loop</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">The strongest reason an API consumer should know CoreWeave is the <strong>training-to-inference loop</strong>. A pure relay (OpenRouter, Portkey) can only route tokens to models someone else runs. CoreWeave lets a team rent GPU capacity, train or fine-tune on CKS, and then serve the finished weights through an OpenAI-compatible endpoint — Dedicated for a reserved, tunable deployment or Inference on CKS for complete stack control. The OpenAI-compatible surface means you can prototype against a hosted catalog model on Serverless, then swap to your own Dedicated endpoint running a fine-tune with zero client changes. This is why autonomous-agent and frontier-lab teams (OpenAI, Anthropic, Meta, Jane Street, Flow Traders, MasterClass for AI teaching agents) anchor on CoreWeave: the same GPU fleet that does the training does the serving, eliminating the data-transfer and cold-start overhead of moving weights to a separate inference provider.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Who runs on CoreWeave, and what it signals for API teams</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">The customer list is the clearest signal of where CoreWeave sits in the AI stack. OpenAI expanded its CoreWeave agreement by up to <strong>$6.5 billion</strong>, a sign that even the largest frontier lab reasons about diversified, dedicated AI capacity rather than only hyperscaler clouds. Anthropic signed a multi-year agreement; Meta announced a <strong>$2.1 billion</strong> expanded AI infrastructure agreement; Jane Street committed a <strong>$6 billion</strong> AI-cloud deal; Perplexity uses CoreWeave for inference workloads; Runway relies on it for next-generation AI-video models; Flow Traders runs foundation-model training for quantitative trading; and MasterClass (announced August 2026) uses CoreWeave Cloud plus W&B Weave to trace, monitor, and improve its AI teaching agents. For an API consumer this matters in two ways. First, it validates CoreWeave as durable, well-capitalized infrastructure — the kind you trust with production workloads, not a project that might vanish. Second, the frontier-lab and enterprise concentration means CoreWeave's OpenAI-compatible surface is battle-tested at extreme scale, from training runs to high-traffic inference endpoints.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Developer experience: what it is like to build against CoreWeave</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">The developer experience differs sharply from a zero-config inference relay. Because CoreWeave is a Kubernetes-native cloud, the mental model is "<strong>operations-first</strong>": you provision GPU nodes, manage clusters (CKS), set up networking and object storage, and use Mission Control for observability and node lifecycle. For Serverless Inference the experience normalizes — pick a catalog model, call an OpenAI-compatible endpoint, pay per token — which is why it is the right entry point for most API consumers. But the moment you want to run your own fine-tune, you are in Kubernetes territory: you spin up a Dedicated Inference deployment or a CKS workload, configure the gateway, and reason about capacity reservations. This is more powerful and more flexible than a relay, but it carries real overhead. There is no public list price for Dedicated or CKS beyond the per-GPU on-demand rates; enterprise pricing is negotiated, and high-demand GPUs like GB200 may require waitlisting or Capacity Plans. The Terraform provider and gRPC API are a strong signal for infrastructure-as-code teams that manage GPU fleets programmatically.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Who should choose CoreWeave — and who should not</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">CoreWeave is not the right default for every AI API consumer. Choose it if you are (a) training or fine-tuning your own models and want to serve them through an OpenAI-compatible endpoint on the same GPU fleet; (b) an enterprise that needs guaranteed capacity, the newest NVIDIA platforms (Vera Rubin NVL72, GB300), and MLPerf-grade performance; or (c) a team with Kubernetes expertise that wants first-party control over the serving stack and observability. Skip it if you (a) just want to call a frontier or open model with minimal setup — OpenRouter or a hosted model API is simpler and cheaper per token for pure consumption; (b) need low-cost, developer-friendly GPU bursts — RunPod or Hyperbolic offer far cheaper entry H100/L40 rates with per-second billing; (c) serve latency-sensitive traffic to mainland China or need a regional endpoint — there is no China node and cross-Pacific latency runs 150-250ms. CoreWeave is a premium, enterprise-scale, GPU-native infrastructure tier, not a drop-in replacement for a cheap relay.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">CoreWeave vs. Nebius, RunPod, and Hyperbolic</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">These three competitors bracket the GPU-cloud spectrum differently. <a href="/providers/nebius">Nebius</a> is also an AI-native cloud with a managed inference and training stack, positioned as the "AI-native cloud" with strong EU and US presence — closer to CoreWeave's enterprise ambition but smaller and without as tight an NVIDIA-equity tie. <a href="/providers/runpod">RunPod</a> is the developer-friendly option: serverless GPU pods, a marketplace, and per-second billing that undercuts CoreWeave's hourly on-demand rates for burst jobs. <a href="/providers/hyperbolic">Hyperbolic</a> is a decentralized GPU marketplace that aggregates idle GPUs, offering among the lowest entry prices but with less predictable capacity and enterprise guarantees. CoreWeave's niche is enterprise-scale, NVIDIA-aligned, first-to-newest-platform (Vera Rubin NVL72, GB300), and MLPerf-record-setting — the premium tier. Choose CoreWeave when you value guaranteed capacity, the newest NVIDIA silicon, and a first-party training-to-inference stack; choose RunPod or Hyperbolic when cost and burst flexibility dominate.</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Region availability and latency</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">CoreWeave's data centers are concentrated in the United States, with 2026 international expansion into the UK (two operational data centers), Indonesia as its first Asia-Pacific node, and Sweden via a Conapto partnership. There is no mainland China direct endpoint. For China-based production, you would need a proxy or a regional provider with local presence. For latency-sensitive Asia-facing traffic, cross-Pacific requests to US regions typically add 150-250ms of first-byte delay versus ~50-80ms from a regional provider like Alibaba Bailian, ByteDance Volcano Engine, or Cloudflare Workers AI. Teams serving APAC users should watch CoreWeave's Indonesia build-out, but mainland China latency remains a decision factor. CoreWeave is best suited to US/EU-anchored training-to-inference workloads; pick a regional provider for latency-critical Asia traffic.</p>
+
+        <section class="faq">
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">CoreWeave FAQ</h2>
+          <div class="faq-item"><strong>Q: Is CoreWeave an API provider or a GPU cloud?</strong><p>A: Both. It is a GPU-native cloud, but its inference family (Serverless, Dedicated, CKS) all expose OpenAI-compatible endpoints, so it functions as an AI API provider for catalog models while also renting raw GPU capacity for training and fine-tuning.</p></div>
+          <div class="faq-item"><strong>Q: What is the cheapest way to use CoreWeave for inference?</strong><p>A: For catalog models, Serverless Inference bills per token via W&B — no idle GPU cost, and CoreWeave's MLPerf inference leadership means strong price-performance on models like Kimi K2.6. For your own weights, spot GPU instances (40-60% off on demand) on Dedicated or CKS are the cheapest path.</p></div>
+          <div class="faq-item"><strong>Q: Does CoreWeave charge egress fees?</strong><p>A: CoreWeave's 0EM (Zero Egress Migration) program waives egress fees during migration into the platform with no lock-in, and AI Object Storage includes native high-throughput access. This is a differentiator versus clouds that charge per-GB egress.</p></div>
+          <div class="faq-item"><strong>Q: Which NVIDIA GPUs are available on CoreWeave?</strong><p>A: H100, H200, B200, A100 80GB, L40S, L40, and GB200 NVL72 on demand with spot discounts; plus early access to NVIDIA Vera Rubin NVL72 and GB300 NVL72 — CoreWeave was the first cloud to deploy both.</p></div>
+          <div class="faq-item"><strong>Q: Is CoreWeave good for fine-tuning?</strong><p>A: Yes. Train or fine-tune on CKS with Mission Control observability, then serve the result via an OpenAI-compatible Dedicated or CKS endpoint — no model-transfer step, closing the training-to-inference loop on the same GPU fleet.</p></div>
+        </section>
+
+      </div>
+      <aside class="hidden lg:block">
+        <div class="bg-gray-50 rounded-xl border border-gray-200 p-4 sticky top-24">
+          <h3 class="font-bold text-gray-900 mb-3">Key Facts</h3>
+          <ul class="text-sm text-gray-600 space-y-2">
+            <li><strong>Type:</strong> GPU-native AI cloud (neocloud)</li>
+            <li><strong>Stock:</strong> Nasdaq: CRWV; NVIDIA ~11%</li>
+            <li><strong>On-demand:</strong> H100 $49.24/hr, H200 $50.44/hr</li>
+            <li><strong>Spot:</strong> H100 $19.71/hr (60% off)</li>
+            <li><strong>Serverless:</strong> pay-per-token via W&B</li>
+            <li><strong>Inference API:</strong> OpenAI-compatible</li>
+            <li><strong>Customers:</strong> OpenAI, Anthropic, Meta, Jane Street</li>
+            <li><strong>China:</strong> ❌ proxy required</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
