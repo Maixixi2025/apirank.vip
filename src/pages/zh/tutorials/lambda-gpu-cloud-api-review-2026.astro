@@ -1,0 +1,121 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'lambda-gpu-cloud-api-review-2026';
+const date = '2026-08-21';
+const locale = 'zh';
+const zhTitle = 'Lambda GPU Cloud 2026 评测：H100/B200 定价与 1-Click 集群';
+const zhDescription = 'Lambda GPU Cloud 2026 评测：H100 $3.99/hr 定价、1-Click 集群、Superclusters、训练过 OpenAI 的基础设施、以及正在退役的 Inference API。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Lambda 是 AI API 提供商还是 GPU 云？', acceptedAnswer: { '@type': 'Answer', text: "Lambda（lambda.ai）主要是 GPU 云——「超级智能云」——而不是按 token 计费的模型 API。你按秒租用 NVIDIA GPU 实例（H100、B200、A100、GH200）、自助式 16x-512x GPU 的 1-Click 集群，或签合同使用单租户 Superclusters（4000+ GPU）。运行推理需自己在 GPU 实例上用 vLLM、SGLang 或 TensorRT-LLM 部署开源权重。注意：Lambda 不是 AWS Lambda（无服务器函数产品），两者无关。" } },
+  { '@type': 'Question', name: 'Lambda GPU 云价格是多少？', acceptedAnswer: { '@type': 'Answer', text: "按需 GPU 实例按每 GPU 小时计费：NVIDIA B200 SXM6 $6.69、H100 SXM $3.99、A100 SXM 80GB $2.79、A100 SXM 40GB $1.99、GH200 $2.29、A100 PCIe $1.99、A6000 $1.09、A10 $1.29、V100 $0.79。1-Click 集群预付价（每 GPU 小时）：HGX B200 $9.86（16 GPU）降至 $8.87（256+）、HGX H100 $6.16 降至 $5.54。Superclusters/Private Cloud（4000+ GPU）联系销售。Lambda 无 egress 费。" } },
+  { '@type': 'Question', name: '什么是 Lambda 1-Click Clusters？', acceptedAnswer: { '@type': 'Answer', text: "1-Click Clusters 是 Lambda 的自助式多节点产品：你在 Cloud 控制台几分钟内配置 NVIDIA HGX B200 或 H100 集群（16x 到 512x GPU），选择存储和编排方式（托管 Kubernetes、预装 Kubernetes 或 Slurm）。预付 2 周至 1 年解锁批量定价。它介于按秒计费的按需实例与仅合同制的单租户 Superclusters 档之间。" } },
+  { '@type': 'Question', name: '能在 Lambda 上运行 AI 模型推理吗？', acceptedAnswer: { '@type': 'Answer', text: "可以，但需自托管。Lambda 的托管 Inference API 正在逐步退役（2026），因此推荐路径是自己在 GPU 实例上用 vLLM、SGLang 或 TensorRT-LLM 部署开源模型，然后暴露自己的 OpenAI 兼容端点。这样你能完全控制量化、批处理和 KV 缓存策略——与任何裸 GPU 云相同的控制力，且按 Lambda 的小时价计费、无 egress 费。" } },
+  { '@type': 'Question', name: 'Lambda 有免费层吗？', acceptedAnswer: { '@type': 'Answer', text: "没有永久免费 GPU 层。从第一个实例起按用量计费（GPU 实例按秒，集群预付）。注册需信用卡和账单地址验证。截至 2026 年 8 月没有免费推理额度档。" } },
+  { '@type': 'Question', name: 'Lambda 与 RunPod、Crusoe 或 Hyperbolic 相比如何？', acceptedAnswer: { '@type': 'Answer', text: "Lambda 是 GPU 云中最具企业资质的一家——OpenAI 的 GPT-5 和 DeepMind 的 Gemini 有在 Lambda 集群上训练的官方记录，它还在 2025 年 11 月获微软和英伟达领投的 $1.5B，正谋划 IPO。但它对突发负载最不友好：无消费级 GPU（缺 RTX 4090）、无托管按 token 端点（Inference API 正在退役）、集群需 2 周-1 年承诺。RunPod 在按秒 serverless pods 和最便宜突发上胜出；Crusoe 和 Nebius 将 GPU 算力与托管 OpenAI 兼容推理 API 结合；Hyperbolic 是最低成本去中心化市场。Lambda 属于训练与自托管生产推理档。" } },
+  { '@type': 'Question', name: 'Lambda 在中国或亚太区域可用吗？', acceptedAnswer: { '@type': 'Answer', text: "截至 2026 年 8 月，没有中国大陆直连端点，也未宣布中国区域。数据中心在美国（加州及其他美国区域），欧洲和中东是当前国际扩张重点。中国用户需要代理或海外中转；跨太平洋到美国区域的首字节延迟通常 150-250ms，而区域提供商（阿里云百炼、字节火山引擎）约 50-80ms。" } },
+  { '@type': 'Question', name: '谁在用 Lambda，它值得信赖吗？', acceptedAnswer: { '@type': 'Answer', text: "Lambda 资金充足且企业合规：SOC 2 Type II、ISO 27001/27017/27701/22301、实时 Trust Portal。OpenAI 和 Google DeepMind 是官方记载曾在 Lambda GPU 集群上进行前沿模型训练的实验室之一。它 2025 年 11 月获微软和英伟达领投的 $1.5B，并据报道正在谋求 IPO（2026 年 1 月讨论过 $350M 上市前融资）。对 API 调用方而言，这标志着持久、经过实战考验的基础设施，而非可能消失的项目。" } }
+]};
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+
+        <h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">{zhTitle}</h1>
+
+        <p class="text-gray-700 leading-relaxed my-4"><strong>Lambda</strong>（lambda.ai）自称「超级智能云」——一家 GPU 云和 AI 基础设施公司（前身品牌 Lambda Labs / Lambda Cloud），提供从单个按需 GPU 实例到数千 GPU 单租户超级集群的 NVIDIA 加速算力。它<strong>不是</strong>按 token 计费的模型 API，也<strong>不是</strong> AWS Lambda（无服务器函数产品），两者无关。Lambda 在专用 GPU 云中拥有无与伦比的可信度信号：<strong>OpenAI 的 GPT-5 和 Google DeepMind 的 Gemini</strong> 都是官方记载曾在 Lambda GPU 集群上训练过的前沿模型。其产品栈按三种方式扩展——按秒计费的<strong>按需实例</strong>（单节点 B200/H100）、自助式<strong>1-Click 集群</strong>（16x-512x GPU）、以及基于 NVIDIA Quantum-2 InfiniBand 的单租户<strong>Superclusters / Private Cloud</strong>（4000+ GPU）——覆盖 NVIDIA Rubin 代（VR200 NVL72）、Blackwell（GB300 NVL72、HGX B300、HGX B200）和 Hopper（H200、H100）系统。完整 4 段对比见 <a href="/zh/providers/lambda">Lambda 厂商页面</a>，或对比 <a href="/zh/providers/runpod">RunPod</a>、<a href="/zh/providers/crusoe">Crusoe</a>、<a href="/zh/providers/hyperbolic">Hyperbolic</a>。</p>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 速览：</strong>Lambda 是 GPU 云中的企业档——OpenAI 和 DeepMind 训练前沿模型所用的基础设施，获微软与英伟达 $1.5B 融资并谋求 IPO。定价透明（H100 SXM 按需 $3.99/GPU-hr、无 egress 费），合规齐全（SOC 2 Type II + ISO 27001/27017/27701/22301）。但它<strong>不是</strong>即插即用的模型 API：托管 Inference API 正在退役（2026），你需在 GPU 实例上用 vLLM/SGLang 自部署开源权重，且集群需 2 周-1 年承诺。训练/微调与自托管生产推理选 Lambda；便宜按秒突发选 RunPod 或 Hyperbolic；需要托管 OpenAI 兼容推理 API 的 GPU 选择 Crusoe/Nebius。</div>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Lambda 是什么？2026 年「超级智能云」为何重要？</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Lambda 最初是 GPU 算力和深度学习硬件公司，在 AI 需求爆发后转型为完全托管的 NVIDIA GPU 云（"GPU cloud" / "neocloud"）。其定位「The Superintelligence Cloud」反映了一个刻意的选择：不与超大规模云在通用云服务上竞争，而是专注于密集的 NVIDIA 集群加上编排层（托管 Kubernetes、Slurm）、一行<strong>Lambda Stack</strong> 安装器（CUDA、cuDNN、PyTorch、TensorFlow、NVIDIA 驱动）以及企业合规（SOC 2 Type II、ISO 27001/27017/27701/22301、实时 Trust Portal）。公开的 <a href="https://lambda.ai/pricing">GPU 定价页</a> 和 <a href="https://lambda.ai/llms.txt">llms.txt 概览</a> 是本文数据的主要来源。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Lambda GPU 定价：按需实例、1-Click 集群、Superclusters</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Lambda 按每 GPU 小时（秒级粒度）计费且无 egress 费。按需列表价格与 1-Click 集群预付价（2026 年 8 月从公开定价页核实）：</p>
+
+        <table class="table-token">
+          <thead><tr><th>GPU / 服务</th><th>按需（$/GPU/hr）</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td>NVIDIA B200 SXM6</td><td>$6.69</td><td>180GB 显存，8-GPU 主机</td></tr>
+            <tr><td>NVIDIA H100 SXM</td><td>$3.99</td><td>80GB 显存 —— 最常租用的 Hopper GPU</td></tr>
+            <tr><td>NVIDIA A100 SXM 80GB / 40GB</td><td>$2.79 / $1.99</td><td>Ampere 主力卡</td></tr>
+            <tr><td>NVIDIA GH200</td><td>$2.29</td><td>96GB Grace-Hopper 超级芯片</td></tr>
+            <tr><td>NVIDIA A100 PCIe / A6000 / A10 / V100</td><td>$1.99 / $1.09 / $1.29 / $0.79</td><td>入门数据中心级</td></tr>
+            <tr><td>1-Click 集群 — HGX B200（16 GPU）</td><td>$9.86</td><td>预付 2 周-1 年；256+ GPU 降至 $8.87</td></tr>
+            <tr><td>1-Click 集群 — HGX H100（16 GPU）</td><td>$6.16</td><td>256+ GPU 降至 $5.54；需预付</td></tr>
+            <tr><td>Superclusters / Private Cloud</td><td>联系销售</td><td>VR200 NVL72（Rubin）/ GB300 NVL72（Blackwell），4000+ GPU，Quantum-2 InfiniBand</td></tr>
+          </tbody>
+        </table>
+
+        <p class="text-gray-700 leading-relaxed my-4">几点定价说明。按需 H100 $3.99/GPU-hr 与 RunPod 和 Hyperbolic 的突发价相当，且 Lambda 的「无 egress 费」政策对移动大型 checkpoint 和数据集的训练任务是实在的降本杠杆。1-Click 集群和 Supercluster 价附带 2 周至 1 年的预付承诺，以换取批量折扣；如果你只需要突发容量，按秒计费的按需实例更划算。Lambda 没有消费级 GPU（无 RTX 4090）——产品线仅数据中心级，从 A10/A6000/V100 起步。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Lambda 的 API 表面：它是基础设施云，不是模型 API</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">对 API 调用方而言，理解 Lambda 最重要的一点是：它<strong>不是</strong>按 token 计费的模型端点。Lambda 的托管 <strong>Inference API 正在逐步退役</strong>（2026），官方指引是「继续在 NVIDIA GPU 实例上无缝部署和扩展模型」。这意味着开发者体验是<strong>运维优先</strong>的：你从 Cloud 控制台或 REST API 启动 GPU 实例或集群，然后用 <strong>vLLM、SGLang 或 TensorRT-LLM</strong> 自行部署开源权重，暴露自己的 OpenAI 兼容端点。代价是控制力：你拥有量化、批处理、KV 缓存策略，以及关键的——成本和延迟。回报是最大的模型自由——DeepSeek V4、Qwen 3.x、Llama、GLM、Kimi 或其中任何一个的微调版——且没有托管 API 的按 token 加价。</p>
+
+        <ul class="list-disc list-inside text-gray-700 leading-relaxed my-4">
+          <li><strong>Lambda Stack：</strong>一行安装器配置 CUDA、cuDNN、PyTorch、TensorFlow 和 NVIDIA 驱动——托管实例已预装镜像，几分钟从空 GPU 到可用 ML 环境。</li>
+          <li><strong>托管 Kubernetes + Slurm：</strong>两种编排层都在 1-Click 集群上提供且无每节点费——运行 PyTorch DDP/FSDP 或 Slurm 任务数组的团队可获得与本地相同的调度器。</li>
+          <li><strong>1-Click 集群启动：</strong>从控制台分钟级自助配置 16x-512x GPU；Supercluster 档以下无需销售介入。</li>
+          <li><strong>按秒计费：</strong>按需实例按秒计费、随时终止；集群附 2 周至 1 年预付。</li>
+          <li><strong>无 egress 费：</strong>出站数据传输不像超大规模云那样按量计费。</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么 Lambda 对 API 调用方重要：前沿训练资质与基础设施持久性</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">对 2026 年选择 AI 基础设施的工程师而言，Lambda 重要有两个原因。第一，<strong>可信度</strong>：OpenAI 的 GPT-5 和 Google DeepMind 的 Gemini 被官方记载在 Lambda GPU 集群上训练——这是大多数专用 GPU 云无法匹敌的信号，也强烈暗示如果你需要大规模有保障的 NVIDIA 容量，Lambda 拥有相应集群。第二，<strong>持久性</strong>：Lambda 2025 年 11 月获 <strong>$1.5B</strong> 融资，由 <strong>微软和英伟达</strong>领投，并正在谋求 IPO（2026 年 1 月讨论过 $350M 上市前融资）。这是你可以放心用于生产负载的基础设施资本画像。合规栈（SOC 2 Type II、ISO 27001/27017/27701/22301、实时 Trust Portal）进一步降低了企业安全审查的门槛。需要注意的是，Lambda 的价值几乎完全通过自管理 GPU 使用实现——你用托管 API 的便利换取原始控制力。需要托管 OpenAI 兼容端点的团队应把 Lambda GPU 与 vLLM 自托管结合，或改选按 token 提供商。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Lambda vs. RunPod、Crusoe、Hyperbolic</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">这三家竞品从不同角度框定 GPU 云光谱，各自对应 Lambda 的一种用例。<a href="/zh/providers/runpod">RunPod</a> 是开发者友好的 serverless 选项：按秒 GPU pods、大型市场、以及消费级卡（RTX 4090），是突发推理和实验最便宜的选择。<a href="/zh/providers/crusoe">Crusoe</a> 和 <a href="/zh/providers/nebius">Nebius</a> 最接近「带托管推理 API 的 GPU 云」：他们既出租 GPU 算力，又为开源模型暴露 OpenAI 兼容按 token 端点，让你得到 Lambda 级算力而无需自己管理 vLLM。<a href="/zh/providers/hyperbolic">Hyperbolic</a> 是聚合闲置 GPU 的去中心化市场，入门价最低，但以可预测容量为代价。Lambda 的定位是<strong>企业训练 + 自托管生产推理</strong>档：最顶级的客户名单、$1.5B+ 融资、严格合规、以及通向 4000+ GPU 单租户集群的清晰（虽需承诺）路径。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">谁该选 Lambda —— 谁不该选</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">选 Lambda 如果你：(a) 训练或微调大型模型，需要资金充足、合规平台上的有保障 NVIDIA 容量；(b) 用 vLLM/SGLang 大规模自托管生产推理，想要每 GPU 小时透明的价格且无 egress 费；或 (c) 企业需要 SOC 2/ISO 合规，并希望扩展至 4000+ GPU 单租户集群。跳过它如果你：(a) 只需简单调用开源或前沿模型——托管按 token API（OpenAI、聚合器、或 Crusoe/Nebius）对纯消费更简单更便宜；(b) 需要廉价、突发、按秒 GPU 且无多周承诺——RunPod 或 Hyperbolic 更合适且提供 RTX 4090 等消费级卡；(c) 服务面向中国大陆的延迟敏感流量——没有中国端点，跨太平洋延迟 150-250ms。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">区域可用性与延迟</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Lambda 的数据中心在美国（加州及其他美国区域），服务北美及日益增长的欧洲团队；欧洲和中东是当前国际扩张重点。截至 2026 年 8 月，没有中国大陆直连端点，也未宣布中国区域。对中国生产部署，你需要代理或选择有本地存在的区域提供商。对延迟敏感的亚洲流量，跨太平洋请求到美国区域通常增加 150-250ms 首字节延迟，而区域提供商（阿里云百炼、字节火山引擎、Cloudflare Workers AI）约 50-80ms。对训练负载——GPU 按小时租用、数据批量搬运——这种网络成本远不如同步推理关键。Lambda 最适合美国/欧洲锚定的训练与自托管推理；延迟关键的亚洲流量应选择区域 GPU 云。</p>
+
+        <section class="faq">
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Lambda GPU Cloud 常见问题</h2>
+          <div class="faq-item"><strong>Q: 我能像 OpenAI 或其他按 token API 那样使用 Lambda 吗？</strong><p>A: 不能直接。Lambda 没有托管的按 token 推理端点（Inference API 正在退役）。你租一个 GPU 实例，自己用 vLLM/SGLang 部署开源权重，然后调用自己的 OpenAI 兼容端点。</p></div>
+          <div class="faq-item"><strong>Q: 用 Lambda 做推理最便宜的方式是什么？</strong><p>A: 按秒计费的按需实例（H100 SXM $3.99/GPU-hr、A10 $1.29/GPU-hr）配合 vLLM 自托管是突发工作的最便宜路径。1-Click 集群预付（2 周-1 年）只有在高利用率持续时才能降低每 GPU 成本。</p></div>
+          <div class="faq-item"><strong>Q: Lambda 收 egress 费吗？</strong><p>A: 不收。Lambda 公布无 egress 费定价，这对移动大型 checkpoint 和数据集的训练任务很重要。</p></div>
+          <div class="faq-item"><strong>Q: Lambda 提供哪些 NVIDIA GPU？</strong><p>A: 按需：B200 SXM6、H100 SXM、A100 SXM 80GB/40GB、GH200、A100 PCIe、A6000、A10、V100。集群：HGX B200 和 HGX H100 最高 512 GPU。Superclusters：VR200 NVL72（Rubin）和 GB300 NVL72（Blackwell），4000+ GPU。无消费级卡（无 RTX 4090）。</p></div>
+          <div class="faq-item"><strong>Q: Lambda 适合微调吗？</strong><p>A: 适合。租 H100/B200 实例，用你的框架微调，然后在同一实例上 serve 或快照镜像启动 serve 节点——完全控制，无按 token 微调加价。</p></div>
+          <div class="faq-item"><strong>Q: Lambda 和 AWS Lambda 有关吗？</strong><p>A: 无关。Lambda（lambda.ai）是 GPU 云 / AI 基础设施公司，前身品牌 Lambda Labs；AWS Lambda 是亚马逊的无服务器函数产品。两者是无关的公司和产品。</p></div>
+        </section>
+
+      </div>
+      <aside class="hidden lg:block">
+        <div class="bg-gray-50 rounded-xl border border-gray-200 p-4 sticky top-24">
+          <h3 class="font-bold text-gray-900 mb-3">核心事实</h3>
+          <ul class="text-sm text-gray-600 space-y-2">
+            <li><strong>类型：</strong>GPU 云（neocloud）</li>
+            <li><strong>定位：</strong>「超级智能云」</li>
+            <li><strong>按需：</strong>H100 $3.99/hr、B200 $6.69/hr</li>
+            <li><strong>集群：</strong>16x-512x GPU，预付 2 周-1 年</li>
+            <li><strong>Superclusters：</strong>4000+ GPU，联系销售</li>
+            <li><strong>Inference API：</strong>正在退役（自托管）</li>
+            <li><strong>融资：</strong>$1.5B（微软/英伟达），拟 IPO</li>
+            <li><strong>合规：</strong>SOC 2 II、ISO 27001/27017/27701/22301</li>
+            <li><strong>中国：</strong>❌ 需代理</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
