@@ -14,7 +14,7 @@ const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'Breadcrum
 const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
   { '@type': 'Question', name: 'Does Crusoe have an OpenAI-compatible API?', acceptedAnswer: { '@type': 'Answer', text: "Yes. Crusoe's Managed Inference exposes an OpenAI-compatible REST API at https://inference.crusoe.ai/v1 (POST /v1/chat/completions, /v1/completions, /v1/embeddings). Existing OpenAI or Anthropic SDK clients can target Crusoe by swapping the base URL and API key — no code rewrite. As of August 12, 2026, Pydantic AI lists Crusoe as a native first-class model provider in the PydanticAI SDK." } },
   { '@type': 'Question', name: 'What is MemoryAlloy™ and why does it matter for inference cost?', acceptedAnswer: { '@type': 'Answer', text: "MemoryAlloy™ is Crusoe's proprietary cluster-orchestration layer that persists a cluster-wide KV cache across nodes. When multiple requests share a system prompt or prefix, MemoryAlloy routes them to nodes that already have the relevant KV cache loaded — eliminating redundant prefill computation. Crusoe reports up to 9.9x faster time-to-first-token and 5x higher throughput versus a naive single-instance deployment. For multi-agent or RAG systems with long shared contexts, the prefix-cache hit rate directly drives down per-token cost — the same workload on Together AI or Fireworks AI pays full prefill cost on every request." } },
-  { '@type': 'Question', name: 'How does Crusoe's 4-tier Managed Inference pricing work?', acceptedAnswer: { '@type': 'Answer', text: "Crusoe groups open-weight models into four parameter-count tiers and charges a flat rate per 1M tokens per tier: <16B parameters at $0.40, 16B-70B at $2.50, 70B-300B at $6.00, and >300B at $10.00. This means a developer only needs to know a model's parameter count to estimate cost — no need to compare 17+ separate per-model price lists. Cached input tokens are billed separately at $0.03-$1.50 per 1M. Some models have specific overrides: DeepSeek V4 Pro is $1.74/$3.48 per 1M (input/output) with $0.15 cached; DeepSeek V4 Flash is $0.14/$0.28 with $0.03 cached." } },
+  { '@type': 'Question', name: 'How does Crusoe\u2019s 4-tier Managed Inference pricing work?', acceptedAnswer: { '@type': 'Answer', text: "Crusoe groups open-weight models into four parameter-count tiers and charges a flat rate per 1M tokens per tier: <16B parameters at $0.40, 16B-70B at $2.50, 70B-300B at $6.00, and >300B at $10.00. This means a developer only needs to know a model's parameter count to estimate cost — no need to compare 17+ separate per-model price lists. Cached input tokens are billed separately at $0.03-$1.50 per 1M. Some models have specific overrides: DeepSeek V4 Pro is $1.74/$3.48 per 1M (input/output) with $0.15 cached; DeepSeek V4 Flash is $0.14/$0.28 with $0.03 cached." } },
   { '@type': 'Question', name: 'What is the cheapest open-weight model on Crusoe Managed Inference?', acceptedAnswer: { '@type': 'Answer', text: "On the parameter-count tier list, the cheapest models are in the <16B tier at $0.40 per 1M tokens (e.g. Qwen3.5 2B/9B, Llama 3.1 8B Instruct, Qwen3 8B). Among 70B+ models, GPT-OSS 120B and DeepSeek V4 Flash are the cheapest list entries at $0.05/$0.20 and $0.14/$0.28 per 1M respectively. By comparison, Together AI charges roughly $0.18-$0.20 per 1M for Llama 3.1 8B and Fireworks AI charges around $0.20 per 1M for similar small models — so Crusoe's <16B tier is roughly 2x more expensive than the cheapest per-model competitors, but the value proposition is cluster-cache reuse and unified billing rather than minimum price." } },
   { '@type': 'Question', name: 'Can I self-host open-weight models on Crusoe GPU instances?', acceptedAnswer: { '@type': 'Answer', text: "Yes. Crusoe's Self-Serve Deployments lets you spin up dedicated endpoints for any open or fine-tuned model in minutes, with no sales engagement required. NVIDIA H100 80GB HGX instances bill at $5.50 per GPU-hour; NVIDIA H200 141GB HGX at $6.00 per GPU-hour. For higher-level optimization (Tailored Deployments) or guaranteed throughput (Provisioned Throughput via AI Model Units), you negotiate directly with Crusoe sales — no public list pricing. Managed Kubernetes is $0.10 per cluster-hour and Object Storage is $0.06 per GiB-month for model artifacts and datasets." } },
   { '@type': 'Question', name: 'Does Crusoe have a free tier or trial?', acceptedAnswer: { '@type': 'Answer', text: "Crusoe does not advertise a permanent free Managed Inference tier. Pricing is strictly pay-as-you-go from the first token. New customers should expect to load an API key with credit before any request. For benchmarks, research labs typically use Self-Serve Deployments with H100 or H200 instances billed per-minute. Serverless Fine-Tuning (launched July 2026) also starts at $0.40 per 1M tokens for sub-16B models — there is no free fine-tuning tier." } },
@@ -130,7 +130,7 @@ const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEn
 
         <p class="text-gray-700 leading-relaxed my-4">Because the API is OpenAI-compatible, the integration is the same as calling OpenAI with a base URL change. In Python with the official <code>openai</code> SDK:</p>
 
-        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code>from openai import OpenAI
+        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code is:raw>from openai import OpenAI
 
 client = OpenAI(
     base_url="https://inference.crusoe.ai/v1",
@@ -151,7 +151,7 @@ print(f"Tokens: {resp.usage.total_tokens}, cost estimate: $" + "{resp.usage.tota
 
         <p class="text-gray-700 leading-relaxed my-4">Or in TypeScript / Node:</p>
 
-        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code>import OpenAI from 'openai';
+        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code is:raw>import OpenAI from 'openai';
 
 const client = new OpenAI({
   baseURL: 'https://inference.crusoe.ai/v1',
@@ -170,7 +170,7 @@ console.log(completion.choices[0].message.content);</code></pre>
 
         <p class="text-gray-700 leading-relaxed my-4">Pydantic AI integration (since August 12, 2026) — Crusoe is listed as a native provider:</p>
 
-        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code>from pydantic_ai import Agent
+        <pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto"><code is:raw>from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 
 model = OpenAIModel(
