@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'fireworks-ai-serverless-inference-review-2026';
+const date = '2026-08-22';
+const locale = 'zh';
+const zhTitle = 'Fireworks AI 2026 评测：开源模型推理定价与 Serverless';
+const zhDescription = 'Fireworks AI 2026 评测：serverless 推理定价、DeepSeek V4 和 Kimi K3 价格、FireAttention 引擎、提示缓存、以及与 Groq 和 Together AI 的对比。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Fireworks AI 是好的开源模型推理提供商吗？', acceptedAnswer: { '@type': 'Answer', text: "Fireworks AI 是最快的开源模型推理平台之一。其专有 FireAttention 引擎配合量化与投机解码，让 DeepSeek V4 Pro、Kimi K3、OpenAI GPT-OSS 等模型首 token 延迟亚秒级。它提供 OpenAI 兼容 API、提示缓存和三档 serverless 服务路径，是生产环境自建 vLLM 之外一个有底气、低延迟的选择。" } },
+  { '@type': 'Question', name: 'Fireworks AI serverless 推理价格多少？', acceptedAnswer: { '@type': 'Answer', text: "Serverless 按 token 计费（输入 / 缓存输入 / 输出，每 1M）。Standard 档：DeepSeek V4 Pro $1.74 / $0.145 / $3.48、DeepSeek V4 Flash $0.22 / $0.007 / $0.66、Kimi K3 $3.00 / $0.30 / $15.00、MiniMax M3 $0.30 / $0.06 / $1.20、Qwen 3.7 Plus $0.40 / $0.08 / $1.60、GPT-OSS 120B $0.15 / $0.015 / $0.60、GLM 5.1 $1.40 / $0.26 / $4.40。缓存输入远低于全新输入。" } },
+  { '@type': 'Question', name: 'Fireworks AI 托管哪些模型？', acceptedAnswer: { '@type': 'Answer', text: "Fireworks 托管 100+ 开源模型，覆盖文本、视觉、音频、图像和嵌入，包括 DeepSeek V4 Pro/Flash、Kimi K3 和 K2.7 Code、Qwen 3.x、OpenAI GPT-OSS 120B/20B、GLM 5.x、MiniMax M3、NVIDIA Nemotron。全部是开源权重，跑在 FireAttention 引擎上，提供 OpenAI 兼容端点。" } },
+  { '@type': 'Question', name: 'Fireworks AI 比 Groq 或 Together AI 便宜吗？', acceptedAnswer: { '@type': 'Answer', text: "取决于模型。Fireworks 的 DeepSeek V4 Flash（$0.22 输入 / $0.66 输出，每 1M）是市面上最便宜的开源模型价格之一，提示缓存还能让大输入工作负载降到更低。Groq 靠其专用 LPU 硬件在极端速度上胜出；Together AI 以最广的开源模型覆盖和微调见长。Fireworks 的价值在于亚秒延迟 + 热门开源模型上极具竞争力的按 token 定价的组合。" } },
+  { '@type': 'Question', name: 'Fireworks AI 有免费层吗？', acceptedAnswer: { '@type': 'Answer', text: "每次注册可获得 $1 免费 serverless 额度，足够测试 API 和跑真实请求。除此之外没有永久免费档；serverless 是按量后付费，按需 GPU 和微调按用量计费。" } },
+  { '@type': 'Question', name: 'Fireworks AI 在中国可用吗？', acceptedAnswer: { '@type': 'Answer', text: "没有中国大陆直连端点。Fireworks 是美国平台（Bellevue, WA），大陆直连需代理或海外中转，跨太平洋首字节延迟通常 150-250ms，而区域提供商约 50-80ms。最近的 APAC 多区域是东京。对延迟敏感的中国市场流量，建议配合海外中转或选择区域提供商。" } },
+  { '@type': 'Question', name: 'Fireworks AI 支持微调吗？', acceptedAnswer: { '@type': 'Answer', text: "支持。Fireworks 支持对最高 1T+ 参数的开源模型进行监督（SFT）、偏好（DPO）和强化微调，微调后的模型与基础模型同价服务。SFT 按模型大小每 1M 训练 token $0.50-$10.00。Serverless Training API 只按你 prefill、采样和训练 的 token 计费，因此没有闲置 GPU 成本。" } }
+]};
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+
+        <h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">{zhTitle}</h1>
+
+        <p class="text-gray-700 leading-relaxed my-4"><strong>Fireworks AI</strong>（fireworks.ai）是一家 YC 背景的 serverless 推理平台，自称「基于开源 AI 模型构建的最快平台」。它不是自研前沿闭源模型，而是运行 API 社区实际在用的开源权重——<strong>DeepSeek V4</strong>、<strong>Kimi K3</strong>、<strong>Qwen 3.x</strong>、<strong>MiniMax M3</strong>、<strong>GLM 5.x</strong>，以及现在的 <strong>OpenAI GPT-OSS</strong>——跑在专有 FireAttention 推理引擎上，并通过 <strong>OpenAI 兼容 API</strong> 对外服务。凭借 100+ 模型、按 token 的 serverless 定价、提示缓存和 $1 免费额度，它是自建 vLLM 或经聚合器路由之外的强有力替代方案。完整 4 段对比见 <a href="/zh/providers/fireworks">Fireworks AI 厂商页面</a>，或对比 <a href="/zh/providers/groq">Groq</a>、<a href="/zh/providers/together-ai">Together AI</a>、<a href="/zh/providers/deepseek">DeepSeek</a>。</p>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 速览：</strong>Fireworks 是低延迟、低成本<strong>开源模型</strong>推理且零运维的上佳选择。DeepSeek V4 Flash 定价（$0.22 输入 / $0.66 输出，每 1M）是市面上最便宜的开源价格之一，FireAttention 引擎给出亚秒级 TTFT，提示缓存可把大输入账单砍掉约 90%。代价是：无中国大陆直连端点、无自研前沿模型、按需 GPU 2026 年 9 月 1 日起上涨约 15-27%。生产级开源模型 API 调用选 Fireworks；绝对最低延迟选 <a href="/zh/providers/groq">Groq</a>（专用 LPU 硬件）；最广开源模型目录与托管微调选 <a href="/zh/providers/together-ai">Together AI</a>。</div>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Fireworks AI 是什么？2026 年开源模型推理为何重要？</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Fireworks AI 的创立是为了解决一个具体痛点：前沿开源模型授权便宜，但跑好很贵。Hugging Face 权重好下载，却常常因为在朴素 vLLM 配置上冷启动慢、批处理差、基础设施昂贵而表现不佳。Fireworks 用一套专为推理打造的栈来攻坚——<strong>FireAttention</strong> 引擎、内核级优化、模型量化、投机解码——把开源模型延迟推到前沿闭源水平，却无需闭源提供商的 API 加价。结果是你可以把它当作一个开箱即用的 OpenAI 端点：同样的请求格式、同样的 SDK、同样的 SFT 数据格式用于微调，只是指向开源权重、成本更低。</p>
+
+        <p class="text-gray-700 leading-relaxed my-4">这也是该平台在 2026 年重要的原因。随着 DeepSeek、Qwen（阿里）、Kimi（月之暗面）等厂商不断推出更强的开源权重，团队越来越常问一个问题：能否在不付出 OpenAI 每百万输出 token $3-15 的情况下获得接近前沿的质量？Fireworks 正是少数几家给出肯定回答的提供商之一——与 <a href="/zh/providers/groq">Groq</a>、<a href="/zh/providers/together-ai">Together AI</a>、<a href="/zh/providers/sambanova">SambaNova</a> 一样，以企业级速度和可靠性服务这些开源权重。公开的 <a href="https://fireworks.ai/pricing">定价页</a> 和 <a href="https://docs.fireworks.ai/serverless/pricing">serverless 定价文档</a> 是本文所有数字的主要来源。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Fireworks AI serverless 定价：热门模型按 token 价格</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Fireworks 按 token 计费 serverless 推理，分三个维度——输入、缓存输入、输出——并按工作负载可选 <strong>Standard</strong>、<strong>Priority</strong>、<strong>Fast</strong> 三档服务路径。下表展示 Standard 档价格（美元 / 每百万 token，2026 年 8 月自官方文档核对）：</p>
+
+        <table class="table-token">
+          <thead><tr><th>模型</th><th>输入 ($/M)</th><th>缓存 ($/M)</th><th>输出 ($/M)</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td>DeepSeek V4 Pro</td><td>$1.74</td><td>$0.145</td><td>$3.48</td><td>Priority $2.61 / $0.218 / $5.22</td></tr>
+            <tr><td>DeepSeek V4 Flash (0731)</td><td>$0.22</td><td>$0.007</td><td>$0.66</td><td>预算之选；2026 年 8 月 V4 家族</td></tr>
+            <tr><td>Kimi K3</td><td>$3.00</td><td>$0.30</td><td>$15.00</td><td>K2.7 Code $0.95 / $0.19 / $4.00</td></tr>
+            <tr><td>MiniMax M3</td><td>$0.30</td><td>$0.06</td><td>$1.20</td><td>预算级前沿开源模型</td></tr>
+            <tr><td>Qwen 3.7 Plus</td><td>$0.40</td><td>$0.08</td><td>$1.60</td><td>Qwen 3.8 Max $2.00 / $0.25 / $6.00</td></tr>
+            <tr><td>OpenAI GPT-OSS 120B</td><td>$0.15</td><td>$0.015</td><td>$0.60</td><td>GPT-OSS 20B $0.07 / $0.035 / $0.30</td></tr>
+            <tr><td>GLM 5.1</td><td>$1.40</td><td>$0.26</td><td>$4.40</td><td>GLM 5.2 $1.40 / $0.14 / $4.40</td></tr>
+          </tbody>
+        </table>
+
+        <p class="text-gray-700 leading-relaxed my-4">几点定价要点值得牢记。首先，<strong>提示缓存是大杠杆</strong>：Fireworks 把缓存输入定得远低于全新输入——DeepSeek V4 Pro 从 $1.74 降到缓存 $0.145（每 1M），约 92% 折扣。长系统提示、few-shot 示例、长多轮上下文会触发缓存，所以重复上下文的负载能大幅砍成本。其次，<strong>Priority 档</strong>（约 Standard 的 1.25-1.5 倍）和 <strong>Fast 档</strong>让你只在需要处购买更高吞吐或更低延迟。第三，嵌入从 <strong>$0.008 / 1M 输入 token</strong> 起（<150M 模型），检索负载上也很划算。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">按需 GPU 定价与微调：容量和训练侧</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">除按 token 的 serverless 外，Fireworks 还提供按需 GPU 部署（按 GPU 秒计费）和托管微调。其按需 GPU 列表——2026 年 8 月自公开定价页核对——从 H100 80GB 每小时 <strong>$7.00</strong> 起，最高到 GB300 288GB 每小时 <strong>$18.00</strong>。值得注意的是，这些价格 <strong>2026 年 9 月 1 日起上涨</strong>：H100/H200 从 $7.00 涨到 $8.00，B200 从 $10.00 涨到 $13.00，B300 从 $12.00 涨到 $15.00，GB300 从 $18.00 涨到 $20.00。规划专用容量的团队应在变价前锁定当前价格。区域限定单区域部署另有 1.5 倍加价。</p>
+
+        <p class="text-gray-700 leading-relaxed my-4">自定义模型方面，Fireworks 支持对最高 <strong>1T+ 参数</strong>开源模型进行 <strong>SFT</strong>、偏好（<strong>DPO</strong>）和强化微调，微调后的模型与基础模型同价服务。监督微调按模型大小每 1M 训练 token 计费：≤16B 参数 $0.50，16.1-80B $3.00（SFT）/ $6.00（DPO），80-300B $6.00 / $12.00，>300B（DeepSeek V3、Kimi K2 级别）$10.00 / $20.00。较新的 <strong>Serverless Training API</strong> 接入共享、常驻的训练池——只按你 prefill、采样和训练 的 token 计费，无预置、无闲置成本。粗略估算：Qwen 3.5 9B 每 1M prefill $0.66、采样 $1.995、训练 $1.463；Kimi K3 192k 为 $10.87 / $27.11 / $32.55。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">开发者体验：为生产而生的 OpenAI 兼容 API</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">开发者体验是 Fireworks 的隐形强项。API 对推理和微调都 OpenAI 兼容——把 base URL 换成 <code class="font-mono text-sm">https://api.fireworks.ai/inference/v1</code>，现有 OpenAI 客户端即可工作，包括函数调用和结构化（JSON）输出。这让迁移对已在 OpenAI 上的团队几乎零改码，也正是 Fireworks 成为开源模型生产流量热门去处的原因。平台核心开发者功能包括：</p>
+
+        <ul class="list-disc list-inside text-gray-700 leading-relaxed my-4">
+          <li><strong>三档服务路径</strong>——Standard、Priority、Fast——按工作负载选择价格 vs 延迟，无需换模型。</li>
+          <li><strong>自动提示缓存</strong>——缓存输入 token 只按全新输入的一小部分计费，无需开关或配置。</li>
+          <li><strong>自适应速率限制</strong>——吞吐配额随你的用量增减，而不是一开始就固定。</li>
+          <li><strong>结构化输出与函数调用</strong>——为 agent 和工具工作流提供可靠的 JSON 响应。</li>
+          <li><strong>嵌入与重排序</strong>——开源嵌入模型用于检索，重排序模型用于搜索管道。</li>
+          <li><strong>量化与自定义模型</strong>——从 Hugging Face 等处上传权重，用量化精度部署以降低成本。</li>
+        </ul>
+
+        <p class="text-gray-700 leading-relaxed my-4">因为 Fireworks 在自己的引擎上运行开源权重，你还能在新开源版本落地当天就用上——包括<strong>DeepSeek V4 Pro</strong>（0813 构建），直接关联到 2026 年 8 月 DeepSeek V4 模型家族浪潮，详见 <a href="/zh/tutorials/deepseek-v4-pro-peak-valley-pricing-2026">DeepSeek V4 Pro 定价</a> 和 <a href="/zh/tutorials/deepseek-v4-flash-api-2026">DeepSeek V4 Flash API</a>。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Fireworks AI vs. Groq、Together AI、SambaNova</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">这些竞品从不同角度界定开源模型推理的光谱。<a href="/zh/providers/groq">Groq</a> 是极端速度选项：其定制 LPU 硬件对支持的模型给出最低延迟，但目录更小、更不灵活。<a href="/zh/providers/together-ai">Together AI</a> 以最广的开源模型目录外加托管微调和大社区与之抗衡，按 token 价格相近。<a href="/zh/providers/sambanova">SambaNova</a> 聚焦企业级开源模型推理与高吞吐服务。Fireworks 在组合上差异化：<strong>通过 FireAttention 在热门开源模型上实现亚秒级 TTFT、激进的提示缓存定价、三档服务路径，以及企业级可靠性的 OpenAI 兼容 API</strong>。如果延迟是唯一指标且 Groq 支持你的模型，Groq 胜出；如果需要最宽的模型货架加调参，Together AI 很强；至于跨 DeepSeek、Kimi、Qwen、MiniMax 的成本优化 OpenAI 即插即用，Fireworks 是领先选择。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">谁该选 Fireworks AI——谁不该</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">选 Fireworks 如果：(a) 需要 OpenAI 兼容 API 的生产级开源模型推理且不想自建 vLLM；(b) 重视 DeepSeek V4、Kimi K3、Qwen 3.x 上的亚秒级首 token 延迟和深度提示缓存折扣；(c) 需要微调开源模型并低价服务（无按 token 微调加价）；或 (d) 想以最少改动把代码库从 OpenAI 迁到更便宜的开源模型。跳过它如果：(a) 需要绝对最低延迟且 Groq 支持你的模型；(b) 依赖只有 OpenAI/Anthropic/Google 提供的前沿<em>专有</em>模型（Fireworks 只托管开源权重）；(c) 直接面向中国大陆提供延迟敏感流量——没有中国端点，跨太平洋延迟 150-250ms；(d) 需要永久免费层而非一次性 $1 额度。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">区域可用性与延迟</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Fireworks 运行全球基础设施。Serverless 推理默认跨四个高层级分组进行多区域部署——<strong>GLOBAL</strong>、<strong>US</strong>、<strong>EUROPE</strong>、<strong>APAC</strong>——流量就近服务用户并抵御局部故障。按需 GPU 的单区域覆盖 12 个美国站点（亚利桑那、加州、佐治亚、伊利诺伊、爱荷华、俄亥俄、德州、犹他、弗吉尼亚、华盛顿三个区）加上法兰克福和两个冰岛站点（EU）、两个东京区（APAC），配 H100、A100、B200、H200。没有<strong>中国大陆直连端点</strong>。作为美国平台（Bellevue, WA），大陆直连需代理或中转，跨太平洋首字节延迟通常 150-250ms，而区域提供商约 50-80ms。对延迟敏感的中国市场流量，建议配合海外中转或选择区域端点——东京多区域是最接近的 APAC 选项。与其他推理提供商的对比见 <a href="/zh/tutorials/cheapest-llm-api-pricing-2026">最便宜 LLM API 定价盘点</a>。</p>
+
+        <section class="faq">
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Fireworks AI 常见问题</h2>
+          <div class="faq-item"><strong>Q: Fireworks AI 是好的开源模型推理提供商吗？</strong><p>A: 是的，尤其适合低延迟生产负载。FireAttention 引擎给开源模型亚秒级 TTFT，定价有竞争力（DeepSeek V4 Flash $0.22 输入 / $0.66 输出，每 1M），OpenAI 兼容 API 让迁移几乎零改码。</p></div>
+          <div class="faq-item"><strong>Q: Fireworks AI 的计费模式是什么？</strong><p>A: Serverless 推理按 token 计费，分输入、缓存输入、输出三档，有 Standard/Priority/Fast 三档路径。按需 GPU 按 GPU 秒计费。微调按每 1M 训练 token（SFT）或经 Serverless Training API 按 token 计费。新账号有 $1 免费 serverless 额度。</p></div>
+          <div class="faq-item"><strong>Q: Fireworks AI 有免费层吗？</strong><p>A: 每次注册可获得一次性 $1 免费 serverless 额度，足够真实测试。没有持续免费层；serverless 是按量后付费。</p></div>
+          <div class="faq-item"><strong>Q: 能在 Fireworks AI 上用哪些模型？</strong><p>A: 100+ 开源模型，覆盖文本、视觉、音频、图像和嵌入——DeepSeek V4 Pro/Flash、Kimi K3/K2.7、Qwen 3.x、OpenAI GPT-OSS 120B/20B、GLM 5.x、MiniMax M3、NVIDIA Nemotron，以及嵌入和重排序模型。</p></div>
+          <div class="faq-item"><strong>Q: Fireworks AI 比 OpenAI 用开源模型便宜吗？</strong><p>A: 通常是的。DeepSeek V4 Flash（$0.22 输入 / $0.66 输出）和 GPT-OSS 120B（$0.15 / $0.60）等开源模型只有 OpenAI gpt-5 档价格的一小部分，且 Fireworks 以低延迟 + 提示缓存服务它们。</p></div>
+          <div class="faq-item"><strong>Q: 能在 Fireworks AI 上微调模型吗？</strong><p>A: 可以。SFT、DPO 和强化微调支持最高 1T+ 参数开源模型，微调后的模型与基础模型同价服务。SFT 按大小每 1M 训练 token $0.50-$10.00。</p></div>
+          <div class="faq-item"><strong>Q: Fireworks AI 在中国可用吗？</strong><p>A: 无中国大陆直连端点。美国平台，大陆访问需代理或中转，跨太平洋延迟 150-250ms。东京多区域是最接近的 APAC 选项。</p></div>
+        </section>
+
+      </div>
+      <aside class="hidden lg:block">
+        <div class="bg-gray-50 rounded-xl border border-gray-200 p-4 sticky top-24">
+          <h3 class="font-bold text-gray-900 mb-3">关键信息</h3>
+          <ul class="text-sm text-gray-600 space-y-2">
+            <li><strong>类型：</strong> Serverless 开源模型推理</li>
+            <li><strong>定位：</strong> 最快的开源 AI 平台</li>
+            <li><strong>DeepSeek V4 Flash：</strong> $0.22 / $0.007 / $0.66 每 1M</li>
+            <li><strong>DeepSeek V4 Pro：</strong> $1.74 / $0.145 / $3.48 每 1M</li>
+            <li><strong>引擎：</strong> FireAttention，亚秒 TTFT</li>
+            <li><strong>API：</strong> OpenAI 兼容即插即用</li>
+            <li><strong>按需 GPU：</strong> H100 $7/小时（9 月 1 日涨 $8）</li>
+            <li><strong>免费层：</strong> $1 一次性额度</li>
+            <li><strong>中国：</strong> ❌ 需代理</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
