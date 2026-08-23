@@ -1,0 +1,128 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'qwen-3-8-27b-reasoning-effort-overthinking-tokens-2026';
+const date = '2026-08-23';
+const locale = 'zh';
+const zhTitle = 'Qwen 3.8 27B reasoning_effort：如何关掉过度思考省 Token';
+const zhDescription = 'Qwen 3.8 27B 默认 xhigh 推理强度会过度思考、浪费 token。本文教你在 API 与本地运行时调低 reasoning_effort（low/medium/xhigh）省成本。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: '为什么 Qwen 3.8 27B 默认会过度思考？', acceptedAnswer: { '@type': 'Answer', text: 'Qwen 3.8 27B 出厂把 reasoning_effort 默认设为 xhigh（最强的推理档位）。官方 chat 模板只允许 xhigh/medium/low 三档并默认 xhigh。Simon Willison 在 2026-08-16 实测发现，连画一个圆的简单请求它都会先长篇规划，浪费大量 token。' } },
+  { '@type': 'Question', name: 'reasoning_effort 支持哪些取值？', acceptedAnswer: { '@type': 'Answer', text: 'Qwen 3.8 支持三档：xhigh（默认）用于复杂任务的深度分析；medium 兼顾准确与速度；low 面向速度与成本的高效推理。也可在单次请求里用 enable_thinking=false 完全关闭思考。' } },
+  { '@type': 'Question', name: 'Qwen 3.8 27B 过度思考会浪费多少 token？', acceptedAnswer: { '@type': 'Answer', text: '在 Simon Willison 的实测里，同一个 SVG 提示词在 xhigh 档用了 22,276 个推理 token 才产出 3,223 个回答 token（约 7 倍思考比），耗时 21 分钟；关闭推理后同样是 3,715 token、约 137 秒。具体倍数取决于提示词复杂度与所选档位。' } },
+  { '@type': 'Question', name: 'reasoning_effort 在 OpenRouter 这类 API 平台上生效吗？', acceptedAnswer: { '@type': 'Answer', text: '在 OpenAI 兼容与 Qwen 原生端点，reasoning_effort 作为顶层请求参数（如字符串 "low"/"medium"/"xhigh"）传入。OpenRouter 的 qwen/qwen3.8-27b 支持 reasoning_effort，很多托管服务也允许用 enable_thinking=false 按请求关闭思考。' } },
+  { '@type': 'Question', name: 'Qwen 3.8 27B 的过度思考有没有用？', acceptedAnswer: { '@type': 'Answer', text: '有。推理能显著提升复杂任务的一次成稿质量。Willison 发现关闭推理后，它自建的物体框选工具会把框放错位置；而一直留在 xhigh 又会过度设计。实用做法是：Agent、写代码、搭工具类提示词保留思考（通常 medium），琐碎生成与批量转换用 low 或关闭。' } }
+] };
+const affiliateSidebar = { title: '试试 FreeModel 多厂商路由', description: '一个 API Key 打通 Qwen、DeepSeek、OpenAI、Anthropic、Google 等多厂商，OpenAI 兼容，支持按模型调 reasoning_effort，省去跨区切换的繁琐。', url: 'https://freemodel.dev/invite/FRE-7a3b6220', cta: '免费试用' };
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Qwen 3.8 27B reasoning_effort：为什么会过度思考、怎么省下 Token 账单</h1>
+<p class="text-gray-700 leading-relaxed my-4">上周五，阿里 Qwen 团队发布了 <strong>Qwen 3.8 27B</strong>：一个 Apache-2.0 协议、270 亿参数、支持视觉的开源模型，17GB 的 <code class="bg-gray-100 px-1 rounded text-sm">Q4_K_M</code> 量化文件就能在笔记本上跑。它确实很强：代码、工具调用、长上下文、图像理解都不错。但它出厂带一个<strong>很坑的默认</strong>：模型把 <code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort</code> 设成 <code class="bg-gray-100 px-1 rounded text-sm">xhigh</code>（最强推理档）。Simon Willison 在 2026-08-16 的独立实测发现，这个默认会让模型<strong>几乎对什么都过度思考</strong> &mdash; 思考 token 常常是回答 token 的 7 倍，在付费 API 上直接烧钱。本文是一份实战调优指南：<code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort</code> 是什么、过度思考的实测数据、怎么用代码限档或关掉、以及每个工作负载该用哪一档。</p>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 快速结论：</strong>Qwen 3.8 27B 默认的 <code class="bg-gray-100 px-1 rounded text-sm">xhigh</code> 推理是跑这个模型最大的隐藏成本。在已测案例里它用了 <strong>22,276 个思考 token 只产出 3,223 个</strong>（7 倍浪费）。大多数负载把 <code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort</code> 设成 <code class="bg-gray-100 px-1 rounded text-sm">"low"</code> 或 <code class="bg-gray-100 px-1 rounded text-sm">"medium"</code>，琐碎请求直接关思考，通常能把思考 token 的开销砍掉 60&ndash;90%，同时该有的质量一点不掉。只有真正困难的一次成稿任务才值得留在 <code class="bg-gray-100 px-1 rounded text-sm">xhigh</code>。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">问题：一个鼓励过度思考的默认值</h2>
+<p class="text-gray-700 leading-relaxed my-4">Qwen 官方模型卡和随权重自带的 chat 模板写得很清楚：<code class="bg-gray-100 px-1 rounded text-sm">resolved_reasoning_effort = reasoning_effort|default('xhigh')</code>，只允许 <code class="bg-gray-100 px-1 rounded text-sm">xhigh</code>、<code class="bg-gray-100 px-1 rounded text-sm">medium</code>、<code class="bg-gray-100 px-1 rounded text-sm">low</code> 三档并默认 <code class="bg-gray-100 px-1 rounded text-sm">xhigh</code>。三档官方说明：</p>
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700"><li><strong>xhigh（默认）</strong>&mdash; 面向需要深度分析的复杂任务；提示词要求模型「仔细思考、校验关键假设、考虑替代方案」。</li><li><strong>medium</strong> &mdash; 兼顾准确性与速度。</li><li><strong>low</strong> &mdash; 面向速度与成本的高效推理；「保持思考简短聚焦，直接得出结论」。</li></ul>
+<p class="text-gray-700 leading-relaxed my-4">思考模式也是<strong>默认开启</strong>的，可以在<em>单次请求</em>里关掉（模板用 <code class="bg-gray-100 px-1 rounded text-sm">enable_thinking</code> 做判断），历史对话的推理上下文用 <code class="bg-gray-100 px-1 rounded text-sm">preserve_thinking</code> 保留。这在实践里的意思是：一个不做任何调优的新 API 请求，你在看到答案之前，往往已经为一大堆看不见的思考 token 付了钱。</p>
+<p class="text-gray-700 leading-relaxed my-4">Simon Willison 的实测把这个问题放大到了极致。用模型默认设置本地跑 17GB 量化版，<a href="https://simonwillison.net/2026/Aug/16/qwen-38-27b" rel="noopener" target="_blank">他让它画一个「骑自行车的鹈鹕」SVG</a>。模型烧了 <strong>22,276 个推理 token 才产出 3,223 个回答 token</strong>（约 <strong>7 倍思考比</strong>），耗时 <strong>21 分钟</strong>。用关闭推理的完全相同提示词重跑，只需 <strong>3,715 token、约 137 秒</strong>。连「画一个圆的 SVG」这种琐碎请求，在 <code class="bg-gray-100 px-1 rounded text-sm">xhigh</code> 下都会先花几分钟规划什么「包豪斯配色」，最后产出一个根本不是你要的东西。</p>
+<p class="text-gray-700 leading-relaxed my-4">不是说推理没用 &mdash; 它非常有用。同一篇文章里，开推理时它一次成稿搭出一个可用的图片框选工具；关推理后同样的构建把框放错了位置。过度思考是<em>成本与延迟</em>问题，不是质量问题。在付费 API 上，每一个推理 token 都按输出价计费，所以没调优的 <code class="bg-gray-100 px-1 rounded text-sm">xhigh</code> 默认，能把一个几厘钱的问题变成几毛钱，再加几分钟延迟。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">实测价格：这些思考 token 到底多贵</h2>
+<p class="text-gray-700 leading-relaxed my-4">所有主流路线的推理 token 都按<strong>输出/completion</strong>价计费。截至 2026-08-23 的 Qwen 3.8 已验证价格如下：</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">路线</th><th class="px-3 py-2 text-left">模型</th><th class="px-3 py-2 text-left">输入 / M</th><th class="px-3 py-2 text-left">输出 / M</th><th class="px-3 py-2 text-left">缓存输入 / M</th></tr></thead><tbody><tr><td class="px-3 py-2 border-t">OpenRouter</td><td class="px-3 py-2 border-t font-mono">qwen/qwen3.8-27b</td><td class="px-3 py-2 border-t font-mono">$0.40</td><td class="px-3 py-2 border-t font-mono">$3.00</td><td class="px-3 py-2 border-t font-mono">$0.05</td></tr><tr><td class="px-3 py-2 border-t">OpenRouter</td><td class="px-3 py-2 border-t font-mono">qwen/qwen3.8-2.4t-a95b</td><td class="px-3 py-2 border-t font-mono">$2.00</td><td class="px-3 py-2 border-t font-mono">$6.00</td><td class="px-3 py-2 border-t font-mono">$0.25</td></tr><tr><td class="px-3 py-2 border-t">Workers AI</td><td class="px-3 py-2 border-t font-mono">@cf/qwen/qwen3.8-27b</td><td class="px-3 py-2 border-t font-mono">$0.45</td><td class="px-3 py-2 border-t font-mono">$3.20</td><td class="px-3 py-2 border-t font-mono">暂无缓存行</td></tr></tbody></table>
+<p class="text-gray-700 leading-relaxed my-4">把 Willison 实测的 7 倍思考比套到 OpenRouter 的 <strong>$3.00 / M 输出价</strong>上，画面就很吓人了。一个思考 22,276 token、回答 3,223 token 的请求，实际计费 <strong>25,499 个输出 token &mdash; 约 $0.077</strong>。关掉推理，同样的任务只需 3,715 个输出 token &mdash; <strong>$0.011</strong>。也就是说对不需要深度推理的任务，输出成本能省差不多 <strong>7 倍</strong>。反过来也说明：当你确实想要模型思考时，等于在花 ≈7 倍的输出预算买那番斟酌 &mdash; 这笔钱应该是主动花的，而不是被一个沉默的默认值吞掉的。</p>
+<p class="text-gray-700 leading-relaxed my-4">注意 OpenRouter 路线的<strong>缓存输入只要 $0.05 / M</strong>，这对 Agent 循环很重要：把大量重复的 system prompt 稳定缓存，每次轮询只按全价输出付推理预算。（Workers AI 这个模型还没有公开的缓存输入行 &mdash; 完整价格与 Neuron 换算见我们的 <a href="/tutorials/qwen-3-8-27b-workers-ai-edge-inference-2026/">Workers AI Qwen 3.8 27B 指南</a>。）</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">怎么在代码里调 reasoning_effort</h2>
+<p class="text-gray-700 leading-relaxed my-4">在 OpenAI 兼容和 Qwen 原生端点，<code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort</code> 是顶层请求参数。最干净的部署是<strong>按路由建一套策略映射</strong>：琐碎调用默认 low（或关思考），困难的 Agent 调用保留 medium 或 xhigh。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>1. Python（OpenAI SDK 或任意 OpenAI 兼容端点，例如 OpenRouter）：</strong></p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_OPENROUTER_KEY",
+    base_url="https://openrouter.ai/api/v1",
+)
+
+# 琐碎抽取：不需要深度推理 - 用 low
+low = client.chat.completions.create(
+    model="qwen/qwen3.8-27b",
+    messages=[{"role": "user", "content": "从这段文字里抽出模型名称。"}],
+    reasoning_effort="low",
+    max_tokens=300,
+)
+
+# 困难的一次成稿写代码任务：用 medium
+hard = client.chat.completions.create(
+    model="qwen/qwen3.8-27b",
+    messages=[{"role": "user", "content":
+        "写一个 Python 函数，根据 0-1000 比例的 JSON 输入在图片上渲染带标签的包围框。"}],
+    reasoning_effort="medium",
+)
+
+print(hard.choices[0].message.content)</code></pre>
+<p class="text-gray-700 leading-relaxed my-4"><strong>2. 对延迟敏感流量直接关掉思考。</strong>解析 transcript、归一化 JSON、批量转换这类任务，直接用 <code class="bg-gray-100 px-1 rounded text-sm">enable_thinking: false</code> 跳过推理阶段：</p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>resp = client.chat.completions.create(
+    model="qwen/qwen3.8-27b",
+    messages=[{"role": "user", "content": "把这个会话日志转成干净的 markdown。"}],
+    enable_thinking=False,     # Qwen 原生 / 支持的宿主
+    max_tokens=1200,
+)</code></pre>
+<p class="text-gray-700 leading-relaxed my-4"><strong>3. curl，适合脚本和快速测试：</strong></p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>curl https://openrouter.ai/api/v1/chat/completions \\
+  -H "Authorization: Bearer *** \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "qwen/qwen3.8-27b",
+    "messages": [{"role": "user", "content": "用 5 个要点总结这个 README。"}],
+    "reasoning_effort": "low"
+  }'</code></pre>
+<p class="text-gray-700 leading-relaxed my-4"><strong>4. 流式输出 + 用量遥测。</strong>推理 token 会出现在 <code class="bg-gray-100 px-1 rounded text-sm">reasoning_content</code> 字段；请求 <code class="bg-gray-100 px-1 rounded text-sm">stream_options={"include_usage": true}</code>，就能按请求量出思考对回答的比例，据此微调 <code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort</code>：</p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>stream = client.chat.completions.create(
+    model="qwen/qwen3.8-27b",
+    messages=[{"role": "user", "content": "简单解释一下量子计算。"}],
+    reasoning_effort="medium",
+    stream=True,
+    stream_options={"include_usage": True},
+)
+for chunk in stream:
+    # chunk.choices[0].delta.reasoning_content  -> 思考 token
+    # chunk.usage  -> completion_tokens / prompt_tokens 总量
+    pass</code></pre>
+<p class="text-gray-700 leading-relaxed my-4">如果你的服务商走的是 OpenAI 兼容 schema，留意 SDK 是否暴露了 <code class="bg-gray-100 px-1 rounded text-sm">reasoning_content</code> &mdash; 有些网关会把它并进 <code class="bg-gray-100 px-1 rounded text-sm">content</code>。无论哪种，<code class="bg-gray-100 px-1 rounded text-sm">usage</code> 对象都是账单的最终真相。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">每个负载该用哪一档</h2>
+<p class="text-gray-700 leading-relaxed my-4">正确档位是任务难度的函数，不是对模型的忠诚度。一份可直接套用的默认策略：</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">负载</th><th class="px-3 py-2 text-left">reasoning_effort</th><th class="px-3 py-2 text-left">为什么</th></tr></thead><tbody><tr><td class="px-3 py-2 border-t">抽取、归一化、摘要、翻译</td><td class="px-3 py-2 border-t font-mono">low 或 off</td><td class="px-3 py-2 border-t">输出确定、延迟敏感、无需多步洞察</td></tr><tr><td class="px-3 py-2 border-t">写代码、搭工具、一次成稿 Agent</td><td class="px-3 py-2 border-t font-mono">medium</td><td class="px-3 py-2 border-t">性价比最佳；Willison 的工具构建开着推理也成功了</td></tr><tr><td class="px-3 py-2 border-t">固定 system prompt 的长 Agent 循环</td><td class="px-3 py-2 border-t font-mono">medium</td><td class="px-3 py-2 border-t">静态上下文走 prompt-cache，只付每轮推理的钱</td></tr><tr><td class="px-3 py-2 border-t">数学、逻辑、多步规划、调试</td><td class="px-3 py-2 border-t font-mono">xhigh</td><td class="px-3 py-2 border-t">把这个贵的默认留给真正需要深思的活</td></tr></tbody></table>
+<p class="text-gray-700 leading-relaxed my-4">Agent 和本地跑场景里，除了限制思考 token，还要关注与它互补的<strong>原生多 token 预测（MTP）</strong>。在 llama.cpp 上用 <code class="bg-gray-100 px-1 rounded text-sm">--spec-type draft-mtp</code> 跑 Qwen 3.8，同一份基准测出本地生成<strong>快约 72%</strong>，因为一个更便宜的草稿头会向前猜几个 token 让主模型快速校验。限 <code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort</code> 是减少你生成的 token <em>数量</em>；MTP 是降低每 token 的<em>时间</em>。两个一起用是最便宜的快路径。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">限制与坑</h2>
+<ol class="list-decimal pl-6 my-4 space-y-2 text-gray-700"><li><strong>默认会穿透。</strong>如果你 fork 或自部署官方权重但不显式设置 <code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort</code>，chat 模板会强制 <code class="bg-gray-100 px-1 rounded text-sm">xhigh</code>。每个请求都显式传参，或在采样器默认里写死。</li><li><strong>各家服务商接受度不同。</strong>不是每个 OpenAI 兼容宿主都以同样方式映射 <code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort</code> 或 <code class="bg-gray-100 px-1 rounded text-sm">enable_thinking</code>。有些网关上这个参数会静默失效，你还是按默认付费 &mdash; 先做一次流式用量实测，再信任「low」标签。</li><li><strong>思考 token 按输出价计费。</strong>推理不是免费的「隐藏」阶段，每个思考 token 都是账单上的一行 completion。把 system prompt 走缓存（OpenRouter 缓存输入 $0.05/M vs $0.40/M），让重复流量里只有推理是全价。</li><li><strong>开推理在困难任务上确实更准。</strong>为了省钱全关，会毁掉写代码和搭工具的一次成稿质量。7 倍浪费是默认值的问题，不是全员关推理的理由。</li><li><strong>上下文压力。</strong>本地默认上下文（8,192）下，过度思考可能在想完之前就把整个窗口耗尽导致截断。刻意跑 <code class="bg-gray-100 px-1 rounded text-sm">xhigh</code> 时把上下文/最大 token 调大。</li></ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>怎么查我这次请求实际用了哪档 reasoning_effort？</strong>用 <code class="bg-gray-100 px-1 rounded text-sm">stream_options={"include_usage": true}</code> 流式计数 <code class="bg-gray-100 px-1 rounded text-sm">reasoning_content</code>/usage。<code class="bg-gray-100 px-1 rounded text-sm">推理 token : 回答 token</code> 的比例会立刻告诉你这个负载是否在过度思考。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Qwen 3.8 27B 和 Qwen3.8-Max 旗舰是同一个吗？</strong>不是。27B 是 270 亿参数、带视觉、面向边缘的开源模型（磁盘上 17GB 量化）。Max / 2.4T-A95B 以及 Qwen3.8-Max 旗舰是几千亿参数、每 token 贵得多，只在百炼和伙伴云上提供。Qwen 各档完整对比与百炼端点见我们的 <a href="/tutorials/qwen3-bailian-api-guide-2026/">百炼 API 指南</a>。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>走 OpenRouter 时 reasoning_effort 生效吗？</strong>生效。OpenRouter 的 <code class="bg-gray-100 px-1 rounded text-sm">qwen/qwen3.8-27b</code> 标注支持推理，并透传顶层 <code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort</code> 参数。该路线的模型列表还显示它有 1M 上下文窗口，思考阶段空间很充裕。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>能只保留思考但变便宜吗？</strong>能 &mdash; 全局默认设 <code class="bg-gray-100 px-1 rounded text-sm">"medium"</code>、琐碎调用设 <code class="bg-gray-100 px-1 rounded text-sm">"low"</code>（或关），把 <code class="bg-gray-100 px-1 rounded text-sm">"xhigh"</code> 留给真正困难的一次成稿提示词。配合 prompt 缓存和本地跑 MTP 加速，就能保住模型真正的推理强项，又不用交 7 倍默认税。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">总结</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Qwen 3.8 27B 默认的 <code class="bg-gray-100 px-1 rounded text-sm">xhigh</code> 推理，是运行这个模型最大的隐藏成本。</strong>官方 chat 模板强制它，实测思考对回答约 <strong>7 倍</strong>（参考案例 22,276 : 3,223），又因为思考按输出价计费，会在付费 API 上悄悄放大你的单次成本与延迟。修法很小也很机械：按路由传 <code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort: "low"</code>/<code class="bg-gray-100 px-1 rounded text-sm">"medium"</code>（或 <code class="bg-gray-100 px-1 rounded text-sm">enable_thinking: false</code>），缓存稳定提示词，只把 <code class="bg-gray-100 px-1 rounded text-sm">xhigh</code> 留给需要深思的活。做到位，你在保住这个模型出色的代码、工具与视觉能力的同时，能把大部分流量的思考 token 花销砍掉 60&ndash;90%。权威的采样参数参考见官方 <a href="https://huggingface.co/Qwen/Qwen3.8-27B" rel="noopener" target="_blank">Qwen3.8-27B 模型卡</a>，云端开箱即用的全价目表见我们的 <a href="/tutorials/qwen-3-8-27b-workers-ai-edge-inference-2026/">Workers AI 定价指南</a>。</p>
+<p class="text-gray-700 leading-relaxed my-4">如果你要把 Qwen（或 DeepSeek、OpenAI、Anthropic）接进应用，又想要<em>按模型</em>控制推理档位、只用一把 OpenAI 兼容 Key 而不是同时在五个后台来回切，FreeModel 是最省事的交接：一个后台、一份账单、跨区故障转移，无需胶水代码。</p>`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={enCanonicalUrl} locale="zh" type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">速查参考</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>模型：</strong>qwen/qwen3.8-27b</li><li><strong>默认：</strong>reasoning_effort "xhigh"</li><li><strong>档位：</strong>xhigh / medium / low（+ 关闭）</li><li><strong>OpenRouter：</strong>$0.40 入 / $3.00 出 / $0.05 缓存</li><li><strong>Workers AI：</strong>$0.45 入 / $3.20 出</li><li><strong>实测浪费：</strong>xhigh 约 7 倍思考:回答</li><li><strong>最佳默认：</strong>"medium"，琐碎用 "low"</li><li><strong>本地加速：</strong>MTP 生成快约 72%</li></ul></div><div class="bg-blue-50 border border-blue-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">{affiliateSidebar.title}</h3><p class="text-sm text-gray-700 mb-2">{affiliateSidebar.description}</p><a href={affiliateSidebar.url} class="inline-block bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700">{affiliateSidebar.cta}</a></div></aside>
+    </div>
+  </main>
+</BaseLayout>
