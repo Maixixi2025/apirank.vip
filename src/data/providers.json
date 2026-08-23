@@ -7577,7 +7577,145 @@
     ],
     "bestFor": "RAG 流水线的嵌入 + 重排序 + 数据采集；多语言（中英德法西日韩）检索；长文档切片与维度压缩；与 LlamaIndex/LangChain/AutoGen 原生集成",
     "bestForEN": "RAG pipeline embedding + reranking + data collection; multilingual (zh/en/de/fr/es/ja/ko) retrieval; long-document chunking with dimension reduction; native LlamaIndex/LangChain/AutoGen integration",
-    "status": "active"
+    "status": "active",
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": [
+          "Plan",
+          "Tokens",
+          "Price",
+          "Effective Rate"
+        ],
+        "headersZh": [
+          "方案",
+          "Token 数量",
+          "价格",
+          "折算单价"
+        ],
+        "rows": [
+          [
+            "Toy Experiment",
+            "10M free",
+            "$0",
+            "Free (CC-BY-NC, non-commercial)"
+          ],
+          [
+            "Prototype Development",
+            "1B",
+            "$50",
+            "$0.05 / 1M tokens"
+          ],
+          [
+            "Production Deployment",
+            "11B",
+            "$500",
+            "$0.045 / 1M tokens"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "实验试用",
+            "1000 万免费",
+            "$0",
+            "免费（CC-BY-NC，仅限非商用）"
+          ],
+          [
+            "原型开发",
+            "10 亿",
+            "$50",
+            "$0.05 / 百万 token"
+          ],
+          [
+            "生产部署",
+            "110 亿",
+            "$500",
+            "$0.045 / 百万 token"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "Endpoints",
+            "value": "Separate RAG-focused REST endpoints — /v1/embeddings, /v1/rerank, /v1/reader, /v1/search — designed around search & retrieval pipelines rather than chat."
+          },
+          {
+            "label": "OpenAI-compatible",
+            "value": "Embeddings endpoint mirrors the OpenAI /v1/embeddings shape, so switching from text-embedding-3/ada is a near drop-in with just a base-URL + key change."
+          },
+          {
+            "label": "Reader & Search",
+            "value": "Prefix any URL with r.jina.ai to return clean LLM-ready Markdown; s.jina.ai returns a SERP for web search — both usable with a single GET request."
+          },
+          {
+            "label": "MCP Server",
+            "value": "mcp.jina.ai exposes Reader + Search as MCP tools, letting Claude/Cursor/GPT agents fetch live web content inside a single session."
+          },
+          {
+            "label": "Batch Discount",
+            "value": "50% batch discount on all endpoints — submit asynchronous batch jobs for bulk embedding, reranking, or document ingestion at half the per-token cost."
+          },
+          {
+            "label": "SDK & Tools",
+            "value": "SDKs for Python and Node plus native integrations with LlamaIndex, LangChain, and Haystack; vector DB adapters (Qdrant, Weaviate, Chroma) built in."
+          },
+          {
+            "label": "Multilingual & Dynamic Dims",
+            "value": "Matryoshka output lets you request 32→2048 dimensions from one model; 100+ languages supported without language-specific models."
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "端点",
+            "value": "提供面向检索的独立 REST 端点——/v1/embeddings、/v1/rerank、/v1/reader、/v1/search——专为搜索与检索流水线设计而非聊天。"
+          },
+          {
+            "label": "OpenAI 兼容",
+            "value": "嵌入端点沿用 OpenAI /v1/embeddings 结构，从 text-embedding-3/ada 迁移几乎是换 base-URL 和 key 即可完成的 drop-in 替换。"
+          },
+          {
+            "label": "Reader 与 Search",
+            "value": "在任意 URL 前加 r.jina.ai 即可返回干净、LLM 就绪的 Markdown；s.jina.ai 返回网页搜索 SERP——两者均可单次 GET 请求调用。"
+          },
+          {
+            "label": "MCP Server",
+            "value": "mcp.jina.ai 将 Reader + Search 暴露为 MCP 工具，让 Claude/Cursor/GPT 智能体能在单次会话内实时抓取网页内容。"
+          },
+          {
+            "label": "批量折扣",
+            "value": "所有端点都提供 5 折批量折扣——异步提交批量 job，以一半的 token 单价完成批量嵌入、重排序或文档入库。"
+          },
+          {
+            "label": "SDK 与工具",
+            "value": "提供 Python、Node SDK，并与 LlamaIndex、LangChain、Haystack 原生集成；内建 Qdrant、Weaviate、Chroma 等向量数据库适配器。"
+          },
+          {
+            "label": "多语言与动态维度",
+            "value": "Matryoshka 输出支持从单一模型请求 32→2048 维度；支持 100+ 语言，无需按语言单独选模型。"
+          }
+        ]
+      },
+      {
+        "title": "🔍 RAG-Native Search Foundation",
+        "titleZh": "🔍 RAG 原生搜索基础模型",
+        "type": "text",
+        "text": "Jina AI is a search-foundation company: it sells the three primitives a retrieval system needs — embeddings, rerankers, and a URL reader — rather than a general chat model. The current line-up is the v5 family: jina-embeddings-v5-omni-small (1.7B, 32K context, text/image/audio/video) shares one embedding space across every modality ('one embedding for all'), so a text query can retrieve video, image, or audio documents without separate models; v5-text-nano (239M) targets edge deployment at 8K context. jina-reranker-v3.5 (2026-07) brings listwise reranking over 131K-token inputs in 100+ languages. Because every endpoint draws from one token pool, a full RAG pipeline — embed, retrieve, rerank, read — is priced and billed uniformly. Open-weight (Apache/AI models) versions let teams self-host for production.",
+        "textZh": "Jina AI 是一家搜索基础模型公司：它提供的是检索系统所需的三类原语——嵌入（embeddings）、重排序（reranker）与 URL Reader——而非通用聊天模型。当前产品线为 v5 系列：jina-embeddings-v5-omni-small（1.7B，32K 上下文，支持文本/图像/音频/视频）让所有模态共享同一个嵌入空间（'一个嵌入服务所有'），因此文本查询可直接检索视频、图像或音频文档而无需分别建模；v5-text-nano（239M）面向边缘部署，8K 上下文。jina-reranker-v3.5（2026 年 7 月）在 131K token 输入上提供 listwise 重排序，支持 100+ 语言。由于所有端点共用同一个 token 池，完整的 RAG 流水线——嵌入、检索、重排序、读取——以统一方式计费。开源（Apache/AI 模型许可）版本允许团队自托管用于生产。"
+      },
+      {
+        "title": "🌐 China Access & Latency",
+        "titleZh": "🌐 中国访问与延迟",
+        "type": "text",
+        "text": "Jina AI's API is hosted on AWS US-East and EU-Frankfurt with no mainland-China edge nodes, so direct access from mainland China requires a stable proxy or VPC/secondary routing. Latency from China typically lands in the 300ms–1.5s range depending on proxy quality — acceptable for batch ingestion but noticeable for real-time rerank inside a search loop. For teams serving China-based users, the practical options are (a) route through a self-hosted aggregator or edge, or (b) self-host Jina's open-source embedding/reranker weights on a domestic GPU. The API itself is pay-as-you-go by token, so there is no regional pricing penalty — but curl-level calls from Chinese IPs will fail without a working proxy.",
+        "textZh": "Jina AI 的 API 部署在 AWS 美东与欧盟法兰克福，无中国大陆边缘节点，因此从大陆直连通常需要稳定代理或专线/VPC 中转。从中国的延迟一般在 300ms–1.5 秒之间，取决于代理质量——对批量入库尚可接受，但在搜索回路内的实时重排序中会明显感知。面向中国用户提供服务的团队，可行方案是 (a) 通过自托管聚合器或边缘路由转发，或 (b) 在国内 GPU 上自托管 Jina 开源的嵌入/重排序权重。API 本身按 token 即用即付，无区域加价——但中国 IP 的 curl 直连在无可用代理时会失败。"
+      }
+    ]
   },
   {
     "id": "cartesia",
