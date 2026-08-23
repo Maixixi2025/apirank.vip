@@ -13573,5 +13573,281 @@
         "textZh": "Fireworks 运行全球基础设施。Serverless 推理默认跨四个高层级分组进行多区域部署——GLOBAL、US、EUROPE、APAC——流量就近服务用户并抵御局部故障。按需 GPU 的单区域覆盖 12 个美国站点（亚利桑那、加州、佐治亚、伊利诺伊、爱荷华、俄亥俄、德州、犹他、弗吉尼亚、华盛顿三个区）加上 EU（法兰克福、冰岛）和 APAC（东京两个区），横跨 H100/A100/B200/H200。没有中国大陆直连端点：作为美国平台，大陆直连需代理或中转，跨太平洋首字节延迟通常 150-250ms，而区域提供商约 50-80ms。对延迟敏感的中国市场流量，建议配合海外中转或选择区域端点；东京多区域是最接近的 APAC 选择。"
       }
     ]
+  },
+  {
+    "id": "liquid-ai",
+    "name": "Liquid AI",
+    "nameCn": "Liquid AI",
+    "category": "international",
+    "website": "https://www.liquid.ai",
+    "apiDocs": "https://docs.liquid.ai/llms.txt",
+    "affiliateUrl": "",
+    "affiliateAvailable": false,
+    "models": [
+      "LFM2.5-8B-A1B (MoE, 8B total / 1.5B active, 128K context) — open weights, free download / run / fine-tune under the LFM Open License (royalty-free until $10M annual revenue)",
+      "LFM2.5-2.6B (dense, 128K context, agentic tool calling) — DSpark draft variant up to 3.18× GPU / 2.87× on-device decode speedup",
+      "LFM2.5-1.2B-Instruct / Thinking / Base / JP (1.2B) — instruction-tuned chat, math/reasoning, pre-trained, Japanese",
+      "LFM2.5-350M / 230M — compact edge models; LFM2.5-350M trained on 28T tokens, runs under 1GB",
+      "LFM2.5-VL-3B / 1.6B / 450M — vision-language, SigLIP2 backbone, OCR + grounding + vision tool calling",
+      "LFM2-24B-A2B (MoE, 24B total / 2B active) — largest model, for laptops / single-GPU; LFM2-2.6B & 700M for phones and laptops",
+      "Any LFM can be served via llama.cpp, SGLang, vLLM, MLX, ONNX, or Ollama (OpenAI-compatible), or deployed on-device with the LEAP SDK"
+    ],
+    "modelCount": 14,
+    "pricing": {
+      "input": "无按 token 云 API 定价——LFM 权重免费下载/运行/微调（LFM Open License，公司年收入超过 1000 万美元前免版税）。推理要么在自有硬件上自托管，要么通过 LEAP SDK 本地部署；无 per-token 请求费用。",
+      "output": "无 per-token 输出计费。模型在 CPU/GPU/NPU 上本地或自托管运行，适合对延迟与隐私敏感的高频或离线工作负载（Liquid 的定位：「为何为云 API 按 token 付费，而非本地推理」）。",
+      "cacheRead": "不适用——无按 token API 缓存计费。提示缓存成本由你的本地/自托管运行时不产生（自托管无请求费），DSpark 投机解码以更少权重流量提升解码吞吐。"
+    },
+    "pricingEN": {
+      "input": "No per-token cloud API pricing — LFM weights are free to download, run, and fine-tune under the LFM Open License (royalty-free until your company exceeds $10M annual revenue). Inference is self-hosted on your own hardware or deployed on-device via the LEAP SDK; there are no per-request fees.",
+      "output": "No per-token output billing. Models run locally or self-hosted on CPUs, GPUs, and NPUs — positioned for latency- and privacy-sensitive, high-frequency, or offline workloads (Liquid's framing: \"why pay per token for a cloud API instead of running on-device\").",
+      "cacheRead": "Not applicable — there is no per-token API cache billing. Prompt-cache cost is irrelevant when self-hosting has no request fee; DSpark speculative decoding raises decode throughput with less weight traffic."
+    },
+    "freeTier": "全部 14+ 个 LFM 模型在 LFM Open License 下免费下载/运行/微调——包括商用（公司年收入 ≤ 1000 万美元）。研究、教育与非营利使用永久免费、无收入上限。",
+    "freeTierEN": "All 14+ LFM models are free to download, run, and fine-tune under the LFM Open License — including commercially (until your company exceeds $10M annual revenue). Research, education, and non-profit use is always free with no revenue limit.",
+    "paidModel": "无 per-token API。开源的 LFM 免费商用（LFM Open License，年收入 ≤ 1000 万美元免版税）。超过 1000 万美元后需商业授权；LEAP 企业版（LEAP SDK + OEM/on-prem 部署支持、SLA）按部署规模与支持需求结构化定价，需联系销售。",
+    "paidModelEN": "No per-token API. Open-source LFMs are free for commercial use (LFM Open License, royalty-free until $10M annual revenue). Past $10M you need a commercial license; the LEAP Enterprise tier (LEAP SDK + OEM/on-prem deployment support, SLAs) is structured pricing around your deployment scale and support needs — contact sales.",
+    "availabilityCN": "⚠️ 无托管云 API，因此无中国直连端点问题。模型权重自由下载并可在本地/自托管运行，包括在中国境内（对数据主权友好）。不需要云 API 网关或代理；token 处理完全在本地硬件上进行。",
+    "availabilityEN": "⚠️ No managed cloud API, so there is no China direct-connect issue. Model weights download freely and run locally or self-hosted, including inside mainland China (data-sovereignty friendly). No cloud API gateway or proxy needed; token processing happens entirely on local hardware.",
+    "speedRank": 2,
+    "priceRank": 1,
+    "overallRank": 40,
+    "highlights": [
+      "开源、免版税的 LFM Open License——年收入 ≤ 1000 万美元前模型免费商用，无 copyleft，微调可私有化",
+      "全栈端侧/边缘优先：LEAP SDK（iOS/Android/JVM/Linux/Windows 同一 API）+ llama.cpp/SGLang/vLLM/MLX/ONNX/Ollama 直接部署",
+      "2026-08-20 发布 LFM2.5-DSpark 投机解码草稿模型：GPU 吞吐最高 3.18×、端侧 2.87×，函数调用延迟平均降低 57%，无损（精确）解码",
+      "小模型大能力：LFM2.5-350M 训练 28T tokens、<1GB 即可运行；MoE 8B-A1B 128K 上下文，端侧 agent 工具调用",
+      "无 per-token 成本——高频、离线、隐私敏感工作负载无限请求",
+      "多模态覆盖：LFM2.5-VL（视觉）与 LFM2.5 音频模型，OCR/grounding/视觉工具调用",
+      "波士顿 AI 独角兽（est. 2023，~$2.4B 估值），Mercedes-Benz、Shopify 等企业采用，8 月获 NBC Boston / Business Journals 报道"
+    ],
+    "highlightsEN": [
+      "Open-source, royalty-free LFM Open License — models are free for commercial use until $10M annual revenue, no copyleft, fine-tunes stay private",
+      "Full-stack on-device / edge-first: LEAP SDK (same API across iOS/Android/JVM/Linux/Windows) + direct llama.cpp / SGLang / vLLM / MLX / ONNX / Ollama deployment",
+      "LFM2.5-DSpark speculative-decoding draft models released 2026-08-20: up to 3.18× GPU throughput, 2.87× on-device, 57% average function-calling latency cut, lossless exact decoding",
+      "Small model, big capability: LFM2.5-350M trained on 28T tokens, runs under 1GB; MoE 8B-A1B with 128K context for on-device agent tool calling",
+      "No per-token cost — unlimited requests for high-frequency, offline, privacy-sensitive workloads",
+      "Multimodal coverage: LFM2.5-VL (vision) and LFM2.5 audio models with OCR / grounding / vision tool calling",
+      "Boston AI unicorn (est. 2023, ~$2.4B valuation), adopted by Mercedes-Benz and Shopify, covered by NBC Boston and Business Journals in Aug 2026"
+    ],
+    "cons": [
+      "无托管云 API——不能像 OpenAI/DeepSeek 那样按 token 调用，需自有 GPU/设备或自托管",
+      "免费商用有收入门槛——公司年收入超过 1000 万美元后需购买商业授权",
+      "模型规模主打端侧重推理（≤24B MoE），与前沿闭源旗舰（GPT-5.6、Claude、Gemini 2.5 级）在绝对能力上有差距",
+      "DSpark 草稿模型需要额外部署步骤（llama.cpp/SGLang 集成），并非开箱即用"
+    ],
+    "consEN": [
+      "No hosted cloud API — you cannot call it per-token like OpenAI or DeepSeek; you need your own GPUs/devices or self-hosting",
+      "Free commercial use has a revenue cap — once your company exceeds $10M annual revenue you need a commercial license",
+      "Models target edge/on-device inference (≤24B MoE) and trail frontier closed flagships (GPT-5.6, Claude, Gemini 2.5-class) in absolute capability",
+      "DSpark draft models require extra deployment steps (llama.cpp / SGLang integration) — not turnkey out of the box"
+    ],
+    "bestFor": "开发者和团队在自有硬件上构建本地/端侧推理：需要免版税开源权重、数据不出设备、超高吞吐解码（DSpark）和跨设备（iOS/Android/JVM/桌面）统一 SDK 的隐私敏感、离线或高频 agent 工作负载。",
+    "bestForEN": "Developers and teams running local / on-device inference on their own hardware — privacy-sensitive, offline, or high-frequency agent workloads that want royalty-free open weights, data that never leaves the device, and unified SDK across iOS/Android/JVM/desktop.",
+    "status": "active",
+    "addedDate": "2026-08-23",
+    "source": "liquid.ai/pricing + docs.liquid.ai/llms.txt + huggingface.co/blog/LiquidAI/lfm25-dspark (verified 2026-08-23)",
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": [
+          "Model",
+          "Params",
+          "Context",
+          "Price",
+          "Note"
+        ],
+        "headersZh": [
+          "模型",
+          "参数",
+          "上下文",
+          "价格",
+          "备注"
+        ],
+        "rows": [
+          [
+            "LFM2.5-350M",
+            "350M",
+            "—",
+            "Free",
+            "Trained on 28T tokens; runs under 1GB; edge / low-latency"
+          ],
+          [
+            "LFM2.5-1.2B-Instruct",
+            "1.2B",
+            "—",
+            "Free",
+            "Recommended chat model; also Thinking, Base, JP variants"
+          ],
+          [
+            "LFM2.5-2.6B",
+            "2.6B dense",
+            "128K",
+            "Free",
+            "Agentic — native tool calling for on-device agents"
+          ],
+          [
+            "LFM2.5-8B-A1B",
+            "8B / 1.5B active (MoE)",
+            "128K",
+            "Free",
+            "Reasoning MoE for on-device tool calling and agentic tasks"
+          ],
+          [
+            "LFM2-24B-A2B",
+            "24B / 2B active (MoE)",
+            "—",
+            "Free",
+            "Largest model; laptops / single-GPU"
+          ],
+          [
+            "LFM2.5-VL-3B / 1.6B / 450M",
+            "3B / 1.6B / 450M",
+            "—",
+            "Free",
+            "Vision-language; OCR, grounding, vision tool calling"
+          ],
+          [
+            "LEAP Enterprise",
+            "—",
+            "—",
+            "Contact sales",
+            "Commercial license + OEM/on-prem support + SLAs past $10M revenue"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "LFM2.5-350M",
+            "350M",
+            "—",
+            "免费",
+            "训练 28T tokens；<1GB 可运行；边缘/低延迟"
+          ],
+          [
+            "LFM2.5-1.2B-Instruct",
+            "1.2B",
+            "—",
+            "免费",
+            "推荐的对话模型；另有 Thinking、Base、JP 变体"
+          ],
+          [
+            "LFM2.5-2.6B",
+            "2.6B dense",
+            "128K",
+            "免费",
+            "Agentic——为端侧 agent 提供原生工具调用"
+          ],
+          [
+            "LFM2.5-8B-A1B",
+            "8B / 1.5B active（MoE）",
+            "128K",
+            "免费",
+            "推理 MoE，用于端侧工具调用与 agent 任务"
+          ],
+          [
+            "LFM2-24B-A2B",
+            "24B / 2B active（MoE）",
+            "—",
+            "免费",
+            "最大模型；笔记本 / 单 GPU"
+          ],
+          [
+            "LFM2.5-VL-3B / 1.6B / 450M",
+            "3B / 1.6B / 450M",
+            "—",
+            "免费",
+            "视觉-语言；OCR、grounding、视觉工具调用"
+          ],
+          [
+            "LEAP 企业版",
+            "—",
+            "—",
+            "联系销售",
+            "商用授权 + OEM/on-prem 支持 + SLA（年收入超 1000 万美元）"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "No managed cloud API",
+            "value": "Liquid does not sell per-token hosting like OpenAI or DeepSeek. You download the weights from Hugging Face (Safetensors + GGUF) and run them yourself — via llama.cpp, SGLang, vLLM, MLX, ONNX, or Ollama (the last serving an OpenAI-compatible endpoint)."
+          },
+          {
+            "label": "LEAP SDK",
+            "value": "The Liquid Edge AI Platform SDK compiles models for iOS, macOS, Android, JVM, Linux, and Windows with the same API everywhere, including function calling (LeapFunction), constrained JSON generation, and a voice-assistant widget."
+          },
+          {
+            "label": "DSpark speculative decoding",
+            "value": "DSpark draft checkpoints (LFM2.5-1.2B-Instruct, 2.6B, 8B-A1B) add a draft module that proposes tokens the target verifies in one pass — up to 3.18× GPU / 2.87× on-device throughput, 57% average function-calling latency cut, with exact (lossless) output. Day-one support in llama.cpp and SGLang."
+          },
+          {
+            "label": "Tool calling & structured output",
+            "value": "LFM2.5 and LFM2 support function calling for agent workflows (APIs, databases), plus constrained/structured JSON generation with compile-time validation via the LEAP SDK."
+          },
+          {
+            "label": "OpenAI-compatible serving",
+            "value": "Serve LFM with SGLang or vLLM for a low-latency OpenAI-compatible endpoint, or use the SDK's OpenAI-compatible chat-completions client for hybrid on-device + cloud routing."
+          },
+          {
+            "label": "Fine-tuning",
+            "value": "LEAP Finetune prepares, trains, evaluates, and exports customized LFMs (SFT, DPO, VLM); no copyleft, so fine-tunes stay private and proprietary. Quantization-aware distillation (LFM2.5 Q4_0) targets edge deployment."
+          },
+          {
+            "label": "Ecosystem reach",
+            "value": "41.3M+ model downloads on Hugging Face; supported on phones, laptops, vehicles, and embedded devices across CPUs, GPUs, and NPUs."
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "无托管云 API",
+            "value": "Liquid 不像 OpenAI 或 DeepSeek 那样售卖按 token 托管。你从 Hugging Face 下载权重（Safetensors + GGUF）自行运行——通过 llama.cpp、SGLang、vLLM、MLX、ONNX 或 Ollama（后者提供 OpenAI 兼容端点）。"
+          },
+          {
+            "label": "LEAP SDK",
+            "value": "Liquid Edge AI Platform SDK 可将模型编译到 iOS、macOS、Android、JVM、Linux 和 Windows，处处同一 API，包括函数调用（LeapFunction）、约束式 JSON 生成和语音助手组件。"
+          },
+          {
+            "label": "DSpark 投机解码",
+            "value": "DSpark 草稿检查点（LFM2.5-1.2B-Instruct、2.6B、8B-A1B）添加一个草稿模块，在单次前向中由目标模型验证其生成的候选 token——GPU 吞吐最高 3.18×、端侧 2.87×，函数调用延迟平均降低 57%，输出精确无损。llama.cpp 与 SGLang 首日支持。"
+          },
+          {
+            "label": "工具调用与结构化输出",
+            "value": "LFM2.5 与 LFM2 支持 agent 工作流（API、数据库）的函数调用，以及通过 LEAP SDK 的约束式/结构化 JSON 生成（编译期校验）。"
+          },
+          {
+            "label": "OpenAI 兼容服务",
+            "value": "用 SGLang 或 vLLM 服务 LFM，即可获得低延迟的 OpenAI 兼容端点；或使用 SDK 的 OpenAI 兼容 chat-completions 客户端做端侧+云端混合路由。"
+          },
+          {
+            "label": "微调",
+            "value": "LEAP Finetune 负责准备、训练、评估和导出定制 LFM（SFT、DPO、VLM）；无 copyleft，微调结果可私有。量化感知蒸馏（LFM2.5 Q4_0）面向边缘部署。"
+          },
+          {
+            "label": "生态触达",
+            "value": "Hugging Face 模型下载量 4100 万+；支持手机、笔记本、汽车与嵌入式设备，横跨 CPU、GPU、NPU。"
+          }
+        ]
+      },
+      {
+        "title": "🧠 On-Device & Edge-First Inference",
+        "titleZh": "🧠 端侧与边缘优先推理",
+        "type": "text",
+        "text": "Liquid AI's core bet is that the next wave of AI runs on the device, not in a per-token cloud API. Its LFM2.5 family spans 230M to 8B-A1B so models fit phones, laptops, and embedded hardware — the 350M model trained on 28T tokens runs under 1GB. The Aug 2026 LFM2.5-DSpark release sharpens this: speculative-decoding draft checkpoints for the 1.2B, 2.6B, and 8B-A1B models deliver up to 3.18× decode throughput on an H100 and 2.87× on an M4 Max, lossless, with a 57% average latency cut on function-calling. The economics are plain: on-device removes per-token API costs, keeps latency in the millisecond range, works offline, and stops recurring usage bills. Everything ships under the royalty-free LFM Open License, which is why Mercedes-Benz and Shopify adopt it for edge inference.",
+        "textZh": "Liquid AI 的核心押注是：下一波 AI 跑在设备上，而不是按 token 付费的云 API。其 LFM2.5 家族覆盖 230M 到 8B-A1B 参数，正是为了让模型装进手机、笔记本和嵌入式硬件——350M 模型训练了 28T tokens，<1GB 即可运行。2026 年 8 月的 LFM2.5-DSpark 发布进一步强化了这个端侧叙事：为 1.2B、2.6B、8B-A1B 模型提供的投机解码草稿检查点，在 H100 上解码吞吐最高提升 3.18×，在 Apple M4 Max 上 2.87×，输出精确无损，函数调用延迟平均降低 57%——对设备驻留 agent 是实打实的提升。公司在定价页上把经济账说得直白：本地运行消除按 token 的 API 成本、把延迟压到毫秒级、离线也能用，因此高频或隐私敏感的工作负载不再产生循环账单。所有模型都采用免版税的 LFM Open License（年收入 1000 万美元前免费商用），这正是 Mercedes-Benz、Shopify 等团队选它做嵌入式和边缘推理的原因。"
+      },
+      {
+        "title": "🌐 Regional Availability & Latency",
+        "titleZh": "🌐 区域可用性与延迟",
+        "type": "text",
+        "text": "Because Liquid AI has no hosted cloud API, regional availability and latency depend on where you run the models, not Liquid's data centers. Weights download freely worldwide (including mainland China) from Hugging Face, and inference happens on your own CPUs, GPUs, or NPUs — no cross-Pacific round-trip, no per-region endpoint to provision, and data-sovereignty friendly for China. On a capable laptop or phone, token production is local, so latency is millisecond-level; the 350M and 450M-VL models are tuned for fastest edge latency, while 8B-A1B targets single-GPU laptops. For a managed path, the LEAP SDK and Bundle CLI give reproducible iOS/Android/JVM/desktop deployment, and the enterprise tier adds OEM and on-prem support. If you need a low-latency China-resident endpoint today, this is the option that keeps inference entirely on devices inside China.",
+        "textZh": "因为 Liquid AI 没有托管云 API，区域可用性与延迟取决于你在哪里运行模型，而不是 Liquid 的数据中心。权重可从 Hugging Face 全球免费下载（包括中国大陆），推理发生在你自己的 CPU、GPU 或 NPU 上——因此没有跨太平洋的 API 往返、也不需要按区域预置端点，这对中国部署是数据主权友好的。在性能不错的笔记本或手机上，token 本地生成，生成延迟在毫秒级；350M 与 450M-VL 面向最快的边缘延迟调优，较大的 8B-A1B 面向单 GPU 笔记本。若团队想要托管路径而非自托管，LEAP SDK 与 Bundle CLI 提供跨 iOS/Android/JVM/桌面的可复现部署路线，企业版额外提供 OEM 与 on-prem 部署支持。如果你今天就需要一个低延迟的中国境内端点，Liquid 不是那个选项——它是在中国境内把推理完全保留在设备上的选项。"
+      }
+    ]
   }
 ]

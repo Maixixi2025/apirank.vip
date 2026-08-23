@@ -1,0 +1,120 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'liquid-ai-lfm25-dspark-edge-inference-review-2026';
+const date = '2026-08-23';
+const locale = 'zh';
+const zhTitle = 'Liquid AI LFM2.5 2026 评测：DSpark 端侧推理与开源定价';
+const zhDescription = 'Liquid AI LFM2.5 2026 评测：LFM2.5-DSpark 投机解码、3.18 倍解码加速、LFM Open License 定价、LEAP SDK、端侧边缘推理。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Liquid AI 是什么？LFM2.5 模型有哪些？', acceptedAnswer: { '@type': 'Answer', text: "Liquid AI 是一家波士顿 AI 公司（est. 2023，估值约 $2.4B），构建设备原生基础模型。其 LFM2.5 家族覆盖 230M 到 8B-A1B 参数，涵盖文本、视觉与音频，专为手机、笔记本、汽车和嵌入式硬件上的端侧与边缘推理而设计。" } },
+  { '@type': 'Question', name: '什么是 LFM2.5-DSpark？', acceptedAnswer: { '@type': 'Answer', text: "LFM2.5-DSpark（2026 年 8 月 20 日发布）为 LFM2.5-1.2B-Instruct、2.6B、8B-A1B 模型添加投机解码草稿检查点。轻量草稿模块先提出候选 token，目标模型在单次前向中验证，GPU 解码吞吐最高提升 3.18x、端侧 2.87x，输出精确无损，函数调用延迟平均降低 57%。" } },
+  { '@type': 'Question', name: 'Liquid AI 价格多少？', acceptedAnswer: { '@type': 'Answer', text: "没有按 token 的云 API。所有 LFM 模型在免版税的 LFM Open License 下免费下载、运行、微调——包括商用——直到公司年收入超过 1000 万美元。超过后需商业授权；LEAP 企业版按部署规模与支持需求定价。" } },
+  { '@type': 'Question', name: 'Liquid AI 有 API 吗？', acceptedAnswer: { '@type': 'Answer', text: "没有托管的按 token API。你从 Hugging Face 下载权重（Safetensors + GGUF）自行服务——通过 llama.cpp、SGLang、vLLM、MLX、ONNX 或 Ollama（后者暴露 OpenAI 兼容端点）。LEAP SDK 在 iOS、Android、JVM、Linux、Windows 上提供统一 API。" } },
+  { '@type': 'Question', name: 'Liquid AI 适合边缘推理吗？', acceptedAnswer: { '@type': 'Answer', text: "适合——边缘正是它的核心。350M 模型训练 28T tokens、<1GB 即可运行；8B-A1B MoE 有 128K 上下文用于端侧 agent 工具调用。DSpark 投机解码让 GPU 解码快 3.18x、端侧 2.87x，llama.cpp 与 SGLang 首日支持。" } },
+  { '@type': 'Question', name: 'Liquid AI 与 OpenAI 或 DeepSeek 这类云 API 相比如何？', acceptedAnswer: { '@type': 'Answer', text: "Liquid 无按 token 收费、完全本地运行，消除了循环 API 账单并让数据留在设备上——非常适合高频、离线或隐私敏感负载。代价是你必须有自有硬件；绝对能力落后于 GPT-5.6、Claude 等前沿闭源旗舰。" } },
+  { '@type': 'Question', name: 'Liquid AI 能在中国使用吗？', acceptedAnswer: { '@type': 'Answer', text: "可以，且对数据主权友好。权重可从 Hugging Face 全球免费下载（包括中国大陆），推理运行在你自己的 CPU、GPU 或 NPU 上，因此没有跨太平洋 API 往返。这是把推理完全保留在中国境内设备上、而非调用美国托管端点的选项。" } }
+]};
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+
+        <h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">{zhTitle}</h1>
+
+        <p class="text-gray-700 leading-relaxed my-4"><strong>Liquid AI</strong>（liquid.ai）是一家波士顿 AI 公司——估值约 <strong>$2.4B</strong> 的独角兽，2023 年创立，2026 年 8 月获 NBC Boston 与 Business Journals 报道——它采取了与 OpenAI 相反的商业模式：不卖按 token 的云推理，而是在免版税开源许可下发布<strong>设备原生基础模型</strong>（LFM），让你在自己的硬件上运行。其 <strong>LFM2.5</strong> 家族覆盖 230M 到 8B-A1B 参数，横跨文本、视觉、音频；2026 年 8 月 20 日的 <strong>LFM2.5-DSpark</strong> 发布为模型添加投机解码草稿检查点，GPU 解码最高提升 <strong>3.18×</strong>、端侧 <strong>2.87×</strong>，且无损。完整 4 段对比见 <a href="/zh/providers/liquid-ai">Liquid AI 厂商页面</a>，或对比 <a href="/zh/providers/groq">Groq</a>、<a href="/zh/providers/modal">Modal</a>、<a href="/zh/providers/deepseek">DeepSeek</a>。</p>
+
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 速览：</strong>Liquid AI 是按 token 云 API 之外最有力的<strong>开源许可、边缘优先</strong>替代。每个 LFM 均可免费下载、运行、微调商用（直到年收入 1000 万美元），无按 token 成本、数据不出设备、本地毫秒级延迟。LFM2.5-DSpark（8 月 20 日)让 GPU 解码快 3.18×、函数调用延迟平均降 57%——对端侧 agent 是实打实的提升。代价是：<strong>无托管云 API</strong>（需自带 GPU/硬件）、免费商用有 1000 万美元收入上限、绝对能力落后于前沿闭源旗舰。隐私敏感、高频或离线边缘负载选 Liquid AI；云上绝对最低延迟选 <a href="/zh/providers/groq">Groq</a>；完整 per-token API + 前沿开源模型选 <a href="/zh/providers/deepseek">DeepSeek</a>。</div>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Liquid AI 是什么？2026 年为何边缘推理重要？</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Liquid AI 创立时的信念是：下一波 AI 跑在设备上，而不是按 token 的云 API 里。多数提供商在数据中心延迟和 token 价格上竞争，Liquid 则在<strong>「一个能本地跑的模型能有多小、多快」</strong>上面竞争。其 LFM2.5 家族刻意做在 230M 到 8B-A1B 参数，就是为了装进手机、笔记本、汽车和嵌入式硬件——<strong>350M 模型训练了 28T tokens、&lt;1GB 即可运行</strong>，以极小的体积承载「1GB 内的前沿 AI」。公司在 Hugging Face 累计 4130 万+ 模型下载，企业客户包括 <strong>Mercedes-Benz</strong>（嵌入式车载智能）和 <strong>Shopify</strong>。</p>
+
+        <p class="text-gray-700 leading-relaxed my-4">这也是它如今在 AI API 生态中重要的原因。云推理的成本与延迟让团队开始追问：是否每个负载都需要往返一次 OpenAI？边缘推理彻底消除了按 token 账单，并让数据留在设备上——对隐私敏感、离线、或持续高频负载是决定性的。Liquid 在 <a href="https://www.liquid.ai/pricing">定价页</a> 上的明确提问值得每个 API 买家细品：<em>「为何要为云 API 按 token 付费，而不在本地推理？」</em>其回答是：本地运行消除按 token 的 API 成本、把延迟压到毫秒级、离线也能用。这正是与我们在 <a href="/zh/tutorials/qwen-3-8-27b-workers-ai-edge-inference-2026">Qwen Workers AI 边缘推理</a> 中覆盖的云端边缘推理浪潮相对的、开源许可的边缘方案。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">LFM2.5-DSpark：投机解码让解码快 3.18×</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">2026 年 8 月 20 日的 <strong>LFM2.5-DSpark</strong> 发布（MarkTechPost、Unite.AI、GIGAZINE、TUN 等多家报道）为三款 LFM2.5 模型——<strong>LFM2.5-1.2B-Instruct</strong>、<strong>LFM2.5-2.6B</strong>、<strong>LFM2.5-8B-A1B</strong>——添加 DSpark 草稿检查点，即在既有权重上挂一个轻量草稿模块。官方 <a href="https://huggingface.co/blog/LiquidAI/lfm25-dspark">Hugging Face 博客</a> 给出经核实的数字：<strong>H100 上吞吐最高提升 3.18×</strong>（MATH500：428 → 1362 tok/s）、<strong>端侧最高 2.87×</strong>（M4 Max）、LFM2.5-2.6B <strong>函数调用延迟平均降低 57%</strong>、输出<strong>精确无损</strong>——因为目标模型验证每个候选 token，贪心输出与目标模型本身完全一致。</p>
+
+        <p class="text-gray-700 leading-relaxed my-4">这对 API 选型为何重要：解码阶段传统上受内存带宽限制——大部分延迟来自把权重从 DRAM 读入 SRAM，而不是计算。投机解码用单次前向验证 k 个候选 token，把权重加载成本分摊到所有 token 上。对 API 提供商（以及我们此前 <a href="/zh/tutorials/dspark-speculative-decoding-2026">DeepSeek DSpark 分析</a> 的主题）来说，同一技术正是 DeepSeek 用来把单用户生成速度提升 60-85% 的手段。Liquid 的贡献在于把它做到能部署在边缘的小模型上，且 llama.cpp 与 SGLang 首日支持、集成开源——于是手机或笔记本上的 1.2B-8B 模型能有更大引擎的解码速度。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Liquid AI 定价：免费开源权重，而非按 token 计费</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Liquid 不卖按 token API——这正是它的定价模式。所有 LFM 模型在 <strong>LFM Open License</strong> 下<strong>免费下载、运行、微调</strong>（包括商用）：免版税使用、修改、分发，直到公司年收入超过 <strong>1000 万美元</strong>。无 <strong>copyleft</strong>，微调结果可私有。研究、教育与非营利使用永久免费、无收入上限。超过门槛后需商业授权；<strong>LEAP 企业版</strong>（Mercedes-Benz、Shopify 为代表的企业客户）按部署规模与支持需求定价。</p>
+
+        <table class="table-token">
+          <thead><tr><th>模型</th><th>参数</th><th>上下文</th><th>价格</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td>LFM2.5-350M</td><td>350M</td><td>—</td><td>免费</td><td>训练 28T tokens；&lt;1GB；最快边缘</td></tr>
+            <tr><td>LFM2.5-1.2B-Instruct</td><td>1.2B</td><td>—</td><td>免费</td><td>推荐对话模型；+ Thinking/Base/JP</td></tr>
+            <tr><td>LFM2.5-2.6B</td><td>2.6B dense</td><td>128K</td><td>免费</td><td>Agentic——原生工具调用</td></tr>
+            <tr><td>LFM2.5-8B-A1B</td><td>8B / 1.5B active（MoE）</td><td>128K</td><td>免费</td><td>推理 MoE，端侧 agent 任务</td></tr>
+            <tr><td>LFM2-24B-A2B</td><td>24B / 2B active（MoE）</td><td>—</td><td>免费</td><td>最大模型；笔记本 / 单 GPU</td></tr>
+            <tr><td>LFM2.5-VL-3B/1.6B/450M</td><td>视觉</td><td>—</td><td>免费</td><td>OCR、grounding、视觉工具调用</td></tr>
+            <tr><td>LEAP 企业版</td><td>—</td><td>—</td><td>联系销售</td><td>商用授权 + OEM/on-prem 支持 + SLA</td></tr>
+          </tbody>
+        </table>
+
+        <p class="text-gray-700 leading-relaxed my-4">实际的成本账与任何按 token 提供商都不同。没有输入/输出/缓存输入价目表；你唯一的成本是已拥有的硬件和电费。对持续或高频负载，经济账完全反转——完全没有循环按 token 账单。但前提是你能自己跑模型：Liquid <em>不是</em> 通过 URL 调用 DeepSeek 或 OpenAI 的即插即用替代。你是在用「无 API 加价」换「自己运维服务」——想要托管式开源权重服务，<a href="/zh/providers/modal">Modal</a> 或 <a href="/zh/tutorials/fireworks-ai-serverless-inference-review-2026">Fireworks</a> 是桥梁。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">开发者体验：LEAP SDK、OpenAI 兼容服务与 DSpark 集成</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">Liquid 的开发者体验以 <strong>LEAP SDK</strong> 为核心，它把 LFM 模型编译到 iOS、macOS、Android、JVM、Linux 和 Windows，处处同一 API——包括函数调用（LeapFunction）、编译期校验的约束式 JSON 生成，以及即插即用的语音助手组件。偏好标准工具的团队可用 <strong>llama.cpp、SGLang、vLLM、MLX、ONNX 或 Ollama</strong> 服务模型（后两者暴露 OpenAI 兼容端点），完整文档见 <a href="https://docs.liquid.ai/llms.txt">Liquid 文档</a>。核心开发者功能：</p>
+
+        <ul class="list-disc list-inside text-gray-700 leading-relaxed my-4">
+          <li><strong>DSpark 投机解码</strong>——1.2B / 2.6B / 8B-A1B 草稿检查点，GPU 最快 3.18×、端侧 2.87×，无损，llama.cpp + SGLang 首日支持。</li>
+          <li><strong>LEAP SDK 跨平台</strong>——一套 API 覆盖 iOS、Android、JVM、桌面与原生 Linux/Windows，负责模型加载、生成与工具使用。</li>
+          <li><strong>工具调用与结构化输出</strong>——原生函数调用（LeapFunction，Hermes/Pythonic 解析器）与编译期校验的约束式 JSON。</li>
+          <li><strong>OpenAI 兼容服务</strong>——SGLang/vLLM 提供低延迟 OpenAI 兼容端点；SDK 的 OpenAI 兼容客户端支持端侧+云端混合路由。</li>
+          <li><strong>LEAP Finetune</strong>——准备、训练、评估、导出定制 LFM（SFT、DPO、VLM）；无 copyleft，微调可私有；量化感知蒸馏（Q4_0）面向边缘。</li>
+          <li><strong>边缘优先体积</strong>——350M 低于 1GB，8B-A1B MoE 可在单 GPU 笔记本运行，CPU/GPU/NPU 支持从手机到汽车。</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">谁该选 Liquid AI——谁又该跳过</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">选 Liquid AI，如果你 (a) 跑高频、持续或离线推理，按 token API 账单会占大头；(b) 需要数据永不出设备（隐私、合规、数据主权——包括完全在中国大陆境内运行）；(c) 想要免版税开源权重、无 copyleft、可私有微调；或 (d) 在 iOS/Android/JVM/桌面构建端侧 agent，重视统一 SDK。跳过它，如果你 (a) 需要托管式按 token API、不想自己运维；(b) 想要 GPT-5.6 / Claude / Gemini 级别的完整前沿模型；(c) 没有商业授权就要企业级 SLA 与规模化支持；或 (d) 想要即插即用的 OpenAI 替代——那种情况用 <a href="/zh/providers/deepseek">DeepSeek</a>（API）或 <a href="/zh/tutorials/fireworks-ai-serverless-inference-review-2026">Fireworks</a>（托管开源模型服务）。</p>
+
+        <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">区域可用性与延迟</h2>
+
+        <p class="text-gray-700 leading-relaxed my-4">因为 Liquid 没有托管云 API，可用性与延迟取决于<em>你</em>在哪里运行模型，而不是 Liquid 的数据中心。权重可从 Hugging Face 全球免费下载——包括中国大陆——推理运行在你自己的 CPU、GPU 或 NPU 上，因此没有跨太平洋 API 往返，也不需要按区域预置端点。这让 Liquid 对中国部署异常<strong>数据主权友好</strong>：整个推理管线完全留在本地设备、零数据外泄。在性能不错的笔记本或手机上，token 本地生成，延迟毫秒级；350M 与 450M-VL 面向最快边缘延迟调优，8B-A1B 面向单 GPU 笔记本。想要托管部署路径，LEAP SDK 与 Bundle CLI 提供跨 iOS/Android/JVM/桌面的可复现路线，企业版提供 OEM 与 on-prem 支持。你可以在我们的<a href="/zh/tutorials/cheapest-llm-api-pricing-2026">最便宜 LLM API 定价盘点</a> 中对比这种边缘优先模型与按 token 选项。</p>
+
+        <section class="faq">
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Liquid AI 常见问题</h2>
+          <div class="faq-item"><strong>Q: Liquid AI 是什么？LFM2.5 模型有哪些？</strong><p>A: Liquid AI 是一家波士顿 AI 公司（est. 2023，估值约 $2.4B），构建设备原生基础模型。其 LFM2.5 家族覆盖 230M 到 8B-A1B 参数，涵盖文本、视觉与音频，专为手机、笔记本、汽车和嵌入式硬件上的端侧与边缘推理而设计。</p></div>
+          <div class="faq-item"><strong>Q: 什么是 LFM2.5-DSpark？</strong><p>A: LFM2.5-DSpark（2026 年 8 月 20 日发布）为 LFM2.5-1.2B-Instruct、2.6B、8B-A1B 模型添加投机解码草稿检查点。轻量草稿模块先提出候选 token，目标模型在单次前向中验证，GPU 解码吞吐最高提升 3.18x、端侧 2.87x，输出精确无损，函数调用延迟平均降低 57%。</p></div>
+          <div class="faq-item"><strong>Q: Liquid AI 价格多少？</strong><p>A: 没有按 token 的云 API。所有 LFM 模型在免版税的 LFM Open License 下免费下载、运行、微调——包括商用——直到公司年收入超过 1000 万美元。超过后需商业授权；LEAP 企业版按部署规模与支持需求定价。</p></div>
+          <div class="faq-item"><strong>Q: Liquid AI 有 API 吗？</strong><p>A: 没有托管的按 token API。你从 Hugging Face 下载权重（Safetensors + GGUF）自行服务——通过 llama.cpp、SGLang、vLLM、MLX、ONNX 或 Ollama（后者暴露 OpenAI 兼容端点）。LEAP SDK 在 iOS、Android、JVM、Linux、Windows 上提供统一 API。</p></div>
+          <div class="faq-item"><strong>Q: Liquid AI 适合边缘推理吗？</strong><p>A: 适合——边缘正是它的核心。350M 模型训练 28T tokens、&lt;1GB 即可运行；8B-A1B MoE 有 128K 上下文用于端侧 agent 工具调用。DSpark 投机解码让 GPU 解码快 3.18x、端侧 2.87x，llama.cpp 与 SGLang 首日支持。</p></div>
+          <div class="faq-item"><strong>Q: Liquid AI 与 OpenAI 或 DeepSeek 这类云 API 相比如何？</strong><p>A: Liquid 无按 token 收费、完全本地运行，消除了循环 API 账单并让数据留在设备上——非常适合高频、离线或隐私敏感负载。代价是你必须有自有硬件；绝对能力落后于 GPT-5.6、Claude 等前沿闭源旗舰。</p></div>
+          <div class="faq-item"><strong>Q: Liquid AI 能在中国使用吗？</strong><p>A: 可以，且对数据主权友好。权重可从 Hugging Face 全球免费下载（包括中国大陆），推理运行在你自己的 CPU、GPU 或 NPU 上，因此没有跨太平洋 API 往返。这是把推理完全保留在中国境内设备上、而非调用美国托管端点的选项。</p></div>
+        </section>
+
+      </div>
+      <aside class="hidden lg:block">
+        <div class="bg-gray-50 rounded-xl border border-gray-200 p-4 sticky top-24">
+          <h3 class="font-bold text-gray-900 mb-3">关键信息</h3>
+          <ul class="text-sm text-gray-600 space-y-2">
+            <li><strong>类型：</strong>开源许可边缘推理</li>
+            <li><strong>定位：</strong>设备原生基础模型</li>
+            <li><strong>DSpark：</strong>GPU 解码最快 3.18×</li>
+            <li><strong>端侧：</strong>最快 2.87×（M4 Max）</li>
+            <li><strong>函数调用：</strong>延迟平均降 57%</li>
+            <li><strong>许可：</strong>1000 万美元收入前免费</li>
+            <li><strong>生态：</strong>Hugging Face 下载 4130 万+</li>
+            <li><strong>中国：</strong>数据不出设备友好</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
