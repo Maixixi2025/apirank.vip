@@ -1,0 +1,101 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-5-6-sol-cloudflare-ai-gateway-50-off-2026';
+const date = '2026-08-24';
+const locale = 'zh';
+const zhTitle = 'GPT-5.6 Sol 五折：Cloudflare AI Gateway 真能省多少';
+const zhDescription = 'Cloudflare AI Gateway 把 GPT-5.6 Sol 降到每百万 token $2.50/$15（五折），到 2026-09-18 为止。对比直连 OpenAI 与 OpenRouter 价格并给出接入代码。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Cloudflare AI Gateway 的 GPT-5.6 Sol 折扣是自动的吗？', acceptedAnswer: { '@type': 'Answer', text: '是的。只要把请求指向 openai/gpt-5.6-sol 这个模型，五折促销价会自动生效，不需要优惠码。前提是你的账号走 Unified Billing（统一计费）；使用 Bring Your Own Keys（自带密钥）的客户不享受折扣。' } },
+  { '@type': 'Question', name: 'AI Gateway 上打折后的 GPT-5.6 Sol 价格是多少？', acceptedAnswer: { '@type': 'Answer', text: '促销期内（到 2026-09-18）Cloudflare 对 GPT-5.6 Sol 按每百万 token 收取 $2.50 输入、$15.00 输出、$0.25 缓存读取。这正好是标准价 $5.00 / $30.00 / $0.50 的五折。' } },
+  { '@type': 'Question', name: 'GPT-5.6 Sol 促销持续到什么时候？', acceptedAnswer: { '@type': 'Answer', text: '五折促销到 2026 年 9 月 18 日结束。之后通过 Cloudflare AI Gateway 调用 GPT-5.6 Sol 会恢复到标准价 $5.00 输入 / $30.00 输出 / $0.50 缓存读取。想用折扣价跑大任务，就在窗口关闭前结算。' } },
+  { '@type': 'Question', name: 'Cloudflare AI Gateway 比直连 OpenAI 的 GPT-5.6 Sol 更便宜吗？', acceptedAnswer: { '@type': 'Answer', text: '促销价下是的：$2.50/$15 对比 OpenAI 直连的标准 Sol 档约 $5/$30，同一个模型走网关大约只要一半价格。注意折扣只对 Unified Billing 账号生效，而且聚合平台价格会波动，大批量跑之前务必核对目标路由的实时价格。' } },
+  { '@type': 'Question', name: '用 AI Gateway 调用 GPT-5.6 Sol 需要单独的 API Key 吗？', acceptedAnswer: { '@type': 'Answer', text: '不需要单独的 OpenAI Key。你用自己的 Cloudflare AI Gateway 端点、模型名填 openai/gpt-5.6-sol 即可；Unified Billing 下把额度充进 AI Gateway，促销价自动生效，对已经在 Cloudflare 平台的团队来说是一次统一账单的便利。' } }
+] };
+const affiliateSidebar = { title: '试试 FreeModel 多厂商路由', description: '一个 API Key 打通 GPT-5.6、Qwen、DeepSeek、Anthropic、Google 等多厂商，OpenAI 兼容，支持按模型做成本控制与跨区故障转移。', url: 'https://freemodel.dev/invite/FRE-7a3b6220', cta: '免费试用' };
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">GPT-5.6 Sol 在 Cloudflare AI Gateway 打五折：到底能省多少</h1>
+<p class="text-gray-700 leading-relaxed my-4">2026 年 8 月 19 日，Cloudflare 悄悄发布了 API 团队最喜欢的那种定价消息：<strong>GPT-5.6 Sol 已可通过 AI Gateway 调用，并且限时五折</strong>。没有促销码、不用抢券 &mdash; 只要用 <code class="bg-gray-100 px-1 rounded text-sm">openai/gpt-5.6-sol</code> 这个模型名走一个 Unified Billing 的 AI Gateway 账号，折扣价就会自动生效。这让 OpenAI 标准 GPT-5.6 全家桶里最贵也最强的 Sol，从大约 <strong>每百万 token 输入 $5 降到 $2.5</strong>、<strong>输出从 $30 降到 $15</strong>。本文给出这项促销背后的官方核验数字，把折后网关价与直连 OpenAI、以及 OpenRouter 当前实时 Sol 价格放在一起对比，并在 2026 年 9 月 18 日截止前，用真实代码教你怎么接。</p>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 快速结论：</strong>Cloudflare AI Gateway 的五折是标准 GPT-5.6 Sol 档期上实打实的半价窗口（促销 <strong>$2.50 / $15</strong> vs 标准 <strong>$5 / $30</strong> 每百万 token，缓存读取 <strong>$0.25 / $0.50</strong>），到 <strong>2026 年 9 月 18 日</strong>为止。两个注意点：它<strong>只对 Unified Billing 生效</strong>（Bring Your Own Keys 客户不适用）；而且它不一定是所有 Sol 路由里最便宜的 &mdash; 截至 2026-08-24，OpenRouter 同款模型约 $2 / $10。已经住在 Cloudflare 计费体系里的团队，抓紧这个窗口；纯粹看价格的，先查一下目标聚合平台的实时价。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">这项促销到底是什么</h2>
+<p class="text-gray-700 leading-relaxed my-4">改动写死在 Cloudflare 官方 changelog（2026-08-19）里，非常直接。GPT-5.6 Sol 由 AI Gateway 提供，限时内对 <code class="bg-gray-100 px-1 rounded text-sm">openai/gpt-5.6-sol</code> 模型的请求按标准价的 50% 计费。核心机制全部来自这份 changelog：</p>
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700"><li><strong>自动折扣</strong> &mdash; 老用户只需要用对模型名就能享受促销价，除了模型标识之外代码一行都不用改。</li><li><strong>只限 Unified Billing</strong> &mdash; Bring Your Own Keys（自备密钥）配置不参与促销。你得把额度充进 AI Gateway（统一计费）并从它路由。</li><li><strong>固定窗口</strong> &mdash; 促销到 <strong>2026 年 9 月 18 日</strong>为止。之后 GPT-5.6 Sol 恢复标准价。</li></ul>
+<p class="text-gray-700 leading-relaxed my-4">下面是 Cloudflare 官方公布的、促销价对标准价的每百万 token 明细：</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">计费项</th><th class="px-3 py-2 text-left">促销价</th><th class="px-3 py-2 text-left">标准价</th><th class="px-3 py-2 text-left">节省</th></tr></thead><tbody><tr><td class="px-3 py-2 border-t">输入</td><td class="px-3 py-2 border-t font-mono">$2.50 / 1M</td><td class="px-3 py-2 border-t font-mono">$5.00 / 1M</td><td class="px-3 py-2 border-t">50%</td></tr><tr><td class="px-3 py-2 border-t">输出</td><td class="px-3 py-2 border-t font-mono">$15.00 / 1M</td><td class="px-3 py-2 border-t font-mono">$30.00 / 1M</td><td class="px-3 py-2 border-t">50%</td></tr><tr><td class="px-3 py-2 border-t">缓存读取</td><td class="px-3 py-2 border-t font-mono">$0.25 / 1M</td><td class="px-3 py-2 border-t font-mono">$0.50 / 1M</td><td class="px-3 py-2 border-t">50%</td></tr></tbody></table>
+<p class="text-gray-700 leading-relaxed my-4">每一行都正好是一半。这个固定的 2 倍关系让促销特别好规划：无论你平时在网关上为 GPT-5.6 Sol 花多少，只要在 9 月 18 日之前发货，就按 50% 计费。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">折后网关价怎么对比</h2>
+<p class="text-gray-700 leading-relaxed my-4">促销价是相对 Cloudflare 自己的 AI Gateway 标准价打的折，而后者与 OpenAI 直连标准 GPT-5.6 Sol 档的列表价一致（约 <strong>输入 $5 / 输出 $30</strong> 每百万 token）。所以对本来就打算按直连价付 Sol 钱的团队，网关促销就等于同一个模型名打了对折。但对比时要对两件事保持诚实：</p>
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="px-3 py-2 text-left">路由</th><th class="px-3 py-2 text-left">输入 / 1M</th><th class="px-3 py-2 text-left">输出 / 1M</th><th class="px-3 py-2 text-left">说明</th></tr></thead><tbody><tr><td class="px-3 py-2 border-t">Cloudflare AI Gateway（促销）</td><td class="px-3 py-2 border-t font-mono">$2.50</td><td class="px-3 py-2 border-t font-mono">$15.00</td><td class="px-3 py-2 border-t">Unified Billing，到 2026-09-18</td></tr><tr><td class="px-3 py-2 border-t">Cloudflare AI Gateway（标准）</td><td class="px-3 py-2 border-t font-mono">$5.00</td><td class="px-3 py-2 border-t font-mono">$30.00</td><td class="px-3 py-2 border-t">窗口结束后适用</td></tr><tr><td class="px-3 py-2 border-t">OpenAI 直连（列表价）</td><td class="px-3 py-2 border-t font-mono">$5.00</td><td class="px-3 py-2 border-t font-mono">$30.00</td><td class="px-3 py-2 border-t">标准 Sol 档</td></tr><tr><td class="px-3 py-2 border-t">OpenRouter（实时，2026-08-24）</td><td class="px-3 py-2 border-t font-mono">$2.00</td><td class="px-3 py-2 border-t font-mono">$10.00</td><td class="px-3 py-2 border-t">聚合价会波动，大批量前先核实</td></tr></tbody></table>
+<p class="text-gray-700 leading-relaxed my-4">两个实操要点。第一，上面 OpenRouter 的数是<strong>截至 2026 年 8 月 24 日</strong>、直接从 OpenRouter 公开 models API 拉到的，它说明了更普遍的现象：旗舰模型的聚合价波动快、且因渠道而异，所以「五折」这个标题永远要拿你实际要用的那条路由的实时价来复核。第二，对<em>输出偏重</em>的负载（长推理链、大 completion），另一个聚合商低于 $15 的输出价，即便在促销窗口内也可能击败网关促销 &mdash; 该选谁取决于你的输入输出比例，而不是单纯看折扣数字谁大。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">一个具体成本对比</h2>
+<p class="text-gray-700 leading-relaxed my-4">把促销落到数字上：假设一个后台批量任务发送 <strong>100M 输入 token</strong>、收到 <strong>20M 输出 token</strong>（5:1 的输入输出比，典型于文档分析与结构化抽取）。按促销网关价是 <code class="bg-gray-100 px-1 rounded text-sm">100 &times; $2.50 + 20 &times; $15.00 = $550</code>。同样任务按标准价是 <code class="bg-gray-100 px-1 rounded text-sm">100 &times; $5 + 20 &times; $30 = $1,100</code> &mdash; <strong>省 $550</strong>，正好一半。如果把它路由到输出价 $10/M 的平台，输出段降到 $200，总计 $450 &mdash; 在这个比例下比网关促销还便宜。决策一句话总结：网关半价窗口非常划算，但它只是活跃市场里的一个选项。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">怎么用代码接入</h2>
+<p class="text-gray-700 leading-relaxed my-4">因为促销在模型层面自动生效，接入方式跟调用任何 Cloudflare AI Gateway 模型完全一样。你用自己的网关端点（<code class="bg-gray-100 px-1 rounded text-sm">https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_slug}</code> 这个 base URL），模型名填 <code class="bg-gray-100 px-1 rounded text-sm">openai/gpt-5.6-sol</code>。下面两个是最小可跑示例。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>1. curl &mdash; 最快验证折扣路由通不通：</strong></p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>curl https://gateway.ai.cloudflare.com/v1/YOUR_ACCOUNT_ID/YOUR_GATEWAY/chat/completions \\\\
+  -H "Authorization: Bearer *** \\\\
+  -H "Content-Type: application/json" \\\\
+  -d '{
+    "model": "openai/gpt-5.6-sol",
+    "messages": [
+      { "role": "user", "content": "从这份发布会笔记 PDF 里提取所有模型名和价格。" }
+    ],
+    "max_tokens": 1200
+  }'</code></pre>
+<p class="text-gray-700 leading-relaxed my-4"><strong>2. Python &mdash; 一个走网关并打印用量的小助手：</strong></p>
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4 text-sm"><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_CLOUDFLARE_API_TOKEN",
+    base_url="https://gateway.ai.cloudflare.com/v1/YOUR_ACCOUNT_ID/YOUR_GATEWAY",
+)
+
+resp = client.chat.completions.create(
+    model="openai/gpt-5.6-sol",
+    messages=[{"role": "user", "content":
+        "用六个要点总结这份季度财报电话会记录。"}],
+    max_tokens=800,
+)
+
+# usage 是账单的真相，促销价就按它计费
+print(resp.usage.prompt_tokens, "input", resp.usage.completion_tokens, "output")</code></pre>
+<p class="text-gray-700 leading-relaxed my-4">两个示例都是 OpenAI 兼容 &mdash; 这正是走网关的意义：把 base URL 换掉、模型名一改，其它现有 OpenAI SDK 代码原样能用。不用换新 SDK，也不用重写重试与流式逻辑。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">限制与坑</h2>
+<ol class="list-decimal pl-6 my-4 space-y-2 text-gray-700"><li><strong>Unified Billing 门槛。</strong>五折只对统一计费账号生效。如果你用 Bring Your Own Keys（自己提供密钥、经网关直连 OpenAI）调用，拿不到促销价，只按上游 OpenAI 账单付 &mdash; 这是「折扣怎么没生效」最常见的原因。</li><li><strong>硬截止。</strong>2026 年 9 月 18 日是硬日期。任何跨过这个节点或跑超的任务，会在边界处悄悄恢复成标准 $5/$30。长批量任务要么在截止前跑完，要么预算里预留涨价。</li><li><strong>不一定是 Sol 最便宜的路由。</strong>旗舰模型聚合价动得很快。截至 2026-08-24，OpenRouter 的 <code class="bg-gray-100 px-1 rounded text-sm">openai/gpt-5.6-sol</code> 约 $2 / $10，在输出偏重的组合里比网关促销更便宜。把大额开销押在一个标题折扣上之前，先查目标路由实时价。</li><li><strong>促销仅限单渠道。</strong>五折只对 AI Gateway 的 Unified Billing 路由生效。OpenAI 直连、其它网关、其它聚合平台都不受影响 &mdash; 别以为折扣会传播到别处。</li><li><strong>Sol 本身就是贵得有理。</strong>就算 $2.50/$15，它仍是 GPT-5.6 家族里的高端档。很多负载用便宜得多的 Luna 或 Terra 反而是更好的性价比 &mdash; 促销让 Sol 更有吸引力，但不等于让 Sol 成为默认答案。</li></ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>折扣要代码还是自动的？</strong>自动。用 <code class="bg-gray-100 px-1 rounded text-sm">openai/gpt-5.6-sol</code> 走一个 Unified Billing 的 AI Gateway 账号，计费时就按促销价，不需要代码也不需要激活步骤。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>为什么我在 AI Gateway 上还是按全价扣？</strong>最可能是你的账号配成了 Bring Your Own Keys 而不是 Unified Billing。只有统一计费账号享受五折。想用促销就检查网关计费模式，并把额度充进 AI Gateway。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>折扣覆盖其它 GPT-5.6 模型吗？</strong>Cloudflare 的 changelog 只点名了 GPT-5.6 Sol。Luna、Terra 以及各 Pro 变体不在这次五折范围内 &mdash; 除非 Cloudflare 另行公布，否则把这次当成 Sol 专属。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>能拿折扣网关配我现有的 OpenAI SDK 吗？</strong>可以。AI Gateway 暴露 OpenAI 兼容的 chat completions 接口，你把 base URL 指向自己的网关端点、模型名设为 <code class="bg-gray-100 px-1 rounded text-sm">openai/gpt-5.6-sol</code>，其余 SDK 代码原样保留。</p>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Azure OpenAI Serverless 也在这个比较里吗？</strong>不 &mdash; 本文只覆盖 Cloudflare AI Gateway、OpenAI 直连和 OpenRouter 三条路由。Azure OpenAI Serverless 用预留容量与配额计费模型，跟这里的按 token 单价不直接可比。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">总结</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>Cloudflare 的 GPT-5.6 Sol 五折是一个真实、可核验的半价窗口</strong> &mdash; 促销 <strong>$2.50/$15</strong> vs 标准 <strong>$5/$30</strong> 每百万 token，缓存读取 <strong>$0.25/$0.50</strong>，对 Unified Billing 账号自动生效，到 <strong>2026 年 9 月 18 日</strong>为止。它把 OpenAI 标准 GPT-5.6 阵容里最贵的 Sol，输入端压到接近直连列表价、输出端明显更低。对已经住在 Cloudflare 计费的团队，截止前凡是要跑 Sol 形态的负载，基本接近无脑上。只需记住两个前提：Bring Your Own Keys 账号不享受折扣；而且在一个活跃的聚合市场里，网关促销未必总是绝对最低价 &mdash; 截至 2026-08-24，OpenRouter 同款约 $2 / $10。先核对目标路由实时价，再有意识地使用这个窗口，而不是无脑冲。本文所有数字的权威出处是官方 <a href="https://developers.cloudflare.com/changelog/post/2026-08-19-gpt-5-6-sol-discount/" rel="noopener" target="_blank">Cloudflare changelog</a>，辅以 <a href="https://developers.cloudflare.com/ai-gateway/" rel="noopener" target="_blank">AI Gateway 产品文档</a> 与 <a href="https://openrouter.ai/openai/gpt-5.6-sol" rel="noopener" target="_blank">OpenRouter 的实时模型页</a> 交叉验证。更广的 GPT-5.6 档位结构（Luna/Terra/Sol 与 Pro 变体）见我们的 <a href="/tutorials/gpt-5-6-pro-tiers-2026/">GPT-5.6 Pro Tiers 指南</a>；本月初 OpenRouter 对该系列的重新定价见 <a href="/tutorials/openrouter-gpt-5-6-luna-terra-promo-2026/">OpenRouter GPT-5.6 促销指南</a>。</p>
+<p class="text-gray-700 leading-relaxed my-4">如果你不想手工去挑厂商、挑折扣窗口，一个多厂商路由器能用一把 OpenAI 兼容的 Key 打通 GPT-5.6、Qwen、DeepSeek、Anthropic 等多家，按负载自动路由到当下最便宜的实时价，并跨区故障转移，无需胶水代码。</p>`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={enCanonicalUrl} locale="zh" type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">速查参考</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>模型：</strong>openai/gpt-5.6-sol</li><li><strong>促销：</strong>$2.50 入 / $15.00 出 / $0.25 缓存</li><li><strong>标准：</strong>$5.00 / $30.00 / $0.50</li><li><strong>窗口：</strong>到 2026-09-18</li><li><strong>适用：</strong>仅 Unified Billing</li><li><strong>自动：</strong>是，无需促销码</li><li><strong>OpenAI 列表价：</strong>约 $5 / $30</li><li><strong>OpenRouter（8/24）：</strong>约 $2 / $10</li></ul></div><div class="bg-blue-50 border border-blue-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">{affiliateSidebar.title}</h3><p class="text-sm text-gray-700 mb-2">{affiliateSidebar.description}</p><a href={affiliateSidebar.url} class="inline-block bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700">{affiliateSidebar.cta}</a></div></aside>
+    </div>
+  </main>
+</BaseLayout>
