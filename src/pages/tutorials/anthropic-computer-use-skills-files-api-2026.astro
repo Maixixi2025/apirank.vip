@@ -1,0 +1,183 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'anthropic-computer-use-skills-files-api-2026';
+const date = '2026-08-25';
+const locale = 'en';
+const enTitle = 'Anthropic Computer Use + Skills API + Files API GA 2026';
+const enDescription = 'Anthropic ships Computer use (GA, HIPAA), Browser use tool, Skills API, and Files API (5x rate limits, 1 TB). Pricing for Sonnet 5, Opus 5, Haiku 4.5.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: enTitle, description: enDescription, datePublished: date, dateModified: date, inLanguage: 'en-US', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://apirank.vip' }, { '@type': 'ListItem', position: 2, name: 'Tutorials', item: 'https://apirank.vip/tutorials' }, { '@type': 'ListItem', position: 3, name: enTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'What did Anthropic ship on August 20, 2026?', acceptedAnswer: { '@type': 'Answer', text: 'Anthropic moved Computer use, the Skills API, and the Files API to general availability on the Claude Platform and added a new browser use tool inside computer use. Computer use also became HIPAA-eligible under a BAA. Skills API and Files API are simultaneously available on Microsoft Foundry, with computer use and browser use coming soon to Google Cloud Vertex AI.' } },
+  { '@type': 'Question', name: 'How much does Computer use cost per request?', acceptedAnswer: { '@type': 'Answer', text: 'Computer use follows the standard tool use pricing: declaring computer_toolset_20260801 adds about 4,500 input tokens to a request (~4,520 on Fable 5, Mythos 5, Opus 5, Opus 4.8; ~4,590 on Sonnet 5). Disabling zoom with configs removes ~410 tokens. Screenshot and zoom images returned in tool results are billed as image input on top of the model base price (Sonnet 5 $2/$10 per M, Opus 5 $5/$25, Haiku 4.5 $1/$5, Fable 5 $10/$50).' } },
+  { '@type': 'Question', name: 'What does the Skills API actually do?', acceptedAnswer: { '@type': 'Answer', text: 'The Skills API lets you upload and version your own skills (folders of instructions, scripts, and templates) and attach them to any Claude request. Skills run in Claude\u2019s code execution sandbox, so there is no skill-hosting infrastructure to operate. Endpoints: POST /v1/skills, GET /v1/skills, GET /v1/skills/{id}, DELETE /v1/skills/{id}, plus /v1/skills/{id}/versions for versioning. Sources can be custom (private to your workspace), anthropic, anthropic_example, or plugin.' } },
+  { '@type': 'Question', name: 'What changed in the Files API?', acceptedAnswer: { '@type': 'Answer', text: 'The Files API now ships automatic file expiration, 5x higher rate limits, and 1 TB of storage per organization. Files are referenced by ID in later requests instead of being re-uploaded, and agent-produced files can be downloaded by ID, which removes the re-upload tax for long-running agent workflows.' } },
+  { '@type': 'Question', name: 'What is the browser use tool inside computer use?', acceptedAnswer: { '@type': 'Answer', text: 'Browser use is a new member of the computer use toolset that reads the DOM structure of the page alongside the screenshot and targets specific fields and buttons rather than raw pixel coordinates. It uses the same multi-action turn model as computer use and lands inside computer use (no separate tool name), which means existing computer use integrations can opt in by enabling the new toolset version.' } },
+  { '@type': 'Question', name: 'How does this compare to OpenAI\u2019s computer use preview?', acceptedAnswer: { '@type': 'Answer', text: 'OpenAI launched its computer use preview in January 2025 with a separate computer-use-preview model. Anthropic\u2019s GA approach is broader: computer use runs on production Claude models (Sonnet 5, Opus 5, Haiku 4.5, Fable 5) with a single toolset name (computer_toolset_20260801) instead of a dedicated model, and adds browser use, the Skills API, and the Files API as first-class peers rather than a screenshot-only loop.' } },
+] };
+
+const affiliateSidebar = { title: 'Try FreeModel multi-vendor routing', description: 'One API key across Qwen, DeepSeek, OpenAI, Anthropic, Google and more — OpenAI-compatible, with per-model reasoning controls and simpler cross-region failover.', url: 'https://freemodel.dev/invite/FRE-7a3b6220', cta: 'Free trial' };
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Anthropic Computer Use + Skills API + Files API 2026: Pricing, Browser Use Tool, and 1 TB Storage</h1>
+<p class="text-gray-700 leading-relaxed my-4">On <strong>August 20, 2026</strong> Anthropic moved three agent-building blocks to general availability on the Claude Platform — <strong>Computer use</strong>, the <strong>Skills API</strong>, and the <strong>Files API</strong> — and added a new <strong>browser use tool</strong> inside computer use. Together they describe a single loop: an agent that <em>sees</em> an application, applies your team\u2019s expertise from a skill, retrieves your documents by ID, and writes finished files back. This is also the first time Computer use is HIPAA-eligible under a BAA, which is a real change for healthcare and insurance workflows.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For API consumers the interesting questions are <strong>how much does each request cost</strong>, <strong>what new surface area do you actually have to integrate</strong>, and <strong>how does it compare to OpenAI\u2019s computer use preview</strong>. We pulled pricing and endpoint specs straight from <a href="https://claude.com/blog/computer-use-skills-api-files-api" class="text-blue-600 hover:underline">Anthropic\u2019s GA announcement</a>, the <a href="https://docs.anthropic.com/en/docs/agents-and-tools/computer-use" class="text-blue-600 hover:underline">Computer use docs</a>, the <a href="https://docs.anthropic.com/en/api/skills" class="text-blue-600 hover:underline">Skills API reference</a>, and the live <a href="https://www.anthropic.com/pricing" class="text-blue-600 hover:underline">anthropic.com/pricing</a> page to answer all three.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Pricing: per-token base + ~4,500-token toolset overhead</h2>
+<p class="text-gray-700 leading-relaxed my-4">Computer use follows Anthropic\u2019s standard tool-use pricing: you pay the model\u2019s input/output rate plus the screenshot/image rate for visual results. On top of that, declaring the new toolset adds a fixed input-token overhead:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+  <li><strong>~4,500 input tokens</strong> to declare <code class="bg-gray-100 px-1 rounded text-sm">computer_toolset_20260801</code> with default members (covers tool definitions + the tool-use system prompt).</li>
+  <li><strong>~4,520</strong> on Claude Fable 5, Mythos 5, Opus 5, and Opus 4.8; <strong>~4,590</strong> on Claude Sonnet 5.</li>
+  <li>Disabling zoom with <code class="bg-gray-100 px-1 rounded text-sm">configs</code> removes <strong>~410</strong> of those tokens.</li>
+  <li>Screenshot and zoom images returned in tool results are billed as <strong>image input</strong> (see Vision pricing on each model page).</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The base model prices that matter (verified live on <code class="bg-gray-100 px-1 rounded text-sm">anthropic.com/pricing</code>, 2026-08-25):</p>
+
+<table class="min-w-full bg-white border border-gray-200 my-4 text-sm">
+  <thead><tr class="bg-gray-50"><th class="px-4 py-2 text-left">Model</th><th class="px-4 py-2 text-left">Input</th><th class="px-4 py-2 text-left">Output</th><th class="px-4 py-2 text-left">Cache write</th><th class="px-4 py-2 text-left">Cache read</th></tr></thead>
+  <tbody>
+    <tr class="border-t border-gray-200"><td class="px-4 py-2"><strong>Haiku 4.5</strong></td><td class="px-4 py-2">$1 / MTok</td><td class="px-4 py-2">$5 / MTok</td><td class="px-4 py-2">$1.25 / MTok</td><td class="px-4 py-2">$0.10 / MTok</td></tr>
+    <tr class="border-t border-gray-200"><td class="px-4 py-2"><strong>Sonnet 5</strong></td><td class="px-4 py-2">$2 / MTok</td><td class="px-4 py-2">$10 / MTok</td><td class="px-4 py-2">$2.50 / MTok</td><td class="px-4 py-2">$0.20 / MTok</td></tr>
+    <tr class="border-t border-gray-200"><td class="px-4 py-2"><strong>Opus 5</strong></td><td class="px-4 py-2">$5 / MTok</td><td class="px-4 py-2">$25 / MTok</td><td class="px-4 py-2">$6.25 / MTok</td><td class="px-4 py-2">$0.50 / MTok</td></tr>
+    <tr class="border-t border-gray-200"><td class="px-4 py-2"><strong>Fable 5</strong></td><td class="px-4 py-2">$10 / MTok</td><td class="px-4 py-2">$50 / MTok</td><td class="px-4 py-2">$12.50 / MTok</td><td class="px-4 py-2">$1 / MTok</td></tr>
+  </tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Worked example.</strong> One Claude Opus 5 turn with <code class="bg-gray-100 px-1 rounded text-sm">computer_toolset_20260801</code>, default members, a 1,024&times;768 PNG screenshot, and a 1,000-token assistant message:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+  <li>Toolset overhead: ~4,520 input tokens → $0.0226</li>
+  <li>Screenshot (image input on Opus 5): see Vision pricing; an 800&times;600 screenshot lands in the same per-image band as a single high-res image</li>
+  <li>1,000 output tokens → $0.025</li>
+  <li>Total per turn ≈ $0.05–$0.08 on Opus 5; on Sonnet 5, ~$0.02–$0.04; on Haiku 4.5, ~$0.01–$0.02</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The exact image input count is reported in the response <code class="bg-gray-100 px-1 rounded text-sm">usage</code> block, and you can pre-flight it with the <code class="bg-gray-100 px-1 rounded text-sm">count_tokens</code> endpoint.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Computer use: multi-action turns, browser use tool, HIPAA</h2>
+<p class="text-gray-700 leading-relaxed my-4">Computer use at GA lets Claude <strong>take several actions per turn</strong> instead of one action per model call. The same Anthropic blog post describes a healthcare-customer result (Davide Locatelli, Research Engineer): <em>our longest claims workflow went from 32 minutes to 13, cost per task fell about 30% across every workflow we tested, and completion hit 100%, with no changes to our prompts</em>. The multi-action turn is most of the win — fewer round-trips to the API, fewer cached system-prompt re-charges.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The new <strong>browser use tool</strong> is a member of the same toolset, not a separate tool name. It reads the DOM structure of the page alongside the screenshot, so the agent targets <em>the search input with id="q"</em> rather than <em>pixel (412, 187)</em>. That makes web workflows more reliable than screenshots alone, especially on SPAs that move elements around.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>HIPAA.</strong> Computer use is now eligible for HIPAA-regulated workloads under Anthropic\u2019s Business Associate Agreement. If you handle PHI through a claims or prior-auth agent, this removes the largest compliance blocker that previously forced customers to keep Claude out of the loop entirely.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Skills API: upload-and-version your team\u2019s playbooks</h2>
+<p class="text-gray-700 leading-relaxed my-4">A <strong>skill</strong> is a folder of instructions, scripts, and templates that Claude loads only when a task calls for it. The Skills API lets you upload and version your own skills and attach them to any request; skills run inside Claude\u2019s code execution sandbox, so there is nothing to host. The endpoints we pulled from the <a href="https://docs.anthropic.com/en/api/skills" class="text-blue-600 hover:underline">Skills API reference</a>:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-3 text-sm overflow-x-auto my-4"><code>POST   /v1/skills                       # Create skill
+GET    /v1/skills                       # List skills
+GET    /v1/skills/{skill_id}            # Get one
+DELETE /v1/skills/{skill_id}            # Delete
+POST   /v1/skills/{skill_id}/versions   # Publish a new version
+GET    /v1/skills/{skill_id}/versions   # List versions
+GET    /v1/skills/{skill_id}/versions/{version}
+DELETE /v1/skills/{skill_id}/versions/{version}</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The <code class="bg-gray-100 px-1 rounded text-sm">SkillSource.type</code> field is one of <strong>custom</strong> (your workspace, private), <strong>anthropic</strong> (Anthropic-published, shared, read-only), <strong>anthropic_example</strong> (Anthropic samples), or <strong>plugin</strong> (resolved from an installed plugin). Box\u2019s Matthew Midson described the canonical use case in the GA blog: <em>for a bank, a skill captures the firm\u2019s credit methodology and approved memo format; Box Agent applies it to the financial statements and deal documents already in Box and produces a source-grounded credit memo for analyst review</em>.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Files API: 5x rate limits, 1 TB per org, automatic expiration</h2>
+<p class="text-gray-700 leading-relaxed my-4">The Files API is now production storage for the documents an agent reads and writes. You upload a PDF or spreadsheet once, reference it by ID in later requests instead of re-sending it, and download the files the agent creates. Three concrete upgrades at GA:</p>
+
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+  <li><strong>5x higher rate limits</strong> on the Files endpoints.</li>
+  <li><strong>1 TB of storage per organization</strong> — enough to host a corporate knowledge base without aggressive eviction.</li>
+  <li><strong>Automatic file expiration</strong> — configurable, so you don\u2019t leak old evidence into new runs.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">For long-running agents the win is not paying the input-token tax twice. A 50 MB PDF referenced by ID in ten subsequent turns is one upload cost, not ten.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Code example: a Computer use + Files API loop</h2>
+<p class="text-gray-700 leading-relaxed my-4">Here is a minimal Python loop that uploads a screenshot, lets Claude act on it with multi-action turns, and downloads the file the agent writes back. This is the canonical \u201cclaims agent\u201d shape from Anthropic\u2019s GA blog, simplified.</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-3 text-sm overflow-x-auto my-4"><code>import anthropic
+from pathlib import Path
+
+client = anthropic.Anthropic()
+
+# 1. Upload the intake document once
+intake = client.files.create(
+    file=("intake.pdf", Path("intake.pdf").read_bytes(), "application/pdf"),
+    purpose="file",
+)
+file_id = intake.id  # reference by ID, not bytes, on every later turn
+
+# 2. Multi-action computer use turn (computer_toolset_20260801)
+response = client.messages.create(
+    model="claude-opus-5",
+    max_tokens=4096,
+    tools=[{"type": "computer_toolset_20260801"}],
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "Process the intake and save the confirmation."},
+                {"type": "file", "file_id": file_id},  # Files API reference
+            ],
+        }
+    ],
+)
+
+# 3. Walk every tool_use block (multi-action turn returns a batch)
+for block in response.content:
+    if block.type == "tool_use" and block.name.startswith("computer"):
+        print(block.input)  # {"action": "left_click", "coordinate": [412, 187]}
+
+# 4. Download the file Claude wrote back
+for fid in response.usage.get("output_files", []):
+    file_bytes = client.files.download(fid)
+    Path(fid + ".pdf").write_bytes(file_bytes)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The same call shape works with <strong>Haiku 4.5</strong> for cheap high-volume automation (sub-cent per turn for simple web forms) or with <strong>Fable 5</strong> for the hardest long-running agent loops where the 4,500-token toolset overhead is dwarfed by the actual tool calls.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Speed: why multi-action turns matter more than the toolset overhead</h2>
+<p class="text-gray-700 leading-relaxed my-4">The Locatelli quote — 32 minutes to 13 minutes on the same workflow — is the right way to think about performance. Computer use latency is dominated by the number of round-trips and the size of each screenshot; the per-turn toolset overhead is a flat tax. By collapsing several clicks/keystrokes into one model call, multi-action turns reduce the round-trip count by 3&ndash;5x on typical workflows. On Haiku 4.5 the tax is small (~$0.0045 per turn at $1/M input); on Opus 5 it\u2019s still small relative to the time savings (~$0.0226 per turn).</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For browser use, the DOM-aware targeting means fewer <em>retry on misclick</em> turns — a common silent cost in screenshot-only loops. In Box\u2019s described workflow, the skill itself is what keeps the agent on-task; the Files API keeps the cost per turn flat as documents accumulate.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Availability beyond the Claude Platform</h2>
+<p class="text-gray-700 leading-relaxed my-4">Skills API and Files API are <strong>also available through Microsoft Foundry</strong>; the updated Computer use and browser use tools are <strong>coming soon to Google Cloud Vertex AI</strong>. Existing beta integrations keep working during migration, so an Anthropic-direct integration that you cut over to Vertex AI later will not require a code rewrite. This is the same multi-cloud pattern Anthropic has used for Claude generally since Opus 4.7.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Limitations worth knowing</h2>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+  <li><strong>Prompt injection is still the #1 risk.</strong> Anthropic\u2019s docs explicitly call out: <em>instructions on webpages or contained in images might override your instructions or cause Claude to make mistakes</em>. Treat any computer-use or browser-use agent touching untrusted pages the same way you treat a junior analyst clicking through spam — isolate sensitive data, scope the action set, log everything.</li>
+  <li><strong>The 4,500-token overhead is per turn.</strong> On Haiku 4.5 it is a meaningful fraction of a short request. Disable zoom (saves ~410 tokens) when you don\u2019t need it, and prefer the smallest toolset that does the job.</li>
+  <li><strong>Files API expiration is automatic, not optional.</strong> Configure it deliberately; long-lived evidence files should be re-uploaded or pinned, or your agent will see them vanish.</li>
+  <li><strong>Vertex AI is "coming soon," not GA.</strong> If your stack requires Google Cloud from day one, plan a temporary Anthropic-direct path.</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Who should integrate this week</h2>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+  <li><strong>Healthcare and insurance workflows</strong> that need HIPAA coverage: the BAA eligibility removes the biggest blocker.</li>
+  <li><strong>Banking and financial-services agents</strong> that depend on firm-specific methodology: the Skills API is the right shape for a credit memo, KYC, or compliance-check workflow.</li>
+  <li><strong>Web-form automation at scale</strong>: browser use + Haiku 4.5 turns sub-dollar screenshots into sub-cent actions.</li>
+  <li><strong>Document-heavy agent loops</strong>: Files API 1 TB + 5x rate limits removes the re-upload tax that punished long-running agents under the previous limits.</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verdict</h2>
+<p class="text-gray-700 leading-relaxed my-4">Anthropic\u2019s August 20 GA is not a single product launch — it is a tightly-integrated <em>trio</em>. Computer use (now with browser use) handles the <strong>see and act</strong> loop; the Skills API handles the <strong>apply expertise</strong> loop; the Files API handles the <strong>carry evidence</strong> loop. Pricing stays at the model base rate plus a transparent ~4,500-token toolset overhead, and HIPAA eligibility is the kind of compliance change that quietly unlocks the next wave of enterprise pilots.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you already run Claude for chat or code, the marginal effort to add computer use is small. If you run OpenAI\u2019s computer-use-preview, the comparison worth making is <strong>cost per turn on a real workflow</strong> — Sonnet 5 at $2/$10 with multi-action turns usually beats a dedicated screenshot model once you factor in retry rate. Either way, the Files API alone is worth integrating: 5x rate limits and 1 TB of storage is a real upgrade, not a marketing line.</p>
+
+<p class="text-sm text-gray-500 my-4">Pricing verified against <a href="https://www.anthropic.com/pricing" class="text-blue-600 hover:underline">anthropic.com/pricing</a> and the <a href="https://docs.anthropic.com/en/docs/agents-and-tools/computer-use" class="text-blue-600 hover:underline">Computer use docs</a> on 2026-08-25. Skills API endpoints verified from <a href="https://docs.anthropic.com/en/api/skills" class="text-blue-600 hover:underline">docs.anthropic.com/en/api/skills</a>. GA announcement and customer quotes from <a href="https://claude.com/blog/computer-use-skills-api-files-api" class="text-blue-600 hover:underline">claude.com/blog/computer-use-skills-api-files-api</a>.</p>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={zhCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/" class="hover:underline">Home</a> &rsaquo; <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo; <span class="text-gray-700">{enTitle}</span></nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">Quick Reference</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>GA date:</strong> August 20, 2026</li><li><strong>Computer use overhead:</strong> ~4,500 input tokens</li><li><strong>Tools:</strong> Computer use, Browser use, Skills API, Files API</li><li><strong>Skills API:</strong> POST/GET/DELETE /v1/skills[/{id}[/versions]]</li><li><strong>Files API:</strong> 5x rate limits, 1 TB storage per org</li><li><strong>HIPAA:</strong> Computer use eligible under BAA</li><li><strong>Sonnet 5 base:</strong> $2 in / $10 out per M</li><li><strong>Opus 5 base:</strong> $5 in / $25 out per M</li><li><strong>Haiku 4.5 base:</strong> $1 in / $5 out per M</li><li><strong>Fable 5 base:</strong> $10 in / $50 out per M</li></ul></div><div class="bg-blue-50 border border-blue-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">{affiliateSidebar.title}</h3><p class="text-sm text-gray-700 mb-2">{affiliateSidebar.description}</p><a href={affiliateSidebar.url} class="inline-block bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700">{affiliateSidebar.cta}</a></div></aside>
+    </div>
+  </main>
+</BaseLayout>

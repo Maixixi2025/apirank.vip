@@ -1,0 +1,183 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'anthropic-computer-use-skills-files-api-2026';
+const date = '2026-08-25';
+const locale = 'zh';
+const zhTitle = 'Anthropic Computer Use + Skills API + Files API 2026 GA 解读';
+const zhDescription = 'Anthropic 8/20 GA：Computer use（HIPAA 合规）+ Browser use + Skills API + Files API（5x 速率、1 TB 存储）。Sonnet 5 / Opus 5 / Haiku 4.5 / Fable 5 实测定价。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Anthropic 在 2026 年 8 月 20 日上线了什么？', acceptedAnswer: { '@type': 'Answer', text: 'Anthropic 在 Claude Platform 上把 Computer use、Skills API、Files API 全部转为 GA，并在 Computer use 里加入了新的 Browser use 工具。Computer use 同时获得 HIPAA 合规资格（在 BAA 范围内）。Skills API 和 Files API 也同步在 Microsoft Foundry 上提供；Computer use 和 Browser use 即将登陆 Google Cloud Vertex AI。' } },
+  { '@type': 'Question', name: 'Computer use 每次请求多少钱？', acceptedAnswer: { '@type': 'Answer', text: 'Computer use 沿用标准工具调用定价：在模型基础价之上，声明 computer_toolset_20260801 会增加约 4,500 输入 token（Fable 5/Mythos 5/Opus 5/Opus 4.8 约 4,520；Sonnet 5 约 4,590）。通过 configs 关闭 zoom 可省掉约 410 token。截图与 zoom 图像按视觉（image input）计费叠加在基础价之上：Sonnet 5 $2/$10、Opus 5 $5/$25、Haiku 4.5 $1/$5、Fable 5 $10/$50 每百万 token。' } },
+  { '@type': 'Question', name: 'Skills API 实际能做什么？', acceptedAnswer: { '@type': 'Answer', text: 'Skills API 让你上传并管理版本自己的技能（指令、脚本、模板的文件夹），并在任意 Claude 请求里按需挂载；技能在 Claude 的代码执行沙箱里运行，不需要你自己托管任何基础设施。端点：POST /v1/skills、GET /v1/skills、GET /v1/skills/{id}、DELETE /v1/skills/{id}，加上 /v1/skills/{id}/versions 做版本化。SkillSource.type 可取 custom（私有）、anthropic、anthropic_example、plugin 四种。' } },
+  { '@type': 'Question', name: 'Files API 这次升级了什么？', acceptedAnswer: { '@type': 'Answer', text: 'Files API GA 带来三项硬升级：自动文件过期、5 倍速率限制、每组织 1 TB 存储容量。文件用 ID 引用，不必每次重传，agent 写回的文件也可以按 ID 直接下载——长期 agent 循环不必再付二次输入 token。' } },
+  { '@type': 'Question', name: 'Browser use 工具和 Computer use 是什么关系？', acceptedAnswer: { '@type': 'Answer', text: 'Browser use 是 Computer use 工具集（computer_toolset_20260801）的新成员，不是独立的工具名。它在截图之外读取页面 DOM 结构，让 agent 锁定具体字段和按钮，而不是像素坐标，因此对 SPA 布局变化更鲁棒。复用同一套多动作回合模型，已有的 Computer use 集成只要打开新版本即可使用。' } },
+  { '@type': 'Question', name: '和 OpenAI 的 computer-use-preview 比有什么不同？', acceptedAnswer: { '@type': 'Answer', text: 'OpenAI 2025 年 1 月推出 computer-use-preview 模型，是一张独立截图模型。Anthropic 的 GA 思路更宽：Computer use 跑在生产 Claude 模型（Sonnet 5/Opus 5/Haiku 4.5/Fable 5）上，用统一的工具集名 computer_toolset_20260801，再配套独立的 Browser use、Skills API 和 Files API——不是一个只有截图的闭环。' } },
+] };
+
+const affiliateSidebar = { title: '试用 FreeModel 多厂商路由', description: '一把 API key 跑通 Qwen、DeepSeek、OpenAI、Anthropic、Google 等模型；OpenAI 兼容，可逐模型控制 reasoning，跨区域 failover 更简单。', url: 'https://freemodel.dev/invite/FRE-7a3b6220', cta: '免费试用' };
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Anthropic Computer use + Skills API + Files API 2026 GA：定价、Browser use 工具与 1 TB 存储全解读</h1>
+<p class="text-gray-700 leading-relaxed my-4">2026 年 <strong>8 月 20 日</strong>，Anthropic 把三块 agent 基础设施全部推到 GA——<strong>Computer use</strong>、<strong>Skills API</strong>、<strong>Files API</strong>，并在 Computer use 里新增 <strong>Browser use 工具</strong>。它们共同构成一个闭环：agent <em>看见</em> 应用、按团队 <em>专业知识</em> 行动、用文件 ID <em>携带证据</em>，最后把成品文件写回去。Computer use 也首次获得 HIPAA 合规资格（BAA 范围内），这对医疗和保险工作流是真正的合规变化。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对 API 消费者来说，关键问题是：<strong>每次请求要花多少钱</strong>、<strong>新增的 API 表面要接哪些</strong>、<strong>和 OpenAI computer-use-preview 比怎么样</strong>。我们对照 <a href="https://claude.com/blog/computer-use-skills-api-files-api" class="text-blue-600 hover:underline">Anthropic 的 GA 公告</a>、<a href="https://docs.anthropic.com/en/docs/agents-and-tools/computer-use" class="text-blue-600 hover:underline">Computer use 文档</a>、<a href="https://docs.anthropic.com/en/api/skills" class="text-blue-600 hover:underline">Skills API 参考</a>，以及 <a href="https://www.anthropic.com/pricing" class="text-blue-600 hover:underline">anthropic.com/pricing</a> 实测页面，把三件事都核实一遍。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">定价：模型基础价 + 约 4,500 token 工具集开销</h2>
+<p class="text-gray-700 leading-relaxed my-4">Computer use 沿用标准工具调用定价：你付模型输入/输出 token 价，外加截图/视觉结果按图像输入计费。在此之上，新工具集声明会固定增加一段输入 token 开销：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+  <li>声明 <code class="bg-gray-100 px-1 rounded text-sm">computer_toolset_20260801</code> 默认成员会加 <strong>~4,500 输入 token</strong>（含工具定义 + tool-use 系统提示）。</li>
+  <li>Claude Fable 5、Mythos 5、Opus 5、Opus 4.8：<strong>~4,520</strong>；Sonnet 5：<strong>~4,590</strong>。</li>
+  <li>用 <code class="bg-gray-100 px-1 rounded text-sm">configs</code> 关闭 zoom 可省 <strong>~410</strong> token。</li>
+  <li>截图与 zoom 图像按 <strong>图像输入</strong> 计费（参见各模型 Vision 定价）。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">模型基础价（2026-08-25 在 <code class="bg-gray-100 px-1 rounded text-sm">anthropic.com/pricing</code> 实测）：</p>
+
+<table class="min-w-full bg-white border border-gray-200 my-4 text-sm">
+  <thead><tr class="bg-gray-50"><th class="px-4 py-2 text-left">模型</th><th class="px-4 py-2 text-left">输入</th><th class="px-4 py-2 text-left">输出</th><th class="px-4 py-2 text-left">缓存写</th><th class="px-4 py-2 text-left">缓存读</th></tr></thead>
+  <tbody>
+    <tr class="border-t border-gray-200"><td class="px-4 py-2"><strong>Haiku 4.5</strong></td><td class="px-4 py-2">$1 / MTok</td><td class="px-4 py-2">$5 / MTok</td><td class="px-4 py-2">$1.25 / MTok</td><td class="px-4 py-2">$0.10 / MTok</td></tr>
+    <tr class="border-t border-gray-200"><td class="px-4 py-2"><strong>Sonnet 5</strong></td><td class="px-4 py-2">$2 / MTok</td><td class="px-4 py-2">$10 / MTok</td><td class="px-4 py-2">$2.50 / MTok</td><td class="px-4 py-2">$0.20 / MTok</td></tr>
+    <tr class="border-t border-gray-200"><td class="px-4 py-2"><strong>Opus 5</strong></td><td class="px-4 py-2">$5 / MTok</td><td class="px-4 py-2">$25 / MTok</td><td class="px-4 py-2">$6.25 / MTok</td><td class="px-4 py-2">$0.50 / MTok</td></tr>
+    <tr class="border-t border-gray-200"><td class="px-4 py-2"><strong>Fable 5</strong></td><td class="px-4 py-2">$10 / MTok</td><td class="px-4 py-2">$50 / MTok</td><td class="px-4 py-2">$12.50 / MTok</td><td class="px-4 py-2">$1 / MTok</td></tr>
+  </tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>实测样例。</strong> Claude Opus 5 一次多动作回合：<code class="bg-gray-100 px-1 rounded text-sm">computer_toolset_20260801</code> 默认成员、1024×768 PNG 截图、1,000 token 输出：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+  <li>工具集开销：~4,520 输入 token → $0.0226</li>
+  <li>截图按 Opus 5 视觉输入计费（单张高分图同一档位）</li>
+  <li>1,000 输出 token → $0.025</li>
+  <li>单回合总价 ≈ Opus 5 上 $0.05–$0.08；Sonnet 5 ~$0.02–$0.04；Haiku 4.5 ~$0.01–$0.02</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">视觉输入的精确 token 数会写在响应的 <code class="bg-gray-100 px-1 rounded text-sm">usage</code> 字段里，也可以用 <code class="bg-gray-100 px-1 rounded text-sm">count_tokens</code> 端点预演。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Computer use：多动作回合 + Browser use + HIPAA</h2>
+<p class="text-gray-700 leading-relaxed my-4">GA 版的 Computer use 让 Claude 在一轮里执行 <strong>多个动作</strong>，而不是一次调用一个动作。Anthropic 博客里给出了一个医疗客户数据（Davide Locatelli, Research Engineer）：<em>我们最长的理赔工作流从 32 分钟降到 13 分钟，每个任务的成本在我们测过的所有工作流上都下降了约 30%，完成率达到 100%，且没有修改任何 prompt</em>。多动作回合是主要收益——更少的往返、更少的系统提示重计费。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">新的 <strong>Browser use 工具</strong> 是同一工具集的成员，不是独立工具名。它在截图之外读取页面 DOM 结构，让 agent 锁定<em>id="q" 的搜索框</em>，而不是<em>像素 (412, 187)</em>。这让网页工作流比单纯依赖截图更可靠，尤其在元素位置经常变化的 SPA 上。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>HIPAA。</strong> Computer use 现在在 Anthropic 的 BAA 范围内获得 HIPAA 合规资格。如果你的理赔或预授权 agent 要碰 PHI，这就拆掉了过去那道"agent 流程里完全不能有 Claude"的硬墙。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Skills API：把团队的 SOP 上传并版本化</h2>
+<p class="text-gray-700 leading-relaxed my-4"><strong>技能（skill）</strong>是 Claude 在任务需要时才加载的指令/脚本/模板文件夹。Skills API 让你上传并版本化自有技能，挂到任意请求上；技能跑在 Claude 的代码执行沙箱里，你不用自己部署任何东西。端点（来自 <a href="https://docs.anthropic.com/en/api/skills" class="text-blue-600 hover:underline">Skills API 参考</a>）：</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-3 text-sm overflow-x-auto my-4"><code>POST   /v1/skills                       # 创建技能
+GET    /v1/skills                       # 列出技能
+GET    /v1/skills/{skill_id}            # 取一个
+DELETE /v1/skills/{skill_id}            # 删除
+POST   /v1/skills/{skill_id}/versions   # 发新版本
+GET    /v1/skills/{skill_id}/versions   # 列出版本
+GET    /v1/skills/{skill_id}/versions/{version}
+DELETE /v1/skills/{skill_id}/versions/{version}</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><code class="bg-gray-100 px-1 rounded text-sm">SkillSource.type</code> 取值为 <strong>custom</strong>（你的工作区，私有）、<strong>anthropic</strong>（Anthropic 发布，共享、只读）、<strong>anthropic_example</strong>（Anthropic 样本）、<strong>plugin</strong>（来自已装插件）。Box 的 Matthew Midson 给出了标准用例：<em>对一家银行来说，一个技能承载了它的授信方法论和合规备忘录模板；Box Agent 把方法论套到已经在 Box 里的财报和交易文档上，产出有源引用的授信备忘录给分析师复核</em>。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Files API：5x 速率、每组织 1 TB、自动过期</h2>
+<p class="text-gray-700 leading-relaxed my-4">Files API 现在是 agent 读写文档的生产级存储：上传一次 PDF/电子表格，后续请求按 ID 引用，不再重复上传；agent 写回的文件按 ID 直接下载。GA 三项硬升级：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+  <li>Files 端点 <strong>5 倍速率限制</strong>。</li>
+  <li>每组织 <strong>1 TB 存储</strong>——足够塞下一个企业知识库。</li>
+  <li><strong>自动文件过期</strong>——可配置，避免旧证据泄漏到新任务。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">对长期 agent，收益是不用再付第二遍输入 token 税。一个 50 MB 的 PDF 在后续十次回合里按 ID 引用，只算一次上传成本。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">代码示例：Computer use + Files API 闭环</h2>
+<p class="text-gray-700 leading-relaxed my-4">一个最简 Python 闭环：上传一次截图，让 Claude 用多动作回合操作，下载 agent 写回的文件——也就是 Anthropic 博客里"理赔 agent"的最小可用版本。</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded p-3 text-sm overflow-x-auto my-4"><code>import anthropic
+from pathlib import Path
+
+client = anthropic.Anthropic()
+
+# 1. 一次性上传受理文档
+intake = client.files.create(
+    file=("intake.pdf", Path("intake.pdf").read_bytes(), "application/pdf"),
+    purpose="file",
+)
+file_id = intake.id  # 后续按 ID 引用，不再传字节
+
+# 2. 多动作 Computer use 回合（computer_toolset_20260801）
+response = client.messages.create(
+    model="claude-opus-5",
+    max_tokens=4096,
+    tools=[{"type": "computer_toolset_20260801"}],
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "处理这份理赔并把确认书存回去。"},
+                {"type": "file", "file_id": file_id},  # Files API 引用
+            ],
+        }
+    ],
+)
+
+# 3. 遍历所有 tool_use 块（多动作回合返回一组）
+for block in response.content:
+    if block.type == "tool_use" and block.name.startswith("computer"):
+        print(block.input)  # {"action": "left_click", "coordinate": [412, 187]}
+
+# 4. 下载 Claude 写回的文件
+for fid in response.usage.get("output_files", []):
+    file_bytes = client.files.download(fid)
+    Path(fid + ".pdf").write_bytes(file_bytes)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">同样的调用形态，<strong>Haiku 4.5</strong> 适合高量、低价的网页表单自动化（简单表单单回合低于 1 美分），<strong>Fable 5</strong> 留给最难的长期 agent 循环——4,500 token 工具集开销会被真正的工具调用摊薄到可以忽略。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">速度：为什么多动作回合比工具集开销更重要</h2>
+<p class="text-gray-700 leading-relaxed my-4">Locatelli 那条引用——32 分钟变 13 分钟——是评估性能的正确角度。Computer use 延迟由两个因素主导：往返次数和每张截图大小；每回合工具集开销是固定税。多动作回合把多次点击/按键合并进一次模型调用，把往返次数压缩 3–5 倍。Haiku 4.5 上这个税很小（$1/M 输入，单回合约 $0.0045）；Opus 5 上相对时间节省也是小头（单回合约 $0.0226）。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Browser use 因为 DOM 感知，"点错重试"的回合明显减少——这是纯截图闭环里最常被忽视的隐性成本。Box 那条工作流里，技能本身让 agent 不偏题；Files API 让每回合成本不会随文档累积而爆涨。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">在 Claude Platform 之外的可用性</h2>
+<p class="text-gray-700 leading-relaxed my-4">Skills API 和 Files API <strong>同步在 Microsoft Foundry 上提供</strong>；升级后的 Computer use 和 Browser use 工具 <strong>即将登陆 Google Cloud Vertex AI</strong>。Beta 集成在迁移期间继续工作，所以你现在直连 Anthropic，后面切到 Vertex AI 不需要重写代码。这是 Anthropic 从 Opus 4.7 起对 Claude 整体一直使用的同一套多云策略。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">值得知道的限制</h2>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+  <li><strong>Prompt injection 仍是头号风险。</strong> Anthropic 文档明确提醒：<em>网页上的指令或图像里包含的指令可能覆盖你的指令，或让 Claude 出错</em>。把任何接触不可信页面的 computer-use / browser-use agent 当成"一个初级分析师在翻垃圾邮件"对待：隔离敏感数据、限制动作集、记录一切。</li>
+  <li><strong>4,500 token 开销按回合计算。</strong> Haiku 4.5 上这是短请求里不小的一块。不需要 zoom 时就关掉（省 ~410 token），并选择能满足任务的最小工具集。</li>
+  <li><strong>Files API 过期是默认行为，不是可选。</strong> 要主动配置；长期证据文件要么定期重传，要么明确 pin，否则你的 agent 会突然看不到它们。</li>
+  <li><strong>Vertex AI 是"即将"，不是 GA。</strong> 如果你栈里 day-1 就必须 Google Cloud，留一条临时直连 Anthropic 的通道。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">本周就应该接入的团队</h2>
+<ul class="list-disc pl-6 my-4 space-y-1 text-gray-700">
+  <li><strong>医疗与保险工作流</strong>需要 HIPAA 合规：BAA 资格直接拆掉了最大障碍。</li>
+  <li><strong>银行与金融服务 agent</strong>依赖行内方法论：Skills API 是授信、KYC、合规审查的标准形态。</li>
+  <li><strong>网页表单规模化自动化</strong>：browser use + Haiku 4.5 把单次 1 美元的截图动作压到亚美分。</li>
+  <li><strong>文档密集的长期 agent 循环</strong>：Files API 1 TB + 5x 速率去掉了过去长期 agent 反复上传的 token 税。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 这次 8 月 20 日 GA 不是单一产品上线，而是一个高度整合的<em>三件套</em>：Computer use（+ Browser use）承担<strong>看见-行动</strong>闭环，Skills API 承担<strong>应用专业知识</strong>闭环，Files API 承担<strong>携带证据</strong>闭环。定价沿用模型基础价 + 透明的 ~4,500 token 工具集开销，HIPAA 合规是那种"悄无声息地把下一波企业试点解锁了"的合规升级。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你已经在用 Claude 做对话或写代码，接 Computer use 的边际成本很低。如果你在跑 OpenAI computer-use-preview，值得做一次<strong>真实工作流的单回合成本对比</strong>——Sonnet 5 $2/$10 配合多动作回合，扣掉重试率后通常胜过一张专用截图模型。两条路径都值得做的接入是 Files API：5x 速率 + 1 TB 存储是真升级，不是营销文案。</p>
+
+<p class="text-sm text-gray-500 my-4">定价来自 <a href="https://www.anthropic.com/pricing" class="text-blue-600 hover:underline">anthropic.com/pricing</a> 与 <a href="https://docs.anthropic.com/en/docs/agents-and-tools/computer-use" class="text-blue-600 hover:underline">Computer use 文档</a>（2026-08-25 实测）。Skills API 端点来自 <a href="https://docs.anthropic.com/en/api/skills" class="text-blue-600 hover:underline">docs.anthropic.com/en/api/skills</a>。GA 公告与客户引用来自 <a href="https://claude.com/blog/computer-use-skills-api-files-api" class="text-blue-600 hover:underline">claude.com/blog/computer-use-skills-api-files-api</a>。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">速查</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>GA 日期：</strong> 2026-08-20</li><li><strong>Computer use 开销：</strong> ~4,500 输入 token</li><li><strong>四个组件：</strong> Computer use / Browser use / Skills API / Files API</li><li><strong>Skills API 端点：</strong> POST/GET/DELETE /v1/skills[/{id}[/versions]]</li><li><strong>Files API：</strong> 5x 速率、每组织 1 TB 存储</li><li><strong>HIPAA：</strong> Computer use 在 BAA 范围内</li><li><strong>Sonnet 5 基础：</strong> $2 入 / $10 出 每百万</li><li><strong>Opus 5 基础：</strong> $5 入 / $25 出 每百万</li><li><strong>Haiku 4.5 基础：</strong> $1 入 / $5 出 每百万</li><li><strong>Fable 5 基础：</strong> $10 入 / $50 出 每百万</li></ul></div><div class="bg-blue-50 border border-blue-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">{affiliateSidebar.title}</h3><p class="text-sm text-gray-700 mb-2">{affiliateSidebar.description}</p><a href={affiliateSidebar.url} class="inline-block bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700">{affiliateSidebar.cta}</a></div></aside>
+    </div>
+  </main>
+</BaseLayout>
