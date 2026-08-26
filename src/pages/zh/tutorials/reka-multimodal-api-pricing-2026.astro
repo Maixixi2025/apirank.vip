@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'reka-multimodal-api-pricing-2026';
+const date = '2026-08-26';
+const locale = 'zh';
+const zhTitle = 'Reka 多模态 API 价格 2026：Edge / Flash / Core 模型与已验证成本';
+const zhDescription = 'Reka 多模态 API 评测 2026：Edge $0.10/M、Flash $0.80/M、Core $2.00/M；视频/音频按分钟计费；vLLM 开源权重与 Reka Flash Research agentic 搜索。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+    { '@type': 'Question', name: 'Reka 是什么？', acceptedAnswer: { '@type': 'Answer', text: "Reka（reka.ai）是一家总部位于加州 Sunnyvale 的多模态 AI 公司，2022 年由 Google DeepMind 与 Meta AI 的五位研究员联合创立（联合创始人 Dani Yogatama、Cyprien de Masson d'Autume、Mikel Artetxe、Qi Liu、Yi Tay）。Reka 提供五款原生多模态 chat 模型（Reka Edge / Flash / Core / Spark / Flash Research）以及三个垂直平台（Reka Vision、Research、Speech）。Chat Completions API 与 OpenAI 完全兼容，base_url 为 api.reka.ai/v1，Reka Edge 还提供 vLLM 可部署的开源权重用于本地推理。" } },
+    { '@type': 'Question', name: 'Reka 怎么计费？', acceptedAnswer: { '@type': 'Answer', text: 'Reka 按模型 + 模态计费，定价页 docs.reka.ai/pricing.md 上完整公开。Reka Edge 输入 $0.10 / 输出 $0.10 每百万 token；Reka Flash $0.80 / $2.00；Reka Core $2.00 / $6.00。多模态用量（图像、视频、音频）按次或按分钟独立计费：图像 $0.005-$0.02/次、视频 $0.03-$0.08/分钟、音频 $0.015-$0.02/分钟。Reka Flash Research（reka-flash-research-20250708）按千次请求计费：$25 标准、$35 parallel-thinking 低、$60 parallel-thinking 高。' } },
+    { '@type': 'Question', name: 'Reka 比 OpenAI / Claude 便宜吗？', acceptedAnswer: { '@type': 'Answer', text: 'Reka Flash $0.80/M 输入比 Claude Sonnet 4.5（$3/M 输入）便宜约 4 倍，与 GPT-4.1-mini（$0.40/M 输入）处于同一档位。关键差异：Reka Flash 在一条 chat completion 里原生支持文本+图像+音频+视频，而 Anthropic 没有原生 audio、OpenAI 把多模态拆到不同端点。Reka Core $2.00/$6.00 与 Claude Sonnet 4.5 文本价格相当，但 Reka Core 在同一调用面里覆盖图像与视频。' } },
+    { '@type': 'Question', name: 'Reka 可以自托管吗？', acceptedAnswer: { '@type': 'Answer', text: '可以——Reka Edge 是唯一提供 vLLM 兼容开源权重的 Reka 模型。据 docs.reka.ai/quickstart.md，硬件要求 NVIDIA GPU ≥24GB VRAM；GTX 3090 已验证可达 40-50 token/秒。软件栈要求 Linux + Python 3.10-3.14 + vLLM 0.15.x（不接受 0.16.0）；macOS 不支持本地推理。自托管路径完全绕过 api.reka.ai，适用于中国大陆驻留、数据主权、低于 50ms 延迟或离线运行场景。' } },
+    { '@type': 'Question', name: 'Reka Edge 在 OpenRouter 上吗？', acceptedAnswer: { '@type': 'Answer', text: '在的——根据 reka.ai/news/switch-models-zero-code-changes-reka-edge-now-available-on-openrouter，Reka Edge 已在 OpenRouter 上架，可实现零代码切换。通过 OpenRouter 路由的团队可以把 Reka Edge 加入与 OpenAI、Anthropic、Google 等厂商并列的 failover 轮换，无需修改应用代码。OpenAI 兼容 API + OpenRouter 上架 + vLLM 可部署开源权重这三重组合，让 Reka 在不同部署模式之间有罕见的可移植性。' } },
+    { '@type': 'Question', name: 'Reka 支持中国大陆吗？', acceptedAnswer: { '@type': 'Answer', text: '不直接支持。Reka 总部位于加州 Sunnyvale 530 Lawrence Expressway，api.reka.ai 是单一全球端点，因此从中国大陆的生产流量需要代理或中转，跨太平洋首字节延迟约 150-250ms。绕过方案是自托管 Reka Edge：单张 ≥24GB VRAM 的 NVIDIA GPU（已在 GTX 3090 上验证）可通过 vLLM 以 40-50 token/秒跑模型，完全脱离 api.reka.ai，满足中国大陆驻留要求。' } }
+] };
+const affiliateSidebar = { title: '试试 FreeModel 多厂商路由', description: '一个 API Key 打通 OpenAI、Anthropic、Google、DeepSeek、Qwen 等厂商，OpenAI 兼容，支持按模型调 reasoning_effort，agent 技术栈的跨区切换不再繁琐。', url: 'https://freemodel.dev/invite/FRE-7a3b6220', cta: '免费试用' };
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Reka 多模态 API 价格 2026：Edge / Flash / Core 模型与已验证成本</h1>
+<p class="text-gray-700 leading-relaxed my-4">2026 年关于"AI API 应该长什么样"的讨论，沿着一道未被广泛提及的断层线分裂：大多数厂商现在把多模态作为独立端点附加（<strong>OpenAI</strong> 把 <code class="bg-gray-100 px-1 rounded text-sm">/v1/audio</code> + <code class="bg-gray-100 px-1 rounded text-sm">/v1/images</code> 拆成相邻产品，<strong>Google</strong> 分 Vision 与 Audio，<strong>Anthropic</strong> 至今没有原生 audio）。<strong>Reka</strong>（法人实体 Reka, Inc.，加州 Sunnyvale；2022 年由 Google DeepMind 与 Meta AI 的五位研究员联合创立，包括 Yi Tay 与 Mikel Artetxe）反向押注：多模态不是特性开关，而是模型本身。Reka Edge、Reka Flash、Reka Core 都在一条 chat completion message 里原生接受图像、视频、音频块，开发者无需在调用之外再接 OCR、STT 或视频帧抽取。本评测覆盖 docs.reka.ai/pricing（2026-08-26 抓取）上已验证的 per-token 与 per-minute 价格、vLLM 可部署的 Reka Edge 开源权重（据 docs.reka.ai/quickstart，GTX 3090 单卡 40-50 tok/s），以及 Reka 在 GPT-4.1、Claude Sonnet 4.5、Gemini 之间的定位。</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 一句话结论：</strong>Reka 是一家<strong>湾区多模态基础模型厂商</strong>，提供五款原生多模态 chat 模型（Reka Edge $0.10/$0.10 每百万、Reka Flash $0.80/$2.00、Reka Core $2.00/$6.00），叠加按分钟计费的视频/音频，以及按请求计费的 agentic 网络研究模型（Reka Flash Research，标准 $25/千次）。定价为纯按量付费、无最低承诺。差异化点是 Reka Edge：vLLM 兼容的开源权重可在单张 NVIDIA GPU（≥24GB VRAM，GTX 3090 验证 40-50 tok/s）上本地运行，完全绕过云端。代价：Reka 名气不及 OpenAI/Anthropic/Google，第三方 SDK 与教程生态较薄；没有中国大陆直连端点；Reka Spark 已出现在产品目录但暂未通过公开 API 开放。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Reka 究竟是什么</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><a href="https://reka.ai" rel="noopener" target="_blank">Reka</a> 由 Google DeepMind、Meta AI 等实验室的五位研究员于 2022 年联合创立（联合创始人：Dani Yogatama、Cyprien de Masson d'Autume、Mikel Artetxe、Qi Liu、Yi Tay）。公司总部位于加州 Sunnyvale 530 Lawrence Expressway，注册主体为 Reka, Inc.（已通过 reka.ai 上的 Organization JSON-LD 验证）。Reka 的产品目录分为两组：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700"><li><strong>基础模型</strong>：Reka Spark（超紧凑，面向端侧设备）、Reka Edge（紧凑，面向设备端执行）、Reka Flash（高性价比主力模型）、Reka Core（旗舰复杂推理）、Reka Flash Research（agentic 网络研究）。</li><li><strong>垂直平台</strong>：Reka Vision（视频 + 图像搜索、问答、生成）、Reka Research（复杂多步研究）、Reka Speech（超越转写的音频理解）。</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Reka Spark 当前已在 reka.ai 产品目录中列出，但暂未通过公开 API 开放（通过在公开端点上枚举 <code class="bg-gray-100 px-1 rounded text-sm">/v1/models</code> 验证——基线集合里只有 <code class="bg-gray-100 px-1 rounded text-sm">reka-flash</code> 和 <code class="bg-gray-100 px-1 rounded text-sm">reka-edge</code>，据 <a href="https://docs.reka.ai/chat/models.md" rel="noopener" target="_blank">docs.reka.ai/chat/models.md</a>）。生产路径是 Chat Completions：<code class="bg-gray-100 px-1 rounded text-sm">base_url=https://api.reka.ai/v1</code>，鉴权用 <code class="bg-gray-100 px-1 rounded text-sm">X-Api-Key</code> 请求头。Reka Vision 有独立的 per-minute 价格阶梯（下文展开），并对外暴露托管 MCP 服务器（<code class="bg-gray-100 px-1 rounded text-sm">https://docs.reka.ai/_mcp/server</code>）供 Claude Code、Cursor 等 MCP-aware 客户端调用。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Reka 价格 2026：docs.reka.ai 已验证</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><a href="https://docs.reka.ai/pricing.md" rel="noopener" target="_blank">docs.reka.ai/pricing.md</a>（2026-08-26 抓取）上的定价结构按 model + 模态区分。Reka Chat token 按百万计费；多模态用量（图像、视频、音频）按次或按分钟单独计费，与文本 token 独立：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700"><li><strong>Reka Edge</strong>：输入 $0.10 / 输出 $0.10 每百万 token。图像 $0.005/次。视频 $0.03/分钟。不支持 audio。超紧凑模型，面向设备端执行；vLLM 兼容开源权重。</li><li><strong>Reka Flash</strong>：输入 $0.80 / 输出 $2.00 每百万 token。图像 $0.01/次。视频 $0.06/分钟。音频 $0.015/分钟。面向日常任务的高性价比模型。</li><li><strong>Reka Core</strong>：输入 $2.00 / 输出 $6.00 每百万 token。图像 $0.02/次。视频 $0.08/分钟。音频 $0.02/分钟。面向复杂推理任务的旗舰模型。</li><li><strong>Reka Flash Research</strong>（reka-flash-research-20250708）：标准 $25/千次请求，parallel-thinking（低）$35/千次，parallel-thinking（高）$60/千次。支持跨 web 的复杂多步推理的 agentic 研究模型。</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">相对于闭源旗舰的定价位置很有看点。Reka Flash $0.80/M 输入比 Claude Sonnet 4.5（$3/M 输入）便宜约 4 倍，与 GPT-4.1-mini（$0.40/M 输入）同一档——但 Reka Flash 在一条 message 里原生接受图像、视频、音频块，而 Anthropic 没有原生 audio，OpenAI 把模态拆到独立端点。Reka Core $2.00/$6.00 与 Claude Sonnet 4.5 文本价格相当，但 Reka Core 在同一调用面里覆盖图像与视频。按量模型无最低承诺：在 <a href="https://platform.reka.ai" rel="noopener" target="_blank">platform.reka.ai</a> 注册、充值额度即可使用 API，没有永久免费档。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">多模态定价：按分钟的视频与音频</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">视频与音频的 per-minute 定价在业内并不常见。多数 LLM API 要么把多模态并入 per-token 定价（Gemini），要么按图像/文件上传次数计费（OpenAI Vision）。Reka 的 per-minute 定价针对视频与音频工作负载校准：成本由内容时长驱动，而非 prompt 大小。</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700"><li><strong>视频处理</strong>：Reka Edge $0.03/分钟、Reka Flash $0.06/分钟、Reka Core $0.08/分钟。一段 10 分钟的视频片段用 Reka Core 分析成本 $0.80。</li><li><strong>音频处理</strong>：Reka Flash $0.015/分钟、Reka Core $0.02/分钟。一段 30 分钟播客用 Reka Core 分析成本 $0.60。（Reka Edge 不支持 audio。）</li><li><strong>图像处理</strong>：Reka Edge $0.005/张、Reka Flash $0.01/张、Reka Core $0.02/张——按次计费，与分辨率无关。</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">定价结构鼓励按工作负载选用合适的模型：短片段或低分辨率帧用 Reka Edge（同一调用面支持图像、短视频、文本），典型多模态工作负载用 Reka Flash，Reka Core 只在需要对长视频或高保真音频做复杂多步推理时使用。Reka Vision 平台有独立的 per-minute 视频定价阶梯（<a href="https://docs.reka.ai/vision/pricing.md" rel="noopener" target="_blank">docs.reka.ai/vision/pricing.md</a>），服务于视频搜索、问答、生成等场景。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Reka Edge 开源权重：vLLM 单卡 40-50 tok/s</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Reka Edge 是值得深挖的差异化点。据 <a href="https://docs.reka.ai/quickstart.md" rel="noopener" target="_blank">docs.reka.ai/quickstart.md</a>，Reka Edge 通过 vLLM 0.15.x 在 ≥24GB VRAM 的 NVIDIA GPU 上本地运行——文档明确引用 GTX 3090 单卡 40-50 token/秒的本地服务性能。这条路径适合以下团队：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700"><li><strong>中国大陆驻留</strong>或严格的数据主权需求——把模型托管在自己的基础设施上，无需调用 api.reka.ai。</li><li><strong>低于 50ms 延迟</strong>——单卡本地推理快于任何云端往返。</li><li><strong>离线运行</strong>——Reka Edge 模型规模足以在单张消费级 GPU 的工作站上运行。</li><li><strong>无 per-token 计费波动</strong>——按 GPU 固定成本付费，不按 API 调用。</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">硬件要求（NVIDIA GPU、≥24GB VRAM、Linux；macOS 不支持服务）是主要约束。支持的软件栈是 NVIDIA CUDA + vLLM 0.15.x（文档明确排除 vLLM 0.16.0 与 Python 3.10-3.14 之外的版本）。对于已经在基础设施中配备 NVIDIA GPU 的团队，Reka Edge 是替代 OpenAI Vision + GPT-4 + Whisper 拼接的多模态工作负载的有力选项。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">OpenAI 兼容与 OpenRouter 上架</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Reka 的 Chat API 与 OpenAI 兼容，base_url 为 <code class="bg-gray-100 px-1 rounded text-sm">https://api.reka.ai/v1</code>。官方 OpenAI Python SDK 可直接替换使用——把 <code class="bg-gray-100 px-1 rounded text-sm">base_url</code> 改成 Reka 端点，把 <code class="bg-gray-100 px-1 rounded text-sm">X-Api-Key</code> 作为 <code class="bg-gray-100 px-1 rounded text-sm">api_key</code> 传入，chat completions 调用无需任何修改即可走通。Reka Edge 还已上架 <a href="https://reka.ai/news/switch-models-zero-code-changes-reka-edge-now-available-on-openrouter" rel="noopener" target="_blank">OpenRouter</a>（见 reka.ai 新闻帖"Switch models with zero code changes: Reka Edge now available on OpenRouter"），通过 OpenRouter 路由的团队无需改动应用代码即可把 Reka Edge 加入 failover 轮换。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">这一组合——OpenAI 兼容 API + OpenRouter 上架 + vLLM 可部署开源权重——让 Reka 异常便于移植。团队可以用托管 API 起步做原型，生产切到自托管 Reka Edge，再通过 OpenRouter 做跨厂商 failover，全程不需要改调用模型的代码。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Reka Flash Research：$25/千次请求的 agentic 网络研究</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Reka Flash Research 是 Reka 在 agentic 搜索赛道的入场券，与 Perplexity Sonar 和 OpenAI deep-research 同台。定价按 1K 请求：$25 标准、$35 parallel-thinking（低）、$60 parallel-thinking（高）。模型 ID 是 <code class="bg-gray-100 px-1 rounded text-sm">reka-flash-research</code>（版本 <code class="bg-gray-100 px-1 rounded text-sm">reka-flash-research-20250708</code>），文档描述为"支持跨 web 的复杂多步研究"。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">per-request 定价与 token 计费模型不同。单次多步研究任务如果触发多轮推理就会产生多次 parallel-thinking 计费。为了让成本可控，应用层需要给每次请求限制 parallel-thinking 步数上限。Perplexity Sonar Pro API 价格是输入 $3/输出 $15 每百万 token——与 Reka Flash Research 哪个更便宜要看 prompt 大小与推理深度，比较不是单维度的。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Reka Vision 与 Reka Speech</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">除 Chat API 外，Reka 还提供三个垂直平台：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700"><li><strong>Reka Vision</strong>（<a href="https://docs.reka.ai/vision/overview.md" rel="noopener" target="_blank">docs.reka.ai/vision</a>）：视频 + 图像搜索、问答、字幕、检测、embedding、高亮片段生成。有独立的 per-minute 视频价格阶梯，并为 AI 客户端提供 MCP 服务器端点。</li><li><strong>Reka Research</strong>：复杂多步研究工作流，作为 Reka Flash Research 的一部分提供。</li><li><strong>Reka Speech</strong>：超越转写的音频理解——从音频源中提取含义、上下文和洞察。</li></ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Vision API 是三个平台中最生产可用的。它支持视频上传、搜索、问答、高亮片段生成、元数据打标、图像管理，并通过托管 MCP 服务器把全部能力暴露给 Claude Code、Cursor 等 AI 客户端。构建 AI 视频工作流的团队可以把 Reka Vision MCP 与 Mixedbread Vision MCP 直接对比。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">中国接入与区域可用性</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Reka 是一家美国公司，全球只有一个 api.reka.ai 端点。没有中国大陆直连端点，从中国的生产流量需要代理或中转——跨太平洋首字节延迟约 150-250ms，与其他美国 AI 平台相当。Reka Edge 的开源权重是中国大陆驻留需求的绕过方案：单张 ≥24GB VRAM 的 NVIDIA GPU（已在 GTX 3090 上验证）通过 vLLM 0.15.x 可达 40-50 token/秒，需要严格数据主权的团队可以把模型托管在自己的基础设施上。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对北美与欧洲，托管 API 在 api.reka.ai 首字节延迟低。Reka Vision API 跑在独立基础设施上，视频按分钟计费。Reka Edge 在 OpenRouter 上路由，延迟剖面取决于 OpenRouter 路由选择。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Reka 适合谁</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Reka 在三个具体场景中是有力的选择：</p>
+
+<ol class="list-decimal pl-6 my-4 space-y-2 text-gray-700"><li><strong>单次调用覆盖多模态的应用</strong>：单次 API 调用同时处理文本+图像+视频+音频，无需拼接 OpenAI 做视觉、Whisper 做音频、再加一个独立视频帧抽取器。per-minute 视频与音频定价按内容时长校准。</li><li><strong>成本敏感的多模态工作负载</strong>：Reka Flash $0.80/M 输入比 Claude Sonnet 4.5 便宜约 4 倍、与 GPT-4.1-mini 同一档，且同一调用支持原生多模态。</li><li><strong>自托管的多模态推理</strong>：Reka Edge 的开源权重通过 vLLM（GTX 3090 单卡 40-50 tok/s）是不需要云 API 调用的少数生产级多模态路径之一——适用于中国大陆驻留、数据主权、低于 50ms 延迟的需求。</li></ol>
+
+<p class="text-gray-700 leading-relaxed my-4">Reka 在以下场景较弱：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700"><li><strong>需要顶级品牌信任度</strong>：Reka 不及 OpenAI、Anthropic、Google 知名，企业合同往往默认选择既有厂商。五位联合创始人的履历（Yi Tay 来自 Google DeepMind、Mikel Artetxe 来自 Meta AI 等）有帮助，但品牌尚未达到同等认知。</li><li><strong>需要中文支持</strong>：所有文档、定价、API 参考均仅提供英文。</li><li><strong>需要 prompt caching 折扣价</strong>：Reka 的定价不区分缓存与全新文本 token，长上下文重复查询的成本优化空间比 OpenAI、Anthropic 有限。</li></ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Reka 是 2026 年最具可信度的多模态原生基础模型厂商。<a href="https://docs.reka.ai/pricing.md" rel="noopener" target="_blank">docs.reka.ai/pricing.md</a> 上的定价已经验证（2026-08-26 抓取）：Reka Edge $0.10/$0.10 每百万 token、Reka Flash $0.80/$2.00、Reka Core $2.00/$6.00，外加 per-minute 视频与音频定价、按请求计费的 Reka Flash Research（$25-$60 每千次）。独特的差异化点是 Reka Edge 的开源权重——单张 NVIDIA GPU 通过 vLLM 即可达到 40-50 token/秒，是需要不依赖云 API 的多模态 AI 团队最强的兜底方案。代价的形状恰好合理：Reka 在相同的多模态工作负载上与 OpenAI、Anthropic 正面竞争，但模型本身开放发布并支持自托管，因此团队可以从托管 API 起步，按成本或合规要求迁移到本地。权威来源是 <a href="https://docs.reka.ai/pricing.md" rel="noopener" target="_blank">定价页</a>、<a href="https://docs.reka.ai/quickstart.md" rel="noopener" target="_blank">quickstart</a>、<a href="https://reka.ai" rel="noopener" target="_blank">reka.ai 产品目录</a>，以及 Reka Edge 上架 OpenRouter 的<a href="https://reka.ai/news/switch-models-zero-code-changes-reka-edge-now-available-on-openrouter" rel="noopener" target="_blank">新闻帖</a>。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果要把 Reka（以及 Claude、GPT、DeepSeek、Qwen）用一个 OpenAI 兼容 key + 跨区 failover 串起来，FreeModel 是最简单的接入：一个 dashboard、一个计费关系、加上路由控制，省掉自己写胶水代码。</p>`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">快速参考</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>厂商：</strong>Reka, Inc.（加州 Sunnyvale）</li><li><strong>成立：</strong>2022 年由 5 位前 Google DeepMind / Meta AI 研究员创立</li><li><strong>模型：</strong>Edge、Flash、Core、Spark、Flash Research</li><li><strong>Edge：</strong>$0.10/$0.10 每百万 token（vLLM 可部署）</li><li><strong>Flash：</strong>$0.80/$2.00 每百万 token</li><li><strong>Core：</strong>$2.00/$6.00 每百万 token</li><li><strong>视频：</strong>$0.03-$0.08/分钟（Edge/Flash/Core）</li><li><strong>音频：</strong>$0.015-$0.02/分钟（Flash/Core）</li><li><strong>Flash Research：</strong>$25-$60/千次请求</li><li><strong>API：</strong>OpenAI 兼容，base_url=api.reka.ai/v1</li></ul></div><div class="bg-blue-50 border border-blue-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">{affiliateSidebar.title}</h3><p class="text-sm text-gray-700 mb-2">{affiliateSidebar.description}</p><a href={affiliateSidebar.url} class="inline-block bg-blue-600 text-white text-sm px-3 py-1.5 rounded hover:bg-blue-700">{affiliateSidebar.cta}</a></div></aside>
+    </div>
+  </main>
+</BaseLayout>
