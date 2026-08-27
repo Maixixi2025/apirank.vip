@@ -15459,5 +15459,250 @@
         "textZh": "Reka 总部位于加州 Sunnyvale 530 Lawrence Expressway（Reka, Inc.，2022 年成立），工程团队在湾区。api.reka.ai 是单一全球端点，北美/欧洲首字节延迟低；中国大陆无法保证直连，生产流量通常需要代理或中转，跨太平洋首字节延迟约 150-250ms。Reka Edge 开源权重是强力兜底：单张 ≥24GB VRAM NVIDIA GPU（已在 GTX 3090 上验证）可通过 vLLM 0.15.x 以 40-50 tok/s 跑模型，需要中国大陆驻留或低于 50ms 延迟的团队可直接自托管。Reka Vision 有独立的视频按分钟计费和 MCP 服务器端点。Reka Edge 同时在 OpenRouter 上架做跨厂商 failover；Flash Research 在美国托管推理上增加 agentic 搜索层。"
       }
     ]
+  },
+  {
+    "id": "nscale",
+    "name": "Nscale",
+    "nameCn": "Nscale",
+    "category": "international",
+    "website": "https://www.nscale.com",
+    "apiDocs": "https://docs.nscale.com",
+    "affiliateUrl": "",
+    "affiliateAvailable": false,
+    "models": [
+      "Moonshot AI Kimi K2.5 — open chat model via serverless inference; per-1M input/output token pricing (verified on nscale.com/product/inference featured model list)",
+      "Alibaba Cloud Qwen3 8B / Qwen3 4B Thinking / Qwen3 4B Instruct — open chat models with reasoning variants; per-1M token pricing",
+      "OpenAI GPT OSS 20B / GPT OSS 120B — OpenAI's open-weights chat models served on Nscale-managed GPUs",
+      "Meta Llama 4 Scout — open multimodal chat model via serverless inference",
+      "Mistral 8x22B Instruct — open mixture-of-experts chat model",
+      "Black Forest Labs FLUX.1 [schnell] and Stability AI Stable Diffusion XL Base 1.0 — image generation models via /v1/images/generations (billed per output pixels)",
+      "Fine-tuning workspaces + Prompt Workbench for adapting and iterating on the above models"
+    ],
+    "modelCount": 10,
+    "pricing": {
+      "input": "Nscale 采用充值余额（credit）按量计费，价格按模型分列，在 Nscale 控制台 AI Services → Models 与 /v1/models API 中按每 1M 输入 token 报价（文本模型）；图像模型输入按 0 计费。定价结构经 serverless-openapi.yaml ModelPricing schema 验证（input = 每 1M 输入 token 美元价）。",
+      "output": "输出按每 1M 输出 token 计费（文本模型）；图像模型按每百万像素计费（ModelPricing.output 定义为 per-million output pixels）。具体美元单价在控制台与 /v1/models 端点内按模型展示，注册充值后可查。",
+      "cacheRead": "Nscale 文档未单独公布\"缓存输入\"折扣档——计费以 model 为单位按 input/output 两档计（对照 OpenAI/Anthropic 的缓存输入差价，Nscale 暂无独立缓存价格线）。"
+    },
+    "pricingEN": {
+      "input": "Nscale uses credit-based pay-as-you-go billing with per-model rates quoted per 1M input tokens (text models) in the Nscale Console (AI Services → Models) and via the /v1/models API endpoint; image models bill input as 0. The pricing structure is verified against the ModelPricing schema in serverless-openapi.yaml (input = USD per 1M input tokens).",
+      "output": "Output bills per 1M output tokens (text models); image models bill per million output pixels (ModelPricing.output defined as per-million output pixels). Exact per-model USD rates are shown in the Console and /v1/models once you top up credit.",
+      "cacheRead": "Nscale's docs do not expose a separate 'cached input' discount tier — billing is per-model split into input/output only (unlike OpenAI/Anthropic which discount cached input)."
+    },
+    "freeTier": "无永久免费档。新用户注册后通过 Google SSO 登录，官方提示早期用户可能获得免费信用额度（promotional offer，非保证）。默认需先充值（credit）才能调用 serverless 推理 API。",
+    "freeTierEN": "No permanent free tier. New users sign up via Google SSO; the quickstart notes early users may be eligible for free promotional credits (not guaranteed). By default you must top up credit before calling the serverless inference API.",
+    "paidModel": "纯预付充值制（credit-based）：通过 Nscale 控制台用 Stripe 充入余额，再按模型单价扣费——文本模型按每 1M 输入/输出 token，图像模型按每百万输出像素。API 调用经 inference.api.nscale.com/v1，需 Bearer service token。另有按需 GPU/实例、Kubernetes、Slurm 训练、微调（fine-tuning）与 Prompt Workbench 等资源型计费。",
+    "paidModelEN": "Pure prepaid credit-based billing: top up via Stripe in the Nscale Console, then spend per-model — text models per 1M input/output tokens, image models per million output pixels. API calls go to inference.api.nscale.com/v1 with a Bearer service token. Also offers compute instances, Kubernetes, Slurm training, fine-tuning, and a Prompt Workbench on separate resource billing.",
+    "availabilityCN": "❌ 无中国大陆直连端点。inference.api.nscale.com 是单一全球端点，数据中心集中于欧洲（英国 Loughton、挪威 Glomfjord/Narvik）与美国（德州、西弗吉尼亚）；大陆生产流量需代理或中转，跨大西洋/跨太平洋首字节延迟通常 200-350ms。主打 EU 数据主权与在国境内处理，适合欧洲合规场景而非中国区低延迟。",
+    "availabilityEN": "❌ No mainland China direct endpoint. inference.api.nscale.com is a single global endpoint; data centers concentrate in Europe (Loughton UK, Glomfjord/Narvik Norway) and the US (Texas, West Virginia), so China production traffic needs a proxy and transatlantic/transpacific first-byte latency is typically 200-350ms. The platform emphasizes EU data sovereignty and in-country processing, which suits European compliance workloads more than China-region low latency.",
+    "highlights": [
+      "Serverless 推理：无需管理集群/GPU，托管端点按 API 调用即可上线，支持自动扩缩",
+      "OpenAI 兼容：base_url=https://inference.api.nscale.com/v1，官方 OpenAI SDK 直接可用",
+      "模型库：Qwen3、GPT OSS、Llama 4、Kimi K2.5、Mistral 8x22B、FLUX.1、SDXL 等开源模型",
+      "一流微调 + Prompt Workbench：浏览器内提示调试、版本化、成本查看",
+      "EU 数据主权：英国/挪威/冰岛数据中心，在国境内处理满足 GDPR 与数据驻留合规",
+      "全栈：按需 GPU 实例、Kubernetes（NKS）、Slurm 训练、GB300 预占容量"
+    ],
+    "highlightsEN": [
+      "Serverless inference: managed endpoints ship in minutes with autoscaling — no clusters, GPUs, or infrastructure to operate",
+      "OpenAI-compatible: base_url=https://inference.api.nscale.com/v1, official OpenAI SDKs work as a drop-in",
+      "Model library: Qwen3, GPT OSS, Llama 4, Kimi K2.5, Mistral 8x22B, FLUX.1, SDXL open models",
+      "Fine-tuning + Prompt Workbench: browser prompt iteration, versioning, and cost visibility",
+      "EU data sovereignty: UK/Norway/Iceland data centers with in-country processing for GDPR and data-residency compliance",
+      "Full stack: on-demand GPU instances, Kubernetes (NKS), Slurm training, GB300 reserved capacity"
+    ],
+    "cons": [
+      "定价不公开：模型单价需登录控制台或调 /v1/models（需 key）查看，无公开定价页，比 OpenAI/Anthropic 透明度低",
+      "知名度较新：品牌与生态（第三方 SDK、教程、社区）远不如 OpenAI/Anthropic/Google",
+      "无中国大陆直连端点，主打欧洲/美国区域",
+      "需要先充值（credit）才能用 API，且仅支持 Google SSO 注册",
+      "无公开免费档（仅可能的新用户促销额度，非保证）"
+    ],
+    "consEN": [
+      "Pricing not public: per-model rates require logging into the Console or calling /v1/models (needs a key) — no open pricing page, less transparent than OpenAI/Anthropic",
+      "Newer brand: ecosystem (third-party SDKs, tutorials, community) is far smaller than OpenAI/Anthropic/Google",
+      "No mainland China direct endpoint; positioned for Europe/US regions",
+      "Requires prepaid credit before using the API, and signup is Google SSO only",
+      "No public free tier (only possible promotional credits, not guaranteed)"
+    ],
+    "bestFor": "需要 OpenAI 兼容、托管 serverless 推理来跑开源模型（Qwen3、GPT OSS、Llama、Kimi、Mistral）的欧洲团队；重视 EU 数据主权、在国境内处理与 GDPR 合规的政企客户；想要 serverless + 按需 GPU + 微调一站式全栈、且能接受充值制与 Google SSO 注册的开发者。",
+    "bestForEN": "European teams that want OpenAI-compatible managed serverless inference for open models (Qwen3, GPT OSS, Llama, Kimi, Mistral); enterprises and governments prioritizing EU data sovereignty, in-country processing, and GDPR compliance; developers who want a one-stop full-stack (serverless + on-demand GPUs + fine-tuning) and accept prepaid credit + Google SSO signup.",
+    "status": "active",
+    "addedDate": "2026-08-27",
+    "source": "nscale.com + docs.nscale.com + inference.api.nscale.com/v1 probe (verified 2026-08-27)",
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": [
+          "Plan / Model Tier",
+          "Billing",
+          "Input",
+          "Output",
+          "Notes"
+        ],
+        "headersZh": [
+          "方案 / 模型档",
+          "计费",
+          "输入",
+          "输出",
+          "备注"
+        ],
+        "rows": [
+          [
+            "Serverless text models",
+            "Per 1M tokens (credit)",
+            "Per-model rate",
+            "Per-model rate",
+            "Qwen3, GPT OSS, Llama 4, Kimi K2.5, Mistral 8x22B"
+          ],
+          [
+            "Image generation",
+            "Per output pixels",
+            "0",
+            "Per 1M px",
+            "FLUX.1 [schnell], SDXL Base 1.0 via /v1/images/generations"
+          ],
+          [
+            "Dedicated inference",
+            "Reserved endpoint",
+            "Per-model",
+            "Per-model",
+            "Strict customer isolation for compliance"
+          ],
+          [
+            "Fine-tuning",
+            "Per job/usage",
+            "—",
+            "—",
+            "Customize foundation models; governed production flow"
+          ],
+          [
+            "Compute instances",
+            "Per GPU-hour",
+            "—",
+            "—",
+            "On-demand GPU/CPU VMs, Kubernetes (NKS), Slurm"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "Serverless 文本模型",
+            "按每 1M token（充值余额）",
+            "按模型单价",
+            "按模型单价",
+            "Qwen3、GPT OSS、Llama 4、Kimi K2.5、Mistral 8x22B"
+          ],
+          [
+            "图像生成",
+            "按输出像素",
+            "0",
+            "每 1M 像素",
+            "FLUX.1 [schnell]、SDXL Base 1.0，经 /v1/images/generations"
+          ],
+          [
+            "专属推理",
+            "预留端点",
+            "按模型",
+            "按模型",
+            "严格客户隔离，满足合规"
+          ],
+          [
+            "微调",
+            "按任务/用量",
+            "—",
+            "—",
+            "基于企业数据定制基础模型；规范化上线流程"
+          ],
+          [
+            "计算实例",
+            "按 GPU 小时",
+            "—",
+            "—",
+            "按需 GPU/CPU 虚拟机、Kubernetes（NKS）、Slurm"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "API Style",
+            "value": "OpenAI-compatible REST API at https://inference.api.nscale.com/v1 — the official OpenAI Python/TypeScript SDK works as a drop-in by changing base_url."
+          },
+          {
+            "label": "Endpoints",
+            "value": "Chat Completions (/v1/chat/completions), Completions (/v1/completions), Embeddings (/v1/embeddings), Image Generation (/v1/images/generations), plus /v1/models with per-model pricing + context length."
+          },
+          {
+            "label": "Auth",
+            "value": "Bearer service token (JWT) created in Settings → Service Tokens; tokens are scoped, time-limited, and shown only once at creation."
+          },
+          {
+            "label": "Serverless vs Dedicated",
+            "value": "Serverless autoscaling endpoints ship in minutes with integrated observability; dedicated endpoints add strict customer isolation for compliance-heavy teams."
+          },
+          {
+            "label": "Fine-tuning",
+            "value": "Customize foundation models on your own data with a streamlined workflow, then move tuned models into production in a repeatable, governed flow."
+          },
+          {
+            "label": "Prompt Workbench",
+            "value": "Browser-based prompt experimentation with versioning, preset saving, and cost visibility — reproducible runs without burning GPU hours."
+          },
+          {
+            "label": "Model Catalog",
+            "value": "Open models only (Qwen3, GPT OSS, Llama 4, Kimi K2.5, Mistral, FLUX.1, SDXL) — no proprietary frontier models like GPT-5 or Claude; catalog managed per organization."
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "接口风格",
+            "value": "OpenAI 兼容 REST API，base_url=https://inference.api.nscale.com/v1 —— 官方 OpenAI Python/TypeScript SDK 改 base_url 即可直接用。"
+          },
+          {
+            "label": "端点",
+            "value": "Chat Completions（/v1/chat/completions）、Completions（/v1/completions）、Embeddings（/v1/embeddings）、图像生成（/v1/images/generations），以及带每模型价格与上下文长度的 /v1/models。"
+          },
+          {
+            "label": "鉴权",
+            "value": "Bearer service token（JWT），在 Settings → Service Tokens 创建；token 带作用域与时限，仅在创建时显示一次。"
+          },
+          {
+            "label": "Serverless vs 专属",
+            "value": "Serverless 自动扩缩端点几分钟即可上线并内置可观测性；专属端点提供严格客户隔离，适合注重合规的团队。"
+          },
+          {
+            "label": "微调",
+            "value": "基于自有数据定制基础模型，流程简洁，并将调优后的模型以可重复、受控的方式推进到生产。"
+          },
+          {
+            "label": "Prompt Workbench",
+            "value": "浏览器内提示实验，支持版本化、预设保存与成本查看——无需烧 GPU 小时即可获得可复现的运行。"
+          },
+          {
+            "label": "模型库",
+            "value": "仅开源模型（Qwen3、GPT OSS、Llama 4、Kimi K2.5、Mistral、FLUX.1、SDXL）——不含 GPT-5、Claude 等专有前沿模型；目录按组织管理。"
+          }
+        ]
+      },
+      {
+        "title": "🧠 Sovereign Serverless Inference",
+        "titleZh": "🧠 主权级 Serverless 推理",
+        "type": "text",
+        "text": "Nscale's differentiator is a full-stack AI cloud built around European data sovereignty. Serverless inference runs on Nscale-managed GPUs across UK (Loughton), Norway (Glomfjord, Narvik), and US (Texas, West Virginia) data centers, with in-country processing to satisfy GDPR and data-residency requirements. The model catalog is open-weights only — Qwen3, GPT OSS, Llama 4, Kimi K2.5, Mistral 8x22B, FLUX.1, and SDXL — plus fine-tuning and a Prompt Workbench, so teams move from experimentation to production on one governed platform. Nscale's raising of a $900M revolving credit facility and its acquisition of Anyscale (announced late July 2026) signal aggressive expansion of this sovereign AI footprint.",
+        "textZh": "Nscale 的差异化在于围绕欧洲数据主权构建的全栈 AI 云。Serverless 推理运行于 Nscale 托管的 GPU 上，数据中心分布在英国（Loughton）、挪威（Glomfjord、Narvik）与美国（德州、西弗吉尼亚），通过在国家境内处理来满足 GDPR 与数据驻留要求。模型库只含开源权重——Qwen3、GPT OSS、Llama 4、Kimi K2.5、Mistral 8x22B、FLUX.1、SDXL——并提供微调与 Prompt Workbench，团队可以在一个受控平台上从实验推进到生产。Nscale 获得 9 亿美元循环信贷额度并在 2026 年 7 月底宣布收购 Anyscale，彰显其对这一主权 AI 版图的激进扩张。"
+      },
+      {
+        "title": "🌐 Regional Availability & Latency",
+        "titleZh": "🌐 区域可用性与延迟",
+        "type": "text",
+        "text": "Nscale concentrates capacity in Europe and North America: own data centers at Loughton (UK), Glomfjord and Narvik (Norway), Texas and West Virginia (US), with partner-run sites in Sines (Portugal), Keflavik (Iceland), and Stavanger/Oslo (Norway). inference.api.nscale.com is a single global endpoint, so European and US clients see low single-digit tens of ms first-byte latency, while mainland China needs a proxy with typical 200-350ms transatlantic/transpacific latency. There is no Asia-Pacific or China-region endpoint. Teams prioritizing in-country data processing, GDPR alignment, or UK/Nordic sovereignty should consider Nscale; low-latency China workloads are better served by domestic providers.",
+        "textZh": "Nscale 的算力集中在欧洲与北美：自有数据中心位于英国 Loughton、挪威 Glomfjord/Narvik、美国德州/西弗吉尼亚，另有葡萄牙 Sines、冰岛 Keflavik、挪威 Stavanger/Oslo 等伙伴运营站点。inference.api.nscale.com 是单一全球端点，欧洲与美国客户端首字节延迟低至几十毫秒，而中国大陆需要代理，跨大西洋/跨太平洋延迟通常在 200-350ms。目前没有亚太或中国区端点。优先考虑在国境内数据处理、GDPR 合规或英/北欧主权的团队适合选 Nscale；中国区低延迟负载更适合国内厂商。"
+      }
+    ]
   }
 ]

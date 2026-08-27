@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'nscale-serverless-inference-api-review-2026';
+const date = '2026-08-27';
+const locale = 'zh';
+const zhTitle = 'Nscale Serverless 推理 API 价格 2026：开源模型与欧盟主权';
+const zhDescription = 'Nscale serverless 推理 API 评测 2026：OpenAI 兼容 /v1 端点，开源模型（Qwen3、GPT OSS、Llama、Kimi），欧盟数据主权，充值制计费。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' } }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+    { '@type': 'Question', name: 'Nscale 是什么？', acceptedAnswer: { '@type': 'Answer', text: "Nscale 是一家总部位于英国的全栈 AI 基础设施公司，数据中心分布在英国 Loughton、挪威 Glomfjord/Narvik、美国德州/西弗吉尼亚。其 serverless 推理 API 位于 inference.api.nscale.com，与 OpenAI 完全兼容，且只提供开源权重模型——Qwen3、OpenAI GPT OSS、Meta Llama 4、Moonshot Kimi K2.5、Mistral 8x22B，图像生成包含 FLUX.1 与 Stable Diffusion。Nscale 主打欧洲数据主权与在国境内处理，以满足 GDPR 与数据驻留合规。" } },
+    { '@type': 'Question', name: 'Nscale 怎么计费？', acceptedAnswer: { '@type': 'Answer', text: 'Nscale 采用预付充值制按量计费。在控制台通过 Stripe 充值，再按模型单价扣费：文本模型按每 1M 输入/输出 token，图像模型按每百万输出像素。具体美元单价在控制台的 AI Services → Models 与 /v1/models API 端点（需 Bearer service token）内展示。没有永久免费档，但 quickstart 提到早期用户可能获得促销额度。' } },
+    { '@type': 'Question', name: 'Nscale 比 OpenAI / Anthropic 便宜吗？', acceptedAnswer: { '@type': 'Answer', text: '因为 Nscale 只提供开源权重模型（Qwen3、GPT OSS、Llama 4、Kimi、Mistral）而非专有前沿模型，token 单价通常低于 GPT-5 或 Claude Opus 档——但 Nscale 没有公开的定价页，必须登录控制台或调用 /v1/models 才能看到单价，因此与公开完整定价的 OpenAI/Anthropic 做横向对比会更费劲。' } },
+    { '@type': 'Question', name: 'Nscale serverless 推理有哪些模型？', acceptedAnswer: { '@type': 'Answer', text: '只提供开源模型。据 nscale.com/product/inference（2026-08-27 抓取）的精选目录：Moonshot Kimi K2.5、阿里 Qwen3 8B 与 Qwen3 4B（Thinking + Instruct）、Meta Llama 4 Scout、Mistral 8x22B Instruct、OpenAI GPT OSS 20B/120B、Black Forest Labs FLUX.1 [schnell]、Stability AI SDXL Base 1.0。chat、视觉、embeddings、图像生成均通过 OpenAI 兼容端点暴露。' } },
+    { '@type': 'Question', name: 'Nscale 在中国能用吗？', acceptedAnswer: { '@type': 'Answer', text: 'Nscale 没有中国大陆直连端点。inference.api.nscale.com 是单一全球端点，数据中心集中在欧洲与美国，因此中国生产流量需代理，跨大西洋/跨太平洋延迟通常 200-350ms。Nscale 定位的是欧洲数据主权与 GDPR 对齐的在国境内处理，而非中国区低延迟。' } },
+    { '@type': 'Question', name: 'Nscale 收购了 Anyscale 吗？', acceptedAnswer: { '@type': 'Answer', text: '是的——Nscale 于 2026 年 7 月底宣布收购 Anyscale（已在 Nscale newsroom 与多家行业媒体验证）。Anyscale 在 APIRank 上已作为独立 provider 收录。此次收购加上 9 亿美元循环信贷额度，彰显 Nscale 对全栈主权 AI 云的激进扩张。两者仍分开收录，因为面向不同层面：Anyscale 提供 Ray 生态与 serverless 模型服务，Nscale 是底层的 GPU 基础设施 + 推理平台。' } }
+] };
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Nscale Serverless 推理 API 价格 2026：开源模型与欧盟主权</h1>
+<p class="text-gray-700 leading-relaxed my-4">2026 年大多数"AI API"评测都从某个专有前沿模型出发，然后一路谈到价格。<strong>Nscale</strong> 相反：它是一家全栈 AI 基础设施公司——数据中心、GPU、Kubernetes、Slurm 训练、微调，以及位于 <code class="bg-gray-100 px-1 rounded text-sm">https://inference.api.nscale.com/v1</code> 的 serverless 推理 API——并且<strong>只提供开源权重模型</strong>。目录（据 <a href="https://www.nscale.com/product/inference" rel="noopener" target="_blank">nscale.com/product/inference</a>，2026-08-27 抓取）为 Qwen3 4B/8B、OpenAI GPT OSS 20B/120B、Meta Llama 4 Scout、Moonshot Kimi K2.5、Mistral 8x22B Instruct，图像生成含 FLUX.1 [schnell] 与 Stable Diffusion XL。卖点是欧洲数据主权：在英国与挪威数据中心做在国境内处理、对齐 GDPR、并提供 OpenAI 兼容端点——开发者只需改 <code class="bg-gray-100 px-1 rounded text-sm">base_url</code> 就能把官方 OpenAI SDK 指向 Nscale。本评测覆盖已验证的 API 表面、充值制计价模型，以及团队在开源模型聚合商（如 Fireworks / Groq）与专有厂商之间如何选择 Nscale。</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 一句话结论：</strong>Nscale 是一家<strong>全栈、欧盟主权的 AI 云</strong>，其 serverless 推理 API 与 OpenAI 兼容且只提供开源模型（Qwen3、GPT OSS、Llama 4、Kimi K2.5、Mistral、FLUX.1、SDXL）。计费为预付充值制、按模型计价——文本按每 1M 输入/输出 token、图像按每百万输出像素——单价在控制台与 <code class="bg-gray-100 px-1 rounded text-sm">/v1/models</code> 展示。没有永久免费档也没有公开定价页，透明度低于 OpenAI/Anthropic。差异化在于主权算力：英国、挪威、美国数据中心做在国境内处理以满足 GDPR 与数据驻留负载，加上 9 亿美元信贷额度与 2026 年 7 月底收购 Anyscale，彰显激进扩张。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Nscale 到底是什么</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><a href="https://www.nscale.com" rel="noopener" target="_blank">Nscale</a> 不是模型厂商，而是一家拥有自有数据中心的基础设施公司。首页自述为"the engine of superintelligence"，产品分为四层：AI Services（推理端点、微调、Prompt Workbench）、平台服务（托管 Slurm、Kubernetes、实例）、基础设施服务（计算、网络、存储）、Fleet 运维（可观测性、Radar API）。自有数据中心位于英国 Loughton、挪威 Glomfjord/Narvik、美国德州/西弗吉尼亚，另有葡萄牙 Sines、冰岛 Keflavik、挪威 Stavanger/Oslo 等伙伴站点。CEO 兼创始人 Josh Payne 领导公司，newsroom 始终围绕主权 AI、在国境内数据驻留与亚 30ms 边缘推理展开叙事。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对 AI API 用户而言，入口是 <strong>serverless 推理</strong>——完全托管、用 Bearer service token 和 OpenAI 兼容载荷即可调用的端点。<code class="bg-gray-100 px-1 rounded text-sm">/v1</code> 表面与 OpenAI 对齐：<code class="bg-gray-100 px-1 rounded text-sm">/v1/chat/completions</code>、<code class="bg-gray-100 px-1 rounded text-sm">/v1/completions</code>、<code class="bg-gray-100 px-1 rounded text-sm">/v1/embeddings</code>、<code class="bg-gray-100 px-1 rounded text-sm">/v1/images/generations</code>，以及带每模型价格与上下文长度的 <code class="bg-gray-100 px-1 rounded text-sm">/v1/models</code>。我实测该端点无 token 时返回 HTTP 401 Unauthorized——这是端点真实存在、需要 API key 的干净信号，与失效或占位接口不同。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Nscale 模型目录（已验证）</h2>
+
+<table class="min-w-full divide-y divide-gray-200 my-4 text-sm"><thead class="bg-gray-50"><tr><th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">模型</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">厂商</th><th class="px-4 py-2 text-left text-xs font-semibold text-gray-500 uppercase">类型</th></tr></thead><tbody class="bg-white divide-y divide-gray-200"><tr><td class="px-4 py-2">Qwen3 8B / Qwen3 4B Instruct / Qwen3 4B Thinking</td><td class="px-4 py-2">阿里云</td><td class="px-4 py-2">对话 + 推理</td></tr><tr><td class="px-4 py-2">GPT OSS 20B / GPT OSS 120B</td><td class="px-4 py-2">OpenAI</td><td class="px-4 py-2">对话（开源权重）</td></tr><tr><td class="px-4 py-2">Llama 4 Scout</td><td class="px-4 py-2">Meta</td><td class="px-4 py-2">多模态对话</td></tr><tr><td class="px-4 py-2">Kimi K2.5</td><td class="px-4 py-2">Moonshot AI</td><td class="px-4 py-2">对话</td></tr><tr><td class="px-4 py-2">Mistral 8x22B Instruct</td><td class="px-4 py-2">Mistral AI</td><td class="px-4 py-2">专家混合对话</td></tr><tr><td class="px-4 py-2">FLUX.1 [schnell]</td><td class="px-4 py-2">Black Forest Labs</td><td class="px-4 py-2">图像生成</td></tr><tr><td class="px-4 py-2">Stable Diffusion XL Base 1.0</td><td class="px-4 py-2">Stability AI</td><td class="px-4 py-2">图像生成</td></tr></tbody></table>
+
+<p class="text-gray-700 leading-relaxed my-4">目录刻意只含开源模型。除开源 GPT OSS 系列外，没有专有前沿模型（无 GPT-5、无 Claude、无 Gemini）。这让 Nscale 成为"想用受管基础设施跑开源权重并付费"的团队的直接替代——与 Fireworks AI、Groq、Together AI 同赛道——但额外优势是 Nscale 自有 GPU 与数据中心而非租赁，对主权放置阈值有更紧的控制。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">计价模型（结构已验证）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Nscale 采用<strong>预付充值制计费</strong>：用 Google SSO 注册、在控制台通过 Stripe 充值、再按模型扣费。计费结构经公开的 <code class="bg-gray-100 px-1 rounded text-sm">serverless-openapi.yaml</code> 中 <code class="bg-gray-100 px-1 rounded text-sm">ModelPricing</code> schema 验证：文本模型 <code class="bg-gray-100 px-1 rounded text-sm">input</code> 按每 1M 输入 token、<code class="bg-gray-100 px-1 rounded text-sm">output</code> 按每 1M 输出 token；图像模型输入计 0、输出按每百万像素。各模型美元单价本身在控制台与已鉴权的 <code class="bg-gray-100 px-1 rounded text-sm">/v1/models</code> 端点返回，而非公开定价页。</p>
+
+<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 my-4"><strong>⚠️ 透明度取舍：</strong>与 OpenAI、Anthropic、OpenRouter 不同，Nscale 不发布公开定价表。每模型 token 成本需要登录的控制台会话或已鉴权的 <code class="bg-gray-100 px-1 rounded text-sm">/v1/models</code> 调用。这是做成本对比评测的主要摩擦点——结构已验证，精确数字不公开。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">API 与开发者体验</h2>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700"><li><strong>OpenAI 兼容端点</strong>：<code class="bg-gray-100 px-1 rounded text-sm">base_url=https://inference.api.nscale.com/v1</code>；官方 OpenAI Python/TypeScript SDK 改 base_url 并传 service token 即可用。</li><li><strong>一个表面四种模态</strong>：chat completions、text completions、embeddings、图像生成都在 <code class="bg-gray-100 px-1 rounded text-sm">/v1</code> 下，形状对齐 OpenAI，现有工具大多可直接迁移。</li><li><strong>Service token 鉴权</strong>：在 Settings → Service Tokens 创建带作用域、限时的 JWT，仅在创建时显示一次——比普通 API key 更现代的鉴权模型。</li><li><strong>Serverless vs 专属</strong>：自动扩缩的 serverless 端点内置可观测性；或提供严格客户隔离的专属端点，适合注重合规的团队。</li><li><strong>微调 + Prompt Workbench</strong>：基于自有数据定制基础模型，并在带版本化与成本查看的浏览器工作台迭代提示。</li><li><strong>全栈可选性</strong>：同一账户可开 GPU 实例、Kubernetes（NKS）、Slurm 训练集群、预留容量（GB300 NVL72）与对象存储——推理只是更大平台的一层。</li></ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">主权推理与近期动态</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">战略差异化在于主权。Nscale 把"在国境内处理"定位为 GDPR 与数据驻留要求的答案：英国或挪威企业可以在自己司法管辖区内的 GPU 上跑推理，使用无需自行运维的专属基础设施。两条近期信号佐证扩张轨迹：其一，Nscale 获得 <strong>9 亿美元循环信贷额度</strong>（newsroom，2026）；其二，Nscale 于 2026 年 7 月底宣布 <strong>收购 Anyscale</strong>——值得注意的是 Anyscale 已是 APIRank 收录的（Ray 生态 + serverless serving）provider。收购叠加信贷额度，表明 Nscale 意在成为美国超大规模云之外的顶级欧盟主权替代。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Nscale 适合谁</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Nscale 是最优选择的场景：</p>
+
+<ol class="list-decimal pl-6 my-4 space-y-2 text-gray-700"><li><strong>你需要欧盟数据主权</strong>：在英/挪 GPU 上跑开源模型并做在国境内处理，是仅美国厂商难以匹配的。</li><li><strong>你要 OpenAI 兼容的开源模型服务</strong>：Qwen3、GPT OSS、Llama 4、Kimi、Mistral 归到一个 <code class="bg-gray-100 px-1 rounded text-sm">/v1</code> 免胶水接入，可比 Fireworks/Together，但基础设施自有。</li><li><strong>你要一个受控的一体化平台</strong>：serverless + 按需 GPU + 微调 + workbench 归入同一账户与同一余额，而非拼装多家。</li></ol>
+
+<p class="text-gray-700 leading-relaxed my-4">Nscale 较弱的选择：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700"><li><strong>你需要公开、可验证的定价</strong>：缺少公开定价页，预算与基准比对比 OpenAI/Anthropic/OpenRouter 更难。</li><li><strong>你需要专有前沿模型</strong>：无 GPT-5、无 Claude——仅开源权重。</li><li><strong>你服务中国大陆</strong>：无中国区端点，预计 200-350ms 代理延迟。</li><li><strong>你要零摩擦注册</strong>：仅 Google SSO、首次调用前需充值、无永久免费档。</li></ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Nscale 是一个可靠、欧盟主权、全栈的 AI 云，其 serverless 推理 API 真正与 OpenAI 兼容，并提供扎实的开源模型目录（Qwen3、GPT OSS、Llama 4、Kimi K2.5、Mistral、FLUX.1、SDXL——均已在 nscale.com/product/inference 验证，2026-08-27 抓取）。计价为预付充值制，结构上文本按每 1M 输入/输出 token、图像按每百万输出像素（已验证于公开的 <a href="https://docs.nscale.com/openapi/serverless-openapi.yaml" rel="noopener" target="_blank">serverless-openapi.yaml</a>），单价在控制台与已鉴权的 <code class="bg-gray-100 px-1 rounded text-sm">/v1/models</code> 展示。取舍真实且自洽：无公开定价页、仅开源模型、无中国端点、Google SSO 注册、无免费档。权威来源是 <a href="https://www.nscale.com/product/inference" rel="noopener" target="_blank">AI 服务页</a>、<a href="https://docs.nscale.com/docs/getting-started/quickstart.md" rel="noopener" target="_blank">quickstart</a>、<a href="https://docs.nscale.com/llms.txt" rel="noopener" target="_blank">docs 索引</a>，以及 Anyscale 与 9 亿美元相关更新的 <a href="https://www.nscale.com" rel="noopener" target="_blank">newsroom</a>。对重视主权开源模型推理、且愿意在控制台管理余额的团队，Nscale 是真正差异化的选择。</p>`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">速览</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>厂商：</strong>Nscale（英国；数据中心在英国/挪威/美国）</li><li><strong>模型：</strong>Qwen3、GPT OSS、Llama 4、Kimi K2.5、Mistral、FLUX.1、SDXL</li><li><strong>API：</strong>OpenAI 兼容，base_url=inference.api.nscale.com/v1</li><li><strong>计费：</strong>预付充值；文本每 1M 输入/输出 token，图像每 1M 像素</li><li><strong>鉴权：</strong>Bearer service token（JWT），Google SSO 注册</li><li><strong>免费档：</strong>无（可能有促销额度）</li><li><strong>中国：</strong>无直连端点，需代理</li><li><strong>动态：</strong>9 亿美元信贷额度；2026 年 7 月收购 Anyscale</li></ul></div></aside>
+    </div>
+  </main>
+</BaseLayout>
