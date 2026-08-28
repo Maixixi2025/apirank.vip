@@ -1,0 +1,229 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'morph-api-review-2026';
+const date = '2026-08-28';
+const locale = 'en';
+const enTitle = 'Morph API Review 2026: Kimi K3, GLM-5.2 & Fast Apply';
+const enDescription = 'Morph LLM API 2026 review: Fast Apply at 10,500 tok/s for code merges, Compact context compression, WarpGrep code search, Kimi K3 + GLM-5.2 + Qwen 3.5 397B inference, OpenAI + Anthropic wire formats, MCP server for Claude Code.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: enTitle, description: enDescription, datePublished: date, dateModified: date, inLanguage: 'en-US', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://apirank.vip' }, { '@type': 'ListItem', position: 2, name: 'Tutorials', item: 'https://apirank.vip/tutorials' }, { '@type': 'ListItem', position: 3, name: enTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'What is Morph and what does the API do?', acceptedAnswer: { '@type': 'Answer', text: "Morph (morphllm.com) is a Y Combinator-backed inference API positioned as 'inference built for agents.' It ships specialized endpoints for the agent loop — Fast Apply (10,500 tok/s code edits at 96-98% accuracy), Compact (33,000 tok/s context compression with byte-for-byte keepContext preservation), WarpGrep (semantic code search in ~6 s), Reflexes (11 built-in text classifiers in ~90 ms), and Model Router (prompt difficulty classifier at $0.005/request) — plus an open-weight chat lineup (Kimi K3, GLM-5.2, Qwen 3.5 397B, DeepSeek V4 Flash, MiniMax M3 / M2.7, Qwen 3.8 / 3.6 27B, Gemma 4 31B) on both the OpenAI Chat Completions and Anthropic Messages wire formats. Base URL https://api.morphllm.com, one API key." } },
+  { '@type': 'Question', name: 'How much does the Morph API cost?', acceptedAnswer: { '@type': 'Answer', text: "Morph is pure pay-as-you-go across the board, no monthly subscription, no permanent free tier. Per-1M token rates for open-weight chat (verified 2026-08-28 from docs.morphllm.com/llms.txt): Kimi K3 $2.90/$14.00, Qwen 3.5 397B $0.50/$3.50 (cached input $0.30/M), GLM-5.2 744B $1.10/$4.10, GLM-5.3-Flash $0.15/$0.50, MiniMax M3 428B $0.30/$1.20, DeepSeek V4 Flash beta $0.12/$0.278, Qwen 3.8 / 3.6 27B $0.289/$2.40, Gemma 4 31B $0.14/$0.40. Fast Apply via OpenRouter-verified morph-v3-fast $0.0008/$0.0012 per 1k tokens and morph-v3-large $0.0009/$0.0019 per 1k tokens. Reflexes bill per event: realtime $0.001/event (drops to $0.0005 past 1M events/month), async batch $0.0005/event (drops to $0.00025 past 1M). Model Router is $0.005 per request flat. Up to $5,000 in Startup Credits available for qualified startups via a separate sales contact form." } },
+  { '@type': 'Question', name: 'Is Morph OpenAI-compatible?', acceptedAnswer: { '@type': 'Answer', text: "Yes for chat and for every open-weight chat model. The base URL is https://api.morphllm.com/v1 with the standard OpenAI Chat Completions surface, so the official OpenAI Python and TypeScript SDKs work as drop-in by changing base_url. Every chat model also serves the Anthropic Messages wire format at /v1/messages with /v1/messages/count_tokens support, so the official Anthropic SDKs work too — and Claude Code / Codex can be pointed at Morph with four environment variables (ANTHROPIC_BASE_URL, ANTHROPIC_AUTH_TOKEN, ANTHROPIC_MODEL, ANTHROPIC_SMALL_FAST_MODEL). Specialized endpoints (Fast Apply, Compact, WarpGrep, Reflexes, Model Router) are OpenAI-format only." } },
+  { '@type': 'Question', name: 'What is Fast Apply and how does it work?', acceptedAnswer: { '@type': 'Answer', text: "Fast Apply merges AI-generated code edits into files at 10,500 tok/s with 96% accuracy (morph-v3-fast) or 5,000 tok/s with 98% accuracy (morph-v3-large). Use the auto model to let Morph route between them. The prompt format is proprietary: <instruction>{brief description}</instruction><code>{full original file}</code><update>{edit snippet with // ... existing code ... markers for unchanged sections}</update>. The response is a standard OpenAI chat completion with the fully merged file in choices[0].message.content (or Anthropic content[-1].text). Same models published on OpenRouter as morph/morph-v3-fast and morph/morph-v3-large." } },
+  { '@type': 'Question', name: 'What is Compact and how does byte-for-byte preservation work?', acceptedAnswer: { '@type': 'Answer', text: "Compact compresses chat history and code context at 33,000 tok/s — a 100k-token history compresses in under 2 seconds. Pass query to tell the model what matters for the next LLM call, compression_ratio to control how aggressively to compress, and preserve_recent to keep the last N lines verbatim. Wrap any section in <keepContext>...</keepContext> tags to guarantee byte-for-byte preservation regardless of compression ratio. Response includes output (compressed text) and compacted_line_ranges showing which lines survived. Available as POST /v1/compact (native), as model=morph-compactor on /v1/chat/completions, and on /v1/responses." } },
+  { '@type': 'Question', name: 'What is WarpGrep?', acceptedAnswer: { '@type': 'Answer', text: "WarpGrep is Morph's semantic code search subagent. The model (morph-warp-grep-v2.1) has built-in tools — grep_search, read, list_directory, glob, finish — and runs a multi-turn tool-calling loop to find code locations matching a natural-language query. The caller passes <repo_structure>{flat list of absolute paths}</repo_structure> + <search_string>{natural language query}</search_string>, executes each tool_call locally on the filesystem, and replies with standard tool messages. Typical latency is ~6 seconds across 3-6 turns before the model calls finish with the code locations." } },
+  { '@type': 'Question', name: 'What are Reflexes?', acceptedAnswer: { '@type': 'Answer', text: "Reflexes are 11 built-in text classifiers that label a turn in ~90 ms. Available models: jailbreak (prompt-injection detection), guardrail (NSFW/harassment), leaked-thinking (agent leaking internal reasoning), stuck-in-a-loop (agent blocked, not trying new things), incomplete-thought (truncated user prompt), user-frustrated, user-joy, ambiguity (low/med/high), difficulty (easy/medium/hard), domain (general/summary/coding/design/data), and health-emergency. Pass models as an array to run several in one request. Each event bills at the per-event rate with volume discounts past 1M events/month." } },
+  { '@type': 'Question', name: 'Does Morph support Claude Code?', acceptedAnswer: { '@type': 'Answer', text: "Yes — Claude Code speaks the Anthropic Messages API, which Morph serves natively. Set ANTHROPIC_BASE_URL=https://api.morphllm.com, ANTHROPIC_AUTH_TOKEN to your MORPH_API_KEY, ANTHROPIC_MODEL to morph-kimik3 (sonnet/opus remap), and ANTHROPIC_SMALL_FAST_MODEL to morph-kimik3-fast (haiku remap). File edits, Bash, Grep tools continue to work through Anthropic's tool_use loop. Alternatively, install the MCP server with claude mcp add morph -- npx -y @morphllm/morphmcp@latest to expose edit_file, codebase_search, and github_codebase_search as native MCP tools." } },
+  { '@type': 'Question', name: 'What is the Morph Model Router?', acceptedAnswer: { '@type': 'Answer', text: "The Model Router classifies a prompt in ~180 ms and tells you which model to call next. POST /v1/router/classify returns { difficulty, ambiguity, domain } labels with confidence and meets_threshold flags. POST /v1/router/multimodel takes allowed_models / allowed_providers / policy (balanced or cost_efficient) / default_model and returns the single best model to call next. Pricing is $0.005 per request flat. Trained on millions of coding prompts; effective for cost reduction on multi-model stacks where easy prompts go to GLM-5.3-Flash ($0.15/$0.50 per 1M) and hard prompts go to Kimi K3 or GLM-5.2." } },
+  { '@type': 'Question', name: 'Is there a free Morph tier?', acceptedAnswer: { '@type': 'Answer', text: "No permanent free tier. The Morph homepage CTA 'Start free. Get API Key' refers to signup friction — you get an API key without a credit card but you are billed pay-as-you-go from the first token. Morph offers up to $5,000 in Startup Credits for qualified startups via a separate sales contact form, applied as account credit. There is no monthly minimum, no monthly subscription, and no enterprise price list on the website." } },
+  { '@type': 'Question', name: 'Does Morph work from mainland China?', acceptedAnswer: { '@type': 'Answer', text: "Not directly. Morph runs a single global endpoint at https://api.morphllm.com with no documented Asia-Pacific regional routing. Production traffic from North America and Europe sees low single-digit tens of ms first-byte latency; mainland China requires a proxy or transit with typical 200-400 ms transpacific first-byte latency. The Fast Apply models are also published on OpenRouter as morph/morph-v3-fast and morph/morph-v3-large, which routes them through OpenRouter's own multi-region infrastructure — this gives Chinese developers a low-latency Fast Apply path without leaving the OpenRouter API key. The open-weight chat lineup is on Morph's direct API only. No ICP-licensed mainland China endpoint as of August 2026." } }
+] };
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${enTitle}</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Morph</strong> (morphllm.com) is a Y Combinator-backed inference API positioned as "inference built for agents." Instead of selling yet another chat completions endpoint, Morph ships four specialized endpoints — <strong>Fast Apply</strong> (10,500 tok/s code merges), <strong>Compact</strong> (33,000 tok/s context compression), <strong>WarpGrep</strong> (semantic code search in ~6 s), <strong>Reflexes</strong> (jailbreak / loop / frustration classifiers in ~90 ms) — plus a <strong>Model Router</strong> that picks the cheapest model for each prompt, all on one OpenAI- and Anthropic-compatible API key. For an engineer building a coding agent in August 2026, Morph matters because it removes the three biggest token sinks (file edits, context compression, code search) from the general-purpose LLM bill, while serving the same Kimi K3 / GLM-5.2 / Qwen 3.5 397B open-weight lineup you'd otherwise route through Together, Fireworks, or DeepSeek. See the full <a href="/providers/morph">Morph provider page</a> for the structured comparison table.</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 Quick take:</strong> Morph is the first inference API designed around the agent loop rather than chat completions. Fast Apply merges code edits at 10,500 tok/s, Compact compresses context at 33,000 tok/s with byte-for-byte preservation of <code>&lt;keepContext&gt;</code> sections, WarpGrep returns code locations in ~6 s, Reflexes classifies any agent turn in ~90 ms. One API key serves both OpenAI Chat Completions and Anthropic Messages, so Claude Code and Codex run on Kimi K3 with four env vars. No permanent free tier; up to $5K Startup Credits for qualified startups. No mainland China endpoint.</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Morph, and why its API matters in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Morph is the public API of <strong>AutoInfra, Inc.</strong>, a Y Combinator-backed startup whose only product is a specialized inference stack for AI agents. Where OpenAI and Anthropic optimize for general chat and Anthropic's <a href="/tutorials/anthropic-claude-api-review-2026">Claude API</a> and OpenAI's GPT-5.6 lead on broad reasoning, Morph optimizes for the four operations a coding or long-running agent does on every turn:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>Edit a file</strong> with a partial diff and return the merged file → Fast Apply at <strong>10,500 tok/s</strong> with 96-98% accuracy on the merge;</li>
+  <li><strong>Compress the chat history</strong> so the next LLM call still fits in the context window → Compact at <strong>33,000 tok/s</strong> with byte-for-byte preservation of tagged sections;</li>
+  <li><strong>Search the codebase</strong> for the snippet an LLM needs to answer a question → WarpGrep in <strong>~6 s</strong> with built-in <code>grep_search</code>, <code>read</code>, <code>list_directory</code>, <code>glob</code>, and <code>finish</code> tools;</li>
+  <li><strong>Monitor the agent</strong> for jailbreaks, infinite loops, leaked thinking, user frustration, and prompt ambiguity → Reflexes in <strong>~90 ms</strong> per label.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">On top of those four specialized endpoints, Morph serves the open-weight chat lineup you'd expect from a 2026 inference provider — Kimi K3 (2.8T MoE, #1 on Design Arena), GLM-5.2 (744B MoE, 1M context, OpenAI <code>service_tier</code> standby), Qwen 3.5 397B (262k context), DeepSeek V4 Flash (1M context beta), MiniMax M3 / M2.7 (256k / 196k MoE), Gemma 4 31B, Qwen 3.8 / 3.6 27B — on both the OpenAI Chat Completions wire format and the Anthropic Messages wire format, so Claude Code and Codex can switch from Anthropic to open-weight models by changing four environment variables. The Model Router classifies prompt difficulty in ~180 ms and picks the cheapest model that handles it; the <a href="/tutorials/openrouter-api-review-2026">OpenRouter</a> rankings list Morph in the Top 25 by token volume, serving 100B+ tokens/day across 400+ production agents.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Morph product lineup in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Morph ships eight product surfaces behind one API key. Each has its own pricing model, endpoint, and SDK surface:</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">Product</th>
+<th class="border p-2">Purpose</th>
+<th class="border p-2">Billing</th>
+<th class="border p-2">Best for</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Fast Apply</strong></td><td class="border p-2">Merge AI-generated code edits into files</td><td class="border p-2">Per 1k prompt+completion tokens</td><td class="border p-2">Coding agents that edit many files per turn</td></tr>
+<tr><td class="border p-2"><strong>Compact</strong></td><td class="border p-2">Verbatim context compression for long chats</td><td class="border p-2">Per token / per event</td><td class="border p-2">Long-running agents with growing history</td></tr>
+<tr><td class="border p-2"><strong>WarpGrep</strong></td><td class="border p-2">Semantic code search subagent</td><td class="border p-2">Per request (multi-turn)</td><td class="border p-2">Repo-aware retrieval without building your own index</td></tr>
+<tr><td class="border p-2"><strong>Reflexes</strong></td><td class="border p-2">11 built-in text classifiers</td><td class="border p-2">Per event (realtime / async)</td><td class="border p-2">Production agent observability + safety</td></tr>
+<tr><td class="border p-2"><strong>Model Router</strong></td><td class="border p-2">Classify prompt difficulty + route to model</td><td class="border p-2">$0.005 per request (flat)</td><td class="border p-2">Cost reduction on multi-model stacks</td></tr>
+<tr><td class="border p-2"><strong>Fast Models (chat)</strong></td><td class="border p-2">Open-weight chat inference</td><td class="border p-2">Per 1M input/output tokens</td><td class="border p-2">Direct chat, Anthropic / OpenAI SDK drop-in</td></tr>
+<tr><td class="border p-2"><strong>Custom Reflexes</strong></td><td class="border p-2">Train your own classifier via /v1/fine_tuning/*</td><td class="border p-2">Per fine-tuning job</td><td class="border p-2">Domain-specific guardrails (~30s train)</td></tr>
+<tr><td class="border p-2"><strong>Reserved B200</strong></td><td class="border p-2">Dedicated GPU-hour capacity</td><td class="border p-2">Per GPU-hour (sales)</td><td class="border p-2">Production fleets with latency SLAs</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">Every chat model also serves the Anthropic Messages wire format at <code>/v1/messages</code> with <code>/v1/messages/count_tokens</code> support, so the same API key routes Claude Code and Codex to Kimi K3, GLM-5.2, or any other chat model. Specialized endpoints (Fast Apply, Compact, WarpGrep, Reflexes, Router) are OpenAI format only.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Morph pricing: per-token, per-event, per-GPU-hour</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Morph is pay-as-you-go across the board. There is no monthly subscription, no permanent free tier, and no enterprise price list published on the website — only the per-product rates below, plus an up-to-$5,000 Startup Credits program for qualified startups (applied via a separate sales contact form). Pricing verified 2026-08-28 against <a href="https://docs.morphllm.com/llms.txt">docs.morphllm.com/llms.txt</a> (Fast Models table + Reflexes pricing section) and the OpenRouter model catalog:</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">Model / Product</th>
+<th class="border p-2">Speed</th>
+<th class="border p-2">Context</th>
+<th class="border p-2">Input / M</th>
+<th class="border p-2">Output / M</th>
+<th class="border p-2">Notes</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Kimi K3 2.8T</strong> (morph-kimik3)</td><td class="border p-2">~100 tok/s</td><td class="border p-2">1M</td><td class="border p-2">$2.90</td><td class="border p-2">$14.00</td><td class="border p-2">Flagship Fable-tier; #1 on Design Arena</td></tr>
+<tr><td class="border p-2"><strong>Kimi K3 Fast</strong> (morph-kimik3-fast)</td><td class="border p-2">fastest</td><td class="border p-2">1M</td><td class="border p-2">$6.00</td><td class="border p-2">$22.50</td><td class="border p-2">Fastest Kimi K3 tier</td></tr>
+<tr><td class="border p-2"><strong>Qwen 3.5 397B</strong> (morph-qwen35-397b)</td><td class="border p-2">~180 tok/s</td><td class="border p-2">262k</td><td class="border p-2">$0.50</td><td class="border p-2">$3.50</td><td class="border p-2">Cached input $0.30 / M (40% off)</td></tr>
+<tr><td class="border p-2"><strong>GLM-5.2 744B</strong> (morph-glm52-744b)</td><td class="border p-2">~80 tok/s</td><td class="border p-2">1M</td><td class="border p-2">$1.10</td><td class="border p-2">$4.10</td><td class="border p-2">Supports OpenAI service_tier standby</td></tr>
+<tr><td class="border p-2"><strong>GLM-5.3-Flash</strong> (morph-glm53flash)</td><td class="border p-2">—</td><td class="border p-2">1M</td><td class="border p-2">$0.15</td><td class="border p-2">$0.50</td><td class="border p-2">Budget tier for high-volume agents</td></tr>
+<tr><td class="border p-2"><strong>MiniMax M3 428B</strong> (morph-minimax3-428b)</td><td class="border p-2">~90 tok/s</td><td class="border p-2">256k</td><td class="border p-2">$0.30</td><td class="border p-2">$1.20</td><td class="border p-2">MoE for agentic workflows</td></tr>
+<tr><td class="border p-2"><strong>DeepSeek V4 Flash beta</strong> (morph-dsv4flash)</td><td class="border p-2">~150 tok/s</td><td class="border p-2">1M</td><td class="border p-2">$0.12</td><td class="border p-2">$0.278</td><td class="border p-2">Sub-second TTFT</td></tr>
+<tr><td class="border p-2"><strong>Qwen 3.8 / 3.6 27B</strong></td><td class="border p-2">~100 tok/s</td><td class="border p-2">131k</td><td class="border p-2">$0.289</td><td class="border p-2">$2.40</td><td class="border p-2">Dense, low-latency</td></tr>
+<tr><td class="border p-2"><strong>Gemma 4 31B</strong> (morph-gemma4-31b)</td><td class="border p-2">~120 tok/s</td><td class="border p-2">175k</td><td class="border p-2">$0.14</td><td class="border p-2">$0.40</td><td class="border p-2">Open-weight dense</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">Specialized endpoints (verified 2026-08-28 against docs.morphllm.com/llms.txt + openrouter.ai/api/v1/models):</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">Specialized product</th>
+<th class="border p-2">Performance</th>
+<th class="border p-2">Pricing</th>
+<th class="border p-2">Best for</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Fast Apply (morph-v3-fast)</strong></td><td class="border p-2">10,500 tok/s, 96% accuracy</td><td class="border p-2">$0.0008 prompt + $0.0012 completion per 1k tokens (OpenRouter-verified)</td><td class="border p-2">Real-time, quick edits</td></tr>
+<tr><td class="border p-2"><strong>Fast Apply (morph-v3-large)</strong></td><td class="border p-2">5,000 tok/s, 98% accuracy</td><td class="border p-2">$0.0009 prompt + $0.0019 completion per 1k tokens (OpenRouter-verified)</td><td class="border p-2">Complex changes, highest accuracy</td></tr>
+<tr><td class="border p-2"><strong>Fast Apply (auto)</strong></td><td class="border p-2">5,000-10,500 tok/s, ~98%</td><td class="border p-2">Routed per underlying model</td><td class="border p-2">Recommended default</td></tr>
+<tr><td class="border p-2"><strong>Compact (morph-compactor)</strong></td><td class="border p-2">33,000 tok/s, 100k in &lt;2 s</td><td class="border p-2">Per token / per event</td><td class="border p-2">Long chat / code context</td></tr>
+<tr><td class="border p-2"><strong>WarpGrep (morph-warp-grep-v2.1)</strong></td><td class="border p-2">~6 s per query</td><td class="border p-2">Per request</td><td class="border p-2">Semantic code search</td></tr>
+<tr><td class="border p-2"><strong>Reflexes (realtime)</strong></td><td class="border p-2">~90 ms per label</td><td class="border p-2">$0.001/event → $0.0005 past 1M events</td><td class="border p-2">Production guardrails</td></tr>
+<tr><td class="border p-2"><strong>Reflexes (async batch)</strong></td><td class="border p-2">Batched</td><td class="border p-2">$0.0005/event → $0.00025 past 1M</td><td class="border p-2">Offline labeling</td></tr>
+<tr><td class="border p-2"><strong>Model Router</strong></td><td class="border p-2">~180 ms</td><td class="border p-2">$0.005 per request (flat)</td><td class="border p-2">Cheap vs powerful routing</td></tr>
+<tr><td class="border p-2"><strong>Reserved B200</strong></td><td class="border p-2">Dedicated</td><td class="border p-2">Per GPU-hour (sales)</td><td class="border p-2">Production fleets with SLAs</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">For a concrete cost example: a coding agent making 1,000 turns on a long task — 5 Fast Apply edits at ~2k tokens each on the <code>auto</code> route (~$0.01), 1 Compact call on a 100k-token history at the per-token rate (~$0.05), 3 WarpGrep searches (~$0.015 if at the per-request rate, or free on the unlimited tier if Morph bundles it), and 20 chat calls to Kimi K3 at ~5k input / 2k output = $0.073 per call. Daily total at 1,000 turns: under $150 — and most of that is the chat tokens, not the agent-specific endpoints, because the specialized endpoints bill per token / per event rather than per chat completion.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How the Morph API actually works</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Morph's API is OpenAI-compatible for chat, Anthropic-compatible for chat, and OpenAI-format-only for the specialized endpoints. The base URL is <code>https://api.morphllm.com</code>; one <code>MORPH_API_KEY</code> covers every endpoint. Here's the practical flow for a coding agent built on Morph:</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Step 1: Switch the chat model.</strong> Drop the OpenAI Python SDK in, point <code>base_url</code> at <code>https://api.morphllm.com/v1</code>, and call <code>model="morph-kimik3"</code> or <code>model="morph-glm52-744b"</code>. No new SDK to learn. Anthropic SDK works the same way: <code>base_url="https://api.morphllm.com"</code> + <code>model="morph-kimik3"</code>. For Claude Code, four env vars (<code>ANTHROPIC_BASE_URL</code>, <code>ANTHROPIC_AUTH_TOKEN</code>, <code>ANTHROPIC_MODEL</code>, <code>ANTHROPIC_SMALL_FAST_MODEL</code>) route the assistant and the small-fast model to Kimi K3 and Kimi K3 Fast respectively.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Step 2: Use Fast Apply for file edits.</strong> Send a prompt in the <code>&lt;instruction&gt;{...}&lt;/instruction&gt;&lt;code&gt;{full original file}&lt;/code&gt;&lt;update&gt;{edit with // ... existing code ... markers}&lt;/update&gt;</code> format; the model returns the fully merged file in <code>choices[0].message.content</code>. Use the <code>auto</code> model to let Morph pick between <code>morph-v3-fast</code> (10,500 tok/s, 96% accuracy, cheap) and <code>morph-v3-large</code> (5,000 tok/s, 98% accuracy, expensive). On OpenRouter the same models are published as <code>morph/morph-v3-fast</code> and <code>morph/morph-v3-large</code> with the rates above.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Step 3: Compact the chat history.</strong> When the conversation gets too long, POST to <code>/v1/compact</code> with <code>{ input: chatHistory, query: "what matters for the next LLM call", compression_ratio: 0.5, preserve_recent: 0 }</code>. The response includes <code>output</code> (the compressed text) and <code>compacted_line_ranges</code> showing exactly which lines survived. Sections wrapped in <code>&lt;keepContext&gt;</code> tags are preserved byte-for-byte regardless of compression ratio. The same operation is available as <code>model="morph-compactor"</code> on <code>/v1/chat/completions</code> for OpenAI-SDK-only integrations.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Step 4: Search the repo with WarpGrep.</strong> Pass <code>&lt;repo_structure&gt;{flat list of absolute paths}&lt;/repo_structure&gt;</code> + <code>&lt;search_string&gt;{natural language query}&lt;/search_string&gt;</code> to <code>model="morph-warp-grep-v2.1"</code>. The model returns <code>tool_calls</code> for <code>grep_search</code>, <code>read</code>, <code>list_directory</code>, <code>glob</code>, and <code>finish</code>; you execute each on the local filesystem and reply with <code>{role: "tool", tool_call_id, content}</code> messages. The loop typically runs 3-6 turns before <code>finish</code>. <strong>Important:</strong> you do <em>not</em> pass a <code>tools</code> array — the tools are built in.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Step 5: Monitor with Reflexes.</strong> On every agent turn, send the user message to <code>POST /v1/reflex/predict</code> with <code>model="jailbreak"</code>, <code>model="guardrail"</code>, <code>model="leaked-thinking"</code>, <code>model="stuck-in-a-loop"</code>, and <code>model="user-frustrated"</code>. Eleven built-in models cover the common failure modes; you can pass <code>models</code> as an array to run several in a single request. Each event bills at the per-event rate, with volume discounts past 1M events per billing month.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Step 6: Route with the Model Router.</strong> Before each chat call, POST to <code>/v1/router/classify</code> with <code>{ input: prompt, classes: ["difficulty", "ambiguity", "domain"] }</code> (or use <code>/v1/router/multimodel</code> to get a fully-formed next-model recommendation). Map <code>difficulty: easy</code> to a cheap model, <code>difficulty: hard</code> to a flagship. The classifier signals include <code>confidence</code> and <code>meets_threshold</code>; treat low-confidence results as <code>needs_info</code> and fall back to your default model.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Claude Code, Codex, and Cursor integration</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Morph ships a single MCP server, <code>@morphllm/morphmcp</code>, that exposes <code>edit_file</code>, <code>codebase_search</code>, and <code>github_codebase_search</code> as native tools to any MCP-compatible agent. One command wires it into Claude Code:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 my-4 overflow-x-auto text-sm"><code>claude mcp add morph -- npx -y @morphllm/morphmcp@latest</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Set <code>MORPH_API_KEY</code> in the env. The MCP server routes <code>edit_file</code> through Fast Apply (so the agent sends a partial edit and the merged file comes back), <code>codebase_search</code> through WarpGrep, and <code>github_codebase_search</code> through a GitHub-aware variant. For Cursor or Windsurf, add the same MCP server to your <code>mcp.json</code>. For raw Claude Code without MCP, the four Anthropic env vars route the chat loop through Morph on their own — useful when you want Morph for chat but still use Claude Code's built-in Read / Edit / Bash tools. Morph also publishes a one-command migration tool: <code>MORPH_API_KEY=*** npx -y @morphllm/morph-setup --kimi</code> drops the morph-migrate skill into your project, and <code>/morph-migrate</code> in Claude Code walks you through the conversion end-to-end.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Morph vs OpenRouter, Together, Fireworks, DeepInfra, Nscale</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Morph is not a pure chat-inference provider like <a href="/tutorials/openrouter-api-review-2026">OpenRouter</a>, <a href="/tutorials/together-ai-api-review">Together AI</a>, <a href="/tutorials/fireworks-api-review-2026">Fireworks</a>, <a href="/tutorials/deepinfra-api-review-2026">DeepInfra</a>, or <a href="/tutorials/nscale-serverless-inference-api-review-2026">Nscale</a>. The differentiation is the agent-specific endpoints, which none of those competitors ship:</p>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm">
+<thead><tr class="bg-gray-100">
+<th class="border p-2">Provider</th>
+<th class="border p-2">Chat inference</th>
+<th class="border p-2">Fast Apply</th>
+<th class="border p-2">Compact</th>
+<th class="border p-2">WarpGrep</th>
+<th class="border p-2">Reflexes</th>
+<th class="border p-2">Anthropic wire</th>
+</tr></thead>
+<tbody>
+<tr><td class="border p-2"><strong>Morph</strong></td><td class="border p-2">✅ Kimi K3, GLM-5.2, Qwen 3.5, etc.</td><td class="border p-2">✅ 10,500 tok/s, 96-98%</td><td class="border p-2">✅ 33,000 tok/s</td><td class="border p-2">✅ ~6 s</td><td class="border p-2">✅ 11 built-in</td><td class="border p-2">✅ Chat models</td></tr>
+<tr><td class="border p-2"><strong>OpenRouter</strong></td><td class="border p-2">✅ 415+ models</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌ (OpenAI only)</td></tr>
+<tr><td class="border p-2"><strong>Together AI</strong></td><td class="border p-2">✅ 200+ open models</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td></tr>
+<tr><td class="border p-2"><strong>Fireworks</strong></td><td class="border p-2">✅ Open + fine-tuned</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td></tr>
+<tr><td class="border p-2"><strong>DeepInfra</strong></td><td class="border p-2">✅ Cheap OSS</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td></tr>
+<tr><td class="border p-2"><strong>Nscale</strong></td><td class="border p-2">✅ EU sovereign</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td><td class="border p-2">❌</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">For pure chat inference at the cheapest per-token rate, OpenRouter, Together, Fireworks, and DeepInfra all beat Morph on flagship chat models (Morph's Kimi K3 at $2.90/$14.00 is not a budget tier). For a coding agent where file edits, context compression, and code search dominate the token bill, the speed of Fast Apply (10,500 tok/s), the compression ratio of Compact (33,000 tok/s), and the response time of WarpGrep (~6 s) make Morph the structurally cheaper choice once you account for the specialized workload. For a Claude Code migration where you want to keep the Anthropic SDK, Morph is the only provider that serves Kimi K3 and GLM-5.2 on the Anthropic wire format.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">China access, mainland-China latency, and the regional story</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Morph runs a single global endpoint at <code>https://api.morphllm.com</code> with no Asia-Pacific regional routing layer — production traffic from North America and Europe sees low single-digit tens of ms first-byte latency, but mainland China production traffic sees typical 200-400 ms transpacific first-byte latency. The Fast Apply models <code>morph/morph-v3-fast</code> and <code>morph/morph-v3-large</code> are also published on OpenRouter, which routes them through OpenRouter's own multi-region infrastructure — this gives Chinese developers a low-latency Fast Apply path without leaving the OpenRouter API key, but Morph's direct API is not available from mainland China without a proxy. The open-weight chat lineup (Kimi K3, GLM-5.2, Qwen 3.5 397B, etc.) is on Morph's direct API only and not through any region-aware proxy as of August 2026. No ICP-licensed mainland China endpoint exists.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Who should use Morph in 2026?</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-2">
+  <li><strong>Teams building production coding agents</strong> — Claude Code, Codex, Cursor, or custom agents that edit many files per turn. Fast Apply replaces a general-purpose LLM edit-and-hope at 10,500 tok/s with byte-for-byte merged output.</li>
+  <li><strong>Long-running agents</strong> — anywhere the chat history grows faster than the context window. Compact at 33,000 tok/s with <code>&lt;keepContext&gt;</code> byte-preservation keeps the next LLM call within budget.</li>
+  <li><strong>Production agent fleets</strong> — operators who need Reflexes (jailbreak, leaked-thinking, stuck-in-loop, user-frustrated) to monitor every turn without rolling their own classifier.</li>
+  <li><strong>Claude Code users migrating to open weights</strong> — four env vars route Claude Code through Morph's Anthropic-compatible endpoint on Kimi K3 or GLM-5.2, replacing the Anthropic API key with Morph's.</li>
+  <li><strong>Cost-conscious multi-model stacks</strong> — the Model Router at $0.005 per request classifies prompt difficulty and routes easy prompts to GLM-5.3-Flash ($0.15/$0.50 per 1M) and hard prompts to Kimi K3 or GLM-5.2.</li>
+  <li><strong>YC-stage startups eligible for Morph Startup Credits</strong> — up to $5K in API credits via a separate sales contact form, no permanent free tier otherwise.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Who should look elsewhere:</strong> teams that need a permanent free tier should evaluate <a href="/tutorials/openrouter-api-review-2026">OpenRouter</a>'s free-tier routes or <a href="/tutorials/freemodel-api-review-2026">FreeModel</a>; teams that need a mainland China endpoint should evaluate <a href="/tutorials/aliyun-bailian-api-review-2026">Alibaba Cloud Bailian</a>, <a href="/tutorials/baidu-ernie-api-review-2026">Baidu ERNIE</a>, or <a href="/tutorials/zhipu-glm-4-api-review-2026">Zhipu GLM</a>; teams that need function calling on the chat model itself should note that the specialized endpoints (Fast Apply, Compact, WarpGrep) require their own prompt templates rather than drop-in tool definitions.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verdict</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Morph is the right choice when the agent loop is the workload, not chat. Fast Apply at 10,500 tok/s with 96-98% edit accuracy, Compact at 33,000 tok/s with byte-for-byte preservation, WarpGrep in ~6 s with built-in tools, and 11 Reflexes classifiers in ~90 ms each solve the four structural token sinks of coding / long-running agents — and the open-weight chat lineup (Kimi K3, GLM-5.2, Qwen 3.5 397B, DeepSeek V4 Flash, MiniMax M3, Qwen 3.8 / 3.6 27B, Gemma 4 31B) is on par with what OpenRouter, Together, Fireworks, or DeepInfra offer on the chat side, with the added benefit of the Anthropic Messages wire format for Claude Code / Codex migrations. The 400+ production agents and 100B+ tokens/day throughput puts Morph in the OpenRouter Top 25 by volume as of August 2026.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Where it wins:</strong> agent-specific inference at speeds general-purpose chat models can't match, byte-for-byte context compression with tagged preservation, semantic code search with built-in tools, Anthropic-compatible open-weight chat for Claude Code / Codex migrations, YC backing and OpenRouter Top 25 throughput.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Where it loses:</strong> no permanent free tier, no monthly subscription, no mainland China endpoint, no enterprise price list published on the website, specialized endpoints require proprietary prompt templates rather than drop-in OpenAI tool definitions, and the chat models don't undercut OpenRouter / Together / Fireworks / DeepInfra on flagship pricing.</p>
+
+<hr class="my-8 border-gray-200">
+
+<p class="text-gray-500 text-sm my-4"><strong>Sources verified 2026-08-28:</strong> Open-weight chat pricing + GLM-5.2 service_tier behavior + Kimi K3 dynamic tool loading from the official <a href="https://docs.morphllm.com/llms.txt">docs.morphllm.com/llms.txt</a> Fast Models and Anthropic API sections; Fast Apply <code>morph-v3-fast</code> / <code>morph-v3-large</code> per-token pricing from the OpenRouter model catalog <code>openrouter.ai/api/v1/models</code>; Reflexes per-event tiered pricing from the docs.morphllm.com/llms.txt Pricing section; Model Router flat $0.005/request from docs.morphllm.com/llms.txt; MCP server + Claude Code / Cursor integration from <a href="https://docs.morphllm.com/mcp-integration">docs.morphllm.com/mcp-integration</a> and <a href="https://docs.morphllm.com/guides/coding-agents">docs.morphllm.com/guides/coding-agents</a>; YC backing and 100B+/day throughput from <a href="https://morphllm.com">morphllm.com</a> home page. No affiliate relationship with Morph.</p>`;
+
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={zhCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/" class="hover:underline">Home</a> &rsaquo; <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo; <span class="text-gray-700">{enTitle}</span></nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Reference</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Platform:</strong> api.morphllm.com/v1</li>
+            <li><strong>Flagship:</strong> Kimi K3 2.8T (1M ctx)</li>
+            <li><strong>Fast Apply:</strong> 10,500 tok/s, 96-98%</li>
+            <li><strong>Compact:</strong> 33,000 tok/s</li>
+            <li><strong>WarpGrep:</strong> ~6s per search</li>
+            <li><strong>Wire formats:</strong> OpenAI + Anthropic</li>
+            <li><strong>Free:</strong> No; up to $5K Startup Credits</li>
+            <li><strong>China:</strong> proxy required</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
