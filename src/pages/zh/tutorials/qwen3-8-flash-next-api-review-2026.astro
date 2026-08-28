@@ -1,0 +1,179 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'qwen3-8-flash-next-api-review-2026';
+const date = '2026-08-28';
+const locale = 'zh';
+const zhTitle = 'Qwen3.8-Flash-Next API 评测 2026：125B MoE + GDN/QSA 混合注意力';
+const zhDescription = 'Qwen3.8-Flash-Next API 评测：125B 总参 / 6B 激活，GDN+QSA 混合注意力，Qwen4 架构预览，qwen-community-1.0 协议，HF/ModelScope 开放权重。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": "Qwen3.8-Flash-Next API 评测 2026：125B MoE + GDN/QSA 混合注意力", "description": "Qwen3.8-Flash-Next API 评测：125B 总参 / 6B 激活，GDN+QSA 混合注意力，Qwen4 架构预览，qwen-community-1.0 协议，HF/ModelScope 开放权重。", "datePublished": "2026-08-28", "dateModified": "2026-08-28", "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://apirank.vip/zh/tutorials/qwen3-8-flash-next-api-review-2026"}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh"}, {"@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials"}, {"@type": "ListItem", "position": 3, "name": "Qwen3.8-Flash-Next API 评测 2026：125B MoE + GDN/QSA 混合注意力", "item": "https://apirank.vip/zh/tutorials/qwen3-8-flash-next-api-review-2026"}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Qwen3.8-Flash-Next 是什么？", "acceptedAnswer": {"@type": "Answer", "text": "阿里巴巴 2026-08-26 发布的 125B 总参数开放权重 MoE 模型，每个 token 激活 6B 参数，是首个把 Gated DeltaNet (GDN) 与 Qwen Sparse Attention (QSA) 在同一混合注意力栈中组合的 Qwen 模型。HF config.json 将其架构类声明为 Qwen4ExpForConditionalGeneration——明确标注为 Qwen4 将使用的架构的早期预览。"}}, {"@type": "Question", "name": "Qwen3.8-Flash-Next 和 Qwen3.8-Flash 有什么区别？", "acceptedAnswer": {"@type": "Answer", "text": "Qwen3.8-Flash-Next 是开放权重的实验版本（HF + ModelScope，qwen-community-1.0 协议，含 51B N-gram 嵌入 + 4B MTP 共约 180B 总参）。Qwen3.8-Flash 是同日（2026-08-26 在 OpenRouter 上线）发布的仅托管的生产版本；其 HF 仓库鉴权失败，权重未公开。Flash 默认 1M 上下文、多模态（文本 + 图片 + 视频 → 文本），QwenCloud 定价 $0.15/M 输入 + $0.47/M 输出。截至 2026-08-28 Flash-Next 没有公开定价页。"}}, {"@type": "Question", "name": "什么是 GDN + QSA 混合注意力？", "acceptedAnswer": {"@type": "Answer", "text": "Gated DeltaNet (GDN) 是带可学习门控的线性注意力块；Qwen Sparse Attention (QSA) 是带 Qwen 风格稀疏的窗口化全注意力块。Qwen3.8-Flash-Next 的堆叠方式：12 个宏块，每块包含 3×GDN→MoE 后接 1×QSA→MoE，共 48 层。线性块（GDN）以廉价方式处理大部分长上下文；稀疏全注意力块（QSA）每 4 层介入一次以恢复精度。它替代了 Qwen3-Next-80B-A3B-Instruct 中使用的 Gated Attention。"}}, {"@type": "Question", "name": "Qwen3.8-Flash-Next 的上下文窗口是多少？", "acceptedAnswer": {"@type": "Answer", "text": "原生 262,144 tokens（256K），可经 YaRN 风格扩展到 1,000,000 tokens。仅托管的 Qwen3.8-Flash 生产版本默认 1M 上下文。"}}, {"@type": "Question", "name": "Qwen3.8-Flash-Next 是开源的吗？", "acceptedAnswer": {"@type": "Answer", "text": "是——权重在 Hugging Face（Qwen/Qwen3.8-Flash-Next）和 ModelScope 上以 qwen-community-1.0 协议发布（不是 Apache 2.0）。该协议允许研究和商用，但带署名和使用范围限制；部署前请阅读 LICENSE 文件。"}}, {"@type": "Question", "name": "Qwen3.8-Flash-Next 在 OpenRouter 上吗？", "acceptedAnswer": {"@type": "Answer", "text": "不在。截至 2026-08-28，OpenRouter 仅托管 qwen/qwen3.8-flash（仅托管的生产 Flash 版本，同日上线），没有 Flash-Next 开放权重版本。当前可用渠道为：直接下载权重自部署、QwenChat（网页聊天用于评估）、阿里云 DashScope（Qwen Cloud API 表面；Flash 定价 $0.15/M 输入 + $0.47/M 输出；Flash-Next 定价尚未公开）。"}}, {"@type": "Question", "name": "Qwen3.8-Flash-Next 训练成本比 Qwen3.7-Plus 便宜多少？", "acceptedAnswer": {"@type": "Answer", "text": "阿里在 GitHub README 中声明，Qwen3.8-Flash-Next 训练只需 Qwen3.7-Plus「约 1/9」的算力。节省来自 GDN/QSA 混合——线性块主导长上下文（密集注意力最贵的部分），稀疏 QSA 块只在每 4 层运行一次以保证精度关键位置。"}}, {"@type": "Question", "name": "做代码 Agent 应该选 Qwen3.8-Flash-Next 还是 Qwen3.8-Max？", "acceptedAnswer": {"@type": "Answer", "text": "工具不同。Qwen3.8-Max（2.4T MoE，2026-08-03 发布）是追求最强推理和代码生成质量的专有旗舰；Qwen3.8-Flash-Next（125B MoE，6B 激活）是低成本、低延迟、开放权重、混合注意力栈、面向长上下文工作负载的模型。对仓库级上下文、低预算 Agent 场景，Flash-Next 更合适；对前沿质量的单轮代码生成，Qwen3.8-Max 仍然领先。"}}]};
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Qwen3.8-Flash-Next API 评测 2026：125B MoE + GDN/QSA 混合注意力</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">2026-08-26，阿里巴巴发布 <strong>Qwen3.8-Flash-Next</strong>——一个开放权重、125B 总参数的 Mixture-of-Experts 模型，每个 token 只激活 <strong>6B 参数</strong>，是首个在同一混合栈中组合 <strong>Gated DeltaNet (GDN)</strong> 与 <strong>Qwen Sparse Attention (QSA)</strong> 的 Qwen 模型。Hugging Face <code class="bg-gray-100 px-1 rounded text-sm">config.json</code> 将架构类声明为 <code class="bg-gray-100 px-1 rounded text-sm">Qwen4ExpForConditionalGeneration</code>，GitHub README 明确把它描述为「Qwen4 将使用架构的早期预览」。同日上线的是 <strong>Qwen3.8-Flash</strong>——OpenRouter 列出的仅托管生产版本，<strong>$0.15/M 输入 + $0.47/M 输出</strong>。本评测覆盖已核实的架构、训练成本声明（「约 1/9」于 Qwen3.7-Plus）、qwen-community-1.0 协议、各版本的访问入口，以及 Flash-Next 在 Qwen3.8-Max（2.4T 旗舰）和 Qwen3.7-Plus 之间，长上下文工作负载中的定位。</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 一句话结论：</strong>Qwen3.8-Flash-Next 是 Qwen3.8-Flash 的开放权重实验对应物。两者都是 2026-08-26 发布，只有 Flash（托管版本）有公开定价页。Flash-Next 以 qwen-community-1.0 协议在 Hugging Face 和 ModelScope 发布，是 Qwen 系列中首个使用 GDN+QSA 混合注意力的模型，替代了驱动 Qwen3-Next-80B-A3B 的 Gated Attention。如果你要前沿级长上下文质量又不想自部署，Flash 是 $0.15/$0.47 的生产路径。如果你要检查、微调或蒸馏 Qwen4 将用的架构，Flash-Next 是唯一发布权重的选项。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Qwen3.8 系列一览（2026-08-26）</h2>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">版本</th><th class="border p-2">总参数</th><th class="border p-2">每 token 激活</th><th class="border p-2">协议</th><th class="border p-2">权重</th><th class="border p-2">访问入口</th></tr></thead><tbody>
+<tr><td class="border p-2"><strong>Qwen3.8-Flash-Next</strong></td><td class="border p-2">125B（+ 51B N-gram + 4B MTP）</td><td class="border p-2">6B</td><td class="border p-2">qwen-community-1.0</td><td class="border p-2">✅ HF + ModelScope</td><td class="border p-2">自部署、QwenChat、DashScope（暂无公开定价）</td></tr>
+<tr><td class="border p-2"><strong>Qwen3.8-Flash</strong></td><td class="border p-2">同族（托管）</td><td class="border p-2">同</td><td class="border p-2">仅托管（专有）</td><td class="border p-2">❌ 鉴权墙后</td><td class="border p-2">QwenCloud $0.15/$0.47 · OpenRouter <code class="bg-gray-100 px-1 rounded text-sm">qwen/qwen3.8-flash</code> · DashScope</td></tr>
+<tr><td class="border p-2"><strong>Qwen3.8-Max</strong>（先发，2026-08-03）</td><td class="border p-2">2.4T (MoE)</td><td class="border p-2">约 256B</td><td class="border p-2">Qwen 开放权重</td><td class="border p-2">✅ HF</td><td class="border p-2">阿里云百炼 $1.10/$3.30 · OpenRouter</td></tr>
+</tbody></table>
+
+<p class="text-gray-700 leading-relaxed my-4">命名约定可能误导：「Flash-Next」是 Flash 的开放权重实验兄弟，不是后继。「Next」后缀表明这是一个预览 Qwen4 将用架构的研究线。无后缀的「Flash」是托管、即用、面向现有 Qwen API 表面的生产版本。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">架构：GDN + QSA 混合注意力</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">头条创新是注意力栈。Qwen3-Next-80B-A3B-Instruct（前一条实验线）用的是 <strong>Gated Attention</strong>（带可学习 value 门的窗口化全注意力）和标准全注意力的混合。Qwen3.8-Flash-Next 把 Gated Attention 替换为 <strong>Gated DeltaNet (GDN)</strong>——一种对序列长度 O(n) 的线性注意力块，以牺牲部分精度为代价；搭配 <strong>Qwen Sparse Attention (QSA)</strong>——只在选定 token 位置运行的窗口化/稀疏全注意力块。从 Hugging Face 的 <code class="bg-gray-100 px-1 rounded text-sm">config.json</code> 已核实：</p>
+
+<ul class="list-disc pl-6 my-4 space-y-2 text-gray-700">
+<li><strong>48 个总层</strong>，组织为 12 个宏块，每块 4 层</li>
+<li>每宏块为 <strong>3× (GDN → MoE)</strong> 后接 <strong>1× (QSA → MoE)</strong></li>
+<li><strong>MoE：每层 512 个专家</strong>（每个 token 激活 10 路由 + 1 共享）</li>
+<li><strong>其它组件</strong>：Gated Residual 连接、N-gram 嵌入（51B 额外参数，用于 next-token 感知嵌入）、Multi-Token Prediction（4B 额外）、Muon + AdamW 优化器</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">这与 API 成本的关系：线性注意力（GDN）在序列长度上是 <em>O(n)</em>，密集注意力是 <em>O(n&sup2;)</em>。每 4 层中有 3 层是线性的，长上下文中占主导的费用就坍缩下来。QSA 这个稀疏全注意力块只在每 4 层跑一次，阿里把它定位为精度恢复步骤，捕捉纯线性注意力会丢召回的场景。结果，按 README 中阿里的声明，训练成本仅是 Qwen3.7-Plus 的「约 1/9」，能力却相当。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">已核实事实（截至 2026-08-28）</h2>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">字段</th><th class="border p-2">已核实值</th></tr></thead><tbody>
+<tr><td class="border p-2">发布日期</td><td class="border p-2">2026-08-26（GitHub README News 段）</td></tr>
+<tr><td class="border p-2">HF 仓库创建时间</td><td class="border p-2">2026-08-24T08:24:59Z</td></tr>
+<tr><td class="border p-2">主参数</td><td class="border p-2">125B（MoE；每层 512 路由 + 1 共享）</td></tr>
+<tr><td class="border p-2">每 token 激活参数</td><td class="border p-2">6B（10 路由专家 + 1 共享）</td></tr>
+<tr><td class="border p-2">N-gram 嵌入参数</td><td class="border p-2">51B（独立于主 125B）</td></tr>
+<tr><td class="border p-2">多 token 预测参数</td><td class="border p-2">4B</td></tr>
+<tr><td class="border p-2">三项总参</td><td class="border p-2">约 180B</td></tr>
+<tr><td class="border p-2">原生上下文</td><td class="border p-2">262,144 tokens（256K）</td></tr>
+<tr><td class="border p-2">扩展上下文（YaRN）</td><td class="border p-2">1,000,000 tokens（1M）</td></tr>
+<tr><td class="border p-2">协议</td><td class="border p-2">qwen-community-1.0（非 Apache 2.0）</td></tr>
+<tr><td class="border p-2">架构类（config.json）</td><td class="border p-2"><code class="bg-gray-100 px-1 rounded text-sm">Qwen4ExpForConditionalGeneration</code> / model_type <code class="bg-gray-100 px-1 rounded text-sm">qwen4_exp</code></td></tr>
+<tr><td class="border p-2">OpenRouter 列名（Flash-Next）</td><td class="border p-2">❌ 截至 2026-08-28 未列出</td></tr>
+<tr><td class="border p-2">OpenRouter 列名（Flash，非 Next）</td><td class="border p-2">✅ <code class="bg-gray-100 px-1 rounded text-sm">qwen/qwen3.8-flash</code>，创建时间 2026-08-26T19:37:40Z</td></tr>
+<tr><td class="border p-2">Flash（非 Next）定价</td><td class="border p-2">$0.15/M 输入、$0.47/M 输出（QwenCloud、OpenRouter）</td></tr>
+<tr><td class="border p-2">Flash-Next 公开定价</td><td class="border p-2">无公开定价页（QwenCloud /models/qwen3.8-flash-next 返回 404）</td></tr>
+</tbody></table>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么 Qwen4 预览对 API 用户重要</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">开放权重的预览发布在这个品类里很少见。大部分实验室先发论文、再发 API、几个月后才发权重。阿里第一天就把 <code class="bg-gray-100 px-1 rounded text-sm">config.json</code> 中的 <code class="bg-gray-100 px-1 rounded text-sm">model_type: qwen4_exp</code> 一起发了——这本身是一个强烈信号：该架构会登陆 Qwen4 生产。对 API 用户来说，这意味着三件事：</p>
+
+<ol class="list-decimal pl-6 my-4 space-y-2 text-gray-700">
+<li><strong>蒸馏目标稳定。</strong>需要在 Flash-Next 输出上微调一个更小 Qwen3.5 / Qwen3.7 模型的团队可以做，等 Qwen4 上线时这条流水线直接续上。在 125B MoE 上做微调不便宜，但 Qwen3.5-7B-Instruct 或 Qwen3.5-14B-Instruct 从 Flash-Next 输出蒸馏是可行的。</li>
+<li><strong>线性注意力经济性先行到达。</strong>如果 GDN+QSA 栈在 Qwen4 生产里站住脚，长上下文 API 经济性就会改善。Flash-Next 是金丝雀——只要长上下文召回在 benchmark 上撑住，同一套注意力布局就会以旗舰价位登陆 Qwen4 闭源权重。</li>
+<li><strong>托管定价页是今天的生产入口。</strong>如果你不需要开放权重，Flash（非 Next）以 <strong>$0.15/M 输入 + $0.47/M 输出</strong> 是入口——同架构、多模态（文本 + 图片 + 视频 → 文本）、默认 1M 上下文、无需自部署。</li>
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">OpenAI 兼容接入（DashScope）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">托管面是 OpenAI 兼容的 DashScope 端点。Flash 生产版本在 DashScope 和 OpenRouter 上的模型 ID 是 <code class="bg-gray-100 px-1 rounded text-sm">qwen3.8-flash</code>；截至 2026-08-28，Flash-Next 两个面都没有。</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    api_key="YOUR_DASHSCOPE_API_KEY",
+)
+
+response = client.chat.completions.create(
+    model="qwen3.8-flash",
+    messages=[
+        {"role": "system", "content": "你是一名严谨的金融分析师。"},
+        {"role": "user", "content": "总结这段 10-K 摘录中的 2026 Q2 风险因素。"},
+    ],
+    max_tokens=800,
+    temperature=0.2,
+)
+print(response.choices[0].message.content)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">多模态调用（图片或视频 URL → 文本）时，把 <code class="bg-gray-100 px-1 rounded text-sm">content</code> 作为 parts 数组传入。长上下文调用时，<code class="bg-gray-100 px-1 rounded text-sm">max_tokens</code> 设宽裕一些——Flash 生产版本默认 1M 上下文，但输出 token 仍按每 1M 输出价计费。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">自部署 Flash-Next（开放权重）</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">HF 仓库是 <a href="https://huggingface.co/Qwen/Qwen3.8-Flash-Next" rel="noopener" target="_blank">Qwen/Qwen3.8-Flash-Next</a>。125B MoE 加上 51B N-gram 嵌入和 4B MTP，总参数约 180B；fp16 下磁盘占用约 360 GB，把 N-gram 嵌入留在 fp8 后实际加载 220-260 GB。生产托管意味着 4×H100 或 4×A100-80GB 节点；研究用托管一台 8×H100 即可。vLLM 0.6+ 或 SGLang 都支持 <code class="bg-gray-100 px-1 rounded text-sm">Qwen4ExpForConditionalGeneration</code> 架构类。</p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code># vLLM serve 示例（以 HF 仓库 README 当前 flag 为准）
+python -m vllm.entrypoints.openai.api_server \\
+  --model Qwen/Qwen3.8-Flash-Next \\
+  --tensor-parallel-size 4 \\
+  --max-model-len 262144 \\
+  --enable-prefix-caching \\
+  --port 8000</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">qwen-community-1.0 协议允许带署名的商用；部署前请查看仓库 LICENSE 文件了解完整使用范围边界。Qwen3.5 Apache-2.0 的部分宽松条款（无限制微调、带修改再分发）在 qwen-community-1.0 下受到限制，因此上线前做一次法务复核是值得的。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">价格对比（已核实 2026-08-28）</h2>
+
+<table class="min-w-full border border-gray-300 my-4 text-sm"><thead><tr class="bg-gray-100"><th class="border p-2">模型</th><th class="border p-2">输入 ($/M)</th><th class="border p-2">输出 ($/M)</th><th class="border p-2">上下文</th><th class="border p-2">开放权重</th></tr></thead><tbody>
+<tr><td class="border p-2"><strong>Qwen3.8-Flash</strong>（托管）</td><td class="border p-2">0.15</td><td class="border p-2">0.47</td><td class="border p-2">1M</td><td class="border p-2">❌</td></tr>
+<tr><td class="border p-2"><strong>Qwen3.8-Flash-Next</strong>（开放）</td><td class="border p-2">自部署</td><td class="border p-2">自部署</td><td class="border p-2">256K 原生 / 1M 扩展</td><td class="border p-2">✅ qwen-community-1.0</td></tr>
+<tr><td class="border p-2"><strong>Qwen3.8-Max</strong></td><td class="border p-2">1.10</td><td class="border p-2">3.30</td><td class="border p-2">128K</td><td class="border p-2">✅ Qwen 协议</td></tr>
+<tr><td class="border p-2"><strong>Qwen3.5-Plus</strong></td><td class="border p-2">0.28</td><td class="border p-2">0.83</td><td class="border p-2">128K</td><td class="border p-2">✅ Apache 2.0</td></tr>
+<tr><td class="border p-2"><strong>Qwen3.5-Max</strong></td><td class="border p-2">0.55</td><td class="border p-2">1.65</td><td class="border p-2">128K</td><td class="border p-2">✅ Apache 2.0</td></tr>
+</tbody></table>
+
+<p class="text-gray-700 leading-relaxed my-4">托管 Flash 的输入价大约是 Qwen3.5-Plus 的 <strong>1/1.87</strong>、Qwen3.8-Max 的 <strong>1/7.3</strong>。1M 上下文默认值是从 Plus 切到 Flash 的最强单一理由。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">何时选 Flash-Next vs Flash vs Plus</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">要 <strong>1M 上下文 + 最低单价 + 不需要检查或微调权重</strong>：选 <strong>Qwen3.8-Flash（托管）</strong>。OpenRouter 的 <code class="bg-gray-100 px-1 rounded text-sm">qwen/qwen3.8-flash</code> 直接配 OpenAI Python SDK；DashScope 原生支持多模态。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">要 <strong>权重本身</strong>：选 <strong>Qwen3.8-Flash-Next（开放）</strong>——蒸馏流水线、自有数据微调、数据驻留合规的本地部署，或研究 GDN+QSA 架构。生产推理预算 4×H100，部署前评估 qwen-community-1.0 协议条款。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">要 <strong>单轮质量优先</strong>：选 <strong>Qwen3.8-Max</strong>。2.4T 旗舰在硬推理和代码生成 benchmark 上仍领先；Flash 定位不同。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">要 <strong>Apache 2.0 协议</strong>：选 <strong>Qwen3.5-Plus</strong>。价格略高于 Flash，但避免 qwen-community-1.0 的协议摩擦。Apache 2.0 是当前 Qwen 系列最宽松的协议。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">限制与风险</h2>
+
+<ol class="list-decimal pl-6 my-4 space-y-2 text-gray-700">
+<li><strong>截至 2026-08-28 无 Flash-Next 公开定价。</strong>自部署是当前唯一有可核实经济性的路径，对任何第三方报价保持警惕。</li>
+<li><strong>协议是 qwen-community-1.0，不是 Apache 2.0。</strong>多数 Qwen3.5 权重用的 Apache 2.0 不适用于 Flash-Next。商用部署前请阅读 HF 仓库 LICENSE 文件。</li>
+<li><strong>OpenRouter 不列 Flash-Next。</strong>只有 Flash（托管）上了 OpenRouter。如果你的栈只走 OpenRouter，会路由到 <code class="bg-gray-100 px-1 rounded text-sm">qwen/qwen3.8-flash</code>，不是开放权重版本。</li>
+<li><strong>自部署成本不小。</strong>180B 参数 fp16 = 至少 360 GB 显存；生产服务建议 4×H100 或 4×A100-80GB。</li>
+<li><strong>长上下文扩展走 YaRN。</strong>原生 256K 是阿里完整验证过的；1M 扩展是 YaRN 风格，公开文档里 benchmark 不如原生版深。</li>
+<li><strong>多模态在托管 Flash 上，不在开放 Flash-Next 上。</strong>需要图片或视频 → 文本的话，走 DashScope 或 OpenRouter，不要走自部署权重。</li>
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Qwen3.8-Flash-Next 是一个可信的、开放权重的预览——预览阿里将在 Qwen4 中发布的架构。GDN+QSA 混合是 Qwen3-Next Gated Attention 之上的实质进步：线性块主导长上下文，稀疏全注意力块每 4 层恢复精度，README 中已核实的「比 Qwen3.7-Plus 训练成本 1/9」声明正是那种效率数学——如果它在生产里站住脚，将重塑 2026 下半年的长上下文 API 经济性。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对 API 用户来说，决策树很短。要今天的廉价长上下文，<strong>Qwen3.8-Flash（托管）</strong>以 <strong>$0.15/$0.47</strong> 在 DashScope 或 OpenRouter 上是入口——多模态、1M 上下文、OpenAI 兼容。要权重用于蒸馏、微调或本地部署，<strong>Qwen3.8-Flash-Next</strong> 在 Hugging Face 上是唯一开放选项，预算 4×H100 自部署和 qwen-community-1.0 协议条款。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">旗舰 <strong>Qwen3.8-Max</strong> 在硬推理 benchmark 上仍以 7× 的输入价胜出；<strong>Qwen3.5-Plus</strong> 的 Apache-2.0 线在协议摩擦比价格更重要时是合适选择。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果要把 Qwen3.8-Flash 跟 OpenAI、Anthropic、Groq 一起路由到同一个 OpenAI 兼容密钥并做跨区故障切换，<a href="https://freemodel.dev/invite/FRE-7a3b6220" class="text-blue-600 hover:underline" rel="sponsored noopener" target="_blank">FreeModel</a> 是最简单的衔接：一个仪表盘、一份账单关系、没有胶水代码的路由控制。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">参考资料</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+<li>Qwen，<a href="https://huggingface.co/Qwen/Qwen3.8-Flash-Next/raw/main/README.md" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Qwen3.8-Flash-Next 模型卡（HF）</a></li>
+<li>Qwen，<a href="https://huggingface.co/Qwen/Qwen3.8-Flash-Next/raw/main/config.json" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Qwen3.8-Flash-Next config.json（HF）</a></li>
+<li>Qwen，<a href="https://github.com/QwenLM/Qwen3.8-Flash-Next" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Qwen3.8-Flash-Next GitHub README（1/9 训练成本声明、News 段）</a></li>
+<li>阿里云，<a href="https://www.qwencloud.com/models/qwen3.8-flash" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Qwen3.8-Flash 产品页（QwenCloud 定价）</a></li>
+<li>OpenRouter，<a href="https://openrouter.ai/qwen/qwen3.8-flash" class="text-blue-600 hover:underline" rel="noopener" target="_blank">qwen/qwen3.8-flash 模型页</a></li>
+<li>OpenRouter，<a href="https://openrouter.ai/api/v1/models" class="text-blue-600 hover:underline" rel="noopener" target="_blank">/api/v1/models 列表（已核实 Flash-Next 不在其中）</a></li>
+<li>Qwen，<a href="https://qwen.ai/blog?id=qwen3.8-flash-next" class="text-blue-600 hover:underline" rel="noopener" target="_blank">Qwen3.8-Flash-Next 官方博客</a></li>
+</ul>`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+    <div class="mb-8"><a href="/zh/tutorials" class="text-blue-600 hover:underline text-sm">← 返回教程</a></div>
+    <div class="flex items-center gap-3 mb-4"><span class="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded">Provider Review</span><time datetime={date} class="text-sm text-gray-500">2026-08-28</time></div>
+    <div set:html={enBody} />
+    <hr class="my-12 border-gray-200" />
+    <section class="mt-8"><p class="text-sm text-gray-500 mb-2"><strong>披露声明</strong></p><p class="text-sm text-gray-500">APIRank 文章中的合作伙伴链接可能产生联盟佣金。编辑判断独立。</p></section>
+  </article>
+</BaseLayout>
