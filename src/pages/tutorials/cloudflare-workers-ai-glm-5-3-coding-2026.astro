@@ -1,0 +1,546 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'cloudflare-workers-ai-glm-5-3-coding-2026';
+const date = '2026-08-29';
+const locale = 'en';
+
+const enTitle = 'Cloudflare Workers AI GLM-5.3: $1.40/M Coding Model Tested';
+const enDescription = 'Cloudflare Workers AI adds Z.ai GLM-5.3 on Aug 28, 2026: $1.40/$0.26/$4.40 per M tokens, 1M context, 28.3 Terminal Bench 3.0 OS-SOTA, Workers Paid required.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Is GLM-5.3 free on the Workers Free tier?", "acceptedAnswer": { "@type": "Answer", "text": "No. GLM-5.3 is on Cloudflare's paid-billing-only frontier list alongside GLM-5.2, GLM-5.3-Flash, Kimi K2.6, Kimi K2.7 Code, DeepSeek V4 Flash, and DeepSeek V4 Pro. To call it you need a Workers Paid plan ($5/month) or prepaid AI Gateway credits. The standard 10,000 free Neurons/day does not apply." } },
+    { "@type": "Question", "name": "How much does GLM-5.3 cost on Workers AI?", "acceptedAnswer": { "@type": "Answer", "text": "$1.40 per million input tokens, $0.26 per million cached input tokens, and $4.40 per million output tokens — same rates as GLM-5.2. Per 1,000 input tokens the model consumes 127,273 Neurons; per 1,000 output tokens, 400,000 Neurons. A typical 50K-input / 4K-output coding task runs around $0.088 per call." } },
+    { "@type": "Question", "name": "What is the model ID on Workers AI?", "acceptedAnswer": { "@type": "Answer", "text": "The official model ID is @cf/zai-org/glm-5.3 (note: namespace is zai-org, NOT zhipu). The sibling Flash variant is @cf/zai-org/glm-5.3-flash. Both share the same 1,048,576-token context window, reasoning, function calling, and structured outputs capabilities." } },
+    { "@type": "Question", "name": "What is the rate limit for GLM-5.3?", "acceptedAnswer": { "@type": "Answer", "text": "As of 2026-08-29, GLM-5.3 inherits the default Text Generation rate of 300 requests per minute per account. Cloudflare's explicit 'Frontier models' RPM table (currently listing GLM-5.2, Kimi K2.6, Kimi K2.7 Code at 20 RPM standard / 50 RPM with prepaid AI Gateway credits) has not been updated to include GLM-5.3 yet — expect that to be added in the days after launch." } },
+    { "@type": "Question", "name": "How does GLM-5.3 compare to GLM-5.2 on coding benchmarks?", "acceptedAnswer": { "@type": "Answer", "text": "Z.ai reports a 50% improvement on its in-house Z.ai Code Bench. On public benchmarks GLM-5.3 vs GLM-5.2 scores: Terminal Bench 2.1 88.2 vs 81.0, Terminal Bench 3.0 28.3 vs 4.6 (now open-source SOTA), DeepSWE 66.9 vs 46.2, FrontierSWE 78.1 vs 67.5, SWE-Marathon 42.5 vs 19.4 (more than 2x), CyberGym 84.5, AutomationBench 48.2. The same base model as GLM-5.2 — every gain comes from post-training." } },
+    { "@type": "Question", "name": "Can I self-host GLM-5.3?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. GLM-5.3 weights are open and available at huggingface.co/zai-org/GLM-5.3 (754B parameters, BF16 + FP8 sharded, ~755 GB on disk). The model is a MoE with DSA attention (GlmMoeDsaForCausalLM, 8 experts per token). License is the custom GLM-5.3 License — free for use, modification, fine-tuning, and commercial deployment; Model-as-a-Service providers whose affiliate-group revenue exceeds US$10B in any 12-month period must complete a Z.AI security review first." } },
+    { "@type": "Question", "name": "How do I call GLM-5.3 from a Worker?", "acceptedAnswer": { "@type": "Answer", "text": "Four entry points: (1) Workers binding — env.AI.run('@cf/zai-org/glm-5.3', { messages: [...] }); (2) REST API — POST https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/@cf/zai-org/glm-5.3; (3) OpenAI-compatible — POST /v1/chat/completions against the Workers AI endpoint with model='@cf/zai-org/glm-5.3'; (4) AI Gateway — same model ID, with gateway billing set to 'Unified billing' for prepaid-credit access." } },
+    { "@type": "Question", "name": "What about China access?", "acceptedAnswer": { "@type": "Answer", "text": "Workers AI endpoints are global; the model runs in Cloudflare's GPU pools across 300+ cities and is reachable from mainland China through Cloudflare's standard anycast IPs. For higher throughput inside the GFW, Z.ai's own platform (z.ai) hosts the same GLM-5.3 family plus a GLM Coding Plan subscription that bundles GLM-5.3, GLM-5.3-Flash, GLM-5.2, and GLM-5-Turbo for IDE and agent use cases." } }
+  ]
+};
+
+const enBody = `<h1 class="text-3xl font-bold mb-6">Cloudflare Workers AI GLM-5.3: The $1.40/M Coding Model That Just Hit Terminal Bench 3.0 SOTA</h1>
+
+<p class="text-lg leading-relaxed mb-4">On <strong>August 28, 2026</strong>, Cloudflare quietly added Z.ai's <strong>GLM-5.3</strong> to Workers AI under the model ID <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3</code>. The interesting bit isn't that it's another Chinese frontier model on Cloudflare's edge — that story already played out with GLM-5.2 in June. The interesting bit is the price-to-performance ratio: GLM-5.3 costs the same as GLM-5.2 ($1.40 per million input tokens, $0.26 cached, $4.40 output) while roughly <strong>doubling GLM-5.2's score on long-horizon benchmarks like SWE-Marathon</strong> and improving Terminal Bench 3.0 by <strong>6.1x</strong> (4.6 → 28.3, now open-source state of the art).</p>
+
+<p class="text-lg leading-relaxed mb-4">Cloudflare calls GLM-5.3 "the most capable open-weights model for coding" in the changelog body. The arXiv paper (<a href="https://arxiv.org/abs/2602.15763" target="_blank" rel="nofollow">2602.15763</a>, "GLM-5: from Vibe Coding to Agentic Engineering") frames the model as the post-training-only successor to GLM-5.2 — same base weights, every gain from alignment work. That matters for capacity planning: if you already deployed GLM-5.2 on Workers AI, the migration is a one-line model-ID swap, and your unit economics stay flat.</p>
+
+<p class="text-lg leading-relaxed mb-4">This review covers: the exact Workers AI pricing and Neuron consumption (verified from <a href="https://developers.cloudflare.com/workers-ai/platform/pricing/" target="_blank" rel="nofollow">/workers-ai/platform/pricing/</a>), the paid-billing requirement (GLM-5.3 is on the frontier-model list — no free 10K Neurons/day), the current rate-limit picture (300 RPM default, frontier-RPM table not yet updated), the four API surfaces (binding, REST, OpenAI-compatible, AI Gateway), how GLM-5.3 stacks up against GLM-5.2 on the seven public benchmarks Z.ai reports, and the open-weights + self-hosting story under the new GLM-5.3 License.</p>
+
+<p class="text-lg leading-relaxed mb-4">Last verified: <strong>2026-08-29</strong>. Pricing and benchmark figures pulled directly from the Cloudflare changelog and pricing page; if Cloudflare updates the frontier-rate-limit table to include GLM-5.3 in the next few days, I'll note it in the FAQ.</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">GLM-5.3 on Workers AI: pricing, Neurons, and the paid-tier requirement</h2>
+
+<p class="mb-4">Cloudflare's pricing page lists GLM-5.3 verbatim alongside GLM-5.2 and the rest of the frontier list. The exact row, lifted from <a href="https://developers.cloudflare.com/workers-ai/platform/pricing/" target="_blank" rel="nofollow">/workers-ai/platform/pricing/</a>:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>@cf/zai-org/glm-5.3
+  Input tokens          $1.400 per M    127,273 neurons per M
+  Cached input tokens   $0.260 per M     23,636 neurons per M
+  Output tokens         $4.400 per M    400,000 neurons per M</code></pre>
+
+<p class="mb-4">Three things to internalize:</p>
+
+<ul class="list-disc pl-6 mb-4 space-y-2">
+<li><strong>Same price as GLM-5.2.</strong> Z.ai and Cloudflare deliberately held the rates flat to make the upgrade a no-brainer for existing GLM-5.2 workloads. The benchmark improvements are pure upside on the same line item.</li>
+<li><strong>Cache hits are roughly one-fifth the input price.</strong> $0.26/M cached vs $1.40/M full input — a 5.4x discount on repeated prefix. If you run an agent loop that re-feeds the system prompt + tool definitions every turn (typical Claude Code / Cursor pattern), this matters enormously. A 30K-token fixed prompt on every call costs $0.009 cached vs $0.042 full input — saves ~$0.033 per turn.</li>
+<li><strong>Neuron consumption is 127,273 / 400,000 per 1K input/output.</strong> That's roughly twice what Qwen 3.8 27B (also on Workers AI) consumes per token. Heavier bills for the same token count, but GLM-5.3 needs fewer total tokens because the agentic tasks finish in fewer rounds.</li>
+</ul>
+
+<p class="mb-4">The <strong>paid-tier requirement</strong> is the structural change for hobbyists. From the pricing page:</p>
+
+<blockquote class="border-l-4 border-orange-400 pl-4 italic text-gray-700 mb-4">Some models require a paid billing method. This applies to <code class="bg-gray-100 px-1 rounded text-sm">@cf/moonshotai/kimi-k2.6</code>, <code class="bg-gray-100 px-1 rounded text-sm">@cf/moonshotai/kimi-k2.7-code</code>, <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.2</code>, <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3</code>, <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3-flash</code>, <code class="bg-gray-100 px-1 rounded text-sm">@cf/deepseek-ai/deepseek-v4-flash-0731</code>, and <code class="bg-gray-100 px-1 годах/dark/ai/deepseek-v4-pro-0813</code>. You can access these models with either the <strong>Workers Paid plan</strong> or <strong>prepaid AI Gateway credits</strong>.</blockquote>
+
+<p class="mb-4">Two paths: subscribe to <strong>Workers Paid</strong> ($5/month, includes 10M included Neurons + per-Neuron overage), or use <strong>prepaid AI Gateway credits</strong> without a Workers subscription. The AI Gateway path is interesting for teams that already use Cloudflare's gateway for OpenAI/Anthropic routing — same billing relationship, just add a model ID. The changelog notes that "Requests to frontier models that use prepaid credits receive higher rate limits," which is the explicit incentive.</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">Rate limits: 300 RPM default, frontier table pending</h2>
+
+<p class="mb-4">Cloudflare's <a href="https://developers.cloudflare.com/workers-ai/platform/limits/" target="_blank" rel="nofollow">rate-limits page</a> lists GLM-5.3 under the paid-billing frontier umbrella but has not yet added it to the explicit "Frontier models" RPM table. That table currently lists only three models:</p>
+
+<table class="w-full border-collapse border border-gray-300 my-4">
+<thead class="bg-gray-100">
+<tr><th class="border border-gray-300 px-4 py-2 text-left">Model</th><th class="border border-gray-300 px-4 py-2 text-right">Standard RPM</th><th class="border border-gray-300 px-4 py-2 text-right">Prepaid AI Gateway RPM</th></tr>
+</thead>
+<tbody>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.2</code></td><td class="border border-gray-300 px-4 py-2 text-right">20</td><td class="border border-gray-300 px-4 py-2 text-right">50</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/moonshotai/kimi-k2.6</code></td><td class="border border-gray-300 px-4 py-2 text-right">20</td><td class="border border-gray-300 px-4 py-2 text-right">50</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/moonshotai/kimi-k2.7-code</code></td><td class="border border-gray-300 px-4 py-2 text-right">20</td><td class="border border-gray-300 px-4 py-2 text-right">50</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3</code> <em>(new, expected)</em></td><td class="border border-gray-300 px-4 py-2 text-right">300 <span class="text-xs text-gray-500">(Text Generation default)</span></td><td class="border border-gray-300 px-4 py-2 text-right">tbd</td></tr>
+</tbody>
+</table>
+
+<p class="mb-4">In practice, GLM-5.3 currently inherits the <strong>300 RPM Text Generation default</strong> — much higher than GLM-5.2's 20 RPM standard frontier ceiling. This is almost certainly a transitional state (Cloudflare usually caps frontier models at 20/50 RPM to protect GPU supply), so if you're building production traffic on GLM-5.3, plan for the table to be updated within a week or two. The 50 RPM prepaid-credits uplift pathway will likely apply when the table is updated.</p>
+
+<p class="mb-4">For agent workloads with bursty call patterns, the 300 RPM default is a temporary gift — concurrent agent fleets can hammer GLM-5.3 hard today. For sustained batch jobs, queue with a token-bucket limiter.</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">Benchmarks: GLM-5.3 vs GLM-5.2, head-to-head</h2>
+
+<p class="mb-4">The headline claim from the changelog is the 50% Z.ai Code Bench improvement. The public benchmark deltas are more striking:</p>
+
+<table class="w-full border-collapse border border-gray-300 my-4">
+<thead class="bg-gray-100">
+<tr><th class="border border-gray-300 px-4 py-2 text-left">Benchmark</th><th class="border border-gray-300 px-4 py-2 text-right">GLM-5.2</th><th class="border border-gray-300 px-4 py-2 text-right">GLM-5.3</th><th class="border border-gray-300 px-4 py-2 text-right">Delta</th></tr>
+</thead>
+<tbody>
+<tr><td class="border border-gray-300 px-4 py-2">Terminal Bench 2.1</td><td class="border border-gray-300 px-4 py-2 text-right">81.0</td><td class="border border-gray-300 px-4 py-2 text-right">88.2</td><td class="border border-gray-300 px-4 py-2 text-right">+7.2</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">Terminal Bench 3.0</td><td class="border border-gray-300 px-4 py-2 text-right">4.6</td><td class="border border-gray-300 px-4 py-2 text-right">28.3</td><td class="border border-gray-300 px-4 py-2 text-right text-green-700">+23.7 (OS SOTA)</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">DeepSWE</td><td class="border border-gray-300 px-4 py-2 text-right">46.2</td><td class="border border-gray-300 px-4 py-2 text-right">66.9</td><td class="border border-gray-300 px-4 py-2 text-right">+20.7</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">FrontierSWE</td><td class="border border-gray-300 px-4 py-2 text-right">67.5</td><td class="border border-gray-300 px-4 py-2 text-right">78.1</td><td class="border border-gray-300 px-4 py-2 text-right">+10.6</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">SWE-Marathon</td><td class="border border-gray-300 px-4 py-2 text-right">19.4</td><td class="border border-gray-300 px-4 py-2 text-right">42.5</td><td class="border border-gray-300 px-4 py-2 text-right">+23.1 (2.2x)</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">CyberGym (vuln discovery)</td><td class="border border-gray-300 px-4 py-2 text-right">—</td><td class="border border-gray-300 px-4 py-2 text-right">84.5</td><td class="border border-gray-300 px-4 py-2 text-right text-green-700">top in Z.ai comparisons</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">AutomationBench</td><td class="border border-gray-300 px-4 py-2 text-right">—</td><td class="border border-gray-300 px-4 py-2 text-right">48.2</td><td class="border border-gray-300 px-4 py-2 text-right text-green-700">top in Z.ai comparisons</td></tr>
+</tbody>
+</table>
+
+<p class="mb-4">Three patterns to call out:</p>
+
+<ul class="list-disc pl-6 mb-4 space-y-2">
+<li><strong>Long-horizon work sees the biggest lift.</strong> SWE-Marathon (multi-hour agentic engineering tasks) more than doubled. Terminal Bench 3.0 (longer-horizon terminal tasks) jumped 6.1x. The post-training emphasis on agentic tool use shows up most where the model has to plan across many steps.</li>
+<li><strong>Single-turn coding nudges up only modestly.</strong> Terminal Bench 2.1 went from 81.0 to 88.2 — a solid +9% gain, but not a revolution. If your workload is one-shot code generation (no tool loop, no multi-step planning), the upgrade is nice-to-have, not transformative.</li>
+<li><strong>Vulnerability discovery and long-horizon automation are new SOTA claims</strong> for open weights — CyberGym 84.5 and AutomationBench 48.2 are benchmark wins for security-research and agent-automation use cases where open-weight models previously trailed closed APIs.</li>
+</ul>
+
+<p class="mb-4">The "same base model as GLM-5.2, every gain from post-training" framing matters for one decision: if your GLM-5.2 deployment was bottlenecked on context understanding (rather than planning, tool use, or long-horizon coherence), GLM-5.3 won't help. If your deployment was bottlenecked on the agent getting stuck mid-task or losing track of the goal, GLM-5.3 should be a measurable improvement.</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">Calling GLM-5.3 from a Worker: four entry points</h2>
+
+<p class="mb-4">Cloudflare documents four API surfaces for Workers AI models, all supported on GLM-5.3.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">1. Workers binding — <code class="bg-gray-100 px-1 rounded text-sm">env.AI.run()</code></h3>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>// wrangler.toml bindings: [[ai_bindings]] binding = "AI"
+// TypeScript Worker
+export interface Env { AI: Ai }
+
+export default {
+  async fetch(req: Request, env: Env): Promise&lt;Response&gt; {
+    const { prompt } = await req.json();
+
+    const resp = await env.AI.run('@cf/zai-org/glm-5.3', {
+      messages: [
+        { role: 'system', content: 'You are a senior TypeScript engineer.' },
+        { role: 'user',   content: prompt }
+      ],
+      max_tokens: 4096,
+      temperature: 0.7,
+      reasoning_effort: 'medium'  // 'low' | 'medium' | 'high'
+    });
+
+    return Response.json(resp);
+  }
+};</code></pre>
+
+<p class="mb-4">The <code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort</code> parameter (low / medium / high) is OpenAI-style — set high for the agentic benchmarks, low for simple Q&amp;A.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">2. REST API — account-scoped endpoint</h3>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>curl -X POST "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/ai/run/@cf/zai-org/glm-5.3" \\
+  -H "Authorization: Bearer $CF_API_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "messages": [
+      {"role": "user", "content": "Refactor this Python function to use asyncio."}
+    ],
+    "max_tokens": 2048,
+    "stream": true
+  }'</code></pre>
+
+<p class="mb-4">Useful from CI runners, serverless functions outside the Workers runtime, or any environment where you can hold an API token.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">3. OpenAI-compatible — drop-in for OpenAI SDKs</h3>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key="&lt;your-cloudflare-api-token&gt;",
+    base_url="https://api.cloudflare.com/client/v4/accounts/&lt;CF_ACCOUNT_ID&gt;/ai/v1"
+)
+
+resp = client.chat.completions.create(
+    model="@cf/zai-org/glm-5.3",
+    messages=[
+        {"role": "user", "content": "Write a TypeScript debounce function with tests."}
+    ],
+    max_tokens=2048,
+    temperature=0.7,
+)
+
+print(resp.choices[0].message.content)</code></pre>
+
+<p class="mb-4">Works with any OpenAI SDK (Python, Node, Go, Rust) by swapping <code class="bg-gray-100 px-1 rounded text-sm">base_url</code>. The model ID has to include the <code class="bg-gray-100 px-1 rounded text-sm">@cf/</code> prefix even on the OpenAI-compatible surface — that's the one gotcha.</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">4. AI Gateway — gateway-mediated routing + caching</h3>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>// gateway.example.com routes to GLM-5.3 via Unified billing
+curl -X POST "https://gateway.example.com/v1/chat/completions" \\
+  -H "Authorization: Bearer $GATEWAY_TOKEN" \\
+  -d '{
+    "model": "@cf/zai-org/glm-5.3",
+    "messages": [{"role": "user", "content": "Explain DSA attention."}]
+  }'</code></pre>
+
+<p class="mb-4">AI Gateway is the prepaid-credits path mentioned earlier — set gateway billing to "Unified billing" and load credits, then route OpenAI/Anthropic/Workers AI models through one endpoint with caching, rate-limiting, and analytics on top.</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">Open weights: HF repo, license, self-hosting path</h2>
+
+<p class="mb-4">GLM-5.3 weights are published at <a href="https://huggingface.co/zai-org/GLM-5.3" target="_blank" rel="nofollow">huggingface.co/zai-org/GLM-5.3</a> under the custom <strong>GLM-5.3 License</strong>. The model is a MoE with DSA attention (<code class="bg-gray-100 px-1 rounded text-sm">GlmMoeDsaForCausalLM</code>), 8 experts per token, ~754B total parameters stored as BF16 + FP8 sharded safetensors (~755 GB on disk across all shards).</p>
+
+<p class="mb-4">License summary (full text at <a href="https://huggingface.co/zai-org/GLM-5.3/raw/main/LICENSE" target="_blank" rel="nofollow">HF LICENSE file</a>):</p>
+
+<ul class="list-disc pl-6 mb-4 space-y-2">
+<li>Free for use, modification, merge, publication, distribution, sublicensing, and sale</li>
+<li>Fine-tuning and derivative works allowed</li>
+<li>No copyleft — derivative works can use any license</li>
+<li>One condition: <strong>Model-as-a-Service providers whose affiliate-group revenue exceeds US$10 billion in any 12-month period must complete a Z.AI security review before commercial use</strong></li>
+<li>Provided "AS IS", no warranty</li>
+<li>Contact for the security review: <code class="bg-gray-100 px-1 rounded text-sm">glmlicense@z.ai</code></li>
+</ul>
+
+<p class="mb-4">For typical SaaS startups and internal tools, the license is permissive in practice. The $10B-revenue threshold targets only the largest hyperscalers — every API reseller below that line can self-host GLM-5.3 without contacting Z.AI. The arXiv paper is <a href="https://arxiv.org/abs/2602.15763" target="_blank" rel="nofollow">2602.15763</a> ("GLM-5: from Vibe Coding to Agentic Engineering") for the architecture details.</p>
+
+<p class="mb-4">If you self-host, expect serious hardware requirements: 754B parameters at BF16 is ~1.5 TB GPU memory minimum for inference, or ~755 GB at FP8. An 8x H100 node (80 GB each, 640 GB total) won't fit BF16; you'd need an 8x B200 or 8x GB300 node for full BF16 inference, or accept FP8 quantization for an 8x H100 fit. For most teams, Workers AI's $1.40/M input is cheaper than the amortized GPU cost of self-hosting at this scale.</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">When to use GLM-5.3 vs the alternatives on Workers AI</h2>
+
+<p class="mb-4">The Workers AI China-model lineup now has three paid-tier options for coding/agent workloads:</p>
+
+<table class="w-full border-collapse border border-gray-300 my-4">
+<thead class="bg-gray-100">
+<tr><th class="border border-gray-300 px-4 py-2 text-left">Model</th><th class="border border-gray-300 px-4 py-2 text-right">Input $/M</th><th class="border border-gray-300 px-4 py-2 text-right">Output $/M</th><th class="border border-gray-300 px-4 py-2 text-left">Best for</th></tr>
+</thead>
+<tbody>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3</code></td><td class="border border-gray-300 px-4 py-2 text-right">$1.40</td><td class="border border-gray-300 px-4 py-2 text-right">$4.40</td><td class="border border-gray-300 px-4 py-2">Long-horizon agentic engineering, multi-hour coding tasks, vulnerability research</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3-flash</code></td><td class="border border-gray-300 px-4 py-2 text-right">$0.15</td><td class="border border-gray-300 px-4 py-2 text-right">$0.50</td><td class="border border-gray-300 px-4 py-2">High-volume interactive workloads, multimodal input, cost-sensitive chat/agent loops</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/moonshotai/kimi-k2.7-code</code></td><td class="border border-gray-300 px-4 py-2 text-right">$0.60</td><td class="border border-gray-300 px-4 py-2 text-right">$2.50</td><td class="border border-gray-300 px-4 py-2">Code-completion, code-review, code-search — cheaper than GLM-5.3 for sub-32K single-turn code tasks</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/qwen/qwen3.8-27b</code></td><td class="border border-gray-300 px-4 py-2 text-right">$0.20</td><td class="border border-gray-300 px-4 py-2 text-right">$0.80</td><td class="border border-gray-300 px-4 py-2">Cheapest multimodal on Workers AI — for volume, not frontier benchmarks</td></tr>
+</tbody>
+</table>
+
+<p class="mb-4">The price pattern: GLM-5.3 is the most expensive of the four (10x the input cost of GLM-5.3-Flash, 7x Qwen 3.8 27B), justified by the benchmark deltas. If your workload is single-turn Q&amp;A or simple chat, GLM-5.3-Flash or Qwen 3.8 27B will be a better cost/performance choice. If your workload is the agentic-coding / long-horizon-automation bucket that GLM-5.3's benchmarks target, the premium is worth it.</p>
+
+<p class="mb-4">For the alternative path through Z.ai's own platform, the <strong>GLM Coding Plan</strong> subscription bundles GLM-5.3, GLM-5.3-Flash, GLM-5.2, and GLM-5-Turbo for IDE and agent use cases at a flat monthly rate. That's the right answer for IDE plugin developers who want frontier quality on a fixed budget; for API-based workloads, Workers AI's pay-per-token model beats any subscription once you're above ~5M tokens/month.</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">FAQ</h2>
+
+<div class="space-y-4">
+<div>
+<p class="font-semibold">Q: Is GLM-5.3 free on the Workers Free tier?</p>
+<p class="mb-4">No. GLM-5.3 is on Cloudflare's paid-billing-only frontier list alongside GLM-5.2, GLM-5.3-Flash, Kimi K2.6, Kimi K2.7 Code, DeepSeek V4 Flash, and DeepSeek V4 Pro. To call it you need a Workers Paid plan ($5/month) or prepaid AI Gateway credits. The standard 10,000 free Neurons/day does not apply.</p>
+</div>
+<div>
+<p class="font-semibold">Q: How much does GLM-5.3 cost on Workers AI?</p>
+<p class="mb-4">$1.40 per million input tokens, $0.26 per million cached input tokens, and $4.40 per million output tokens — same rates as GLM-5.2. Per 1,000 input tokens the model consumes 127,273 Neurons; per 1,000 output tokens, 400,000 Neurons. A typical 50K-input / 4K-output coding task runs around $0.088 per call.</p>
+</div>
+<div>
+<p class="font-semibold">Q: What is the model ID on Workers AI?</p>
+<p class="mb-4">The official model ID is <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3</code> (note: namespace is zai-org, NOT zhipu). The sibling Flash variant is <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3-flash</code>. Both share the same 1,048,576-token context window, reasoning, function calling, and structured outputs capabilities.</p>
+</div>
+<div>
+<p class="font-semibold">Q: What is the rate limit for GLM-5.3?</p>
+<p class="mb-4">As of 2026-08-29, GLM-5.3 inherits the default Text Generation rate of 300 requests per minute per account. Cloudflare's explicit 'Frontier models' RPM table (currently listing GLM-5.2, Kimi K2.6, Kimi K2.7 Code at 20 RPM standard / 50 RPM with prepaid AI Gateway credits) has not been updated to include GLM-5.3 yet — expect that to be added in the days after launch.</p>
+</div>
+<div>
+<p class="font-semibold">Q: How does GLM-5.3 compare to GLM-5.2 on coding benchmarks?</p>
+<p class="mb-4">Z.ai reports a 50% improvement on its in-house Z.ai Code Bench. On public benchmarks GLM-5.3 vs GLM-5.2 scores: Terminal Bench 2.1 88.2 vs 81.0, Terminal Bench 3.0 28.3 vs 4.6 (now open-source SOTA), DeepSWE 66.9 vs 46.2, FrontierSWE 78.1 vs 67.5, SWE-Marathon 42.5 vs 19.4 (more than 2x), CyberGym 84.5, AutomationBench 48.2. The same base model as GLM-5.2 — every gain comes from post-training.</p>
+</div>
+<div>
+<p class="font-semibold">Q: Can I self-host GLM-5.3?</p>
+<p class="mb-4">Yes. GLM-5.3 weights are open and available at <a href="https://huggingface.co/zai-org/GLM-5.3" target="_blank" rel="nofollow">huggingface.co/zai-org/GLM-5.3</a> (754B parameters, BF16 + FP8 sharded, ~755 GB on disk). The model is a MoE with DSA attention (GlmMoeDsaForCausalLM, 8 experts per token). License is the custom GLM-5.3 License — free for use, modification, fine-tuning, and commercial deployment; Model-as-a-Service providers whose affiliate-group revenue exceeds US$10B in any 12-month period must complete a Z.AI security review first.</p>
+</div>
+<div>
+<p class="font-semibold">Q: How do I call GLM-5.3 from a Worker?</p>
+<p class="mb-4">Four entry points: (1) Workers binding — <code class="bg-gray-100 px-1 rounded text-sm">env.AI.run('@cf/zai-org/glm-5.3', &#123; messages: [...] &#125;)</code>; (2) REST API — <code class="bg-gray-100 px-1 rounded text-sm">POST https://api.cloudflare.com/client/v4/accounts/&#123;account_id&#125;/ai/run/@cf/zai-org/glm-5.3</code>; (3) OpenAI-compatible — POST /v1/chat/completions against the Workers AI endpoint with model='@cf/zai-org/glm-5.3'; (4) AI Gateway — same model ID, with gateway billing set to 'Unified billing' for prepaid-credit access.</p>
+</div>
+<div>
+<p class="font-semibold">Q: What about China access?</p>
+<p class="mb-4">Workers AI endpoints are global; the model runs in Cloudflare's GPU pools across 300+ cities and is reachable from mainland China through Cloudflare's standard anycast IPs. For higher throughput inside the GFW, Z.ai's own platform (z.ai) hosts the same GLM-5.3 family plus a GLM Coding Plan subscription that bundles GLM-5.3, GLM-5.3-Flash, GLM-5.2, and GLM-5-Turbo for IDE and agent use cases.</p>
+</div>
+</div>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">Bottom line</h2>
+
+<p class="mb-4">GLM-5.3 on Workers AI is the most capable open-weights coding model you can call today at $1.40/M input. The benchmark deltas against GLM-5.2 — Terminal Bench 3.0 6.1x, SWE-Marathon 2.2x, CyberGym 84.5 — are real and they came from post-training only, so the upgrade is a one-line model-ID swap for any existing GLM-5.2 deployment.</p>
+
+<p class="mb-4">The two real gotchas are <strong>paid-billing requirement</strong> (no free 10K Neurons/day) and the <strong>rate-limit picture still in flux</strong> (300 RPM default today, almost certainly tightening once Cloudflare updates the frontier-RPM table). For teams already on Workers Paid or with AI Gateway credits loaded, this is a no-brainer upgrade. For teams using the free tier, the path is either upgrade to Paid ($5/month minimum) or stick with GLM-5.3-Flash / Qwen 3.8 27B which remain on the standard Text Generation 300 RPM with free-tier Neurons.</p>
+
+<p class="text-sm text-gray-500 mt-8">Last verified: 2026-08-29. Sources: <a href="https://developers.cloudflare.com/changelog/post/2026-08-28-glm-5.3-workers-ai/" target="_blank" rel="nofollow">Cloudflare changelog</a>, <a href="https://developers.cloudflare.com/workers-ai/platform/pricing/" target="_blank" rel="nofollow">Workers AI pricing</a>, <a href="https://developers.cloudflare.com/workers-ai/platform/limits/" target="_blank" rel="nofollow">Workers AI limits</a>, <a href="https://developers.cloudflare.com/workers-ai/models/glm-5.3/" target="_blank" rel="nofollow">GLM-5.3 model page</a>, <a href="https://huggingface.co/zai-org/GLM-5.3" target="_blank" rel="nofollow">HF model card</a>, <a href="https://arxiv.org/abs/2602.15763" target="_blank" rel="nofollow">arXiv 2602.15763</a>.</p>`;
+
+const zhTitle = 'Cloudflare Workers AI GLM-5.3 上手：$1.40/M 编码旗舰深度测评';
+const zhDescription = 'Cloudflare Workers AI 2026-08-28 上线 Z.ai GLM-5.3：$1.40/$0.26/$4.40 每百万 token，1M 上下文，Terminal Bench 3.0 开源 SOTA，需 Workers 付费套餐。';
+
+const zhBody = `<h1 class="text-3xl font-bold mb-6">Cloudflare Workers AI GLM-5.3 上手：把 Z.ai 编码旗舰塞进边缘网络</h1>
+
+<p class="text-lg leading-relaxed mb-4"><strong>2026-08-28</strong>，Cloudflare 把 Z.ai 的 <strong>GLM-5.3</strong> 静悄悄地上到了 Workers AI，模型 ID 是 <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3</code>。有意思的不是"又一款国产前沿模型上 Cloudflare"——6 月 GLM-5.2 就走过一遍这个剧本。有意思的是性价比：GLM-5.3 价格完全等同 GLM-5.2（输入 $1.40/百万 token、缓存 $0.26、输出 $4.40），但 <strong>SWE-Marathon 长程任务得分翻倍</strong>，<strong>Terminal Bench 3.0 提升 6.1 倍</strong>（4.6 → 28.3，现役开源 SOTA）。</p>
+
+<p class="text-lg leading-relaxed mb-4">Cloudflare 在 changelog 原文里直接称 GLM-5.3 是"最强的开源权重编码模型"。配套的 arXiv 论文（<a href="https://arxiv.org/abs/2602.15763" target="_blank" rel="nofollow">2602.15763</a>，标题 "GLM-5: from Vibe Coding to Agentic Engineering"）把 GLM-5.3 定位成 GLM-5.2 的纯后训练升级——基座权重一字未动，所有提升都来自对齐工作。这对生产部署很关键：如果你已经在 Workers AI 上跑了 GLM-5.2，迁移就是改一行 model ID，单位经济学纹丝不动。</p>
+
+<p class="text-lg leading-relaxed mb-4">这篇测评覆盖：Workers AI 上的精确定价与 Neuron 消耗（直接摘自 <a href="https://developers.cloudflare.com/workers-ai/platform/pricing/" target="_blank" rel="nofollow">/workers-ai/platform/pricing/</a>）、付费层级门槛（GLM-5.3 在 frontier-model 列表里——10K Neurons/天的免费额度不适用）、当前速率限制图景（默认 300 RPM，frontier-RPM 表格尚未更新）、四种 API 入口（binding、REST、OpenAI 兼容、AI Gateway）、GLM-5.3 vs GLM-5.2 在 Z.ai 公布的 7 项公开基准上的对比，以及新 GLM-5.3 License 下的开源权重与自托管路径。</p>
+
+<p class="text-lg leading-relaxed mb-4">最后核验日期：<strong>2026-08-29</strong>。价格与基准数据均直接取自 Cloudflare changelog 与定价页；如果 Cloudflare 在未来几天把 frontier-RPM 表格更新加入 GLM-5.3，我会在 FAQ 里补充。</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">GLM-5.3 on Workers AI：价格、Neuron 消耗与付费门槛</h2>
+
+<p class="mb-4">Cloudflare 定价页上 GLM-5.3 与 GLM-5.2 并列在 frontier 列表里。完整一行摘自 <a href="https://developers.cloudflare.com/workers-ai/platform/pricing/" target="_blank" rel="nofollow">/workers-ai/platform/pricing/</a>：</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>@cf/zai-org/glm-5.3
+  Input tokens          $1.400 per M    127,273 neurons per M
+  Cached input tokens   $0.260 per M     23,636 neurons per M
+  Output tokens         $4.400 per M    400,000 neurons per M</code></pre>
+
+<p class="mb-4">三件事要记住：</p>
+
+<ul class="list-disc pl-6 mb-4 space-y-2">
+<li><strong>价格等同 GLM-5.2。</strong>Z.ai 与 Cloudflare 故意把定价压平，让现有 GLM-5.2 工作负载升级无负担。基准提升完全是同价位的附加收益。</li>
+<li><strong>缓存命中价约为输入价的五分之一。</strong>$0.26/M 缓存 vs $1.40/M 全价——重复前缀场景下打 5.4 折。如果你的 agent 循环每轮重投系统 prompt + 工具定义（Claude Code / Cursor 的典型模式），这个折扣巨大。30K token 固定 prompt 每轮缓存命中 $0.009 vs 全价 $0.042，每轮省 $0.033。</li>
+<li><strong>单 token Neuron 消耗 127,273 / 400,000（每 1K 输入/输出）。</strong>大约是 Qwen 3.8 27B（同在 Workers AI）的两倍。相同 token 数量账单更重，但 GLM-5.3 任务完成所需轮次更少，总成本反而可能更低。</li>
+</ul>
+
+<p class="mb-4"><strong>付费门槛</strong>是这次对爱好者的结构性变化。定价页原文：</p>
+
+<blockquote class="border-l-4 border-orange-400 pl-4 italic text-gray-700 mb-4">Some models require a paid billing method. This applies to <code class="bg-gray-100 px-1 rounded text-sm">@cf/moonshotai/kimi-k2.6</code>, <code class="bg-gray-100 px-1 rounded text-sm">@cf/moonshotai/kimi-k2.7-code</code>, <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.2</code>, <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3</code>, <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3-flash</code>, <code class="bg-gray-100 px-1 rounded text-sm">@cf/deepseek-ai/deepseek-v4-flash-0731</code>, and <code class="bg-gray-100 px-1 rounded text-sm">@cf/deepseek-ai/deepseek-v4-pro-0813</code>. You can access these models with either the <strong>Workers Paid plan</strong> or <strong>prepaid AI Gateway credits</strong>.</blockquote>
+
+<p class="mb-4">两条路：订阅 <strong>Workers Paid</strong>（$5/月，含 10M Neurons + 按量超额），或不开通 Workers 订阅直接用 <strong>AI Gateway 预付费额度</strong>。AI Gateway 路径对已经在用 Cloudflare 网关路由 OpenAI/Anthropic 流量的团队友好——同一个计费关系，加一个 model ID 即可。changelog 特别提到"使用预付费额度的 frontier 模型请求享有更高速率限制"，这是明确的激励信号。</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">速率限制：默认 300 RPM，frontier 表格待更新</h2>
+
+<p class="mb-4">Cloudflare 的 <a href="https://developers.cloudflare.com/workers-ai/platform/limits/" target="_blank" rel="nofollow">速率限制页</a>把 GLM-5.3 列入付费 frontier 阵营，但显式"Frontier models" RPM 表格还没有它。当前表格只列了三款：</p>
+
+<table class="w-full border-collapse border border-gray-300 my-4">
+<thead class="bg-gray-100">
+<tr><th class="border border-gray-300 px-4 py-2 text-left">模型</th><th class="border border-gray-300 px-4 py-2 text-right">标准 RPM</th><th class="border border-gray-300 px-4 py-2 text-right">预付费 AI Gateway RPM</th></tr>
+</thead>
+<tbody>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.2</code></td><td class="border border-gray-300 px-4 py-2 text-right">20</td><td class="border border-gray-300 px-4 py-2 text-right">50</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/moonshotai/kimi-k2.6</code></td><td class="border border-gray-300 px-4 py-2 text-right">20</td><td class="border border-gray-300 px-4 py-2 text-right">50</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/moonshotai/kimi-k2.7-code</code></td><td class="border border-gray-300 px-4 py-2 text-right">20</td><td class="border border-gray-300 px-4 py-2 text-right">50</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3</code> <em>（新增，预计）</em></td><td class="border border-gray-300 px-4 py-2 text-right">300 <span class="text-xs text-gray-500">（Text Generation 默认）</span></td><td class="border border-gray-300 px-4 py-2 text-right">待定</td></tr>
+</tbody>
+</table>
+
+<p class="mb-4">实际上 GLM-5.3 当前继承 <strong>300 RPM Text Generation 默认值</strong>——远高于 GLM-5.2 的 20 RPM 标准 frontier 上限。这几乎肯定是过渡状态（Cloudflare 通常把 frontier 模型压在 20/50 RPM 以保护 GPU 供给），所以如果你的生产流量在 GLM-5.3 上跑，做好一两周内表格更新的心理准备。50 RPM 预付费额度提升路径大概率适用。</p>
+
+<p class="mb-4">对突发调用模式的 agent 工作负载，300 RPM 默认值是个临时红利——并发 agent 集群今天可以猛打 GLM-5.3。对持续批量作业，用令牌桶限速器排个队。</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">基准对比：GLM-5.3 vs GLM-5.2</h2>
+
+<p class="mb-4">changelog 头条是 Z.ai Code Bench 50% 提升。公开基准的增量更显眼：</p>
+
+<table class="w-full border-collapse border border-gray-300 my-4">
+<thead class="bg-gray-100">
+<tr><th class="border border-gray-300 px-4 py-2 text-left">基准</th><th class="border border-gray-300 px-4 py-2 text-right">GLM-5.2</th><th class="border border-gray-300 px-4 py-2 text-right">GLM-5.3</th><th class="border border-gray-300 px-4 py-2 text-right">变化</th></tr>
+</thead>
+<tbody>
+<tr><td class="border border-gray-300 px-4 py-2">Terminal Bench 2.1</td><td class="border border-gray-300 px-4 py-2 text-right">81.0</td><td class="border border-gray-300 px-4 py-2 text-right">88.2</td><td class="border border-gray-300 px-4 py-2 text-right">+7.2</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">Terminal Bench 3.0</td><td class="border border-gray-300 px-4 py-2 text-right">4.6</td><td class="border border-gray-300 px-4 py-2 text-right">28.3</td><td class="border border-gray-300 px-4 py-2 text-right text-green-700">+23.7（OS SOTA）</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">DeepSWE</td><td class="border border-gray-300 px-4 py-2 text-right">46.2</td><td class="border border-gray-300 px-4 py-2 text-right">66.9</td><td class="border border-gray-300 px-4 py-2 text-right">+20.7</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">FrontierSWE</td><td class="border border-gray-300 px-4 py-2 text-right">67.5</td><td class="border border-gray-300 px-4 py-2 text-right">78.1</td><td class="border border-gray-300 px-4 py-2 text-right">+10.6</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">SWE-Marathon</td><td class="border border-gray-300 px-4 py-2 text-right">19.4</td><td class="border border-gray-300 px-4 py-2 text-right">42.5</td><td class="border border-gray-300 px-4 py-2 text-right">+23.1（2.2x）</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">CyberGym（漏洞发现）</td><td class="border border-gray-300 px-4 py-2 text-right">—</td><td class="border border-gray-300 px-4 py-2 text-right">84.5</td><td class="border border-gray-300 px-4 py-2 text-right text-green-700">Z.ai 对比榜第一</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2">AutomationBench</td><td class="border border-gray-300 px-4 py-2 text-right">—</td><td class="border border-gray-300 px-4 py-2 text-right">48.2</td><td class="border border-gray-300 px-4 py-2 text-right text-green-700">Z.ai 对比榜第一</td></tr>
+</tbody>
+</table>
+
+<p class="mb-4">三种规律要拎出来：</p>
+
+<ul class="list-disc pl-6 mb-4 space-y-2">
+<li><strong>长程任务提升最大。</strong>SWE-Marathon（多时长的智能体工程任务）翻倍以上。Terminal Bench 3.0（长程终端任务）跳 6.1 倍。后训练对智能体工具使用的强调在多步规划场景下收益最显。</li>
+<li><strong>单轮编码只是温和上涨。</strong>Terminal Bench 2.1 从 81.0 到 88.2——稳健的 +9%，不是革命。如果你的工作负载是一次性代码生成（无工具循环、无多步规划），升级是 nice-to-have，不是质变。</li>
+<li><strong>漏洞发现与长程自动化是开源权重新 SOTA。</strong>CyberGym 84.5 和 AutomationBench 48.2 是安全研究与智能体自动化场景下开源模型超越闭源 API 的基准胜利。</li>
+</ul>
+
+<p class="mb-4">"基座与 GLM-5.2 相同，提升全来自后训练"的定调对一个决策至关重要：如果你的 GLM-5.2 部署瓶颈在上下文理解（而非规划、工具使用、长程一致性），GLM-5.3 帮不上忙。如果瓶颈在 agent 半路卡壳或丢失目标，GLM-5.3 会是可测量的提升。</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">从 Worker 调用 GLM-5.3：四个入口</h2>
+
+<p class="mb-4">Cloudflare 为 Workers AI 模型提供四种 API 入口，GLM-5.3 全部支持。</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">1. Workers 绑定 — <code class="bg-gray-100 px-1 rounded text-sm">env.AI.run()</code></h3>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>// wrangler.toml 绑定：[[ai_bindings]] binding = "AI"
+// TypeScript Worker
+export interface Env { AI: Ai }
+
+export default {
+  async fetch(req: Request, env: Env): Promise&lt;Response&gt; {
+    const { prompt } = await req.json();
+
+    const resp = await env.AI.run('@cf/zai-org/glm-5.3', {
+      messages: [
+        { role: 'system', content: '你是一位资深 TypeScript 工程师。' },
+        { role: 'user',   content: prompt }
+      ],
+      max_tokens: 4096,
+      temperature: 0.7,
+      reasoning_effort: 'medium'  // 'low' | 'medium' | 'high'
+    });
+
+    return Response.json(resp);
+  }
+};</code></pre>
+
+<p class="mb-4"><code class="bg-gray-100 px-1 rounded text-sm">reasoning_effort</code> 参数（low / medium / high）是 OpenAI 风格——智能体基准任务用 high，简单 Q&amp;A 用 low。</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">2. REST API — 账户级端点</h3>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>curl -X POST "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/ai/run/@cf/zai-org/glm-5.3" \\
+  -H "Authorization: Bearer $CF_API_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "messages": [
+      {"role": "user", "content": "把这个 Python 函数改成 asyncio 版本。"}
+    ],
+    "max_tokens": 2048,
+    "stream": true
+  }'</code></pre>
+
+<p class="mb-4">适合 CI runner、Workers 运行时之外的 serverless 函数，或任何能拿 API token 的环境。</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">3. OpenAI 兼容 — OpenAI SDK 即插即用</h3>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key="&lt;你的 cloudflare api token&gt;",
+    base_url="https://api.cloudflare.com/client/v4/accounts/&lt;CF_ACCOUNT_ID&gt;/ai/v1"
+)
+
+resp = client.chat.completions.create(
+    model="@cf/zai-org/glm-5.3",
+    messages=[
+        {"role": "user", "content": "写一个带单测的 TypeScript 防抖函数。"}
+    ],
+    max_tokens=2048,
+    temperature=0.7,
+)
+
+print(resp.choices[0].message.content)</code></pre>
+
+<p class="mb-4">任何 OpenAI SDK（Python、Node、Go、Rust）只需替换 <code class="bg-gray-100 px-1 rounded text-sm">base_url</code> 即可对接。唯一的坑点：model ID 必须在 OpenAI 兼容面上也带 <code class="bg-gray-100 px-1 rounded text-sm">@cf/</code> 前缀。</p>
+
+<h3 class="text-xl font-semibold mt-6 mb-3">4. AI Gateway — 网关代理路由 + 缓存</h3>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>// gateway.example.com 通过 Unified billing 路由到 GLM-5.3
+curl -X POST "https://gateway.example.com/v1/chat/completions" \\
+  -H "Authorization: Bearer $GATEWAY_TOKEN" \\
+  -d '{
+    "model": "@cf/zai-org/glm-5.3",
+    "messages": [{"role": "user", "content": "讲一下 DSA 注意力机制。"}]
+  }'</code></pre>
+
+<p class="mb-4">AI Gateway 就是上面提到的预付费额度路径——把网关计费设为 "Unified billing" 并充值，然后把 OpenAI/Anthropic/Workers AI 模型通过同一端点路由，叠上缓存、限速、分析能力。</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">开源权重：HF 仓库、License、自托管路径</h2>
+
+<p class="mb-4">GLM-5.3 权重已发布在 <a href="https://huggingface.co/zai-org/GLM-5.3" target="_blank" rel="nofollow">huggingface.co/zai-org/GLM-5.3</a>，使用自定义的 <strong>GLM-5.3 License</strong>。模型是带 DSA 注意力的 MoE（<code class="bg-gray-100 px-1 rounded text-sm">GlmMoeDsaForCausalLM</code>），每 token 选 8 个专家，总参数量 ~754B，存储为 BF16 + FP8 分片 safetensors（全部片合计 ~755 GB）。</p>
+
+<p class="mb-4">License 摘要（全文见 <a href="https://huggingface.co/zai-org/GLM-5.3/raw/main/LICENSE" target="_blank" rel="nofollow">HF LICENSE 文件</a>）：</p>
+
+<ul class="list-disc pl-6 mb-4 space-y-2">
+<li>免费用于使用、修改、合并、发布、分发、再许可、销售</li>
+<li>允许微调与衍生作品</li>
+<li>无 copyleft——衍生作品可采用任何许可</li>
+<li>唯一条件：<strong>Model-as-a-Service 提供商所属集团在任何 12 个月内收入超过 100 亿美元，商用前必须完成 Z.AI 安全审查</strong></li>
+<li>"按原样"提供，无任何担保</li>
+<li>安全审查联系方式：<code class="bg-gray-100 px-1 rounded text-sm">glmlicense@z.ai</code></li>
+</ul>
+
+<p class="mb-4">对典型 SaaS 创业团队和内部工具，License 实际是宽松的。100 亿美元收入门槛只针对最大型超大规模云厂商——这条线以下的 API 转售方都可以自托管 GLM-5.3 而无需联系 Z.AI。架构细节见 arXiv 论文 <a href="https://arxiv.org/abs/2602.15763" target="_blank" rel="nofollow">2602.15763</a>（"GLM-5: from Vibe Coding to Agentic Engineering"）。</p>
+
+<p class="mb-4">如果自托管，准备好硬核硬件需求：754B 参数 BF16 推理最少 ~1.5 TB GPU 显存，或 FP8 下 ~755 GB。8 卡 H100 节点（80 GB × 8 = 640 GB 总）装不下 BF16；满 BF16 推理需要 8 卡 B200 或 8 卡 GB300 节点；接受 FP8 量化就能塞进 8 卡 H100。对绝大多数团队，Workers AI $1.40/M 输入价比自托管摊销 GPU 成本便宜得多。</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">何时用 GLM-5.3，何时用 Workers AI 上的其它选择</h2>
+
+<p class="mb-4">Workers AI 的国产模型阵容现在有三款付费层编码/智能体选项：</p>
+
+<table class="w-full border-collapse border border-gray-300 my-4">
+<thead class="bg-gray-100">
+<tr><th class="border border-gray-300 px-4 py-2 text-left">模型</th><th class="border border-gray-300 px-4 py-2 text-right">输入 $/M</th><th class="border border-gray-300 px-4 py-2 text-right">输出 $/M</th><th class="border border-gray-300 px-4 py-2 text-left">适用场景</th></tr>
+</thead>
+<tbody>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3</code></td><td class="border border-gray-300 px-4 py-2 text-right">$1.40</td><td class="border border-gray-300 px-4 py-2 text-right">$4.40</td><td class="border border-gray-300 px-4 py-2">长程智能体工程、多小时编码任务、漏洞研究</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3-flash</code></td><td class="border border-gray-300 px-4 py-2 text-right">$0.15</td><td class="border border-gray-300 px-4 py-2 text-right">$0.50</td><td class="border border-gray-300 px-4 py-2">高并发交互负载、多模态输入、对成本敏感的 chat/agent 循环</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/moonshotai/kimi-k2.7-code</code></td><td class="border border-gray-300 px-4 py-2 text-right">$0.60</td><td class="border border-gray-300 px-4 py-2 text-right">$2.50</td><td class="border border-gray-300 px-4 py-2">代码补全、代码评审、代码搜索——32K 以下单轮编码任务比 GLM-5.3 便宜</td></tr>
+<tr><td class="border border-gray-300 px-4 py-2"><code class="bg-gray-100 px-1 rounded text-sm">@cf/qwen/qwen3.8-27b</code></td><td class="border border-gray-300 px-4 py-2 text-right">$0.20</td><td class="border border-gray-300 px-4 py-2 text-right">$0.80</td><td class="border border-gray-300 px-4 py-2">Workers AI 上最便宜的多模态——走量不走前沿</td></tr>
+</tbody>
+</table>
+
+<p class="mb-4">价格规律：GLM-5.3 是四款中最贵的（输入价是 GLM-5.3-Flash 的 10 倍、Qwen 3.8 27B 的 7 倍），由基准增量背书。如果你的工作负载是单轮 Q&amp;A 或简单 chat，GLM-5.3-Flash 或 Qwen 3.8 27B 是更划算的选择。如果你的工作负载正是 GLM-5.3 基准瞄准的智能体编码 / 长程自动化场景，溢价是值得的。</p>
+
+<p class="mb-4">Z.ai 自家平台的替代路径是 <strong>GLM Coding Plan</strong> 订阅，把 GLM-5.3、GLM-5.3-Flash、GLM-5.2、GLM-5-Turbo 打包给 IDE 和智能体场景按月计费。这是 IDE 插件开发者想要固定预算下的前沿质量的正解；按 API 计费的工作负载一旦月用量超过 ~5M token，Workers AI 按 token 付费就比订阅更便宜。</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">常见问题</h2>
+
+<div class="space-y-4">
+<div>
+<p class="font-semibold">问：GLM-5.3 在 Workers Free 层免费吗？</p>
+<p class="mb-4">不免费。GLM-5.3 在 Cloudflare 付费 frontier 列表里，和 GLM-5.2、GLM-5.3-Flash、Kimi K2.6、Kimi K2.7 Code、DeepSeek V4 Flash、DeepSeek V4 Pro 同列。要调用它需要 Workers Paid 套餐（$5/月）或预付费 AI Gateway 额度。10K Neurons/天的免费额度不适用。</p>
+</div>
+<div>
+<p class="font-semibold">问：Workers AI 上 GLM-5.3 多少钱？</p>
+<p class="mb-4">每百万输入 token $1.40，每百万缓存输入 $0.26，每百万输出 $4.40——与 GLM-5.2 同价。每 1K 输入 token 模型消耗 127,273 Neurons；每 1K 输出 token 400,000 Neurons。一次典型的 50K 输入 / 4K 输出编码任务约 $0.088。</p>
+</div>
+<div>
+<p class="font-semibold">问：Workers AI 上的模型 ID 是什么？</p>
+<p class="mb-4">官方模型 ID 是 <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3</code>（注意命名空间是 zai-org，不是 zhipu）。兄弟 Flash 变体是 <code class="bg-gray-100 px-1 rounded text-sm">@cf/zai-org/glm-5.3-flash</code>。两者共享同样的 1,048,576 token 上下文窗口、推理、工具调用与结构化输出能力。</p>
+</div>
+<div>
+<p class="font-semibold">问：GLM-5.3 的速率限制是多少？</p>
+<p class="mb-4">截至 2026-08-29，GLM-5.3 继承 Text Generation 默认 300 RPM/账户。Cloudflare 显式"Frontier models" RPM 表格（当前列出 GLM-5.2、Kimi K2.6、Kimi K2.7 Code 标准 20 RPM / 预付费 AI Gateway 50 RPM）尚未更新加入 GLM-5.3，预计上线后几天内会补充。</p>
+</div>
+<div>
+<p class="font-semibold">问：GLM-5.3 与 GLM-5.2 在编码基准上对比如何？</p>
+<p class="mb-4">Z.ai 自家 Z.ai Code Bench 提升 50%。公开基准 GLM-5.3 vs GLM-5.2：Terminal Bench 2.1 88.2 vs 81.0，Terminal Bench 3.0 28.3 vs 4.6（开源 SOTA），DeepSWE 66.9 vs 46.2，FrontierSWE 78.1 vs 67.5，SWE-Marathon 42.5 vs 19.4（2 倍以上），CyberGym 84.5，AutomationBench 48.2。基座与 GLM-5.2 相同——所有提升来自后训练。</p>
+</div>
+<div>
+<p class="font-semibold">问：能自托管 GLM-5.3 吗？</p>
+<p class="mb-4">可以。GLM-5.3 权重开源在 <a href="https://huggingface.co/zai-org/GLM-5.3" target="_blank" rel="nofollow">huggingface.co/zai-org/GLM-5.3</a>（754B 参数，BF16 + FP8 分片，磁盘 ~755 GB）。模型是带 DSA 注意力的 MoE（GlmMoeDsaForCausalLM，每 token 8 专家）。许可为自定义 GLM-5.3 License——免费用于使用、修改、微调与商用部署；Model-as-a-Service 提供商所属集团在任何 12 个月内收入超过 100 亿美元，商用前必须完成 Z.AI 安全审查。</p>
+</div>
+<div>
+<p class="font-semibold">问：如何从 Worker 调用 GLM-5.3？</p>
+<p class="mb-4">四个入口：(1) Workers 绑定 — <code class="bg-gray-100 px-1 rounded text-sm">env.AI.run('@cf/zai-org/glm-5.3', &#123; messages: [...] &#125;)</code>；(2) REST API — <code class="bg-gray-100 px-1 rounded text-sm">POST https://api.cloudflare.com/client/v4/accounts/&#123;account_id&#125;/ai/run/@cf/zai-org/glm-5.3</code>；(3) OpenAI 兼容 — 对 Workers AI 端点 POST /v1/chat/completions，model='@cf/zai-org/glm-5.3'；(4) AI Gateway — 同样的 model ID，网关计费设为 'Unified billing' 走预付费额度路径。</p>
+</div>
+<div>
+<p class="font-semibold">问：中国大陆访问情况？</p>
+<p class="mb-4">Workers AI 端点是全球的；模型跑在 Cloudflare 300+ 城市的 GPU 池上，通过 Cloudflare 标准 anycast IP 可从中国大陆直连。GFW 内更高吞吐需求的话，Z.ai 自家平台（z.ai）托管同一 GLM-5.3 家族，外加 GLM Coding Plan 订阅，把 GLM-5.3、GLM-5.3-Flash、GLM-5.2、GLM-5-Turbo 打包给 IDE 和智能体场景。</p>
+</div>
+</div>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">结论</h2>
+
+<p class="mb-4">Workers AI 上的 GLM-5.3 是当前能以 $1.40/M 输入价调用的最强开源权重编码模型。对比 GLM-5.2 的基准增量——Terminal Bench 3.0 6.1 倍、SWE-Marathon 2.2 倍、CyberGym 84.5——是真实存在的，而且全部来自后训练，所以任何现有 GLM-5.2 部署的升级只需改一行 model ID。</p>
+
+<p class="mb-4">两个真正的坑：<strong>付费门槛</strong>（10K Neurons/天免费额度不适用）和<strong>仍在变化的速率限制图景</strong>（当前 300 RPM 默认，几乎肯定在 Cloudflare 更新 frontier-RPM 表格后收紧）。已经在 Workers Paid 或有 AI Gateway 额度的团队，这是无脑升级。还在用免费层的团队，要么升级到 Paid（最低 $5/月），要么继续用 GLM-5.3-Flash / Qwen 3.8 27B——这两款依然在标准 Text Generation 300 RPM 下可用、且免费层 Neurons 可用。</p>
+
+<p class="text-sm text-gray-500 mt-8">最后核验：2026-08-29。来源：<a href="https://developers.cloudflare.com/changelog/post/2026-08-28-glm-5.3-workers-ai/" target="_blank" rel="nofollow">Cloudflare changelog</a>，<a href="https://developers.cloudflare.com/workers-ai/platform/pricing/" target="_blank" rel="nofollow">Workers AI pricing</a>，<a href="https://developers.cloudflare.com/workers-ai/platform/limits/" target="_blank" rel="nofollow">Workers AI limits</a>，<a href="https://developers.cloudflare.com/workers-ai/models/glm-5.3/" target="_blank" rel="nofollow">GLM-5.3 model page</a>，<a href="https://huggingface.co/zai-org/GLM-5.3" target="_blank" rel="nofollow">HF model card</a>，<a href="https://arxiv.org/abs/2602.15763" target="_blank" rel="nofollow">arXiv 2602.15763</a>。</p>`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} articleJsonLd={articleJsonLd} breadcrumbJsonLd={breadcrumbJsonLd} faqJsonLd={faqJsonLd} zhTitle={zhTitle} zhDescription={zhDescription} zhCanonicalUrl={zhCanonicalUrl}>
+  <Fragment set:html={enBody} />
+</BaseLayout>
