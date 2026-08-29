@@ -1,0 +1,256 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'firecrawl-web-scraping-api-review-2026';
+const date = '2026-08-29';
+const locale = 'zh';
+const zhTitle = 'Firecrawl v2 API 价格 2026：web 抓取与 MCP';
+const zhDescription = 'Firecrawl v2 API 2026：9 端点（Scrape / Crawl / Map / Search / Batch / Extract / Interact / Monitor / Agent），JSON Mode 与 maxAge 缓存，MCP server，$83/月 Standard。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: zhTitle, description: zhDescription, datePublished: date, dateModified: date, inLanguage: 'zh-CN', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' }, { '@type': 'ListItem', position: 2, name: '教程', item: 'https://apirank.vip/zh/tutorials' }, { '@type': 'ListItem', position: 3, name: zhTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'Firecrawl 是什么？', acceptedAnswer: { '@type': 'Answer', text: 'Firecrawl (firecrawl.dev) 是 Y Combinator W23 的一家创业公司，整个产品只有一个 API：把活网页变成干净的、可直接喂给 LLM 的数据。v2 API 9 个端点共用一个 credit 系统和一个 API key：Scrape 单页 markdown / HTML / JSON 转换、Crawl 递归整站、Map URL 发现、Search 网页搜索 + scrape 融合、Batch Scrape 显式 URL 列表、Extract LLM 驱动的多 URL 结构化抽取、Interact Playwright 代码或自然语言浏览器自动化、Monitor 定时 diff 跟踪、Agent 跨站点自主研究。Base URL https://api.firecrawl.dev/v2，Bearer token 鉴权；托管 MCP server api.firecrawl.dev/mcp/sse 把 Scrape / Search / Parse 暴露为 Claude Code / Cursor / Windsurf 的原生工具。' } },
+  { '@type': 'Question', name: 'Firecrawl API 价格怎么算？', acceptedAnswer: { '@type': 'Answer', text: 'Firecrawl 按 credit 计费而非按 token。从 firecrawl.dev/pricing + docs.firecrawl.dev/billing.md 验证（2026-08-29）：Free 1k credits/月 $0（无信用卡）；Hobby 5k credits/月 $19（年付 $16）；Standard 100k credits/月 $83（年付）或 $99（月付）；Growth 500k credits/月 $333（年付）或 $399（月付）；Scale 1M credits/月 $599；Enterprise custom。Credit 单价：Scrape / Crawl / Map 1 cr/页、Search 2 cr/10 results（向上取整）、Batch Scrape 1 cr/URL、Monitor 1 cr/页/检查、Interact 2 cr/分钟（Playwright 代码）或 7 cr/分钟（prompt 驱动，1 分钟最低）、Agent 5 daily runs free 超量按用量计费。' } },
+  { '@type': 'Question', name: 'Firecrawl JSON Mode 是什么？', acceptedAnswer: { '@type': 'Answer', text: 'JSON Mode 是 v2 API 的一个改动，把「先 scrape 再 LLM extract」两步压成一次调用。v1 的 jsonOptions 参数已被移除；改为直接把 OpenAI 格式 schema 内嵌到 formats 数组：formats: [{type: "json", schema: {type: "object", properties: {...}, required: [...]}}]。OpenAI tool-call schema 原样可用。响应返回 {success: true, data: {...}}，data 已符合 schema —— 无需二次 LLM 调用、无需 schema 映射胶水代码。单 URL 抽取用 JSON Mode；多 URL / URL pattern 抽取用 Extract 或 Agent。' } },
+  { '@type': 'Question', name: 'Firecrawl 能自托管吗？', acceptedAnswer: { '@type': 'Answer', text: '可以，AGPL-3.0 授权。官方 Docker 镜像与 Kubernetes manifests 位于 github.com/firecrawl/firecrawl，支持自带数据库（Postgres / Redis）与自带队列。企业客户可购买商业授权用于闭源 fork 与专有分发。自托管是绕开 mainland-China 延迟与数据驻留差距最干净的路径 —— 整个管道（scrape、crawl、monitor、browser sandbox）在客户 VPC 内运行，无跨太平洋往返。' } },
+  { '@type': 'Question', name: 'Firecrawl 有免费档吗？', acceptedAnswer: { '@type': 'Answer', text: '有 —— 1,000 credits/月，无需信用卡。Free 档完整支持 Scrape / Crawl / Map / Search / Batch Scrape / JSON Mode 等所有端点（企业独有功能除外）；2 个并发浏览器、50,000 最大队列任务数。Agent 在每个 plan（含 Free）每天 5 次免费运行。Credits 在每月初重置且不结转。Free 档足以验证单域管道并决定 credit 成本模型是否适合你的用量模式。' } },
+  { '@type': 'Question', name: 'Firecrawl vs Apify / Browse AI？', acceptedAnswer: { '@type': 'Answer', text: 'Firecrawl、Apify、Browse AI 都在做 web 抓取但设计点不同。Firecrawl 是首个为 in-agent 调用设计的抓取 API —— 九个 v2 端点、JSON Mode 内嵌 OpenAI 格式 schema、MCP server 提供 keyless Scrape / Search / Parse、自托管 AGPL-3.0 构建、永久 Free 档。Apify 有 prebuilt Actor marketplace，在结构化抽取工作流上更强，但每个任务更贵，在 JSON Mode / MCP server 故事上更弱。需要两者的团队可以组合：Firecrawl 走通用管道 + MCP 驱动 agent 工作，Apify 走站点特定 Actor 库。' } },
+  { '@type': 'Question', name: 'Firecrawl MCP server 怎么用？', acceptedAnswer: { '@type': 'Answer', text: 'Firecrawl MCP server 把 Scrape / Search / Parse 暴露为 Claude Code / Cursor / Windsurf 的原生 MCP 工具。三种接入模式：(1) Keyless MCP，指向 https://api.firecrawl.dev/mcp/sse，无需 API key（低 rate limit，适合评估）；(2) 完整 MCP，用 `npx -y firecrawl-mcp-server` 注册并提供 FIRECRAWL_API_KEY（完整 rate limit）；(3) 自托管 MCP，指向本地 Firecrawl Docker 实例。官方 SKILL.md 接入 firecrawl.dev/agent-onboarding/SKILL.md 单文件覆盖 CLI / 浏览器鉴权、API key 设置、能力摘要。能铸造 WorkOS ID-JAG 的 agent 平台，鉴权路径见 firecrawl.dev/auth.md。' } },
+  { '@type': 'Question', name: '中国大陆能用 Firecrawl 吗？', acceptedAnswer: { '@type': 'Answer', text: '托管 api.firecrawl.dev 运行于单一美国区域基础 URL，无文档化的亚太或中国大陆路由层。中国大陆生产流量跨太平洋首字节延迟通常 200-400 ms。评估场景 Free 档 1,000 credits 可代理使用。稳定生产流量最干净的路径是自托管 AGPL-3.0 Docker / Kubernetes 构建（github.com/firecrawl/firecrawl）—— 整个管道在客户 VPC 内运行，无跨太平洋往返。截至 2026 年 8 月没有 ICP 备案的中国大陆托管端点。' } }
+] };
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${zhTitle}</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Firecrawl</strong>（firecrawl.dev）是 Y Combinator W23 的一家创业公司，整个产品只有一个 API：把活网页变成干净的、可直接喂给 LLM 的数据。在原生 HTML 抓取（BeautifulSoup、Cheerio、Requests）在每个 JS 渲染 SPA、登录墙、Bot 检测面前频繁失效的场景下，Firecrawl 用一套 credit 系统和一个 API key 把 <strong>v2 的 9 个端点</strong>串起来：<strong>Scrape</strong> 单页 markdown / HTML / JSON 转换、<strong>Crawl</strong> 递归整站、<strong>Map</strong> URL 发现、<strong>Search</strong> 网页搜索 + scrape 融合、<strong>Batch Scrape</strong> 显式 URL 列表、<strong>Extract</strong> LLM 驱动的多 URL 结构化抽取、<strong>Interact</strong> Playwright 代码或自然语言浏览器自动化、<strong>Monitor</strong> 定时 diff 跟踪、<strong>Agent</strong> 跨站点自主研究。对于 2026 年 8 月构建 web-aware agent 的工程师，Firecrawl 解决了把「抓取 + 解析 + 抽取」管道压成一个 HTTP 调用、并通过 MCP server 让 Claude Code / Cursor / Windsurf 直接驱动这套栈的问题。完整结构化对比表见 <a href="/zh/providers/firecrawl">Firecrawl 提供商页</a>。</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 一句话结论：</strong>Firecrawl 是首个为 in-agent 调用设计的 web 抓取 API。v2 JSON Mode 通过把 OpenAI 格式 schema 直接内嵌到 <code>formats</code> 数组，将「先抓取再 LLM 抽取」两步压成一次调用。maxAge 页面缓存默认 2 天，命中毫秒级返回。自托管 AGPL-3.0 Docker / Kubernetes 构建给企业绕开中国大陆延迟与合规风险。Free 档零信用卡：1,000 credits/月 + 5 daily Agent runs。无中国大陆托管端点。</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Firecrawl 到底是什么，为什么 2026 年它的 API 重要</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl 是 Firecrawl, Inc. 的公开 API。其创业前提是：每个 web-aware AI agent 最终都需要同一套抓取管道，不应该每个项目重建一遍。在通用 LLM 推理（OpenAI、Anthropic、Google Gemini、DeepSeek）与 LLM 推理成本（Fireworks、Together、DeepInfra、Nscale）这两个赛道之外，Firecrawl 定位在 agent 每个 turn 都会做的四件事上：</p>
+
+<ol class="list-decimal list-inside text-gray-700 space-y-2 my-4">
+<li><strong>Scrape</strong> 单 URL —— 把 HTML 转成 markdown、JSON 或结构化数据（JSON mode）。</li>
+<li><strong>Crawl</strong> 整站 —— 从起始 URL 递归走到配置的最大深度。</li>
+<li><strong>Search</strong> 网页 —— 搜索引擎式查询，可选在同一调用里 scrape 顶部结果。</li>
+<li><strong>Monitor</strong> URL / 整站 / 全网搜索 —— 定时检查并在 diff 时通知。</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">背后还有五个补充端点。<strong>Map</strong> 列出整站所有 URL 但不抓内容（适用 sitemap 发现与 crawl 规划）。<strong>Batch Scrape</strong> 接受显式 URL 列表，在同一并发任务中返回所有结果（sync + async 模式）。<strong>Extract</strong> 是基于 LLM 的多 URL / URL pattern 结构化抽取端点 —— JSON mode 的多 URL 兄弟。<strong>Interact</strong> 提供浏览器沙盒（Playwright 代码或自然语言 prompt），适用登录墙页面、JS 渲染 SPA、表单填写、端到端 web 测试。<strong>Agent</strong> 跨多个站点做自主研究，可选返回 JSON schema；每个 plan 每天 5 次免费运行。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl 在 2026 年 agent 构建中持续出现的另一个原因：v2 <strong>JSON Mode</strong> 把标准的「scrape → extract」两步管道压成一次调用。v1 API 有一个独立的 <code>jsonOptions</code> 参数，住在 formats 数组之外；v2 API 把它删了，让你可以直接把 OpenAI 格式 schema 内嵌到 <code>formats: [{type: "json", schema: {...}}]</code>。响应返回 <code>{success: true, data: {...}}</code>，<code>data</code> 已符合 schema —— 无需第二次 LLM 调用、无需第二层解析器、无需 schema 映射胶水代码。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Firecrawl v2 产品阵容</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl v2 一共九个端点，每个的用例边界都很清楚：</p>
+
+<table class="table-token min-w-full bg-white border border-gray-200 my-4">
+<thead>
+<tr class="bg-gray-50"><th class="px-3 py-2 text-left">端点</th><th class="px-3 py-2 text-left">Method</th><th class="px-3 py-2 text-left">路径</th><th class="px-3 py-2 text-left">Credit 单价</th></tr>
+</thead>
+<tbody>
+<tr><td class="px-3 py-2"><strong>Scrape</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/scrape</td><td class="px-3 py-2">1 / 页</td></tr>
+<tr><td class="px-3 py-2"><strong>Crawl</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/crawl</td><td class="px-3 py-2">1 / 抓取页</td></tr>
+<tr><td class="px-3 py-2"><strong>Map</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/map</td><td class="px-3 py-2">1 / 调用</td></tr>
+<tr><td class="px-3 py-2"><strong>Search</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/search</td><td class="px-3 py-2">2 / 10 results（向上取整）</td></tr>
+<tr><td class="px-3 py-2"><strong>Batch Scrape</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/batch/scrape</td><td class="px-3 py-2">1 / URL（sync + async）</td></tr>
+<tr><td class="px-3 py-2"><strong>Extract</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/extract</td><td class="px-3 py-2">1 / URL（LLM 驱动）</td></tr>
+<tr><td class="px-3 py-2"><strong>Interact</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/interact</td><td class="px-3 py-2">2-7 / browser minute（1 分钟最低）</td></tr>
+<tr><td class="px-3 py-2"><strong>Monitor</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/monitor</td><td class="px-3 py-2">1 / 页 / 检查</td></tr>
+<tr><td class="px-3 py-2"><strong>Agent</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/agent</td><td class="px-3 py-2">5 daily runs free，超量动态计费</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">MCP server 暴露是 Firecrawl 在抓取工具中独树一帜的地方。<code>npx -y firecrawl-mcp-server</code> 把 Scrape / Search / Parse 注册成 Claude Code / Cursor / Windsurf 的原生 MCP 工具；托管 MCP keyless 端点 <code>https://api.firecrawl.dev/mcp/sse</code> 同样暴露这三个工具但无需 API key（低 rate limit、适合评估）。当 agent 需要抓取它正在看的页面时，调用走 Firecrawl 而无需离开 agent loop。官方 SKILL.md 接入文档 firecrawl.dev/agent-onboarding/SKILL.md 单文件覆盖 CLI / 浏览器鉴权、API key 设置、能力摘要。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Firecrawl 价格：credit 计费，不是 token 计费</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl 是主流抓取 API 里唯一按 credit 计费而非按 token 计费的。每个 API 调用消耗固定数量的 credits（Scrape / Crawl / Map / Batch URL / Monitor page 1 credit/页、Search 2 credits/10 results、Interact 2-7 credits/browser-minute、Agent 每天 5 次免费）。Credits 在每个计费周期开始时重置且不结转。额外 credits 按 $5 一档出售（按 plan 1k / 2k / 2.5k / 5k credits 不等）。</p>
+
+<table class="table-token min-w-full bg-white border border-gray-200 my-4">
+<thead>
+<tr class="bg-gray-50"><th class="px-3 py-2 text-left">方案</th><th class="px-3 py-2 text-left">每月 credits</th><th class="px-3 py-2 text-left">并发浏览器</th><th class="px-3 py-2 text-left">年付价（每月）</th><th class="px-3 py-2 text-left">额外 credit 档</th></tr>
+</thead>
+<tbody>
+<tr><td class="px-3 py-2"><strong>Free</strong></td><td class="px-3 py-2">1,000</td><td class="px-3 py-2">2</td><td class="px-3 py-2">$0（无信用卡）</td><td class="px-3 py-2">—</td></tr>
+<tr><td class="px-3 py-2"><strong>Hobby</strong></td><td class="px-3 py-2">5,000</td><td class="px-3 py-2">5</td><td class="px-3 py-2">$16/月（$19/月付）</td><td class="px-3 py-2">$5 / 1,000 credits</td></tr>
+<tr><td class="px-3 py-2"><strong>Standard</strong></td><td class="px-3 py-2">100,000</td><td class="px-3 py-2">25</td><td class="px-3 py-2">$83/月（$99/月付）</td><td class="px-3 py-2">$5 / 2,000 credits</td></tr>
+<tr><td class="px-3 py-2"><strong>Growth</strong></td><td class="px-3 py-2">500,000</td><td class="px-3 py-2">50</td><td class="px-3 py-2">$333/月（$399/月付）</td><td class="px-3 py-2">$5 / 2,500 credits</td></tr>
+<tr><td class="px-3 py-2"><strong>Scale</strong></td><td class="px-3 py-2">1,000,000</td><td class="px-3 py-2">100</td><td class="px-3 py-2">$599/月</td><td class="px-3 py-2">$5 / 5,000 credits</td></tr>
+<tr><td class="px-3 py-2"><strong>Enterprise</strong></td><td class="px-3 py-2">Custom</td><td class="px-3 py-2">100+</td><td class="px-3 py-2">联系销售</td><td class="px-3 py-2">Custom + ZDR Search</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">年付实际 per-credit 价：Hobby ~$0.0032、Standard ~$0.00083、Growth ~$0.000666、Scale ~$0.000599。Free 档真正免费 —— 无信用卡、1,000 credits/月、Agent 5 daily runs free 同样适用。Standard $83/月 100k credits 是生产级 RAG 与 crawl 工作负载的实际甜点位；Free 档足以验证单域管道并决定 credit 成本模型是否适合你的用量模式。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Enterprise 档两个值得点出的特性：<strong>Zero-Data-Retention (ZDR) Search</strong> 让企业客户可以拒绝在请求生命周期外留存搜索查询与结果 URL；<strong>SIEM audit logging</strong> 把每一次抓取作为结构化事件流式推到客户自己的 SIEM（从 Microsoft Sentinel 开始）。IP 限制（CIDR 白名单）与单 key 端点 / 输出格式限制在 Enterprise 也是服务端强制的 —— 适用需要把 API key 锁定到特定输出格式的合规团队。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Firecrawl API 实际工作机制</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">v2 API base URL 是 <code>https://api.firecrawl.dev/v2</code>，鉴权使用从 Firecrawl 控制台签发的 Bearer token。每个端点接受同一个 <code>Authorization</code> header 并返回 JSON。SDK（Python <code>pip install firecrawl</code>、Node <code>npm install firecrawl</code>）封装原生 HTTP 端点，多数调用方无需直接 <code>curl</code>。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Scrape（单 URL）—— 标准调用：</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code>// JavaScript / Node SDK
+import Firecrawl from 'firecrawl-js';
+
+const fc = new Firecrawl({ apiKey: process.env.FIRECRAWL_API_KEY });
+
+const result = await fc.scrape('https://docs.firecrawl.dev', {
+  formats: [
+    { type: 'markdown' },
+    { type: 'json', schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string' },
+        version: { type: 'string' }
+      },
+      required: ['title']
+    } }
+  ],
+  maxAge: 3600000,           // 接受 1 小时以内的缓存
+  onlyMainContent: true      // 去掉 nav、footer、sidebar
+});
+
+console.log(result.data);    // { success: true, markdown: '...', json: { title: '...', version: '...' } }
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><code>maxAge</code> 参数控制缓存新鲜度 —— 默认 172800000 ms（2 天）；命中缓存毫秒级返回。<code>maxAge: 0</code> 强制刷新；<code>storeInCache: false</code> 返回页面但不持久化。对每几小时重新抓取同一份文档的 RAG 管道来说，缓存是毫秒与多秒响应时间之间的差别。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Batch Scrape（sync 模式）：</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code># Python SDK — sync batch
+from firecrawl import Firecrawl
+
+fc = Firecrawl(api_key='fc-...')
+
+batch = fc.batch_scrape(
+    urls=[
+        'https://docs.firecrawl.dev/scrape',
+        'https://docs.firecrawl.dev/crawl',
+        'https://docs.firecrawl.dev/agent'
+    ],
+    formats=['markdown'],
+    max_age=86400000  # 24h cache
+)
+print('Batch result:', batch.data)  # { status: 'completed', completed: 3, total: 3, data: [...] }
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Async 模式接受同样的调用但立即返回 <code>{id, status: 'queued'}</code>；轮询 <code>/v2/batch/scrape/:id</code> 或注册 webhook 等待完成。所有 scrape 选项（formats、JSON schema、headers、maxAge、onlyMainContent）都透传到每个 URL。默认并发队列任务超时是 48 小时。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Interact（浏览器自动化）：</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code># cURL — prompt 驱动浏览器会话
+curl -X POST https://api.firecrawl.dev/v2/interact \
+  -H "Authorization: Bearer $FC_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/login",
+    "prompt": "click the login button, fill email@example.com into the email field, click submit, then scrape the resulting dashboard"
+  }'
+# Returns: { success, code, execution_logs, interactive_screenshot, captures: [...] }
+# 7 credits / browser minute，1 分钟最低消费
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Interact 接受 <code>code</code>（Playwright 代码，2 credits/minute）或 <code>prompt</code>（自然语言描述，7 credits/minute）。每个会话按 1 分钟最低消费，即使秒级 probe 也按整分钟计。返回 <code>interactive_screenshot</code> 加 <code>captures</code> 数组 —— 适用登录墙抓取、JS 渲染 SPA、表单提交、端到端测试。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Agent（自主跨站点研究）：</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code>// Node SDK — agent with JSON schema output
+const result = await fc.agent({
+  prompt: 'Find the current API pricing for the top 3 LLM providers (OpenAI, Anthropic, Google) and return as JSON',
+  schema: {
+    type: 'object',
+    properties: {
+      providers: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            flagship_model: { type: 'string' },
+            input_price: { type: 'string' },
+            output_price: { type: 'string' }
+          }
+        }
+      }
+    }
+  }
+});
+
+// 5 daily runs free on every plan (Free / Hobby / Standard / Growth / Scale)
+// usage-based dynamic pricing beyond
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Agent 与 Extract 组合做多 URL 结构化研究：Agent 发现 URL，Extract 用 JSON schema 拉结构化字段。5 daily free 配额在每个 plan（含 Free）都适用，所以评估工作流能在付费之前就完成有意义的跨站点研究管道。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">通过 MCP 接入 Claude Code / Cursor / Windsurf</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl 的托管 MCP server 在 <code>https://api.firecrawl.dev/mcp/sse</code>，把 Scrape / Search / Parse 暴露为原生 MCP 工具。三种接入模式：</p>
+
+<ol class="list-decimal list-inside text-gray-700 space-y-2 my-4">
+<li><strong>Keyless MCP（低 rate limit）</strong> —— 把 Claude Code / Cursor 指向托管 MCP 端点，无需 API key。Scrape / Search / Parse 可用；rate limit 最紧。</li>
+<li><strong>API key MCP（完整 rate limit）</strong> —— 用 <code>npx -y firecrawl-mcp-server</code> 注册 MCP server 并提供 <code>FIRECRAWL_API_KEY</code>。所有端点 + 完整 rate limit。</li>
+<li><strong>自托管 MCP</strong> —— 本地运行 Firecrawl Docker 镜像，把 MCP 指向本地 URL；消除中国大陆 agent 的跨太平洋延迟并去除数据驻留差距。</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">当 agent 需要抓取它正在看的页面时，调用走 Firecrawl 而无需离开 agent loop —— MCP 工具面负责鉴权、429 重试、maxAge 缓存与格式转换。这是 Firecrawl 与早期抓取 API 的差异化设计点：它是为 in-agent 调用而构建的，不是为单独 worker 跑的批 ETL 管道。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对能铸造 Firecrawl WorkOS ID-JAG（已验证的鉴权委托 token）的 agent 平台，鉴权路径更简单：<code>https://www.firecrawl.dev/auth.md</code> 描述流程与 WorkOS ID-JAG 铸造端点。官方 SKILL.md 接入 firecrawl.dev/agent-onboarding/SKILL.md 单文件覆盖标准 CLI / 浏览器鉴权路径、API key 设置与能力摘要。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Firecrawl vs Apify / Browse AI / Zyte</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 8 月的抓取 API 市场有四个有意义的大类，Firecrawl 的位置：</p>
+
+<ul class="list-disc list-inside text-gray-700 space-y-2 my-4">
+<li><strong>直接 HTML 抓取（BeautifulSoup、Cheerio、Requests、Scrapy）：</strong> 免费、静态站点上很快，但每个 JS SPA、登录墙、Bot 检测都会失效。Firecrawl 在任何非平凡的站点上替换这套。</li>
+<li><strong>浏览器自动化即服务（Browserbase、Steel、Anchor Browser）：</strong> 托管的 Chromium，由 Playwright 代码驱动。比 Firecrawl 更低层 —— 抓取、解析、抽取管道都自己做。Firecrawl 的 Interact 与这个类别重叠但同时打包了 parse / extract 层。</li>
+<li><strong>Headless 抓取器（Apify、Browse AI、Zyte）：</strong> 在结构化数据抽取上更强，有现成的 scraper marketplace（Apify Actors），但每个任务更贵，在多格式 JSON mode + MCP server 故事上更弱。Firecrawl 价格更简单（1 credit / 页），JSON mode 把 scrape + extract 两步压成一次调用。</li>
+<li><strong>Firecrawl：</strong> 首个为 in-agent 调用设计的抓取 API。九个 v2 端点在一个 credit 系统下，JSON mode 内嵌 OpenAI 格式 schema，MCP server 提供 keyless Scrape / Search / Parse，自托管 AGPL-3.0 Docker / Kubernetes 给企业。零信用卡 Free 档。</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 8 月 Firecrawl 的诚实定位：这 <strong>不是</strong> Apify 的即插即用替代品，如果你的团队为特定站点建了大量 Apify Actors。Firecrawl 是正确选择的时候：抓取管道是通用的（任意 URL → 干净的 markdown / JSON）且 agent 需要调用从它的工具循环里发生。需要两者的团队，这两个 API 配合得很清晰—— Firecrawl 走通用管道 + MCP 驱动 agent 工作，Apify 走站点特定 Actor 库。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">中国访问、mainland-China 延迟与区域故事</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl 托管 API 运行于单一区域基础 URL <code>https://api.firecrawl.dev</code>（美国旧金山），无文档化的亚太或中国大陆路由层。北美与欧洲生产流量首字节延迟低至几十毫秒；中国大陆需代理或中转，托管端点跨太平洋首字节延迟通常 200-400 ms。Free 档的 1,000 credits 可代理试用，但稳定生产流量建议自托管 Firecrawl（Docker / Kubernetes）或挂在企业代理后面。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对有中国大陆延迟或数据驻留要求的企业，自托管 AGPL-3.0 Docker / Kubernetes 构建（github.com/firecrawl/firecrawl）完全运行在客户自己的基础设施上，免去跨太平洋往返。构建支持自带数据库（Postgres / Redis）与自带队列，所以整个管道 —— 包括页面缓存与 Browserbase / Steel Interact 后端 —— 都能在客户 VPC 内运行。截至 2026 年 8 月没有 ICP 备案的中国大陆托管端点，但 api.firecrawl.dev/mcp/sse 的 MCP server 在全球范围提供 Scrape / Search / Parse keyless 端点（评估期最低 rate limit 档）。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">谁应该用 Firecrawl？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl 在 2026 年 8 月适配五个清晰的工程工作流：</p>
+
+<ul class="list-disc list-inside text-gray-700 space-y-2 my-4">
+<li><strong>RAG 工程师</strong>：要把整站或大批 URL 转成干净 markdown。2 天 maxAge 页面缓存 + JSON mode schema 抽取把最常见的 RAG scrape + extract 管道压成一次 Firecrawl 调用。</li>
+<li><strong>构建 web-scale 监控的 agent 团队</strong>：合规、价格、新闻、招聘、产品页 diff。Monitor 的三种目标类型（Page / Website / Web-scale）端到端覆盖定期检查用例，webhook + email + Slack 通知。</li>
+<li><strong>用自然语言 prompt 驱动浏览器的产品团队</strong>：端到端 web 测试、表单填写、登录态交互。Interact 7 credits/minute（prompt 驱动）或 2 credits/minute（Playwright 代码）处理纯 scrape 拿不下来的 JS 渲染 SPA 与登录墙。</li>
+<li><strong>想在 Claude Code / Cursor / Windsurf 里直接抓取当前页面的 agent 开发者</strong>：通过 <code>firecrawl-mcp-server</code>。MCP 集成是 Firecrawl 在抓取工具中独树一帜的设计点。</li>
+<li><strong>受限于中国大陆延迟 / 合规的企业</strong>：自托管 Firecrawl Docker / Kubernetes 镜像，所有数据留在 VPC 内，免去跨太平洋往返。</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">结论</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl 是 agent 时代的抓取层。九个 v2 端点在一个 credit 系统下，JSON mode 把 scrape + extract 管道压成一次调用，maxAge 页面缓存支持毫秒级命中返回，MCP server 提供 keyless Scrape / Search / Parse 给 in-agent 调用，自托管 AGPL-3.0 Docker / Kubernetes 构建让企业能在自己的基础设施上跑整个栈。价格真正有竞争力 —— Free 档零信用卡、Hobby $19/月、Standard $83/月 100k credits —— Standard 档实际 per-credit 价（~$0.00083）把 Firecrawl 放在 credit 计费档里最便宜的 mainstream 抓取 API。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">对构建 web-aware agent 需要从 agent 循环里直接抓取当前页面的团队，Firecrawl 在 2026 年 8 月是最直接的单一厂商答案。MCP server 集成是其他抓取 API 没有的设计点。对已建好站点特定 Apify Actor 库的团队，Firecrawl 是补充而非替代 —— Firecrawl 走通用管道 + MCP 驱动 agent 工作，Apify 走站点特定 Actor 库。对需要 mainland-China 延迟或数据驻留的企业，自托管 Docker / Kubernetes 镜像，跨太平洋往返就消失了。</p>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/zh" class="hover:underline">首页</a> &rsaquo; <a href="/zh/tutorials" class="hover:underline">教程</a> &rsaquo; <span class="text-gray-700">{zhTitle}</span></nav>
+        <div set:html={zhBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0"><div class="bg-gray-50 border border-gray-200 rounded-lg p-4"><h3 class="font-semibold text-gray-900 mb-2">速览</h3><ul class="text-sm text-gray-700 space-y-1"><li><strong>厂商：</strong>Firecrawl, Inc.（YC W23）</li><li><strong>端点：</strong>v2 共 9 个（Scrape / Crawl / Map / Search / Batch / Extract / Interact / Monitor / Agent）</li><li><strong>JSON Mode：</strong>v2 /scrape 通过 formats: [{type: "json", schema: {...}}]</li><li><strong>maxAge 缓存：</strong>默认 2 天（172800000 ms）</li><li><strong>MCP server：</strong>api.firecrawl.dev/mcp/sse（keyless）</li><li><strong>免费档：</strong>1k credits/月，无信用卡</li><li><strong>Standard：</strong>$83/月（100k credits）</li><li><strong>中国：</strong>需代理；生产建议自托管</li></ul></div></aside>
+    </div>
+  </main>
+</BaseLayout>

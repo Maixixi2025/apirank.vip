@@ -16528,5 +16528,466 @@
         "textZh": "Morph 运营 https://api.morphllm.com 单一全球端点，无文档化的亚太或区域路由。北美与欧洲生产流量首字节延迟低至几十毫秒；中国大陆需代理或中转，跨太平洋首字节延迟通常 200-400 ms。OpenRouter 上发布的 Morph 模型（morph/morph-v3-fast、morph/morph-v3-large）走 OpenRouter 自己的多区域基础设施，这给中国开发者提供了 OpenRouter API key 内的低延迟 Fast Apply 路径 —— 但开源权重 chat 阵容（Kimi K3、GLM-5.2、Qwen 3.5 397B 等）只在 Morph 直连与 OpenAI/Anthropic 直连可用，不经过任何区域感知代理。截至 2026 年 8 月没有 ICP 备案的中国大陆端点。"
       }
     ]
+  },
+  {
+    "id": "firecrawl",
+    "name": "Firecrawl",
+    "nameCn": "Firecrawl",
+    "category": "international",
+    "website": "https://firecrawl.dev",
+    "apiDocs": "https://docs.firecrawl.dev",
+    "affiliateUrl": "",
+    "affiliateAvailable": false,
+    "overallRank": 42,
+    "priceRank": 6,
+    "speedRank": 4,
+    "models": [
+      "Scrape (v2 /scrape) — convert any URL into clean markdown / HTML / structured JSON via the JSON-mode schema option; 1 credit per page",
+      "Crawl (v2 /crawl) — recursively crawl a website and return content for every linked page; 1 credit per page scraped",
+      "Map (v2 /map) — return every URL on a website without scraping content; 1 credit per call",
+      "Search (v2 /search) — search the web and optionally scrape results; 2 credits per 10 results (rounded up)",
+      "Batch Scrape (/v2/batch/scrape) — scrape an explicit list of URLs in one concurrent job (sync + async modes); 1 credit per URL",
+      "Interact (/v2/interact) — interactive browser sandbox with Playwright code or natural-language prompts; 2 credits/minute (Playwright) or 7 credits/minute (prompt-driven); 1-minute minimum",
+      "Monitor (/v2/monitor) — schedule recurring page / website / web-scale checks and notify by webhook, email, or Slack; 1 credit per page per check",
+      "Agent (/v2/agent) — autonomous web research agent with optional JSON schema; 5 daily runs free, dynamic usage-based pricing beyond",
+      "Extract (/v2/extract) — LLM-driven structured extraction across many URLs and URL patterns (batch sibling of JSON mode)",
+      "JSON mode — embed `formats: [{type: \"json\", schema: {...}}]` directly in v2 /scrape to extract structured data with an OpenAI-compatible JSON schema"
+    ],
+    "modelCount": 10,
+    "pricing": {
+      "input": "纯 credit-based 按 endpoint 与特性消耗，每月按 plan 重置额度；额外 credit 按 $5 一档购买（每档 1k–5k credits 不等）。从 firecrawl.dev/pricing 与 docs.firecrawl.dev/billing.md 验证（2026-08-29）：Free 1k/月 $0；Hobby 5k/月 $19（年付 $16）；Standard 100k/月 $83（年付 $99）；Growth 500k/月 $333（年付 $399）；Scale 1M/月 $599；Enterprise Custom。Credit 单价：Scrape / Crawl / Map 1 cr/page、Search 2 cr/10 results、Monitor 1 cr/page/check、Interact 2–7 cr/browser-minute。Batch Scrape / Extract 按子操作同价。Agent 5 daily runs free，超量动态计费。",
+      "output": "无独立 output 维度——Firecrawl 输出的是 scraped markdown / HTML / JSON 内容，计费仅按输入端的 credit 消耗与并发浏览器占用。出站数据本身不另收费；唯一例外是 Search 在 ZDR（zero-data-retention）企业档下按企业价另议。",
+      "cacheRead": "无 token 级 cache。Firecrawl 自带页面层 maxAge 缓存（默认 2 天 = 172800000 ms，命中率高的页面秒级返回），仅对新鲜 scrape 调用扣 1 credit；`maxAge: 0` 强制刷新，`storeInCache: false` 不入库。"
+    },
+    "pricingEN": {
+      "input": "Pure credit-based billing, consumption per endpoint and feature, monthly reset per plan; extra credits sold in $5 batches (1k–5k credits per batch depending on plan). Verified against firecrawl.dev/pricing + docs.firecrawl.dev/billing.md (2026-08-29): Free 1k credits/mo at $0; Hobby 5k at $19/mo ($16/mo billed yearly); Standard 100k at $83/mo (yearly ~$99/mo); Growth 500k at $333/mo (yearly ~$399/mo); Scale 1M at $599/mo; Enterprise Custom. Per-call credit costs: Scrape / Crawl / Map 1 cr/page, Search 2 cr/10 results (rounded up), Monitor 1 cr/page/check, Interact 2 cr/minute (Playwright) or 7 cr/minute (prompt-driven, 1-min minimum). Batch Scrape and Extract inherit the same per-URL / per-call credit costs. Agent gives 5 daily runs free, then dynamic usage-based pricing.",
+      "output": "No separate output dimension — Firecrawl returns scraped markdown / HTML / JSON content, billed only against the input credit cost and concurrent-browser occupancy. The data returned is not separately metered; the only output-side caveat is enterprise ZDR Search, which carries a custom rate negotiated per contract.",
+      "cacheRead": "No token-level cache. Firecrawl maintains a page-level maxAge cache (default 2 days = 172800000 ms; cached pages return in milliseconds), and only the fresh scrape call consumes 1 credit. Set `maxAge: 0` to force-refresh every request, or `storeInCache: false` to skip persisting the result."
+    },
+    "freeTier": "Free 档永久免费：1,000 credits / 月，无需信用卡，支持 Scrape / Crawl / Map / Search / Batch Scrape / JSON mode 全部 endpoints；2 concurrent browsers；50,000 max queued jobs。适合评估与轻量使用，但 credit 重置周期每月初清零、当月用完不再补。Agent 5 daily runs free 适用于所有 plan（含 Free）。",
+    "freeTierEN": "Permanent Free tier: 1,000 credits per month with no credit card required, full access to Scrape / Crawl / Map / Search / Batch Scrape / JSON mode and every other endpoint; 2 concurrent browsers and a 50,000 max queued jobs ceiling. Designed for evaluation and low-volume use; credits reset at the start of each month and do not roll over. Agent's 5-daily-free runs apply across every plan, including Free.",
+    "paidModel": "付费按 plan 阶梯：Hobby 5k credits/月 $19（年付 $16/月，约 $0.0032/credit）；Standard 100k/月 $83（约 $0.00083/credit，年付 ~$0.00099/credit）；Growth 500k/月 $333（约 $0.000666/credit）；Scale 1M/月 $599（约 $0.000599/credit）。额外 credit 各档不同：Standard $5/2,000 credits、Growth $5/2,500 credits、Scale $5/5,000 credits（年付用户价更优）。Enterprise 私谈含 ZDR（zero-data-retention）、SIEM audit logging、IP 限制、key restrictions、SLA、SSO。",
+    "paidModelEN": "Plan-based paid tiers: Hobby 5k credits/mo at $19 ($16/mo billed yearly, ~$0.0032/credit); Standard 100k/mo at $83 (yearly ~$99/mo, ~$0.00083–$0.00099/credit); Growth 500k/mo at $333 (yearly ~$399/mo, ~$0.000666/credit); Scale 1M/mo at $599 (~$0.000599/credit). Extra-credit packs vary by plan: Standard $5/2,000 credits, Growth $5/2,500 credits, Scale $5/5,000 credits (yearly-billed users get better per-credit rates). Enterprise is custom and bundles Zero-Data-Retention (ZDR) Search, SIEM audit logging, IP restrictions, per-key endpoint/output restrictions, SLA, and SSO.",
+    "availabilityCN": "❌ 无中国大陆直连端点。Firecrawl 总部位于美国旧金山（YC W23），API base URL https://api.firecrawl.dev 单区域部署；docs.firecrawl.dev/billing.md 未列出任何亚太 / 中国路由层。中国大陆生产流量需代理或中转，跨太平洋首字节延迟通常 200-400 ms；Free 档 1000 credits 评估期可代理试用，但稳定流量建议自建代理或自部署 Firecrawl 自托管版（self-hosted Docker / Kubernetes）。",
+    "availabilityEN": "❌ No mainland China direct endpoint. Firecrawl is headquartered in San Francisco (Y Combinator W23 batch) with a single-region API base URL at https://api.firecrawl.dev; the billing and rate-limits docs do not list any Asia-Pacific or China routing layer. China production traffic requires a proxy or transit, with typical 200-400 ms transpacific first-byte latency. The Free tier's 1,000 credits work behind a proxy for evaluation, but stable production traffic should either run a self-hosted Firecrawl deployment (Docker / Kubernetes) or sit behind a corporate proxy.",
+    "highlights": [
+      "v2 API 9 个 endpoint 一站式覆盖：Scrape / Crawl / Map / Search / Batch Scrape / Extract / Interact / Monitor / Agent，无需拼装多个工具",
+      "JSON mode (formats: [{type: \"json\", schema: {...}}]) 单次 scrape 直接产出 OpenAI 兼容 schema 结构化数据，免二次解析",
+      "maxAge 缓存默认 2 天：命中即毫秒级返回（实测 ~10× 加速）；`maxAge: 0` 强制刷新，`storeInCache: false` 不入库",
+      "Interact 浏览器沙盒：Playwright code 或自然语言 prompt 双模式，2–7 credits/minute，1 分钟最低消费",
+      "Monitor 三类目标：Page（已知 URL diff）/ Website（定时整站）/ Web-scale（always-on 搜索新结果），webhook + email + Slack 通知",
+      "Agent 自主研究：5 daily runs free，超量按 token 用量动态计费；支持 JSON schema 输出，可与 Extract 联动",
+      "Self-hosted 开源（AGPL-3.0）：官方 Docker / Kubernetes 镜像完整可用，企业可私有化部署避开大陆延迟与合规风险",
+      "MCP server 支持：firecrawl-mcp-server 提供 Scrape / Search / Parse 的 keyless 试用端点，官方 SKILL.md 一行接入 Claude Code / Cursor",
+      "Free 档永久免费、零信用卡：1k credits/月 + 5 daily Agent runs，是 web scraping 工具中评估门槛最低的一家"
+    ],
+    "highlightsEN": [
+      "v2 API covers nine endpoints in one stack — Scrape / Crawl / Map / Search / Batch Scrape / Extract / Interact / Monitor / Agent — no need to assemble multiple scraping tools",
+      "JSON mode (`formats: [{type: \"json\", schema: {...}}]`) returns OpenAI-format structured data on a single scrape call, eliminating a second parsing step",
+      "maxAge page cache defaults to 2 days: cache hits return in milliseconds (~10x speedup measured); `maxAge: 0` forces a fresh scrape, `storeInCache: false` skips persisting the result",
+      "Interact browser sandbox: dual Playwright-code or natural-language-prompt modes at 2–7 credits/minute with a 1-minute minimum",
+      "Monitor supports three target types — Page (known URL diffs), Website (scheduled full crawl), Web-scale (always-on search for new results) — with webhook + email + Slack notifications",
+      "Agent autonomous research: 5 daily runs free, then dynamic usage-based pricing; supports JSON schema output and composes with Extract",
+      "Self-hostable under AGPL-3.0: official Docker / Kubernetes images let enterprises avoid mainland-China latency and compliance gaps",
+      "MCP server support: the firecrawl-mcp-server exposes Scrape / Search / Parse keyless endpoints, with an official SKILL.md for one-line Claude Code / Cursor integration",
+      "Permanent Free tier with no credit card: 1,000 credits/month + 5 daily Agent runs — the lowest evaluation barrier among mainstream web-scraping APIs"
+    ],
+    "cons": [
+      "无中国大陆端点：api.firecrawl.dev 单区域部署，跨太平洋延迟 200-400 ms；企业稳定流量建议自部署 self-hosted",
+      "无 token 级 cache：仅页面级 maxAge 缓存，对同 URL 频繁更新场景需自行管理 maxAge 与 storeInCache 标志",
+      "Output 不限速但 Input 计 credit：Search 每次最多 10 results，11 results 算 4 credits（向上取整），高频搜索成本累积快",
+      "Free 档每月 1k credits 用完即停：与评估期项目进度强耦合，月底 burst 流量可能被 429 拒绝",
+      "Interact browser 最低 1 分钟计费：<1 分钟的快速 probe 也按整分钟计，调试期成本难压",
+      "Monitor / Agent 计费动态：监控频次与 agent 任务量直接影响 credit 消耗，无固定封顶",
+      "Self-hosted 版 AGPL-3.0：商业化 fork / 二次分发需开源；商业闭源场景需用 hosted 版或购买商业授权",
+      "无 affiliate 合作计划：apirank 暂未上线 Firecrawl 联盟链接，需走直接注册",
+      "Vendor 暂无 Chat Completions / Responses API 形态：Firecrawl 是 scraping/crawling 平台而非通用 LLM API，与 OpenAI / Anthropic 不同赛道"
+    ],
+    "consEN": [
+      "No mainland China endpoint: api.firecrawl.dev is single-region with 200-400 ms transpacific latency; stable production traffic should self-host",
+      "No token-level cache: only the page-level maxAge cache applies; high-frequency same-URL updates need manual maxAge + storeInCache management",
+      "Output not rate-limited but Input charges credits: Search bills 4 credits for 11 results (rounded up to 2-credit units), so high-frequency search accumulates costs fast",
+      "Free tier stops at 1k credits/month: tightly coupled to project timelines, month-end burst traffic can hit 429",
+      "Interact browser charges a 1-minute minimum: sub-minute probes still bill a full minute, hard to compress during debug",
+      "Monitor and Agent pricing is dynamic: monitor frequency and agent task volume directly drive credit consumption with no fixed cap",
+      "Self-hosted edition is AGPL-3.0: commercial forks or redistribution must open-source the fork; closed-source commercial usage needs the hosted edition or a separate commercial license",
+      "No affiliate program yet: apirank has no Firecrawl affiliate link live; sign up via the homepage",
+      "Not a general-purpose LLM API: Firecrawl is a scraping / crawling platform, not a chat completions / responses API; sits in a different lane than OpenAI / Anthropic"
+    ],
+    "bestFor": "需要把整站 / 大批 URL 转成 clean markdown 的 RAG 工程师；构建 web-scale 监控（合规、价格、新闻、招聘、产品页变化）的 agent 团队；用自然语言 prompt 驱动浏览器做端到端 web 测试 / 表单填写 / 登录态交互的产品团队；要在 Claude Code / Cursor / Windsurf 里直接 scrape 当前页面的 agent 开发者（通过 firecrawl-mcp-server）；受限于中国大陆延迟 / 合规的企业（自部署 Firecrawl Docker / Kubernetes 镜像）；评估期 / 个人项目（Free 档零信用卡 1k credits/月 + 5 daily Agent runs）。",
+    "bestForEN": "RAG engineers who need to turn entire sites or large URL batches into clean markdown; agent teams building web-scale monitors for compliance, pricing, news, hiring, or product-page diffs; product teams driving browsers via natural-language prompts for end-to-end web tests, form fills, or login-session interactions; agent developers who want to scrape the current page from inside Claude Code / Cursor / Windsurf via firecrawl-mcp-server; enterprises constrained by mainland-China latency or compliance (self-host the Firecrawl Docker / Kubernetes image); evaluation or personal projects (Free tier, 1k credits/month + 5 daily Agent runs, no credit card).",
+    "status": "active",
+    "addedDate": "2026-08-29",
+    "source": "firecrawl.dev/pricing + docs.firecrawl.dev llms.txt + billing.md + rate-limits.md + features/*.md (verified 2026-08-29)",
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": [
+          "Plan",
+          "Monthly Credits",
+          "Concurrent Browsers",
+          "Monthly Price (Monthly)",
+          "Monthly Price (Yearly)",
+          "Extra Credit Pack"
+        ],
+        "headersZh": [
+          "方案",
+          "每月 credits",
+          "并发浏览器",
+          "月付价",
+          "年付价（每月）",
+          "额外 credit 档"
+        ],
+        "rows": [
+          [
+            "Free",
+            "1,000",
+            "2",
+            "$0",
+            "—",
+            "— (no purchase)"
+          ],
+          [
+            "Hobby",
+            "5,000",
+            "5",
+            "$19/mo",
+            "$16/mo",
+            "$5 / 1,000 credits"
+          ],
+          [
+            "Standard",
+            "100,000",
+            "25",
+            "$99/mo (~$83 effective)",
+            "$83/mo",
+            "$5 / 2,000 credits"
+          ],
+          [
+            "Growth",
+            "500,000",
+            "50",
+            "$399/mo (~$333 effective)",
+            "$333/mo",
+            "$5 / 2,500 credits"
+          ],
+          [
+            "Scale",
+            "1,000,000",
+            "100",
+            "$599/mo",
+            "$599/mo",
+            "$5 / 5,000 credits"
+          ],
+          [
+            "Enterprise",
+            "Custom",
+            "100+",
+            "Contact sales",
+            "Contact sales",
+            "Custom + bulk discounts + ZDR Search"
+          ],
+          [
+            "Credit cost — Scrape / Crawl / Map",
+            "1 credit / page or call",
+            "—",
+            "—",
+            "—",
+            "all plans"
+          ],
+          [
+            "Credit cost — Batch Scrape / Extract",
+            "1 credit / URL",
+            "—",
+            "—",
+            "—",
+            "all plans"
+          ],
+          [
+            "Credit cost — Search",
+            "2 credits / 10 results (rounded up)",
+            "—",
+            "—",
+            "—",
+            "all plans (ZDR custom for Enterprise)"
+          ],
+          [
+            "Credit cost — Interact (Playwright code)",
+            "2 credits / browser minute",
+            "—",
+            "—",
+            "—",
+            "1-minute minimum"
+          ],
+          [
+            "Credit cost — Interact (prompt-driven)",
+            "7 credits / browser minute",
+            "—",
+            "—",
+            "—",
+            "1-minute minimum"
+          ],
+          [
+            "Credit cost — Monitor",
+            "1 credit / page / check",
+            "—",
+            "—",
+            "—",
+            "all plans"
+          ],
+          [
+            "Agent daily free runs",
+            "5 / day, then dynamic",
+            "—",
+            "—",
+            "—",
+            "applies to every plan including Free"
+          ],
+          [
+            "maxAge page cache",
+            "default 2 days (172800000 ms)",
+            "—",
+            "—",
+            "—",
+            "free on every plan"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "Free",
+            "1,000",
+            "2",
+            "$0",
+            "—",
+            "—（不售卖）"
+          ],
+          [
+            "Hobby",
+            "5,000",
+            "5",
+            "$19/月",
+            "$16/月",
+            "$5 / 1,000 credits"
+          ],
+          [
+            "Standard",
+            "100,000",
+            "25",
+            "$99/月（约 $83 实际）",
+            "$83/月",
+            "$5 / 2,000 credits"
+          ],
+          [
+            "Growth",
+            "500,000",
+            "50",
+            "$399/月（约 $333 实际）",
+            "$333/月",
+            "$5 / 2,500 credits"
+          ],
+          [
+            "Scale",
+            "1,000,000",
+            "100",
+            "$599/月",
+            "$599/月",
+            "$5 / 5,000 credits"
+          ],
+          [
+            "Enterprise",
+            "Custom",
+            "100+",
+            "联系销售",
+            "联系销售",
+            "Custom + 批量折扣 + ZDR Search"
+          ],
+          [
+            "Credit 单价 — Scrape / Crawl / Map",
+            "1 credit / 页或调用",
+            "—",
+            "—",
+            "—",
+            "全 plan 通用"
+          ],
+          [
+            "Credit 单价 — Batch Scrape / Extract",
+            "1 credit / URL",
+            "—",
+            "—",
+            "—",
+            "全 plan 通用"
+          ],
+          [
+            "Credit 单价 — Search",
+            "2 credits / 10 results（向上取整）",
+            "—",
+            "—",
+            "—",
+            "全 plan（Enterprise 可定制 ZDR）"
+          ],
+          [
+            "Credit 单价 — Interact（Playwright code）",
+            "2 credits / browser minute",
+            "—",
+            "—",
+            "—",
+            "1 分钟最低消费"
+          ],
+          [
+            "Credit 单价 — Interact（prompt 驱动）",
+            "7 credits / browser minute",
+            "—",
+            "—",
+            "—",
+            "1 分钟最低消费"
+          ],
+          [
+            "Credit 单价 — Monitor",
+            "1 credit / 页 / 检查",
+            "—",
+            "—",
+            "—",
+            "全 plan 通用"
+          ],
+          [
+            "Agent 每日免费运行",
+            "5 次/天，超量动态计费",
+            "—",
+            "—",
+            "—",
+            "所有 plan（含 Free）均适用"
+          ],
+          [
+            "maxAge 页面缓存",
+            "默认 2 天（172800000 ms）",
+            "—",
+            "—",
+            "—",
+            "所有 plan 内置"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "API Style",
+            "value": "REST + SDK wrappers; v2 endpoints live at https://api.firecrawl.dev/v2 (with backward-compatible /v1 surface still served). Official Python SDK `firecrawl` (PyPI), Node SDK `firecrawl-js` (npm), and a hosted MCP server `firecrawl-mcp-server` exposing Scrape / Search / Parse for Claude Code / Cursor / Windsurf. SDKs wrap the raw HTTP endpoints so most callers never touch curl."
+          },
+          {
+            "label": "Endpoints",
+            "value": "POST /v2/scrape (single URL with formats array), POST /v2/crawl (recursively crawl a site with page limits, paths include/exclude, maxDepth), POST /v2/map (list every URL on a site), POST /v2/search (web search + optional scrape), POST /v2/batch/scrape (explicit URL list, sync + async modes), POST /v2/extract (LLM-driven extraction across many URLs / URL patterns), POST /v2/interact (browser sandbox with code or prompt), POST /v2/monitor (scheduled checks), POST /v2/agent (autonomous research), GET /v2/crawl/:id + /v2/batch/scrape/:id (status + results), GET /v2/usage (credit consumption), GET /v2/queue/status (concurrency headroom)."
+          },
+          {
+            "label": "Auth",
+            "value": "Bearer token (single `Authorization: Bearer fc-XXX` header) issued from the Firecrawl dashboard at firecrawl.dev/dashboard/api-keys. Team-scoped: all keys in one team share the same concurrent-browser limit and monthly credit pool. Enterprise adds optional IP restrictions (allowlist of CIDR ranges) and per-key endpoint / output-format restrictions, both enforced server-side."
+          },
+          {
+            "label": "JSON Mode (structured extraction)",
+            "value": "v2 API change: the v1 `jsonOptions` parameter is gone. Embed the schema directly in the formats array: `formats: [{type: \"json\", schema: {type: \"object\", properties: {...}, required: [...]}}]`. The OpenAI schema is used verbatim, so any JSON schema generated for an OpenAI tool call works without rewriting. Returns `{success: true, data: {...}}` where `data` already conforms to the schema; no second LLM call required."
+          },
+          {
+            "label": "Batch Scrape & Async",
+            "value": "POST /v2/batch/scrape accepts a list of URLs and returns `{id, urls, status}`. Poll /v2/batch/scrape/:id for `{status, completed, total, data: [...]}`. Async mode streams results via webhook when the job finishes; sync mode blocks until the job completes (subject to the timeout parameter, max 48h in the concurrency queue). All scrape options (formats, JSON schema, headers, maxAge, onlyMainContent) pass through to each URL."
+          },
+          {
+            "label": "Interact (Browser Sandbox)",
+            "value": "POST /v2/interact accepts either `{url, code: \"playwright code...\"}` for code-driven sessions (2 credits/minute) or `{url, prompt: \"click login, fill email, click submit\"}` for prompt-driven sessions (7 credits/minute). 1-minute minimum on every session; billed per browser-minute. Returns `{success, code, execution_logs, interactive_screenshot, captures: [...]}`. Useful for login-walled scraping, JS-rendered SPAs, form submissions."
+          },
+          {
+            "label": "maxAge Page Cache",
+            "value": "Set `maxAge` (milliseconds) on any scrape call to control cache freshness. Default 172800000 ms (2 days); cache hits return in milliseconds instead of seconds (~10x speedup). `maxAge: 0` forces fresh scrape (bypasses cache, slower). `storeInCache: false` returns the page but does not persist it to the cache (useful for one-off scrapes that should not influence other callers)."
+          },
+          {
+            "label": "Monitor (Scheduled Checks)",
+            "value": "Three target types: `/monitor` for known URLs (single-page diff), `/monitor` for entire websites (scheduled full crawl), `/monitor` for web-scale (always-on search). Configure schedule (cron), optional plain-language goal, and notification channels (webhook, email, Slack). Credit cost is 1 credit / page / check. Bounty program (5,000 credits) rewards feedback on government / legal / regulatory / public-record sources."
+          },
+          {
+            "label": "Agent",
+            "value": "POST /v2/agent with `{prompt, urls?, schema?}` runs an autonomous research agent that browses, searches, and synthesizes. 5 daily runs free on every plan including Free; usage-based pricing beyond. Supports JSON schema output and composes with Extract for multi-URL structured research. Useful for `find all products that match X and return price / SKU / stock` workflows that span multiple sites."
+          },
+          {
+            "label": "MCP Server",
+            "value": "`npx -y firecrawl-mcp-server` exposes Scrape / Search / Parse to Claude Code / Cursor / Windsurf as native MCP tools. Hosted MCP keyless endpoint at `https://api.firecrawl.dev/mcp/sse` allows Scrape / Search / Parse without an API key (low rate limits). Full MCP server with all tools requires an account connection or API key. SKILL.md onboarding at firecrawl.dev/agent-onboarding/SKILL.md; WorkOS ID-JAG auth path for agent platforms that can mint one."
+          },
+          {
+            "label": "SDKs & Self-Hosting",
+            "value": "Official Python (`pip install firecrawl`), Node (`npm install firecrawl`), Go (community), Rust (community). Self-hosted edition under AGPL-3.0 license: official Docker image + Kubernetes manifests at github.com/firecrawl/firecrawl, with Bring-Your-Own-Database (Postgres / Redis) and Bring-Your-Own-Queue support. Enterprise commercial license available for closed-source forks; pricing on contact."
+          },
+          {
+            "label": "Rate Limits & Concurrency",
+            "value": "Per-team rate limits (requests/minute) cap request volume; concurrent-browser limits (2 / 5 / 25 / 50 / 100+ by plan) cap parallel jobs. Exceeding either returns 429. `GET /v2/queue/status` returns current availability before sending work. Max queued jobs = 50,000 on Free/Hobby/Standard, 100,000 on Growth, 200,000+ on Scale/Enterprise. Jobs in the queue wait up to 48h before timing out."
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "接口风格",
+            "value": "REST + SDK 封装；v2 端点位于 https://api.firecrawl.dev/v2（保留向后兼容的 /v1 表面）。官方 Python SDK `firecrawl`（PyPI）、Node SDK `firecrawl-js`（npm），以及托管 MCP server `firecrawl-mcp-server`，将 Scrape / Search / Parse 暴露给 Claude Code / Cursor / Windsurf。SDK 封装原生 HTTP 端点，多数调用方无需直接 curl。"
+          },
+          {
+            "label": "端点",
+            "value": "POST /v2/scrape（单 URL，支持 formats 数组）、POST /v2/crawl（递归爬取整站，支持 page 限制、include/exclude 路径、maxDepth）、POST /v2/map（列出整站所有 URL）、POST /v2/search（网页搜索 + 可选 scrape）、POST /v2/batch/scrape（明确 URL 列表，sync + async 两种模式）、POST /v2/extract（基于 LLM 的多 URL / URL pattern 结构化抽取）、POST /v2/interact（浏览器沙盒，code 或 prompt 驱动）、POST /v2/monitor（定时检查）、POST /v2/agent（自主研究）、GET /v2/crawl/:id + /v2/batch/scrape/:id（状态 + 结果）、GET /v2/usage（credit 消耗）、GET /v2/queue/status（并发余量）。"
+          },
+          {
+            "label": "鉴权",
+            "value": "Bearer token（`Authorization: Bearer fc-XXX` header），从 Firecrawl 控制台 firecrawl.dev/dashboard/api-keys 创建。团队作用域：同一团队内所有 key 共享同一并发浏览器上限与每月 credit 池。Enterprise 可叠加 IP 限制（CIDR 白名单）与单 key 端点 / 输出格式限制，两者均服务端强制。"
+          },
+          {
+            "label": "JSON Mode（结构化抽取）",
+            "value": "v2 API 改动：v1 `jsonOptions` 参数已移除。直接将 schema 内嵌到 formats 数组：`formats: [{type: \"json\", schema: {type: \"object\", properties: {...}, required: [...]}}]`。OpenAI schema 原样使用，为 OpenAI tool call 生成的 schema 无需改写即用。返回 `{success: true, data: {...}}`，`data` 已符合 schema，无需二次 LLM 调用。"
+          },
+          {
+            "label": "Batch Scrape 与异步",
+            "value": "POST /v2/batch/scrape 接受 URL 列表并返回 `{id, urls, status}`。轮询 /v2/batch/scrape/:id 获取 `{status, completed, total, data: [...]}`。Async 模式任务完成后通过 webhook 流式推送；sync 模式阻塞至任务结束（受 timeout 参数约束，并发队列中最多等待 48h）。所有 scrape 选项（formats、JSON schema、headers、maxAge、onlyMainContent）透传到每个 URL。"
+          },
+          {
+            "label": "Interact（浏览器沙盒）",
+            "value": "POST /v2/interact 接受 `{url, code: \"playwright code...\"}`（code 驱动会话，2 credits/minute）或 `{url, prompt: \"click login, fill email, click submit\"}`（prompt 驱动会话，7 credits/minute）。每次会话 1 分钟最低消费，按 browser-minute 计费。返回 `{success, code, execution_logs, interactive_screenshot, captures: [...]}`。适用登录墙抓取、JS 渲染 SPA、表单提交。"
+          },
+          {
+            "label": "maxAge 页面缓存",
+            "value": "在任意 scrape 调用设置 `maxAge`（毫秒）控制缓存新鲜度。默认 172800000 ms（2 天）；命中缓存毫秒级返回（实测 ~10x 加速）。`maxAge: 0` 强制刷新（绕过缓存，更慢）。`storeInCache: false` 返回页面但不写入缓存（适用一次性抓取、不影响其他调用）。"
+          },
+          {
+            "label": "Monitor（定时检查）",
+            "value": "三种目标类型：`/monitor` 已知 URL（单页 diff）、`/monitor` 整站（定时全量爬）、`/monitor` 全网（always-on 搜索）。配置 schedule（cron）、可选自然语言目标、通知渠道（webhook、email、Slack）。Credit 单价 1 credit / 页 / 检查。Bounty 计划（5,000 credits）奖励政府 / 法律 / 监管 / 公开记录源的反馈。"
+          },
+          {
+            "label": "Agent",
+            "value": "POST /v2/agent 接受 `{prompt, urls?, schema?}`，运行自主研究 agent 浏览 / 搜索 / 综合。每个 plan（含 Free）5 次/天免费运行；超量按用量计费。支持 JSON schema 输出，可与 Extract 联动做多 URL 结构化研究。适用「找符合 X 的所有产品并返回 price / SKU / stock」跨站工作流。"
+          },
+          {
+            "label": "MCP Server",
+            "value": "`npx -y firecrawl-mcp-server` 将 Scrape / Search / Parse 暴露为 Claude Code / Cursor / Windsurf 的原生 MCP 工具。托管 MCP keyless 端点 `https://api.firecrawl.dev/mcp/sse` 允许无 API key 调用 Scrape / Search / Parse（低 rate limits）。完整 MCP server 需要账号连接或 API key。SKILL.md 接入文档 firecrawl.dev/agent-onboarding/SKILL.md；WorkOS ID-JAG 鉴权路径支持能铸造 ID-JAG 的 agent 平台。"
+          },
+          {
+            "label": "SDK 与自托管",
+            "value": "官方 Python（`pip install firecrawl`）、Node（`npm install firecrawl`）、Go（社区）、Rust（社区）。Self-hosted 版 AGPL-3.0 授权：官方 Docker 镜像 + Kubernetes manifests 位于 github.com/firecrawl/firecrawl，支持自带数据库（Postgres / Redis）与自带队列。Enterprise 商业授权用于闭源 fork；价格联系销售。"
+          },
+          {
+            "label": "Rate Limit 与并发",
+            "value": "按团队的 rate limit（请求/分钟）限制请求量；并发浏览器上限（按 plan 2 / 5 / 25 / 50 / 100+）限制并行任务。任一超限返回 429。`GET /v2/queue/status` 返回当前可用度。最大队列任务数：Free / Hobby / Standard 50,000、Growth 100,000、Scale / Enterprise 200,000+。队列中任务最多等待 48h 后超时。"
+          }
+        ]
+      },
+      {
+        "title": "🕸️ Web Scraping at Production Scale",
+        "titleZh": "🕸️ 生产级 Web 抓取能力",
+        "type": "text",
+        "text": "Firecrawl positions itself as the scraping layer for the agent era. Where raw HTML scraping breaks on JS-rendered SPAs, login-walled pages, and bot detection, Firecrawl bundles nine v2 endpoints behind one credit system: Scrape, Crawl, Map, Search, Batch Scrape, Extract, Interact for Playwright code or prompts, Monitor, and Agent. The v2 JSON mode collapses two-step workflows into one call by embedding an OpenAI schema in the formats array. The self-hosted AGPL-3.0 build gives enterprises a clean path around mainland-China latency. Firecrawl's hosted MCP server exposes Scrape / Search / Parse as native tools for Claude Code / Cursor / Windsurf — the first scraping tool designed for in-agent invocation.",
+        "textZh": "Firecrawl 将自身定位为 agent 时代的抓取层。原生 HTML 抓取在 JS 渲染 SPA、登录墙、Bot 检测面前频繁失效；Firecrawl 将九个 v2 端点装入同一 credit 系统：Scrape 单页格式转换、Crawl 递归整站、Map URL 发现、Search 网页搜索 + scrape 融合、Batch Scrape 显式 URL 列表、Extract LLM 结构化抽取、Interact Playwright 代码或 prompt 驱动浏览器、Monitor 定时 diff、Agent 跨站点研究。v2 JSON Mode 将「scrape → LLM 抽取」两步压缩为一次调用。self-hosted AGPL-3.0 Docker / Kubernetes 构建给企业绕开中国大陆延迟与合规风险。Firecrawl 托管 MCP server 将 Scrape / Search / Parse 暴露为 Claude Code / Cursor / Windsurf 的原生工具。"
+      },
+      {
+        "title": "🌐 Regional Availability & Latency",
+        "titleZh": "🌐 区域可用性与延迟",
+        "type": "text",
+        "text": "Firecrawl's hosted API runs from a single-region base URL at https://api.firecrawl.dev (US, San Francisco) with no documented Asia-Pacific or mainland China routing layer. North American and European production traffic sees single-digit tens of ms first-byte latency; mainland China requires a proxy or transit, with typical 200-400 ms transpacific first-byte latency. For enterprises with mainland China latency or data-residency requirements, the self-hosted AGPL-3.0 Docker / Kubernetes build runs entirely on the customer's infrastructure and removes the transpacific round trip. No ICP-licensed mainland China hosted endpoint as of August 2026, but the MCP server at api.firecrawl.dev/mcp/sse serves Scrape / Search / Parse keyless endpoints globally for evaluation. Agent-friendly onboarding at firecrawl.dev/agent-onboarding/SKILL.md handles CLI / browser auth, API key setup, and capability summary.",
+        "textZh": "Firecrawl 托管 API 运行于 https://api.firecrawl.dev 单一区域基础 URL（美国旧金山），无文档化的亚太或中国大陆路由层。北美与欧洲生产流量首字节延迟低至几十毫秒；中国大陆需代理或中转，托管端点跨太平洋首字节延迟通常 200-400 ms。对有中国大陆延迟或数据驻留要求的企业，自托管 AGPL-3.0 Docker / Kubernetes 构建完全运行在客户自己的基础设施上，免去跨太平洋往返。截至 2026 年 8 月没有 ICP 备案的中国大陆托管端点，但 api.firecrawl.dev/mcp/sse 的 MCP server 在全球范围提供 Scrape / Search / Parse keyless 端点。agent-friendly 接入 firecrawl.dev/agent-onboarding/SKILL.md 单文件覆盖 CLI / 浏览器鉴权、API key 设置、能力摘要。"
+      }
+    ]
   }
 ]

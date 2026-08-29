@@ -1,0 +1,272 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'firecrawl-web-scraping-api-review-2026';
+const date = '2026-08-29';
+const locale = 'en';
+const enTitle = 'Firecrawl API Review 2026: Web Scraping';
+const enDescription = 'Firecrawl v2 review 2026: 9 web scraping endpoints, JSON mode, MCP server, self-hosted, Free 1k credits, $83/mo Standard plan.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = { '@context': 'https://schema.org', '@type': 'Article', headline: enTitle, description: enDescription, datePublished: date, dateModified: date, inLanguage: 'en-US', author: { '@type': 'Organization', name: 'APIRank', url: 'https://apirank.vip' }, publisher: { '@type': 'Organization', name: 'APIRank', logo: { '@type': 'ImageObject', url: 'https://apirank.vip/favicon.svg' }}, mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrl } };
+const breadcrumbJsonLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: 'https://apirank.vip' }, { '@type': 'ListItem', position: 2, name: 'Tutorials', item: 'https://apirank.vip/tutorials' }, { '@type': 'ListItem', position: 3, name: enTitle, item: canonicalUrl }] };
+const faqJsonLd = { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: [
+  { '@type': 'Question', name: 'What is Firecrawl and what does the API do?', acceptedAnswer: { '@type': 'Answer', text: "Firecrawl (firecrawl.dev) is a Y Combinator W23 startup whose entire product is one API for turning the live web into clean LLM-ready data. The v2 API exposes nine endpoints behind one credit system and one API key: Scrape for single-page markdown / HTML / JSON conversion, Crawl for recursive whole-site walks, Map for URL discovery, Search for web search + scrape fusion, Batch Scrape for explicit URL lists, Extract for LLM-driven structured extraction across many URLs, Interact for Playwright code or natural-language browser automation, Monitor for scheduled diff tracking, and Agent for autonomous multi-site research. Base URL https://api.firecrawl.dev/v2 with Bearer-token auth; a hosted MCP server at api.firecrawl.dev/mcp/sse exposes Scrape / Search / Parse as native tools for Claude Code / Cursor / Windsurf." } },
+  { '@type': 'Question', name: 'How much does the Firecrawl API cost?', acceptedAnswer: { '@type': 'Answer', text: "Firecrawl uses credit-based billing, not per-token metering. Verified against firecrawl.dev/pricing + docs.firecrawl.dev/billing.md (2026-08-29): Free 1k credits/mo at $0 (no credit card); Hobby 5k at $19/mo ($16/mo billed yearly); Standard 100k at $83/mo (yearly) or $99/mo (monthly); Growth 500k at $333/mo (yearly) or $399/mo (monthly); Scale 1M at $599/mo; Enterprise custom. Per-call credit costs: Scrape / Crawl / Map 1 cr/page, Search 2 cr/10 results (rounded up), Batch Scrape 1 cr/URL, Monitor 1 cr/page/check, Interact 2 cr/minute (Playwright code) or 7 cr/minute (prompt-driven, 1-minute minimum), Agent 5 daily runs free then dynamic usage-based pricing." } },
+  { '@type': 'Question', name: 'What is Firecrawl JSON mode and how does it work?', acceptedAnswer: { '@type': 'Answer', text: "JSON mode is a v2 API change that collapses the two-step scrape then LLM extract workflow into one call. The v1 jsonOptions parameter is gone; instead, embed an OpenAI-format schema directly in the formats array as formats: [{type: “json”, schema: {type: “object”, properties: {...}, required: [...]}}]. The OpenAI tool-call schema works verbatim. The response returns {success: true, data: {...}} where data already conforms to the schema — no second LLM call, no schema mapping glue code. For single-URL extraction use JSON mode; for multi-URL / URL-pattern extraction use Extract or Agent." } },
+  { '@type': 'Question', name: 'Is Firecrawl self-hostable?', acceptedAnswer: { '@type': 'Answer', text: "Yes under AGPL-3.0. The official Docker image and Kubernetes manifests live at github.com/firecrawl/firecrawl with Bring-Your-Own-Database (Postgres / Redis) and Bring-Your-Own-Queue support. Enterprise customers can purchase a commercial license for closed-source forks and proprietary redistribution. Self-hosting is the cleanest path around mainland-China latency and data-residency gaps — the entire pipeline (scrape, crawl, monitor, browser sandbox) runs inside the customer's VPC without the transpacific round trip." } },
+  { '@type': 'Question', name: 'Does Firecrawl have a free tier?', acceptedAnswer: { '@type': 'Answer', text: "Yes — 1,000 credits per month, no credit card required. The Free tier includes full access to Scrape / Crawl / Map / Search / Batch Scrape / JSON mode and every other endpoint except enterprise-only features; 2 concurrent browsers and a 50,000 max queued jobs ceiling. Agent gives 5 daily free runs on every plan including Free. Credits reset at the start of each month and do not roll over. The Free tier is enough to validate a single-domain pipeline and decide whether the credit cost model fits your usage pattern." } },
+  { '@type': 'Question', name: 'How does Firecrawl compare to Apify and Browse AI?', acceptedAnswer: { '@type': 'Answer', text: "Firecrawl, Apify, and Browse AI all serve the web-scraping use case but with different design points. Firecrawl is the first scraping API designed for in-agent invocation — nine v2 endpoints, JSON mode with OpenAI-format schema inline, MCP server with keyless Scrape / Search / Parse, self-hosted AGPL-3.0 build, and a permanent Free tier. Apify has a marketplace of prebuilt Actors for specific sites and is stronger on structured extraction workflows but more expensive per task and weaker on the JSON-mode / MCP-server story. Browse AI overlaps with Apify on the structured extraction side. For teams that need both, the two APIs compose cleanly — Firecrawl for the generic pipeline and MCP-driven agent work, Apify for site-specific Actor libraries." } },
+  { '@type': 'Question', name: 'What is the Firecrawl MCP server?', acceptedAnswer: { '@type': 'Answer', text: "The Firecrawl MCP server exposes Scrape / Search / Parse as native MCP tools for Claude Code / Cursor / Windsurf. Three integration patterns: (1) keyless MCP at https://api.firecrawl.dev/mcp/sse without an API key (low rate limits, ideal for evaluation); (2) full MCP via `npx -y firecrawl-mcp-server` with FIRECRAWL_API_KEY for full rate limits; (3) self-hosted MCP pointing at a local Firecrawl Docker instance. The official SKILL.md onboarding at firecrawl.dev/agent-onboarding/SKILL.md handles CLI / browser auth, API key setup, and a capability summary. For agent platforms that can mint a WorkOS ID-JAG, the auth path is documented at firecrawl.dev/auth.md." } },
+  { '@type': 'Question', name: 'Does Firecrawl work from mainland China?', acceptedAnswer: { '@type': 'Answer', text: "The hosted api.firecrawl.dev runs from a single US-region base URL with no documented Asia-Pacific or mainland China routing layer. Mainland China production traffic sees typical 200-400 ms transpacific first-byte latency. For evaluation, the Free tier's 1,000 credits work behind a proxy. For stable production traffic, the cleanest path is self-hosting the AGPL-3.0 Docker / Kubernetes build (github.com/firecrawl/firecrawl) — the entire pipeline runs inside the customer's VPC without the transpacific round trip. No ICP-licensed mainland China hosted endpoint as of August 2026." } }
+] };
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${enTitle}</h1>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Firecrawl</strong> (firecrawl.dev) is a Y Combinator W23 startup whose entire product is one API for turning the live web into clean LLM-ready data. Where BeautifulSoup and Cheerio break on every JS-rendered SPA, login-walled page, and bot-detection trigger, Firecrawl ships <strong>nine v2 endpoints</strong> behind one credit system and one API key: <strong>Scrape</strong> for single-page markdown / HTML / JSON conversion, <strong>Crawl</strong> for recursive whole-site walks, <strong>Map</strong> for URL discovery, <strong>Search</strong> for web search + scrape fusion, <strong>Batch Scrape</strong> for explicit URL lists, <strong>Extract</strong> for LLM-driven structured extraction across many URLs, <strong>Interact</strong> for Playwright code or natural-language browser automation, <strong>Monitor</strong> for scheduled diff tracking, and <strong>Agent</strong> for autonomous multi-site research. For an engineer building a web-aware agent in August 2026, Firecrawl matters because it collapses the scrape + parse + extract pipeline into one HTTP call and exposes the whole stack as an MCP server that Claude Code / Cursor / Windsurf can drive directly. See the full <a href="/providers/firecrawl">Firecrawl provider page</a> for the structured comparison table.</p>
+
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>🌍 Quick take:</strong> Firecrawl is the first web-scraping API designed for in-agent invocation. The v2 JSON mode collapses the two-step "scrape then LLM extract" workflow into one call by embedding an OpenAI-format schema directly in the <code>formats</code> array. maxAge page cache defaults to 2 days for millisecond returns on cache hits. The self-hosted AGPL-3.0 Docker / Kubernetes build gives enterprises a clean path around mainland-China latency and compliance. Free tier with no credit card: 1,000 credits/month + 5 daily Agent runs. No mainland China hosted endpoint.</div>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What Firecrawl is, and why its API matters in 2026</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl is the public API of <strong>Firecrawl, Inc.</strong>, a Y Combinator W23 startup whose founding premise is that every web-aware AI agent eventually needs the same scraping pipeline and that pipeline should not be rebuilt per project. Where OpenAI's <a href="/tutorials/openai-gpt-red-api-security-2026">GPT API</a> and Anthropic's <a href="/tutorials/anthropic-claude-api-review">Claude API</a> optimize for general chat reasoning and Fireworks / Together / DeepInfra optimize for LLM inference cost, Firecrawl optimizes for the four operations a web agent does on every turn:</p>
+
+<ol class="list-decimal list-inside text-gray-700 space-y-2 my-4">
+<li><strong>Scrape</strong> a single URL — convert HTML to markdown, JSON, or structured data (JSON mode).</li>
+<li><strong>Crawl</strong> an entire website — recursively walk from a starting URL to the configured depth.</li>
+<li><strong>Search</strong> the web — search-engine-style query that optionally scrapes the top results in the same call.</li>
+<li><strong>Monitor</strong> a URL / website / web-scale search — schedule recurring checks and notify on diff.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">Behind those four primary operations sit five complementary endpoints. <strong>Map</strong> lists every URL on a website without scraping content (useful for sitemap discovery and crawl planning). <strong>Batch Scrape</strong> accepts an explicit URL list and returns all results in one concurrent job (sync + async modes). <strong>Extract</strong> is the LLM-driven structured-extraction endpoint for many URLs / URL patterns — the batch sibling of the single-URL JSON mode. <strong>Interact</strong> provides a browser sandbox for Playwright code or natural-language prompts — login-walled pages, JS-rendered SPAs, form fills, end-to-end web tests. <strong>Agent</strong> runs autonomous research across multiple sites, optionally returning a JSON schema; 5 daily runs are free on every plan.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The other reason Firecrawl keeps showing up in 2026 agent builds: the v2 <strong>JSON mode</strong> collapses the canonical two-step scrape-extract pipeline into one call. The v1 API had a separate <code>jsonOptions</code> parameter that lived outside the formats array; the v2 API removed it and lets you embed an OpenAI-format schema directly in <code>formats: [{type: "json", schema: {...}}]</code>. The response returns <code>{success: true, data: {...}}</code> with <code>data</code> already conforming to the schema — no second LLM call, no second parsing layer, no schema mapping glue code.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Firecrawl v2 product lineup</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl ships nine v2 endpoints, each with a clearly bounded use case. The headline matrix:</p>
+
+<table class="table-token min-w-full bg-white border border-gray-200 my-4">
+<thead>
+<tr class="bg-gray-50"><th class="px-3 py-2 text-left">Endpoint</th><th class="px-3 py-2 text-left">Method</th><th class="px-3 py-2 text-left">Path</th><th class="px-3 py-2 text-left">Credit Cost</th></tr>
+</thead>
+<tbody>
+<tr><td class="px-3 py-2"><strong>Scrape</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/scrape</td><td class="px-3 py-2">1 / page</td></tr>
+<tr><td class="px-3 py-2"><strong>Crawl</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/crawl</td><td class="px-3 py-2">1 / page scraped</td></tr>
+<tr><td class="px-3 py-2"><strong>Map</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/map</td><td class="px-3 py-2">1 / call</td></tr>
+<tr><td class="px-3 py-2"><strong>Search</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/search</td><td class="px-3 py-2">2 / 10 results (rounded up)</td></tr>
+<tr><td class="px-3 py-2"><strong>Batch Scrape</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/batch/scrape</td><td class="px-3 py-2">1 / URL (sync + async modes)</td></tr>
+<tr><td class="px-3 py-2"><strong>Extract</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/extract</td><td class="px-3 py-2">1 / URL (LLM-driven)</td></tr>
+<tr><td class="px-3 py-2"><strong>Interact</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/interact</td><td class="px-3 py-2">2-7 / browser minute (1-min minimum)</td></tr>
+<tr><td class="px-3 py-2"><strong>Monitor</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/monitor</td><td class="px-3 py-2">1 / page / check</td></tr>
+<tr><td class="px-3 py-2"><strong>Agent</strong></td><td class="px-3 py-2">POST</td><td class="px-3 py-2">/v2/agent</td><td class="px-3 py-2">5 daily runs free, dynamic beyond</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">On top of the v2 endpoints, Firecrawl ships the JSON mode format spec for v2 /scrape: <code>formats: [{type: "json", schema: {type: "object", properties: {title: {type: "string"}}, required: ["title"]}}]</code>. The schema is OpenAI's tool-call JSON schema verbatim — no translation layer. Returned data satisfies the schema inline, eliminating the second LLM call that v1 forced. For the single-URL extract workflow (one URL, one schema, one call), JSON mode is the right tool. For anything beyond a single URL, Extract or Agent handle the multi-URL case.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The <strong>MCP server</strong> exposure is what makes Firecrawl unique among scraping tools. <code>npx -y firecrawl-mcp-server</code> registers Scrape / Search / Parse as native MCP tools in Claude Code / Cursor / Windsurf; the hosted MCP keyless endpoint at <code>https://api.firecrawl.dev/mcp/sse</code> exposes the same three tools without an API key (low rate limits, ideal for evaluation). When the agent needs to scrape the page it is currently looking at, the call goes through Firecrawl without leaving the agent loop. The official SKILL.md onboarding at <code>firecrawl.dev/agent-onboarding/SKILL.md</code> handles CLI / browser auth, API key setup, and a capability summary in a single file.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Firecrawl pricing: credits, not tokens</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl is the only major scraping API that uses a credit-based plan system, not per-call metering at the per-token level. Every API call consumes a fixed number of credits (1 credit per Scrape / Crawl / Map / Batch URL / Monitor page, 2 credits per 10 Search results, 2-7 credits per Interact browser-minute, Agent free 5 times/day). Credits reset at the start of every billing cycle and do not roll over. Extra credits are sold in $5 packs (1k / 2k / 2.5k / 5k credits depending on plan).</p>
+
+<table class="table-token min-w-full bg-white border border-gray-200 my-4">
+<thead>
+<tr class="bg-gray-50"><th class="px-3 py-2 text-left">Plan</th><th class="px-3 py-2 text-left">Monthly Credits</th><th class="px-3 py-2 text-left">Concurrent Browsers</th><th class="px-3 py-2 text-left">Monthly Price (Yearly)</th><th class="px-3 py-2 text-left">Extra Credit Pack</th></tr>
+</thead>
+<tbody>
+<tr><td class="px-3 py-2"><strong>Free</strong></td><td class="px-3 py-2">1,000</td><td class="px-3 py-2">2</td><td class="px-3 py-2">$0 (no card)</td><td class="px-3 py-2">—</td></tr>
+<tr><td class="px-3 py-2"><strong>Hobby</strong></td><td class="px-3 py-2">5,000</td><td class="px-3 py-2">5</td><td class="px-3 py-2">$16/mo ($19/mo monthly)</td><td class="px-3 py-2">$5 / 1,000 credits</td></tr>
+<tr><td class="px-3 py-2"><strong>Standard</strong></td><td class="px-3 py-2">100,000</td><td class="px-3 py-2">25</td><td class="px-3 py-2">$83/mo ($99/mo monthly)</td><td class="px-3 py-2">$5 / 2,000 credits</td></tr>
+<tr><td class="px-3 py-2"><strong>Growth</strong></td><td class="px-3 py-2">500,000</td><td class="px-3 py-2">50</td><td class="px-3 py-2">$333/mo ($399/mo monthly)</td><td class="px-3 py-2">$5 / 2,500 credits</td></tr>
+<tr><td class="px-3 py-2"><strong>Scale</strong></td><td class="px-3 py-2">1,000,000</td><td class="px-3 py-2">100</td><td class="px-3 py-2">$599/mo</td><td class="px-3 py-2">$5 / 5,000 credits</td></tr>
+<tr><td class="px-3 py-2"><strong>Enterprise</strong></td><td class="px-3 py-2">Custom</td><td class="px-3 py-2">100+</td><td class="px-3 py-2">Contact sales</td><td class="px-3 py-2">Custom + ZDR Search</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">Effective per-credit rates on the yearly plans: Hobby ~$0.0032, Standard ~$0.00083, Growth ~$0.000666, Scale ~$0.000599. Free is genuinely free — no credit card, 1,000 credits/month, and the Agent's 5 daily free runs apply even on Free. The Standard plan at $83/mo with 100k credits is the practical sweet spot for production RAG and crawl workloads; the Free plan is enough to validate a single-domain pipeline and decide whether the credit cost model fits your usage pattern.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Two features worth highlighting on the Enterprise tier: <strong>Zero-Data-Retention (ZDR) Search</strong>, which lets enterprise customers opt out of having search queries and result URLs logged for retention beyond the request lifetime; and <strong>SIEM audit logging</strong>, which streams a structured event to the customer's SIEM (starting with Microsoft Sentinel) for every scrape the team runs. IP restrictions (allowlist of CIDR ranges) and per-key endpoint / output-format restrictions are also enforced server-side on Enterprise — useful for compliance teams that need to lock an API key to specific output formats.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">How the Firecrawl API actually works</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The v2 API base URL is <code>https://api.firecrawl.dev/v2</code> with a <code>Bearer</code> token issued from the Firecrawl dashboard. Every endpoint accepts the same <code>Authorization</code> header and returns JSON. The SDKs (Python <code>pip install firecrawl</code>, Node <code>npm install firecrawl</code>) wrap the raw HTTP endpoints so most callers never touch <code>curl</code>.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Scrape (single URL) — the canonical call:</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code>// JavaScript / Node SDK
+import Firecrawl from 'firecrawl-js';
+
+const fc = new Firecrawl({ apiKey: process.env.FIRECRAWL_API_KEY });
+
+const result = await fc.scrape('https://docs.firecrawl.dev', {
+  formats: [
+    { type: 'markdown' },
+    { type: 'json', schema: {
+      type: 'object',
+      properties: {
+        title: { type: 'string' },
+        version: { type: 'string' }
+      },
+      required: ['title']
+    } }
+  ],
+  maxAge: 3600000,           // accept cache up to 1 hour old
+  onlyMainContent: true      // strip nav, footer, sidebar
+});
+
+console.log(result.data);    // { success: true, markdown: '...', json: { title: '...', version: '...' } }
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The <code>maxAge</code> parameter controls cache freshness — default 172800000 ms (2 days); cache hits return in milliseconds. <code>maxAge: 0</code> forces a fresh scrape; <code>storeInCache: false</code> returns the page but does not persist it. For RAG pipelines that re-scrape the same docs hourly, the cache is the difference between millisecond and multi-second response times.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Batch Scrape (sync mode):</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code>// Python SDK — sync batch
+from firecrawl import Firecrawl
+
+fc = Firecrawl(api_key='fc-...')
+
+batch = fc.batch_scrape(
+    urls=[
+        'https://docs.firecrawl.dev/scrape',
+        'https://docs.firecrawl.dev/crawl',
+        'https://docs.firecrawl.dev/agent'
+    ],
+    formats=['markdown'],
+    max_age=86400000  # 24h cache
+)
+print(batch.data)  # { status: 'completed', completed: 3, total: 3, data: [...] }
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Async mode accepts the same call but returns immediately with <code>{id, status: 'queued'}</code>; poll <code>/v2/batch/scrape/:id</code> or register a webhook for completion. All scrape options (formats, JSON schema, headers, maxAge, onlyMainContent) pass through to each URL. The default job timeout in the concurrency queue is 48 hours.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Interact (browser automation):</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code>// cURL — prompt-driven browser session
+curl -X POST https://api.firecrawl.dev/v2/interact \
+  -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com/login",
+    "prompt": "click the login button, fill email@example.com into the email field, click submit, then scrape the resulting dashboard"
+  }'
+# Returns: { success, code, execution_logs, interactive_screenshot, captures: [...] }
+# Cost: 7 credits / browser minute, 1-minute minimum
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Interact accepts either <code>code</code> (Playwright code, 2 credits/minute) or <code>prompt</code> (natural-language description, 7 credits/minute). Each session bills a 1-minute minimum even for sub-second probe runs. The session returns an <code>interactive_screenshot</code> plus the resulting <code>captures</code> array — useful for login-walled scraping, JS-rendered SPAs, end-to-end form testing.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Agent (autonomous multi-site research):</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4"><code>// Node SDK — agent with JSON schema output
+const result = await fc.agent({
+  prompt: 'Find the current API pricing for the top 3 LLM providers (OpenAI, Anthropic, Google) and return as JSON',
+  schema: {
+    type: 'object',
+    properties: {
+      providers: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            flagship_model: { type: 'string' },
+            input_price: { type: 'string' },
+            output_price: { type: 'string' }
+          }
+        }
+      }
+    }
+  }
+});
+
+// 5 daily runs free on every plan (Free / Hobby / Standard / Growth / Scale)
+// usage-based dynamic pricing beyond
+</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Agent composes with Extract for multi-URL structured research: use Agent to discover the URLs, then Extract with a JSON schema to pull structured fields. The 5-daily-free quota applies on every plan including Free, so evaluation workflows can run a useful multi-site research pipeline before committing to a paid tier.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Claude Code, Cursor, and Windsurf integration via MCP</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl's hosted MCP server at <code>https://api.firecrawl.dev/mcp/sse</code> exposes Scrape / Search / Parse as native MCP tools. Three integration patterns:</p>
+
+<ol class="list-decimal list-inside text-gray-700 space-y-2 my-4">
+<li><strong>Keyless MCP (low rate limits)</strong> — point Claude Code / Cursor at the hosted MCP endpoint without an API key. Scrape / Search / Parse work; rate limits are tightest.</li>
+<li><strong>API-key MCP (full rate limits)</strong> — register the MCP server with <code>npx -y firecrawl-mcp-server</code> and supply <code>FIRECRAWL_API_KEY</code>. All endpoints and full rate limits.</li>
+<li><strong>Self-hosted MCP</strong> — run the Firecrawl Docker image locally and point MCP at the local URL; eliminates transpacific latency for mainland China agents and removes the data-residency gap.</li>
+</ol>
+
+<p class="text-gray-700 leading-relaxed my-4">When the agent needs to scrape the page it is currently looking at, the call goes through Firecrawl without leaving the agent loop — the MCP tool surface handles the auth, the retry-on-429, the maxAge cache, and the format conversion. This is the design point that differentiates Firecrawl from earlier scraping APIs: it is built for in-agent invocation, not for batch ETL pipelines run from a separate worker.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For agent platforms that can mint a WorkOS ID-JAG for Firecrawl (verified auth delegation tokens), the auth path is simpler: <code>https://www.firecrawl.dev/auth.md</code> describes the flow and the WorkOS ID-JAG minting endpoint. The official SKILL.md onboarding at <code>firecrawl.dev/agent-onboarding/SKILL.md</code> handles the standard CLI / browser auth path, the API key setup, and a capability summary in a single file.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Firecrawl vs Apify, Browse AI, Zyte, and the other scraping APIs</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The scraping API market in August 2026 has four meaningful categories. Where Firecrawl fits in:</p>
+
+<ul class="list-disc list-inside text-gray-700 space-y-2 my-4">
+<li><strong>Direct HTML scraping (BeautifulSoup, Cheerio, Requests, Scrapy):</strong> free, fast on static sites, but breaks on every JS SPA, login wall, and bot-detection trigger. Firecrawl replaces this for any non-trivial site.</li>
+<li><strong>Browser-automation-as-a-service (Browserbase, Steel, Anchor Browser):</strong> a managed Chromium that you drive with Playwright code. Lower-level than Firecrawl — you handle the scrape, parse, and extract pipeline yourself. Interact in Firecrawl overlaps with this category but bundles the parse / extract layer too.</li>
+<li><strong>Headless scrapers (Apify, Browse AI, Zyte):</strong> stronger on structured data extraction, marketplace of prebuilt scrapers (Apify Actors), but more expensive per task and weaker on the multi-format JSON mode + MCP server story. Firecrawl's pricing is simpler (1 credit / page) and the JSON mode collapses the scrape + extract steps.</li>
+<li><strong>Firecrawl:</strong> the first scraping API designed for in-agent invocation. Nine v2 endpoints under one credit system, JSON mode with OpenAI-format schema inline, MCP server with keyless Scrape / Search / Parse, self-hosted AGPL-3.0 Docker / Kubernetes for enterprises. Free tier with no credit card.</li>
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The honest frame for Firecrawl in August 2026: this is <strong>not</strong> a drop-in replacement for Apify if your team has built a large library of Apify Actors for specific sites. Firecrawl is the right tool when the scrape pipeline is generic (any URL → clean markdown / JSON) and the agent needs the call to happen from inside its tool loop. For teams that need both, the two APIs compose cleanly — Firecrawl for the generic pipeline and MCP-driven agent work, Apify for site-specific Actor libraries.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">China access, mainland China latency, and the regional story</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl's hosted API runs from a single-region base URL at <code>https://api.firecrawl.dev</code> (US, San Francisco) with no documented Asia-Pacific or mainland China routing layer. North American and European production traffic sees single-digit tens of ms first-byte latency; mainland China requires a proxy or transit, with typical 200-400 ms transpacific first-byte latency on the hosted endpoint. The Free tier's 1,000 credits work behind a proxy for evaluation, but stable production traffic should either run a self-hosted Firecrawl deployment (Docker / Kubernetes) or sit behind a corporate proxy.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For enterprises with mainland China latency or data-residency requirements, the self-hosted AGPL-3.0 Docker / Kubernetes build at <code>github.com/firecrawl/firecrawl</code> runs entirely on the customer's infrastructure and removes the transpacific round trip. The build supports Bring-Your-Own-Database (Postgres / Redis) and Bring-Your-Own-Queue, so the entire pipeline — including the page cache and the Browserbase / Steel Interact backend — can run inside the customer's VPC. No ICP-licensed mainland China hosted endpoint as of August 2026, but the hosted MCP server at <code>api.firecrawl.dev/mcp/sse</code> serves Scrape / Search / Parse keyless endpoints globally at the lowest rate-limit tier for evaluation.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Who should use Firecrawl in 2026?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl fits cleanly into five engineering workflows in August 2026:</p>
+
+<ul class="list-disc list-inside text-gray-700 space-y-2 my-4">
+<li><strong>RAG engineers</strong> who need to turn entire sites or large URL batches into clean markdown. The 2-day maxAge page cache and the JSON mode schema extraction collapse the most common RAG scrape + extract pipeline into one Firecrawl call.</li>
+<li><strong>Agent teams building web-scale monitors</strong> for compliance, pricing, news, hiring, or product-page diffs. Monitor's three target types (Page / Website / Web-scale) cover the recurring-check use case end-to-end with webhook + email + Slack notifications.</li>
+<li><strong>Product teams driving browsers via natural-language prompts</strong> for end-to-end web tests, form fills, or login-session interactions. Interact at 7 credits/minute (prompt-driven) or 2 credits/minute (Playwright code) handles the JS-rendered SPA and login-walled page cases that pure scrape cannot.</li>
+<li><strong>Agent developers</strong> who want to scrape the current page from inside Claude Code / Cursor / Windsurf via <code>firecrawl-mcp-server</code>. The MCP integration is the design point that makes Firecrawl unique among scraping tools.</li>
+<li><strong>Enterprises constrained by mainland China latency or compliance</strong> — self-host the Firecrawl Docker / Kubernetes image, keep all data inside the VPC, remove the transpacific round trip.</li>
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verdict</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Firecrawl is the scraping layer for the agent era. Nine v2 endpoints behind one credit system, JSON mode that collapses the scrape + extract pipeline into one call, maxAge page cache for millisecond returns on cache hits, MCP server with keyless Scrape / Search / Parse for in-agent invocation, and a self-hosted AGPL-3.0 Docker / Kubernetes build for enterprises that need to run the entire stack on their own infrastructure. The pricing is genuinely competitive — Free with no credit card, Hobby at $19/mo, Standard at $83/mo for 100k credits — and the per-credit effective rates on the Standard plan (~$0.00083) put Firecrawl at the cheapest mainstream scraping API in the credit-based billing tier.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For teams building web-aware agents that need to scrape the current page from inside the agent loop, Firecrawl is the most direct single-vendor answer in August 2026. The MCP server integration is the design point that no other scraping API matches. For teams that have built large libraries of site-specific Apify Actors, Firecrawl is a complement rather than a replacement — use Firecrawl for the generic pipeline and MCP-driven agent work, Apify for site-specific Actor libraries. For enterprises that need mainland China latency or data residency, self-host the Docker / Kubernetes image and the transpacific round trip disappears.</p>
+`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} zhCanonicalUrl={zhCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="lg:grid lg:grid-cols-[1fr_300px] lg:gap-8">
+      <div class="lg:col-span-2 space-y-8">
+        <nav class="text-sm text-gray-500 mb-2"><a href="/" class="hover:underline">Home</a> &rsaquo; <a href="/tutorials" class="hover:underline">Tutorials</a> &rsaquo; <span class="text-gray-700">{enTitle}</span></nav>
+        <div set:html={enBody} />
+      </div>
+      <aside class="space-y-6 mt-8 lg:mt-0">
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <h3 class="font-semibold text-gray-900 mb-2">Quick Reference</h3>
+          <ul class="text-sm text-gray-700 space-y-1">
+            <li><strong>Vendor:</strong> Firecrawl, Inc. (YC W23)</li>
+            <li><strong>Endpoints:</strong> 9 v2 (Scrape / Crawl / Map / Search / Batch / Extract / Interact / Monitor / Agent)</li>
+            <li><strong>JSON mode:</strong> v2 /scrape with formats: [{type: "json", schema: {...}}]</li>
+            <li><strong>maxAge cache:</strong> default 2 days (172800000 ms)</li>
+            <li><strong>MCP server:</strong> api.firecrawl.dev/mcp/sse (keyless)</li>
+            <li><strong>Free:</strong> 1k credits/mo, no credit card</li>
+            <li><strong>Standard:</strong> $83/mo (100k credits)</li>
+            <li><strong>China:</strong> proxy required; self-host for prod</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </main>
+</BaseLayout>
