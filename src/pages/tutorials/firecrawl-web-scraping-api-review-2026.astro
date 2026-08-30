@@ -41,7 +41,7 @@ const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${enTitle
 
 <p class="text-gray-700 leading-relaxed my-4">Behind those four primary operations sit five complementary endpoints. <strong>Map</strong> lists every URL on a website without scraping content (useful for sitemap discovery and crawl planning). <strong>Batch Scrape</strong> accepts an explicit URL list and returns all results in one concurrent job (sync + async modes). <strong>Extract</strong> is the LLM-driven structured-extraction endpoint for many URLs / URL patterns — the batch sibling of the single-URL JSON mode. <strong>Interact</strong> provides a browser sandbox for Playwright code or natural-language prompts — login-walled pages, JS-rendered SPAs, form fills, end-to-end web tests. <strong>Agent</strong> runs autonomous research across multiple sites, optionally returning a JSON schema; 5 daily runs are free on every plan.</p>
 
-<p class="text-gray-700 leading-relaxed my-4">The other reason Firecrawl keeps showing up in 2026 agent builds: the v2 <strong>JSON mode</strong> collapses the canonical two-step scrape-extract pipeline into one call. The v1 API had a separate <code>jsonOptions</code> parameter that lived outside the formats array; the v2 API removed it and lets you embed an OpenAI-format schema directly in <code>formats: [{`{type: "json", schema: {...}}`}]</code>. The response returns <code>{`{success: true, data: {...}}`}</code> with <code>data</code> already conforming to the schema — no second LLM call, no second parsing layer, no schema mapping glue code.</p>
+<p class="text-gray-700 leading-relaxed my-4">The other reason Firecrawl keeps showing up in 2026 agent builds: the v2 <strong>JSON mode</strong> collapses the canonical two-step scrape-extract pipeline into one call. The v1 API had a separate <code>jsonOptions</code> parameter that lived outside the formats array; the v2 API removed it and lets you embed an OpenAI-format schema directly in <code is:raw>ts: [{`{type: "json", schema: {...}}`}]</code>. The response returns <code is:raw>{`{success: true, data: {...}}`}</code> with <code>data</code> already conforming to the schema — no second LLM call, no second parsing layer, no schema mapping glue code.</p>
 
 <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The Firecrawl v2 product lineup</h2>
 
@@ -64,7 +64,7 @@ const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">${enTitle
 </tbody>
 </table>
 
-<p class="text-gray-700 leading-relaxed my-4">On top of the v2 endpoints, Firecrawl ships the JSON mode format spec for v2 /scrape: <code>formats: [{`{type: "json", schema: {type: "object", properties: {title: {type: "string"}}, required: ["title"]}}`}{`{type: "object", properties: {title: {type: "string"}}, required: ["title"]}`}}]</code>. The schema is OpenAI's tool-call JSON schema verbatim — no translation layer. Returned data satisfies the schema inline, eliminating the second LLM call that v1 forced. For the single-URL extract workflow (one URL, one schema, one call), JSON mode is the right tool. For anything beyond a single URL, Extract or Agent handle the multi-URL case.</p>
+<p class="text-gray-700 leading-relaxed my-4">On top of the v2 endpoints, Firecrawl ships the JSON mode format spec for v2 /scrape: <code is:raw>ts: [{`{type: "json", schema: {type: "object", properties: {title: {type: "string"}}, required: ["title"]}}`}{`{type: "object", properties: {title: {type: "string"}}, required: ["title"]}`}}]</code>. The schema is OpenAI's tool-call JSON schema verbatim — no translation layer. Returned data satisfies the schema inline, eliminating the second LLM call that v1 forced. For the single-URL extract workflow (one URL, one schema, one call), JSON mode is the right tool. For anything beyond a single URL, Extract or Agent handle the multi-URL case.</p>
 
 <p class="text-gray-700 leading-relaxed my-4">The <strong>MCP server</strong> exposure is what makes Firecrawl unique among scraping tools. <code>npx -y firecrawl-mcp-server</code> registers Scrape / Search / Parse as native MCP tools in Claude Code / Cursor / Windsurf; the hosted MCP keyless endpoint at <code>https://api.firecrawl.dev/mcp/sse</code> exposes the same three tools without an API key (low rate limits, ideal for evaluation). When the agent needs to scrape the page it is currently looking at, the call goes through Firecrawl without leaving the agent loop. The official SKILL.md onboarding at <code>firecrawl.dev/agent-onboarding/SKILL.md</code> handles CLI / browser auth, API key setup, and a capability summary in a single file.</p>
 
@@ -141,7 +141,7 @@ batch = fc.batch_scrape(
 print(batch.data)  # { status: 'completed', completed: 3, total: 3, data: [...] }
 </code></pre>
 
-<p class="text-gray-700 leading-relaxed my-4">Async mode accepts the same call but returns immediately with <code>{id, status: 'queued'}</code>; poll <code>/v2/batch/scrape/:id</code> or register a webhook for completion. All scrape options (formats, JSON schema, headers, maxAge, onlyMainContent) pass through to each URL. The default job timeout in the concurrency queue is 48 hours.</p>
+<p class="text-gray-700 leading-relaxed my-4">Async mode accepts the same call but returns immediately with <code is:raw>{id, status: 'queued'}</code>; poll <code>/v2/batch/scrape/:id</code> or register a webhook for completion. All scrape options (formats, JSON schema, headers, maxAge, onlyMainContent) pass through to each URL. The default job timeout in the concurrency queue is 48 hours.</p>
 
 <p class="text-gray-700 leading-relaxed my-4"><strong>Interact (browser automation):</strong></p>
 
@@ -258,7 +258,7 @@ const result = await fc.agent({
           <ul class="text-sm text-gray-700 space-y-1">
             <li><strong>Vendor:</strong> Firecrawl, Inc. (YC W23)</li>
             <li><strong>Endpoints:</strong> 9 v2 (Scrape / Crawl / Map / Search / Batch / Extract / Interact / Monitor / Agent)</li>
-            <li><strong>JSON mode:</strong> v2 /scrape with formats: {`[{`{type: "json", schema: {...}}`}]`}</li>
+            <li><strong>JSON mode:</strong> v2 /scrape with formats: {`[{type: "json", schema: {...}}]`}</li>
             <li><strong>maxAge cache:</strong> default 2 days (172800000 ms)</li>
             <li><strong>MCP server:</strong> api.firecrawl.dev/mcp/sse (keyless)</li>
             <li><strong>Free:</strong> 1k credits/mo, no credit card</li>
