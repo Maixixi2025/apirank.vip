@@ -17843,5 +17843,195 @@
         "textZh": "Firecrawl 托管 API 运行于 https://api.firecrawl.dev 单一区域基础 URL（美国旧金山），无文档化的亚太或中国大陆路由层。北美与欧洲生产流量首字节延迟低至几十毫秒；中国大陆需代理或中转，托管端点跨太平洋首字节延迟通常 200-400 ms。对有中国大陆延迟或数据驻留要求的企业，自托管 AGPL-3.0 Docker / Kubernetes 构建完全运行在客户自己的基础设施上，免去跨太平洋往返。截至 2026 年 8 月没有 ICP 备案的中国大陆托管端点，但 api.firecrawl.dev/mcp/sse 的 MCP server 在全球范围提供 Scrape / Search / Parse keyless 端点。agent-friendly 接入 firecrawl.dev/agent-onboarding/SKILL.md 单文件覆盖 CLI / 浏览器鉴权、API key 设置、能力摘要。"
       }
     ]
+  },
+  {
+    "id": "cloudflare-workers-ai",
+    "name": "Cloudflare Workers AI",
+    "nameCn": "Cloudflare Workers AI",
+    "category": "international",
+    "website": "https://developers.cloudflare.com/workers-ai/",
+    "apiDocs": "https://developers.cloudflare.com/workers-ai/get-started/ REST quickstart",
+    "affiliateUrl": "",
+    "affiliateAvailable": false,
+    "models": [
+      "@cf/zai-org/glm-5.3 — Z.ai 320B MoE coding model (1M ctx, $1.40/$4.40)",
+      "@cf/zai-org/glm-5.3-flash — fast variant ($0.15/$0.50)",
+      "@cf/deepseek-ai/deepseek-v4-pro-0813 — 1M-ctx reasoning ($1.32/$3.96)",
+      "@cf/deepseek-ai/deepseek-v4-flash-0731 — fast reasoning ($0.44/$1.32)",
+      "@cf/moonshotai/kimi-k2.7-code — code-tuned ($0.95/$4.00)",
+      "@cf/openai/gpt-oss-120b — open-source GPT-OSS 120B ($0.35/$0.75)",
+      "@cf/meta/llama-3.3-70b-instruct-fp8-fast — fast Llama ($0.293/$2.253)",
+      "@cf/meta/llama-4-scout-17b-16e-instruct — Llama 4 ($0.270/$0.850)",
+      "@cf/google/gemma-3-12b-it — Gemma 3 12B ($0.345/$0.556)",
+      "@cf/mistralai/mistral-small-3.1-24b-instruct — Mistral Small 3.1 ($0.351/$0.555)",
+      "@cf/ibm/granite-4.0 — IBM Granite 4.0 (text generation)",
+      "@cf/black-forest-labs/flux-1-schnell — image generation",
+      "@cf/openai/whisper — automatic speech recognition",
+      "@cf/microsoft/resnet-50 — image classification"
+    ],
+    "modelCount": 86,
+    "pricing": {
+      "input": "Neurons-based: $0.011 per 1,000 Neurons (after free tier); per-model token prices vary",
+      "output": "Same Neurons billing; token price differs per model — Llama 3.3 70B $0.293/$2.253, GLM-5.3 $1.40/$4.40, DeepSeek V4 Pro $1.32/$3.96, GPT-OSS 120B $0.35/$0.75 per M tokens"
+    },
+    "freeTier": "每天 10,000 Neurons 免费（Workers Free 计划）",
+    "freeTierEN": "10,000 Neurons per day free on Workers Free plan",
+    "paidModel": "Workers Paid：超出免费额度后 $0.011/1000 Neurons，按模型 token 计费；frontier 模型（GLM-5.3/5.3-Flash、DeepSeek V4 Flash/Pro、Kimi K2.6/K2.7-code）需付费方式或 AI Gateway 预付信用",
+    "paidModelEN": "Workers Paid: $0.011 per 1,000 Neurons beyond free tier; per-model token pricing; frontier models (GLM-5.3/Flash, DeepSeek V4 Flash/Pro, Kimi K2.6/K2.7-code) require Workers Paid or prepaid AI Gateway credits",
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": [
+          "Tier",
+          "Daily Free Allowance",
+          "Neuron Rate",
+          "Notes"
+        ],
+        "headersZh": [
+          "层级",
+          "每日免费额度",
+          "Neuron 费率",
+          "备注"
+        ],
+        "rows": [
+          [
+            "Workers Free",
+            "10,000 Neurons / day",
+            "$0",
+            "Generous daily free tier for prototyping; resets at 00:00 UTC; excludes frontier models (GLM-5.3, DeepSeek V4, Kimi K2.6/K2.7-code)"
+          ],
+          [
+            "Workers Paid",
+            "10,000 Neurons / day free + overage billed",
+            "$0.011 per 1,000 Neurons",
+            "Pay-as-you-go; per-model token prices displayed in catalog; frontier models accessible; AI Gateway credits unlock higher rate limits"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "Workers Free",
+            "10,000 Neurons / 天",
+            "$0",
+            "适合原型的每日免费额度；UTC 00:00 重置；不含 frontier 模型（GLM-5.3、DeepSeek V4、Kimi K2.6/K2.7-code）"
+          ],
+          [
+            "Workers Paid",
+            "10,000 Neurons / 天免费 + 超额计费",
+            "$0.011 / 1000 Neurons",
+            "按量计费；模型目录显示各模型 token 价格；可访问 frontier 模型；AI Gateway 预付信用可解锁更高速率限制"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "Workers AI Binding",
+            "value": "Call models directly from a Cloudflare Worker via `env.AI.run(\"@cf/...\", { ... })` with no separate SDK or API key management — the Workers runtime handles auth and routing."
+          },
+          {
+            "label": "REST API",
+            "value": "Every model is also exposed via a plain HTTPS REST endpoint (https://api.cloudflare.com/client/v4/accounts/<id>/ai/run/<model>) so any non-Worker client can hit Workers AI without writing a Worker."
+          },
+          {
+            "label": "OpenAI-Compatible",
+            "value": "An OpenAI-shaped `/v1/chat/completions` endpoint is available (with API-token auth) so existing OpenAI SDK code works after a base-URL change."
+          },
+          {
+            "label": "Streaming",
+            "value": "Server-Sent Events streaming is supported on the Workers binding and REST endpoint, returning incremental tokens for low time-to-first-token UX."
+          },
+          {
+            "label": "Vectorize Integration",
+            "value": "Embeddings models output vectors that can be written directly to Cloudflare Vectorize (or any vector DB) from the same Worker — no intermediate HTTP hop."
+          },
+          {
+            "label": "Edge Network",
+            "value": "Inference runs on Cloudflare's global edge in 300+ cities; the closest GPU-bearing POP serves the request, giving sub-second TTFT for most regions."
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "Workers AI Binding",
+            "value": "通过 Cloudflare Worker 的 `env.AI.run(\"@cf/...\", { ... })` 直接调用模型，无需独立 SDK 或 API 密钥管理——Workers 运行时处理鉴权与路由。"
+          },
+          {
+            "label": "REST API",
+            "value": "每个模型也可通过纯 HTTPS REST 端点（https://api.cloudflare.com/client/v4/accounts/<id>/ai/run/<model>）调用，任何非 Worker 客户端无需编写 Worker 即可使用。"
+          },
+          {
+            "label": "OpenAI 兼容",
+            "value": "提供类 OpenAI 的 `/v1/chat/completions` 端点（API Token 鉴权），现有 OpenAI SDK 代码只需修改 base-URL 即可工作。"
+          },
+          {
+            "label": "流式输出",
+            "value": "Workers binding 与 REST 端点均支持 Server-Sent Events 流式返回分片 token，实现低首 token 延迟体验。"
+          },
+          {
+            "label": "Vectorize 集成",
+            "value": "Embedding 模型产出的向量可直接在同一 Worker 中写入 Cloudflare Vectorize（或任何向量库）——无需中转 HTTP。"
+          },
+          {
+            "label": "边缘网络",
+            "value": "推理运行在 Cloudflare 全球 300+ 城市的边缘节点，最近的 GPU POP 服务请求，多数地区首 token 延迟可达亚秒级。"
+          }
+        ]
+      },
+      {
+        "title": "🎯 Edge Serverless GPU & Frontier Model Catalog",
+        "titleZh": "🎯 边缘无服务器 GPU 与前沿模型目录",
+        "type": "text",
+        "text": "Cloudflare Workers AI is not a hosted model API in the traditional sense — it is serverless GPU compute priced in Cloudflare's own 'Neurons' unit, accessible from any Worker or REST call. The August 2026 catalog spans 86 models across text, embedding, image, and audio, including frontier-tier models that other serverless platforms price as separate SKUs: Z.ai GLM-5.3 at $1.40/$4.40 per million tokens with 1M context (released 2026-08-28), DeepSeek V4 Pro at $1.32/$3.96 with 1M context, Moonshot Kimi K2.7-code at $0.95/$4.00 for code workloads, and OpenAI GPT-OSS 120B at $0.35/$0.75. Per-model granular pricing lets you route small classification jobs to Llama-3.2-1B at fractions of a cent while reserving frontier models for code or long-context tasks.",
+        "textZh": "Cloudflare Workers AI 并不是传统意义上的托管模型 API——它是以 Cloudflare 自有「Neurons」计费的无服务器 GPU 算力，可从任何 Worker 或 REST 调用接入。2026 年 8 月的目录覆盖 86 个模型，涵盖文本、Embedding、图像与音频，其中包括其他无服务器平台需单独定价的前沿模型：Z.ai GLM-5.3 （百万 token $1.40/$4.40、1M 上下文）、DeepSeek V4 Pro（百万 token $1.32/$3.96）、Moonshot Kimi K2.7-code（百万 token $0.95/$4.00，代码负载）、OpenAI GPT-OSS 120B（百万 token $0.35/$0.75）。粒度按模型定价，你可以把小型分类交给 Llama-3.2-1B（成本不到一美分），把前沿模型留给代码或长上下文任务。"
+      },
+      {
+        "title": "🌐 Regional Availability & Latency",
+        "titleZh": "🌐 区域覆盖与延迟",
+        "type": "text",
+        "text": "Workers AI runs inference on Cloudflare's global edge in 300+ cities, so latency from any major region is governed by the nearest GPU-bearing POP rather than a single origin. For North America, Europe, East Asia, and Oceania the typical TTFT is sub-second on small models and 1-2 seconds on 70B+ frontier models. Mainland China is the explicit exception: Cloudflare's network does not currently serve inference traffic from in-China POPs, so mainland clients reach the global edge over the public Internet with variable latency (often 200-600 ms even on small models). Teams serving Chinese users either fall back to a domestic provider (Zhipu, Qwen, Doubao) or accept higher edge latency in exchange for Workers AI's unified billing and curated frontier catalog.",
+        "textZh": "Workers AI 在 Cloudflare 全球 300+ 城市边缘节点运行推理，因此任何主要区域的延迟由最近的 GPU POP 决定，而非单一源区域。对北美、欧洲、东亚与大洋洲，小模型典型 TTFT 处于亚秒级，70B+ 前沿模型在 1-2 秒级。中国大陆是明确例外：Cloudflare 网络目前不通过境内 POP 提供推理流量，大陆客户端需经公共互联网访问全球边缘，延迟不稳定（即便小模型也常达 200-600 ms）。面向中国大陆用户的团队要么回退到国内厂商（智谱、通义、豆包），要么在 Workers AI 统一计费与目录与更高边缘延迟之间做取舍。"
+      }
+    ],
+    "availabilityCN": "❌ 大陆边缘节点不可达（CF 网络在大陆无 GPU POP），需代理访问；适合海外/港澳台/出海业务",
+    "availabilityEN": "❌ Mainland China edge unreachable (CF has no in-China GPU POPs); proxy required; ideal for overseas / HK-MO-TW / outbound-China workloads",
+    "speedRank": 2,
+    "priceRank": 1,
+    "overallRank": 5,
+    "highlights": [
+      "86 个模型目录：LLM / Embedding / 图像 / 音频全覆盖",
+      "每天 10,000 Neurons 免费，无需信用卡",
+      "Neurons 统一计量：$0.011/1000 Neurons，模型 token 价格按目录明码",
+      "前沿模型同价入场：GLM-5.3、DeepSeek V4、Kimi K2.7-code、GPT-OSS 120B",
+      "Cloudflare 边缘 300+ 城市推理，最近 GPU POP 服务",
+      "REST + Workers Binding + OpenAI 兼容 `/v1/chat/completions` 三入口"
+    ],
+    "highlightsEN": [
+      "86-model catalog spanning LLM, embedding, image, and audio",
+      "10,000 Neurons per day free, no credit card required",
+      "Unified Neurons billing: $0.011 per 1,000 Neurons, with per-model token prices visible in the catalog",
+      "Frontier-tier models at parity: GLM-5.3, DeepSeek V4, Kimi K2.7-code, GPT-OSS 120B",
+      "Inference on Cloudflare's 300+ city edge, nearest GPU POP serves the request",
+      "REST + Workers binding + OpenAI-compatible `/v1/chat/completions` — three entry points"
+    ],
+    "cons": [
+      "Workers Free 计划不含 frontier 模型（GLM-5.3、DeepSeek V4、Kimi K2.6/2.7-code）",
+      "中国大陆无 GPU POP，延迟与可达性依赖国际线路",
+      "Neurons 计量对不熟悉的用户不够直觉（需对照 token 价换算）",
+      "Workers Paid 起步 $5/月起，比单纯 API 调用多一项订阅",
+      "模型目录由 Cloudflare 自定，不接受 BYO-model 自托管"
+    ],
+    "consEN": [
+      "Workers Free plan excludes frontier models (GLM-5.3, DeepSeek V4, Kimi K2.6/2.7-code)",
+      "No in-China GPU POP; latency and reachability depend on international routing",
+      "Neurons billing is non-obvious for new users (must cross-reference token pricing)",
+      "Workers Paid requires a $5/month base subscription on top of usage",
+      "Model catalog is curated by Cloudflare — no BYO-model self-hosting"
+    ],
+    "bestFor": "全球边缘部署的 AI 应用；已有 Cloudflare Workers 基础设施的团队；需要前沿模型 + 低运维成本的初创公司；Agent / RAG / 边缘推理场景",
+    "bestForEN": "Globally-deployed AI applications; teams already running on Cloudflare Workers; startups needing frontier models with low operational overhead; agent, RAG, and edge inference workloads"
   }
 ]

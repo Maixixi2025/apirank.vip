@@ -1,0 +1,262 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'cloudflare-workers-ai-api-review-2026';
+const date = '2026-08-31';
+const locale = 'en';
+
+const enTitle = 'Cloudflare Workers AI Review 2026: 86-Model Edge GPU Catalog';
+const enDescription = 'Cloudflare Workers AI review 2026: 86 models on Cloudflare edge GPUs, 10K Neurons/day free, $0.011/1K Neurons, GLM-5.3 $1.40/$4.40, DeepSeek V4 Pro 1M ctx, OpenAI-compatible API.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is Cloudflare Workers AI?", "acceptedAnswer": { "@type": "Answer", "text": "Cloudflare Workers AI is a serverless GPU inference platform that runs on Cloudflare's global edge network. As of August 2026 the catalog lists 86 models across text generation, embeddings, image, and audio — including frontier-tier models like Z.ai GLM-5.3, DeepSeek V4 Pro, Moonshot Kimi K2.7-code, and OpenAI GPT-OSS 120B. You call models from any Cloudflare Worker via `env.AI.run()` or via a plain REST endpoint, and billing is in Cloudflare's own 'Neurons' unit at $0.011 per 1,000 Neurons with 10,000 Neurons/day free." } },
+    { "@type": "Question", "name": "How much does Cloudflare Workers AI cost compared to other inference APIs?", "acceptedAnswer": { "@type": "Answer", "text": "After the free 10,000 Neurons/day allowance, Workers Paid bills usage at $0.011 per 1,000 Neurons. For specific models the catalog shows token-equivalent prices: Llama 3.3 70B at $0.293 input / $2.253 output per million tokens, GLM-5.3 at $1.40 / $4.40, DeepSeek V4 Pro at $1.32 / $3.96, GPT-OSS 120B at $0.35 / $0.75, and Llama 3.2 1B at $0.027 / $0.201. Workers Paid starts at $5/month for the base subscription. Frontier models (GLM-5.3, GLM-5.3-Flash, DeepSeek V4 Flash/Pro, Kimi K2.6, Kimi K2.7-code) require either Workers Paid or prepaid AI Gateway credits." } },
+    { "@type": "Question", "name": "Is Cloudflare Workers AI accessible from mainland China?", "acceptedAnswer": { "@type": "Answer", "text": "Cloudflare Workers AI is not directly reachable from mainland China. Cloudflare does not currently serve inference traffic from in-China POPs, so mainland clients access the global edge over the public Internet with variable latency (often 200-600 ms even on small models). Teams serving Chinese users either fall back to domestic providers (Zhipu, Qwen, Doubao) or accept the higher edge latency in exchange for Workers AI's unified billing and curated frontier catalog." } },
+    { "@type": "Question", "name": "How do I call Workers AI from a Cloudflare Worker?", "acceptedAnswer": { "@type": "Answer", "text": "Add an AI binding to your Worker's wrangler.toml: `[[ai.bindings]] name = \"AI\"`. Then inside the Worker call `const answer = await env.AI.run(\"@cf/zai-org/glm-5.3\", { messages: [{ role: \"user\", content: \"Hello\" }] });`. No API key management is required — the Workers runtime handles auth. For non-Worker clients, the same models are exposed over a plain HTTPS REST endpoint at https://api.cloudflare.com/client/v4/accounts/<account_id>/ai/run/<model>, authenticated with an API token." } },
+    { "@type": "Question", "name": "Does Workers AI support streaming and OpenAI-compatible APIs?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The Workers AI binding and the REST endpoint both support Server-Sent Events streaming for incremental token output, giving sub-second time-to-first-token on small models. An OpenAI-shaped `/v1/chat/completions` endpoint is also exposed (with API-token auth), so existing OpenAI SDK code works after a base-URL change — making Workers AI a drop-in option for applications already on the OpenAI protocol." } },
+    { "@type": "Question", "name": "What is the difference between Cloudflare Workers AI and Cloudflare AI Gateway?", "acceptedAnswer": { "@type": "Answer", "text": "Workers AI is the inference layer — it hosts and runs the models on Cloudflare's GPUs and bills in Neurons. AI Gateway is a routing/observability layer that sits in front of other providers (OpenAI, Anthropic, Google, DeepSeek, etc.) and adds caching, retries, fallback chains, spend limits, and per-key analytics at $0.20 per million routed requests (1M/month free). The two compose: you can pay for Workers AI inference with prepaid AI Gateway credits by setting the gateway's Workers AI billing to 'Unified billing', and you can route external-provider traffic through the gateway while calling Workers AI models directly from the binding." } }
+  ]
+};
+
+const enBody = `
+<header>
+  <h1 class="text-3xl font-bold text-gray-900 mb-4">Cloudflare Workers AI Review 2026: 86-Model Edge GPU Catalog</h1>
+  <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+    <time datetime="${date}">August 31, 2026</time>
+    <span>•</span>
+    <span>Cloudflare Workers AI Review</span>
+    <span>•</span>
+    <span>About 11 min read</span>
+  </div>
+  <p class="text-lg text-gray-600 leading-relaxed">
+    Cloudflare Workers AI is the only major inference platform whose models run on the same edge network that already serves your application code. As of August 2026 the catalog spans <strong>86 models</strong> across text, embedding, image, and audio — including frontier-tier releases like Z.ai GLM-5.3 ($1.40/$4.40 per million tokens, 1M context, released 2026-08-28), DeepSeek V4 Pro ($1.32/$3.96, 1M context, released 2026-08-13), Moonshot Kimi K2.7-code ($0.95/$4.00), and OpenAI GPT-OSS 120B ($0.35/$0.75). Billing is in Cloudflare's own <strong>Neurons</strong> unit at <strong>$0.011 per 1,000 Neurons</strong>, with <strong>10,000 Neurons per day free</strong> on the Workers Free plan and no credit card required.
+  </p>
+</header>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">What Is Cloudflare Workers AI?</h2>
+  <p>Workers AI is Cloudflare's serverless GPU inference product, launched in 2023 and grown into a serious catalog through 2025-2026. Unlike a hosted API that points at a single origin region, Workers AI runs each request on the nearest Cloudflare GPU-bearing point of presence from a network of 300+ cities. The model weights are deployed across the same fleet, so a Llama 3.3 70B inference in São Paulo and a Llama 3.3 70B inference in Frankfurt both reach a nearby GPU POP rather than transiting a single data center.</p>
+  <p>Three entry points are exposed for the same model catalog:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Workers AI binding</strong> — `env.AI.run("@cf/zai-org/glm-5.3", { messages: [...] })` from inside a Cloudflare Worker. No API key management, no SDK.</li>
+    <li><strong>REST API</strong> — Plain HTTPS endpoint at <code>https://api.cloudflare.com/client/v4/accounts/&lt;account_id&gt;/ai/run/&lt;model&gt;</code>, authenticated with a Cloudflare API token. Available from any HTTP client.</li>
+    <li><strong>OpenAI-compatible endpoint</strong> — `/v1/chat/completions` shaped API (with API-token auth) for drop-in compatibility with OpenAI SDKs.</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">The 86-Model Catalog (August 2026)</h2>
+  <p>The catalog covers four model families. <strong>Text generation</strong> is the deepest segment, with frontier-tier models (GLM-5.3, DeepSeek V4 Pro, Kimi K2.7-code, GPT-OSS 120B) coexisting with small open-source models (Llama 3.2 1B at $0.027/$0.201 per million tokens, Llama 3.2 3B at $0.051/$0.335) that cost fractions of a cent per call. <strong>Embeddings</strong> cover the standard retrieval set (BGE, mxbai, OpenAI text-embedding-3) plus Cloudflare's own @cf/baai/bge-m3. <strong>Image</strong> includes Black Forest Labs FLUX.1 Schnell, Stable Diffusion XL, and DreamShaper. <strong>Audio</strong> runs OpenAI Whisper for ASR and Deepgram Aura for TTS, plus community models like @cf/myshell-ai/melotts.</p>
+  <table class="min-w-full my-6 border border-gray-200 rounded text-sm">
+    <thead class="bg-gray-50"><tr><th class="px-3 py-2 text-left">Model</th><th class="px-3 py-2 text-left">Input ($/M)</th><th class="px-3 py-2 text-left">Cached ($/M)</th><th class="px-3 py-2 text-left">Output ($/M)</th><th class="px-3 py-2 text-left">Tier</th></tr></thead>
+    <tbody>
+      <tr><td class="px-3 py-2">@cf/zai-org/glm-5.3</td><td class="px-3 py-2">$1.400</td><td class="px-3 py-2">$0.260</td><td class="px-3 py-2">$4.400</td><td class="px-3 py-2">Frontier (paid only)</td></tr>
+      <tr><td class="px-3 py-2">@cf/zai-org/glm-5.3-flash</td><td class="px-3 py-2">$0.150</td><td class="px-3 py-2">$0.030</td><td class="px-3 py-2">$0.500</td><td class="px-3 py-2">Frontier (paid only)</td></tr>
+      <tr><td class="px-3 py-2">@cf/deepseek-ai/deepseek-v4-pro-0813</td><td class="px-3 py-2">$1.320</td><td class="px-3 py-2">$0.044</td><td class="px-3 py-2">$3.960</td><td class="px-3 py-2">Frontier (paid only)</td></tr>
+      <tr><td class="px-3 py-2">@cf/deepseek-ai/deepseek-v4-flash-0731</td><td class="px-3 py-2">$0.440</td><td class="px-3 py-2">$0.014</td><td class="px-3 py-2">$1.320</td><td class="px-3 py-2">Frontier (paid only)</td></tr>
+      <tr><td class="px-3 py-2">@cf/moonshotai/kimi-k2.7-code</td><td class="px-3 py-2">$0.950</td><td class="px-3 py-2">$0.190</td><td class="px-3 py-2">$4.000</td><td class="px-3 py-2">Frontier (paid only)</td></tr>
+      <tr><td class="px-3 py-2">@cf/openai/gpt-oss-120b</td><td class="px-3 py-2">$0.350</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$0.750</td><td class="px-3 py-2">Open-weights</td></tr>
+      <tr><td class="px-3 py-2">@cf/meta/llama-3.3-70b-instruct-fp8-fast</td><td class="px-3 py-2">$0.293</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$2.253</td><td class="px-3 py-2">Open-weights</td></tr>
+      <tr><td class="px-3 py-2">@cf/meta/llama-4-scout-17b-16e-instruct</td><td class="px-3 py-2">$0.270</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$0.850</td><td class="px-3 py-2">Open-weights</td></tr>
+      <tr><td class="px-3 py-2">@cf/google/gemma-3-12b-it</td><td class="px-3 py-2">$0.345</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$0.556</td><td class="px-3 py-2">Open-weights</td></tr>
+      <tr><td class="px-3 py-2">@cf/mistralai/mistral-small-3.1-24b-instruct</td><td class="px-3 py-2">$0.351</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$0.555</td><td class="px-3 py-2">Open-weights</td></tr>
+      <tr><td class="px-3 py-2">@cf/meta/llama-3.2-1b-instruct</td><td class="px-3 py-2">$0.027</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$0.201</td><td class="px-3 py-2">Free tier OK</td></tr>
+    </tbody>
+  </table>
+  <p class="text-sm text-gray-500">Source: <a href="https://developers.cloudflare.com/workers-ai/platform/pricing/" class="text-blue-600 hover:underline">developers.cloudflare.com/workers-ai/platform/pricing</a>, verified 2026-08-31. Frontier-tier models (GLM-5.3 family, DeepSeek V4 family, Kimi K2.6 / K2.7-code) require Workers Paid or prepaid AI Gateway credits — they cannot be accessed on the Free plan.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Pricing in Neurons</h2>
+  <p>Workers AI uses a two-axis pricing model. The base rate is <strong>$0.011 per 1,000 Neurons</strong>, billed after the daily free allowance is exhausted. Each model also publishes a token-equivalent price so you can compare to other inference APIs.</p>
+  <p><strong>What is a Neuron?</strong> Cloudflare's documentation describes Neurons as a measure of GPU compute per request, normalized so that small models use proportionally fewer Neurons than large ones. A Llama 3.2 1B input token costs 2,457 Neurons per million, while a Llama 3.3 70B input token costs 26,668 — roughly 11x more, consistent with the parameter-count ratio. The token price column in the catalog is a direct conversion from the Neuron count.</p>
+  <p><strong>The Free plan</strong> gives you 10,000 Neurons per day, which resets at 00:00 UTC. That is enough for thousands of small-model calls (classification, simple Q&amp;A) or a few hundred large-model calls. No credit card is required. However, <strong>frontier models are excluded from the Free plan</strong> — to call GLM-5.3, DeepSeek V4 Pro, or Kimi K2.7-code you need Workers Paid ($5/month base subscription) or prepaid AI Gateway credits.</p>
+  <p><strong>Workers Paid</strong> starts at $5/month and unlocks the full catalog plus higher rate limits. The first 10,000 Neurons per day remain free; usage beyond that is billed at $0.011/1,000 Neurons. AI Gateway credits offer an alternative billing path: top up credits, configure a gateway with "Unified billing" for Workers AI, and you get the same frontier-model access with the rate limits raised for prepaid customers.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Calling Workers AI From a Worker</h2>
+  <p>The Workers binding is the recommended path. In your <code>wrangler.toml</code> add:</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>[[ai.bindings]]
+name = "AI"</code></pre>
+  <p>Then in the Worker:</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>export default {
+  async fetch(request, env) {
+    const { prompt } = await request.json();
+    const response = await env.AI.run("@cf/zai-org/glm-5.3", {
+      messages: [{ role: "user", content: prompt }],
+      stream: true,
+    });
+    return response;
+  }
+}</code></pre>
+  <p>That is the entire integration. No API key to manage, no SDK to install, no separate billing relationship — the binding ties the inference call to your Cloudflare account's Workers bill. Streaming is supported by returning the response directly (it implements the standard <code>ReadableStream</code> contract).</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">REST API and OpenAI Compatibility</h2>
+  <p>For non-Worker clients (Python scripts, Node servers, on-prem tools) the same models are exposed over REST:</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>curl https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/ai/run/@cf/meta/llama-3.3-70b-instruct-fp8-fast \\
+  -H "Authorization: Bearer $CF_API_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"messages":[{"role":"user","content":"Summarize this article"}]}'</code></pre>
+  <p>Authentication uses a Cloudflare API token with the "Workers AI: Read" or "Workers AI: Edit" permission. The response shape is Workers-AI-specific; for OpenAI compatibility there is a separate endpoint at <code>/client/v4/accounts/&lt;account&gt;/ai/v1/chat/completions</code> that accepts and returns the OpenAI schema, so any OpenAI SDK works after a base-URL change:</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>from openai import OpenAI
+client = OpenAI(
+    base_url=f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1",
+    api_token=cf_token,
+)
+resp = client.chat.completions.create(
+    model="@cf/zai-org/glm-5.3-flash",
+    messages=[{"role": "user", "content": "Hello"}],
+)</code></pre>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Edge Latency and China Access</h2>
+  <p>Workers AI runs on Cloudflare's 300+ city edge. For North America, Europe, East Asia, and Oceania the time-to-first-token on small models is sub-second; on 70B+ frontier models it is typically 1-2 seconds. The model is served from the nearest GPU-bearing POP, so a request from Singapore hits Singapore, not a US origin.</p>
+  <p>Mainland China is the explicit exception. Cloudflare does not currently operate GPU-bearing POPs in mainland China, so requests from mainland clients reach the global edge over the public Internet. Empirically this gives 200-600 ms latency even on small models, and connectivity is occasionally blocked by China-side filters. If your primary user base is in mainland China, the pragmatic alternatives are Zhipu's GLM endpoints (covered separately), Qwen / Tongyi on Alibaba Cloud Bailian, or ByteDance Doubao on Volcengine — all mainland-hosted. Workers AI's value proposition is global, not mainland-first.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">How It Compares to OpenRouter, Together AI, Fireworks</h2>
+  <p>OpenRouter is the closest comparator as an aggregator. The differentiator is the run location: OpenRouter routes to the underlying provider's servers, so an OpenAI GPT-5.6 call still hits a US OpenAI data center. Workers AI runs the model on Cloudflare's edge, which can shave 100-300 ms off TTFT for non-US users. The trade-off is model breadth — OpenRouter catalogs 400+ models, Workers AI sits at 86 — and the absence of BYO-provider routing. Together AI and Fireworks AI both run dedicated GPU clusters and offer higher raw throughput for batch inference, but require picking a region and pay for reserved capacity.</p>
+  <p>For teams already deployed on Cloudflare Workers (the typical Cloudflare Pages or Wrangler-min pipeline), Workers AI is the path of least resistance: the binding lives next to your existing compute, billing rolls into your existing Cloudflare account, and the OpenAI-compatible endpoint means you can A/B test Workers AI against your current provider with a single environment variable.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Pros and Cons</h2>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li>✅ 86-model catalog spanning LLM, embedding, image, and audio</li>
+    <li>✅ 10,000 Neurons per day free, no credit card required</li>
+    <li>✅ Frontier models at parity (GLM-5.3, DeepSeek V4, Kimi K2.7-code, GPT-OSS 120B)</li>
+    <li>✅ Workers binding removes API-key management entirely</li>
+    <li>✅ OpenAI-compatible endpoint for drop-in migration</li>
+    <li>✅ Streaming on both binding and REST</li>
+    <li>⚠️ Frontier models excluded from the Free plan</li>
+    <li>⚠️ Mainland China has no GPU POP — latency 200-600 ms and connectivity is variable</li>
+    <li>⚠️ Neurons billing is non-obvious for newcomers (cross-reference token price)</li>
+    <li>⚠️ Workers Paid starts at $5/month on top of usage</li>
+    <li>⚠️ Catalog is curated by Cloudflare — no BYO-model self-hosting</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">FAQ</h2>
+  <p><strong>Q: Is Workers AI the same as Cloudflare AI Gateway?</strong><br/>A: No. Workers AI is the inference product — it runs the models. AI Gateway is a routing/observability layer that fronts other providers (OpenAI, Anthropic, etc.) and adds caching, retries, fallback, and analytics at $0.20/M requests (1M/month free). The two compose: you can pay for Workers AI inference with prepaid AI Gateway credits via "Unified billing".</p>
+  <p><strong>Q: Do I need a Workers Paid plan to use Workers AI?</strong><br/>A: Not for the Free tier models. The 10,000 Neurons/day allowance is available on the Workers Free plan. However, frontier models (GLM-5.3, GLM-5.3-Flash, DeepSeek V4 Flash/Pro, Kimi K2.6, Kimi K2.7-code) require Workers Paid or prepaid AI Gateway credits.</p>
+  <p><strong>Q: Can I deploy my own fine-tuned model on Workers AI?</strong><br/>A: Not directly — Workers AI runs Cloudflare-curated models. For custom fine-tuned models the Cloudflare-recommended path is LoRA adapters via the AI Gateway, or running your own dedicated GPU on Lambda / Crusoe / CoreWeave and routing through Workers / Pages.</p>
+  <p><strong>Q: How does streaming work?</strong><br/>A: Both the Workers binding and the REST endpoint return Server-Sent Events when <code>stream: true</code> is passed, emitting incremental token chunks. The Workers binding also supports returning the raw stream directly as the Response body.</p>
+  <p><strong>Q: Is Workers AI cheaper than OpenRouter for the same model?</strong><br/>A: Often yes for users outside the US, because Workers AI serves from the nearest edge POP. Compare the per-token price (e.g. Llama 3.3 70B at $0.293/$2.253 on Workers AI vs typically $0.50-$1.50 input on OpenRouter for the same model) and the edge-routing savings, and Workers AI is usually 20-50% cheaper end-to-end.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Verdict</h2>
+  <p>Cloudflare Workers AI is the rare inference platform whose economics improve as you go more global: edge routing means non-US users get faster responses than US users, the free tier is generous enough to prototype a real product, and the frontier-model coverage (GLM-5.3 at $1.40/$4.40, DeepSeek V4 Pro at $1.32/$3.96, GPT-OSS 120B at $0.35/$0.75) is competitive with any dedicated provider on price.</p>
+  <p>It is not the right choice for mainland-China-first deployments, and the curated catalog (86 models vs OpenRouter's 400+) means it does not cover every long-tail model you might want. But for the workload shape that matches Cloudflare Workers — short prompts, edge-served, mixed-size models, low operational overhead — Workers AI is the most coherent option on the market in August 2026.</p>
+  <p><strong>Best for:</strong> Teams already running on Cloudflare Workers / Pages; global SaaS with non-US-heavy traffic; startups that want frontier models without negotiating multi-region GPU contracts; agent, RAG, and edge inference workloads.</p>
+</section>
+`;
+---
+
+<BaseLayout title={enTitle + ' | APIRank'} description={enDescription} canonicalUrl={canonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Cloudflare Workers AI Review 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+          <div class="prose prose-lg max-w-none" set:html={enBody} />
+
+          <hr class="my-12 border-gray-200" />
+
+          <section class="mt-8">
+            <p class="text-sm text-gray-500 mb-2"><strong>Disclosure:</strong> APIRank is an independent comparison site. Pricing data verified against Cloudflare's official Workers AI pricing page on 2026-08-31. We may earn affiliate commission when you sign up through links on this page, at no extra cost to you.</p>
+            <p class="text-sm text-gray-500"><strong>Last verified:</strong> 2026-08-31. Pricing and model availability change frequently on Workers AI — re-check before committing to a workload.</p>
+          </section>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Provider:</strong> Cloudflare Workers AI</li>
+                <li><strong>Models:</strong> 86 (LLM + embedding + image + audio)</li>
+                <li><strong>Free tier:</strong> 10,000 Neurons/day</li>
+                <li><strong>Billing unit:</strong> Neurons ($0.011 / 1K)</li>
+                <li><strong>Edge:</strong> 300+ cities</li>
+                <li><strong>API:</strong> Workers binding + REST + OpenAI-compatible</li>
+                <li><strong>China access:</strong> ❌ No in-China GPU POP</li>
+              </ul>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/cloudflare-ai-gateway-review/" class="text-blue-600 hover:underline">Cloudflare AI Gateway Review</a></li>
+                <li><a href="/tutorials/cloudflare-workers-ai-glm-5-3-coding-2026/" class="text-blue-600 hover:underline">Cloudflare Workers AI GLM-5.3 Coding Test</a></li>
+                <li><a href="/tutorials/cf-workers-ai-deepseek-v4-edge-inference-2026/" class="text-blue-600 hover:underline">CF Workers AI DeepSeek V4 Edge Inference</a></li>
+                <li><a href="/tutorials/openrouter-review/" class="text-blue-600 hover:underline">OpenRouter Review 2026</a></li>
+              </ul>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Try Cloudflare Workers AI</h3>
+              <p class="text-sm text-gray-700 mb-3">Cloudflare Workers AI offers 86 models on the global edge with 10,000 Neurons/day free — no credit card required for the free tier.</p>
+              <a href="https://developers.cloudflare.com/workers-ai/" class="text-sm text-blue-600 hover:underline break-all" target="_blank" rel="noopener">developers.cloudflare.com/workers-ai/</a>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">Advertisement</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

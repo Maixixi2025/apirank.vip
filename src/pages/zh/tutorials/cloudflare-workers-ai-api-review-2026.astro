@@ -1,0 +1,238 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'cloudflare-workers-ai-api-review-2026';
+const date = '2026-08-31';
+const locale = 'zh';
+
+const zhTitle = 'Cloudflare Workers AI 评测 2026：86 模型边缘 GPU 目录';
+const zhDescription = 'Cloudflare Workers AI 评测 2026：86 个模型跑在 Cloudflare 边缘 GPU 上，每日 10K Neurons 免费，$0.011/1K Neurons，GLM-5.3 百万 token $1.40/$4.40，DeepSeek V4 Pro 1M 上下文，OpenAI 兼容 API。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Cloudflare Workers AI 评测 2026：86 模型边缘 GPU 目录",
+  "description": "Cloudflare Workers AI 评测 2026：86 个模型跑在 Cloudflare 边缘 GPU 上，每日 10K Neurons 免费，$0.011/1K Neurons，GLM-5.3 百万 token $1.40/$4.40，DeepSeek V4 Pro 1M 上下文，OpenAI 兼容 API。",
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Cloudflare Workers AI 是什么？", "acceptedAnswer": { "@type": "Answer", "text": "Cloudflare Workers AI 是运行在 Cloudflare 全球边缘网络上的无服务器 GPU 推理平台。截至 2026 年 8 月，目录已收录 86 个模型，覆盖文本生成、Embedding、图像与音频——其中包括 Z.ai GLM-5.3、DeepSeek V4 Pro、Moonshot Kimi K2.7-code、OpenAI GPT-OSS 120B 等前沿模型。你可以从任意 Cloudflare Worker 通过 `env.AI.run()` 调用模型，也可以通过纯 REST 端点调用，计费采用 Cloudflare 自有的「Neurons」单位，$0.011/1000 Neurons，每日 10,000 Neurons 免费。" } },
+    { "@type": "Question", "name": "Cloudflare Workers AI 的价格与其他推理 API 相比如何？", "acceptedAnswer": { "@type": "Answer", "text": "超出每日 10,000 Neurons 免费额度后，Workers Paid 按 $0.011/1000 Neurons 计费。目录对每个模型给出 token 等效价格：Llama 3.3 70B 百万 token $0.293/$2.253、GLM-5.3 $1.40/$4.40、DeepSeek V4 Pro $1.32/$3.96、GPT-OSS 120B $0.35/$0.75、Llama 3.2 1B $0.027/$0.201。Workers Paid 起步订阅费为 $5/月。前沿模型（GLM-5.3、GLM-5.3-Flash、DeepSeek V4 Flash/Pro、Kimi K2.6、Kimi K2.7-code）需要 Workers Paid 或预付 AI Gateway 信用才能调用。" } },
+    { "@type": "Question", "name": "Cloudflare Workers AI 在中国大陆可直接访问吗？", "acceptedAnswer": { "@type": "Answer", "text": "Cloudflare Workers AI 不能从中国大陆直接稳定访问。Cloudflare 目前没有在大陆部署 GPU 推理 POP，大陆客户端需要经公共互联网访问全球边缘，延迟不稳定（即便小模型也常达 200-600 ms），部分时段还可能受大陆侧网络过滤影响。如果你的主要用户在中国大陆，务实的替代方案是使用智谱 GLM 端点、阿里云百炼通义千问、字节火山引擎豆包等大陆原生厂商。Workers AI 的真正价值是面向全球，而非大陆优先。" } },
+    { "@type": "Question", "name": "如何从 Cloudflare Worker 调用 Workers AI？", "acceptedAnswer": { "@type": "Answer", "text": "在 Worker 的 wrangler.toml 中加入 AI binding：`[[ai.bindings]] name = \"AI\"`。然后在 Worker 内调用 `const answer = await env.AI.run(\"@cf/zai-org/glm-5.3\", { messages: [{ role: \"user\", content: \"Hello\" }] });`。无需管理 API 密钥——Workers 运行时自动处理鉴权。对于非 Worker 客户端，同一模型也通过纯 HTTPS REST 端点（https://api.cloudflare.com/client/v4/accounts/<account_id>/ai/run/<model>）暴露，使用 Cloudflare API Token 鉴权。" } },
+    { "@type": "Question", "name": "Workers AI 支持流式输出与 OpenAI 兼容 API 吗？", "acceptedAnswer": { "@type": "Answer", "text": "支持。Workers AI binding 和 REST 端点都支持 Server-Sent Events 流式返回分片 token，在小模型上首 token 延迟可达亚秒级。同时也提供类 OpenAI 的 `/v1/chat/completions` 端点（API Token 鉴权），现有 OpenAI SDK 代码只需修改 base-URL 即可工作——这让 Workers AI 成为已采用 OpenAI 协议的应用的即插即用选项。" } },
+    { "@type": "Question", "name": "Cloudflare Workers AI 与 Cloudflare AI Gateway 有什么区别？", "acceptedAnswer": { "@type": "Answer", "text": "Workers AI 是推理层——它在 Cloudflare 自家 GPU 上托管并运行模型，按 Neurons 计费。AI Gateway 是路由/可观测层，它位于其他提供商（OpenAI、Anthropic、Google、DeepSeek 等）前面，提供缓存、重试、回退链、花费限制与按 key 分析，每百万路由请求 $0.20（每月 100 万次免费）。两者可以组合：你可以在 AI Gateway 上开启「Unified billing」用预付信用为 Workers AI 推理付费，同时通过 binding 直接调用 Workers AI 模型、通过 Gateway 路由外部供应商流量。" } }
+  ]
+};
+
+const enBody = `
+<header>
+  <h1 class="text-3xl font-bold text-gray-900 mb-4">Cloudflare Workers AI 评测 2026：86 模型边缘 GPU 目录</h1>
+  <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+    <time datetime="${date}">2026 年 8 月 31 日</time>
+    <span>•</span>
+    <span>Cloudflare Workers AI 评测</span>
+    <span>•</span>
+    <span>约 11 分钟阅读</span>
+  </div>
+  <p class="text-lg text-gray-600 leading-relaxed">
+    Cloudflare Workers AI 是目前唯一在同一边缘网络上同时承载应用代码与模型推理的主流推理平台。截至 2026 年 8 月，目录已覆盖 <strong>86 个模型</strong>，涵盖文本、Embedding、图像与音频——其中包括前沿模型 Z.ai GLM-5.3（百万 token $1.40/$4.40，1M 上下文，2026-08-28 上线）、DeepSeek V4 Pro（$1.32/$3.96，1M 上下文，2026-08-13 上线）、Moonshot Kimi K2.7-code（$0.95/$4.00）与 OpenAI GPT-OSS 120B（$0.35/$0.75）。计费采用 Cloudflare 自有的 <strong>Neurons</strong> 单位，<strong>$0.011/1000 Neurons</strong>，Workers Free 计划下 <strong>每日 10,000 Neurons 免费</strong>，无需信用卡。
+  </p>
+</header>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Cloudflare Workers AI 是什么？</h2>
+  <p>Workers AI 是 Cloudflare 的无服务器 GPU 推理产品，2023 年上线，在 2025-2026 年间目录规模显著扩张。与指向单一源区域的标准托管 API 不同，Workers AI 在 300+ 城市的边缘网络中每个请求都由最近的 Cloudflare GPU 节点服务。模型权重部署在同一舰队，所以圣保罗的 Llama 3.3 70B 推理与法兰克福的 Llama 3.3 70B 推理都路由到本地 GPU POP，无需跨大洲传输。</p>
+  <p>同一份模型目录提供三种调用方式：</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Workers AI binding</strong>——在 Cloudflare Worker 内 `env.AI.run("@cf/zai-org/glm-5.3", { messages: [...] })`，无需 API 密钥或 SDK。</li>
+    <li><strong>REST API</strong>——纯 HTTPS 端点 <code>https://api.cloudflare.com/client/v4/accounts/&lt;account_id&gt;/ai/run/&lt;model&gt;</code>，使用 Cloudflare API Token 鉴权，任何 HTTP 客户端可用。</li>
+    <li><strong>OpenAI 兼容端点</strong>——`/v1/chat/completions` 形态的 API（API Token 鉴权），可直接替换 OpenAI SDK。</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">86 模型目录（2026 年 8 月）</h2>
+  <p>目录覆盖四类模型。<strong>文本生成</strong>是深度最大的部分，前沿模型（GLM-5.3、DeepSeek V4 Pro、Kimi K2.7-code、GPT-OSS 120B）与小型开源模型（Llama 3.2 1B 百万 token $0.027/$0.201、Llama 3.2 3B $0.051/$0.335）共存。<strong>Embedding</strong>包括标准检索套件（BGE、mxbai、OpenAI text-embedding-3）以及 Cloudflare 自研的 @cf/baai/bge-m3。<strong>图像</strong>包含 Black Forest Labs FLUX.1 Schnell、Stable Diffusion XL 与 DreamShaper。<strong>音频</strong>包括 OpenAI Whisper 语音转文字、Deepgram Aura 文字转语音，以及社区模型如 @cf/myshell-ai/melotts。</p>
+  <table class="min-w-full my-6 border border-gray-200 rounded text-sm">
+    <thead class="bg-gray-50"><tr><th class="px-3 py-2 text-left">模型</th><th class="px-3 py-2 text-left">输入 ($/M)</th><th class="px-3 py-2 text-left">缓存 ($/M)</th><th class="px-3 py-2 text-left">输出 ($/M)</th><th class="px-3 py-2 text-left">层级</th></tr></thead>
+    <tbody>
+      <tr><td class="px-3 py-2">@cf/zai-org/glm-5.3</td><td class="px-3 py-2">$1.400</td><td class="px-3 py-2">$0.260</td><td class="px-3 py-2">$4.400</td><td class="px-3 py-2">前沿（仅付费）</td></tr>
+      <tr><td class="px-3 py-2">@cf/zai-org/glm-5.3-flash</td><td class="px-3 py-2">$0.150</td><td class="px-3 py-2">$0.030</td><td class="px-3 py-2">$0.500</td><td class="px-3 py-2">前沿（仅付费）</td></tr>
+      <tr><td class="px-3 py-2">@cf/deepseek-ai/deepseek-v4-pro-0813</td><td class="px-3 py-2">$1.320</td><td class="px-3 py-2">$0.044</td><td class="px-3 py-2">$3.960</td><td class="px-3 py-2">前沿（仅付费）</td></tr>
+      <tr><td class="px-3 py-2">@cf/deepseek-ai/deepseek-v4-flash-0731</td><td class="px-3 py-2">$0.440</td><td class="px-3 py-2">$0.014</td><td class="px-3 py-2">$1.320</td><td class="px-3 py-2">前沿（仅付费）</td></tr>
+      <tr><td class="px-3 py-2">@cf/moonshotai/kimi-k2.7-code</td><td class="px-3 py-2">$0.950</td><td class="px-3 py-2">$0.190</td><td class="px-3 py-2">$4.000</td><td class="px-3 py-2">前沿（仅付费）</td></tr>
+      <tr><td class="px-3 py-2">@cf/openai/gpt-oss-120b</td><td class="px-3 py-2">$0.350</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$0.750</td><td class="px-3 py-2">开放权重</td></tr>
+      <tr><td class="px-3 py-2">@cf/meta/llama-3.3-70b-instruct-fp8-fast</td><td class="px-3 py-2">$0.293</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$2.253</td><td class="px-3 py-2">开放权重</td></tr>
+      <tr><td class="px-3 py-2">@cf/meta/llama-4-scout-17b-16e-instruct</td><td class="px-3 py-2">$0.270</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$0.850</td><td class="px-3 py-2">开放权重</td></tr>
+      <tr><td class="px-3 py-2">@cf/google/gemma-3-12b-it</td><td class="px-3 py-2">$0.345</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$0.556</td><td class="px-3 py-2">开放权重</td></tr>
+      <tr><td class="px-3 py-2">@cf/mistralai/mistral-small-3.1-24b-instruct</td><td class="px-3 py-2">$0.351</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$0.555</td><td class="px-3 py-2">开放权重</td></tr>
+      <tr><td class="px-3 py-2">@cf/meta/llama-3.2-1b-instruct</td><td class="px-3 py-2">$0.027</td><td class="px-3 py-2">—</td><td class="px-3 py-2">$0.201</td><td class="px-3 py-2">免费层可用</td></tr>
+    </tbody>
+  </table>
+  <p class="text-sm text-gray-500">来源：<a href="https://developers.cloudflare.com/workers-ai/platform/pricing/" class="text-blue-600 hover:underline">developers.cloudflare.com/workers-ai/platform/pricing</a>，2026-08-31 核实。前沿模型（GLM-5.3 系列、DeepSeek V4 系列、Kimi K2.6 / K2.7-code）需要 Workers Paid 或预付 AI Gateway 信用，免费层不可访问。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Neurons 计费机制</h2>
+  <p>Workers AI 采用双轴定价。基础费率 <strong>$0.011/1000 Neurons</strong>，在每日免费额度耗尽后开始计费。每个模型同时发布 token 等效价格，便于与其他推理 API 比较。</p>
+  <p><strong>Neurons 是什么？</strong>Cloudflare 文档将 Neurons 描述为每次请求 GPU 算力的归一化度量——小模型使用的 Neurons 数量按比例低于大模型。Llama 3.2 1B 每百万输入 token 消耗 2,457 Neurons，而 Llama 3.3 70B 每百万输入 token 消耗 26,668 Neurons，比值约 11 倍，与参数量比一致。目录中的 token 价格列是 Neurons 数量的直接换算结果。</p>
+  <p><strong>免费计划</strong>每日提供 10,000 Neurons，UTC 00:00 重置。足够数千次小模型调用（分类、简单问答）或几百次大模型调用，无需信用卡。但<strong>前沿模型不包含在免费计划</strong>——要调用 GLM-5.3、DeepSeek V4 Pro 或 Kimi K2.7-code，需要 Workers Paid（$5/月基础订阅）或预付 AI Gateway 信用。</p>
+  <p><strong>Workers Paid</strong>起步 $5/月，解锁完整目录与更高速率限制。每日 10,000 Neurons 仍免费，超出部分按 $0.011/1000 Neurons 计费。AI Gateway 信用提供另一种计费路径：充值信用后，在 Gateway 中将 Workers AI 计费设为「Unified billing」，即可获得相同的 frontier 模型访问权限，预付用户速率限制更高。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">从 Worker 调用 Workers AI</h2>
+  <p>推荐路径是 Workers binding。在 <code>wrangler.toml</code> 中添加：</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>[[ai.bindings]]
+name = "AI"</code></pre>
+  <p>然后在 Worker 中：</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>export default {
+  async fetch(request, env) {
+    const { prompt } = await request.json();
+    const response = await env.AI.run("@cf/zai-org/glm-5.3", {
+      messages: [{ role: "user", content: prompt }],
+      stream: true,
+    });
+    return response;
+  }
+}</code></pre>
+  <p>仅此而已——无需管理 API 密钥，无需安装 SDK，binding 自动将推理调用计入 Cloudflare 账户的 Workers 账单。流式输出支持直接返回 Response 对象（实现了标准的 <code>ReadableStream</code> 合约）。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">REST API 与 OpenAI 兼容性</h2>
+  <p>对于非 Worker 客户端（Python 脚本、Node 服务、本地工具），同一份模型通过 REST 暴露：</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>curl https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/ai/run/@cf/meta/llama-3.3-70b-instruct-fp8-fast \\
+  -H "Authorization: Bearer *** \\
+  -H "Content-Type: application/json" \\
+  -d '{"messages":[{"role":"user","content":"总结这篇文章"}]}'</code></pre>
+  <p>鉴权使用具备「Workers AI: Read」或「Workers AI: Edit」权限的 Cloudflare API Token。响应格式是 Workers AI 专有的；如需 OpenAI 兼容，有专用端点 <code>/client/v4/accounts/&lt;account&gt;/ai/v1/chat/completions</code>，接受并返回 OpenAI schema，任何 OpenAI SDK 修改 base-URL 即可工作：</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>from openai import OpenAI
+client = OpenAI(
+    base_url=f"https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1",
+    api_token=cf_token,
+)
+resp = client.chat.completions.create(
+    model="@cf/zai-org/glm-5.3-flash",
+    messages=[{"role": "user", "content": "你好"}],
+)</code></pre>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">边缘延迟与大陆访问</h2>
+  <p>Workers AI 运行在 Cloudflare 300+ 城市边缘。对北美、欧洲、东亚与大洋洲，小模型首 token 延迟亚秒级；70B+ 前沿模型通常在 1-2 秒级。模型由最近的 GPU POP 服务，新加坡的请求不会跨洋路由到美国源站。</p>
+  <p>中国大陆是明确例外。Cloudflare 目前未在大陆部署 GPU 推理 POP，大陆客户端经公共互联网访问全球边缘，实测延迟 200-600 ms 即便在小模型上也是如此，且偶发大陆侧网络过滤。如果你的主要用户在大陆，务实的替代方案是智谱 GLM 端点（详见独立评测）、阿里云百炼通义千问、字节火山引擎豆包——均大陆原生部署。Workers AI 的价值主张是面向全球，而非大陆优先。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">与 OpenRouter、Together AI、Fireworks 对比</h2>
+  <p>OpenRouter 作为聚合器是最接近的对标。关键差异在运行位置：OpenRouter 路由到底层供应商的服务器，所以调用 OpenAI GPT-5.6 仍要打到美国 OpenAI 数据中心。Workers AI 在 Cloudflare 自家边缘运行模型，对非美国用户可减少 100-300 ms TTFT。代价是模型广度——OpenRouter 收录 400+ 模型，Workers AI 只有 86，且没有 BYO-provider 路由。Together AI 和 Fireworks AI 都有独立 GPU 集群，批量推理原始吞吐更高，但需要选择区域并为预留容量付费。</p>
+  <p>对于已部署在 Cloudflare Workers 上的团队（典型的 Cloudflare Pages 或 wrangler-min 流水线），Workers AI 是阻力最小的路径——binding 与现有算力比邻，账单并入现有 Cloudflare 账户，OpenAI 兼容端点让你只需一个环境变量即可在 Workers AI 与现有供应商之间 A/B 测试。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">优缺点</h2>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li>✅ 86 模型目录，覆盖 LLM、Embedding、图像、音频</li>
+    <li>✅ 每日 10,000 Neurons 免费，无需信用卡</li>
+    <li>✅ 前沿模型同等价位（GLM-5.3、DeepSeek V4、Kimi K2.7-code、GPT-OSS 120B）</li>
+    <li>✅ Workers binding 完全消除 API 密钥管理</li>
+    <li>✅ OpenAI 兼容端点支持即插即用迁移</li>
+    <li>✅ binding 与 REST 均支持流式输出</li>
+    <li>⚠️ 前沿模型不包含在免费计划</li>
+    <li>⚠️ 大陆无 GPU POP，延迟 200-600 ms 且可达性不稳定</li>
+    <li>⚠️ Neurons 计费对新用户不够直觉（需对照 token 价格）</li>
+    <li>⚠️ Workers Paid 起步 $5/月订阅费另算</li>
+    <li>⚠️ 目录由 Cloudflare 精选——不支持 BYO-model 自托管</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">常见问题</h2>
+  <p><strong>Q：Workers AI 与 Cloudflare AI Gateway 是同一个东西吗？</strong><br/>A：不是。Workers AI 是推理产品——它运行模型。AI Gateway 是路由/可观测层，位于其他供应商（OpenAI、Anthropic 等）前面，添加缓存、重试、回退与可观测性，$0.20/百万请求（每月 100 万次免费）。两者可组合：你可以在 AI Gateway 上开启「Unified billing」用预付信用为 Workers AI 推理付费。</p>
+  <p><strong>Q：需要 Workers Paid 才能使用 Workers AI 吗？</strong><br/>A：免费层模型不需要。Workers Free 计划下每日 10,000 Neurons 额度可用。但前沿模型（GLM-5.3、GLM-5.3-Flash、DeepSeek V4 Flash/Pro、Kimi K2.6、Kimi K2.7-code）需要 Workers Paid 或预付 AI Gateway 信用。</p>
+  <p><strong>Q：能在 Workers AI 上部署我自己的微调模型吗？</strong><br/>A：不能直接——Workers AI 运行 Cloudflare 精选的模型。自定义微调模型的推荐路径是通过 AI Gateway 注入 LoRA adapter，或在 Lambda / Crusoe / CoreWeave 上跑专属 GPU，再通过 Workers / Pages 路由。</p>
+  <p><strong>Q：流式输出是怎么工作的？</strong><br/>A：Workers binding 与 REST 端点都支持 Server-Sent Events，传递 <code>stream: true</code> 时按分片 token 增量返回。Workers binding 还支持直接将原始流作为 Response body 返回。</p>
+  <p><strong>Q：同一模型 Workers AI 比 OpenRouter 便宜吗？</strong><br/>A：对非美国用户常常更便宜，因为 Workers AI 从最近的边缘 POP 服务。对比每 token 价格（如 Llama 3.3 70B 在 Workers AI 为 $0.293/$2.253，而 OpenRouter 上同模型通常 $0.50-$1.50 输入）加上边缘路由节省，Workers AI 通常端到端便宜 20-50%。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">结论</h2>
+  <p>Cloudflare Workers AI 是少数几个「越全球化越有优势」的推理平台：边缘路由让非美国用户比美国用户响应更快，免费层足够用来搭建真实产品原型，前沿模型覆盖（GLM-5.3 $1.40/$4.40、DeepSeek V4 Pro $1.32/$3.96、GPT-OSS 120B $0.35/$0.75）在价格上对任何独立提供商都具备竞争力。</p>
+  <p>它不是大陆优先部署的正确选择，精选目录（86 模型 vs OpenRouter 400+）也意味着不能覆盖每个长尾模型。但对于与 Cloudflare Workers 形态相匹配的工作负载——短 prompt、边缘服务、混合模型规模、低运维成本——Workers AI 是 2026 年 8 月市场上最自洽的选项。</p>
+  <p><strong>适合：</strong>已在 Cloudflare Workers / Pages 上运行的团队；面向全球、非美国流量占比高的 SaaS；想要前沿模型但不想谈多区域 GPU 合同的初创公司；Agent、RAG、边缘推理负载。</p>
+</section>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+    <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+    <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+    <nav class="text-sm text-gray-500 mb-6" aria-label="breadcrumb">
+      <a href="/zh" class="hover:text-blue-600">首页</a>
+      <span class="mx-2">›</span>
+      <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+      <span class="mx-2">›</span>
+      <span class="text-gray-900 font-medium">Cloudflare Workers AI 评测 2026</span>
+    </nav>
+
+    <div class="prose prose-lg max-w-none" set:html={enBody} />
+
+    <hr class="my-12 border-gray-200" />
+
+    <section class="mt-8">
+      <p class="text-sm text-gray-500 mb-2"><strong>披露：</strong>APIRank 是独立对比站，价格数据于 2026-08-31 通过 Cloudflare 官方 Workers AI 价格页核实。当你通过本页链接注册时，我们可能获得联盟佣金，对你无额外费用。</p>
+      <p class="text-sm text-gray-500"><strong>最后核实：</strong>2026-08-31。Workers AI 的价格与可用模型变化频繁——在投入生产负载前请重新核查。</p>
+    </section>
+
+    <aside class="mt-10 bg-gray-50 border border-gray-200 rounded-lg p-6">
+      <h3 class="font-bold text-gray-900 mb-3">快速参考</h3>
+      <ul class="space-y-2 text-sm text-gray-600">
+        <li><strong>提供商：</strong>Cloudflare Workers AI</li>
+        <li><strong>模型数：</strong>86（LLM + Embedding + 图像 + 音频）</li>
+        <li><strong>免费层：</strong>每日 10,000 Neurons</li>
+        <li><strong>计费单位：</strong>Neurons（$0.011/1K）</li>
+        <li><strong>边缘：</strong>300+ 城市</li>
+        <li><strong>API：</strong>Workers binding + REST + OpenAI 兼容</li>
+        <li><strong>大陆访问：</strong>❌ 无大陆 GPU POP</li>
+      </ul>
+
+      <h3 class="font-bold text-gray-900 mt-6 mb-3">相关文章</h3>
+      <ul class="space-y-2 text-sm">
+        <li><a href="/zh/tutorials/cloudflare-ai-gateway-review/" class="text-blue-600 hover:underline">Cloudflare AI Gateway 评测</a></li>
+        <li><a href="/zh/tutorials/cloudflare-workers-ai-glm-5-3-coding-2026/" class="text-blue-600 hover:underline">Cloudflare Workers AI GLM-5.3 编程测试</a></li>
+        <li><a href="/zh/tutorials/cf-workers-ai-deepseek-v4-edge-inference-2026/" class="text-blue-600 hover:underline">CF Workers AI DeepSeek V4 边缘推理</a></li>
+        <li><a href="/zh/tutorials/openrouter-review/" class="text-blue-600 hover:underline">OpenRouter 评测 2026</a></li>
+      </ul>
+    </aside>
+  </article>
+</BaseLayout>
