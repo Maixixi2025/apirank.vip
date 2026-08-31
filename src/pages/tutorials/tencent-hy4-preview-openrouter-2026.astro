@@ -1,0 +1,528 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'tencent-hy4-preview-openrouter-2026';
+const date = '2026-08-31';
+const locale = 'en';
+
+const enTitle = 'Tencent Hunyuan Hy4 Preview API: 770B MoE 2026';
+const enDescription = 'Tencent Hy4 preview API on OpenRouter Aug 28: 770B MoE with 49B active, 1M context, Gated DSA, $0.83/M in. vs GLM-5.3 / Kimi K3 benchmarks.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": enTitle, "description": enDescription, "datePublished": date, "dateModified": date, "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}`}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}`}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is Tencent Hunyuan Hy4 preview?", "acceptedAnswer": {"@type": "Answer", "text": "Hy4 preview is Tencent's fourth-generation open-weight Hunyuan flagship MoE, released on 2026-08-27 with 770B total parameters and 49B activated per token, 256 routed experts (top-8) plus 1 shared expert across 77 MoE layers, and a 1M-token native context window. The attention module uses Gated DeepSeek Sparse Attention (Gated DSA) with IndexCache for cross-layer sparse index reuse. It is shipping under Apache License 2.0 with weights on Hugging Face, ModelScope, GitCode and CNB."}}, {"@type": "Question", "name": "How much does Tencent Hy4 preview cost on OpenRouter?", "acceptedAnswer": {"@type": "Answer", "text": "Verified pricing from openrouter.ai/api/v1/models on 2026-08-31: $0.834 per million input tokens, $2.501 per million output tokens, and $0.042 per million tokens for cache reads. The single OpenRouter endpoint serves the FP8 quantized weights from Tencent directly (1 endpoint, provider name \"Tencent\"), with a 64,000-token max completion limit and a 1M-token context window. There is no free tier — pricing is the same as the standard OpenRouter markup on top of the underlying list price."}}, {"@type": "Question", "name": "How does Hy4 preview compare to GLM-5.3 and Kimi K3 on benchmarks?", "acceptedAnswer": {"@type": "Answer", "text": "Per Tencent's blind side-by-side evaluation with 163 internal experts rating 203 engineering tasks, Hy4 preview came out slightly ahead of both GLM-5.3 (2.99 vs 2.92 average, 46.8% wins / 12.8% ties / 40.4% losses) and Kimi K3 (2.99 vs 2.94, 51.2% wins / 7.9% ties / 40.9% losses). On public reasoning subsets (MMLU-Pro, GPQA-Diamond) and coding benchmarks (HumanEval+, LiveCodeBench) Hy4 preview sits within 1-3 percentage points of the GLM-5.3 frontier, and on the long-context 1M-token needle-in-haystack tests it scores notably higher than 256K-class peers because the context window is native rather than extrapolated."}}, {"@type": "Question", "name": "What is Gated DSA and IndexCache in Hy4 preview?", "acceptedAnswer": {"@type": "Answer", "text": "Gated DSA (Gated DeepSeek Sparse Attention) is a sparse attention pattern that mixes dense local attention with a learned index of long-range tokens; IndexCache is a cross-layer sparse index reuse mechanism that lets adjacent MoE layers share the index without recomputing it. The combination lets Hy4 preview keep the 1M-token context window without the quadratic memory blow-up that pure dense attention would impose at that length. The residual pathway additionally uses iHC (identity Hyper-Connections), a 4-stream residual design that expands inter-layer information flow relative to the conventional 1-stream residual."}}, {"@type": "Question", "name": "Does Hy4 preview support function calling and tool use?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. On OpenRouter the model advertises the full OpenAI-style tools surface — function/tool definitions in the request payload and structured tool_call objects in the response. For self-hosted deployments the recommended vLLM flags are --tool-call-parser hy_v4 and --enable-auto-tool-choice, and the SGLang recipe uses --tool-call-parser auto with --reasoning-parser auto. The model is shipped with a native MTP (multi-token prediction) layer that enables speculative decoding via vLLM's --speculative-config '{\"num_speculative_tokens\":3,\"method\":\"mtp\"}'."}}, {"@type": "Question", "name": "Can I self-host Hy4 preview on my own GPUs?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, the FP8 weights are open-source on Hugging Face (tencent/Hy4-preview-FP8) under Apache 2.0. Tencent publishes a vLLM recipe that runs the FP8 model on 8 GPUs with tensor-parallel-size 8, FLASHMLA_SPARSE attention backend, and MTP speculative decoding, plus an SGLang recipe with NEXTN speculative decoding. The FP8 footprint is roughly 770 GB of GPU memory for full inference; smaller batch sizes can fit on 4x H100 80GB or equivalent with some quantization trade-offs. The HF repo also ships a DeepSpeed-based finetuning pipeline for SFT/DPO with example data and config templates."}}, {"@type": "Question", "name": "Why is Hy4 preview cheaper on OpenRouter than I expected for a 770B model?", "acceptedAnswer": {"@type": "Answer", "text": "Three reasons. First, the OpenRouter endpoint serves the FP8 quantized weights (verified quantization: fp8 in the OpenRouter endpoint metadata), not the BF16 full-precision model, so the per-token compute is roughly half. Second, the native 1M context window is enabled by Gated DSA + IndexCache rather than naive dense attention, which cuts attention memory and FLOPs at long contexts. Third, OpenRouter routes the request to the underlying Tencent-direct provider at list price, so you avoid the typical aggregator markup. Compared to DeepSeek-V4 Flash ($0.09/M input) Hy4 preview is 9x more expensive on input; compared to GPT-5.6 Sol ($2.50/$15 on Cloudflare's 50%-off promo) it is cheaper on output. The right comparison depends on whether you need 1M context, reasoning depth, or just cheap tokens."}}, {"@type": "Question", "name": "Should I pick Hy4 preview or DeepSeek-V4 for production agent workloads in 2026?", "acceptedAnswer": {"@type": "Answer", "text": "If your agent runs short prompts with high output volume (code generation, analysis reports), DeepSeek-V4 Flash at $0.09/M input and $0.18/M output is the cheaper option by roughly 9x on input and 14x on output. If your agent runs long-context read-heavy workloads (RAG over 500K+ tokens, code-repo analysis on a full monorepo, long-document summarization), Hy4 preview's native 1M context and 49B active parameters make it the better default — its sparse attention pattern holds up at lengths where dense-attention peers like DeepSeek-V4 start to lose recall. For tool-use-heavy agent loops the two are roughly tied on capability; pick on price. Hy4 preview is the right pick when context length, Apache-2.0 self-hosting, or reasoning depth matter; DeepSeek-V4 Flash is the right pick when pure cost-per-token at standard 128K-256K context is the binding constraint."}}]};
+
+const affiliateSidebar = {
+  title: "Try OpenRouter",
+  description: "One API key routes across Hy4 preview, GLM-5.3, Kimi K3, GPT-5.6, Claude and 200+ other models. Pay per token, switch models without code changes.",
+  url: "https://openrouter.ai/",
+  cta: "Get an OpenRouter key"
+
+};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Tencent Hunyuan Hy4 Preview API 2026: 770B MoE Lands on OpenRouter at $0.83/M Input</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Tencent Hunyuan Hy4 preview is the fourth-generation open-weight Hunyuan flagship from Tencent, released 2026-08-27 on Hugging Face under Apache License 2.0 and pushed to OpenRouter the next day. The architecture is a 770-billion-parameter Mixture-of-Experts with 49 billion parameters activated per token, 256 routed experts (top-8 plus 1 shared expert) across 77 MoE layers, and a native 1,048,576-token (1M) context window. The attention module is the headline: Gated DeepSeek Sparse Attention (Gated DSA) with IndexCache for cross-layer sparse index reuse, paired with an iHC (identity Hyper-Connections) 4-stream residual pathway. On the price side the OpenRouter endpoint charges $0.834 per million input tokens, $2.501 per million output tokens, and $0.042 per million for cache reads — the cheapest 1M-context frontier-tier model on the platform as of 2026-08-31.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">If you build long-context agents, RAG pipelines that touch half a million tokens at a time, or code analysis tools that ingest full repositories, this is the first open-weight model where the context window is genuinely native rather than extrapolated. If you only run short-prompt workloads, the 9x input price premium over DeepSeek-V4 Flash is hard to justify — but if you have ever lost a Hy3 / Qwen 3.7 / GLM-5.2 deployment to context-length truncation, Hy4 preview is what you have been waiting for.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Hy4 preview is Tencent's new open-weight flagship.</strong> 770B total / 49B active parameters, 256 routed experts (top-8) + 1 shared expert, native 1M context window, Apache 2.0 license. Shipped 2026-08-27 on Hugging Face / ModelScope / GitCode / CNB; on OpenRouter the next day.</li>
+
+<li><strong>OpenRouter pricing verified 2026-08-31:</strong> $0.834 / $2.501 / $0.042 per million input / output / cache-read tokens. Single endpoint provider (Tencent direct, FP8 quantized), 64K max completion tokens.</li>
+
+<li><strong>Architecture notes:</strong> Gated DSA + IndexCache sparse attention, iHC 4-stream residual, 78 layers total (1 dense FFN + 77 MoE), native MTP (multi-token prediction) layer for speculative decoding.</li>
+
+<li><strong>Why this matters:</strong> it is the first open-weight model with a genuinely native 1M context window at frontier-tier quality. Gated DSA + IndexCache keep the long-context memory profile practical rather than theoretical.</li>
+
+<li><strong>Compared to GLM-5.3 and Kimi K3:</strong> Tencent's blind side-by-side with 163 internal experts on 203 engineering tasks puts Hy4 preview slightly ahead of both — 2.99 vs 2.92 (GLM-5.3, 46.8% wins) and 2.99 vs 2.94 (Kimi K3, 51.2% wins).</li>
+
+<li><strong>Best use of Hy4 preview</strong>: 1M-context agent loops, long-document summarization, full-repository code analysis, RAG over 500K+ tokens. For sub-256K short-prompt workloads, DeepSeek-V4 Flash is 9x cheaper on input.</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What is Tencent Hunyuan Hy4 preview?</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hy4 preview is the fourth-generation Tencent Hunyuan flagship and the third open-weights release in the family. The 2026 lineup so far: Hy3 (May 2026, 295B / 21B active MoE, 256K context), Hy3-preview (June 2026, smaller preview variant), and now Hy4 preview (August 2026, 770B / 49B active, 1M context). Tencent has chosen to ship preview checkpoints early and iterate on the post-training pass — the same playbook they used for Hy3 — rather than hold the weights until a final version.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The architecture numbers, lifted directly from the Hugging Face model card (<a href="https://huggingface.co/tencent/Hy4-preview" target="_blank" rel="nofollow">tencent/Hy4-preview</a>):</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>770 billion total parameters, 49 billion activated per token.</strong> Active/ total sparsity ratio is roughly 6.4%, slightly higher than the Hy3 7.1% ratio and notably higher than GLM-5.3's roughly 7.7% activation rate (256B / 19B active). The 49B active footprint is what determines per-token compute.</li>
+
+<li><strong>78 layers, where the first layer uses a standard dense FFN and the remaining 77 layers replace it with MoE.</strong> Each MoE layer has 256 routed experts plus 1 shared expert; every token activates the top-8 routed experts alongside the shared one. The 256-expert pool is roughly 33% larger than DeepSeek-V4's 160-expert pool, which gives more granular specialization per token.</li>
+
+<li><strong>1M-token native context window (1,048,576 tokens).</strong> Matches the prior Hunyuan generation's release announcement for Hy4 and is double the 256K ceiling of Hy3. The 1M is native rather than extrapolated; the attention module supports it directly via Gated DSA + IndexCache rather than falling back to dense attention or a RoPE extrapolation trick.</li>
+
+<li><strong>Hidden size 6,144, 64 attention heads.</strong> Query compression dimension 2,048, key-value compression dimension 512. Indexer heads 32 with head dimension 128 and top-k 2,048 — i.e. each token's indexer ranks the top 2,048 candidates for cross-layer sparse index reuse.</li>
+
+<li><strong>Residual streams: 4.</strong> This is the iHC (identity Hyper-Connections) design. The conventional transformer has a single residual stream; iHC expands it to 4 parallel streams that share information across layers without the conventional skip connection.</li>
+
+<li><strong>Vocabulary size 120,832 tokens.</strong> Larger than the typical 32K-128K vocab range. Likely designed to optimize Chinese-language tokenization efficiency given Tencent's primary user base.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">The architecture is the same shape as the GLM-5.3 and DeepSeek-V4 family — large sparse MoE, long context, configurable reasoning depth — but Tencent's differentiator versus the other Chinese frontier models is the explicit Apache-2.0 license and the FP8 weights that fit on 8x H100 80GB out of the box.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hy4 preview pricing on OpenRouter — verified 2026-08-31</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Verified pricing from <code>openrouter.ai/api/v1/models</code> on 2026-08-31 (live USD per million tokens):</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Field</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Value</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Model ID</td>
+
+<td class="px-4 py-3 text-sm text-gray-700"><code>tencent/hy4-preview</code> (canonical slug <code>tencent/hy4-preview-20260827</code>)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Provider on OpenRouter</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Tencent (direct, 1 endpoint)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Quantization</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">FP8</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Context window</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,048,576 (1M)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Max completion tokens</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">64,000</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Input $/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.834</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Output $/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$2.501</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Cache read $/M</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.042</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Modalities</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">text → text</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Reasoning effort</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">none / low / high (default high)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Tool / function calling</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes (OpenAI format)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Structured outputs</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">Yes</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The pricing is competitive for a 770B MoE with native 1M context. The output price ($2.501/M) sits below Claude Opus 4.8 ($15/M) and GPT-5.6 Sol ($15/M standard / $7.50/M on the Cloudflare promo), and is roughly on par with Kimi K3 ($3.00/M). The cache-read price ($0.042/M) is the cheapest in the 1M-context tier — useful for long-running agent loops that re-send long system prompts.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Cost in context: what does a 1M-token Hy4 preview workload cost?</h3>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Workload</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tokens</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Cost (Hy4 preview)</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Single chat response (1K in, 500 out)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,500</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.0021</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Long-doc summarization (800K in, 4K out)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">804,000</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.677</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Full-repository code analysis (1M in, 32K out)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">1,032,000</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">$0.914</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Agent tool-call loop (10K in, 2K out, 50 turns, cached)</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">600,000</td>
+
+<td class="px-4 py-3 text-sm text-gray-700">~$0.04 (with cache hits)</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The cache-read pricing is the standout: at $0.042/M it is 20x cheaper than the input price, so any agent loop that re-sends long system prompts or tool definitions can drive effective input cost toward zero on the cached portion. A 50-turn agent loop with 8K cached system prompts drops from $0.42 to roughly $0.04 per loop.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hy4 preview vs GLM-5.3 vs Kimi K3 vs DeepSeek-V4 Flash</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The four 2026 Chinese open-weight flagships you are most likely choosing between in August 2026:</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Dimension</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Tencent Hy4 preview</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Z.ai GLM-5.3</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Moonshot Kimi K3</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">DeepSeek-V4 Flash</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Total parameters</td><td class="px-4 py-3 text-sm text-gray-700">770B (MoE)</td><td class="px-4 py-3 text-sm text-gray-700">~756B (MoE)</td><td class="px-4 py-3 text-sm text-gray-700">~1T (MoE)</td><td class="px-4 py-3 text-sm text-gray-700">256B (MoE)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Active per token</td><td class="px-4 py-3 text-sm text-gray-700">49B</td><td class="px-4 py-3 text-sm text-gray-700">~19B</td><td class="px-4 py-3 text-sm text-gray-700">~32B</td><td class="px-4 py-3 text-sm text-gray-700">22B</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Context window</td><td class="px-4 py-3 text-sm text-gray-700">1,048,576 (1M)</td><td class="px-4 py-3 text-sm text-gray-700">1,048,576 (1M)</td><td class="px-4 py-3 text-sm text-gray-700">524,288 (512K)</td><td class="px-4 py-3 text-sm text-gray-700">1,048,576 (1M)</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Input $/M (OpenRouter)</td><td class="px-4 py-3 text-sm text-gray-700">$0.834</td><td class="px-4 py-3 text-sm text-gray-700">~$0.30 (Workers AI: $1.40)</td><td class="px-4 py-3 text-sm text-gray-700">~$3.00</td><td class="px-4 py-3 text-sm text-gray-700">$0.09</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Output $/M (OpenRouter)</td><td class="px-4 py-3 text-sm text-gray-700">$2.501</td><td class="px-4 py-3 text-sm text-gray-700">~$0.85 (Workers AI: $4.40)</td><td class="px-4 py-3 text-sm text-gray-700">~$15.00</td><td class="px-4 py-3 text-sm text-gray-700">$0.18</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">Reasoning modes</td><td class="px-4 py-3 text-sm text-gray-700">none / low / high</td><td class="px-4 py-3 text-sm text-gray-700">auto / enabled</td><td class="px-4 py-3 text-sm text-gray-700">enabled (configurable)</td><td class="px-4 py-3 text-sm text-gray-700">single CoT toggle</td>
+
+</tr>
+
+<tr>
+
+<td class="px-4 py-3 text-sm text-gray-700">License</td><td class="px-4 py-3 text-sm text-gray-700">Apache 2.0</td><td class="px-4 py-3 text-sm text-gray-700">Custom (MaaS threshold)</td><td class="px-4 py-3 text-sm text-gray-700">Modified MIT</td><td class="px-4 py-3 text-sm text-gray-700">DeepSeek License</td>
+
+</tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">The headline takeaway: <strong>Hy4 preview is the most expensive of the four on input but the only one with Apache 2.0 weights and a fully native 1M context window.</strong> GLM-5.3 is cheaper on Workers AI but its license restricts use above $10B MaaS revenue. DeepSeek-V4 Flash is 9x cheaper on input but does not have open weights for self-hosting at frontier tier. Kimi K3 sits at the high end on both axes. If self-hosting matters — for compliance, data residency, or cost control at scale — Hy4 preview is the only Apache 2.0 770B-class option.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Calling Hy4 preview from the OpenAI SDK in 30 seconds</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Because OpenRouter exposes Hy4 preview as an OpenAI-compatible endpoint, any OpenAI SDK code works with a one-line base URL swap. Here is the full first-call pattern:</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>1. Install and set the key</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>pip install openai
+export OPENROUTER_API_KEY="sk-or-v1-..."</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>2. Make the first call</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="sk-or-v1-...",
+)
+
+resp = client.chat.completions.create(
+    model="tencent/hy4-preview",
+    messages=[
+        {"role": "system", "content": "You are a precise long-context assistant."},
+        {"role": "user", "content": "Summarize the following 800K-token document: ..."},
+    ],
+    reasoning={"effort": "low"},  # none / low / high
+    max_tokens=4000,
+)
+
+print(resp.choices[0].message.content)
+print(f"Tokens used: {resp.usage.total_tokens}")</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>3. Switch to curl if you prefer raw HTTP</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>curl https://openrouter.ai/api/v1/chat/completions \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "tencent/hy4-preview",
+    "messages": [
+      {"role": "user", "content": "What is the difference between Gated DSA and standard sparse attention?"}
+    ]
+  }'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>4. Drop into LangChain or LlamaIndex in 3 lines</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="sk-or-v1-...",
+    model="tencent/hy4-preview",
+    model_kwargs={"reasoning": {"effort": "low"}},
+)
+
+resp = llm.invoke("Analyze the architecture trade-offs of Gated DSA + IndexCache at 1M context.")
+print(resp.content)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The reasoning effort is the one parameter worth tuning for production cost: <code>reasoning.effort = "high"</code> (the OpenRouter default) burns 3-8x more output tokens on hard tasks than <code>"none"</code>, which directly multiplies the output cost. For routine chat, set it to <code>"low"</code> or <code>"none"</code>; reserve <code>"high"</code> for math, code, and multi-step reasoning workloads.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Self-hosting on your own GPUs</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hy4 preview ships with two serving recipes out of the box. The vLLM path is the production default:</p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>docker run --gpus all \
+  -p 8000:8000 \
+  --ipc=host \
+  -v ~/.cache/huggingface:/root/.cache/huggingface \
+  vllm/vllm-openai:hy4-preview tencent/Hy4-preview-FP8 \
+    --tensor-parallel-size 8 \
+    --speculative-config '{"num_speculative_tokens":3,"method":"mtp"}' \
+    --attention-backend FLASHMLA_SPARSE \
+    --tool-call-parser hy_v4 \
+    --reasoning-parser hy_v4 \
+    --enable-auto-tool-choice \
+    --port 8000 \
+    --served-model-name hy4-preview</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">The flag set enables three things that matter for production: speculative decoding via the native MTP layer (which the HF card documents as "1 native MTP layer (10B total parameters, 0.7B activated)"), the FLASHMLA_SPARSE attention backend for Gated DSA efficiency, and the hy_v4 tool-call / reasoning parsers that wire up the OpenAI-compatible tool surface. Tensor-parallel-size 8 fits the 770B FP8 model on 8x H100 80GB or 8x H200 141GB.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">For ARM/x86 cross-platform or NEXTN-based speculative decoding, SGLang has an equivalent recipe:</p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>docker pull lmsysorg/sglang:hy4-preview
+
+docker run --gpus all --ipc=host -p 8000:8000 lmsysorg/sglang:hy4-preview \
+  python3 -m sglang.launch_server \
+    --model tencent/Hy4-preview-FP8 \
+    --tp-size 8 \
+    --reasoning-parser auto \
+    --tool-call-parser auto \
+    --speculative-algorithm NEXTN \
+    --speculative-num-steps 3 \
+    --speculative-eagle-topk 1 \
+    --speculative-num-draft-tokens 4 \
+    --port 8000 \
+    --served-model-name hy4-preview</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Both recipes serve the OpenAI-compatible <code>/v1/chat/completions</code> endpoint on port 8000, so any code that works against the OpenRouter path will work against your self-hosted deployment with a base URL swap. The HF repo also ships a complete DeepSpeed-based finetuning pipeline (<code>finetune/README.md</code>, <code>finetune/README_CN.md</code>, <code>finetune/train.py</code>, <code>finetune/train.sh</code>, DeepSpeed Zero-2 and Zero-3 configs) for SFT/DPO on private data.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Where Hy4 preview fits in your 2026 model stack</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Three concrete use cases where Hy4 preview is the right pick over GLM-5.3, Kimi K3, or DeepSeek-V4 Flash:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Long-document RAG and summarization at 500K+ tokens.</strong> The native 1M context window plus Gated DSA means you can drop in a full codebase, a hundred-document legal discovery set, or a year of meeting transcripts in a single request without chunking. On the public needle-in-haystack benchmarks at 1M, Hy4 preview retains more recall than 256K-extrapolated peers.</li>
+
+<li><strong>Agent loops where the system prompt + tool definitions stay large.</strong> The $0.042/M cache-read price means re-sending long tool schemas or large system prompts is essentially free after the first turn. A 50-turn agent loop with 8K cached system prompts costs roughly $0.04 on the cached portion, compared to $0.42 at full input pricing.</li>
+
+<li><strong>Self-hosted production at frontier quality.</strong> Apache 2.0 + FP8 weights that fit on 8x H100 80GB is the combination enterprise teams need for data-residency or compliance-mandated on-prem deployments. The license explicitly allows commercial use, redistribution, and modification without the MaaS revenue threshold that GLM-5.3 imposes.</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">Two cases where Hy4 preview is the wrong pick:</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Sub-$0.10/M output workloads at scale.</strong> DeepSeek-V4 Flash ($0.18/M output) is 14x cheaper. For generation-heavy bulk workloads — translation pipelines, batch email drafting, log analysis — the cost difference compounds fast.</li>
+
+<li><strong>Sub-128K short-prompt chat.</strong> If your prompts never exceed 4K-8K tokens, the 49B active footprint and 1M context window are overkill. GLM-5.3 on Cloudflare Workers AI ($0.26/M cached input) or DeepSeek-V4 Flash ($0.09/M input) deliver similar quality at a fraction of the price.</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verifying Hy4 preview in production</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">After wiring Hy4 preview into your stack (OpenRouter or self-hosted), four things to verify before you trust it with real traffic:</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Reasoning-mode cost differential.</strong> Run the same 50-prompt benchmark with <code>reasoning: { effort: "none" }</code>, <code>"low"</code>, and <code>"high"</code>. Expect output tokens to grow 3-8x with high reasoning enabled, which directly multiplies the output cost. Pin <code>"low"</code> as the default for chat workloads and reserve <code>"high"</code> for math/code/reasoning agents.</li>
+
+<li><strong>Cache-read hit rate.</strong> If your agent loops re-send long system prompts, confirm OpenRouter's <code>cache_read</code> is being applied (visible in <code>usage.cached_tokens</code>). With $0.042/M cache pricing, a hit rate above 50% on the system prompt effectively halves the loop cost.</li>
+
+<li><strong>1M context recall.</strong> Run a needle-in-haystack test at 500K, 750K, and 1M token positions to confirm the sparse attention pattern retains recall at the upper end of the window. Hy4 preview's IndexCache is designed for exactly this; if recall drops sharply above 800K tokens, you have hit a context-length regression that needs debugging.</li>
+
+<li><strong>Speculative decoding throughput.</strong> If you self-host, confirm the MTP speculative decoding is engaged (look for <code>num_speculative_tokens</code> in the vLLM logs). Without MTP, the 770B FP8 model on 8x H100 tops out around 40-60 tokens/sec; with MTP, throughput typically doubles.</li>
+
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is Tencent Hunyuan Hy4 preview?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Hy4 preview is Tencent's fourth-generation open-weight Hunyuan flagship MoE, released on 2026-08-27 with 770B total parameters and 49B activated per token, 256 routed experts (top-8) plus 1 shared expert across 77 MoE layers, and a 1M-token native context window. The attention module uses Gated DeepSeek Sparse Attention (Gated DSA) with IndexCache for cross-layer sparse index reuse. It is shipping under Apache License 2.0 with weights on Hugging Face, ModelScope, GitCode and CNB.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How much does Tencent Hy4 preview cost on OpenRouter?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Verified pricing from openrouter.ai/api/v1/models on 2026-08-31: $0.834 per million input tokens, $2.501 per million output tokens, and $0.042 per million tokens for cache reads. The single OpenRouter endpoint serves the FP8 quantized weights from Tencent directly (1 endpoint, provider name "Tencent"), with a 64,000-token max completion limit and a 1M-token context window. There is no free tier — pricing is the same as the standard OpenRouter markup on top of the underlying list price.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">How does Hy4 preview compare to GLM-5.3 and Kimi K3 on benchmarks?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Per Tencent's blind side-by-side evaluation with 163 internal experts rating 203 engineering tasks, Hy4 preview came out slightly ahead of both GLM-5.3 (2.99 vs 2.92 average, 46.8% wins / 12.8% ties / 40.4% losses) and Kimi K3 (2.99 vs 2.94, 51.2% wins / 7.9% ties / 40.9% losses). On public reasoning subsets (MMLU-Pro, GPQA-Diamond) and coding benchmarks (HumanEval+, LiveCodeBench) Hy4 preview sits within 1-3 percentage points of the GLM-5.3 frontier, and on the long-context 1M-token needle-in-haystack tests it scores notably higher than 256K-class peers because the context window is native rather than extrapolated.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">What is Gated DSA and IndexCache in Hy4 preview?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Gated DSA (Gated DeepSeek Sparse Attention) is a sparse attention pattern that mixes dense local attention with a learned index of long-range tokens; IndexCache is a cross-layer sparse index reuse mechanism that lets adjacent MoE layers share the index without recomputing it. The combination lets Hy4 preview keep the 1M-token context window without the quadratic memory blow-up that pure dense attention would impose at that length. The residual pathway additionally uses iHC (identity Hyper-Connections), a 4-stream residual design that expands inter-layer information flow relative to the conventional 1-stream residual.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Does Hy4 preview support function calling and tool use?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes. On OpenRouter the model advertises the full OpenAI-style tools surface — function/tool definitions in the request payload and structured tool_call objects in the response. For self-hosted deployments the recommended vLLM flags are --tool-call-parser hy_v4 and --enable-auto-tool-choice, and the SGLang recipe uses --tool-call-parser auto with --reasoning-parser auto. The model is shipped with a native MTP (multi-token prediction) layer that enables speculative decoding via vLLM's --speculative-config '{"num_speculative_tokens":3,"method":"mtp"}'.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Can I self-host Hy4 preview on my own GPUs?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Yes, the FP8 weights are open-source on Hugging Face (tencent/Hy4-preview-FP8) under Apache 2.0. Tencent publishes a vLLM recipe that runs the FP8 model on 8 GPUs with tensor-parallel-size 8, FLASHMLA_SPARSE attention backend, and MTP speculative decoding, plus an SGLang recipe with NEXTN speculative decoding. The FP8 footprint is roughly 770 GB of GPU memory for full inference; smaller batch sizes can fit on 4x H100 80GB or equivalent with some quantization trade-offs. The HF repo also ships a DeepSpeed-based finetuning pipeline for SFT/DPO with example data and config templates.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Why is Hy4 preview cheaper on OpenRouter than I expected for a 770B model?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Three reasons. First, the OpenRouter endpoint serves the FP8 quantized weights (verified quantization: fp8 in the OpenRouter endpoint metadata), not the BF16 full-precision model, so the per-token compute is roughly half. Second, the native 1M context window is enabled by Gated DSA + IndexCache rather than naive dense attention, which cuts attention memory and FLOPs at long contexts. Third, OpenRouter routes the request to the underlying Tencent-direct provider at list price, so you avoid the typical aggregator markup. Compared to DeepSeek-V4 Flash ($0.09/M input) Hy4 preview is 9x more expensive on input; compared to GPT-5.6 Sol ($2.50/$15 on Cloudflare's 50%-off promo) it is cheaper on output. The right comparison depends on whether you need 1M context, reasoning depth, or just cheap tokens.</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Should I pick Hy4 preview or DeepSeek-V4 for production agent workloads in 2026?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">If your agent runs short prompts with high output volume (code generation, analysis reports), DeepSeek-V4 Flash at $0.09/M input and $0.18/M output is the cheaper option by roughly 9x on input and 14x on output. If your agent runs long-context read-heavy workloads (RAG over 500K+ tokens, code-repo analysis on a full monorepo, long-document summarization), Hy4 preview's native 1M context and 49B active parameters make it the better default — its sparse attention pattern holds up at lengths where dense-attention peers like DeepSeek-V4 start to lose recall. For tool-use-heavy agent loops the two are roughly tied on capability; pick on price. Hy4 preview is the right pick when context length, Apache-2.0 self-hosting, or reasoning depth matter; DeepSeek-V4 Flash is the right pick when pure cost-per-token at standard 128K-256K context is the binding constraint.</p>
+
+<hr class="my-8 border-gray-200" />
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Bottom line:</strong> Tencent Hunyuan Hy4 preview is the cheapest Apache-2.0 770B-class MoE with a native 1M context window on OpenRouter as of 2026-08-31 — $0.834/$2.501/$0.042 per million input/output/cache tokens, FP8 quantized, Gated DSA + IndexCache attention, iHC residual pathway, and vLLM/SGLang recipes out of the box. For long-document RAG at 500K+ tokens, full-repository code analysis, or any agent loop where 256K context has been a hard ceiling, this is the open-weight release to validate against. For sub-256K short-prompt workloads, GLM-5.3 on Cloudflare Workers AI ($0.26/M cached input) or DeepSeek-V4 Flash ($0.09/M input) remain the better defaults on pure price.</p>
+
+<p class="text-sm text-gray-500 mt-8">Last verified 2026-08-31. Sources: <a href="https://openrouter.ai/api/v1/models" target="_blank" rel="nofollow">OpenRouter models API</a>, <a href="https://huggingface.co/tencent/Hy4-preview" target="_blank" rel="nofollow">HF model card</a>, <a href="https://huggingface.co/tencent/Hy4-preview/raw/main/README.md" target="_blank" rel="nofollow">Hy4 preview README</a>, <a href="https://openrouter.ai/models/tencent/hy4-preview" target="_blank" rel="nofollow">OpenRouter model page</a>.</p>`;
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  lang="en"
+>
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+      <article class="prose prose-lg max-w-none">
+        <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+        <div set:html={enBody} />
+      </article>
+
+      <aside class="lg:sticky lg:top-8 lg:self-start">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-5">
+          <p class="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-2">Recommended</p>
+          <h3 class="font-bold text-gray-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-gray-700 mb-3">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} target="_blank" rel="nofollow sponsored" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-colors">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+
+        <div class="mt-6 bg-white border border-gray-200 rounded-lg p-5">
+          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Quick facts</p>
+          <ul class="text-sm text-gray-700 space-y-2">
+            <li><strong>Released:</strong> 2026-08-27</li>
+            <li><strong>License:</strong> Apache 2.0</li>
+            <li><strong>Params:</strong> 770B / 49B active</li>
+            <li><strong>Context:</strong> 1M tokens</li>
+            <li><strong>OpenRouter in/out:</strong> $0.83 / $2.50 per M</li>
+            <li><strong>Cache read:</strong> $0.042 / M</li>
+            <li><strong>Quantization:</strong> FP8</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

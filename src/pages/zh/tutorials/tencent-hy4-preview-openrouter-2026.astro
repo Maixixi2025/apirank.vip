@@ -1,0 +1,460 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'tencent-hy4-preview-openrouter-2026';
+const date = '2026-08-31';
+const locale = 'zh';
+
+const zhTitle = '腾讯混元 Hy4 Preview API 2026：770B MoE 上线 OpenRouter 1M 上下文';
+const zhDescription = '腾讯混元 Hy4 preview 8 月 27 日开源，770B MoE / 49B 激活、1M 上下文、Gated DSA + IndexCache 稀疏注意力、Apache 2.0。OpenRouter 价格 $0.83/$2.50/$0.04 每百万 token。';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": `https://apirank.vip/zh/tutorials/${slug}` }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": `https://apirank.vip/zh/tutorials/${slug}` }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "腾讯混元 Hy4 preview 是什么模型？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Hy4 preview 是腾讯混元家族的第四代开源旗舰 MoE，2026 年 8 月 27 日发布于 Hugging Face / ModelScope / GitCode / CNB。架构上 770B 总参数、49B 每 token 激活；77 层 MoE 各含 256 个路由专家（top-8）+ 1 个共享专家；原生 1M token 上下文窗口。注意力模块使用 Gated DeepSeek Sparse Attention（Gated DSA）配合 IndexCache 跨层索引复用。许可证为 Apache 2.0，可商用、可二次分发、可微调。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Hy4 preview 在 OpenRouter 上多少钱？",
+      "acceptedAnswer": { "@type": "Answer", "text": "openrouter.ai/api/v1/models 2026-08-31 实测：输入 $0.834 / 输出 $2.501 / 缓存读取 $0.042（每百万 token）。单端点，Tencent 直接提供 FP8 量化权重；最大输出 64,000 token，上下文 1,048,576 token。没有免费档，价格是 OpenRouter 在底层列表价上的标准加成。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Hy4 preview 和 GLM-5.3、Kimi K3 相比如何？",
+      "acceptedAnswer": { "@type": "Answer", "text": "腾讯官方披露的盲评：163 名内部专家对 203 个工程任务打分，Hy4 preview 平均 2.99，略胜 GLM-5.3（2.92，46.8% 胜率）与 Kimi K3（2.94，51.2% 胜率）。在 MMLU-Pro / GPQA-Diamond 等公开推理基准上与 GLM-5.3 相差 1-3 个百分点；在 1M 上下文 needle-in-haystack 任务上明显优于 256K 级别的模型（因为上下文是原生支持，而非外推）。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Gated DSA 和 IndexCache 是什么？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Gated DSA（Gated DeepSeek Sparse Attention）是一种稀疏注意力，将稠密局部注意力与一个学习得到的长程 token 索引混合；IndexCache 是跨层稀疏索引复用机制，让相邻的 MoE 层共享索引而无需重新计算。两者结合使 Hy4 preview 在 1M 上下文窗口下保持实用级别的注意力内存，而不会出现纯稠密注意力那种平方级的显存爆炸。残差路径额外使用 iHC（identity Hyper-Connections），把传统单流残差扩展为 4 流并行残差以增强层间信息流通。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Hy4 preview 支持 function calling 和工具调用吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "支持。OpenRouter 上模型声明了完整的 OpenAI 风格 tools 接口——请求体内放 function / tool 定义，响应体内返回结构化 tool_call 对象。自托管场景下 vLLM 推荐参数为 --tool-call-parser hy_v4 + --enable-auto-tool-choice，SGLang 用 --tool-call-parser auto + --reasoning-parser auto。模型原生带一层 MTP（multi-token prediction），在 vLLM 上可通过 --speculative-config '{\"num_speculative_tokens\":3,\"method\":\"mtp\"}' 启用投机解码。" }
+    },
+    {
+      "@type": "Question",
+      "name": "能用自己的 GPU 自托管 Hy4 preview 吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "可以。FP8 权重以 Apache 2.0 开源于 Hugging Face（tencent/Hy4-preview-FP8）。腾讯官方提供 vLLM 配方（8 卡 TP-8、FLASHMLA_SPARSE attention 后端、MTP 投机解码）和 SGLang 配方（NEXTN 投机解码）。FP8 模型推理显存约 770 GB，完整 batch 跑 8x H100 80GB 或 8x H200 141GB；小 batch + 进一步量化可在 4x H100 80GB 上运行。HF 仓库同时附带 DeepSpeed Zero-2 / Zero-3 的微调脚本与示例数据。" }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么 770B 的 Hy4 preview 在 OpenRouter 上比想象的便宜？",
+      "acceptedAnswer": { "@type": "Answer", "text": "三个原因。第一，OpenRouter 端点服务的是 FP8 量化权重（端点元数据 quant=fp8），而非 BF16 全精度模型，单 token 算力约为后者的一半。第二，1M 上下文通过 Gated DSA + IndexCache 实现，而非朴素稠密注意力，长上下文下的注意力显存与 FLOPs 都被砍掉。第三，OpenRouter 直接路由到底层 Tencent 提供商，无聚合商加价。与 DeepSeek-V4 Flash（$0.09/M 输入）相比，Hy4 preview 输入贵约 9 倍；与 Cloudflare 50% 折的 GPT-5.6 Sol（$2.50/M 输出）相比，Hy4 preview 输出便宜约 67%。具体选哪个取决于你更需要 1M 上下文、推理深度还是单纯廉价 token。" }
+    },
+    {
+      "@type": "Question",
+      "name": "2026 年生产环境选 Hy4 preview 还是 DeepSeek-V4？",
+      "acceptedAnswer": { "@type": "Answer", "text": "如果你的 agent 是短 prompt + 高输出体量（代码生成、分析报告），DeepSeek-V4 Flash 的 $0.09/M 输入、$0.18/M 输出便宜约 9-14 倍。如果你的 agent 是长上下文、读密集（RAG 500K+ token、整库代码分析、长文档摘要），Hy4 preview 的原生 1M 上下文 + 49B 激活参数是更优默认——它的稀疏注意力在 DeepSeek-V4 之类稠密注意力模型开始掉检索精度的长度上仍能保持。如果工具调用是主要场景，两者能力大致相当，看价格取舍。总结：上下文长度 / Apache 2.0 自托管 / 推理深度选 Hy4 preview；纯按 token 单价 + 128K-256K 标准上下文选 DeepSeek-V4 Flash。" }
+    }
+  ]
+};
+
+const affiliateSidebar = {
+  title: "试用 OpenRouter",
+  description: "一个 API key 路由 Hy4 preview、GLM-5.3、Kimi K3、GPT-5.6、Claude 与 200+ 其他模型，按 token 计费，换模型不需要改代码。",
+  url: "https://openrouter.ai/",
+  cta: "获取 OpenRouter key"
+};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">腾讯混元 Hy4 Preview API 2026：770B MoE 上 OpenRouter，1M 上下文、$0.83/M 输入</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">腾讯混元 Hy4 preview 是腾讯混元家族的第四代开源权重旗舰，2026-08-27 在 Hugging Face 以 Apache License 2.0 发布，第二天即登陆 OpenRouter。架构是 770B 参数的 Mixture-of-Experts，每 token 激活 49B 参数，77 层 MoE 各含 256 个路由专家（top-8 + 1 个共享专家），原生 1,048,576-token（1M）上下文窗口。注意力模块的看点是 Gated DeepSeek Sparse Attention（Gated DSA）配合 IndexCache 跨层稀疏索引复用，残差路径用 iHC（identity Hyper-Connections）4 流并行设计。价格方面，OpenRouter 端点 $0.834 / $2.501 / $0.042（输入 / 输出 / 缓存读取每百万 token），是 2026-08-31 时 1M 上下文档位上最便宜的前沿模型。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你做长上下文 agent、超大上下文 RAG（500K+ token），或者代码分析工具要吞整个 monorepo，这是第一个真正原生支持 1M 上下文（而非外推）的开源权重前沿模型。如果你只跑短 prompt 工作流，Hy4 preview 比 DeepSeek-V4 Flash 贵 9 倍，不太划算；但如果你的 Hy3 / Qwen 3.7 / GLM-5.2 部署曾经在 256K 截断上掉过球，Hy4 preview 就是你等的那个。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">TL;DR</h2>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>Hy4 preview 是腾讯新的开源旗舰。</strong>770B 总参 / 49B 激活、256 路由专家（top-8）+ 1 共享专家、原生 1M 上下文、Apache 2.0。2026-08-27 上 Hugging Face / ModelScope / GitCode / CNB，第二天上 OpenRouter。</li>
+
+<li><strong>OpenRouter 定价（2026-08-31 实测）：</strong>$0.834 / $2.501 / $0.042 每百万输入 / 输出 / 缓存读取 token。单端点，Tencent 直供 FP8 量化权重，最大输出 64,000 token。</li>
+
+<li><strong>架构要点：</strong>Gated DSA + IndexCache 稀疏注意力、iHC 4 流残差、78 层（1 层 dense FFN + 77 层 MoE）、原生 MTP（multi-token prediction）层支持投机解码。</li>
+
+<li><strong>为什么重要：</strong>这是第一个原生（而非外推）支持 1M 上下文的前沿档开源权重模型。Gated DSA + IndexCache 让长上下文的显存保持实用级而非理论级。</li>
+
+<li><strong>对比 GLM-5.3 / Kimi K3：</strong>腾讯盲评（163 内部专家，203 工程任务）Hy4 preview 略胜——2.99 vs 2.92（GLM-5.3，46.8% 胜）、2.99 vs 2.94（Kimi K3，51.2% 胜）。</li>
+
+<li><strong>Hy4 preview 最佳场景：</strong>1M 上下文 agent 循环、长文档摘要、整库代码分析、500K+ token RAG。256K 以下短 prompt，DeepSeek-V4 Flash 在输入价上便宜 9 倍。</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">腾讯混元 Hy4 preview 是什么？</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hy4 preview 是腾讯混元的第四代旗舰，也是该家族的第三个开源权重版本。2026 年到目前为止的发布时间线：Hy3（5 月，295B / 21B 激活，256K 上下文）、Hy3-preview（6 月，更小的 preview 版本）、Hy4 preview（8 月，770B / 49B 激活，1M 上下文）。腾讯选择早发 preview、迭代 post-training——这是 Hy3 时用过的同一打法，不是等"终版"再发。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">架构数据来自 Hugging Face 模型卡（<a href="https://huggingface.co/tencent/Hy4-preview" target="_blank" rel="nofollow">tencent/Hy4-preview</a>）：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>770B 总参数，每 token 激活 49B。</strong>激活率 6.4%，比 Hy3 的 7.1%、GLM-5.3 的约 7.7%（256B / 19B 激活）都略高。每 token 实际算力由 49B 激活参数决定。</li>
+
+<li><strong>78 层：第 1 层 dense FFN，其余 77 层 MoE。</strong>每层 MoE 含 256 路由专家 + 1 共享专家；每 token 激活 top-8 路由 + 共享。256 专家池比 DeepSeek-V4 的 160 专家池大约 33%，对每个 token 的细粒度专业化更友好。</li>
+
+<li><strong>原生 1M token 上下文（1,048,576）。</strong>是 Hy3 上限 256K 的 4 倍。原生支持 1M，而非靠外推；Gated DSA + IndexCache 直接覆盖整个窗口，不依赖 RoPE 外推或别的折中方案。</li>
+
+<li><strong>隐藏维度 6,144，64 注意力头。</strong>Query 压缩维度 2,048，KV 压缩维度 512。Indexer 头 32 个、头维度 128、top-k 2,048——每个 token 的索引器对 top-2,048 候选做跨层稀疏索引复用。</li>
+
+<li><strong>残差流：4。</strong>这是 iHC（identity Hyper-Connections）设计。传统 transformer 单流残差，iHC 扩展为 4 流并行残差，跨层共享信息但不走传统 skip connection。</li>
+
+<li><strong>词表 120,832 token。</strong>大于常见的 32K-128K 范围，可能是为中文 token 化效率优化（毕竟腾讯主用户群是中文）。</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">架构形态与 GLM-5.3、DeepSeek-V4 同族——大稀疏 MoE + 长上下文 + 可配置推理深度——但腾讯的差异化是显式 Apache-2.0 许可 + FP8 权重正好能装进 8x H100 80GB。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hy4 preview 在 OpenRouter 上的定价 — 2026-08-31 实测</h2>
+
+<p class="text-gray-700 leading-relaxed my-4"><code>openrouter.ai/api/v1/models</code> 2026-08-31 实时价格（美元 / 百万 token）：</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">字段</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">值</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">模型 ID</td><td class="px-4 py-3 text-sm text-gray-700"><code>tencent/hy4-preview</code>（canonical slug <code>tencent/hy4-preview-20260827</code>）</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">OpenRouter 提供商</td><td class="px-4 py-3 text-sm text-gray-700">Tencent（直供，1 个端点）</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">量化</td><td class="px-4 py-3 text-sm text-gray-700">FP8</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">上下文窗口</td><td class="px-4 py-3 text-sm text-gray-700">1,048,576（1M）</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">最大输出 token</td><td class="px-4 py-3 text-sm text-gray-700">64,000</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">输入 $/M</td><td class="px-4 py-3 text-sm text-gray-700">$0.834</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">输出 $/M</td><td class="px-4 py-3 text-sm text-gray-700">$2.501</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">缓存读取 $/M</td><td class="px-4 py-3 text-sm text-gray-700">$0.042</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">模态</td><td class="px-4 py-3 text-sm text-gray-700">text → text</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">推理 effort</td><td class="px-4 py-3 text-sm text-gray-700">none / low / high（默认 high）</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">工具调用</td><td class="px-4 py-3 text-sm text-gray-700">支持（OpenAI 格式）</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">结构化输出</td><td class="px-4 py-3 text-sm text-gray-700">支持</td></tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">这个价位对 770B MoE + 原生 1M 上下文来说很有竞争力。输出价（$2.501/M）低于 Claude Opus 4.8（$15/M）和 GPT-5.6 Sol（$15/M 标准 / $7.50/M Cloudflare 折后），与 Kimi K3（$3.00/M）持平。缓存读取（$0.042/M）是 1M 档位最便宜的，对长跑 agent loop（重发长 system prompt）很有用。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">成本场景：1M token 工作流多少钱？</h3>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">场景</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Token 量</th>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Hy4 preview 成本</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">单次对话（1K 入 / 500 出）</td><td class="px-4 py-3 text-sm text-gray-700">1,500</td><td class="px-4 py-3 text-sm text-gray-700">$0.0021</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">长文档摘要（800K 入 / 4K 出）</td><td class="px-4 py-3 text-sm text-gray-700">804,000</td><td class="px-4 py-3 text-sm text-gray-700">$0.677</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">整库代码分析（1M 入 / 32K 出）</td><td class="px-4 py-3 text-sm text-gray-700">1,032,000</td><td class="px-4 py-3 text-sm text-gray-700">$0.914</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">Agent 工具调用循环（10K 入 / 2K 出 × 50 轮，启用缓存）</td><td class="px-4 py-3 text-sm text-gray-700">600,000</td><td class="px-4 py-3 text-sm text-gray-700">约 $0.04（缓存命中）</td></tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">缓存读取价是亮点：$0.042/M 比输入价便宜 20 倍，所以任何重发长 system prompt 或工具定义的 agent 循环，都能把这部分有效成本压到接近零。50 轮循环带 8K system prompt，缓存命中后单循环从 $0.42 降到约 $0.04。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hy4 preview vs GLM-5.3 vs Kimi K3 vs DeepSeek-V4 Flash</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 8 月最该对比的四个中国开源旗舰：</p>
+
+<div class="overflow-x-auto my-6"><table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+
+<thead class="bg-gray-50"><tr>
+
+<th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">维度</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Hy4 preview</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">GLM-5.3</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Kimi K3</th><th class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">DeepSeek-V4 Flash</th>
+
+</tr></thead>
+
+<tbody class="divide-y divide-gray-200 bg-white">
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">总参数</td><td class="px-4 py-3 text-sm text-gray-700">770B（MoE）</td><td class="px-4 py-3 text-sm text-gray-700">~756B（MoE）</td><td class="px-4 py-3 text-sm text-gray-700">~1T（MoE）</td><td class="px-4 py-3 text-sm text-gray-700">256B（MoE）</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">激活 / token</td><td class="px-4 py-3 text-sm text-gray-700">49B</td><td class="px-4 py-3 text-sm text-gray-700">~19B</td><td class="px-4 py-3 text-sm text-gray-700">~32B</td><td class="px-4 py-3 text-sm text-gray-700">22B</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">上下文</td><td class="px-4 py-3 text-sm text-gray-700">1,048,576（1M）</td><td class="px-4 py-3 text-sm text-gray-700">1,048,576（1M）</td><td class="px-4 py-3 text-sm text-gray-700">524,288（512K）</td><td class="px-4 py-3 text-sm text-gray-700">1,048,576（1M）</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">输入 $/M（OpenRouter）</td><td class="px-4 py-3 text-sm text-gray-700">$0.834</td><td class="px-4 py-3 text-sm text-gray-700">~$0.30（Workers AI: $1.40）</td><td class="px-4 py-3 text-sm text-gray-700">~$3.00</td><td class="px-4 py-3 text-sm text-gray-700">$0.09</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">输出 $/M（OpenRouter）</td><td class="px-4 py-3 text-sm text-gray-700">$2.501</td><td class="px-4 py-3 text-sm text-gray-700">~$0.85（Workers AI: $4.40）</td><td class="px-4 py-3 text-sm text-gray-700">~$15.00</td><td class="px-4 py-3 text-sm text-gray-700">$0.18</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">推理模式</td><td class="px-4 py-3 text-sm text-gray-700">none / low / high</td><td class="px-4 py-3 text-sm text-gray-700">auto / enabled</td><td class="px-4 py-3 text-sm text-gray-700">enabled（可配置）</td><td class="px-4 py-3 text-sm text-gray-700">单 CoT toggle</td></tr>
+
+<tr><td class="px-4 py-3 text-sm text-gray-700">许可证</td><td class="px-4 py-3 text-sm text-gray-700">Apache 2.0</td><td class="px-4 py-3 text-sm text-gray-700">自定义（含 MaaS 收入门槛）</td><td class="px-4 py-3 text-sm text-gray-700">修改版 MIT</td><td class="px-4 py-3 text-sm text-gray-700">DeepSeek License</td></tr>
+
+</tbody></table></div>
+
+<p class="text-gray-700 leading-relaxed my-4">核心结论：<strong>Hy4 preview 是四个里输入最贵但唯一 Apache 2.0 + 完全原生 1M 上下文。</strong>GLM-5.3 在 Workers AI 上更便宜但许可证限制 $10B MaaS 收入门槛以上才生效；DeepSeek-V4 Flash 输入便宜 9 倍但不开源权重到前沿档；Kimi K3 两端都靠高。如果自托管重要——合规、数据驻留、规模化成本控制——Hy4 preview 是 770B 档唯一的 Apache 2.0 选项。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">用 OpenAI SDK 30 秒调起 Hy4 preview</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">OpenRouter 把 Hy4 preview 暴露成 OpenAI 兼容端点，所以现有 OpenAI SDK 代码只需换一行 base URL：</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>1. 安装并设置 key</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>pip install openai
+export OPENROUTER_API_KEY="sk-or-v1-..."</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>2. 第一次请求</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="sk-or-v1-...",
+)
+
+resp = client.chat.completions.create(
+    model="tencent/hy4-preview",
+    messages=[
+        {"role": "system", "content": "你是一个精确的长上下文助手。"},
+        {"role": "user", "content": "摘要以下 800K token 的文档：..."},
+    ],
+    reasoning={"effort": "low"},  # none / low / high
+    max_tokens=4000,
+)
+
+print(resp.choices[0].message.content)
+print(f"使用 token: {resp.usage.total_tokens}")</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>3. 想要 curl 也行</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>curl https://openrouter.ai/api/v1/chat/completions \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "tencent/hy4-preview",
+    "messages": [
+      {"role": "user", "content": "Gated DSA 和普通稀疏注意力的区别是什么？"}
+    ]
+  }'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>4. 接入 LangChain / LlamaIndex 三行搞定</strong></p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>from langchain_openai import ChatOpenAI
+
+llm = ChatOpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key="sk-or-v1-...",
+    model="tencent/hy4-preview",
+    model_kwargs={"reasoning": {"effort": "low"}},
+)
+
+resp = llm.invoke("分析 Gated DSA + IndexCache 在 1M 上下文下的架构取舍。")
+print(resp.content)</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">推理 effort 是生产环境最值得调的参数：<code>reasoning.effort = "high"</code>（OpenRouter 默认）在硬任务上输出 token 比 <code>"none"</code> 多 3-8 倍，直接乘进输出成本。常规对话设 <code>"low"</code> 或 <code>"none"</code>；只有数学 / 代码 / 多步推理 agent 才用 <code>"high"</code>。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">自托管到自己的 GPU</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Hy4 preview 自带两个开箱即用的部署配方。生产场景默认用 vLLM：</p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>docker run --gpus all \
+  -p 8000:8000 \
+  --ipc=host \
+  -v ~/.cache/huggingface:/root/.cache/huggingface \
+  vllm/vllm-openai:hy4-preview tencent/Hy4-preview-FP8 \
+    --tensor-parallel-size 8 \
+    --speculative-config '{"num_speculative_tokens":3,"method":"mtp"}' \
+    --attention-backend FLASHMLA_SPARSE \
+    --tool-call-parser hy_v4 \
+    --reasoning-parser hy_v4 \
+    --enable-auto-tool-choice \
+    --port 8000 \
+    --served-model-name hy4-preview</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">这套参数启了三件生产关键的事：通过原生 MTP 层做投机解码（HF 模型卡注明"1 native MTP layer (10B total parameters, 0.7B activated)"），用 FLASHMLA_SPARSE attention 后端跑 Gated DSA 的效率，用 hy_v4 tool-call / reasoning parser 接好 OpenAI 兼容工具接口。TP-8 让 FP8 模型 跑在 8x H100 80GB 或 8x H200 141GB 上。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">想要 ARM / x86 跨平台或 NEXTN 风格的投机解码，SGLang 有对应配方：</p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code>docker pull lmsysorg/sglang:hy4-preview
+
+docker run --gpus all --ipc=host -p 8000:8000 lmsysorg/sglang:hy4-preview \
+  python3 -m sglang.launch_server \
+    --model tencent/Hy4-preview-FP8 \
+    --tp-size 8 \
+    --reasoning-parser auto \
+    --tool-call-parser auto \
+    --speculative-algorithm NEXTN \
+    --speculative-num-steps 3 \
+    --speculative-eagle-topk 1 \
+    --speculative-num-draft-tokens 4 \
+    --port 8000 \
+    --served-model-name hy4-preview</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">两个配方都在 8000 端口暴露 OpenAI 兼容 <code>/v1/chat/completions</code>，所以 OpenRouter 路径能跑的代码，自托管只要换 base URL 就能跑。HF 仓库还附带完整的 DeepSpeed 微调流水线（<code>finetune/README.md</code>、<code>finetune/train.py</code>、DeepSpeed Zero-2 / Zero-3 配置），用于在私有数据上做 SFT / DPO。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Hy4 preview 在 2026 模型栈的位置</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">三个 Hy4 preview 是更优默认的场景：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>500K+ token 长文档 RAG 与摘要。</strong>原生 1M 上下文 + Gated DSA 让单次请求可以塞进整库代码、百文档法律发现集、一年会议记录，无需切片。公开 needle-in-haystack 1M 测试上，Hy4 preview 比 256K 外推的同档模型保留更高的检索精度。</li>
+
+<li><strong>System prompt + 工具定义很大的 agent 循环。</strong>$0.042/M 缓存读取价意味着长工具 schema 或大 system prompt 的重发基本免费。50 轮循环带 8K system prompt，缓存命中后单循环约 $0.04，对比全输入价的 $0.42。</li>
+
+<li><strong>前沿档自托管生产。</strong>Apache 2.0 + FP8 权重正好装 8x H100 80GB，是数据驻留或合规要求的本地部署唯一前沿档选项。许可证明确允许商用、再分发、修改，没有 GLM-5.3 那样的 MaaS 收入门槛。</li>
+
+</ul>
+
+<p class="text-gray-700 leading-relaxed my-4">两个 Hy4 preview 不是最优解的场景：</p>
+
+<ul class="list-disc list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>批量输出 / 输出价 $0.10/M 以下的规模化工作流。</strong>DeepSeek-V4 Flash（$0.18/M 输出）便宜 14 倍。翻译流水线、批量邮件起草、日志分析这类生成重的工作，成本差会被快速放大。</li>
+
+<li><strong>128K 以下短 prompt 对话。</strong>prompt 从不超 4K-8K 时，49B 激活 + 1M 上下文是过度配置。Cloudflare Workers AI 上的 GLM-5.3（$0.26/M 缓存输入）或 DeepSeek-V4 Flash（$0.09/M 输入）以零头价格给出相近质量。</li>
+
+</ul>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">生产部署前的四项验证</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">把 Hy4 preview 接入生产前（无论 OpenRouter 还是自托管），先验证四件事：</p>
+
+<ol class="list-decimal list-inside text-gray-700 my-4 space-y-1">
+
+<li><strong>推理模式成本差。</strong>用 50 个 prompt 分别跑 <code>reasoning: { effort: "none" }</code>、<code>"low"</code>、<code>"high"</code>。预计 <code>"high"</code> 输出 token 是 <code>"none"</code> 的 3-8 倍，直接乘进输出成本。对话默认 <code>"low"</code>，数学 / 代码 / 推理 agent 才用 <code>"high"</code>。</li>
+
+<li><strong>缓存读取命中率。</strong>agent 循环重发长 system prompt 时，确认 OpenRouter 的 <code>cache_read</code> 真的应用上了（<code>usage.cached_tokens</code> 字段可见）。$0.042/M 缓存价下，system prompt 命中率 >50% 时循环成本直接减半。</li>
+
+<li><strong>1M 上下文检索精度。</strong>跑 500K、750K、1M token 位置的 needle-in-haystack 测试，确认稀疏注意力在窗口上沿仍能保持检索精度。Hy4 preview 的 IndexCache 就是为此设计；如果 800K 之上精度骤降，就是上下文长度的回归 bug。</li>
+
+<li><strong>投机解码吞吐。</strong>自托管场景确认 MTP 投机解码生效（vLLM 日志里看 <code>num_speculative_tokens</code>）。不开 MTP 的 770B FP8 模型在 8x H100 上吞吐约 40-60 token / 秒；开 MTP 通常翻倍。</li>
+
+</ol>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">FAQ</h2>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">腾讯混元 Hy4 preview 是什么模型？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Hy4 preview 是腾讯混元家族的第四代开源旗舰 MoE，2026 年 8 月 27 日发布于 Hugging Face / ModelScope / GitCode / CNB。架构上 770B 总参数、49B 每 token 激活；77 层 MoE 各含 256 个路由专家（top-8）+ 1 个共享专家；原生 1M token 上下文窗口。注意力模块使用 Gated DeepSeek Sparse Attention（Gated DSA）配合 IndexCache 跨层索引复用。许可证为 Apache 2.0，可商用、可二次分发、可微调。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Hy4 preview 在 OpenRouter 上多少钱？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">openrouter.ai/api/v1/models 2026-08-31 实测：输入 $0.834 / 输出 $2.501 / 缓存读取 $0.042（每百万 token）。单端点，Tencent 直接提供 FP8 量化权重；最大输出 64,000 token，上下文 1,048,576 token。没有免费档，价格是 OpenRouter 在底层列表价上的标准加成。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Hy4 preview 和 GLM-5.3、Kimi K3 相比如何？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">腾讯官方披露的盲评：163 名内部专家对 203 个工程任务打分，Hy4 preview 平均 2.99，略胜 GLM-5.3（2.92，46.8% 胜率）与 Kimi K3（2.94，51.2% 胜率）。在 MMLU-Pro / GPQA-Diamond 等公开推理基准上与 GLM-5.3 相差 1-3 个百分点；在 1M 上下文 needle-in-haystack 任务上明显优于 256K 级别的模型（因为上下文是原生支持，而非外推）。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Gated DSA 和 IndexCache 是什么？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Gated DSA（Gated DeepSeek Sparse Attention）是一种稀疏注意力，将稠密局部注意力与一个学习得到的长程 token 索引混合；IndexCache 是跨层稀疏索引复用机制，让相邻的 MoE 层共享索引而无需重新计算。两者结合使 Hy4 preview 在 1M 上下文窗口下保持实用级别的注意力内存，而不会出现纯稠密注意力那种平方级的显存爆炸。残差路径额外使用 iHC（identity Hyper-Connections），把传统单流残差扩展为 4 流并行残差以增强层间信息流通。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">Hy4 preview 支持 function calling 和工具调用吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">支持。OpenRouter 上模型声明了完整的 OpenAI 风格 tools 接口——请求体内放 function / tool 定义，响应体内返回结构化 tool_call 对象。自托管场景下 vLLM 推荐参数为 --tool-call-parser hy_v4 + --enable-auto-tool-choice，SGLang 用 --tool-call-parser auto + --reasoning-parser auto。模型原生带一层 MTP（multi-token prediction），在 vLLM 上可通过 --speculative-config '{"num_speculative_tokens":3,"method":"mtp"}' 启用投机解码。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">能用自己的 GPU 自托管 Hy4 preview 吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">可以。FP8 权重以 Apache 2.0 开源于 Hugging Face（tencent/Hy4-preview-FP8）。腾讯官方提供 vLLM 配方（8 卡 TP-8、FLASHMLA_SPARSE attention 后端、MTP 投机解码）和 SGLang 配方（NEXTN 投机解码）。FP8 模型推理显存约 770 GB，完整 batch 跑 8x H100 80GB 或 8x H200 141GB；小 batch + 进一步量化可在 4x H100 80GB 上运行。HF 仓库同时附带 DeepSpeed Zero-2 / Zero-3 的微调脚本与示例数据。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">为什么 770B 的 Hy4 preview 在 OpenRouter 上比想象的便宜？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">三个原因。第一，OpenRouter 端点服务的是 FP8 量化权重（端点元数据 quant=fp8），而非 BF16 全精度模型，单 token 算力约为后者的一半。第二，1M 上下文通过 Gated DSA + IndexCache 实现，而非朴素稠密注意力，长上下文下的注意力显存与 FLOPs 都被砍掉。第三，OpenRouter 直接路由到底层 Tencent 提供商，无聚合商加价。与 DeepSeek-V4 Flash（$0.09/M 输入）相比，Hy4 preview 输入贵约 9 倍；与 Cloudflare 50% 折的 GPT-5.6 Sol（$2.50/M 输出）相比，Hy4 preview 输出便宜约 67%。具体选哪个取决于你更需要 1M 上下文、推理深度还是单纯廉价 token。</p>
+
+<h3 class="text-xl font-bold text-gray-900 mt-6 mb-3">2026 年生产环境选 Hy4 preview 还是 DeepSeek-V4？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你的 agent 是短 prompt + 高输出体量（代码生成、分析报告），DeepSeek-V4 Flash 的 $0.09/M 输入、$0.18/M 输出便宜约 9-14 倍。如果你的 agent 是长上下文、读密集（RAG 500K+ token、整库代码分析、长文档摘要），Hy4 preview 的原生 1M 上下文 + 49B 激活参数是更优默认——它的稀疏注意力在 DeepSeek-V4 之类稠密注意力模型开始掉检索精度的长度上仍能保持。如果工具调用是主要场景，两者能力大致相当，看价格取舍。总结：上下文长度 / Apache 2.0 自托管 / 推理深度选 Hy4 preview；纯按 token 单价 + 128K-256K 标准上下文选 DeepSeek-V4 Flash。</p>
+
+<hr class="my-8 border-gray-200" />
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>结论：</strong>腾讯混元 Hy4 preview 是 2026-08-31 时 OpenRouter 上最便宜的 Apache-2.0 + 770B 档 MoE + 原生 1M 上下文组合——$0.834 / $2.501 / $0.042 每百万输入 / 输出 / 缓存读取 token，FP8 量化，Gated DSA + IndexCache 注意力，iHC 残差，vLLM / SGLang 部署配方开箱即用。长文档 RAG（500K+）、整库代码分析、agent loop 在 256K 是硬上限的场景，这是当下值得验证的开源权重新发布。256K 以下短 prompt，Cloudflare Workers AI 上的 GLM-5.3（$0.26/M 缓存输入）或 DeepSeek-V4 Flash（$0.09/M 输入）按价格仍是更优默认。</p>
+
+<p class="text-sm text-gray-500 mt-8">最后核验 2026-08-31。来源：<a href="https://openrouter.ai/api/v1/models" target="_blank" rel="nofollow">OpenRouter models API</a>，<a href="https://huggingface.co/tencent/Hy4-preview" target="_blank" rel="nofollow">HF model card</a>，<a href="https://huggingface.co/tencent/Hy4-preview/raw/main/README.md" target="_blank" rel="nofollow">Hy4 preview README</a>，<a href="https://openrouter.ai/models/tencent/hy4-preview" target="_blank" rel="nofollow">OpenRouter 模型页</a>。</p>`;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={zhCanonicalUrl}
+  lang="zh"
+>
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+      <article class="prose prose-lg max-w-none">
+        <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+        <div set:html={zhBody} />
+      </article>
+
+      <aside class="lg:sticky lg:top-8 lg:self-start">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-5">
+          <p class="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-2">推荐</p>
+          <h3 class="font-bold text-gray-900 mb-2">{affiliateSidebar.title}</h3>
+          <p class="text-sm text-gray-700 mb-3">{affiliateSidebar.description}</p>
+          <a href={affiliateSidebar.url} target="_blank" rel="nofollow sponsored" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-colors">
+            {affiliateSidebar.cta}
+          </a>
+        </div>
+
+        <div class="mt-6 bg-white border border-gray-200 rounded-lg p-5">
+          <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">速览</p>
+          <ul class="text-sm text-gray-700 space-y-2">
+            <li><strong>发布日期：</strong>2026-08-27</li>
+            <li><strong>许可证：</strong>Apache 2.0</li>
+            <li><strong>参数：</strong>770B / 49B 激活</li>
+            <li><strong>上下文：</strong>1M token</li>
+            <li><strong>OpenRouter 输入/输出：</strong>$0.83 / $2.50 每 M</li>
+            <li><strong>缓存读取：</strong>$0.042 / M</li>
+            <li><strong>量化：</strong>FP8</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
