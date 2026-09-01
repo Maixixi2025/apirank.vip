@@ -8116,7 +8116,183 @@
     ],
     "bestFor": "需要最新 NVIDIA 自研 Nemotron 模型的团队；探索 LiveAgent（代理技能平台）的开发者；多端点部署测试的 AI 工程团队",
     "bestForEN": "Teams needing the latest NVIDIA Nemotron models; developers exploring the LiveAgent platform; AI engineering teams multi-endpoint deployment testing",
-    "status": "active"
+    "status": "active",
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": ["Plan / Channel", "Billing Model", "Free Credits", "Best For"],
+        "headersZh": ["方案 / 渠道", "计费模式", "免费额度", "最佳用途"],
+        "rows": [
+          [
+            "Free Endpoints (build.nvidia.com catalog)",
+            "$0 — generate NVIDIA API key, no credit card, 40 free hosted models for /v1/chat/completions",
+            "Per-model rate limits (≈40 RPM class), no monthly credits to burn down",
+            "Prototyping, eval, /v1/chat/completions smoke-testing before signing partner contracts"
+          ],
+          [
+            "Lightning AI (Nemotron-3 Ultra 550B)",
+            "$0.41 input / $1.20 output per 1M tokens (serverless)",
+            "—",
+            "Lowest listed partner price for flagship Nemotron; one of the cheapest paths to a 550B-class Mamba-2 hybrid model"
+          ],
+          [
+            "Deep Infra (Nemotron-3 Ultra 550B)",
+            "$0.50 input / $2.20 output per 1M tokens (serverless); Dedicated GPU from $0.01/min",
+            "—",
+            "Serverless for bursty workloads, dedicated GPU endpoint when you need a steady tok/s floor"
+          ],
+          [
+            "Bitdeer AI / GMI Cloud (Nemotron-3 Ultra 550B)",
+            "$0.80 input / $2.60 output per 1M tokens (serverless, identical rates on both)",
+            "—",
+            "Asia-Pacific–friendly GPU regions, useful when US-only partners are capacity-constrained"
+          ],
+          [
+            "Digital Ocean (Nemotron-3 Ultra 550B)",
+            "$0.90 input / $1.70 output per 1M tokens (serverless)",
+            "—",
+            "Cheapest partner output token rate; fits content-generation workloads where output tokens dominate cost"
+          ],
+          [
+            "OpenRouter / Together AI / Hugging Face partner mirrors",
+            "Partner-set pricing per token; same Nemotron weights re-hosted under partner rate cards",
+            "—",
+            "Multi-cloud failover, or routing through partners that already sit inside your existing OpenAI-compatible stack"
+          ],
+          [
+            "NIM Self-Hosted (NVIDIA AI Enterprise license)",
+            "Per-GPU annual subscription (H100 / L40S / A100 / H200 SKUs); bring-your-own infra",
+            "—",
+            "On-prem / VPC deploys where data IP cannot leave your perimeter; same Triton + TensorRT-LLM engine as hosted"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "免费端点（build.nvidia.com 目录）",
+            "$0 —— 生成 NVIDIA API Key 即可使用，无需信用卡，40 个免费托管模型走 /v1/chat/completions",
+            "按模型速率限制（约 40 RPM 级别），无月度赠送额度",
+            "原型开发、评估、签合作伙伴合同前的 /v1/chat/completions 冒烟测试"
+          ],
+          [
+            "Lightning AI（Nemotron-3 Ultra 550B）",
+            "$0.41 输入 / $1.20 输出 每百万 token（serverless）",
+            "—",
+            "旗舰 Nemotron 合作伙伴最低报价；调用 550B 级 Mamba-2 混合模型最便宜的渠道之一"
+          ],
+          [
+            "Deep Infra（Nemotron-3 Ultra 550B）",
+            "$0.50 输入 / $2.20 输出 每百万 token（serverless）；专用 GPU 起步 $0.01/分钟",
+            "—",
+            "突发流量用 serverless，需要稳定 tok/s 下限就上专用 GPU 端点"
+          ],
+          [
+            "Bitdeer AI / GMI Cloud（Nemotron-3 Ultra 550B）",
+            "$0.80 输入 / $2.60 输出 每百万 token（serverless，两家报价一致）",
+            "—",
+            "亚太友好 GPU 区域，US-only 合作伙伴容量紧张时的备选"
+          ],
+          [
+            "Digital Ocean（Nemotron-3 Ultra 550B）",
+            "$0.90 输入 / $1.70 输出 每百万 token（serverless）",
+            "—",
+            "输出 token 单价最低；适合输出 token 占成本主体的内容生成场景"
+          ],
+          [
+            "OpenRouter / Together AI / Hugging Face 合作伙伴镜像",
+            "按合作伙伴 token 计价；同一组 Nemotron 权重以合作方价格表重新托管",
+            "—",
+            "多云故障转移，或已经在用 OpenAI 兼容栈时路由到现有合作方"
+          ],
+          [
+            "NIM 自托管（NVIDIA AI Enterprise 许可）",
+            "按 GPU 年度订阅（H100 / L40S / A100 / H200 型号）；自带基础设施",
+            "—",
+            "数据 IP 不能出本地的 on-prem / VPC 部署；与托管版使用相同的 Triton + TensorRT-LLM 引擎"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "API Style",
+            "value": "OpenAI-compatible /v1/chat/completions endpoint at https://integrate.api.nvidia.com/v1 — existing OpenAI SDK clients (openai-python, openai-node, LangChain, LlamaIndex) work by swapping base_url and api_key. Streaming supported via stream=true; tool/function calling on chat-tuned Nemotron checkpoints."
+          },
+          {
+            "label": "Auth & Free Tier",
+            "value": "Single NVIDIA_API_KEY Bearer token issued from build.nvidia.com; no credit card for the 40 free endpoint models. Free tier carries per-model RPM caps (no fixed monthly credit pool); partner endpoints require a separate API key from each partner's console."
+          },
+          {
+            "label": "Model Catalog (100+ models, 23 Nemotron-branded)",
+            "value": "Across LLM, vision, embedding, ASR, OCR, guardrails: Nemotron-3 Ultra 550B (a55B), Nemotron-3 Super 120B (a12B), Nemotron-3 Nano 30B (a3B), Nemotron-3.5-Lightning-30B-A3B, Nemotron-3 Nano Omni 30B (reasoning), Llama-3.1-Nemotron-Ultra-253B v1, Llama-3.3-Nemotron-Super-49B v1.5, Llama-3.1-Nemotron-Nano-8B v1, plus Nemotron-Embed-1B, Nemotron-OCR-v1/v2, Nemotron-Parse, Nemotron-ASR-Streaming, Nemotron-VoiceChat, llama-nemotron-rerank-vl-1b-v2, mistral-nemotron, and Nemoguard safety / topic-control / jailbreak-detect."
+          },
+          {
+            "label": "Reasoning Mode",
+            "value": "Nemotron-3 Ultra / Super / Nano-Omni checkpoints expose an explicit thinking trace via extra_body={\"chat_template_kwargs\":{\"enable_thinking\":True}} and stream chunk.choices[0].delta.reasoning_content — the same chat-completion surface returns both reasoning and final answer, so apps get chain-of-thought for free."
+          },
+          {
+            "label": "Context & Limits",
+            "value": "Up to 16384 completion tokens on flagship Nemotron; context windows vary by checkpoint (Nemotron-3 Ultra typically 128K class). Standard OpenAI sampling knobs (temperature, top_p, top_k, frequency/presence penalties) all honored. No fine-grained tool-use schema beyond OpenAI function-calling shape."
+          },
+          {
+            "label": "Self-Hosted Path",
+            "value": "Every public NIM ships as a Docker container with NVIDIA AI Enterprise license — one helm/docker run brings up Triton Inference Server + TensorRT-LLM + vLLM-optimized engine on H100 / H200 / L40S / A100 / RTX PRO 6000. Identical API surface to integrate.api.nvidia.com/v1, so the same client code moves between hosted and self-hosted."
+          },
+          {
+            "label": "Inference Engines",
+            "value": "Under the hood: TensorRT-LLM for NVIDIA-tuned models, vLLM for community open-source checkpoints, Triton Inference Server as the serving layer. Container GPU matrix documented per model (A100 / H100 / L40S / A10G / A100-PG509-200 visible on the catalog filter)."
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "API 风格",
+            "value": "兼容 OpenAI 的 /v1/chat/completions 端点，地址 https://integrate.api.nvidia.com/v1 —— 现有 OpenAI SDK 客户端（openai-python、openai-node、LangChain、LlamaIndex）只需替换 base_url 和 api_key 即可使用。stream=true 支持流式；chat-tuned Nemotron 检查点支持 tool / function calling。"
+          },
+          {
+            "label": "鉴权与免费层",
+            "value": "从 build.nvidia.com 签发单一 NVIDIA_API_KEY Bearer token；40 个免费端点模型无需信用卡。免费层按模型设 RPM 上限（无固定月度积分池）；合作伙伴端点需要在各合作方控制台单独申请 API key。"
+          },
+          {
+            "label": "模型目录（100+ 模型，23 个 Nemotron 品牌）",
+            "value": "覆盖 LLM、视觉、Embedding、ASR、OCR、Guardrails：Nemotron-3 Ultra 550B (a55B)、Nemotron-3 Super 120B (a12B)、Nemotron-3 Nano 30B (a3B)、Nemotron-3.5-Lightning-30B-A3B、Nemotron-3 Nano Omni 30B（推理）、Llama-3.1-Nemotron-Ultra-253B v1、Llama-3.3-Nemotron-Super-49B v1.5、Llama-3.1-Nemotron-Nano-8B v1，加上 Nemotron-Embed-1B、Nemotron-OCR-v1/v2、Nemotron-Parse、Nemotron-ASR-Streaming、Nemotron-VoiceChat、llama-nemotron-rerank-vl-1b-v2、mistral-nemotron，以及 Nemoguard 安全 / 主题控制 / 越狱检测系列。"
+          },
+          {
+            "label": "推理模式",
+            "value": "Nemotron-3 Ultra / Super / Nano-Omni 检查点通过 extra_body={\"chat_template_kwargs\":{\"enable_thinking\":True}} 暴露显式思考轨迹，并在流式响应中返回 chunk.choices[0].delta.reasoning_content —— 同一个 chat-completion 表面同时返回推理过程和最终答案，应用零改造即可拿到思维链。"
+          },
+          {
+            "label": "上下文与限制",
+            "value": "旗舰 Nemotron 上限 16384 completion token；上下文窗口随检查点变化（Nemotron-3 Ultra 通常 128K 级）。OpenAI 标准采样参数（temperature、top_p、top_k、frequency/presence penalty）全部支持。Tool-use schema 未超出 OpenAI function-calling 标准形态。"
+          },
+          {
+            "label": "自托管路径",
+            "value": "每个公开 NIM 都附带 Docker 容器与 NVIDIA AI Enterprise 许可 —— 一条 helm / docker run 即可在 H100 / H200 / L40S / A100 / RTX PRO 6000 上跑通 Triton Inference Server + TensorRT-LLM + vLLM 优化引擎。API 表面与 integrate.api.nvidia.com/v1 完全一致，同一份客户端代码可在托管与自托管之间无缝迁移。"
+          },
+          {
+            "label": "推理引擎",
+            "value": "底层：NVIDIA 自研模型走 TensorRT-LLM，社区开源模型走 vLLM，Triton Inference Server 作为服务层。每个模型的容器 GPU 矩阵在目录中可查（已知支持 A100 / H100 / L40S / A10G / A100-PG509-200）。"
+          }
+        ]
+      },
+      {
+        "title": "🧬 Nemotron-3 LatentMoE: Mamba-2 + MoE + Attention Hybrid",
+        "titleZh": "🧬 Nemotron-3 LatentMoE：Mamba-2 + MoE + Attention 混合架构",
+        "type": "text",
+        "text": "What makes Nemotron-3 (Ultra 550B / Super 120B / Nano 30B) genuinely interesting in a sea of plain Llama fine-tunes is the LatentMoE hybrid: each layer mixes a Mamba-2 selective state-space model with sparse Mixture-of-Experts and a smaller share of vanilla attention, instead of stacking attention everywhere. The practical effect is linear-time sequence handling for the bulk of the compute (Mamba-2 scales O(n) in tokens vs attention's O(n²)), with attention kept only where it earns its keep — long-range dependencies, in-context retrieval, and tool-use planning. At inference this translates to noticeably steadier tok/s as prompt length grows past 32K, less KV-cache pressure on H100 / H200 GPUs, and room for the same hardware to serve a 550B-active-parameter model that would otherwise need much larger deployments. NVIDIA complements the architecture with explicit reasoning checkpoints (Nemotron-3 Nano Omni 30B reasoning, plus the enable_thinking flag on Ultra / Super) so the same weights can be steered into either chat or chain-of-thought mode by the caller, without re-hosting.",
+        "textZh": "Nemotron-3（Ultra 550B / Super 120B / Nano 30B）在遍地 Llama 微调的当下真正有意思的地方是 LatentMoE 混合架构：每一层把 Mamba-2 选择性状态空间模型与稀疏 MoE 混合，再加少量 vanilla attention，而不是全程堆叠 attention。实际效果是绝大部分计算按 token 线性扩展（Mamba-2 是 O(n)，attention 是 O(n²)），只在确实需要时才保留 attention —— 远距离依赖、上下文检索、工具调用规划。推理时表现为：prompt 长度超过 32K 后 tok/s 衰减明显更平缓，对 H100 / H200 的 KV-cache 压力更小，同样的硬件能承载 550B active 参数模型，否则需要更大规模部署。NVIDIA 还配套了显式推理检查点（Nemotron-3 Nano Omni 30B reasoning，加上 Ultra / Super 上的 enable_thinking 开关），调用方可在 chat 与 chain-of-thought 两种模式间切换，无需重新部署权重。"
+      },
+      {
+        "title": "🌐 China Access & Latency",
+        "titleZh": "🌐 中国访问与延迟",
+        "type": "text",
+        "text": "build.nvidia.com and integrate.api.nvidia.com are both US-hosted, and US export-control rules restrict NVIDIA's top-end accelerators (H100 / H200 / Blackwell-class) from being shipped or fronted from mainland China — the public NIM endpoint is reachable from China only via a stable overseas proxy / VPN / SD-WAN, with typical round-trip latency of 250-450 ms depending on the egress (HK / Tokyo / Singapore). The free endpoint accepts overseas-email registration without credit card, but the service itself logs every prompt and output for product-improvement per the Trial Terms of Service, which is a hard blocker for any confidential code or proprietary data. Practical China-friendly paths: (1) hit Nemotron through an OpenRouter or Together AI partner key (both work behind HK / Tokyo edge nodes and accept overseas cards, with partner-set rate cards often matching NVIDIA's listed tier); (2) self-host the same NIM container inside an Asia-Pacific cloud that is not subject to the export rule (AWS Tokyo, Azure Singapore, GCP Taiwan, or a HK / SG GPU host) — you bring your own license from NVIDIA AI Enterprise and the API surface is identical; (3) use the free build.nvidia.com endpoint purely for evaluation and route all production traffic through one of the above. There is no Alipay / WeChat Pay top-up, no China-domestic pricing tier, and no official NVIDIA mainland channel — every workable route involves an overseas component.",
+        "textZh": "build.nvidia.com 与 integrate.api.nvidia.com 都托管在美国，同时美国出口管制限制 NVIDIA 高端加速器（H100 / H200 / Blackwell 级）销往或从中国大陆前端提供服务 —— 公共 NIM 端点只能通过稳定的海外代理 / VPN / SD-WAN 从国内连通，根据出口位置（HK / Tokyo / Singapore），典型往返延迟 250-450 ms。免费端点允许海外邮箱免信用卡注册，但服务按 Trial 服务条款记录每一次 prompt 与输出用于产品改进，这对任何保密代码或专有数据都是硬性阻断。实用的国内友好路径：(1) 通过 OpenRouter 或 Together AI 合作伙伴密钥调用 Nemotron（两者在 HK / Tokyo 边缘节点可用，接受海外卡，按合作方价格表通常与 NVIDIA 挂牌价持平）；(2) 在不受出口规则约束的亚太云（AWS Tokyo、Azure Singapore、GCP Taiwan 或 HK / SG GPU 主机）上自托管同一份 NIM 容器 —— 通过 NVIDIA AI Enterprise 自行持证，API 表面完全一致；(3) 仅在评估阶段使用 build.nvidia.com 免费端点，所有生产流量走上述两条之一。没有支付宝 / 微信支付充值，没有中国本土定价档，也没有 NVIDIA 官方中国大陆渠道 —— 每一条可行路线都涉及海外环节。"
+      }
+    ]
   },
   {
     "id": "lingyi",
