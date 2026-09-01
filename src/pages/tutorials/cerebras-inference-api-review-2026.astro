@@ -1,0 +1,295 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'cerebras-inference-api-review-2026';
+const date = '2026-09-01';
+const locale = 'en';
+
+const enTitle = 'Cerebras Inference Review 2026: Wafer-Scale AI API';
+const enDescription = 'Cerebras Inference review 2026 — CS-4 wafer-scale hardware, Gemma 4 multimodal, Z.ai GLM 4.7, OpenAI gpt-oss-120b. OpenAI-compatible API, $5 free trial.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is Cerebras Inference?", "acceptedAnswer": { "@type": "Answer", "text": "Cerebras Inference is the hosted model API running on Cerebras Systems' wafer-scale CS-4 silicon rather than merchant GPUs. As of September 2026 the catalog covers frontier open-weights models including Gemma 4 31B (multimodal), Z.ai GLM 4.7, OpenAI gpt-oss-120b, Qwen 3.5, Llama 3.3 70B, and Llama 3.1 405B. The endpoint is OpenAI-compatible, so existing OpenAI SDKs work after a base-URL change to https://inference.cerebras.ai/v1. Pricing is per million tokens — Gemma 4 31B at $0.99 input / $1.49 output, GLM 4.7 at $2.25 / $2.75, gpt-oss-120b at $0.35 / $0.75 — and a $5 signup credit on top of the free trial unlocks every model in the catalog." } },
+    { "@type": "Question", "name": "How much does Cerebras Inference cost compared to other inference APIs?", "acceptedAnswer": { "@type": "Answer", "text": "Cerebras Inference lists its flagship models at sub-$2.50 per million output tokens — Gemma 4 31B at $0.99 input / $1.49 output, Z.ai GLM 4.7 at $2.25 / $2.75, OpenAI gpt-oss-120b at $0.35 / $0.75, Llama 3.3 70B at $0.60 / $0.60, and Llama 3.1 405B reserved for Enterprise tier. The free trial gives $5 of credits on signup, the Developer tier requires a $10 minimum top-up with 10× rate limits, and the Enterprise tier is sales-led with custom weights, dedicated queue priority, an uptime SLA, and fine-tuning services. Compared to OpenRouter's Llama 3.3 70B at ~$0.60/$0.60, Cerebras prices the same model at parity but with materially lower time-to-first-token thanks to the CS-4 wafer." } },
+    { "@type": "Question", "name": "Is Cerebras Inference accessible from mainland China?", "acceptedAnswer": { "@type": "Answer", "text": "Cerebras Inference is hosted exclusively from inference.cerebras.ai, served from US-based CS-4 hardware. North America customers typically see 50-200 ms TTFT on small models and ~400 ms on 405B-class models. Asia-Pacific customers (Tokyo / Singapore / Sydney) see 600-900 ms TTFT. Mainland China is the explicit exception: Cerebras does not currently serve inference traffic from any in-China region, and outbound traffic from CN is frequently throttled by the GFW — mainland developers should expect either 1.5 s+ TTFT or outright connection failures. A domestic provider (Zhipu, Qwen / Alibaba Bailian, ByteDance Doubao on Volcengine) is the recommended fallback for user-facing applications serving CN traffic." } },
+    { "@type": "Question", "name": "Does Cerebras Inference support streaming and OpenAI-compatible APIs?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Cerebras Inference exposes a fully OpenAI-compatible /v1/chat/completions endpoint at https://inference.cerebras.ai/v1 — existing OpenAI SDKs (Python, Node, Go) connect by changing only the base_url. Server-Sent Events (SSE) and JSON stream mode are both available on every chat model, with sub-second time-to-first-token on Gemma 4 31B and ~200 ms on smaller Llama variants on a warm connection. Function calling / tool use is native on gpt-oss-120b and Z.ai GLM 4.7; response_format={"type":"json_schema",...} enforces JSON output on every text-capable model; parallel tool execution is supported." } },
+    { "@type": "Question", "name": "What multimodal input does Cerebras Inference support?", "acceptedAnswer": { "@type": "Answer", "text": "Gemma 4 31B is the first multimodal model on the Cerebras Inference platform — it accepts base64 image inputs (PNG, JPEG, WebP up to 20 MB) directly inside the messages array of a chat-completion request. Screenshots, document scans, diagrams, and product photos can be analyzed without a separate OCR pipeline. Vision routing is automatic — no flag or model variant to switch — and the multimodal inference still runs on the same CS-4 wafer, so vision tasks get the same sub-second time-to-first-token benefit that text workloads already see." } },
+    { "@type": "Question", "name": "What is the difference between Cerebras Inference and Groq, SambaNova, or Together AI?", "acceptedAnswer": { "@type": "Answer", "text": "All four run inference on accelerator silicon rather than commodity GPUs, but the chips differ. Cerebras uses a single wafer-scale CS-4 chip that delivers 30× faster batch-1 inference than GPU peers at flagship-model sizes (Llama 3.1 405B). Groq uses first-gen LPU silicon focused on streaming latency. SambaNova uses RDU (Reconfigurable Dataflow Unit) chips with first-party prompt caching. Together AI runs on H100/B200 GPU clusters. For batch-1 low-latency chat at frontier-model sizes, Cerebras leads; for streaming multimodal workloads the comparison is closer. Cerebras also uniquely serves Gemma 4 31B multimodal on its own silicon, while SambaNova serves MiniMax-M2.7 with cached-input pricing and Together AI is broader across open-source models but slower at 405B-class batch-1." } }
+  ]
+};
+
+const enBody = `
+<header>
+  <h1 class="text-3xl font-bold text-gray-900 mb-4">Cerebras Inference Review 2026: Wafer-Scale AI API</h1>
+  <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+    <time datetime="${date}">September 1, 2026</time>
+    <span>•</span>
+    <span>Cerebras Inference Review</span>
+    <span>•</span>
+    <span>About 11 min read</span>
+  </div>
+  <p class="text-lg text-gray-600 leading-relaxed">
+    Cerebras Inference is one of the few hosted AI APIs that does <strong>not</strong> run on merchant GPUs. As of September 2026 the platform runs every model on its own wafer-scale CS-4 silicon — a single chip that delivers roughly 30× faster batch-1 inference than comparable GPU clouds. The catalog now covers frontier open-weights models at sub-$2.50 per million output tokens: <strong>Gemma 4 31B multimodal</strong> at $0.99 input / $1.49 output (the first vision-capable Cerebras model), <strong>Z.ai GLM 4.7</strong> at $2.25 / $2.75 for coding and reasoning workloads, and <strong>OpenAI gpt-oss-120b</strong> at $0.35 / $0.75 under Apache-2.0. Llama 3.3 70B runs at $0.60 / $0.60 with sub-second time-to-first-token, and Llama 3.1 405B is available on the Enterprise tier with a dedicated queue. The endpoint is fully <strong>OpenAI-compatible</strong> at <code>https://inference.cerebras.ai/v1</code>, the free trial is $5 in credits on signup, and the Developer tier requires only a $10 minimum top-up.
+  </p>
+</header>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">What Is Cerebras Inference?</h2>
+  <p>Cerebras Systems originally built the world's largest commercially available chip — the CS-3 and now CS-4 wafer-scale accelerator — for hyperscale training. By 2024 the company pivoted the same hardware toward inference, and the hosted service at <code>inference.cerebras.ai</code> is the result. The wafer holds 900,000 cores on a single die; for batch-1 inference at 70B+ parameter scales that translates into time-to-first-token numbers no GPU cluster can match. The trade-off historically was a narrow model catalog (Llama, Qwen, DeepSeek), but the September 2026 catalog adds the multimodal <strong>Gemma 4 31B</strong>, the coding-focused <strong>Z.ai GLM 4.7</strong>, and the open-weights <strong>gpt-oss-120b</strong>, expanding the platform from "fast Llama host" to a genuine frontier-API alternative.</p>
+  <p>Three characteristics distinguish Cerebras Inference from a typical hosted LLM endpoint:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Wafer-scale silicon</strong> — every request runs on CS-4 hardware, so TTFT is governed by die-local memory bandwidth rather than PCIe-attached HBM. At 405B-class model sizes this gives sub-1s TTFT where GPU clouds typically deliver 2-4s.</li>
+    <li><strong>OpenAI-compatible API</strong> — the endpoint at <code>https://inference.cerebras.ai/v1</code> follows OpenAI's schema for /v1/chat/completions, function calling, embeddings, and vision. No SDK to install, no proxy to maintain.</li>
+    <li><strong>Open-weights catalog</strong> — Cerebras intentionally avoids proprietary frontier models (no Claude, no GPT, no Gemini). The catalog spans Apache-2.0 / Llama-community / Gemma / Qwen / Z.ai / OpenAI gpt-oss releases.</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">The September 2026 Model Catalog</h2>
+  <p>The current catalog covers three tiers, all hosted on CS-4 hardware:</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Model</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Input $/M</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Output $/M</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Notes</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">Gemma 4 31B (multimodal)</td><td class="px-4 py-2">$0.99</td><td class="px-4 py-2">$1.49</td><td class="px-4 py-2">First vision-capable Cerebras model — accepts base64 images inside chat-completion messages</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Z.ai GLM 4.7</td><td class="px-4 py-2">$2.25</td><td class="px-4 py-2">$2.75</td><td class="px-4 py-2">Coding + reasoning; function calling; JSON mode; long-context optimized</td></tr>
+      <tr><td class="px-4 py-2 font-medium">OpenAI gpt-oss-120b</td><td class="px-4 py-2">$0.35</td><td class="px-4 py-2">$0.75</td><td class="px-4 py-2">Apache-2.0 open weights; function calling; cheapest flagship-tier price</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Qwen 3.5 32B</td><td class="px-4 py-2">$0.40</td><td class="px-4 py-2">$0.80</td><td class="px-4 py-2">Compact Alibaba release with strong multilingual + Chinese</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Llama 3.3 70B</td><td class="px-4 py-2">$0.60</td><td class="px-4 py-2">$0.60</td><td class="px-4 py-2">Symmetric pricing; the workhorse Llama tier</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Llama 3.1 405B</td><td class="px-4 py-2">Enterprise</td><td class="px-4 py-2">Enterprise</td><td class="px-4 py-2">Sales-led pricing; reserved-capacity queue; bespoke SLAs</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Llama 4 Scout (preview)</td><td class="px-4 py-2">$0.80</td><td class="px-4 py-2">$1.20</td><td class="px-4 py-2">New 17B-active / 109B-total MoE with 10M context window</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Note on Llama 3.1 405B:</strong> per the published rate card 405B is gated behind Enterprise sales contact. The 405B tier shares the same wafer as Llama 3.3 70B — the only differentiator is dedicated-queue priority and SLA terms. Cerebras has not published self-serve 405B pricing as of September 2026; expect the same model at $3 / $3 per million on a 1-year commit when negotiated.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Pricing and Plans (September 2026)</h2>
+  <p>The pricing model splits into three tiers:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Free Trial</strong> — $5 in credits on signup, automatically applied; access to every model in the catalog (including 405B, on a shared queue); lowest rate limits.</li>
+    <li><strong>Developer</strong> — $10 minimum top-up; 10× the rate limits of the Free Trial; same model catalog; higher priority processing. This is the recommended self-serve path for any team running more than hobby traffic.</li>
+    <li><strong>Enterprise</strong> — sales-led contract; dedicated queue; 99.9% uptime SLA; custom model weights; fine-tuning services; reserved capacity. Llama 3.1 405B self-serve access is gated here.</li>
+  </ul>
+  <p>The pricing is straightforward per-million-token, billed by the second against an account credit balance. There are no hidden tier fees, no per-request overhead, and no committed-use minimum on Developer. The Enterprise tier is the only place Cerebras charges for fine-tuning — and the fine-tuning service is bespoke to model weights (you bring your own LoRA checkpoints and Cerebras tunes and hosts them on CS-4).</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">API and Developer Experience</h2>
+  <p>The Cerebras Inference API follows the OpenAI v1 schema. Existing OpenAI SDK code works by changing only the base URL and supplying a Cerebras API key:</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://inference.cerebras.ai/v1",
+    api_key=os.environ["CEREBRAS_API_KEY"],
+)
+
+resp = client.chat.completions.create(
+    model="gpt-oss-120b",
+    messages=[{"role": "user", "content": "Write a haiku about CS-4 wafers"}],
+    stream=True,
+)
+for chunk in resp:
+    print(chunk.choices[0].delta.content or "", end="")</code></pre>
+  <p>Function calling on <code>gpt-oss-120b</code> and <code>zai-glm-4.7</code> uses the same <code>tools=[...]</code> and <code>tool_choice</code> parameters as OpenAI; JSON mode via <code>response_format={"type": "json_schema", "schema": ...}</code> works on every text-capable model. Multimodal input on Gemma 4 31B is the only model-specific call signature:</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>import base64
+
+with open("screenshot.png", "rb") as f:
+    img_b64 = base64.b64encode(f.read()).decode("utf-8")
+
+resp = client.chat.completions.create(
+    model="gemma-4-31b",
+    messages=[{
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "Describe this UI and find the broken layout."},
+            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{img_b64}"}}
+        ]
+    }],
+)</code></pre>
+  <p>The Python <code>cerebras-cloud-sdk</code> is also published for teams that prefer a non-OpenAI schema, and LangChain ships <code>langchain-cerebras</code> with <code>ChatCerebras</code> — meaning RAG pipelines need zero glue code to drop Cerebras Inference in as a replacement for an OpenAI-compatible endpoint. LlamaIndex has the same adapter via the OpenAI-compatible path.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Wafer-Scale Hardware: Why Cerebras Is Faster</h2>
+  <p>Most inference providers run on H100 or B200 GPUs. Both chips use high-bandwidth memory (HBM) attached via a PCIe or NVLink bus, which means a batch-1 inference request at 70B+ parameter scale has to traverse ~80 GB of memory bandwidth every token. A single CS-4 wafer puts the entire model on-die, eliminating the memory-bandwidth ceiling. Empirically that gives Cerebras:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Sub-second TTFT on Llama 3.3 70B</strong> — competitive GPU clouds deliver 1.5-2.5s TTFT for the same model; Cerebras delivers ~300 ms. This matters for any interactive UI where the user is staring at an empty textbox.</li>
+    <li><strong>30× throughput at batch 1</strong> — the speed-up factors in for interactive agents, IDE completions, and streaming chat, all of which run at batch-1 by definition.</li>
+    <li><strong>Lower total cost of ownership for streaming workloads</strong> — because the wafer is faster per request, fewer wafer-hours are consumed to deliver the same user-perceived latency.</li>
+  </ul>
+  <p>The trade-off is capacity. Cerebras has a finite fleet of CS-4 systems globally — the catalog supports less aggregate throughput than a 10,000-GPU H100 cluster. For workloads where batch-1 latency is the bottleneck and the request volume stays within Cerebras's fleet size, this is a winning trade. For high-concurrency batch-processing (say, classifying 10M product descriptions per hour), a GPU cloud is a better fit.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Edge Latency and China Access</h2>
+  <p>Cerebras Inference is hosted from US-based CS-4 hardware and reaches customers over the public Internet. North America users typically see 50-200 ms TTFT on smaller models and ~400 ms on Llama 3.1 405B. European users reach the US origin over trans-Atlantic fiber with TTFT roughly 1.5× the North America baseline. Asia-Pacific users (Tokyo / Singapore / Sydney) see 600-900 ms TTFT — workable for batch pipelines and RAG retrieval, noticeable in interactive chat where every additional 100 ms feels like a slow computer.</p>
+  <p>Mainland China is the explicit gap. Cerebras does not currently operate any inference region in mainland China, and outbound traffic from China is regularly throttled by the GFW. Mainland developers should expect either 1.5 s+ TTFT or outright connection failures. For end-user applications serving CN traffic the recommended path is a domestic provider — Zhipu GLM, Alibaba Qwen on Bailian, ByteDance Doubao on Volcengine — and Cerebras only for global (non-CN) workloads.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Cerebras Inference vs Groq, SambaNova, Together AI, OpenRouter</h2>
+  <p>All four competitors run inference on accelerator silicon or H100/B200 clusters, but the choice of chip and the model catalog differ:</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Platform</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Hardware</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Flagship model</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Best for</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">Cerebras Inference</td><td class="px-4 py-2">CS-4 wafer</td><td class="px-4 py-2">gpt-oss-120b</td><td class="px-4 py-2">Batch-1 latency on 70B+</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Groq</td><td class="px-4 py-2">LPU v1</td><td class="px-4 py-2">Llama 3.3 70B</td><td class="px-4 py-2">Streaming speech / fast chat</td></tr>
+      <tr><td class="px-4 py-2 font-medium">SambaNova Cloud</td><td class="px-4 py-2">RDU</td><td class="px-4 py-2">MiniMax-M2.7</td><td class="px-4 py-2">Cached-input pricing, code models</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Together AI</td><td class="px-4 py-2">H100/B200</td><td class="px-4 py-2">Llama 3.1 405B</td><td class="px-4 py-2">Broad open-source catalog at GPU pricing</td></tr>
+      <tr><td class="px-4 py-2 font-medium">OpenRouter</td><td class="px-4 py-2">Aggregator</td><td class="px-4 py-2">300+ models</td><td class="px-4 py-2">Multi-provider routing, single API key</td></tr>
+    </tbody>
+  </table>
+  <p><strong>When to pick Cerebras:</strong> interactive chat at batch-1 on a 70B+ model where every 100 ms of TTFT matters; multimodal inference on Gemma 4 31B; the open-weights-only constraint (no Claude / GPT / Gemini licensing exposure); teams that already pay the OpenAI-SDK migration cost of one endpoint.</p>
+  <p><strong>When to pick elsewhere:</strong> high-concurrency batch workloads above the CS-4 fleet's capacity; closed-source frontier models (Cerebras has no Claude, GPT, or Gemini); mainland China end users; ultra-low-cost at smallest model sizes (Groq's Llama 3.2 1B tier or Cloudflare Workers AI at fractions of a cent per call are cheaper per request).</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Quick Start: Three Lines to a Working Call</h2>
+  <p>From a fresh Python environment:</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>pip install openai
+export CEREBRAS_API_KEY="csk-..."
+python -c "
+from openai import OpenAI
+c = OpenAI(base_url='https://inference.cerebras.ai/v1', api_key=__import__('os').environ['CEREBRAS_API_KEY'])
+r = c.chat.completions.create(model='gpt-oss-120b', messages=[{'role':'user','content':'hi'}])
+print(r.choices[0].message.content)
+"</code></pre>
+  <p>If you see a model response in under a second, you are talking to the CS-4 wafer. The same code (with <code>base_url</code> swapped) would talk to OpenAI's own platform — that is the entire migration story for switching to Cerebras from any other OpenAI-compatible provider.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Who Should Use Cerebras Inference</h2>
+  <p>Cerebras Inference fits three profiles well:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Latency-sensitive interactive agents</strong> — IDE code completions, in-product chat assistants, real-time customer-support agents where every extra 200 ms of TTFT shows up in user retention numbers. The wafer's batch-1 advantage compounds across thousands of concurrent sessions.</li>
+    <li><strong>Multimodal applications on Gemma 4 31B</strong> — screenshot analysis, document OCR-with-context, diagram understanding. Gemma 4 31B is the first vision-capable Cerebras model and runs at $1.49/M output, comparable to GPT-4o-mini's vision tier but on open weights.</li>
+    <li><strong>Open-weights-only teams</strong> — software with licensing constraints that exclude proprietary frontier models (Claude, GPT, Gemini). Cerebras's entire catalog is open-weights (Llama community license, Apache-2.0 gpt-oss, Gemma terms, Z.ai GLM); no proprietary SKU on the platform.</li>
+  </ul>
+  <p>It is a poor fit for anything that requires proprietary frontier intelligence (Claude Opus 5 and Sonnet 5 are not on Cerebras), high-concurrency batch processing above the CS-4 fleet's capacity, or end users in mainland China.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Verdict</h2>
+  <p>Cerebras Inference in September 2026 is a credible hosted-API alternative for teams that prioritize batch-1 latency and accept open-weights-only catalogs. The CS-4 wafer delivers genuinely faster TTFT than GPU competitors on flagship-model sizes; the multimodal Gemma 4 31B adds a vision tier that no other inference-as-a-service platform currently matches at this price; the OpenAI-compatible schema removes the usual migration tax. Pricing is competitive — Llama 3.3 70B at $0.60/$0.60, gpt-oss-120b at $0.35/$0.75, Gemma 4 31B at $0.99/$1.49 — without the per-request overhead or committed-use pressure that some competitors impose. The gaps are real (no proprietary frontier models, single US region, no mainland China access), but for the workload profile Cerebras was designed for — interactive chat at batch-1 on frontier open-weights — it is the strongest current option.</p>
+</section>
+`;
+---
+
+<BaseLayout title={enTitle + ' | APIRank'} description={enDescription} canonicalUrl={canonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Cerebras Inference Review 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+          <div class="prose prose-lg max-w-none" set:html={enBody} />
+
+          <hr class="my-12 border-gray-200" />
+
+          <section class="mt-8">
+            <p class="text-sm text-gray-500 mb-2"><strong>Disclosure:</strong> APIRank is an independent comparison site. Pricing data verified against Cerebras Inference's official pricing page and developer documentation on 2026-09-01. We may earn affiliate commission when you sign up through links on this page, at no extra cost to you.</p>
+            <p class="text-sm text-gray-500"><strong>Last verified:</strong> 2026-09-01. Pricing and model availability on Cerebras Inference change frequently — re-check before committing to a production workload.</p>
+          </section>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Provider:</strong> Cerebras Inference</li>
+                <li><strong>Hardware:</strong> CS-4 wafer-scale silicon</li>
+                <li><strong>Models:</strong> 7 (LLM + multimodal)</li>
+                <li><strong>Flagship open-weights:</strong> gpt-oss-120b ($0.35/$0.75)</li>
+                <li><strong>Multimodal:</strong> Gemma 4 31B ($0.99/$1.49)</li>
+                <li><strong>Free trial:</strong> $5 signup credits</li>
+                <li><strong>Developer tier:</strong> $10 minimum top-up</li>
+                <li><strong>API:</strong> OpenAI-compatible (REST + SDK)</li>
+                <li><strong>China access:</strong> ❌ US-origin only</li>
+              </ul>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/openrouter-review/" class="text-blue-600 hover:underline">OpenRouter Review 2026</a></li>
+                <li><a href="/tutorials/groq-api-review/" class="text-blue-600 hover:underline">Groq API Review</a></li>
+                <li><a href="/tutorials/together-ai-api-review/" class="text-blue-600 hover:underline">Together AI Review</a></li>
+                <li><a href="/tutorials/sambanova-api-review/" class="text-blue-600 hover:underline">SambaNova Cloud Review</a></li>
+                <li><a href="/tutorials/cloudflare-workers-ai-api-review-2026/" class="text-blue-600 hover:underline">Cloudflare Workers AI Review</a></li>
+              </ul>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Try Cerebras Inference</h3>
+              <p class="text-sm text-gray-700 mb-3">Cerebras Inference offers wafer-scale CS-4 inference with a $5 free trial, $10 Developer top-up, and OpenAI-compatible API at every model.</p>
+              <a href="https://inference.cerebras.ai" class="text-sm text-blue-600 hover:underline break-all" target="_blank" rel="noopener">inference.cerebras.ai</a>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">Advertisement</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

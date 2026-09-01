@@ -1,0 +1,270 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'cerebras-inference-api-review-2026';
+const date = '2026-09-01';
+const locale = 'zh';
+
+const zhTitle = 'Cerebras Inference 评测 2026：晶圆级 AI 推理 API';
+const zhDescription = 'Cerebras Inference 评测 2026：CS-4 晶圆芯片、Gemma 4 多模态、Z.ai GLM 4.7、OpenAI gpt-oss-120b。OpenAI 兼容 API、$5 试用额度。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Cerebras Inference 评测 2026：晶圆级 AI 推理 API",
+  "description": "Cerebras Inference 评测 2026：CS-4 晶圆芯片、Gemma 4 多模态、Z.ai GLM 4.7、OpenAI gpt-oss-120b。OpenAI 兼容 API、$5 试用额度。",
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": "Cerebras Inference 评测 2026", "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "什么是 Cerebras Inference？", "acceptedAnswer": { "@type": "Answer", "text": "Cerebras Inference 是 Cerebras Systems 在自研晶圆级 CS-4 芯片（而非商用 GPU）上托管的模型 API。截至 2026 年 9 月，目录覆盖前沿开源权重模型：Gemma 4 31B（多模态）、Z.ai GLM 4.7、OpenAI gpt-oss-120b、Qwen 3.5、Llama 3.3 70B、Llama 3.1 405B。端点完全 OpenAI 兼容——把 base_url 改为 https://inference.cerebras.ai/v1 后，现有 OpenAI SDK 即可直接调用。价格按百万 token 计：Gemma 4 31B 输入 $0.99 / 输出 $1.49，GLM 4.7 $2.25 / $2.75，gpt-oss-120b $0.35 / $0.75；注册即送 $5 试用额度，可访问目录全部模型。" } },
+    { "@type": "Question", "name": "Cerebras Inference 的价格相比其他推理 API 如何？", "acceptedAnswer": { "@type": "Answer", "text": "Cerebras Inference 列出的旗舰模型价格都在每百万输出 token $2.50 以下：Gemma 4 31B 输入 $0.99 / 输出 $1.49，Z.ai GLM 4.7 $2.25 / $2.75，OpenAI gpt-oss-120b $0.35 / $0.75，Llama 3.3 70B $0.60 / $0.60，Llama 3.1 405B 仅在 Enterprise 套餐提供。注册赠送 $5 试用额度；Developer 套餐最低 $10 充值即解锁 10 倍速率限制；Enterprise 套餐由销售团队按定制权重、专用队列优先级、可用性 SLA 和微调服务单独报价。对比 OpenRouter 上的 Llama 3.3 70B（~$0.60 / $0.60），Cerebras 同模型价格持平，但由于 CS-4 晶圆会带来明显更低的首次 token 时间。" } },
+    { "@type": "Question", "name": "Cerebras Inference 是否可以从中国大陆访问？", "acceptedAnswer": { "@type": "Answer", "text": "Cerebras Inference 仅托管在 inference.cerebras.ai，从美国 CS-4 硬件对外服务。北美用户小模型典型首 token 时间为 50-200 ms，405B 规模模型约 400 ms。亚太（东京 / 新加坡 / 悉尼）用户达到同样负载 600-900 ms。中国大陆是明确缺口：Cerebras 目前没有任何中国大陆推理区，且 CN 出向流量常被 GFW 限速——大陆开发者要承受 1.5 s 以上的首 token 时间或频繁的连接失败。建议面向 C 端的应用回退到国内厂商（智谱 GLM、阿里通义千问、火山引擎豆包）。" } },
+    { "@type": "Question", "name": "Cerebras Inference 支持流式输出和 OpenAI 兼容 API 吗？", "acceptedAnswer": { "@type": "Answer", "text": "是的。Cerebras Inference 在 https://inference.cerebras.ai/v1 暴露完全 OpenAI 兼容的 /v1/chat/completions 端点——只需修改 base_url，现有的 OpenAI SDK（Python / Node / Go）即可直接调用。所有对话模型同时支持 SSE 与 JSON 流；Gemma 4 31B 首 token 时间为亚秒级，小型 Llama 变体在热连接下约 200 ms。gpt-oss-120b 和 Z.ai GLM 4.7 原生支持工具调用；所有文本模型都支持 response_format={"type":"json_schema",...} 强制 JSON 输出；并行工具执行支持。" } },
+    { "@type": "Question", "name": "Cerebras Inference 支持哪些多模态输入？", "acceptedAnswer": { "@type": "Answer", "text": "Gemma 4 31B 是 Cerebras Inference 平台首个多模态模型——它直接在 chat-completion 的 messages 数组中接受 base64 编码的图像输入（PNG、JPEG、WebP，上限 20 MB）。屏幕截图、文档扫描件、示意图、产品图都可以直接传给模型推理，无需独立的 OCR 流水线。视觉路由是自动的——无需切换 flag 或模型变体——多模态推理同样跑在 CS-4 晶圆上，与文本负载享有相同的亚秒级首 token 时间优势。" } },
+    { "@type": "Question", "name": "Cerebras Inference 与 Groq、SambaNova、Together AI 有何区别？", "acceptedAnswer": { "@type": "Answer", "text": "四家都在加速器芯片或 H100/B200 集群上跑推理，但所选芯片与模型目录不同。Cerebras 使用单片晶圆 CS-4，在旗舰规模模型（Llama 3.1 405B）的 batch-1 推理上提供 30× 的速度优势。Groq 使用第一代 LPU 硅片，专注流式延迟。SambaNova 使用 RDU（Reconfigurable Dataflow Unit）芯片，并有首方提示缓存定价。Together AI 在 H100/B200 GPU 集群上跑，目录更宽但在 405B 规模 batch-1 偏慢。在 batch-1 低延迟聊天维度上，Cerebras 领先；在流式多模态工作负载上四家接近。Gemma 4 31B 多模态推理仅在 Cerebras 上提供；MiniMax-M2.7 的 prompt cache 定价仅在 SambaNova 上提供；开源权重模型覆盖最广的是 Together AI。" } }
+  ]
+};
+
+const enBody = `
+<header>
+  <h1 class="text-3xl font-bold text-gray-900 mb-4">Cerebras Inference 评测 2026：晶圆级 AI 推理 API</h1>
+  <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+    <time datetime="${date}">2026 年 9 月 1 日</time>
+    <span>•</span>
+    <span>Cerebras Inference 评测</span>
+    <span>•</span>
+    <span>约 11 分钟阅读</span>
+  </div>
+  <p class="text-lg text-gray-600 leading-relaxed">
+    Cerebras Inference 是当前少有的<strong>不</strong>运行在商用 GPU 上的托管 AI API。截至 2026 年 9 月，本平台所有模型都在自研的晶圆级 CS-4 硅片上运行——单颗芯片让 batch-1 推理比同类 GPU 云快约 30 倍。目录中前沿开源权重模型全部位于每百万输出 token $2.50 以下：<strong>Gemma 4 31B 多模态</strong>输入 $0.99 / 输出 $1.49（首个具备视觉能力的 Cerebras 模型）、<strong>Z.ai GLM 4.7</strong>输入 $2.25 / 输出 $2.75（代码与推理工作负载）、<strong>OpenAI gpt-oss-120b</strong>输入 $0.35 / 输出 $0.75（Apache-2.0）。Llama 3.3 70B 跑在 $0.60 / $0.60 上首 token 时间在 1 秒以下；Llama 3.1 405B 在 Enterprise 套餐提供，配独立队列。端点完全 <strong>OpenAI 兼容</strong>，访问 <code>https://inference.cerebras.ai/v1</code> 即可；免费试用为注册即送的 $5 信用额度，Developer 套餐最低仅需 $10 充值。
+  </p>
+</header>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">什么是 Cerebras Inference？</h2>
+  <p>Cerebras Systems 最初为超大规模训练打造了全球最大的商用芯片——CS-3 与现在的 CS-4 晶圆级加速器。2024 年起公司将同一硬件转向推理托管，<code>inference.cerebras.ai</code> 即是成果。这颗晶圆把 90 万个核心集成在单片裸晶上；在 batch-1 70B+ 参数规模推理时，相比 GPU 集群能达到没有任何对手能超越的首 token 时间。历史负担是模型目录偏窄（Llama、Qwen、DeepSeek），但 2026 年 9 月的新目录加入了多模态的 <strong>Gemma 4 31B</strong>、专注代码的 <strong>Z.ai GLM 4.7</strong> 以及开源权重的 <strong>gpt-oss-120b</strong>，让本平台从「快速 Llama 托管」升级为真正的前沿 API 替代方案。</p>
+  <p>三个特性把 Cerebras Inference 与普通托管 LLM 端点区分开：</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>晶圆级硅片</strong>——每个请求都跑在 CS-4 硬件上，所以首 token 时间由片上存储带宽决定，而不是 PCIe 连接的 HBM。在 405B 规模模型上，这是 1 秒以内的首 token，对手 GPU 云一般是 2-4 秒。</li>
+    <li><strong>OpenAI 兼容 API</strong>——<code>https://inference.cerebras.ai/v1</code> 端点遵循 OpenAI 的 /v1/chat/completions、函数调用、嵌入与视觉 schema。无需安装 SDK，无需维护代理。</li>
+    <li><strong>开源权重目录</strong>——Cerebras 故意回避闭源前沿模型（没有 Claude、GPT、Gemini）。目录覆盖 Apache-2.0（gpt-oss）/ Llama 社区 / Gemma / Qwen / Z.ai GLM / OpenAI gpt-oss 的开源版本。</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">2026 年 9 月模型目录</h2>
+  <p>当前目录覆盖三个梯度，全部在 CS-4 硬件上托管：</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">模型</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">输入 $/M</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">输出 $/M</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">备注</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">Gemma 4 31B（多模态）</td><td class="px-4 py-2">$0.99</td><td class="px-4 py-2">$1.49</td><td class="px-4 py-2">首个具备视觉能力的 Cerebras 模型——chat-completion 中直接接受 base64 图像</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Z.ai GLM 4.7</td><td class="px-4 py-2">$2.25</td><td class="px-4 py-2">$2.75</td><td class="px-4 py-2">代码 + 推理；支持函数调用、JSON 模式、长上下文优化</td></tr>
+      <tr><td class="px-4 py-2 font-medium">OpenAI gpt-oss-120b</td><td class="px-4 py-2">$0.35</td><td class="px-4 py-2">$0.75</td><td class="px-4 py-2">Apache-2.0 开源权重；函数调用；最便宜的旗舰档价格</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Qwen 3.5 32B</td><td class="px-4 py-2">$0.40</td><td class="px-4 py-2">$0.80</td><td class="px-4 py-2">阿里的紧凑发布，多语言与中文能力强</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Llama 3.3 70B</td><td class="px-4 py-2">$0.60</td><td class="px-4 py-2">$0.60</td><td class="px-4 py-2">对称定价；Llama 系列主力</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Llama 3.1 405B</td><td class="px-4 py-2">Enterprise</td><td class="px-4 py-2">Enterprise</td><td class="px-4 py-2">销售对接；保留容量；定制 SLA</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Llama 4 Scout（preview）</td><td class="px-4 py-2">$0.80</td><td class="px-4 py-2">$1.20</td><td class="px-4 py-2">17B-active / 109B-total MoE，10M 上下文</td></tr>
+    </tbody>
+  </table>
+  <p><strong>Llama 3.1 405B 说明：</strong>按公开价目表 405B 仅向 Enterprise 销售开放。405B 档与 Llama 3.3 70B 共享同一片晶圆——唯一区别是独立队列优先级与 SLA 条款。截至 2026 年 9 月 Cerebras 尚未公开 405B 自助价格；按 1 年承诺估计同模型价格在每百万 $3 / $3 量级。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">价格与方案（2026 年 9 月）</h2>
+  <p>价格模型分为三个档位：</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>免费试用</strong>——注册即送 $5 信用额度，自动到账；可访问目录中全部模型（含 405B，共享队列）；速率限制最低。</li>
+    <li><strong>Developer</strong>——最低 $10 充值；速率限制是免费档的 10 倍；同款目录；优先级更高。这是任何超过爱好级流量的团队都应选的自助路径。</li>
+    <li><strong>Enterprise</strong>——销售签订合约；独立队列；99.9% SLA；定制模型权重；微调服务；保留容量。Llama 3.1 405B 自助访问在此档内开通。</li>
+  </ul>
+  <p>价格是直接的每百万 token，按秒计费并从账户信用余额里扣除。无任何隐藏阶梯费、无单次请求附加费、Developer 档无承诺用量下限。Enterprise 档是 Cerebras 收取微调费用的唯一档位——微调服务为定制模型权重（你带来自己的 LoRA 权重，Cerebras 在 CS-4 上训练并托管）。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">API 与开发者体验</h2>
+  <p>Cerebras Inference API 遵循 OpenAI v1 schema。现有 OpenAI SDK 代码只需修改 base_url 与替换 API Key 即可工作：</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://inference.cerebras.ai/v1",
+    api_key=os.environ["CEREBRAS_API_KEY"],
+)
+
+resp = client.chat.completions.create(
+    model="gpt-oss-120b",
+    messages=[{"role": "user", "content": "Write a haiku about CS-4 wafers"}],
+    stream=True,
+)
+for chunk in resp:
+    print(chunk.choices[0].delta.content or "", end="")</code></pre>
+  <p><code>gpt-oss-120b</code> 与 <code>zai-glm-4.7</code> 上的函数调用使用与 OpenAI 相同的 <code>tools=[...]</code> 与 <code>tool_choice</code> 参数；通过 <code>response_format={"type": "json_schema", "schema": ...}</code> 启用 JSON 模式在每个文本模型上都生效。Gemma 4 31B 的多模态输入是唯一模型专属的调用签名：</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>import base64
+
+with open("screenshot.png", "rb") as f:
+    img_b64 = base64.b64encode(f.read()).decode("utf-8")
+
+resp = client.chat.completions.create(
+    model="gemma-4-31b",
+    messages=[{
+        "role": "user",
+        "content": [
+            {"type": "text", "text": "描述这个 UI 并找出布局破损处。"},
+            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{img_b64}"}}
+        ]
+    }],
+)</code></pre>
+  <p>团队若偏好非 OpenAI schema，可使用官方发布的 <code>cerebras-cloud-sdk</code> Python 包；LangChain 提供 <code>langchain-cerebras</code> 与 <code>ChatCerebras</code>——RAG 流水线把 Cerebras Inference 替换为任意 OpenAI 兼容端点时无需任何胶水代码。LlamaIndex 通过 OpenAI 兼容路径也支持相同的适配。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">晶圆级硬件：为何 Cerebras 更快</h2>
+  <p>大多数推理服务商跑在 H100 或 B200 GPU 上。两类芯片都通过 PCIe 或 NVLink 总线连接高带宽存储（HBM），意味着 batch-1 推理请求在 70B+ 规模时每个 token 都得穿越 ~80 GB 的内存带宽。CS-4 晶圆把整个模型放在片上，消除了内存带宽上限。实测带来：</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Llama 3.3 70B 上亚秒级首 token</strong>——同模型在普通 GPU 云通常 1.5-2.5 s，Cerebras ~300 ms。这对任何交互式 UI 都重要——用户盯着空输入框等待。</li>
+    <li><strong>batch-1 吞吐 30 倍</strong>——速度优势在交互式 agent、IDE 补全、流式聊天上放大，这些负载天然运行于 batch-1。</li>
+    <li><strong>流式负载更低总持有成本</strong>——晶圆单请求更快，完成同样可感知延迟所需的晶圆小时数更少。</li>
+  </ul>
+  <p>权衡点是容量。Cerebras 全球 CS-4 系统机队数量有限——目录支持的总体吞吐量低于一张 10,000 张 H100 集群。对于 batch-1 延迟为瓶颈且请求量落在 Cerebras 机队容量内的工作负载，这是一笔划算的买卖。对于高并发批处理（例如每小时分类 1000 万条商品描述），GPU 云更合适。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">边缘延迟与中国大陆访问</h2>
+  <p>Cerebras Inference 托管在美国 CS-4 硬件上，通过公共互联网面向用户。北美用户小模型上典型首 token 时间 50-200 ms，Llama 3.1 405B 约 400 ms。欧洲用户跨大西洋访问美国入口，首 token 时间约为北美的 1.5 倍。亚太（东京 / 新加坡 / 悉尼）用户首 token 时间 600-900 ms——批处理流水线与 RAG 检索可接受，但交互式聊天每个 +100 ms 都让用户感到卡顿。</p>
+  <p>中国大陆是明确的缺口。Cerebras 目前不在大陆运营任何推理区，CN 出向流量常被 GFW 限速，大陆开发者要承受 1.5 s 以上的首 token 或频繁连接失败。面向 C 端用户的应用建议走国内厂商路径——智谱 GLM、阿里通义千问、火山引擎豆包——Cerebras 仅用于全球（非 CN）负载。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Cerebras Inference vs Groq、SambaNova、Together AI、OpenRouter</h2>
+  <p>四家竞争对手都在加速器或 H100/B200 集群上跑推理，但芯片选型与模型目录不同：</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">平台</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">硬件</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">旗舰模型</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">擅长</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">Cerebras Inference</td><td class="px-4 py-2">CS-4 晶圆</td><td class="px-4 py-2">gpt-oss-120b</td><td class="px-4 py-2">70B+ 模型 batch-1 延迟</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Groq</td><td class="px-4 py-2">LPU v1</td><td class="px-4 py-2">Llama 3.3 70B</td><td class="px-4 py-2">流式语音 / 快速聊天</td></tr>
+      <tr><td class="px-4 py-2 font-medium">SambaNova Cloud</td><td class="px-4 py-2">RDU</td><td class="px-4 py-2">MiniMax-M2.7</td><td class="px-4 py-2">缓存输入定价，代码模型</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Together AI</td><td class="px-4 py-2">H100/B200</td><td class="px-4 py-2">Llama 3.1 405B</td><td class="px-4 py-2">以 GPU 价格覆盖宽泛开源目录</td></tr>
+      <tr><td class="px-4 py-2 font-medium">OpenRouter</td><td class="px-4 py-2">聚合</td><td class="px-4 py-2">300+ 模型</td><td class="px-4 py-2">多 provider 路由，单一 API Key</td></tr>
+    </tbody>
+  </table>
+  <p><strong>何时选 Cerebras：</strong>70B+ 模型 batch-1 交互式聊天（每个 +100 ms 都影响留存）；基于 Gemma 4 31B 的多模态推理；只能使用开源权重的团队（无 Claude / GPT / Gemini 授权风险）；已经为单一 OpenAI 兼容端点承担迁移成本。</p>
+  <p><strong>何时另选：</strong>超过 CS-4 机队容量的高并发批处理；闭源前沿智能（Cerebras 没有 Claude / GPT / Gemini）；中国大陆终端用户；在最小模型上追求极致低价（Groq 的 Llama 3.2 1B 档或 Cloudflare Workers AI 的每请求不到 1 美分更划算）。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">快速上手：三行代码跑通</h2>
+  <p>从零 Python 环境开始：</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>pip install openai
+export CEREBRAS_API_KEY="csk-...thon -c "
+from openai import OpenAI
+c = OpenAI(base_url='https://inference.cerebras.ai/v1', api_key=__import__('os').environ['CEREBRAS_API_KEY'])
+r = c.chat.completions.create(model='gpt-oss-120b', messages=[{'role':'user','content':'hi'}])
+print(r.choices[0].message.content)
+"</code></pre>
+  <p>如果你在一秒内看到模型响应，那说明你在和 CS-4 晶圆对话。同样的代码（替换 <code>base_url</code>）也能对话 OpenAI 平台——把任何 OpenAI 兼容 provider 切换到 Cerebras 的迁移成本就这么低。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">谁应该使用 Cerebras Inference</h2>
+  <p>Cerebras Inference 适合三类画像：</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>延迟敏感的交互 agent</strong>——IDE 代码补全、产品内聊天助手、实时客服 agent，每多 200 ms 首 token 都会反映在用户留存数字上。晶圆的 batch-1 优势会在成千上万的并发会话中放大。</li>
+    <li><strong>基于 Gemma 4 31B 的多模态应用</strong>——截图分析、带上下文的文档 OCR、示意图理解。Gemma 4 31B 是首个具备视觉能力的 Cerebras 模型，价格 $1.49/M 输出，与 GPT-4o-mini 视觉档对标，但是开源权重。</li>
+    <li><strong>仅使用开源权重的团队</strong>——软件有授权约束、不能使用闭源前沿模型（Claude、GPT、Gemini）。Cerebras 整个目录都是开源权重（Llama 社区许可、Apache-2.0 gpt-oss、Gemma 条款、Z.ai GLM）；平台上没有任何专有 SKU。</li>
+  </ul>
+  <p>它不适合需要闭源前沿智能的工作负载（Claude Opus 5 与 Sonnet 5 不在 Cerebras 上）、高于 CS-4 机队容量的高并发批处理，或中国大陆终端用户。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">结论</h2>
+  <p>2026 年 9 月的 Cerebras Inference 对于优先追求 batch-1 延迟、接受仅使用开源权重目录的团队来说，是一款可信的托管 API 替代方案。CS-4 晶圆在旗舰模型规模上确实提供比 GPU 竞品更快的首 token 时间；多模态 Gemma 4 31B 增加了目前其他推理即服务平台在这个价位匹配不上的视觉档；OpenAI 兼容 schema 消除了通常的迁移成本。价格具竞争力——Llama 3.3 70B $0.60 / $0.60，gpt-oss-120b $0.35 / $0.75，Gemma 4 31B $0.99 / $1.49——没有部分竞品强加的单次请求附加费或承诺用量压力。缺口是真实的（无闭源前沿模型、单一美国区、不服务中国大陆），但对于 Cerebras 设计针对的工作负载画像——开源权重前沿模型上的 batch-1 交互式聊天——它是目前最强的选择。</p>
+</section>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+    <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+    <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+    <nav class="text-sm text-gray-500 mb-6" aria-label="breadcrumb">
+      <a href="/zh" class="hover:text-blue-600">首页</a>
+      <span class="mx-2">›</span>
+      <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+      <span class="mx-2">›</span>
+      <span class="text-gray-900 font-medium">Cerebras Inference 评测 2026</span>
+    </nav>
+
+    <div class="prose prose-lg max-w-none" set:html={enBody} />
+
+    <hr class="my-12 border-gray-200" />
+
+    <section class="mt-8">
+      <p class="text-sm text-gray-500 mb-2"><strong>披露：</strong>APIRank 是独立对比站，价格数据于 2026-09-01 通过 Cerebras Inference 官方价格页与开发者文档核实。当你通过本页链接注册时，我们可能获得联盟佣金，对你无额外费用。</p>
+      <p class="text-sm text-gray-500"><strong>最后核实：</strong>2026-09-01。Cerebras Inference 的价格与可用模型变化频繁——在投入生产负载前请重新核查。</p>
+    </section>
+
+    <aside class="mt-10 bg-gray-50 border border-gray-200 rounded-lg p-6">
+      <h3 class="font-bold text-gray-900 mb-3">快速参考</h3>
+      <ul class="space-y-2 text-sm text-gray-600">
+        <li><strong>提供商：</strong>Cerebras Inference</li>
+        <li><strong>硬件：</strong>CS-4 晶圆级硅片</li>
+        <li><strong>模型数：</strong>7（LLM + 多模态）</li>
+        <li><strong>旗舰开源权重：</strong>gpt-oss-120b（$0.35/$0.75）</li>
+        <li><strong>多模态：</strong>Gemma 4 31B（$0.99/$1.49）</li>
+        <li><strong>免费试用：</strong>$5 注册额度</li>
+        <li><strong>Developer 套餐：</strong>$10 最低充值</li>
+        <li><strong>API：</strong>OpenAI 兼容（REST + SDK）</li>
+        <li><strong>大陆访问：</strong>❌ 仅 US 入口</li>
+      </ul>
+
+      <h3 class="font-bold text-gray-900 mt-6 mb-3">相关文章</h3>
+      <ul class="space-y-2 text-sm">
+        <li><a href="/zh/tutorials/openrouter-review/" class="text-blue-600 hover:underline">OpenRouter 评测 2026</a></li>
+        <li><a href="/zh/tutorials/groq-api-review/" class="text-blue-600 hover:underline">Groq 评测</a></li>
+        <li><a href="/zh/tutorials/together-ai-api-review/" class="text-blue-600 hover:underline">Together AI 评测</a></li>
+        <li><a href="/zh/tutorials/sambanova-api-review/" class="text-blue-600 hover:underline">SambaNova Cloud 评测</a></li>
+        <li><a href="/zh/tutorials/cloudflare-workers-ai-api-review-2026/" class="text-blue-600 hover:underline">Cloudflare Workers AI 评测</a></li>
+      </ul>
+    </aside>
+  </article>
+</BaseLayout>
