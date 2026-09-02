@@ -1,0 +1,333 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'eden-ai-api-review-2026';
+const date = '2026-09-02';
+const locale = 'zh';
+
+const zhTitle = 'Eden AI 评测 2026：1,009 个模型、5.5% 平台费、欧盟端点';
+const zhDescription = 'Eden AI 评测 2026：1,009 个 AI 模型聚合 33 家 Provider、OpenAI 兼容 API、欧盟端点支持 GDPR、5.5% 平台费无加价。含价格 + EU AI Act 合规分析。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Eden AI 在 2026 年聚合了多少个 AI 模型？", "acceptedAnswer": { "@type": "Answer", "text": "Eden AI 公开的 /v3/models 目录目前收录 1,009 个模型，覆盖 33 家上游 Provider（OpenAI、Anthropic、Google、DeepSeek、Mistral、Qwen、Z.ai、xAI、Meta、Cohere、Perplexity、Cerebras、Groq、Cloudflare、Vertex、Azure、AWS Bedrock、Fireworks、DeepInfra、Together、Nebius、OVHcloud、IONOS、Scaleway、Microsoft、Bytedance、Xiaomi、Infomaniak、Lilac AI、FlexAI、TensorX、Moonshot Kimi、MiniMax）。目录涵盖 LLM、OCR、语音转文字、文字转语音、翻译、视觉、图像生成和内容审核端点。" } },
+    { "@type": "Question", "name": "Eden AI 在 2026 年的定价模式是什么？", "acceptedAnswer": { "@type": "Answer", "text": "Eden AI 收取上游 Provider 的精确标价，不加任何溢价，仅在积分购买结账时收取 5.5% 平台费。积分通过 Stripe 预付，支持自动续费（可配置阈值 + 月度上限）。Advanced 计划提供协商定价、专属基础设施、私有化部署、SLA、专属客户经理和定制账单。每个 API 响应顶层都包含精确的 USD 成本字段（cost），便于透明的成本归因。" } },
+    { "@type": "Question", "name": "Eden AI 是否有用于 GDPR / EU AI Act 合规的欧盟端点？", "acceptedAnswer": { "@type": "Answer", "text": "是的。Eden AI 运营专门的欧盟端点 https://api.eu.edenai.run，仅将通过欧洲合规审查的 Provider 与模型纳入路由。同一 API Key 在全球端点（api.edenai.run）和欧盟端点上均可使用——只需切换 host。欧盟主机上的 /v3/models 发现端点会自动筛选欧盟可用的 Provider。这是需要满足 GDPR 数据驻留要求或欧盟 AI Act 透明度与风险管理义务的工作负载的最佳选择。" } },
+    { "@type": "Question", "name": "Eden AI 的 API 是 OpenAI 兼容的吗？", "acceptedAnswer": { "@type": "Answer", "text": "是的。LLM 端点 POST /v3/chat/completions 遵循 OpenAI Chat Completions 规范，任何 OpenAI SDK（Python、Node、Go、Java）只需更换 base-URL 即可接入。模型字符串使用 provider/model 格式（如 openai/gpt-5.6-luna、anthropic/claude-fable-5-1、google/gemini-3.7-flash、zai/glm-5.3-flash）。对于非 LLM 任务（OCR、STT、TTS、翻译、视觉、图像生成），Eden AI 在 POST /v3/universal-ai 提供 Universal AI 端点，采用 feature/subfeature/provider[/model] 格式。" } },
+    { "@type": "Question", "name": "Eden AI Self-serve 计划的速率限制是多少？", "acceptedAnswer": { "@type": "Answer", "text": "默认 Self-serve 计划为账户内所有 API Key 共享 10 次/秒。可通过在线聊天（附简短用例和预期吞吐描述）申请提升至 15 req/sec。Advanced 计划支持显著更高的定制速率限制，是协商合同的一部分。在组织内，所有者的速率限制是所有成员的上限，所有者可以为单个成员设定更低的子限制。" } },
+    { "@type": "Question", "name": "可以从中国大陆使用 Eden AI 吗？", "acceptedAnswer": { "@type": "Answer", "text": "Eden AI 的主端点（api.edenai.run）托管在欧洲，配有全球边缘缓存。中国大陆访问通常需要稳定的海外出口（香港、东京或新加坡），根据运营商和路由路径，实际往返延迟 200-400 ms。Eden AI 既未在国内做官方镜像，也未进行 ICP 备案，因此服务中国用户的生产负载应与国内 Provider 或聚合器（如 FreeModel、火山方舟、硅基流动）配合使用，专门处理中国侧的请求。" } },
+    { "@type": "Question", "name": "Eden AI 有免费层或免费试用吗？", "acceptedAnswer": { "@type": "Answer", "text": "Eden AI 不提供永久免费层或免费月度积分——您需要通过 Stripe 任意额度购买预付积分才能使用 API。但公开的 /v3/models 端点无需 API Key，返回完整模型目录，包含每个模型的 context_length、capabilities、定价和可用区域，便于构建 UI 下拉菜单或定价对比，无需承诺。Advanced 计划通过销售主导的合同为符合条件的企业工作负载提供免费试用。" } },
+    { "@type": "Question", "name": "Eden AI 与 OpenRouter 相比如何？", "acceptedAnswer": { "@type": "Answer", "text": "两者都是多 Provider 聚合器，支持 OpenAI 兼容 API 和按 token 计费。Eden AI 的差异点是：(1) 5.5% 平台费是聚合器领域较低的水平（OpenRouter 通过 App Routing 通常加价 0-30%）；(2) 在 Provider 定价上无任何加价——Eden AI 透传精确标价；(3) 专门的欧盟端点支持 GDPR / EU AI Act 合规；(4) Universal AI 端点除 LLM 外还覆盖 OCR / STT / TTS / 翻译 / 视觉 / 图像生成；(5) 较小的模型目录（1,009 vs OpenRouter 400+），但欧盟主权 Provider 覆盖更强（Scaleway、OVHcloud、IONOS、Infomaniak、Mistral）。OpenRouter 的优势是更宽的模型目录（400+ vs 1,009）和免费模型如 NVIDIA Nemotron。" } }
+  ]
+};
+---
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Eden AI 评测</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Eden AI 评测 2026：1,009 个模型、33 家 Provider、一个 OpenAI 兼容端点</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-09-02">2026 年 9 月 2 日</time>
+              <span>•</span>
+              <span>Eden AI 提供商评测</span>
+              <span>•</span>
+              <span>约 12 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Eden AI 是一家法国 AI 基础设施公司，在 2026 年构建了最全面的多 Provider 聚合层之一。其公开的 <code class="bg-gray-100 px-1 rounded">/v3/models</code> 端点返回 33 家上游 Provider 的 1,009 个模型（OpenAI、Anthropic、Google、DeepSeek、Mistral、Qwen、Z.ai、xAI、Meta、Cohere、Perplexity、Cerebras、Groq、Cloudflare、Vertex、Azure、AWS Bedrock 等 16 家其他 Provider）——而且与大多数聚合器不同，Eden AI 在 Provider 定价上无任何加价。您支付的是上游标价加上固定的 5.5% 平台费。LLM 端点完全 OpenAI 兼容（即插即用），而独立的 Universal AI 端点通过同一身份验证处理 OCR、语音转文字、文字转语音、翻译、视觉和图像生成。本评测涵盖 Eden AI 的架构、定价、用于 GDPR / EU AI Act 合规的欧盟端点，以及与 OpenRouter、Cloudflare AI Gateway、FreeModel 的对比。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR：</strong> Eden AI 在一个 OpenAI 兼容 API（<code class="bg-white px-1 rounded">POST /v3/chat/completions</code>）和一个用于非 LLM 任务的 Universal AI 端点（<code class="bg-white px-1 rounded">POST /v3/universal-ai</code>）后聚合 33 家 Provider 的 1,009 个 AI 模型。定价为上游标价 + 固定的 5.5% 平台费——Provider 侧无任何加价。突出的差异化是用于 GDPR / EU AI Act 数据驻留的专门欧盟端点（<code class="bg-white px-1 rounded">api.eu.edenai.run</code>）。Self-serve 计划从 10 req/sec 起步（可申请提升至 15 req/sec）；Advanced 计划提供协商定价、专属基础设施、私有化部署、SLA 和定制账单。公开的 <code class="bg-white px-1 rounded">/v3/models</code> 端点无需 API Key，这在主要聚合器中罕见且对构建模型选择器 UI 很有用。中国大陆访问需要海外出口（200-400ms）。最适合需要 GDPR 合规的欧盟团队、不想自建 OpenRouter 式路由的中小型应用，以及希望在一个 Key 下同时使用 LLM 和 OCR / 翻译 / 视觉的团队。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+
+            <h2>Eden AI 是什么？</h2>
+            <p>
+              Eden AI 是一家总部位于法国的 AI 基础设施公司，成立的初衷是为开发者和企业提供单一 API 访问整个 AI 模型生态。平台的价值观有三：
+            </p>
+            <ol>
+              <li><strong>统一访问 1,009+ 个 AI 模型</strong>，覆盖 33 家上游 Provider——LLM（OpenAI、Anthropic、Google、DeepSeek、Mistral、Qwen、Z.ai、xAI、Meta、Cohere、Perplexity、Cerebras、Groq）、专家模型（OCR、语音转文字、文字转语音、翻译、视觉、图像生成）以及不断增长的欧洲主权 Provider 列表（Scaleway、OVHcloud、IONOS、Infomaniak、Mistral）。</li>
+              <li><strong>在 Provider 定价上无任何加价</strong>——您在 Eden AI 模型目录上看到的价格就是上游 Provider 的标价，加上在积分购买结账时收取的固定 5.5% 平台费。当 OpenAI 将 GPT-5.6 Luna 从每百万输入 token $0.30 降到 $0.20 时，Eden AI 的目录会自动更新——不需要费率协商或价格锁定。</li>
+              <li><strong>专门的欧盟端点</strong>位于 <code class="bg-gray-100 px-1 rounded">https://api.eu.edenai.run</code>，适用于必须满足 GDPR 数据驻留要求或欧盟 AI Act 透明度与风险管理义务的工作负载。同一 API Key 在两个端点上均可使用。</li>
+            </ol>
+            <p>
+              该平台在 2026 年聚合器格局中的定位介于 <a href="/zh/tutorials/openrouter-api-review" class="text-blue-600 hover:underline">OpenRouter</a> 和 <a href="/zh/tutorials/cloudflare-ai-gateway-api-review" class="text-blue-600 hover:underline">Cloudflare AI Gateway</a> 之间，比 OpenAI 或 Anthropic 等单一 Provider API 更接近聚合层。与这些聚合器的差异在于：(a) 欧盟数据驻留故事，(b) 用于非 LLM 任务的 Universal AI 端点，(c) 无需身份验证的公开 <code class="bg-gray-100 px-1 rounded">/v3/models</code> 目录。
+            </p>
+
+            <h2>Eden AI 的 API 如何工作</h2>
+            <p>
+              API 有两个主端点，都使用标准的 Bearer-token 身份验证方案（与 OpenAI 使用的认证头相同）：
+            </p>
+            <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>// LLM 端点 —— OpenAI 兼容的 chat completions
+POST https://api.edenai.run/v3/chat/completions
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+
+{
+  "model": "anthropic/claude-fable-5-1",
+  "messages": [{"role": "user", "content": "总结欧盟 AI Act 的核心条款。"}],
+  "stream": false
+}</code></pre>
+            <p>
+              响应遵循 OpenAI Chat Completions 格式（<code class="bg-gray-100 px-1 rounded">choices[]</code>、<code class="bg-gray-100 px-1 rounded">usage</code>），外加顶层 <code class="bg-gray-100 px-1 rounded">cost</code> 字段返回调用的精确 USD 成本。通过 Server-Sent Events 流式传输与 OpenAI API 相同。函数调用、tool choice、视觉输入和并行函数调用在支持模型上可用（如 <code class="bg-gray-100 px-1 rounded">claude-fable-5-1</code>、<code class="bg-gray-100 px-1 rounded">gpt-5.6-luna</code>、<code class="bg-gray-100 px-1 rounded">gemini-3.7-flash</code>）。
+            </p>
+            <p>
+              对于非 LLM 任务，Universal AI 端点位于 <code class="bg-gray-100 px-1 rounded">POST /v3/universal-ai</code>，使用 feature/subfeature/provider[/model] 格式：
+            </p>
+            <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>// Universal AI 端点 —— OCR、翻译、视觉等
+POST https://api.edenai.run/v3/universal-ai
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+
+{
+  "model": "text/ai_detection/winstonai",
+  "text": "待检测 AI 生成内容的示例文本。"
+}</code></pre>
+            <p>
+              Universal AI 端点涵盖 OCR（文档解析 + 表格提取）、语音转文字、文字转语音、翻译、图像生成、图像分析、内容审核和 AI 检测。每个专家模型在 <code class="bg-gray-100 px-1 rounded">/v3/info</code> 中暴露自己的定价（也是公开端点）。这使 Eden AI 成为跨 LLM 和传统 ML 工作负载的单一集成点。
+            </p>
+
+            <h2>Eden AI 定价：5.5% 平台费，Provider 定价无加价</h2>
+            <p>
+              Eden AI 的定价模式是 2026 年主要聚合器中最简单的。您通过 Stripe 任意额度购买预付积分；Eden AI 在结账时扣除上游 Provider 标价 + 5.5% 平台费。没有月度订阅、没有最低承诺、没有席位费。支持自动续费（可配置阈值和月度上限），因此生产负载永远不会耗尽积分。
+            </p>
+            <p>
+              例如，如果您在 Eden AI 上以每百万输入 token $0.20 调用 <code class="bg-gray-100 px-1 rounded">openai/gpt-5.6-luna</code> 并处理 100 万 token，则 Eden AI 上的成本为 $0.20 + (5.5% × $0.20) = $0.211。OpenRouter 通过 App Routing 通常在 Provider 费率上加价 0-30%；Cloudflare AI Gateway 加价 $0.20/百万请求。Eden AI 的 5.5% 费是聚合器领域的低水平。
+            </p>
+            <p>
+              对于预算敏感的工作负载（如 DeepSeek V4 Flash $0.14/M 输入），5.5% 费仅增加 $0.0077/M，在最便宜的模型上就是 5-10% 的边际成本。对于 Claude Fable 5.1（$10/M 输入）等高级模型，相同的 5.5% 增加 $0.55/M，相对成本要小得多。Provider 的发布价格更新会自动通过——当 Anthropic 在 Fable 5.1 上将缓存读取从 $1.00 降到 $0.25 时，Eden AI 的目录在同一天反映出来。
+            </p>
+            <p>
+              Advanced 计划在 Self-serve 之上叠加：协商批量折扣、用于私有化部署的专属基础设施、定制延迟和成本优化路由、带 SLA 的专属客户支持渠道、用于架构评审的专业服务，以及用于发票采购的定制账单。Advanced 计划的定价由销售主导，取决于工作负载特征。
+            </p>
+
+            <h2>欧盟端点：GDPR 和 EU AI Act 数据驻留</h2>
+            <p>
+              位于 <code class="bg-gray-100 px-1 rounded">https://api.eu.edenai.run</code> 的欧盟端点是 Eden AI 对于受监管工作负载的突出差异化。从全球端点切换到欧盟端点是 base URL 中简单的 host 切换——同一 API Key、同一认证头、同一请求体、同一响应形状。欧盟端点仅将通过欧洲合规审查的 Provider 和模型纳入路由。
+            </p>
+            <p>
+              对于受 GDPR 数据驻留要求约束的工作负载，这是 2026 年主要聚合器中最强的契合。欧盟主机上的 <code class="bg-gray-100 px-1 rounded">/v3/models</code> 发现端点会自动筛选欧盟可用的 Provider——Mistral AI、Scaleway、OVHcloud、IONOS、Infomaniak 以及 OpenAI、Anthropic、Google 的欧盟区域端点。不需要单独签发"欧盟 Key"；同一 Key 在两个端点上均可使用。
+            </p>
+            <p>
+              对于 EU AI Act 合规，欧盟端点通过确保上游 Provider 合同约定在欧盟范围内处理数据，有助于满足第 10 条（数据治理）和第 12 条（记录保存）。对于第 14 条（人为监督）和第 15 条（准确性、稳健性、网络安全），Eden AI 的每请求 <code class="bg-gray-100 px-1 rounded">cost</code> 字段和 <code class="bg-gray-100 px-1 rounded">usage</code> 块提供清晰的审计跟踪。Advanced 计划在需要单租户欧盟隔离的工作负载上叠加专属基础设施。
+            </p>
+            <p>
+              权衡是比从美西/欧盟客户端直接调用 OpenAI / Anthropic 多 20-60 ms 的跨区域延迟。对于延迟敏感的工作负载，全球端点更快，但通过 Eden AI 边缘选择的上游 Provider 路由。
+            </p>
+
+            <h2>公开模型目录：1,009 个模型，无需认证</h2>
+            <p>
+              Eden AI 最独特的功能之一是公开的 <code class="bg-gray-100 px-1 rounded">/v3/models</code> 端点，无需 API Key 即可返回完整模型目录作为 JSON：
+            </p>
+            <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>GET https://api.edenai.run/v3/models
+
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "anthropic/claude-fable-5-1",
+      "owned_by": "anthropic",
+      "context_length": 1000000,
+      "capabilities": {
+        "input_modalities": ["text"],
+        "output_modalities": ["text"],
+        "supports_reasoning": true,
+        "supports_function_calling": true,
+        "supports_streaming": true
+      },
+      "pricing": {
+        "input_cost_per_token": 1.0e-5,
+        "output_cost_per_token": 5.0e-5
+      },
+      "regions": [{"code": "us", "name": "United States"}]
+    },
+    ...
+  ]
+}</code></pre>
+            <p>
+              每个条目包括模型 ID、上游 Provider、上下文长度、能力标志（输入/输出模态、函数调用、流式传输、prompt 缓存、响应 schema 等）、每 token 定价和可用区域。这使得 Eden AI 成为构建模型选择器 UI、定价对比页面或根据用户任务和预算决定调用哪个模型的路由层的理想选择。无需承诺。在主要聚合器中，没有其他聚合器在不要求 API Key 的情况下发布如此多的元数据。
+            </p>
+            <p>
+              <code class="bg-gray-100 px-1 rounded">/v3/info</code> 端点（同样是公开的）返回专家模型目录——OCR、STT、TTS、翻译、视觉、图像生成、内容审核、AI 检测——包含 <code class="bg-gray-100 px-1 rounded">price</code>、<code class="bg-gray-100 px-1 rounded">price_unit_quantity</code> 和 <code class="bg-gray-100 px-1 rounded">price_unit_type</code> 字段中的每模型定价。
+            </p>
+
+            <h2>Eden AI vs OpenRouter vs Cloudflare AI Gateway</h2>
+            <p>
+              在 2026 年聚合器格局中，Eden AI 位于 OpenRouter（最宽的模型目录）和 Cloudflare AI Gateway（最深的边缘集成）之间。以下是它们在 APIRank 用户关心的维度上的对比：
+            </p>
+            <div class="overflow-x-auto">
+              <table class="min-w-full bg-white border border-gray-200 rounded-lg text-sm">
+                <thead class="bg-gray-50"><tr><th class="px-3 py-2 text-left">维度</th><th class="px-3 py-2 text-left">Eden AI</th><th class="px-3 py-2 text-left">OpenRouter</th><th class="px-3 py-2 text-left">Cloudflare AI Gateway</th></tr></thead>
+                <tbody>
+                  <tr><td class="px-3 py-2 font-medium">模型数</td><td class="px-3 py-2">33 家 Provider 共 1,009 个</td><td class="px-3 py-2">50+ Provider 共 400+ 个</td><td class="px-3 py-2">路由至 20+ Provider（其托管的任何模型）</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">平台费</td><td class="px-3 py-2">5.5%（无加价）</td><td class="px-3 py-2">0-30% 加价（App Routing）</td><td class="px-3 py-2">$0.20/百万请求附加费 + Provider 费</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">欧盟端点</td><td class="px-3 py-2">✅ 专门（api.eu.edenai.run）</td><td class="px-3 py-2">❌ 单一全球端点</td><td class="px-3 py-2">⚠️ 仅边缘缓存，无数据驻留保证</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">非 LLM 端点</td><td class="px-3 py-2">✅ Universal AI（OCR/STT/TTS/TL/视觉/图像生成）</td><td class="px-3 py-2">❌ 仅 LLM</td><td class="px-3 py-2">⚠️ 仅 LLM；与 Workers AI 集成用于专家模型</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">公开模型目录</td><td class="px-3 py-2">✅ /v3/models 无需认证</td><td class="px-3 py-2">⚠️ /api/v1/models 需要 Key</td><td class="px-3 py-2">❌ 无公开目录</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">免费模型</td><td class="px-3 py-2">❌（需要积分）</td><td class="px-3 py-2">✅（NVIDIA Nemorton、Ling-3.0-flash）</td><td class="px-3 py-2">⚠️ Workers AI：10K Neurons/天</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">默认速率限制</td><td class="px-3 py-2">10 req/sec（可申请 15）</td><td class="px-3 py-2">20 req/sec（免费），付费更高</td><td class="px-3 py-2">按上游 Provider 限制</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">中国访问</td><td class="px-3 py-2">⚠️ 200-400ms 通过海外出口</td><td class="px-3 py-2">⚠️ 需要代理</td><td class="px-3 py-2">✅ 通过合作伙伴的国内边缘</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">定价模式</td><td class="px-3 py-2">预付积分（Stripe）</td><td class="px-3 py-2">预付积分</td><td class="px-3 py-2">按请求附加费（无预付）</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              APIRank 用户最清晰的决策规则：如果您需要欧盟端点、希望在一个 Key 下同时使用 LLM 和 OCR/翻译/视觉，或者关心主要聚合器中最低的平台费，请选择 Eden AI。如果您需要最宽的模型目录和免费模型，请选择 OpenRouter。如果您已经在使用 Cloudflare Workers 并希望在上游 Provider 之上获得零成本缓存 + 分析，请选择 Cloudflare AI Gateway。
+            </p>
+
+            <h2>中国访问和延迟</h2>
+            <p>
+              Eden AI 的主端点托管在欧洲，配有全球边缘缓存。中国大陆访问通常需要稳定的海外出口（香港、东京或新加坡）；根据主要中国 ISP 的观察，往返延迟为 200-400 ms。没有中国大陆官方镜像，也没有 ICP 备案。对于服务中国用户的生产负载，实用路径是：(1) 将 Eden AI 与国内 Provider 或聚合器（FreeModel、火山方舟、硅基流动）配合用于中国侧接口；(2) 从海外云区域（香港、新加坡）运行 Eden AI，将延迟保持在 100 ms 以下；(3) 对于必须留在防火墙内的工作负载，使用阿里云百炼（通义/Qwen）、腾讯混元或在火山方舟上的 DeepSeek。
+            </p>
+            <p>
+              欧盟端点不是中国直连工作负载的正确选择——其路由针对欧洲数据驻留进行了优化，比从美西/欧盟客户端直接调用 OpenAI / Anthropic 多 20-60 ms 的跨区域延迟。
+            </p>
+
+            <h2>谁应该使用 Eden AI？</h2>
+            <p>
+              Eden AI 是以下场景的强契合：
+            </p>
+            <ul>
+              <li><strong>欧盟企业</strong>，需要 GDPR / EU AI Act 合规，并希望仅通过欧盟合规审查的 Provider 路由（通过专门的欧盟端点）。</li>
+              <li><strong>中小型应用</strong>，跨 LLM 和非 LLM 任务（OCR、翻译、视觉），使用单一身份验证和单一账单。</li>
+              <li><strong>构建定价对比或模型选择器 UI 的团队</strong>——公开的 <code class="bg-gray-100 px-1 rounded">/v3/models</code> 目录在主要聚合器中是独一无二的。</li>
+              <li><strong>偏好 OpenAI 兼容 API 的开发者</strong>——任何 OpenAI SDK 的即插即用替代品，无需迁移成本。</li>
+              <li><strong>对高级模型有预算意识的工作负载</strong>——5.5% 费在 Claude Fable 5.1 等高级模型上的相对成本要小得多。</li>
+            </ul>
+            <p>
+              Eden AI 不适合：中国大陆直连的生产流量（使用 FreeModel 或火山方舟）、需要免费模型的工作负载（使用 OpenRouter），或者已经有 Cloudflare Workers 堆栈与 Cloudflare AI Gateway 集成的团队（那里的集成故事更清晰）。
+            </p>
+
+            <h2>最终结论</h2>
+            <p>
+              Eden AI 是 2026 年欧盟合规的最强聚合器，也是跨 LLM 和非 LLM 任务团队的清晰契合。Provider 定价无加价 + 5.5% 平台费是我们评测过的主要聚合器中最低的，公开的 <code class="bg-gray-100 px-1 rounded">/v3/models</code> 目录是一个小但有用的差异化，适合在 API 之上构建 UI 的团队。权衡是模型目录小于 OpenRouter（1,009 vs 400+——实际上 Eden AI 按原始计数更大，但 OpenRouter 覆盖更多小众 Provider）且没有免费模型层。如果您在欧盟、跨 LLM 和 OCR/翻译，并关心高级模型上最低的平台费，Eden AI 是 2026 年的默认选择。
+            </p>
+
+          </div>
+
+          <div class="mt-12 pt-6 border-t border-gray-200">
+            <h3 class="text-lg font-bold text-gray-900 mb-3">相关评测</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="/zh/tutorials/openrouter-api-review" class="text-blue-600 hover:underline">OpenRouter API 评测</a> — 400+ 模型、免费模型、美国主导的聚合器</li>
+              <li><a href="/zh/tutorials/cloudflare-ai-gateway-api-review" class="text-blue-600 hover:underline">Cloudflare AI Gateway 评测</a> — 边缘缓存 + 分析 + Workers 集成</li>
+              <li><a href="/zh/tutorials/freemodel-api-review" class="text-blue-600 hover:underline">FreeModel 评测</a> — 中国直连多 Provider 聚合器</li>
+              <li><a href="/zh/tutorials/anthropic-claude-api-review" class="text-blue-600 hover:underline">Anthropic Claude API 评测</a> — Claude Fable 5.1 的直接 Provider</li>
+              <li><a href="/zh/tutorials/openai-gpt-5-api-review" class="text-blue-600 hover:underline">OpenAI GPT-5.6 Luna API 评测</a> — GPT-5.6 的直接 Provider</li>
+            </ul>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">快速参考</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Provider:</strong> Eden AI（法国）</li>
+                <li><strong>全球端点:</strong> api.edenai.run</li>
+                <li><strong>欧盟端点:</strong> api.eu.edenai.run</li>
+                <li><strong>模型数:</strong> 33 家 Provider 共 1,009 个</li>
+                <li><strong>平台费:</strong> 5.5%（无加价）</li>
+                <li><strong>免费层:</strong> 通过 Stripe 预付积分</li>
+                <li><strong>认证:</strong> Bearer Token</li>
+                <li><strong>速率限制:</strong> 10 req/sec（可申请 15）</li>
+                <li><strong>中国访问:</strong> 通过海外出口 200-400ms</li>
+              </ul>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">需要中国直连？</h3>
+              <p class="text-sm text-gray-600 mb-3">FreeModel 在一个 Key 后集成 OpenAI、Anthropic、DeepSeek，已验证中国直连并支持多 Provider 路由。</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="block text-center bg-blue-600 text-white rounded-lg py-2 px-4 text-sm font-medium hover:bg-blue-700" target="_blank" rel="sponsored noopener">立即开始</a>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">定价示例</h3>
+              <ul class="space-y-1 text-xs text-gray-600">
+                <li><strong>GPT-5.6 Luna:</strong> $0.20 / $1.20 每百万 token</li>
+                <li><strong>Claude Fable 5.1:</strong> $10.00 / $50.00 每百万 token</li>
+                <li><strong>Gemini 3.7 Flash:</strong> $0.75 / $3.75 每百万 token</li>
+                <li><strong>DeepSeek V4 Flash:</strong> $0.14 / $0.28 每百万 token</li>
+                <li><strong>GLM 5.3 Flash:</strong> $0.15 / $0.50 每百万 token</li>
+                <li class="pt-2 text-gray-400 italic">+ 5.5% Eden AI 平台费</li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Provider 详情</h3>
+              <ul class="text-sm text-gray-600 space-y-1">
+                <li>类别: 国际聚合器</li>
+                <li>类型: 多 Provider 网关</li>
+                <li>API 格式: OpenAI 兼容</li>
+                <li>欧盟端点: 支持（GDPR / EU AI Act）</li>
+                <li>模型数: 33 家 Provider 共 1,009 个</li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center text-xs text-gray-400">
+              广告占位
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

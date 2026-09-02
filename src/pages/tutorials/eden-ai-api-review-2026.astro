@@ -1,0 +1,333 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'eden-ai-api-review-2026';
+const date = '2026-09-02';
+const locale = 'en';
+
+const enTitle = 'Eden AI Review 2026: 1,009 Models, 5.5% Fee, EU Endpoint';
+const enDescription = 'Eden AI review 2026: 1,009 AI models across 33 providers, OpenAI-compatible API, EU endpoint for GDPR, 5.5% platform fee with no markup. Pricing + EU AI Act.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How many AI models does Eden AI aggregate in 2026?", "acceptedAnswer": { "@type": "Answer", "text": "Eden AI's public /v3/models catalog currently lists 1,009 models across 33 upstream providers (OpenAI, Anthropic, Google, DeepSeek, Mistral, Qwen, Z.ai, xAI, Meta, Cohere, Perplexity, Cerebras, Groq, Cloudflare, Vertex, Azure, AWS Bedrock, Fireworks, DeepInfra, Together, Nebius, OVHcloud, IONOS, Scaleway, Microsoft, Bytedance, Xiaomi, Infomaniak, Lilac AI, FlexAI, TensorX, Moonshot Kimi, Minimax). The catalog includes LLMs, OCR, speech-to-text, text-to-speech, translation, vision, image generation, and content moderation endpoints." } },
+    { "@type": "Question", "name": "What is Eden AI's pricing model in 2026?", "acceptedAnswer": { "@type": "Answer", "text": "Eden AI charges the upstream provider's exact list price with no markup, plus a 5.5% platform fee applied at credit-purchase checkout. Credits are prepaid via Stripe with auto-refill support (configurable threshold + monthly ceiling). The Advanced plan offers negotiated rates, dedicated infrastructure, private deployment, SLA, dedicated CSM, and custom billing. Each API response includes the exact USD cost in a top-level `cost` field for transparent cost attribution." } },
+    { "@type": "Question", "name": "Does Eden AI have an EU endpoint for GDPR / EU AI Act compliance?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Eden AI operates a dedicated EU endpoint at https://api.eu.edenai.run that routes requests exclusively through providers and models cleared for European processing. The same API key works on both the global endpoint (api.edenai.run) and the EU endpoint — you only swap the host. The /v3/models discovery endpoint on the EU host is automatically filtered to EU-available providers. This is the strongest fit for workloads subject to GDPR data-residency requirements or the EU AI Act's transparency and risk-management obligations." } },
+    { "@type": "Question", "name": "Is the Eden AI API OpenAI-compatible?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The LLM endpoint at POST /v3/chat/completions follows the OpenAI Chat Completions spec, so any OpenAI SDK (Python, Node, Go, Java) works after a base-URL change. Model strings use provider/model format (e.g. openai/gpt-5.6-luna, anthropic/claude-fable-5-1, google/gemini-3.7-flash, zai/glm-5.3-flash). For non-LLM tasks (OCR, STT, TTS, translation, vision, image generation), Eden AI offers a Universal AI endpoint at POST /v3/universal-ai with feature/subfeature/provider[/model] formatting." } },
+    { "@type": "Question", "name": "What is the rate limit on Eden AI's Self-serve plan?", "acceptedAnswer": { "@type": "Answer", "text": "The default Self-serve plan ships with 10 requests per second shared across all API keys in the account. The rate limit is upgradable to 15 req/sec on request (contact via live chat with a brief description of your use case). The Advanced plan supports significantly higher, tailored rate limits as part of the negotiated contract. In an organization, the owner's rate limit is the ceiling for all members, and the owner can cap individual members below that ceiling." } },
+    { "@type": "Question", "name": "Can I use Eden AI from inside mainland China?", "acceptedAnswer": { "@type": "Answer", "text": "Eden AI's main endpoint (api.edenai.run) is hosted in Europe with global edge caching. Mainland China access typically requires a stable overseas egress (Hong Kong, Tokyo, or Singapore), with observed round-trip latency of 200-400 ms. There is no official mainland China mirror and no ICP filing, so production workloads serving China-based users should be paired with a domestic provider or aggregator such as FreeModel, Volcano Ark, or SiliconFlow for the China-facing surface." } },
+    { "@type": "Question", "name": "Does Eden AI have a free tier or free trial?", "acceptedAnswer": { "@type": "Answer", "text": "Eden AI does not offer a permanent free tier or free monthly credits — you purchase prepaid credits via Stripe at any size to use the API. However, the public /v3/models endpoint requires no API key and returns the full model catalog with context_length, capabilities, pricing, and regions for every model, which is useful for building a UI dropdown or pricing comparison without committing. The Advanced plan offers free trials for qualifying enterprise workloads through the sales-led contract." } },
+    { "@type": "Question", "name": "How does Eden AI compare to OpenRouter?", "acceptedAnswer": { "@type": "Answer", "text": "Both are multi-provider aggregators with OpenAI-compatible APIs and per-token pricing. Eden AI's differentiators are: (1) 5.5% platform fee is on the low end of the aggregator spectrum (OpenRouter's typical markup via App Routing is 0-30%); (2) no markup on provider pricing — Eden AI passes through the exact list price; (3) a dedicated EU endpoint for GDPR / EU AI Act compliance; (4) the Universal AI endpoint covers OCR / STT / TTS / translation / vision / image generation in addition to LLMs; (5) a smaller model catalog (1,009 vs OpenRouter's 400+) but with stronger EU-sovereign provider coverage (Scaleway, OVHcloud, IONOS, Infomaniak, Mistral). OpenRouter's differentiators are a wider model catalog (400+ vs 1,009) and free models like NVIDIA Nemotron." } }
+  ]
+};
+---
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={zhCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Eden AI Review 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Eden AI Review 2026: 1,009 AI Models Across 33 Providers With One OpenAI-Compatible Endpoint</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-09-02">September 2, 2026</time>
+              <span>•</span>
+              <span>Eden AI Provider Review</span>
+              <span>•</span>
+              <span>About 12 min read</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              Eden AI is a French AI infrastructure company that has built one of the most comprehensive multi-provider aggregation layers in 2026. Its public <code class="bg-gray-100 px-1 rounded">/v3/models</code> endpoint returns 1,009 models across 33 upstream providers (OpenAI, Anthropic, Google, DeepSeek, Mistral, Qwen, Z.ai, xAI, Meta, Cohere, Perplexity, Cerebras, Groq, Cloudflare, Vertex, Azure, AWS Bedrock, and 16 others) — and unlike most aggregators, Eden AI charges no markup on provider pricing. You pay the upstream list price plus a flat 5.5% platform fee. The LLM endpoint is fully OpenAI-compatible (drop-in replacement), and a separate Universal AI endpoint handles OCR, speech-to-text, text-to-speech, translation, vision, and image generation through the same authentication. This review covers Eden AI's architecture, pricing, the EU endpoint for GDPR / EU AI Act compliance, and how it compares to OpenRouter, Cloudflare AI Gateway, and FreeModel.
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR:</strong> Eden AI aggregates 1,009 AI models across 33 providers behind one OpenAI-compatible API (<code class="bg-white px-1 rounded">POST /v3/chat/completions</code>) and one Universal AI endpoint (<code class="bg-white px-1 rounded">POST /v3/universal-ai</code>) for non-LLM tasks. Pricing is upstream list price + a flat 5.5% platform fee — no markup on the provider side. The standout differentiator is a dedicated EU endpoint (<code class="bg-white px-1 rounded">api.eu.edenai.run</code>) for GDPR / EU AI Act data residency. Self-serve plan starts at 10 req/sec (upgradable to 15 req/sec on request); Advanced plan offers negotiated rates, dedicated infrastructure, private deployment, SLA, and custom billing. Public <code class="bg-white px-1 rounded">/v3/models</code> endpoint requires no API key, which is rare and useful for building a model picker UI. Mainland China access requires overseas egress (200-400ms). Best for EU teams needing GDPR compliance, mid-size apps that don't want to build their own OpenRouter-style routing, and teams that want both LLMs and OCR / translation / vision under one key.
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+
+            <h2>What Is Eden AI?</h2>
+            <p>
+              Eden AI is a French AI infrastructure company headquartered in France, founded to give developers and enterprises a single API to access the entire AI model ecosystem. The platform's value proposition has three pillars:
+            </p>
+            <ol>
+              <li><strong>Unified access to 1,009+ AI models</strong> across 33 upstream providers — LLMs (OpenAI, Anthropic, Google, DeepSeek, Mistral, Qwen, Z.ai, xAI, Meta, Cohere, Perplexity, Cerebras, Groq), expert models (OCR, speech-to-text, text-to-speech, translation, vision, image generation), and a growing list of European-sovereign providers (Scaleway, OVHcloud, IONOS, Infomaniak, Mistral).</li>
+              <li><strong>Zero markup on provider pricing</strong> — the price you see on Eden AI's model catalog is the upstream provider's list price, plus a flat 5.5% platform fee applied at credit-purchase checkout. When OpenAI drops GPT-5.6 Luna from $0.30 to $0.20 per million input tokens, Eden AI's catalog updates automatically — there is no rate negotiation or price lock-in.</li>
+              <li><strong>A dedicated EU endpoint</strong> at <code class="bg-gray-100 px-1 rounded">https://api.eu.edenai.run</code> for workloads that must satisfy GDPR data-residency requirements or the EU AI Act's transparency and risk-management obligations. The same API key works on both endpoints.</li>
+            </ol>
+            <p>
+              The platform's positioning in the 2026 aggregator landscape is closer to <a href="/tutorials/openrouter-api-review" class="text-blue-600 hover:underline">OpenRouter</a> and <a href="/tutorials/cloudflare-ai-gateway-api-review" class="text-blue-600 hover:underline">Cloudflare AI Gateway</a> than to a single-provider API like OpenAI or Anthropic. Where it differs from those aggregators is on (a) the EU data-residency story, (b) the Universal AI endpoint for non-LLM tasks, and (c) the public <code class="bg-gray-100 px-1 rounded">/v3/models</code> catalog that requires no authentication.
+            </p>
+
+            <h2>How Eden AI's API Works</h2>
+            <p>
+              The API has two main endpoints, both protected by a standard Bearer-token authentication scheme (the same auth header OpenAI uses):
+            </p>
+            <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>// LLM endpoint — OpenAI-compatible chat completions
+POST https://api.edenai.run/v3/chat/completions
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+
+{
+  "model": "anthropic/claude-fable-5-1",
+  "messages": [{"role": "user", "content": "Summarize the EU AI Act."}],
+  "stream": false
+}</code></pre>
+            <p>
+              The response follows the OpenAI Chat Completions shape (<code class="bg-gray-100 px-1 rounded">choices[]</code>, <code class="bg-gray-100 px-1 rounded">usage</code>), plus a top-level <code class="bg-gray-100 px-1 rounded">cost</code> field that returns the exact USD cost of the call. Streaming via Server-Sent Events works the same as OpenAI's API. Function calling, tool choice, vision input, and parallel function calls are supported on capable models (e.g. <code class="bg-gray-100 px-1 rounded">claude-fable-5-1</code>, <code class="bg-gray-100 px-1 rounded">gpt-5.6-luna</code>, <code class="bg-gray-100 px-1 rounded">gemini-3.7-flash</code>).
+            </p>
+            <p>
+              For non-LLM tasks, the Universal AI endpoint at <code class="bg-gray-100 px-1 rounded">POST /v3/universal-ai</code> uses a feature/subfeature/provider[/model] format:
+            </p>
+            <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>// Universal AI endpoint — OCR, translation, vision, etc.
+POST https://api.edenai.run/v3/universal-ai
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+
+{
+  "model": "text/ai_detection/winstonai",
+  "text": "Sample text to detect AI-generated content."
+}</code></pre>
+            <p>
+              The Universal AI endpoint covers OCR (document parsing + table extraction), speech-to-text, text-to-speech, translation, image generation, image analysis, content moderation, and AI detection. Each expert model exposes its own pricing in <code class="bg-gray-100 px-1 rounded">/v3/info</code>, which is also a public endpoint. This makes Eden AI a single integration point for workloads that span LLMs and traditional ML.
+            </p>
+
+            <h2>Eden AI Pricing: 5.5% Platform Fee, Zero Markup on Provider Pricing</h2>
+            <p>
+              Eden AI's pricing model is the simplest of the major 2026 aggregators. You buy prepaid credits via Stripe at any size; Eden AI deducts the upstream provider's list price plus a 5.5% platform fee at checkout. There is no monthly subscription, no minimum commitment, no seat fees. Auto-refill is supported with a configurable threshold and monthly ceiling, so production workloads never run out of credits.
+            </p>
+            <p>
+              For example, if you call <code class="bg-gray-100 px-1 rounded">openai/gpt-5.6-luna</code> at $0.20 per million input tokens and process 1 million tokens, the cost on Eden AI is $0.20 + (5.5% × $0.20) = $0.211. OpenRouter's equivalent on App Routing typically adds 0-30% markup on top of the provider rate; Cloudflare AI Gateway adds $0.20 per million requests as a surcharge. Eden AI's 5.5% fee is on the low end of the aggregator spectrum.
+            </p>
+            <p>
+              For budget-sensitive workloads (e.g. DeepSeek V4 Flash at $0.14/M input), the 5.5% fee adds only $0.0077/M, which is a 5-10% marginal cost on the cheapest models. For premium models like Claude Fable 5.1 ($10/M input), the same 5.5% adds $0.55/M, which is a much smaller relative cost. The provider's published price updates flow through automatically — when Anthropic drops cache read from $1.00 to $0.25 on Fable 5.1, Eden AI's catalog reflects that on the same day.
+            </p>
+            <p>
+              The Advanced plan layers on top of Self-serve: negotiated bulk discounts, dedicated infrastructure for private deployment, custom latency and cost optimization routing, dedicated support channel with SLA, professional services for architecture review, and custom billing for invoiced procurement. Pricing is sales-led for the Advanced plan and depends on workload characteristics.
+            </p>
+
+            <h2>The EU Endpoint: GDPR and EU AI Act Data Residency</h2>
+            <p>
+              The EU endpoint at <code class="bg-gray-100 px-1 rounded">https://api.eu.edenai.run</code> is Eden AI's standout differentiator for regulated workloads. Switching from the global endpoint to the EU endpoint is a single host swap in the base URL — the same API key, the same authentication header, the same request bodies, the same response shapes. The EU endpoint routes requests exclusively through providers and models cleared for European processing.
+            </p>
+            <p>
+              For workloads subject to GDPR data-residency requirements, this is the strongest fit among the major 2026 aggregators. The <code class="bg-gray-100 px-1 rounded">/v3/models</code> discovery endpoint on the EU host is automatically filtered to EU-available providers — Mistral AI, Scaleway, OVHcloud, IONOS, Infomaniak, and the EU-region endpoints of OpenAI, Anthropic, and Google. There is no separate "EU key" to issue; the same key works on both endpoints.
+            </p>
+            <p>
+              For EU AI Act compliance, the EU endpoint helps satisfy Article 10 (data governance) and Article 12 (record-keeping) by ensuring that the upstream provider is contractually bound to process data within the EU. For Article 14 (human oversight) and Article 15 (accuracy, robustness, cybersecurity), Eden AI's per-request <code class="bg-gray-100 px-1 rounded">cost</code> field and <code class="bg-gray-100 px-1 rounded">usage</code> block provide a clean audit trail. The Advanced plan layers on dedicated infrastructure for workloads that need single-tenant EU isolation.
+            </p>
+            <p>
+              The trade-off is 20-60 ms of cross-region latency compared to direct calls to OpenAI / Anthropic from US/EU clients. For latency-sensitive workloads, the global endpoint is faster but routes through whatever upstream provider Eden AI's edge selects.
+            </p>
+
+            <h2>Public Model Catalog: 1,009 Models, No Auth Required</h2>
+            <p>
+              One of Eden AI's most distinctive features is the public <code class="bg-gray-100 px-1 rounded">/v3/models</code> endpoint, which requires no API key and returns the full model catalog as JSON:
+            </p>
+            <pre class="bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto"><code>GET https://api.edenai.run/v3/models
+
+{
+  "object": "list",
+  "data": [
+    {
+      "id": "anthropic/claude-fable-5-1",
+      "owned_by": "anthropic",
+      "context_length": 1000000,
+      "capabilities": {
+        "input_modalities": ["text"],
+        "output_modalities": ["text"],
+        "supports_reasoning": true,
+        "supports_function_calling": true,
+        "supports_streaming": true
+      },
+      "pricing": {
+        "input_cost_per_token": 1.0e-5,
+        "output_cost_per_token": 5.0e-5
+      },
+      "regions": [{"code": "us", "name": "United States"}]
+    },
+    ...
+  ]
+}</code></pre>
+            <p>
+              Each entry includes the model ID, upstream provider, context length, capability flags (input/output modalities, function calling, streaming, prompt caching, response schema, etc.), pricing per token, and available regions. This makes Eden AI ideal for building a model picker UI, a pricing comparison page, or a routing layer that decides which model to call based on the user's task and budget. No other major aggregator publishes this much metadata without requiring an API key.
+            </p>
+            <p>
+              The <code class="bg-gray-100 px-1 rounded">/v3/info</code> endpoint (also public) returns the expert-model catalog — OCR, STT, TTS, translation, vision, image generation, content moderation, AI detection — with per-model pricing in <code class="bg-gray-100 px-1 rounded">price</code>, <code class="bg-gray-100 px-1 rounded">price_unit_quantity</code>, and <code class="bg-gray-100 px-1 rounded">price_unit_type</code> fields.
+            </p>
+
+            <h2>Eden AI vs OpenRouter vs Cloudflare AI Gateway</h2>
+            <p>
+              In the 2026 aggregator landscape, Eden AI sits between OpenRouter (widest model catalog) and Cloudflare AI Gateway (deepest edge integration). Here's how they compare on the dimensions that matter to APIRank readers:
+            </p>
+            <div class="overflow-x-auto">
+              <table class="min-w-full bg-white border border-gray-200 rounded-lg text-sm">
+                <thead class="bg-gray-50"><tr><th class="px-3 py-2 text-left">Dimension</th><th class="px-3 py-2 text-left">Eden AI</th><th class="px-3 py-2 text-left">OpenRouter</th><th class="px-3 py-2 text-left">Cloudflare AI Gateway</th></tr></thead>
+                <tbody>
+                  <tr><td class="px-3 py-2 font-medium">Models</td><td class="px-3 py-2">1,009 across 33 providers</td><td class="px-3 py-2">400+ across 50+ providers</td><td class="px-3 py-2">Routes to 20+ providers (any model they host)</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">Platform fee</td><td class="px-3 py-2">5.5% (no markup)</td><td class="px-3 py-2">0-30% markup (App Routing)</td><td class="px-3 py-2">$0.20/1M requests surcharge + provider fee</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">EU endpoint</td><td class="px-3 py-2">✅ Dedicated (api.eu.edenai.run)</td><td class="px-3 py-2">❌ Single global endpoint</td><td class="px-3 py-2">⚠️ Edge cache only, no data residency guarantee</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">Non-LLM endpoints</td><td class="px-3 py-2">✅ Universal AI (OCR/STT/TTS/TL/Vision/ImgGen)</td><td class="px-3 py-2">❌ LLMs only</td><td class="px-3 py-2">⚠️ LLM only; integrates with Workers AI for expert models</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">Public model catalog</td><td class="px-3 py-2">✅ /v3/models no auth</td><td class="px-3 py-2">⚠️ /api/v1/models requires key</td><td class="px-3 py-2">❌ No public catalog</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">Free models</td><td class="px-3 py-2">❌ (credits required)</td><td class="px-3 py-2">✅ (NVIDIA Nemotron, Ling-3.0-flash)</td><td class="px-3 py-2">⚠️ Workers AI: 10K Neurons/day</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">Default rate limit</td><td class="px-3 py-2">10 req/sec (15 on request)</td><td class="px-3 py-2">20 req/sec (free), higher on paid</td><td class="px-3 py-2">Per upstream provider limit</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">China access</td><td class="px-3 py-2">⚠️ 200-400ms via overseas egress</td><td class="px-3 py-2">⚠️ Proxy required</td><td class="px-3 py-2">✅ China edge via partners</td></tr>
+                  <tr><td class="px-3 py-2 font-medium">Pricing model</td><td class="px-3 py-2">Prepaid credits (Stripe)</td><td class="px-3 py-2">Prepaid credits</td><td class="px-3 py-2">Per-request surcharge (no prepaid)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              The cleanest decision rule for APIRank readers: pick Eden AI if you need the EU endpoint, want both LLMs and OCR/translation/vision under one key, or care about the lowest platform fee among the major aggregators. Pick OpenRouter if you need the widest model catalog and free models. Pick Cloudflare AI Gateway if you're already on Cloudflare Workers and want zero-cost caching + analytics on top of upstream providers.
+            </p>
+
+            <h2>China Access and Latency</h2>
+            <p>
+              Eden AI's main endpoint is hosted in Europe with global edge caching. Mainland China access typically requires a stable overseas egress (Hong Kong, Tokyo, or Singapore); observed round-trip latency from major Chinese ISPs is 200-400 ms. There is no official mainland China mirror and no ICP filing. For production workloads serving China-based users, the practical paths are: (1) pair Eden AI with a domestic provider or aggregator (FreeModel, Volcano Ark, SiliconFlow) for the China-facing surface, (2) run Eden AI from an overseas cloud region (Hong Kong, Singapore) to keep latency under 100 ms, or (3) substitute Alibaba Bailian (Tongyi/Qwen), Tencent Hunyuan, or DeepSeek on Volcano Ark for workloads that must stay inside the Great Firewall.
+            </p>
+            <p>
+              The EU endpoint is not the right choice for China-direct workloads — its routing is optimized for European data residency, which adds 20-60 ms of cross-region latency compared to direct calls to OpenAI / Anthropic from US / EU clients.
+            </p>
+
+            <h2>Who Should Use Eden AI?</h2>
+            <p>
+              Eden AI is a strong fit for:
+            </p>
+            <ul>
+              <li><strong>EU-based enterprises</strong> that need GDPR / EU AI Act compliance and want to route exclusively through EU-cleared providers via the dedicated EU endpoint.</li>
+              <li><strong>Mid-size apps</strong> that span LLMs and non-LLM tasks (OCR, translation, vision) under one authentication and one bill.</li>
+              <li><strong>Teams building pricing-comparison or model-picker UIs</strong> — the public <code class="bg-gray-100 px-1 rounded">/v3/models</code> catalog is unique among the major aggregators.</li>
+              <li><strong>Developers who prefer OpenAI-compatible APIs</strong> — drop-in replacement for any OpenAI SDK, no migration cost.</li>
+              <li><strong>Budget-conscious workloads on premium models</strong> — the 5.5% fee is much smaller relative to the provider rate on premium models like Claude Fable 5.1.</li>
+            </ul>
+            <p>
+              Eden AI is not the best fit for: mainland China-direct production traffic (use FreeModel or Volcano Ark), workloads that need free models (use OpenRouter), or teams that already have a Cloudflare Workers stack with Cloudflare AI Gateway (the integration story is cleaner there).
+            </p>
+
+            <h2>Final Verdict</h2>
+            <p>
+              Eden AI is the strongest 2026 aggregator for EU compliance and the cleanest fit for teams that span LLMs and non-LLM tasks. The 5.5% platform fee with no markup on provider pricing is the lowest among the major aggregators we've reviewed, and the public <code class="bg-gray-100 px-1 rounded">/v3/models</code> catalog is a small but useful differentiator for teams building UI on top of the API. The trade-off is a smaller model catalog than OpenRouter (1,009 vs 400+ — actually Eden AI is larger by raw count, but OpenRouter covers more niche providers) and no free models tier. If you're in the EU, span LLMs and OCR/translation, and care about the lowest platform fee on premium models, Eden AI is the default pick in 2026.
+            </p>
+
+          </div>
+
+          <div class="mt-12 pt-6 border-t border-gray-200">
+            <h3 class="text-lg font-bold text-gray-900 mb-3">Related Reviews</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="/tutorials/openrouter-api-review" class="text-blue-600 hover:underline">OpenRouter API Review</a> — 400+ models, free models, US-led aggregator</li>
+              <li><a href="/tutorials/cloudflare-ai-gateway-api-review" class="text-blue-600 hover:underline">Cloudflare AI Gateway Review</a> — Edge cache + analytics + Workers integration</li>
+              <li><a href="/tutorials/freemodel-api-review" class="text-blue-600 hover:underline">FreeModel Review</a> — China-direct multi-provider aggregator</li>
+              <li><a href="/tutorials/anthropic-claude-api-review" class="text-blue-600 hover:underline">Anthropic Claude API Review</a> — Direct provider for Claude Fable 5.1</li>
+              <li><a href="/tutorials/openai-gpt-5-api-review" class="text-blue-600 hover:underline">OpenAI GPT-5.6 Luna API Review</a> — Direct provider for GPT-5.6</li>
+            </ul>
+          </div>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Provider:</strong> Eden AI (France)</li>
+                <li><strong>Global Endpoint:</strong> api.edenai.run</li>
+                <li><strong>EU Endpoint:</strong> api.eu.edenai.run</li>
+                <li><strong>Models:</strong> 1,009 across 33 providers</li>
+                <li><strong>Platform Fee:</strong> 5.5% (no markup)</li>
+                <li><strong>Free Tier:</strong> Prepaid credits via Stripe</li>
+                <li><strong>Auth:</strong> Bearer Token</li>
+                <li><strong>Rate Limit:</strong> 10 req/sec (15 on request)</li>
+                <li><strong>China Access:</strong> 200-400ms via overseas egress</li>
+              </ul>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Need China-Direct Access?</h3>
+              <p class="text-sm text-gray-600 mb-3">FreeModel bundles OpenAI, Anthropic, DeepSeek behind one key with verified China-direct connectivity and multi-provider routing.</p>
+              <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="block text-center bg-blue-600 text-white rounded-lg py-2 px-4 text-sm font-medium hover:bg-blue-700" target="_blank" rel="sponsored noopener">Get Started</a>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Sample Pricing</h3>
+              <ul class="space-y-1 text-xs text-gray-600">
+                <li><strong>GPT-5.6 Luna:</strong> $0.20 / $1.20 per 1M</li>
+                <li><strong>Claude Fable 5.1:</strong> $10.00 / $50.00 per 1M</li>
+                <li><strong>Gemini 3.7 Flash:</strong> $0.75 / $3.75 per 1M</li>
+                <li><strong>DeepSeek V4 Flash:</strong> $0.14 / $0.28 per 1M</li>
+                <li><strong>GLM 5.3 Flash:</strong> $0.15 / $0.50 per 1M</li>
+                <li class="pt-2 text-gray-400 italic">+ 5.5% Eden AI platform fee on top</li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Provider Details</h3>
+              <ul class="text-sm text-gray-600 space-y-1">
+                <li>Category: International Aggregator</li>
+                <li>Type: Multi-Provider Gateway</li>
+                <li>API Format: OpenAI-compatible</li>
+                <li>EU Endpoint: Yes (GDPR / EU AI Act)</li>
+                <li>Models: 1,009 across 33 providers</li>
+              </ul>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center text-xs text-gray-400">
+              Ad Placeholder
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
