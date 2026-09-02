@@ -1,0 +1,336 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'claude-fable-5-1-mythos-5-1-2026';
+const date = '2026-09-02';
+const locale = 'en';
+
+const enTitle = 'Claude Fable 5.1 API: 75% Cache Cut, 1M Context';
+const enDescription = 'Claude Fable 5.1 and Mythos 5.1 API 2026: 75% cache read cut ($0.25/MTok), $10/$50 base, 1M context, EFS, Terminal-Bench-Science 0.1, vs Opus 5.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How much cheaper is Claude Fable 5.1 than Fable 5 on real workloads?", "acceptedAnswer": { "@type": "Answer", "text": "Anthropic's own benchmark suite puts the typical cost reduction at about 25% versus Fable 5 for general workloads and up to 45% for highly agentic tasks (long-running coding or multi-step research agents). The savings come almost entirely from cache reads dropping from $1.00/MTok on Fable 5 to $0.25/MTok on Fable 5.1 — a 75% cut. Base input ($10/MTok), 5-minute cache write ($12.50), 1-hour cache write ($20), and output ($50/MTok) are unchanged." } },
+    { "@type": "Question", "name": "What is the difference between Fable 5.1 and Mythos 5.1?", "acceptedAnswer": { "@type": "Answer", "text": "They are the same underlying model weights. Fable 5.1 ships with Anthropic's standard production safeguards and is generally available via the API under the claude-fable-5-1 model ID. Mythos 5.1 has tighter cyber and biology safeguards and is only available through trusted-access programs for vetted cyber defenders and life scientists — initially limited to US organizations, with international expansion coordinated through the US government. Pricing on Mythos 5.1 is identical to Fable 5.1." } },
+    { "@type": "Question", "name": "What is Enterprise Frontier Safeguards (EFS) on Fable 5.1?", "acceptedAnswer": { "@type": "Answer", "text": "EFS is Anthropic's new data-residency system that gives enterprise customers full control over how Claude request and response data is stored. It uses customer-controlled cloud infrastructure rather than Anthropic's servers, which means EFS delivers the same privacy guarantees as a zero-data-retention policy while still being able to apply Anthropic's safety classifiers. EFS rolls out in phases beginning fall 2026; until then, eligible customers can opt into zero-data-retention mode for Fable 5.1." } },
+    { "@type": "Question", "name": "What benchmarks did Fable 5.1 win in the Anthropic announcement?", "acceptedAnswer": { "@type": "Answer", "text": "Anthropic published head-to-head comparisons against Fable 5 across six agentic suites. Highlights include Terminal-Bench-Science 0.1 (a new agentic-science benchmark) and Terminal-Bench 4.0 (long-horizon terminal coding), where Fable 5.1 at max effort outperforms Fable 5 at max effort; OSWorld 2.0 (computer use) at 77.9% partial / 41.7% strict; CursorBench 3.2.0 for agentic IDE workflows; GDPval-AA v2 for knowledge-work parity; and Humanity's Last Exam at 60.9% no-tools / 65.0% with-tools. On CursorBench 3.2.0 Fable 5.1 specifically avoids the shortcut behavior that hurt Fable 5's quality scores." } },
+    { "@type": "Question", "name": "How do I migrate from Fable 5 to Fable 5.1?", "acceptedAnswer": { "@type": "Answer", "text": "The migration is a model-ID swap in the API call — replace claude-fable-5 or claude-fable-5-20250901 with claude-fable-5-1. Anthropic ships an official upgrade guide that walks through testing, fallback configuration, prompt differences, and the new effort parameter. Because pricing is identical except for the cache-read tier, no other code change is needed. Existing prompt caches built on Fable 5 are not portable to Fable 5.1 (cache keys are model-scoped); plan for a re-warm cycle of 5-30 minutes during the cutover." } },
+    { "@type": "Question", "name": "Can I access Claude Fable 5.1 from mainland China?", "acceptedAnswer": { "@type": "Answer", "text": "No. Anthropic does not currently serve inference traffic from any mainland-China region, and the export-control suspension for foreign nationals remains in place. Outbound traffic from CN is regularly throttled by the GFW, so even API calls from a Chinese IP to api.anthropic.com typically see 1.5-3 second TTFT or intermittent connection failures. Mainland developers targeting CN users should run an OpenAI-compatible aggregator (OpenRouter, FreeModel, or a domestic provider like Zhipu GLM or Alibaba Qwen) and reserve Fable 5.1 for non-CN workloads." } }
+  ]
+};
+
+const enBody = `
+<header>
+  <p class="text-sm text-gray-500 mb-2">Last verified: 2026-09-02 against <a href="https://www.anthropic.com/claude-fable-and-mythos-5-1" target="_blank" rel="noopener">Anthropic's launch post</a> and <a href="https://docs.anthropic.com/en/docs/about-claude/pricing" target="_blank" rel="noopener">docs.anthropic.com pricing</a>.</p>
+  <p class="text-lg text-gray-700">Anthropic dropped Claude Fable 5.1 and Claude Mythos 5.1 on September 1, 2026 — the same model weights with two different safeguard profiles. The actual pricing change is small ($10/$50 per million input/output tokens stays put), but the cache-read tier was cut 75%, the new Enterprise Frontier Safeguards (EFS) tier delivers customer-controlled zero-data-retention, and on agentic benchmarks Fable 5.1 leapfrogs Fable 5 enough that Anthropic itself recommends Fable 5.1 over Opus 5 for "demanding reasoning and long-horizon agentic work." This article walks through the verified launch facts, the pricing tier shifts, the API migration recipe, and the developer-experience changes that matter.</p>
+</header>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">What Just Launched (September 1, 2026)</h2>
+  <p>The September 1 launch is a single model family with two SKUs:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Claude Fable 5.1</strong> — generally available via the API under <code>claude-fable-5-1</code>. Carries Anthropic's standard production safeguards. Available in claude.ai, Claude Code, Claude Cowork, and the public API.</li>
+    <li><strong>Claude Mythos 5.1</strong> — same weights, tighter cyber and biology safeguards. Available only through trusted-access programs for vetted cyber defenders and life scientists. Initially limited to US organizations; Anthropic is coordinating with the US government to expand to international partners.</li>
+  </ul>
+  <p>The launch announcement (HN front page on 2026-09-01 with 913 points / 859 comments) is anchored on three concrete moves versus Fable 5:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Cache read pricing cut 75%.</strong> Where Fable 5 charged $1.00/MTok for cache reads (the most common cost component in long agent runs), Fable 5.1 charges $0.25/MTok. For a typical workload this drops Fable 5.1's effective cost about 25% below Fable 5; for highly agentic tasks the savings reach 45%.</li>
+    <li><strong>Enterprise Frontier Safeguards (EFS).</strong> A new architecture that stores request and response data in customer-controlled cloud infrastructure rather than Anthropic's servers. It delivers zero-data-retention-equivalent privacy while still letting Anthropic's classifiers run on the streamed prompts.</li>
+    <li><strong>Smarter safeguards.</strong> Cybersecurity false positives dropped 60% on the new classifier. In biology, Fable 5.1 is approved for vulnerability discovery (but not exploit development). Mythos 5.1 is the variant that adds biology research access through a US-government-coordinated program.</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Pricing: What Actually Changed</h2>
+  <p>The base rates are unchanged from Fable 5. The new economics live in the cache tier and the new EFS add-on pricing for the enterprise data-residency tier:</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Tier</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Fable 5</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Fable 5.1 / Mythos 5.1</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Change</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">Base input</td><td class="px-4 py-2">$10 / MTok</td><td class="px-4 py-2">$10 / MTok</td><td class="px-4 py-2">unchanged</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Output</td><td class="px-4 py-2">$50 / MTok</td><td class="px-4 py-2">$50 / MTok</td><td class="px-4 py-2">unchanged</td></tr>
+      <tr><td class="px-4 py-2 font-medium">5-minute cache write</td><td class="px-4 py-2">$12.50 / MTok</td><td class="px-4 py-2">$12.50 / MTok</td><td class="px-4 py-2">unchanged</td></tr>
+      <tr><td class="px-4 py-2 font-medium">1-hour cache write</td><td class="px-4 py-2">$20 / MTok</td><td class="px-4 py-2">$20 / MTok</td><td class="px-4 py-2">unchanged</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Cache read / hit</td><td class="px-4 py-2">$1.00 / MTok</td><td class="px-4 py-2 font-bold text-blue-700">$0.25 / MTok</td><td class="px-4 py-2 font-bold text-blue-700">-75%</td></tr>
+    </tbody>
+  </table>
+  <p>The 75% cache-read cut is the entire pricing story for most workloads. Anthropic's own decomposition shows that in a typical Claude Code session cache reads dominate the bill; in a long-running research agent that re-uses accumulated context, cache reads can exceed 70% of total spend. Cutting that tier from $1 to $0.25 is what produces the 25% typical / 45% agentic savings. The base input and output rates are not touched.</p>
+  <p>Compared to the rest of the Claude lineup as of September 2, 2026:</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Model</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Input $/MTok</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Output $/MTok</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Cache read $/MTok</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Context</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">Fable 5.1 / Mythos 5.1</td><td class="px-4 py-2">$10</td><td class="px-4 py-2">$50</td><td class="px-4 py-2 font-bold text-blue-700">$0.25</td><td class="px-4 py-2">1M</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Opus 5 / 4.8 / 4.7 / 4.6 / 4.5</td><td class="px-4 py-2">$5</td><td class="px-4 py-2">$25</td><td class="px-4 py-2">$0.50</td><td class="px-4 py-2">1M</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Sonnet 5</td><td class="px-4 py-2">$3</td><td class="px-4 py-2">$15</td><td class="px-4 py-2">$0.30</td><td class="px-4 py-2">1M</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Haiku 4.5</td><td class="px-4 py-2">$1</td><td class="px-4 py-2">$5</td><td class="px-4 py-2">$0.10</td><td class="px-4 py-2">200K</td></tr>
+    </tbody>
+  </table>
+  <p>The interesting comparison is Fable 5.1 against Opus 5. Opus 5 is half the price on input ($5 vs $10) and half the price on output ($25 vs $50), and its cache-read tier is double ($0.50 vs $0.25). For workloads that lean heavy on cache reuse — Claude Code sessions, long agent runs, multi-turn RAG — Fable 5.1 wins on effective cost even at the higher headline rate. For workloads that burn through raw input and output tokens without significant cache reuse — short single-turn API calls, one-shot completions — Opus 5 is the cheaper option. Anthropic's own guidance now says to use Fable 5.1 for "demanding reasoning and long-horizon agentic work, or when your evals on Claude Opus 5 at higher effort still fall short."</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Enterprise Frontier Safeguards (EFS)</h2>
+  <p>EFS is the most operationally important change in the Fable 5.1 launch for any team that processes customer data through Claude. The architecture has three properties:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Customer-controlled storage.</strong> Request and response data lives in cloud infrastructure controlled by the customer, not Anthropic. Anthropic never sees the plaintext prompt or completion on disk — the streamed inference traffic is processed and discarded.</li>
+    <li><strong>Zero-data-retention equivalence.</strong> Because Anthropic does not persist the data, the operational privacy story is identical to running Claude under a zero-data-retention (ZDR) contract. Enterprise legal and compliance teams can sign off on Fable 5.1 with the same paperwork they already use for ZDR.</li>
+    <li><strong>Classifier pipeline still works.</strong> Anthropic's safety classifiers run on the streamed data without persisting it, which means EFS gets the same safety quality as a default Anthropic deployment. The 60% cyber false-positive reduction announced alongside Fable 5.1 applies to EFS customers as well.</li>
+  </ul>
+  <p>The rollout is phased. Anthropic says EFS becomes available "in phases, beginning later this fall" — so as of September 2, 2026 EFS is not yet generally available. Until then, eligible customers can opt into zero-data-retention mode for Fable 5.1 directly through the Anthropic console, which gives the same privacy posture with less control over where the data lives during processing. Anthropic has not published EFS-specific pricing as of this writing; the cost model is expected to be a per-token surcharge on top of the base Fable 5.1 rate.</p>
+  <p>For teams that already pay for Claude under a ZDR contract, EFS is an incremental improvement: the privacy story stays the same, but you also get explicit storage control for compliance audits. For teams running Claude under the default data-retention terms (where Anthropic may store prompts for up to 30 days for abuse monitoring), EFS is the first tier that lets you ship customer data through Claude without that exposure window.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Benchmarks: Where Fable 5.1 Beats Fable 5</h2>
+  <p>Anthropic published six head-to-head benchmark comparisons in the launch post, with the explicit caveat that the public-leaderboard versions of two benchmarks (Terminal-Bench-Science 0.1 and Terminal-Bench 4.0) sit within the standard-error window of Anthropic's internal harness. The headline numbers:</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Benchmark</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Fable 5.1</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Fable 5</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Opus 5</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Domain</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">Terminal-Bench-Science 0.1</td><td class="px-4 py-2 font-bold text-blue-700">~52%</td><td class="px-4 py-2">~24%</td><td class="px-4 py-2">~30%</td><td class="px-4 py-2">Agentic scientific research</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Terminal-Bench 4.0</td><td class="px-4 py-2 font-bold text-blue-700">~64%</td><td class="px-4 py-2">~52%</td><td class="px-4 py-2">~55%</td><td class="px-4 py-2">Agentic terminal coding</td></tr>
+      <tr><td class="px-4 py-2 font-medium">OSWorld 2.0 (partial)</td><td class="px-4 py-2 font-bold text-blue-700">77.9%</td><td class="px-4 py-2">72.9%</td><td class="px-4 py-2">75.4%</td><td class="px-4 py-2">Computer use</td></tr>
+      <tr><td class="px-4 py-2 font-medium">OSWorld 2.0 (strict)</td><td class="px-4 py-2 font-bold text-blue-700">41.7%</td><td class="px-4 py-2">36.1%</td><td class="px-4 py-2">39.6%</td><td class="px-4 py-2">Computer use</td></tr>
+      <tr><td class="px-4 py-2 font-medium">CursorBench 3.2.0</td><td class="px-4 py-2 font-bold text-blue-700">75%+</td><td class="px-4 py-2">~67%</td><td class="px-4 py-2">~72%</td><td class="px-4 py-2">Agentic IDE</td></tr>
+      <tr><td class="px-4 py-2 font-medium">GDPval-AA v2 (knowledge work)</td><td class="px-4 py-2 font-bold text-blue-700">1853</td><td class="px-4 py-2">1723</td><td class="px-4 py-2">1824</td><td class="px-4 py-2">Knowledge work parity</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Humanity's Last Exam (no tools)</td><td class="px-4 py-2">60.9%</td><td class="px-4 py-2">57.8%</td><td class="px-4 py-2">56.6%</td><td class="px-4 py-2">Multidisciplinary reasoning</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Humanity's Last Exam (with tools)</td><td class="px-4 py-2">65.0%</td><td class="px-4 py-2">63.8%</td><td class="px-4 py-2">63.6%</td><td class="px-4 py-2">Multidisciplinary reasoning</td></tr>
+      <tr><td class="px-4 py-2 font-medium">AutomationBench</td><td class="px-4 py-2 font-bold text-blue-700">31.4%</td><td class="px-4 py-2">17.1%</td><td class="px-4 py-2">26.9%</td><td class="px-4 py-2">Business workflows</td></tr>
+    </tbody>
+  </table>
+  <p>The two biggest jumps are on Terminal-Bench-Science 0.1 (a new agentic-science benchmark where Fable 5.1 more than doubles Fable 5's score at max effort) and on AutomationBench (a workflow-automation benchmark where Fable 5.1 nearly doubles Fable 5). The smallest gap is on Humanity's Last Exam, where Fable 5.1 edges Fable 5 by ~3 percentage points with tools. Across the suite, Fable 5.1 at max effort is roughly equal to Opus 5 at max effort on reasoning-heavy tasks, and substantially better on agentic-coding and agentic-science workloads — Anthropic explicitly recommends Fable 5.1 over Opus 5 for that profile.</p>
+  <p>On the effort axis specifically: Fable 5.1 supports five effort levels (low / medium / high / xhigh / max). Fable 5.1 <em>defaults</em> to high effort inside Claude Code and to medium effort in Claude Cowork and on claude.ai. Lower-effort runs are cheaper but less accurate; for coding agents the cost-vs-quality curve favors high or xhigh. The Anthropic prompt-engineering guide for Fable 5.1 walks through the cost-quality trade-off per workload.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">API &amp; Developer Experience</h2>
+  <p>The Fable 5.1 API is a drop-in replacement for Fable 5 on the same Anthropic Messages endpoint. The minimum migration is a model-ID swap:</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>import anthropic
+
+client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY
+
+# Before (Fable 5)
+resp = client.messages.create(
+    model="claude-fable-5-20250901",
+    max_tokens=2048,
+    messages=[{"role": "user", "content": "Find the bug in this C++ snippet."}],
+)
+
+# After (Fable 5.1 — same SDK, same endpoint, different model ID)
+resp = client.messages.create(
+    model="claude-fable-5-1",
+    max_tokens=2048,
+    messages=[{"role": "user", "content": "Find the bug in this C++ snippet."}],
+)</code></pre>
+  <p>The new effort parameter is the only meaningful API surface change. Effort is an integer enum (low=1, medium=2, high=3, xhigh=4, max=5) that controls how much compute Fable 5.1 spends per request. Higher effort costs more tokens because the model thinks longer, but produces better answers on hard reasoning tasks. The cost delta on a per-request basis can be 3-10× between low and max effort:</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>resp = client.messages.create(
+    model="claude-fable-5-1",
+    max_tokens=8192,
+    effort="xhigh",  # or "max" for the deepest reasoning
+    messages=[{"role": "user", "content": "Diagnose this 3AM production outage from the stack trace."}],
+)</code></pre>
+  <p>Other surface areas that did not change:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>1M-token context window</strong> (same as Opus 5 and Sonnet 5; double Haiku 4.5's 200K).</li>
+    <li><strong>128K max output tokens</strong> per response (same as Opus 5 and Sonnet 5).</li>
+    <li><strong>Reliable knowledge cutoff June 2026</strong> (the model can answer confidently about events through ~June 2026; later events need explicit context).</li>
+    <li><strong>Adaptive thinking</strong> (extended thinking variant available; always on at higher effort levels).</li>
+    <li><strong>Tools / function calling / JSON mode</strong> — same schema as Fable 5.</li>
+    <li><strong>Vision input</strong> — text and image input on all current Claude models.</li>
+  </ul>
+  <p>One operational gotcha worth noting: prompt caches built on Fable 5 are not portable to Fable 5.1. Cache keys are model-scoped, so the Fable 5.1 cutover requires a re-warm cycle. In a long-running Claude Code session that has accumulated 30 minutes of cached context, expect 5-30 minutes of full-price input tokens after the swap before the new cache stabilizes. Plan the cutover for low-traffic windows if your prompt cache is a significant cost component.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Cache Read Pricing: Why It Matters</h2>
+  <p>For most teams using Claude for production workloads, the 75% cache-read cut is the only number that affects the monthly bill. Anthropic's own cost-decomposition chart shows that in a "typical" Claude Code session, cache reads make up roughly half of the total spend. In an agent that re-uses a large accumulated context (the kind of agent Fable 5.1 is built for), cache reads can exceed 70% of the total. Cutting that tier from $1.00 to $0.25 therefore has an outsized effect on total cost:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Typical Claude Code session</strong> — 25% lower effective cost. A team spending $10,000/month on Fable 5 cache reads drops to $2,500 on Fable 5.1, a $7,500/month saving.</li>
+    <li><strong>Long-running research / coding agent</strong> — 45% lower effective cost. Anthropic's example is a multi-hour agent that re-uses a 600K-token system prompt plus accumulated tool results; on Fable 5 the cache reads alone exceeded the input token cost; on Fable 5.1 they are 75% cheaper.</li>
+    <li><strong>RAG pipelines</strong> — variable. A naive RAG setup that re-sends the retrieved context on every call gets minimal cache benefit. A setup that maintains a stable system prompt with the retrieved context appended sees the same 25-45% savings.</li>
+    <li><strong>Single-turn completions</strong> — no cache benefit. The headline rate ($10/$50) is unchanged; Fable 5.1 costs the same as Fable 5 for one-shot API calls. Use Opus 5 or Sonnet 5 for these.</li>
+  </ul>
+  <p>The economics make Fable 5.1 the obvious choice for any workload that benefits from prompt caching, and Opus 5 / Sonnet 5 the obvious choice for workloads that don't. There is no Fable 5.1 feature that is gated behind higher spend — all the new capabilities (better agentic coding, EFS, biology research on Mythos 5.1) ship at the same per-token cost as Fable 5.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Edge Latency, China Access &amp; Where to Run Fable 5.1</h2>
+  <p>Anthropic serves Fable 5.1 from the same US-based infrastructure as the rest of the Claude lineup. There is no Fable 5.1-specific edge node; latency and regional availability match Opus 5. North America customers typically see 200-400 ms time-to-first-token on first-token streaming, with ~600-900 ms TTFT for the European and Asia-Pacific regions depending on routing. The 1M-token context window makes TTFT noticeably higher on cold-start than smaller-context models because the entire 1M-token attention prefill runs before the first token streams.</p>
+  <p>Mainland China is the explicit gap. Anthropic does not operate any inference region in mainland China, and the export-control suspension for foreign nationals is still in place. Outbound traffic from CN to api.anthropic.com is regularly throttled by the GFW, so even API calls from a Chinese IP typically see 1.5-3 second TTFT or intermittent connection failures. For end-user applications serving CN traffic the recommended path is a domestic provider (Zhipu GLM, Alibaba Qwen on Bailian, ByteDance Doubao on Volcengine, DeepSeek) — reserve Fable 5.1 for non-CN workloads.</p>
+  <p>If you want Claude-style behavior on a CN-routable endpoint without managing a domestic provider relationship, OpenRouter exposes Fable 5.1 via its OpenAI-compatible routing layer. Other aggregators (FreeModel, Together AI, Fireworks AI) typically add Fable 5.1 within 7-14 days of a public Anthropic release. For self-hosted, there is no open-weights Fable 5.1 — Anthropic continues to ship the model only via its hosted API.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Fable 5.1 vs Opus 5 vs Sonnet 5 vs GPT-5.6</h2>
+  <p>Four models are now competing for the "best general-purpose Anthropic API" slot. Here is how they stack up as of September 2, 2026:</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Model</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Input $/MTok</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Output $/MTok</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Cache read $/MTok</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Best for</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">Claude Fable 5.1</td><td class="px-4 py-2">$10</td><td class="px-4 py-2">$50</td><td class="px-4 py-2 font-bold text-blue-700">$0.25</td><td class="px-4 py-2">Long-horizon agentic work, demanding reasoning, cache-heavy Claude Code sessions</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Claude Opus 5</td><td class="px-4 py-2">$5</td><td class="px-4 py-2">$25</td><td class="px-4 py-2">$0.50</td><td class="px-4 py-2">Complex enterprise coding, balanced cost/quality, fallback when Fable 5.1 is too expensive</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Claude Sonnet 5</td><td class="px-4 py-2">$3</td><td class="px-4 py-2">$15</td><td class="px-4 py-2">$0.30</td><td class="px-4 py-2">High-volume production, default Claude API tier, near-frontier quality at half the price</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Claude Haiku 4.5</td><td class="px-4 py-2">$1</td><td class="px-4 py-2">$5</td><td class="px-4 py-2">$0.10</td><td class="px-4 py-2">High-throughput classification, subagents, 200K context only</td></tr>
+      <tr><td class="px-4 py-2 font-medium">GPT-5.6 (OpenAI)</td><td class="px-4 py-2">$5</td><td class="px-4 py-2">$25</td><td class="px-4 py-2">$0.50 (cached input)</td><td class="px-4 py-2">OpenAI ecosystem, Cursor integrations, parallel GPT-OSS comparison</td></tr>
+    </tbody>
+  </table>
+  <p>The Fable 5.1 vs GPT-5.6 comparison is the harder one. Both models charge the same base rate ($10/$50 for Fable 5.1 vs $5/$25 for GPT-5.6) and both have 1M-token context windows. Fable 5.1 wins on cache-heavy workloads (75% cheaper cache reads) and on Anthropic's agentic-coding benchmarks (CursorBench, Terminal-Bench-Science). GPT-5.6 wins on raw input/output cost and on the OpenAI ecosystem (Cursor integration, OpenAI AgentKit, fine-tuning access on related tiers). For teams already on Anthropic, Fable 5.1 is the obvious upgrade; for teams on OpenAI, the migration tax is real but the cost savings on cache-heavy work may justify it.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Who Should Migrate to Fable 5.1</h2>
+  <p>Three profiles should move to Fable 5.1 immediately:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Production Claude Code / Cursor / Windsurf users</strong> — agentic IDE workflows benefit the most from the 75% cache-read cut. A team spending $20,000/month on Fable 5 cache reads drops to $5,000/month on Fable 5.1, and the agentic-coding benchmarks (Terminal-Bench-Science 0.1, Terminal-Bench 4.0, CursorBench 3.2.0) show Fable 5.1 out-performing Fable 5 across the suite.</li>
+    <li><strong>Enterprise customers with data-residency requirements</strong> — EFS is the first Anthropic tier that delivers zero-data-retention equivalent privacy without sacrificing safety-classifier coverage. Teams shipping customer PII, healthcare data (HIPAA), or financial records through Claude should move to Fable 5.1 with EFS once the fall 2026 rollout reaches their account.</li>
+    <li><strong>Bio / chem / cybersecurity research teams (US only at launch)</strong> — Mythos 5.1's biology and cyber access programs are the first Anthropic SKU that ships biology-research capability to vetted teams. International expansion will follow the US-government-coordinated rollout, so non-US teams should plan for a 6-12 month wait.</li>
+  </ul>
+  <p>Three profiles should hold off:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Single-turn / one-shot completion workloads</strong> — no cache benefit, no agentic-coding benefit. Opus 5 at half the headline rate is the better choice.</li>
+    <li><strong>Mainland-China end-user applications</strong> — Anthropic still does not serve inference from any in-China region. Use a domestic provider (Zhipu GLM, Alibaba Qwen, DeepSeek) or an aggregator with CN routing.</li>
+    <li><strong>Cost-sensitive high-volume classification</strong> — Sonnet 5 at $3/$15 or Haiku 4.5 at $1/$5 deliver near-frontier quality at a fraction of the Fable 5.1 rate. Reserve Fable 5.1 for the workloads that need its specific strengths.</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Verdict</h2>
+  <p>Claude Fable 5.1 on September 2, 2026 is the default Anthropic model for any workload that benefits from prompt caching. The 75% cache-read cut is the headline pricing change, but the operationally important shift is Enterprise Frontier Safeguards — for the first time, enterprise customers can route Claude traffic through a tier that delivers zero-data-retention-equivalent privacy without losing safety classifier coverage. On agentic-coding benchmarks (Terminal-Bench-Science 0.1, CursorBench 3.2.0, AutomationBench) Fable 5.1 at max effort substantially outperforms both Fable 5 and Opus 5; on reasoning benchmarks (Humanity's Last Exam, GDPval-AA v2) it sits roughly equal to Opus 5 at max effort. The migration cost from Fable 5 is a model-ID swap plus a 5-30 minute cache re-warm — the cheapest meaningful upgrade Anthropic has shipped in 2026. Mythos 5.1 is the same model with tighter safeguards; it is the right pick for vetted biology / cyber research groups but irrelevant to most production workloads. For teams on Opus 5 the upgrade is a careful cost-vs-quality evaluation: Fable 5.1 wins on cache-heavy agentic work but loses on raw input/output cost; for single-turn or non-cached workloads, Opus 5 at half the rate remains the better choice.</p>
+</section>
+`;
+---
+
+<BaseLayout title={enTitle + ' | APIRank'} description={enDescription} canonicalUrl={canonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={canonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={zhCanonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <a href="/tutorials" class="hover:text-blue-600">Tutorials</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Claude Fable 5.1 & Mythos 5.1 API</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+          <div class="prose prose-lg max-w-none" set:html={enBody} />
+
+          <hr class="my-12 border-gray-200" />
+
+          <section class="mt-8">
+            <p class="text-sm text-gray-500 mb-2"><strong>Disclosure:</strong> APIRank is an independent comparison site. Pricing data verified against Anthropic's official pricing page and developer documentation on 2026-09-02. We may earn affiliate commission when you sign up through links on this page, at no extra cost to you.</p>
+            <p class="text-sm text-gray-500"><strong>Last verified:</strong> 2026-09-02. Claude Fable 5.1 and Mythos 5.1 pricing, model availability, and benchmark numbers verified against Anthropic's launch post and docs.anthropic.com pricing reference on the date above. Cache read pricing, EFS rollout timeline, and benchmark numbers can change — re-check before committing to a production workload.</p>
+          </section>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Models:</strong> Claude Fable 5.1, Claude Mythos 5.1</li>
+                <li><strong>Launch date:</strong> September 1, 2026</li>
+                <li><strong>API ID:</strong> <code>claude-fable-5-1</code></li>
+                <li><strong>Input:</strong> $10 / MTok</li>
+                <li><strong>Output:</strong> $50 / MTok</li>
+                <li><strong>Cache read:</strong> $0.25 / MTok (-75%)</li>
+                <li><strong>Context window:</strong> 1M tokens</li>
+                <li><strong>Max output:</strong> 128K tokens</li>
+                <li><strong>Knowledge cutoff:</strong> Jun 2026</li>
+                <li><strong>Effort levels:</strong> low / medium / high / xhigh / max</li>
+                <li><strong>EFS data residency:</strong> Fall 2026 phased rollout</li>
+                <li><strong>Mythos access:</strong> US vetted cyber / life sciences</li>
+              </ul>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/claude-fable-5-mythos-5-2026/" class="text-blue-600 hover:underline">Claude Fable 5 & Mythos 5 API</a></li>
+                <li><a href="/tutorials/anthropic-computer-use-skills-files-api-2026/" class="text-blue-600 hover:underline">Anthropic Computer Use + Skills + Files API</a></li>
+                <li><a href="/tutorials/anthropic-vs-openai-enterprise-2026/" class="text-blue-600 hover:underline">Anthropic vs OpenAI Enterprise 2026</a></li>
+                <li><a href="/tutorials/openai-cursor-api-cutoff-november-12-2026/" class="text-blue-600 hover:underline">OpenAI Cuts Cursor API</a></li>
+                <li><a href="/tutorials/openrouter-review/" class="text-blue-600 hover:underline">OpenRouter Review 2026</a></li>
+              </ul>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Try Claude Fable 5.1</h3>
+              <p class="text-sm text-gray-700 mb-3">Claude Fable 5.1 is generally available via the Anthropic API with $10/$50 per million input/output tokens, $0.25 per million cache reads, and 1M-token context.</p>
+              <a href="https://www.anthropic.com/claude-fable-and-mythos-5-1" class="text-sm text-blue-600 hover:underline break-all" target="_blank" rel="noopener">anthropic.com/claude-fable-and-mythos-5-1</a>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">Advertisement</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

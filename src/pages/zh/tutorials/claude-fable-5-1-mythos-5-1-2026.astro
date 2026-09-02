@@ -1,0 +1,240 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'claude-fable-5-1-mythos-5-1-2026';
+const date = '2026-09-02';
+const locale = 'zh';
+
+const zhTitle = 'Claude Fable 5.1 与 Mythos 5.1 API：缓存降价 75%';
+const zhDescription = 'Claude Fable 5.1 和 Mythos 5.1 API 2026：缓存读取降价 75%（$0.25/MTok）、$10/$50 基础价、1M 上下文、EFS、Terminal-Bench-Science 0.1、与 Opus 5 对比。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Claude Fable 5.1 与 Mythos 5.1 API：缓存降价 75%",
+  "description": "Claude Fable 5.1 和 Mythos 5.1 API 2026：缓存读取降价 75%（$0.25/MTok）、$10/$50 基础价、1M 上下文、EFS、Terminal-Bench-Science 0.1、与 Opus 5 对比。",
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": "Claude Fable 5.1 与 Mythos 5.1 API", "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Claude Fable 5.1 在实际工作负载上比 Fable 5 便宜多少？", "acceptedAnswer": { "@type": "Answer", "text": "Anthropic 官方基准显示，对一般工作负载 Fable 5.1 比 Fable 5 总成本下降约 25%，对高自主性工作负载（长时编码或多步研究代理）下降最高 45%。节省几乎全部来自缓存读取从 Fable 5 的 $1.00/MTok 降到 Fable 5.1 的 $0.25/MTok，即降价 75%。基础输入（$10/MTok）、5 分钟缓存写入（$12.50）、1 小时缓存写入（$20）和输出（$50/MTok）均未变。" } },
+    { "@type": "Question", "name": "Fable 5.1 与 Mythos 5.1 有什么区别？", "acceptedAnswer": { "@type": "Answer", "text": "两者使用同一组底层模型权重。Fable 5.1 携带 Anthropic 的标准生产安全护栏，通过 API 以 claude-fable-5-1 模型 ID 全面可用。Mythos 5.1 带有更严格的网络安全和生物安全护栏，仅通过受信访问计划向经过审核的网络防御者和生命科学家开放——初期仅限于美国组织，国际扩展通过美国政府协调。Mythos 5.1 的定价与 Fable 5.1 完全相同。" } },
+    { "@type": "Question", "name": "Fable 5.1 的 Enterprise Frontier Safeguards（EFS）是什么？", "acceptedAnswer": { "@type": "Answer", "text": "EFS 是 Anthropic 新的数据驻留系统，让企业客户完全控制 Claude 请求和响应数据的存储方式。它使用客户控制的云基础设施而非 Anthropic 的服务器，隐私保证等同于零数据保留策略，同时仍能应用 Anthropic 的安全分类器。EFS 自 2026 年秋季起分阶段推出；在此之前，符合条件的客户可以为 Fable 5.1 选择零数据保留模式。" } },
+    { "@type": "Question", "name": "Fable 5.1 在 Anthropic 公告中赢得了哪些基准？", "acceptedAnswer": { "@type": "Answer", "text": "Anthropic 在六套代理基准上发布了与 Fable 5 的正面比较。亮点包括 Terminal-Bench-Science 0.1（新的代理科学基准）和 Terminal-Bench 4.0（长时段终端编码），Fable 5.1 在 max 努力下超过 Fable 5 max 努力；OSWorld 2.0（计算机使用）部分匹配率 77.9% / 严格匹配率 41.7%；CursorBench 3.2.0 覆盖代理 IDE 工作流；GDPval-AA v2 衡量知识工作对等度；Humanity's Last Exam 无工具 60.9% / 有工具 65.0%。在 CursorBench 3.2.0 上，Fable 5.1 特别避免了拖累 Fable 5 质量评分的偷懒行为。" } },
+    { "@type": "Question", "name": "如何从 Fable 5 迁移到 Fable 5.1？", "acceptedAnswer": { "@type": "Answer", "text": "迁移只是在 API 调用中更换模型 ID——把 claude-fable-5 或 claude-fable-5-20250901 替换为 claude-fable-5-1。Anthropic 提供官方升级指南，涵盖测试、回退配置、提示差异和新努力参数。由于除缓存读取档外定价不变，无需其他代码变更。在 Fable 5 上构建的提示缓存在 Fable 5.1 上不可移植（缓存键按模型作用域），切换期间需要 5-30 分钟的重新预热周期。" } },
+    { "@type": "Question", "name": "可以从中国大陆访问 Claude Fable 5.1 吗？", "acceptedAnswer": { "@type": "Answer", "text": "不可以。Anthropic 目前未在中国大陆地区提供推理服务，对外国国民的出口管制暂停仍然有效。来自 CN 的出向流量经常被 GFW 限速，因此即使中国 IP 调用 api.anthropic.com 也通常会看到 1.5-3 秒的首 token 时间或间歇性连接失败。针对 CN 用户的大陆开发者应使用 OpenAI 兼容聚合器（OpenRouter、FreeModel 或智谱 GLM、阿里通义千问等国内厂商），并把 Fable 5.1 留给非 CN 工作负载。" } }
+  ]
+};
+
+const enBody = `
+<header>
+  <h1 class="text-3xl font-bold text-gray-900 mb-4">Claude Fable 5.1 与 Mythos 5.1 API：缓存降价 75%</h1>
+  <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+    <time datetime="${date}">2026 年 9 月 2 日</time>
+    <span>•</span>
+    <span>Claude API 评测</span>
+    <span>•</span>
+    <span>约 14 分钟阅读</span>
+  </div>
+  <p class="text-lg text-gray-600 leading-relaxed">
+    Anthropic 于 2026 年 9 月 1 日发布 <strong>Claude Fable 5.1</strong> 与 <strong>Claude Mythos 5.1</strong>——同一组模型权重、两种不同的安全护栏配置。表面价格几乎未动（基础输入输出仍是 $10/$50 每百万 token），但缓存读取档降价 75%，全新的 <strong>Enterprise Frontier Safeguards（EFS）</strong> 提供客户控制的零数据保留能力；代理基准上 Fable 5.1 拉开了与 Fable 5 的差距，Anthropic 官方直接建议 Fable 5.1 用于「高难度推理与长时段代理工作」，优于 Opus 5。本文根据官方发布贴与定价文档，逐项核对已验证的发布事实、定价档变动、API 迁移方法，以及真正重要的开发者体验变化。
+  </p>
+</header>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">2026 年 9 月 1 日：刚刚发布什么</h2>
+  <p>这次发布是单一模型家族 + 两个 SKU：</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Claude Fable 5.1</strong>——通过 API 以 <code>claude-fable-5-1</code> 模型 ID 全面可用。携带 Anthropic 标准生产安全护栏。在 claude.ai、Claude Code、Claude Cowork 和公开 API 上均可访问。</li>
+    <li><strong>Claude Mythos 5.1</strong>——同一组权重，更严格的网络安全和生物安全护栏。仅通过受信访问计划向经过审核的网络防御者和生命科学家开放。初期限于美国组织；Anthropic 正与美国政府协调，向国际合作伙伴扩展。</li>
+  </ul>
+  <p>发布贴（2026-09-01 登上 HN 首页，913 分 / 859 评论）锚定三项相对 Fable 5 的实质性改动：</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>缓存读取降价 75%。</strong>Fable 5 缓存读取 $1.00/MTok（长代理运行中最常见的成本构成），Fable 5.1 缓存读取 $0.25/MTok。一般工作负载下有效成本比 Fable 5 低约 25%；高自主性工作负载下节省可达 45%。</li>
+    <li><strong>Enterprise Frontier Safeguards（EFS）。</strong>新架构把请求和响应数据存在客户控制的云基础设施中，而非 Anthropic 的服务器。它提供与零数据保留策略等同的隐私，同时仍能让 Anthropic 的分类器在流式提示上运行。</li>
+    <li><strong>更智能的安全护栏。</strong>新分类器使网络安全误报率下降 60%。在生物领域，Fable 5.1 已获批用于漏洞发现（但不可用于漏洞利用开发）。Mythos 5.1 是通过美国政府协调的项目补充生物学研究访问的变体。</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">价格：实际变化了什么</h2>
+  <p>基础价格相对 Fable 5 未变。新的经济性体现在缓存档和 EFS 企业数据驻留档的附加定价：</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">价格档</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Fable 5</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Fable 5.1 / Mythos 5.1</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">变化</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">基础输入</td><td class="px-4 py-2">$10 / MTok</td><td class="px-4 py-2">$10 / MTok</td><td class="px-4 py-2">不变</td></tr>
+      <tr><td class="px-4 py-2 font-medium">输出</td><td class="px-4 py-2">$50 / MTok</td><td class="px-4 py-2">$50 / MTok</td><td class="px-4 py-2">不变</td></tr>
+      <tr><td class="px-4 py-2 font-medium">5 分钟缓存写入</td><td class="px-4 py-2">$12.50 / MTok</td><td class="px-4 py-2">$12.50 / MTok</td><td class="px-4 py-2">不变</td></tr>
+      <tr><td class="px-4 py-2 font-medium">1 小时缓存写入</td><td class="px-4 py-2">$20 / MTok</td><td class="px-4 py-2">$20 / MTok</td><td class="px-4 py-2">不变</td></tr>
+      <tr><td class="px-4 py-2 font-medium">缓存读取 / 命中</td><td class="px-4 py-2">$1.00 / MTok</td><td class="px-4 py-2 font-bold text-blue-700">$0.25 / MTok</td><td class="px-4 py-2 font-bold text-blue-700">-75%</td></tr>
+    </tbody>
+  </table>
+  <p>缓存读取降价 75% 是绝大多数工作负载唯一影响月账单的数字。Anthropic 自家的成本分解图显示：在「典型」Claude Code 会话中，缓存读取约占总支出的一半。在重复利用大量累积上下文的代理（这正是 Fable 5.1 设计的目标场景）中，缓存读取可超过总成本的 70%。把这一档从 $1.00 降到 $0.25 才对总成本产生了显著影响：</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>典型 Claude Code 会话</strong>——有效成本下降 25%。每月在 Fable 5 缓存读取上花费 $10,000 的团队，迁移到 Fable 5.1 后降至 $2,500，每月节省 $7,500。</li>
+    <li><strong>长时段研究 / 编码代理</strong>——有效成本下降 45%。Anthropic 给的例子是重复利用 600K token 系统提示加累积工具结果的多小时代理；在 Fable 5 上仅缓存读取就超过输入 token 成本；Fable 5.1 上便宜 75%。</li>
+    <li><strong>RAG 流水线</strong>——表现不一。朴素 RAG 每次调用都重新发送检索上下文，几乎得不到缓存收益。把系统提示稳定下来、把检索上下文追加其后的设置，能拿到相同的 25-45% 节省。</li>
+    <li><strong>单次补全</strong>——无缓存收益。标价（$10/$50）未变；Fable 5.1 与 Fable 5 单次调用成本相同。这种场景用 Opus 5 或 Sonnet 5。</li>
+  </ul>
+  <p>这一经济学让 Fable 5.1 成为任何能受益于提示缓存的工作负载的显然选择，而 Opus 5 / Sonnet 5 则是不受益场景的显然选择。Fable 5.1 的新特性（更优代理编码、EFS、Mythos 5.1 的生物研究）没有任何一个被高花费门槛挡住——所有新能力都以与 Fable 5 完全相同的每 token 价格提供。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Enterprise Frontier Safeguards（EFS）</h2>
+  <p>对任何把客户数据送进 Claude 的团队而言，EFS 是 Fable 5.1 发布中运营层面最重要的变化。架构有三条性质：</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>客户控制的存储。</strong>请求和响应数据存在客户控制的云基础设施中，而不是 Anthropic。Anthropic 从未在磁盘上看到明文提示或补全——流式推理流量被处理后即丢弃。</li>
+    <li><strong>等同零数据保留。</strong>由于 Anthropic 不持久化数据，运营隐私故事等同于在零数据保留（ZDR）合同下运行 Claude。企业法务和合规团队可以用他们已经在 ZDR 上用的同一套文件签署 Fable 5.1。</li>
+    <li><strong>分类器流水线仍能工作。</strong>Anthropic 的安全分类器在流式数据上运行但不持久化，因此 EFS 拿到与默认 Anthropic 部署相同的安全质量。Fable 5.1 随附的网络安全误报率下降 60% 同样适用于 EFS 客户。</li>
+  </ul>
+  <p>推出按阶段进行。Anthropic 表示 EFS 将于「2026 年秋季起分阶段推出」——截至 2026 年 9 月 2 日，EFS 尚未全面开放。在此之前，符合条件的客户可以通过 Anthropic 控制台为 Fable 5.1 选择零数据保留模式，可以拿到相同的隐私姿态，但对处理期间数据的存放位置控制较少。Anthropic 截至本文撰写时未公开 EFS 专属定价；预计成本模型是 Fable 5.1 基础价之上的每 token 加价。</p>
+  <p>对已经在 ZDR 合同下付费的团队，EFS 是渐进改进：隐私故事不变，但你还能为合规审计获得明确的存储控制。对在默认数据保留条款下（Anthropic 可能将提示保留最多 30 天用于滥用监控）运行 Claude 的团队，EFS 是首个允许你在无该暴露窗口的情况下把客户数据送进 Claude 的档位。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">基准：Fable 5.1 在哪些方面超过 Fable 5</h2>
+  <p>Anthropic 在发布贴中发布了六组基准正面比较，并明确说明：两个基准（Terminal-Bench-Science 0.1 与 Terminal-Bench 4.0）的公开排行榜版本处于 Anthropic 内部评估工具的标准误差窗口内。要点数字：</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">基准</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Fable 5.1</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Fable 5</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Opus 5</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">领域</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">Terminal-Bench-Science 0.1</td><td class="px-4 py-2 font-bold text-blue-700">~52%</td><td class="px-4 py-2">~24%</td><td class="px-4 py-2">~30%</td><td class="px-4 py-2">代理科学研究</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Terminal-Bench 4.0</td><td class="px-4 py-2 font-bold text-blue-700">~64%</td><td class="px-4 py-2">~52%</td><td class="px-4 py-2">~55%</td><td class="px-4 py-2">代理终端编码</td></tr>
+      <tr><td class="px-4 py-2 font-medium">OSWorld 2.0（部分匹配）</td><td class="px-4 py-2 font-bold text-blue-700">77.9%</td><td class="px-4 py-2">72.9%</td><td class="px-4 py-2">75.4%</td><td class="px-4 py-2">计算机使用</td></tr>
+      <tr><td class="px-4 py-2 font-medium">OSWorld 2.0（严格匹配）</td><td class="px-4 py-2 font-bold text-blue-700">41.7%</td><td class="px-4 py-2">36.1%</td><td class="px-4 py-2">39.6%</td><td class="px-4 py-2">计算机使用</td></tr>
+      <tr><td class="px-4 py-2 font-medium">CursorBench 3.2.0</td><td class="px-4 py-2 font-bold text-blue-700">75%+</td><td class="px-4 py-2">~67%</td><td class="px-4 py-2">~72%</td><td class="px-4 py-2">代理 IDE</td></tr>
+      <tr><td class="px-4 py-2 font-medium">GDPval-AA v2（知识工作）</td><td class="px-4 py-2 font-bold text-blue-700">1853</td><td class="px-4 py-2">1723</td><td class="px-4 py-2">1824</td><td class="px-4 py-2">知识工作对等度</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Humanity's Last Exam（无工具）</td><td class="px-4 py-2">60.9%</td><td class="px-4 py-2">57.8%</td><td class="px-4 py-2">56.6%</td><td class="px-4 py-2">多学科推理</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Humanity's Last Exam（有工具）</td><td class="px-4 py-2">65.0%</td><td class="px-4 py-2">63.8%</td><td class="px-4 py-2">63.6%</td><td class="px-4 py-2">多学科推理</td></tr>
+      <tr><td class="px-4 py-2 font-medium">AutomationBench</td><td class="px-4 py-2 font-bold text-blue-700">31.4%</td><td class="px-4 py-2">17.1%</td><td class="px-4 py-2">26.9%</td><td class="px-4 py-2">业务流程自动化</td></tr>
+    </tbody>
+  </table>
+  <p>两个最大跃升在 Terminal-Bench-Science 0.1（Fable 5.1 在 max 努力下超过 Fable 5 翻倍得分）与 AutomationBench（工作流自动化基准，Fable 5.1 接近 Fable 5 翻倍）。最小差距在 Humanity's Last Exam 上，Fable 5.1 仅比 Fable 5 带工具时高约 3 个百分点。整套基准中，Fable 5.1 max 努力在推理密集任务上与 Opus 5 max 努力大致持平，在代理编码与代理科学工作负载上显著更强——Anthropic 显式建议 Fable 5.1 优于 Opus 5。</p>
+  <p>努力维度上，Fable 5.1 支持五档努力（low / medium / high / xhigh / max）。Fable 5.1 在 Claude Code 中默认 high 努力，在 Claude Cowork 和 claude.ai 上默认 medium 努力。低努力运行更便宜但准确度低；对编码代理，成本-质量曲线倾向于 high 或 xhigh。Anthropic 的 Fable 5.1 提示工程指南逐步说明了每个工作负载的成本-质量权衡。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">API 与开发者体验</h2>
+  <p>Fable 5.1 API 是 Fable 5 在同一 Anthropic Messages 端点上的直接替换。最低限度迁移只是更换模型 ID：</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>import anthropic
+
+client = anthropic.Anthropic()  # 读取 ANTHROPIC_API_KEY
+
+# 迁移前（Fable 5）
+resp = client.messages.create(
+    model="claude-fable-5-20250901",
+    max_tokens=2048,
+    messages=[{"role": "user", "content": "找出这段 C++ 代码的 bug。"}],
+)
+
+# 迁移后（Fable 5.1——同一 SDK，同一端点，不同模型 ID）
+resp = client.messages.create(
+    model="claude-fable-5-1",
+    max_tokens=2048,
+    messages=[{"role": "user", "content": "找出这段 C++ 代码的 bug。"}],
+)</code></pre>
+  <p>新的 effort 参数是唯一有意义的 API 表层变化。effort 是整型枚举（low=1, medium=2, high=3, xhigh=4, max=5），控制 Fable 5.1 每次请求花费多少算力。更高的 effort 花费更多 token（因为模型思考更久），但在困难推理任务上给出更好答案。单次请求层面，低到 max 的成本差可达 3-10 倍：</p>
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>resp = client.messages.create(
+    model="claude-fable-5-1",
+    max_tokens=8192,
+    effort="xhigh",  # 或 "max" 进入最深度推理
+    messages=[{"role": "user", "content": "根据堆栈跟踪诊断凌晨 3 点的生产故障。"}],
+)</code></pre>
+  <p>其他未变化的方面：</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>1M token 上下文窗口</strong>（与 Opus 5 和 Sonnet 5 相同；是 Haiku 4.5 200K 的两倍）。</li>
+    <li><strong>单次响应 128K 最大输出</strong>（与 Opus 5 和 Sonnet 5 相同）。</li>
+    <li><strong>可靠知识截止 2026 年 6 月</strong>（模型可自信回答截至约 2026 年 6 月的事件；之后事件需要显式上下文）。</li>
+    <li><strong>自适应思考</strong>（extended thinking 变体可用；在高 effort 档常开）。</li>
+    <li><strong>工具 / 函数调用 / JSON 模式</strong>——与 Fable 5 相同的 schema。</li>
+    <li><strong>视觉输入</strong>——所有当前 Claude 模型都支持文本和图像输入。</li>
+  </ul>
+  <p>一个值得注意的运营坑：在 Fable 5 上构建的提示缓存在 Fable 5.1 上不可移植。缓存键按模型作用域，因此 Fable 5.1 切换需要重新预热周期。在一个累积了 30 分钟缓存上下文的长跑 Claude Code 会话中，预计切换后会有 5-30 分钟的全价输入 token，然后新缓存才稳定。如果你的提示缓存是重要成本组成，请把切换安排在低流量时段。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Fable 5.1 vs Opus 5 vs Sonnet 5 vs GPT-5.6</h2>
+  <p>截至 2026 年 9 月 2 日，四个模型竞争「最佳通用 Anthropic API」的位置。对比如下：</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">模型</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">输入 $/MTok</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">输出 $/MTok</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">缓存读取 $/MTok</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">最适合</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">Claude Fable 5.1</td><td class="px-4 py-2">$10</td><td class="px-4 py-2">$50</td><td class="px-4 py-2 font-bold text-blue-700">$0.25</td><td class="px-4 py-2">长时段代理、高难度推理、缓存密集型 Claude Code 会话</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Claude Opus 5</td><td class="px-4 py-2">$5</td><td class="px-4 py-2">$25</td><td class="px-4 py-2">$0.50</td><td class="px-4 py-2">复杂企业编码、平衡成本与质量、Fable 5.1 太贵时的回退</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Claude Sonnet 5</td><td class="px-4 py-2">$3</td><td class="px-4 py-2">$15</td><td class="px-4 py-2">$0.30</td><td class="px-4 py-2">高并发生产、默认 Claude API 档、近前沿质量半价</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Claude Haiku 4.5</td><td class="px-4 py-2">$1</td><td class="px-4 py-2">$5</td><td class="px-4 py-2">$0.10</td><td class="px-4 py-2">高并发分类、子代理、仅 200K 上下文</td></tr>
+      <tr><td class="px-4 py-2 font-medium">GPT-5.6（OpenAI）</td><td class="px-4 py-2">$5</td><td class="px-4 py-2">$25</td><td class="px-4 py-2">$0.50（缓存输入）</td><td class="px-4 py-2">OpenAI 生态、Cursor 集成、并行 GPT-OSS 对比</td></tr>
+    </tbody>
+  </table>
+  <p>Fable 5.1 vs GPT-5.6 是更难做的比较。两个模型都有 1M token 上下文窗口。Fable 5.1 在缓存密集型工作负载（缓存读取便宜 75%）和 Anthropic 自家代理编码基准（CursorBench、Terminal-Bench-Science）上胜出；GPT-5.6 在原始输入输出成本和 OpenAI 生态（Cursor 集成、OpenAI AgentKit、相关档的微调访问）上胜出。对已经在 Anthropic 上的团队，Fable 5.1 是显然升级；对在 OpenAI 上的团队，迁移成本真实存在，但缓存密集型工作负载上的成本节省可能值得。</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">结论</h2>
+  <p>截至 2026 年 9 月 2 日，Claude Fable 5.1 是任何能受益于提示缓存的工作负载的默认 Anthropic 模型。缓存读取降价 75% 是头条定价变化，但运营层面更重要是 Enterprise Frontier Safeguards——这是首个让企业客户在保留安全分类器覆盖的前提下获得等同零数据保留隐私的档位。在代理编码基准（Terminal-Bench-Science 0.1、CursorBench 3.2.0、AutomationBench）上，Fable 5.1 在 max 努力下显著超过 Fable 5 和 Opus 5；在推理基准（Humanity's Last Exam、GDPval-AA v2）上与 Opus 5 在 max 努力下大致持平。从 Fable 5 的迁移成本是模型 ID 更换加 5-30 分钟缓存重预热——这是 Anthropic 在 2026 年发布的最便宜且有意义的升级。Mythos 5.1 是带更严格护栏的同一模型；它是经过审核的生物 / 网络研究团体的正确选择，但对绝大多数生产工作负载不相关。对在 Opus 5 上的团队，升级需要仔细的成本-质量评估：Fable 5.1 在缓存密集型代理工作上胜出，但在原始输入输出成本上落败；对单轮或非缓存工作负载，半价的 Opus 5 仍是更优选择。</p>
+</section>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} enCanonicalUrl={enCanonicalUrl} type="article">
+  <article class="max-w-4xl mx-auto px-4 py-8" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="datePublished" content={date} />
+    <meta itemprop="dateModified" content={date} />
+
+    <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+    <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+    <div class="prose prose-lg max-w-none" set:html={enBody} />
+
+    <hr class="my-12 border-gray-200" />
+
+    <section class="mt-8">
+      <p class="text-sm text-gray-500 mb-2"><strong>披露：</strong>APIRank 是独立的对比站点。定价数据基于 2026-09-02 对 Anthropic 官方定价页与开发者文档的核对。通过本页链接注册时，我们可能获得联盟佣金，对你不产生额外费用。</p>
+      <p class="text-sm text-gray-500"><strong>最后核对：</strong>2026-09-02。Claude Fable 5.1 与 Mythos 5.1 的定价、模型可用性、基准数字均基于上述日期核对 Anthropic 发布贴与 docs.anthropic.com 定价参考。缓存读取定价、EFS 推出时间表、基准数字可能变化——投入生产工作负载前请重新核对。</p>
+    </section>
+  </article>
+</BaseLayout>
