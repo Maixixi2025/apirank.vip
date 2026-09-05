@@ -1,0 +1,188 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'nvidia-hugging-face-acquisition-2026';
+const date = '2026-09-05';
+const locale = 'en';
+
+const enTitle = 'NVIDIA Buys Hugging Face: What API Devs Must Know';
+const enDescription = 'NVIDIA agreed to buy Hugging Face for $12.93B. What the deal means for open-model inference pricing, HF multi-provider routing, and developer neutrality.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {"@context": "https://schema.org", "@type": "Article", "headline": enTitle, "description": enDescription, "datePublished": date, "dateModified": date, "author": {"@type": "Organization", "name": "APIRank", "url": "https://apirank.vip"}, "publisher": {"@type": "Organization", "name": "APIRank", "logo": {"@type": "ImageObject", "url": "https://apirank.vip/favicon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": `https://apirank.vip/tutorials/${slug}`}};
+const breadcrumbJsonLd = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip"}, {"@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials"}, {"@type": "ListItem", "position": 3, "name": enTitle, "item": `https://apirank.vip/tutorials/${slug}`}]};
+const faqJsonLd = {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+{"@type": "Question", "name": "How much is NVIDIA paying to acquire Hugging Face?", "acceptedAnswer": {"@type": "Answer", "text": "NVIDIA announced on September 3, 2026 that it agreed to acquire Hugging Face for $12,930,300,000 (reported as about $12.9 billion). Hugging Face was last valued at $4.5 billion in 2023, in a Series D round led by Salesforce Ventures that NVIDIA itself participated in."}},
+{"@type": "Question", "name": "When does the NVIDIA-Hugging Face deal close?", "acceptedAnswer": {"@type": "Answer", "text": "The transaction is expected to close in the first half of 2027, subject to regulatory approval and other customary closing conditions, per The Register's September 3, 2026 report. As of September 5, 2026 no formal FTC, DOJ, EU, or UK CMA review had been publicly reported."}},
+{"@type": "Question", "name": "Will Hugging Face stay neutral and open after NVIDIA owns it?", "acceptedAnswer": {"@type": "Answer", "text": "NVIDIA CEO Jensen Huang committed that Hugging Face will remain an open platform for the entire AI ecosystem, that NVIDIA compute will not be required to build on or deploy through it, and that it will continue to support multi-cloud and multi-accelerator development. Analysts (Forrester's Charlie Dai) caution that enterprises should 'watch for future shifts' rather than assume the commitments last forever."}},
+{"@type": "Question", "name": "How does NVIDIA owning Hugging Face affect inference API pricing?", "acceptedAnswer": {"@type": "Answer", "text": "Today Hugging Face routes inference to 18 third-party providers (Together, Groq, Cerebras, Fireworks, DeepInfra, Fal, Replicate, and others) and charges no markup, passing through provider costs directly. NVIDIA's own NIM/DGX Cloud is not currently one of those providers. The near-term pricing risk is indirect: whatever happens before the H1 2027 close determines whether the neutral, no-markup marketplace survives in its current form."}},
+{"@type": "Question", "name": "Is NVIDIA NIM an inference provider on Hugging Face?", "acceptedAnswer": {"@type": "Answer", "text": "No. As of September 5, 2026, the Hugging Face Inference Providers roster is Baseten, Cohere, Cerebras, DeepInfra, Fal AI, Featherless AI, Fireworks, Groq, hf-inference, Novita, Nscale, OVHcloud, PublicAI, Replicate, Scaleway, Together, WaveSpeedAI, and Z.ai. NVIDIA NIM / DGX Cloud is not listed, and queries for an nvidia-nim provider are rejected by the Hub API."}},
+{"@type": "Question", "name": "Should developers switch off Hugging Face because of the NVIDIA deal?", "acceptedAnswer": {"@type": "Answer", "text": "Not yet. The deal closes no earlier than H1 2027 and NVIDIA has made explicit multi-provider, no-NVIDIA-compute-required commitments. The pragmatic move for teams that route open models through Hugging Face is to diversify: use two of the independent providers directly (for example together + groq) or an aggregator like OpenRouter, so no single platform change upends your stack. Watch the routing-neutrality and provider-roster decisions between now and the close."}}
+]};
+
+const enBody = `<h1 class="text-3xl font-bold mb-6">NVIDIA Buys Hugging Face: What API Developers Need to Know in 2026</h1>
+
+<p class="text-lg leading-relaxed mb-4">On <strong>September 3, 2026</strong>, NVIDIA CEO Jensen Huang announced that NVIDIA had agreed to acquire Hugging Face for <strong>$12,930,300,000</strong> &mdash; about <strong>$12.9 billion</strong>. It is NVIDIA's second-largest acquisition ever, behind the roughly $20 billion it paid for Groq assets at the end of 2025 and ahead of the ~$7 billion Mellanox deal in 2019. Hugging Face was last valued publicly at <strong>$4.5 billion</strong> in 2023, when NVIDIA itself participated in its Series D.</p>
+
+<p class="text-lg leading-relaxed mb-4">For anyone who builds on open-weight models &mdash; which is a large slice of the AI-API world this site tracks &mdash; this is not a distant chip story. Hugging Face is the distribution layer for the open model ecosystem and, increasingly, an <strong>inference-API marketplace</strong> in its own right. The founders' stated motive is scale: as Clément Delangue put it on X, open source has "shown that it can be a complement, and even an alternative, to closed-source APIs. But for it to happen at larger scale, it needs more compute, more support, more collaboration and more visibility. That's why we went to talk to Jensen."</p>
+
+<p class="text-lg leading-relaxed mb-4">This article is the API-developer read on the deal: the numbers, the openness commitments that matter, what actually sits at risk on the inference layer between now and the expected <strong>first-half-2027 close</strong>, and the concrete diversification moves that cost you nothing this week.</p>
+
+<p class="text-lg leading-relaxed mb-4">Last verified: <strong>2026-09-05</strong>. Deal value, announcement date, prior valuation, expected close window, the 18-provider inference roster, NVIDIA NIM's absence, and all quotes are primary-source-verified (NVIDIA blog, CNBC, The Register, TechCrunch, Wired, The Verge, SiliconANGLE, Hugging Face docs + Hub API). Regulatory status and provider-roster changes after this date could shift the recommendations.</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">The deal, the platform, and why the number matters</h2>
+
+<p class="mb-4">Hugging Face is not just a model hub &mdash; it is the most concentrated distribution point in open AI. The platform, per NVIDIA's own announcement, counts:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>HUGGING FACE AT A GLANCE (NVIDIA blog, Sept 3 2026)
+  • 18M+ developers, researchers and creators
+  • 3M+ shared models
+  • 500,000 datasets
+  • 1M applications
+  • 200,000+ companies using the platform
+  • Last public valuation: $4.5B (2023 Series D)
+  • NVIDIA was already its largest open-model contributor
+    (500+ models, 250+ open datasets)</code></pre>
+
+<p class="mb-4">The $12.93B price is roughly <strong>2.9x the 2023 valuation</strong>. Context: The Financial Times previously reported that Hugging Face rejected a ~$500M NVIDIA investment the prior year that would have valued it near $7B. The founders &mdash; French entrepreneurs Clément ("Clem") Delangue (CEO), Julien Chaumond, and Thomas Wolf, who started the company around 2016 in New York &mdash; had reportedly explored a sale in the ~$13B range, about three times that 2023 mark. Delangue told CNBC he approached NVIDIA first because it was "a perfect home," and that the discussions "went quite fast."</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">The openness commitments: what NVIDIA actually promised</h2>
+
+<p class="mb-4">The single most important sentence in the announcement, for API developers, is Huang's explicit neutrality pledge. It is worth reading verbatim:</p>
+
+<blockquote class="border-l-4 border-blue-200 pl-4 italic text-gray-700 mb-4">"Hugging Face will remain an open platform for the entire AI ecosystem. Developers will choose the models they want, the frameworks they want, the clouds and inference service providers they want and the computing platforms they want. NVIDIA compute will not be required to build on or deploy through Hugging Face." <strong>&mdash; Jensen Huang, NVIDIA blog, Sept 3, 2026</strong></blockquote>
+
+<p class="mb-4">Huang doubled down on the multi-cloud point: Hugging Face will "continue to support multi-cloud and multi-accelerator development and deployment." His stated rationale is that open weights give defenders an "asymmetric advantage" in security &mdash; more people protecting than attacking, all collaborating transparently.</p>
+
+<p class="mb-4">Huang has skin in this game beyond the checkbook. He co-authored an open letter on the importance of open weights to the AI economy, and NVIDIA is the largest contributor of open models and data to Hugging Face. This is not NVIDIA discovering open AI at the negotiating table; it is the dominant AI-chipmaker buying the distribution layer it already depends on.</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">What actually sits at risk: the inference layer</h2>
+
+<p class="mb-4">Beyond the model hub, Hugging Face runs an increasingly important <strong>inference-API marketplace</strong> that behaves like an OpenAI-compatible proxy. As of early September 2026, it routes requests through <strong>18 third-party inference providers</strong> &mdash; and critically, NVIDIA's own NIM/DGX Cloud is <strong>not</strong> among them. The verified roster:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>HUGGING FACE INFERENCE PROVIDERS (verified 2026-09-05)
+  Baseten, Cohere, Cerebras, DeepInfra, Fal AI,
+  Featherless AI, Fireworks, Groq, hf-inference,
+  Novita, Nscale, OVHcloud, PublicAI, Replicate,
+  Scaleway, Together, WaveSpeedAI, Z.ai
+  → NVIDIA NIM / DGX Cloud: NOT listed</code></pre>
+
+<p class="mb-4">Three properties of this layer are the developer-facing assets most at stake:</p>
+
+<p class="mb-4"><strong>1. Zero-vendor-lock-in routing.</strong> Hugging Face's Inference Providers product is explicitly positioned as "Zero Vendor Lock-in." You can select a provider by suffixing the provider name to a model id (for example <code>openai/gpt-oss-120b:groq</code>), or let the platform route by policy: <code>:fastest</code> (highest tokens/second), <code>:cheapest</code> (lowest price per output token), or your own <code>:preferred</code> order. When a provider is unavailable, traffic auto-fails-over to another.</p>
+
+<p class="mb-4"><strong>2. No markup.</strong> On Hugging Face's inference marketplace, "Hugging Face charges you the same rates as the provider &mdash; we just pass through the provider costs directly." This pass-through neutrality is the reason developers and small aggregators trust it as an honest floor for what open-model inference should cost. A vertically-integrated owner has an incentive that eventually conflicts with "we add nothing and route to whoever is cheapest/fastest," even if that incentive is deferred.</p>
+
+<p class="mb-4"><strong>3. The free tier and PRO economics.</strong> HF gives free users <strong>$0.10/month</strong> of compute credits and PRO subscribers (still $9/month) <strong>$2.00/month</strong> across all HF compute services plus 20x included inference credits. These numbers are small, but they are a real discovery ramp for open-model API experimentation. A large acquirer could keep them unchanged (low cost, high developer funnel) or quietly deprioritize the loss-leading public tiers.</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">The verdict is deferred, not open-and-shut</h2>
+
+<p class="mb-4">Before NVIDIA owns Hugging Face, none of these properties change. The transaction does not close until the <strong>first half of 2027</strong>, subject to regulatory approval, and as of September 5, 2026, no formal US, EU, or UK review has been publicly reported. That is roughly three quarters of runway during which the platform, its pricing, and its provider roster are what they are today.</p>
+
+<p class="mb-4">The analyst consensus is that NVIDIA will preserve openness <em>initially</em> &mdash; because Hugging Face's value <strong>is</strong> its neutrality &mdash; but that teams should prepare for the medium term. Forrester's Charlie Dai put the strategic read plainly: NVIDIA already owns GPUs, CUDA, networking, inference software, and AI frameworks; Hugging Face "will give it a stronger position at the developer, model distribution, and community layers," which is about shaping "where AI workloads are built and deployed." Enterprises should "watch for future shifts." Forrester's Naveen Chhabra framed the motivation as securing the software layer: "hardware-only companies get commoditized over time," and owning the model-distribution layer gives NVIDIA visibility into customer preferences.</p>
+
+<div class="bg-amber-50 border border-amber-200 rounded-xl p-5 my-6">
+  <h3 class="font-bold text-lg mb-2">⚠️ The three things to watch before the 2027 close</h3>
+  <ul class="list-disc pl-5 space-y-2 text-sm">
+    <li><strong>Does NVIDIA NIM/DGX Cloud join the inference-provider roster?</strong> If it appears, and especially if <code>:fastest</code>/<code>:cheapest</code> routing starts favoring first-party hardware, the marketplace ceases to be a neutral price floor.</li>
+    <li><strong>Does the "no markup + pass-through" language survive?</strong> Any move toward NVIDIA-favorable billing or bundled pricing would be the earliest concrete signal of integration.</li>
+    <li><strong>Do the independent providers (Together, Groq, Cerebras, Fireworks, Fal, Replicate) stay comfortable?</strong> If any of them pull out of HF routing, the ecosystem loses exactly the competition that keeps open-model API prices honest.</li>
+  </ul>
+</div>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">How to call Hugging Face inference today (code)</h2>
+
+<p class="mb-4">If you already use Hugging Face's router, nothing changes yet. The OpenAI-compatible endpoint <code>https://router.huggingface.co/v1</code> keeps working, and you can pin a provider explicitly by appending its name to the model id &mdash; exactly the pattern Hugging Face's own docs show with <code>openai/gpt-oss-120b:groq</code>. Here is the same request pinned to Groq via curl:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>curl https://router.huggingface.co/v1/chat/completions \\
+  -H "Authorization: Bearer $HF_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "openai/gpt-oss-120b:groq",
+    "messages": [{"role": "user", "content": "Summarize the NVIDIA-Hugging Face deal in one line."}]
+  }'
+# Append :together, :groq, :fireworks-ai, :cerebras, etc. to pin any roster provider.
+# Use :fastest (default) for highest throughput, or :cheapest for lowest price
+# per output token. Response shape is OpenAI-compatible (id / object / choices).</code></pre>
+
+<p class="mb-4">Python with the OpenAI SDK against the same router, using the <code>:fastest</code> policy HF applies by default:</p>
+
+<pre class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm overflow-x-auto mb-4"><code>import os
+from openai import OpenAI
+
+# HF's router is a drop-in OpenAI-compatible endpoint. model ids take an
+# optional routing suffix: :fastest (default), :cheapest, :preferred, or a
+# provider name (e.g. "openai/gpt-oss-120b:groq").
+client = OpenAI(
+    base_url="https://router.huggingface.co/v1",
+    api_key=os.environ["HF_TOKEN"],   # your HF access token
+)
+
+reply = client.chat.completions.create(
+    model="openai/gpt-oss-120b:fastest",
+    messages=[{"role": "user", "content": "Explain provider-side routing in two sentences."}],
+    temperature=0.3,
+    max_tokens=200,
+)
+print(reply.choices[0].message.content)
+
+# Free / PRO users draw on monthly compute credits ($0.10 free, $2.00 PRO);
+# past that, buy additional credits or set a Custom Provider Key (BYOK),
+# which bypasses HF billing and bills you directly at the provider's rates.</code></pre>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">Diversification moves that cost nothing this week</h2>
+
+<p class="mb-4">Because the close is not until H1 2027, there is no reason to make a frightened migration today. But the cheapest insurance against an uncertain ownership transition is to make sure your open-model stack is <em>already</em> portable. Three low-effort moves, in increasing commitment:</p>
+
+<p class="mb-4"><strong>1. Know your direct-provider credentials.</strong> The 18 roster providers (Together, Groq, Cerebras, Fireworks, DeepInfra, Novita, Baseten, Replicate, Fal, and others) each sell access directly. If you only have an HF token today, opening a free account on two of these gives you a fallback path in minutes.</p>
+
+<p class="mb-4"><strong>2. Prefer a neutral aggregator for anything that must keep running.</strong> Aggregators that sit <em>above</em> Hugging Face &mdash; routing to many independent providers without owning hardware &mdash; are less exposed to this specific integration than a single-chip vendor acquiring its own distribution. This is the one scenario where "add a routing layer" is not added complexity but added optionality.</p>
+
+<p class="mb-4"><strong>3. Pin your critical models today.</strong> If a production workload relies on <code>:fastest</code> or <code>:cheapest</code> auto-routing through HF, note which concrete provider currently wins under each policy. When the roster or the routing algorithm changes post-close, you will know <em>what</em> changed rather than re-discovering which provider your traffic landed on.</p>
+
+<h2 class="text-2xl font-semibold mt-10 mb-4">Bottom line</h2>
+
+<p class="mb-4">NVIDIA buying Hugging Face for ~$12.93B, expected to close in H1 2027, is a bet on owning the distribution layer of open AI &mdash; not a near-term change to any open-model API price. The platform's real commercial value is its neutrality: an 18-provider, no-markup, multi-accelerator marketplace whose pass-through pricing acts as an honest floor for what open inference should cost.</p>
+
+<p class="mb-4">The developer play is to assume the platform stays open (it will, at least initially, because that is the asset NVIDIA is paying for) while removing single-point dependency <em>now</em>, while the deal window gives you three clean quarters to do it calmly. Keep your two-provider fallback ready, pin your routing-sensitive workloads, and re-check the provider roster and pass-through language at the close &mdash; that is the moment the real story, and any real price impact, begins.</p>
+
+<p class="text-sm text-gray-500 mt-8">Last verified 2026-09-05. Primary sources: NVIDIA Blog (deal value, platform stats, openness commitments), CNBC (deal context, Delangue + Huang quotes), The Register (expected H1 2027 close), TechCrunch / Wired / The Verge / SiliconANGLE (prior valuation, backers, analyst quotes), Hugging Face Inference Providers docs + Hub API (18-provider roster, no-markup routing, free/PRO credits). Reuters syndication was bot-walled at fetch and corroborated via the outlets above.</p>
+`;
+---
+
+<BaseLayout
+  title={enTitle + ' | APIRank'}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  lang="en"
+>
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+      <article class="prose prose-lg max-w-none">
+        <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+        <div set:html={enBody} />
+      </article>
+      <aside class="space-y-6">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-5 border border-blue-100">
+          <h3 class="font-bold text-base mb-3">Try FreeModel for multi-provider routing</h3>
+          <p class="text-sm text-gray-600 mb-3">OpenRouter-compatible multi-model endpoint with built-in failover and caching. Route open-weights and frontier models under one OpenAI-style API without hardware vendor lock-in.</p>
+          <a href="https://freemodel.dev/invite/FRE-7a3b6220" class="inline-block bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors" target="_blank" rel="nofollow">Get $5 credit →</a>
+        </div>
+        <div class="bg-gray-50 rounded-xl p-5">
+          <h3 class="font-bold text-base mb-2">Quick facts</h3>
+          <ul class="text-sm space-y-2">
+            <li><strong>Deal value</strong><br/>$12,930,300,000 (~$12.9B)</li>
+            <li><strong>Announced</strong><br/>September 3, 2026</li>
+            <li><strong>Expected close</strong><br/>H1 2027 (regulatory approval)</li>
+            <li><strong>HF last valuation</strong><br/>$4.5B (2023)</li>
+            <li><strong>HF inference providers</strong><br/>18; NVIDIA NIM not listed</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
