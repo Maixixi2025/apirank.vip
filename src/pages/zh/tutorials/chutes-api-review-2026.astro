@@ -1,0 +1,233 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'chutes-api-review-2026';
+const date = '2026-09-06';
+const locale = 'zh';
+
+const zhTitle = 'Chutes API 评测 2026：去中心化开源权重推理';
+const zhDescription = 'Chutes API 2026 评测：去中心化开源权重推理平台，运行于机密 TEE 计算。Qwen3.5-397B $0.45/$3.00、DeepSeek V3.2 $1/$1 每百万 token。2026 年实测价格。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "2026 年的 Chutes 是什么？", "acceptedAnswer": { "@type": "Answer", "text": "Chutes（chutes.ai）是一个开源、去中心化的开源权重模型推理网络。模型运行在 Bittensor 驱动的独立 GPU miner 网络上，并加密在机密 TEE（可信计算）硬件中；通过单一全球 OpenAI 兼容端点 https://llm.chutes.ai/v1 提供。与 OpenRouter 这类转售他人目录模型的聚合器不同，Chutes 自己托管开源权重模型，公布透明、无 markup 的每百万 token 价格，并提供从约 $1.80/小时起、按秒计费的 'Private Chute' GPU 部署。" } },
+    { "@type": "Question", "name": "2026 年 Chutes API 的价格是多少？", "acceptedAnswer": { "@type": "Answer", "text": "公开推理按每 1M token 纯按量计费、无 markup。2026-09-06 实测：Qwen3.5-397B-A17B $0.45 输入 / $3.00 输出（262K 上下文）；DeepSeek-V3.2 $1.00/$1.00；DeepSeek-V4-Flash $0.44/$1.32（1.0M 上下文）；Kimi-K2.6 $0.58/$3.40；GLM-5.2 $1.25/$3.95。小模型很便宜——Qwen3-32B $0.104/$0.416、Gemma-4-31B $0.12/$0.37。可选 Plus $10/月（6% off）与 Pro $20/月（10% off）方案。无免费档。" } },
+    { "@type": "Question", "name": "Chutes 是否 OpenAI 兼容？", "acceptedAnswer": { "@type": "Answer", "text": "是。端点为 https://llm.chutes.ai/v1，对话走 /v1/chat/completions，用 CHUTES_API_KEY 作为 Bearer token 鉴权，现有 OpenAI SDK 换掉 base URL 即可使用。Chutes 也提供一等公民的 'chutes' CLI（Python，MIT，chutesai GitHub 组织），并能把全部模型目录与每百万 token 价格以 JSON 形式发布在 chutes.ai/api/models。" } },
+    { "@type": "Question", "name": "Chutes 有免费档吗？", "acceptedAnswer": { "@type": "Answer", "text": "没有。官方定价 FAQ 明确写道：'我们目前不提供免费档。请在 app 内充值后开始使用。' 按量计费无最低承诺。支持 Stripe 25+ 种支付方式（信用卡、加密货币、银行转账）以及 TAO / Bittensor alpha token。这与注册即送少量免费额度的 Novita、DeepInfra 等聚合器不同。" } },
+    { "@type": "Question", "name": "我从中国大陆能用 Chutes 吗？", "acceptedAnswer": { "@type": "Answer", "text": "不能直接使用。没有中国大陆区域端点、没有中国支付方式（原生上币通道为 Stripe 与 TAO/加密货币）、也没有中国境内数据驻留选项，且端点是单一全球入口而非地域分片。大陆生产流量应经代理或前置 Chutes API 的转发。对延迟或驻留敏感、面向中国用户的表层，仍建议搭配国内厂商（通义、智谱、豆包）作为中国侧接入层。" } },
+    { "@type": "Question", "name": "2026 年 Chutes 托管哪些模型？", "acceptedAnswer": { "@type": "Answer", "text": "实时目录（33 个模型，其中 16 个 LLM）托管领先的开源权重：Qwen3.5-397B-A17B、DeepSeek-V3.2 与 DeepSeek-V4-Flash、Moonshot Kimi-K2.6、智谱 GLM-5.2 与 GLM-5.1、Qwen3-32B / Qwen3.6-27B / Qwen3.8-27B、Google Gemma-4-31B，外加图像/视频/语音/音乐/嵌入/内容审核模型。Chutes 宣称最新 SOTA 开源模型在上游发布后数分钟内即上线。全部是开源权重——无 GPT-6 Astra / Claude / Gemini 专有模型访问。" } }
+  ]
+};
+---
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={enCanonicalUrl}
+  lang="zh"
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Chutes 去中心化开源权重推理 API 评测</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Chutes API 评测 2026：去中心化开源权重推理</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-09-06">2026 年 9 月 6 日</time>
+              <span>•</span>
+              <span>提供商评测</span>
+              <span>•</span>
+              <span>约 10 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              APIRank 已经覆盖专有前沿——GPT-6 Astra、Claude Fable、Gemini——以及 OpenRouter 等大转售聚合器。今天是给目录补上开源权重市场的另一端：<strong>Chutes</strong>，一个<em>去中心化</em>推理网络——它自己托管开源模型（而非转售），并让每个请求都跑在机密 TEE 计算上。它确实在活跃：我核实当天，Kimi K2.6、GLM 5.2、Gemma 4 31B 与 DeepSeek V4 Flash 都已上线网络；其每百万 token 定价公开透明。这篇评测覆盖已核实价格、OpenAI 兼容 API、去中心化/TEE 的角度，以及它与我们已对比的聚合器的位置关系。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR：</strong> Chutes（chutes.ai）是一个开源、<em>去中心化</em>的开源权重推理网络，通过单一全球 OpenAI 兼容端点 <code class="bg-gray-100 px-1 rounded">https://llm.chutes.ai/v1</code> 提供，运行在 Bittensor 驱动的 GPU miner 上并加密在机密 TEE 计算中。第一方价格实测（chutes.ai/api/models + /pricing FAQ，均于 2026-09-06 抓取）：<strong>Qwen3.5-397B-A17B 每百万 $0.45 输入 / $3.00 输出</strong>，DeepSeek-V3.2 $1.00/$1.00，DeepSeek-V4-Flash $0.44/$1.32（1.0M 上下文），Kimi-K2.6 $0.58/$3.40，Qwen3-32B 这类小模型仅 <strong>$0.104/$0.42</strong>。无 markup、无免费档。可选 Plus $10/月与 Pro $20/月。Private Chute 按秒 TEE GPU 部署自 $1.80/小时。代价：只有开源权重前沿——没有专有 GPT-6 Astra / Claude——且没有可绑定延迟的自有区域数据中心，也没有中国端点或支付方式。
+            </p>
+          </div>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">为何是 Chutes，为何是现在</h2>
+          <p>
+            本周的 APIRank 简报被 GPT-6 Astra 发布与 Gemini 3.8 Flash 家族刷屏——这两个都已在站上覆盖。这些故事反而让我意识到我们的<em>非转售开源权重</em>覆盖有多薄。我收录了 DeepInfra、Together、Novita、Hyperbolic 作为开源权重托管商，但还没覆盖去中心化细分——那里的模型运行在独立的 Bittensor GPU 网络上，而非某家厂商的数据中心。Chutes 是该细分仍在积极迭代的最清晰玩家：GitHub 组织显示到 2026 年 9 月初仍有提交，其消费级产品（Chutes Chat 与 Chutes Search）也在真实使用。它还把自己整套实时目录与价格以 JSON 发布，这让核验异常容易。
+          </p>
+          <p>
+            先说一句公允的提醒：Chutes 在自己的首页把自己与 OpenRouter、Kilo、FetchAI、Phala 放在同一排 logo 上自比。我把它当作优点而非贬损——这说明去中心化层正把自己定位成聚合器的替代，而这正是今天流量很大的开源权重开发者要做的采购决策。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">实测价格（2026-09-06）</h2>
+          <p>
+            Chutes 在成本上透明得近乎激进。模型目录与每个模型的每百万输入/输出价都以实时 JSON 发布在 <code class="bg-gray-100 px-1 rounded">https://chutes.ai/api/models</code>，价格页上的数字就是你要付的数字。下表是我于 2026-09-06 直接从该 API 核实到的快照：
+          </p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-gray-700 border border-gray-200">
+              <thead>
+                <tr class="bg-gray-100 text-left">
+                  <th class="px-3 py-2 font-medium">模型</th>
+                  <th class="px-3 py-2 font-medium">输入 $/百万</th>
+                  <th class="px-3 py-2 font-medium">输出 $/百万</th>
+                  <th class="px-3 py-2 font-medium">备注</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="px-3 py-2 font-medium">Qwen3.5-397B-A17B-TEE</td><td class="px-3 py-2">$0.45</td><td class="px-3 py-2">$3.00</td><td class="px-3 py-2">262K 上下文；前沿开源推理 MoE</td></tr>
+                <tr><td class="px-3 py-2 font-medium">DeepSeek-V3.2-TEE</td><td class="px-3 py-2">$1.00</td><td class="px-3 py-2">$1.00</td><td class="px-3 py-2">262K 上下文；热门开源对话模型</td></tr>
+                <tr><td class="px-3 py-2 font-medium">DeepSeek-V4-Flash-0731-TEE</td><td class="px-3 py-2">$0.44</td><td class="px-3 py-2">$1.32</td><td class="px-3 py-2">1.0M 上下文；低成本 Flash 级</td></tr>
+                <tr><td class="px-3 py-2 font-medium">moonshotai/Kimi-K2.6-TEE</td><td class="px-3 py-2">$0.58</td><td class="px-3 py-2">$3.40</td><td class="px-3 py-2">262K 上下文；Kimi 旗舰线</td></tr>
+                <tr><td class="px-3 py-2 font-medium">zai-org/GLM-5.2-TEE</td><td class="px-3 py-2">$1.25</td><td class="px-3 py-2">$3.95</td><td class="px-3 py-2">前沿 Agent/编程开源模型</td></tr>
+                <tr><td class="px-3 py-2 font-medium">Qwen3-32B-TEE</td><td class="px-3 py-2">$0.104</td><td class="px-3 py-2">$0.416</td><td class="px-3 py-2">41K 上下文；廉价小型主力模型</td></tr>
+                <tr><td class="px-3 py-2 font-medium">google/gemma-4-31B-turbo-TEE</td><td class="px-3 py-2">$0.12</td><td class="px-3 py-2">$0.37</td><td class="px-3 py-2">131K 上下文；预算边缘模型</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-sm text-gray-500"><em>注：所有价格与上下文均于 2026-09-06 从实时 <code class="bg-gray-100 px-1 rounded">chutes.ai/api/models</code> 定价 API 核实。</em></p>
+          <p>
+            定价模型本身简单诚实：<strong>无 markup 层级</strong>、无中间商，只为实际消费的 token 付费。若不想随用随充，可选 <strong>Plus（$10/月）</strong>与 <strong>Pro（$20/月）</strong>，把每日请求额度打包，分别按量价 6% 与 10% off。这里<strong>没有免费档</strong>——官方 FAQ 说得直白："我们目前不提供免费档。请在 app 内充值后开始使用。" 这与注册即送小额免费额度的 Novita、DeepInfra 等聚合器是真实差异，也是新用户会撞上的最大入门门槛。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">API 面与开发者体验</h2>
+          <p>
+            迁移阻力极小，因为 Chutes <strong>完全 OpenAI 兼容</strong>。Base URL 是 <code class="bg-gray-100 px-1 rounded">https://llm.chutes.ai/v1</code>，对话走 <code class="bg-gray-100 px-1 rounded">/v1/chat/completions</code>；用 <code class="bg-gray-100 px-1 rounded">Authorization: Bearer CHUTES_API_KEY</code> 作为请求头即可。现有 OpenAI SDK 换掉 base URL 与 key 就能用，官方首页示例就是一段普通 Python <code class="bg-gray-100 px-1 rounded">requests</code> 调用。Chutes 也提供一等公民 <code class="bg-gray-100 px-1 rounded">chutes</code> CLI（Python，MIT，chutesai GitHub 组织），负责 API Key、模型查询以及其招牌功能——一行命令部署 <strong>Private Chute</strong>。
+          </p>
+          <p>
+            <em>Private Chute</em> 是产品的另一半，值得单独说明。若某个模型不在公开目录，或你要跑自己的代码/私有微调且要求完全隔离，就把它部署到一台机密 TEE GPU 上。Chutes 当前自服类列出的是 RTX Pro 6000（96GB Blackwell），<strong>$1.80/小时</strong>，按秒计费，外加一次性部署费 = 时价的 3 倍（$5.40）。空闲实例自动关停，不浪费 GPU 秒。这更接近精简版、带 TEE 风味的 RunPod，而非纯模型 API——适合有自定义权重、又不想起整套 GPU 集群的人。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">Chutes vs 转售聚合器</h2>
+          <p>
+            看待 Chutes 最清晰的方式，是把它当作转售聚合器的<em>垂直整合、开源原生</em>替代。OpenRouter、Kilo 及其同侪是中立的商店，路由到任意上游厂商的列表——一把 key、庞大模型菜单，但多了一层路由，货是别人的。Chutes 则自己拥有整条栈：把开源权重模型托管在自己 Bittensor 驱动的网络上，每个模型隔离在 TEE 里，公布无 markup 的价格。它首页甚至点名自己的对手——"OpenRouter, Kilo, FetchAI, Phala, Pax Historia"——让定位一目了然。
+          </p>
+          <p>
+            对 APIRank 读者而言，实用对比落到几个轴。<strong>价格：</strong>Qwen3.5 这类前沿 397B 开源 MoE 以 $0.45 输入 / $3.00 输出提供，对标第一方专有价相当激进，小模型更是便宜得惊人。<strong>模型新鲜度：</strong>Chutes 宣称上新后"数分钟内"上线 SOTA 开源模型，实时目录证实了这点——我核实的当天，最新的 Kimi、GLM、DeepSeek 迭代全部在位。<strong>隐私：</strong>机密 TEE 执行是相对多租户云的真实差异化。短板：没有专有前沿访问（没法通过它调 GPT-6 Astra 或 Claude）、没有免费档，且去中心化拓扑意味着你无法像 Hyperbolic 或 Together 的自有容量那样指向单一自有区域来锚定延迟。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">中国访问与延迟</h2>
+          <p>
+            Chutes 通过一个全球 OpenAI 兼容端点、前置去中心化 GPU 网络来服务一切，因此延迟跟随 miner 节点位置，而非公开的区域数据中心地图。北美与欧洲通常在公开 TEE 实例上获得低延迟；亚太往返时延会随请求的调度位置波动。<strong>没有中国大陆区域端点</strong>、没有中国支付方式（原生上币通道为 Stripe 与 TAO/加密货币）、也没有中国境内数据驻留选项。大陆开发者应经代理或前置 Chutes API 的转发；对任何面向中国、延迟或驻留敏感的表层，请与目录中所有海外开源权重托管商一样，搭配国内厂商（通义、智谱、豆包）作为中国侧接入层。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">谁适合用 Chutes？</h2>
+          <ul class="list-disc pl-5 space-y-2">
+            <li><strong>开源权重优先的团队</strong>——想要一把 OpenAI 兼容 key 贯通最新的 Kimi/GLM/Qwen/DeepSeek 发布，且喜欢透明、无 markup 的定价。</li>
+            <li><strong>对价格敏感、高吞吐的工作负载</strong>——小模型档（Qwen3-32B 约 $0.10 输入、Gemma-4-31B 约 $0.12 输入）按 token 确实很难被击败。</li>
+            <li><strong>重视隐私的开发者</strong>——看重机密 TEE 执行与隔离，胜过共享多租户云。</li>
+            <li><strong>跑自定义权重或代码的人</strong>——想要按秒的 TEE GPU 容量又不想管集群（走 Private Chute 路径）。</li>
+          </ul>
+          <p>
+            它不太适合需要专有前沿访问、需要免费档做原型、或需要固定自有区域延迟画像的团队。另请注意模型目录会变动——Chutes 首页只优先展示"hot"模型，任何一天真正可服务的模型请以实时 API 为准。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">Chutes FAQ</h2>
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">2026 年的 Chutes 是什么？</h3>
+          <p>Chutes 是一个开源、去中心化的开源权重推理网络，通过单一全球 OpenAI 兼容端点（https://llm.chutes.ai/v1）提供，运行在 Bittensor 驱动的独立 GPU miner 网络上并加密在机密 TEE 计算中。它自己托管开源模型而非转售他人列表，公布无 markup 的每百万 token 价格，并提供按秒的 Private Chute GPU 部署。</p>
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">Chutes API 怎么收费？</h3>
+          <p>按每百万 token 纯按量计费、无 markup。2026-09-06 实测：Qwen3.5-397B-A17B $0.45/$3.00（262K 上下文）；DeepSeek-V3.2 $1.00/$1.00；DeepSeek-V4-Flash $0.44/$1.32（1.0M 上下文）；Kimi-K2.6 $0.58/$3.40；GLM-5.2 $1.25/$3.95；Qwen3-32B $0.104/$0.416；Gemma-4-31B $0.12/$0.37。Plus $10/月与 Pro $20/月叠加折扣每日额度。无免费档。</p>
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">Chutes API 是否 OpenAI 兼容？</h3>
+          <p>是。端点 https://llm.chutes.ai/v1，对话走 /v1/chat/completions，CHUTES_API_KEY Bearer 鉴权——OpenAI SDK 换 base URL 即可。一等公民 'chutes' CLI（Python，MIT）负责 key、模型查询与一行命令的 Private Chute 部署。</p>
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">我从中国大陆能用 Chutes 吗？</h3>
+          <p>不能直接使用——无大陆端点、无中国支付方式、无中国境内数据驻留选项。大陆生产流量需代理或转发。对延迟/驻留敏感的面向中国表层，建议搭配国内厂商（通义、智谱、豆包）作为中国侧接入层。</p>
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">Chutes 是否托管专有前沿模型？</h3>
+          <p>不。目录仅开源权重——Qwen、DeepSeek、Moonshot Kimi、智谱 GLM、Google Gemma 等——无 GPT-6 Astra / Claude / Gemini。专有前沿模型仍走第一方或转售聚合器。</p>
+
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-3">速览</h3>
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li><strong>提供商：</strong> Chutes（chutes.ai）</li>
+              <li><strong>类型：</strong> 去中心化开源权重推理</li>
+              <li><strong>端点：</strong> llm.chutes.ai/v1（OpenAI 兼容）</li>
+              <li><strong>计算：</strong> Bittensor GPU miners + 机密 TEE</li>
+              <li><strong>目录：</strong> 33 个模型，16 个 LLM（09-06 实测）</li>
+              <li><strong>免费档：</strong> 无</li>
+              <li><strong>方案：</strong> Plus $10/月，Pro $20/月，Enterprise</li>
+            </ul>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-2">差异点</h3>
+            <ul class="text-sm text-gray-600 space-y-1 list-disc pl-4">
+              <li>自己托管模型——无转售 markup</li>
+              <li>实时 JSON 定价 API（chutes.ai/api/models）</li>
+              <li>每个请求都在机密 TEE 上</li>
+              <li>Private Chutes 自 $1.80/小时，按秒</li>
+              <li>SOTA 开源模型发布后数分钟即上线</li>
+            </ul>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-3">相关评测</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="/zh/tutorials/openrouter-data-residency-2026" class="text-blue-600 hover:underline">OpenRouter 数据驻留</a>——它对比的转售聚合器</li>
+              <li><a href="/zh/tutorials/together-ai-api-review" class="text-blue-600 hover:underline">Together AI</a>——自有容量的开源权重托管商</li>
+              <li><a href="/tutorials/deepinfra-ai-api-review" class="text-blue-600 hover:underline">DeepInfra AI</a>——带免费额度的低价开源托管商</li>
+              <li><a href="/zh/tutorials/openrouter-jevons-paradox-api-discounts-2026" class="text-blue-600 hover:underline">OpenRouter 折扣</a>——聚合器定价如何变动</li>
+            </ul>
+          </div>
+
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-2">披露与最后核实时点</h3>
+            <p class="text-sm text-gray-600">
+              所有模型价格、上下文、方案价与无免费档声明均于 <strong>2026-09-06</strong> 从 chutes.ai（首页、/pricing FAQ JSON-LD）与 chutes.ai/api/models 定价 API 实时核实。APIRank 不接受付费好评；本条目无联盟链接。
+            </p>
+          </div>
+
+          <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center text-xs text-gray-400">
+            Ad Placeholder
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
