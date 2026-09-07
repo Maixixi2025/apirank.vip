@@ -1,0 +1,243 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'qwen3-8-max-0902-code-arena-webdev-2026';
+const date = '2026-09-07';
+const locale = 'en';
+
+const enTitle = 'Qwen3.8-Max-0902 API 2026: Code Arena WebDev #1';
+const enDescription = 'Qwen3.8-Max-0902 API review: the Sept 2 snapshot that debuted #1 on Code Arena WebDev (1,691 pts). Real price is $2/$6 per 1M, not the blended $5.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is Qwen3.8-Max-0902 and is it a new model?", "acceptedAnswer": { "@type": "Answer", "text": "Qwen3.8-Max-0902 (alias qwen3.8-max-2026-09-02) is an in-place upgraded RL snapshot of Alibaba's 2.4T-parameter MoE flagship Qwen3.8-Max, shipped around September 2, 2026 as a hosted API model. It is not a brand-new disinct model, but a refreshed checkpoint with stronger coding, agent, and vision behavior that retains the 1M context window and thinking mode." } },
+    { "@type": "Question", "name": "Is Qwen3.8-Max-0902 really the #1 on Code Arena WebDev?", "acceptedAnswer": { "@type": "Answer", "text": "It debuted at #1 overall on the arena.ai Code Arena | WebDev leaderboard at launch (September 2, 2026) with about 1,691 points, per the LMArena/Arena announcement quoted by Alibaba's Qwen account. Leaderboard Elo ratings drift over time with new votes, so 1,691 is the launch value, not necessarily its standing weeks later." } },
+    { "@type": "Question", "name": "How much does the Qwen3.8-Max-0902 API cost?", "acceptedAnswer": { "@type": "Answer", "text": "The real list price is $2 per 1M input tokens and $6 per 1M output tokens, with context-cache reads at $0.25 per 1M and cache writes at $2.50 per 1M. The '$5 per million' figure some headlines quote is a blended Pareto-frontier estimate, not a purchasable per-token rate." } },
+    { "@type": "Question", "name": "Is Qwen3.8-Max-0902 open source?", "acceptedAnswer": { "@type": "Answer", "text": "The 0902 snapshot is currently a hosted-service checkpoint available through QwenCloud, Aliyun Bailian (DashScope) and OpenRouter. As of this writing there is no separate open-weights Hugging Face model card tagged 0902 - only the earlier open-weight August releases. Treat the dated snapshot as API-only for now." } },
+    { "@type": "Question", "name": "Where can I call Qwen3.8-Max-0902 from OpenRouter?", "acceptedAnswer": { "@type": "Answer", "text": "OpenRouter serves it as qwen/qwen3.8-max-0902 (provider Alibaba) with the same $2/$6 pricing, and it is OpenAI-compatible, so you can drop it into the OpenAI SDK via the OpenRouter base URL." } }
+  ]
+};
+
+const enBody = `
+<header>
+  <h1 class="text-3xl font-bold text-gray-900 mb-4">Qwen3.8-Max-0902 API 2026: Code Arena WebDev #1</h1>
+  <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+    <time datetime="2026-09-07">September 7, 2026</time>
+    <span>•</span>
+    <span>Alibaba Qwen API Review</span>
+    <span>•</span>
+    <span>About 10 min read</span>
+  </div>
+  <p class="text-lg text-gray-600 leading-relaxed">
+    On <strong>September 2, 2026</strong>, Alibaba rolled out <strong>Qwen3.8-Max-0902</strong> - an in-place upgraded snapshot of its 2.4T-parameter MoE flagship - and it immediately ignited the leaderboard headlines: the model <strong>debuted at #1 overall on arena.ai's Code Arena | WebDev benchmark</strong> at around <strong>1,691 points</strong>, edging Claude Opus 5 (Max). In this review I cut through the marketing to the parts that matter for API developers: what the 0902 snapshot actually adds, the verified $2/$6 per-million pricing (and why the viral "$5 per million" headline is really a blended number), the caveats around a live Elo leaderboard, and how to call it today.
+  </p>
+</header>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">0902 Is a Refresh, Not a New Model</h2>
+  <p>Before touching benchmarks, be precise about what shipped. Alibaba's official QwenCloud description calls <strong>Qwen3.8-Max-0902</strong> (alias <code>qwen3.8-max-2026-09-02</code>) an "upgraded snapshot of qwen3.8-max." The underlying architecture is the same 2.4T-parameter MoE flagship that first appeared on August 3, 2026. The 0902 build is a <strong>targeted reinforcement-learning post-training pass</strong> applied in place over that base, so it is a refreshed hosted checkpoint rather than a new model version number or a new open-weights card.</p>
+  <p>What that refresh is tuned for, per the official description, is three concrete directions that map almost one-to-one onto developer workloads:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Harder, longer-horizon coding</strong> - "engineering-scale projects" and "long-horizon autonomous development," i.e. code that takes a coding agent minutes-to-hours rather than seconds.</li>
+    <li><strong>Agentic collaboration</strong> - "significantly enhanced collaborative agent performance," with "greater composure in multi-tool orchestration and end-to-end task delivery."</li>
+    <li><strong>Refined native vision</strong> - sharper chart reasoning, document parsing, and multimodal perception on top of the existing text+image+video input.</li>
+  </ul>
+  <p>It <strong>retains the 1M-token context window</strong> and the thinking mode, and drops into the same tool ecosystem as the base model. Anyone already on <code>qwen3.8-max</code> is effectively getting this capability bump without a model-ID migration on the Alibaba side.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Verified Pricing: $2/$6 Is the List Price</h2>
+  <p>Here is where a lot of the coverage gets sloppy, so let me separate the list price from the marketing figure:</p>
+  <table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Rate</th>
+        <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Qwen3.8-Max-0902</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+      <tr><td class="px-4 py-2 font-medium">Input per 1M tokens</td><td class="px-4 py-2">$2.00</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Output per 1M tokens</td><td class="px-4 py-2">$6.00</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Context-cache read per 1M</td><td class="px-4 py-2">$0.25</td></tr>
+      <tr><td class="px-4 py-2 font-medium">Context-cache write per 1M</td><td class="px-4 py-2">$2.50</td></tr>
+    </tbody>
+  </table>
+  <p>I verified this directly: OpenRouter's machine-readable models endpoint lists <code>qwen/qwen3.8-max-0902</code> (provider Alibaba) at <strong>$2.00/M prompt, $6.00/M completion</strong>, with cache read $0.25/M and cache write $2.50/M, and QwenCloud's own model page carries the same $2/$6 rates. The base <code>qwen3.8-max</code> shares identical pricing, so the refresh is not a repricing event.</p>
+  <p><strong>Where does "$5 per million" come from?</strong> It is a <em>blended</em> number, not a SKU. Alibaba's own launch post said Qwen3.8-Max-0902 is "top of the Pareto frontier at $5/MToken" - a cost-per-unit-quality estimate that mixes input and output tokens over a heavy agentic/coding workload, not a rate you can buy. If you are budgeting, plan on the line items above. For a mostly-output coding agent, the effective per-million cost will sit closer to $6 than to $5; for a retrieval-heavy pipeline with cache hits, your effective rate will be far below $5 because cached reads are only a quarter.</p>
+  <p><strong>Caveat on list vs. what you pay:</strong> for mainland-China developers on Aliyun DashScope the domestic tier has historically been priced in RMB below the international $2/$6 (the base flagship was around ¥8/¥24). I could not re-pull a clean current RMB table this week (the Aliyun pricing console is JS-gated), so treat any exact CN tier figure as unverified and check your DashScope console before committing to cost models.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">The Benchmark Story: Code Arena WebDev</h2>
+  <p><strong>Code Arena | WebDev</strong> is a real, human- and agentic-battle-based leaderboard on arena.ai (formerly LMArena) that ranks models on front-end web-development tasks. It is not the only coding leaderboard, but it is a popular one for "can this model actually build a working web app" questions, and it carries pricing data next to each model row.</p>
+  <p>Verbatim from the announcement quoted by Alibaba's Qwen account (September 2, 2026): Qwen3.8-Max-0902 "debuted at #1 overall in Code Arena: WebDev with 1,691 points" - roughly <strong>+3 over Claude Opus 5 (Max) at 1,688</strong> and <strong>+22 over the prior Qwen3.8-Max at 1,669</strong>. Independent outlets (AlphaSignal, EnterpriseDNA, aibriefing) repeated the same 1,691 figure the same day, which is a good cross-check.</p>
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>⚠️ Elo drift warning:</strong> arena.ai scores are vote/Elobased and shift as new battles and voters arrive. A live check of the WebDev leaderboard this week showed the Qwen row around the 1,686-1,688 band rather than exactly 1,691. Treat "1,691" as the <strong>launch value</strong> and re-check the live board before you quote it as a current standing weeks later.</div>
+  <p>On value, the leaderboard framing matters more than the single rank: at roughly $20/M input for an Opus 5-class model, a ~1,688-point neighbor costs roughly 4-5x Qwen's $2/M input to reach a similar WebDev rating. That margin is exactly why Qwen leads the Pareto frontier (quality per cost-dollar), not because it is head-and-shoulders above the closed flagships in raw score.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Code Samples: Calling the 0902 Snapshot</h2>
+  <p>Two ways to reach <code>qwen3.8-max-0902</code> today: the OpenAI-compatible OpenRouter route (single key across providers, useful for switching during eval) and Alibaba's own DashScope compatible-mode endpoint. Both are drop-in with the OpenAI SDK.</p>
+  <h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">Example 1 - curl via OpenRouter</h3>
+  <pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>curl "https://openrouter.ai/api/v1/chat/completions" \\
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "qwen/qwen3.8-max-0902",
+    "messages": [
+      { "role": "user", "content": "Build a single-file HTML/CSS/JS landing page for a fictional API-docs startup, with a responsive nav and a pricing table. Return the full code." }
+    ]
+  }'</code></pre>
+  <h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">Example 2 - Python via DashScope (Aliyun) compatible mode</h3>
+  <pre class="bg-gray-900 text-gray-100 p-4 rounded my-4 overflow-x-auto"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    api_key="YOUR_DASHSCOPE_API_KEY",
+)
+
+resp = client.chat.completions.create(
+    model="qwen3.8-max-0902",
+    messages=[
+        {"role": "system", "content": "You are a senior front-end engineer."},
+        {"role": "user", "content": "Refactor this React component to be accessible and memoized: ..."},
+    ],
+    temperature=0.2,
+)
+print(resp.choices[0].message.content)</code></pre>
+  <p class="text-sm text-gray-500">Note: if you target cache-heavy long-context pipelines, send a stable system prompt and preamble first so you hit the $0.25/M cache-read tier on follow-up calls instead of full $2/M input.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Limitations and Honest Caveats</h2>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>It is a hosted snapshot, not a fresh open-weights release.</strong> There is no separate <code>Qwen/Qwen3.8-Max-0902</code> card on Hugging Face as of this writing; only the earlier August open-weight releases exist. If your workflow requires self-hosting the exact 0902 weights, you cannot - self-host the base instead and accept the delta.</li>
+    <li><strong>The #1 rank is time-sensitive.</strong> Elo leaderboards drift. Framing 0902 as "permanently #1 everywhere" would be wrong; it is a strong, price-efficient co-leader of WebDev as of its launch week.</li>
+    <li><strong>"$5/M" is not a buyable rate.</strong> Budget developers who assume a $5 blended flat rate will under-forecast budget on output-heavy coding agents (which clear $6/M) and over-forecast on cache-heavy pipelines (which fall well under $5 thanks to quarter-dollar cache reads).</li>
+    <li><strong>Vision is refined, not revolutionary here.</strong> The 0902 pass improves chart/document/multimodal reasoning, but this remains a text-first coding model at its core; do not pick it purely as a vision API when a dedicated VL model may suit image-heavy tasks better.</li>
+  </ul>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Who Should Use It</h2>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Coding agents that run long, multi-file tasks</strong> - the long-horizon + multi-tool orchestration gains are squarely aimed at IDE plugins, CI review bots, and autonomous refactor agents.</li>
+    <li><strong>Teams that already run Qwen3.8-Max</strong> - the snapshot is an in-place upgrade; validate and roll over for the capability bump at identical list pricing.</li>
+    <li><strong>Cost-sensitive front-end / web-app generation</strong> - if you want Opus 5-class WebDev scores at roughly a quarter of the input price, Qwen is the Pareto pick on paper.</li>
+  </ul>
+  <p><strong>Hold off if</strong> you need deterministic, immutable open weights; you must self-host behind a compliance boundary; or your load is pure vision/image-heavy rather than coding/reasoning. For those, keep the base open-weight model or pair Qwen with a dedicated vision API.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Verdict</h2>
+  <p>Qwen3.8-Max-0902 is a legitimate, well-timed refresh: a same-price in-place snapshot that moves Alibaba's 2.4T flagship to the top of a real WebDev coding leaderboard at launch and keeps the 1M context window. For API developers the honest takeaways are threefold: <strong>(1)</strong> the verified automation price is $2/$6 per 1M with a cheap $0.25 cache read - ignore the "$5 blended" headline for budgeting; <strong>(2)</strong> the Code Arena WebDev #1 claim was true at launch but is Elo-drifting, so treat it as a strong-launch signal, not a permanent title; <strong>(3)</strong> this is a hosted snapshot only - if you need the exact weights to self-host, this refresh is not for you. As an incremental capability + cost-efficiency upgrade for coding-agent workloads, it earns a place on your eval bench.</p>
+</section>
+`;
+
+const zhTitle = 'Qwen3.8-Max-0902 API 2026：Code Arena WebDev 登顶';
+const zhDescription = 'Qwen3.8-Max-0902 API 价格 2026 评测：9 月 2 日快照在 Code Arena WebDev 登顶（1,691 分）。真实价格 $2/$6 每百万 token，并非网传的混合 $5。依据 QwenCloud 官网实核。';
+
+---
+
+<BaseLayout title={enTitle + ' | APIRank'} description={enDescription} canonicalUrl={canonicalUrl} lang="en">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <nav class="text-sm text-gray-500">
+        <a href="/" class="hover:text-gray-700">Home</a>
+        <span class="mx-2">/</span>
+        <a href="/tutorials" class="hover:text-gray-700">Tutorials</a>
+        <span class="mx-2">/</span>
+        <span class="text-gray-700">Qwen3.8-Max-0902 API Review 2026</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+          <div class="prose prose-lg max-w-none" set:html={enBody} />
+
+          <hr class="my-12 border-gray-200" />
+
+          <section class="mt-8">
+            <p class="text-sm text-gray-500 mb-2"><strong>Disclosure:</strong> APIRank is an independent comparison site. Pricing and benchmark data in this article were verified on 2026-09-07 against QwenCloud (qwencloud.com/models/qwen3.8-max-0902), the OpenRouter models API, and the arena.ai Code Arena | WebDev leaderboard. Scores on arena.ai are Elo-based and drift over time; "1,691" is the launch value reported by Alibaba/LMArena on 2026-09-02.</p>
+            <p class="text-sm text-gray-500"><strong>Last verified:</strong> 2026-09-07. Mainland-China DashScope RMB tier pricing was not re-verifiable this week (JS-gated console) - check your own console before cost modeling.</p>
+          </section>
+        </div>
+
+        <aside class="lg:col-span-1">
+          <div class="sticky top-4 space-y-6">
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Quick Reference</h3>
+              <ul class="space-y-2 text-sm text-gray-600">
+                <li><strong>Model:</strong> qwen3.8-max-0902 (alias qwen3.8-max-2026-09-02)</li>
+                <li><strong>Provider:</strong> Alibaba Qwen (QwenCloud / DashScope / OpenRouter)</li>
+                <li><strong>Snapshot shipped:</strong> Sept 2, 2026</li>
+                <li><strong>Base flagship GA:</strong> Aug 3, 2026 (2.4T MoE)</li>
+                <li><strong>Input price:</strong> $2.00 / 1M</li>
+                <li><strong>Output price:</strong> $6.00 / 1M</li>
+                <li><strong>Cache read / write:</strong> $0.25 / $2.50 per 1M</li>
+                <li><strong>Context:</strong> 1,000,000 tokens</li>
+                <li><strong>Input modalities:</strong> text + image + video</li>
+                <li><strong>Code Arena WebDev:</strong> #1 at launch (1,691 pts)</li>
+                <li><strong>OpenRouter ID:</strong> qwen/qwen3.8-max-0902</li>
+                <li><strong>Weights:</strong> hosted snapshot (no 0902 HF card)</li>
+              </ul>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-3">Related Articles</h3>
+              <ul class="space-y-2 text-sm">
+                <li><a href="/tutorials/qwen3-8-max-api-review-2026/" class="text-blue-600 hover:underline">Qwen3.8-Max API Review (base)</a></li>
+                <li><a href="/tutorials/gpt-6-astra-api-pricing-2026/" class="text-blue-600 hover:underline">GPT-6 Astra API Pricing 2026</a></li>
+                <li><a href="/tutorials/claude-fable-5-1-mythos-5-1-2026/" class="text-blue-600 hover:underline">Claude Fable 5.1 / Mythos 5.1 API</a></li>
+                <li><a href="/tutorials/google-gemini-api-review/" class="text-blue-600 hover:underline">Google Gemini API Review</a></li>
+                <li><a href="/tutorials/openrouter-review/" class="text-blue-600 hover:underline">OpenRouter Review</a></li>
+              </ul>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+              <h3 class="font-bold text-gray-900 mb-2">Try Qwen3.8-Max-0902</h3>
+              <p class="text-sm text-gray-700 mb-3">Call it via QwenCloud or OpenRouter (<code>qwen/qwen3.8-max-0902</code>) - $2/$6 per 1M, 1M context, OpenAI-compatible.</p>
+              <a href="https://www.qwencloud.com/models/qwen3.8-max-0902" class="text-sm text-blue-600 hover:underline break-all" target="_blank" rel="noopener">qwencloud.com/models/qwen3.8-max-0902</a>
+            </div>
+
+            <div class="bg-gray-100 border border-gray-200 rounded-lg p-6 text-center">
+              <p class="text-gray-500 text-sm">Advertisement</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

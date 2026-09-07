@@ -1,0 +1,182 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'qwen3-8-max-0902-code-arena-webdev-2026';
+const date = '2026-09-07';
+const locale = 'zh';
+
+const zhTitle = 'Qwen3.8-Max-0902 API 2026：Code Arena WebDev 登顶';
+const zhDescription = 'Qwen3.8-Max-0902 API 价格 2026 评测：9 月 2 日快照在 Code Arena WebDev 登顶（1,691 分）。真实价格 $2/$6 每百万 token，并非网传的混合 $5。依据 QwenCloud 官网实核。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Qwen3.8-Max-0902 是什么？是全新模型吗？", "acceptedAnswer": { "@type": "Answer", "text": "Qwen3.8-Max-0902（别名 qwen3.8-max-2026-09-02）是阿里 2.4T 参数 MoE 旗舰 Qwen3.8-Max 的就地升级快照，约于 2026 年 9 月 2 日作为托管 API 模型上线。它不是全新的独立模型，而是针对性强化学习后训练的新检查点，编码、agent 协作与视觉能力更强，并保留 1M 上下文与思考模式。" } },
+    { "@type": "Question", "name": "Qwen3.8-Max-0902 真的是 Code Arena WebDev 第一名吗？", "acceptedAnswer": { "@type": "Answer", "text": "它在发布时（2026 年 9 月 2 日）以约 1,691 分在 arena.ai 的 Code Arena | WebDev 总榜首次登场即位列第一，依据 Alibaba Qwen 账号转引的 LMArena/Arena 公告。Elo 榜会随时间与投票漂移，因此 1,691 是发布值，不代表数周后的实时排名。" } },
+    { "@type": "Question", "name": "Qwen3.8-Max-0902 API 多少钱？", "acceptedAnswer": { "@type": "Answer", "text": "真实列表价为每百万输入 token $2、每百万输出 token $6，上下文缓存读取每百万 $0.25、缓存写入每百万 $2.50。部分标题所说的『每百万 $5』是混合（Pareto 前沿）估算值，并非可购买的按 token 单价。" } },
+    { "@type": "Question", "name": "Qwen3.8-Max-0902 开源吗？", "acceptedAnswer": { "@type": "Answer", "text": "0902 快照当前是托管服务检查点，可通过 QwenCloud、阿里云百炼（DashScope）与 OpenRouter 使用。截至撰写本文，Hugging Face 上并无单独标注 0902 的开源权重模型卡——只有更早 8 月的开源权重发布。因此该日期快照应视为仅 API 形态。" } },
+    { "@type": "Question", "name": "怎么在 OpenRouter 调用 Qwen3.8-Max-0902？", "acceptedAnswer": { "@type": "Answer", "text": "OpenRouter 以 qwen/qwen3.8-max-0902（供应商 Alibaba）提供同款 $2/$6 定价，且兼容 OpenAI 接口，可直接通过 OpenRouter base_url 放进 OpenAI SDK 使用。" } }
+  ]
+};
+
+const zhBody = `<h1 class="text-3xl font-bold mb-6">Qwen3.8-Max-0902 API 2026：Code Arena WebDev 登顶</h1>
+<p class="text-sm text-gray-500 mb-4"><time datetime="2026-09-07">2026 年 9 月 7 日</time> · 阿里 Qwen API 评测 · 约 10 分钟阅读</p>
+<p class="text-lg text-gray-600 leading-relaxed mb-6">2026 年 9 月 2 日，阿里推出<strong>Qwen3.8-Max-0902</strong>——2.4T 参数 MoE 旗舰的就地升级快照——并迅速引爆榜单新闻：该模型在 arena.ai 的 <strong>Code Arena | WebDev 总榜首次登场即登顶</strong>，约 <strong>1,691 分</strong>，略超 Claude Opus 5（Max）。这篇评测帮你过滤营销，聚焦 API 开发者真正关心的：0902 快照到底新增了什么、经核实的 $2/$6 每百万定价（以及网传『每百万 $5』为何是混合值）、实时 Elo 榜的注意事项，以及今天该怎么调用。</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">0902 是刷新版，不是新模型</h2>
+<p>先厘清发布的实质。阿里 QwenCloud 官方描述称 <strong>Qwen3.8-Max-0902</strong>（别名 <code>qwen3.8-max-2026-09-02</code>）是「qwen3.8-max 的一个升级快照」。底层仍是 2026 年 8 月 3 日首发的 2.4T 参数 MoE 旗舰；0902 是在该基础上<strong>针对性强化学习后训练</strong>的检查点，并非新版本号，也不是新的开源权重卡。</p>
+<p>官方描述称这次刷新针对三大方向，几乎一一对应开发者负载：</p>
+<ul class="list-disc pl-6 space-y-1 text-gray-700 my-3">
+  <li><strong>更难、更长时程的编码</strong>——「工程级项目」与「长时程自主开发」，即需要编码 agent 花数分钟到数小时而非数秒的任务。</li>
+  <li><strong>Agent 协作</strong>——「协作式 agent 性能显著增强」，多工具编排与端到端任务交付更从容。</li>
+  <li><strong>刷新的原生视觉</strong>——图表推理、文档解析与多模态感知更锐利，叠加在原有 text+image+video 输入之上。</li>
+</ul>
+<p>它<strong>保留 1M 上下文窗口</strong>与思考模式，并沿用基础版工具生态。已在 <code>qwen3.8-max</code> 上运行的团队，无异于在阿里侧无迁移成本地获得这一能力升级。</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">已核实的定价：列表价就是 $2/$6</h2>
+<p>这里是最容易被媒体带偏的地方，先分清列表价与营销口径：</p>
+<table class="min-w-full divide-y divide-gray-200 my-4 border border-gray-200 rounded-lg">
+  <thead class="bg-gray-50">
+    <tr>
+      <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">费率</th>
+      <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Qwen3.8-Max-0902</th>
+    </tr>
+  </thead>
+  <tbody class="divide-y divide-gray-200 text-sm text-gray-700">
+    <tr><td class="px-4 py-2 font-medium">每百万输入 token</td><td class="px-4 py-2">$2.00</td></tr>
+    <tr><td class="px-4 py-2 font-medium">每百万输出 token</td><td class="px-4 py-2">$6.00</td></tr>
+    <tr><td class="px-4 py-2 font-medium">上下文缓存读取每百万</td><td class="px-4 py-2">$0.25</td></tr>
+    <tr><td class="px-4 py-2 font-medium">上下文缓存写入每百万</td><td class="px-4 py-2">$2.50</td></tr>
+  </tbody>
+</table>
+<p>我直接核实过：OpenRouter 的机器可读 models 接口列出 <code>qwen/qwen3.8-max-0902</code>（供应商 Alibaba）为 <strong>$2.00/M 输入、$6.00/M 输出</strong>，缓存读 $0.25/M、缓存写 $2.50/M；QwenCloud 官方模型页也是同款 $2/$6。基础版 <code>qwen3.8-max</code> 定价相同，因此这次刷新并非改价事件。</p>
+<p><strong>『每百万 $5』从何而来？</strong> 它是一个<em>混合</em>数字，不是 SKU。阿里发布帖称 Qwen3.8-Max-0902『在 Pareto 前沿以 $5/MToken』——这是把输入与输出 token 在一个重 agent/编码负载上混合后的单位质量成本估算，不是可购买的单价。做预算请按上面行项来：偏向输出的编码 agent，每百万有效成本更接近 $6；而命中缓存多、检索重的管道，有效成本会远低于 $5（缓存读只要 $0.25）。</p>
+<p><strong>列表价 ≠ 你实际支付：</strong>中国大陆走阿里云百炼（DashScope）的开发者，国内档历来按人民币计价且低于国际 $2/$6（基础旗舰约 ¥8/¥24）。本周我无法重新拉取干净的实时人民币价目表（百炼定价控制台是 JS 渲染），所以任何精确的国内档数字请标注为未经核实，做成本模型前以你控制台为准。</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">榜单故事：Code Arena WebDev</h2>
+<p><strong>Code Arena | WebDev</strong> 是 arena.ai（原 LMArena）上真实的人机对战/agentic 评测类排行榜，按前端 Web 开发任务给模型排名。榜单旁还展示每家价格——这正好让它成为「这模型能不能真的做网页应用 + 性价比如何」的常用参照。</p>
+<p>阿里 Qwen 账号转引的官方公告（2026 年 9 月 2 日）原文：Qwen3.8-Max-0902『在 Code Arena: WebDev 总榜以 1,691 分首次登场排名第一』——约比 Claude Opus 5（Max）的 1,688 <strong>高 3 分</strong>、比前代 Qwen3.8-Max 的 1,669 <strong>高 22 分</strong>。AlphaSignal、EnterpriseDNA、aibriefing 等独立媒体同日重复了同一 1,691 数字，相互印证。</p>
+<div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4"><strong>⚠️ Elo 漂移提醒：</strong>arena.ai 分数基于投票/Elo，会随新对局与投票变动。本周对 WebDev 榜单的实时检查显示 Qwen 行约在 1,686–1,688 区间，而非精确 1,691。请把「1,691」当作<strong>发布值</strong>，数周后引用实时排名前先刷新榜单。</div>
+<p>论价值，比单一排名更重要的是榜单语境：Opus 5 级模型输入约 $20/M，其 WebDev 评级虽接近（约 1,688），输入价格却是 Qwen $2/M 的约 4–5 倍。这正是 Qwen 领跑『Pareto 前沿』（单位成本质量）的原因——并非在原始分上碾压闭源旗舰，而是以相近分数给出便宜得多的价格。</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">代码示例：调用 0902 快照</h2>
+<p>今天有两条路调用 <code>qwen3.8-max-0902</code>：兼容 OpenAI 的 OpenRouter 路线（一把 key 跨多家，评估切换方便），以及阿里 DashScope 的 compatible-mode 端点。两条路都能直接放进 OpenAI SDK。</p>
+<h3 class="text-xl font-bold mt-6 mb-3">示例 1 - curl 经 OpenRouter</h3>
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto text-sm my-4"><code>curl "https://openrouter.ai/api/v1/chat/completions" \\
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "qwen/qwen3.8-max-0902",
+    "messages": [
+      { "role": "user", "content": "为一个虚构的 API 文档创业站做一页式 HTML/CSS/JS 落地页，含响应式导航与定价表，返回完整代码。" }
+    ]
+  }'</code></pre>
+<h3 class="text-xl font-bold mt-6 mb-3">示例 2 - Python 经 DashScope compatible-mode</h3>
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto text-sm my-4"><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+    api_key="YOUR_DASHSCOPE_API_KEY",
+)
+
+resp = client.chat.completions.create(
+    model="qwen3.8-max-0902",
+    messages=[
+        {"role": "system", "content": "你是一名资深前端工程师。"},
+        {"role": "user", "content": "重构这个 React 组件，使其具备无障碍与记忆化：..."},
+    ],
+    temperature=0.2,
+)
+print(resp.choices[0].message.content)</code></pre>
+<p class="text-sm text-gray-500 my-3">提示：若目标是缓存密集型长上下文管道，先发送稳定的 system prompt 与固定前缀，让后续调用命中 $0.25/M 的缓存读档，而不是全价 $2/M 输入。</p>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">局限与诚实提醒</h2>
+<ul class="list-disc pl-6 space-y-1 text-gray-700 my-3">
+  <li><strong>它是托管快照，不是新的开源权重发布。</strong>截至本文，Hugging Face 上并无单独的 <code>Qwen/Qwen3.8-Max-0902</code> 卡，只有更早 8 月的开源权重。若你的工作流必须自托管精确的 0902 权重，目前做不到——只能自托管基础版并接受差异。</li>
+  <li><strong>第一名有时效。</strong>Elo 榜会漂移。把 0902 说成『永久全面第一』是错的；它是发布周里 WebDev 上一个强劲、高性价比的并列领先者。</li>
+  <li><strong>『$5/M』不可购买。</strong>把 $5 混合价当成统一价做预算的开发者，会在偏输出的编码 agent 上（超过 $6/M）低估预算，在缓存重型管道上（因 $0.25 缓存读而远低于 $5）高估预算。</li>
+  <li><strong>视觉是『刷新』而非『革命』。</strong>0902 提升了图表/文档/多模态推理，但核心仍是文本为先的编码模型；纯视觉或图像重负载场景，专门的 VL 模型可能更合适。</li>
+</ul>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">谁该用它</h2>
+<p class="mb-2"><strong>适用：</strong></p>
+<ul class="list-disc pl-6 space-y-1 text-gray-700 mb-3">
+  <li><strong>跑长时程、多文件任务的编码 agent</strong>——长时程 + 多工具编排的提升正对 IDE 插件、CI 评审机器人、自主重构 agent。</li>
+  <li><strong>已在用 Qwen3.8-Max 的团队</strong>——快照是就地升级，同价验证后即可切过去换能力提升。</li>
+  <li><strong>对价格敏感的前端 / Web 应用生成</strong>——想在约四分之一的输入价格下拿到 Opus 5 级 WebDev 分数，纸面上 Qwen 就是 Pareto 之选。</li>
+</ul>
+<p class="mb-2"><strong>观望，或继续用基础版：</strong></p>
+<ul class="list-disc pl-6 space-y-1 text-gray-700 mb-3">
+  <li>需要确定、不可变且可自托管的开源权重；必须在合规边界内自托管；或负载是纯视觉而非编码/推理。这类场景保留基础开源模型，或给 Qwen 搭配专用视觉 API。</li>
+</ul>
+
+<h2 class="text-2xl font-bold mt-8 mb-4">结论</h2>
+<p>Qwen3.8-Max-0902 是一次扎实且时机精准的刷新：同价就地快照，让阿里 2.4T 旗舰在发布时登上真实 WebDev 编码榜首位，并保留 1M 上下文。对 API 开发者的诚实结论有三：<strong>①</strong>核实过的自动化价格是 $2/$6 每百万 + 便宜的 $0.25 缓存读——做预算别理『$5 混合』标题；<strong>②</strong>Code Arena WebDev 第一在发布时成立，但会随 Elo 漂移，当它是强发布信号而非永久头衔；<strong>③</strong>这仅是托管快照——若你需要精确权重自托管，这次刷新不适合你。作为编码 agent 负载的增量能力 + 成本效率升级，它值得进入你的评测台。</p>
+`;
+
+---
+
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={zhCanonicalUrl}
+  lang="zh"
+>
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+      <article class="prose prose-lg max-w-none">
+        <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+        <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+        <div set:html={zhBody} />
+      </article>
+      <aside class="space-y-6">
+        <div class="bg-gradient-to-br from-slate-50 to-indigo-50 rounded-xl p-5 border border-slate-100">
+          <h3 class="font-bold text-base mb-2">Qwen3.8-Max-0902 速览</h3>
+          <ul class="text-sm space-y-2">
+            <li><strong>模型</strong><br/>qwen3.8-max-0902（别名 qwen3.8-max-2026-09-02）</li>
+            <li><strong>供应商</strong><br/>阿里 Qwen（QwenCloud / 百炼 DashScope / OpenRouter）</li>
+            <li><strong>快照上线</strong><br/>2026-09-02</li>
+            <li><strong>基础旗舰 GA</strong><br/>2026-08-03（2.4T MoE）</li>
+            <li><strong>输入 / 输出价</strong><br/>$2.00 / $6.00 每百万</li>
+            <li><strong>缓存读 / 写</strong><br/>$0.25 / $2.50 每百万</li>
+            <li><strong>上下文</strong><br/>1,000,000 tokens</li>
+            <li><strong>输入模态</strong><br/>text + image + video</li>
+            <li><strong>Code Arena WebDev</strong><br/>发布时第一（1,691 分）</li>
+            <li><strong>OpenRouter ID</strong><br/>qwen/qwen3.8-max-0902</li>
+            <li><strong>权重</strong><br/>托管快照（无 0902 HF 卡）</li>
+          </ul>
+        </div>
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+          <h3 class="font-bold text-base mb-2">试试 Qwen3.8-Max-0902</h3>
+          <p class="text-sm text-gray-700 mb-3">经 QwenCloud 或 OpenRouter（<code>qwen/qwen3.8-max-0902</code>）调用——$2/$6 每百万、1M 上下文、兼容 OpenAI。</p>
+          <a href="https://www.qwencloud.com/models/qwen3.8-max-0902" class="text-sm text-blue-600 hover:underline break-all" target="_blank" rel="noopener">qwencloud.com/models/qwen3.8-max-0902</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
