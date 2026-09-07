@@ -1,0 +1,233 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'aimlapi-review-2026';
+const date = '2026-09-07';
+const locale = 'zh';
+
+const zhTitle = 'AIMLAPI API 评测 2026：一个 Key 覆盖 785+ 模型';
+const zhDescription = 'AIMLAPI（AI/ML API）2026 评测：一个 OpenAI 兼容 Key 覆盖 785+ 去重模型——Claude Sonnet 5、GPT-5.2、DeepSeek V4 Pro 折扣价接入。2026-09-07 实测。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "2026 年的 AIMLAPI 是什么？", "acceptedAnswer": { "@type": "Answer", "text": "AIMLAPI（品牌 'AI/ML API'，aimlapi.com）是一个托管式转售聚合商：一个 OpenAI 兼容 Key（https://api.aimlapi.com/v1）即可路由到超过 785 个去重模型（实时 /v1/models 目录在 2026-09-07 返回 937 行 / 785 去重）——覆盖 Anthropic Claude Sonnet 5、OpenAI GPT-5.2、Google Gemini 3.6 Flash、xAI Grok 等专有前沿模型，外加 DeepSeek V4 Pro 与 Qwen、GLM、Kimi 等开源权重，以及文生图/视频/TTS/STT/OCR 等 Gen-Media，全部共用同一把 Key。法律主体为爱沙尼亚 AIMLAPI OÜ 与迪拜 Boiler Labs FZ-LLC。" } },
+    { "@type": "Question", "name": "AIMLAPI 比直连更便宜吗？", "acceptedAnswer": { "@type": "Answer", "text": "就本次快照的多个旗舰模型而言，是的。AIMLAPI 以量价谈判的方式在部分模型上提供 ≤ 一级厂商牌价的列表价：2026-09-07 在其模型页实测——Claude Sonnet 5 $2.60 输入 / $13.00 输出每百万 token（Anthropic 一级价约 $3/$15），DeepSeek V4 Pro $0.5655/$1.131，Gemini 3.6 Flash $1.95/$9.75，GPT-5.2 $2.275/$18.20。但折价不保证——它锚定一级牌价，上游调价时可能回涨，任何'省钱'都应视为时点数据而非长期约定。" } },
+    { "@type": "Question", "name": "AIMLAPI 是否 OpenAI 兼容？", "acceptedAnswer": { "@type": "Answer", "text": "是。端点为 https://api.aimlapi.com/v1，对话走 /v1/chat/completions，API Key 在账号后台（aimlapi.com/app/keys）创建。官方文档示例为 OpenAI(base_url='https://api.aimlapi.com/v1', api_key='<KEY>')，现有 OpenAI SDK 与 curl 换掉 base_url 即可使用，与 OpenRouter 相同的即插即用风格。" } },
+    { "@type": "Question", "name": "AIMLAPI 有免费档吗？", "acceptedAnswer": { "@type": "Answer", "text": "没有持续免费的档位。官方 FAQ 明确写道：'The Free Tier is currently paused.'（免费档当前暂停）。新账号可获得注册试用 credits（站点仍宣传 $0 Developer 计划，其背后就是这些试用额度），用完后转为按每 1M token 从预充值余额扣费的按量付费；默认充值计费无月费。" } },
+    { "@type": "Question", "name": "AIMLAPI 实际提供多少模型？", "acceptedAnswer": { "@type": "Answer", "text": "实时模型目录 api.aimlapi.com/v1/models 在 2026-09-07 返回 937 行、去重 785 个模型 ID。营销宣称 '1000+ models'——随着厂商发新版、AIMLAPI 下线废弃模型，数量会变动，因此 /v1/models 响应才是权威且当期的数字，而非首页横幅。" } },
+    { "@type": "Question", "name": "我从中国大陆能用 AIMLAPI 吗？", "acceptedAnswer": { "@type": "Answer", "text": "生产环境不能直接使用。没有中国大陆区域端点、没有中国支付方式、没有中国数据驻留选项；流量经由 Cloudflare 前置的单一全球端点，法律主体在爱沙尼亚与迪拜。大陆生产流量应经代理或转发；对面向中国大陆、延迟或驻留敏感的表层，建议搭配国内厂商（通义、智谱、豆包）作为中国侧接入层。" } }
+  ]
+};
+---
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={enCanonicalUrl}
+  lang="zh"
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">AIMLAPI 聚合 API 评测</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">AIMLAPI API 评测 2026：一个 OpenAI 兼容 Key 覆盖 785+ 模型</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-09-07">2026 年 9 月 7 日</time>
+              <span>•</span>
+              <span>厂商评测</span>
+              <span>•</span>
+              <span>约 10 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              APIRank 已经覆盖了转售聚合商——OpenRouter 是最知名的一个，我们还为开源权重去中心化这一端加了 Chutes。今天我要补上同类目中此前缺失的另一种形态：<strong>AIMLAPI</strong>（品牌 "AI/ML API"），一个把<em>专有</em>前沿模型——Claude、GPT、Gemini、Grok——外加 DeepSeek 与一长串开源权重，放在一个 OpenAI 兼容 Key 背后的托管聚合商，而且其量价谈判后的报价常常低于一级厂商牌价。它的实时 /v1/models 端点在我查验时返回 937 行 / 785 个去重模型 ID，使其成为市面上单一 Key 菜单最宽的厂商之一。这篇评测覆盖核验过的定价、API 形态、折扣经济模型，以及它在与 OpenRouter 同一个开发者决策里该怎么选。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR：</strong>AIMLAPI（aimlapi.com）是托管式转售聚合商——一个 OpenAI 兼容 Key（<code class="bg-gray-100 px-1 rounded">https://api.aimlapi.com/v1</code>）暴露 <strong>785+ 个去重模型</strong>，含 Claude Sonnet 5、GPT-5.2、Gemini 3.6 Flash、Grok 与 DeepSeek V4 Pro，另加文生图/视频/TTS/OCR 等 Gen-Media 与约打对折的异步批量。一手核验定价（模型页 + /v1/models，2026-09-07）：<strong>Claude Sonnet 5 $2.60 输入 / $13.00 输出（每百万 token）</strong>（Anthropic 一级约 $3/$15）、DeepSeek V4 Pro $0.5655/$1.131、Gemini 3.6 Flash $1.95/$9.75、GPT-5.2 $2.275/$18.20。无持续免费档（已暂停）；预充值按量付费。法律主体爱沙尼亚 AIMLAPI OÜ + 迪拜 Boiler Labs FZ-LLC——对欧洲开发者 GDPR 视角友好。代价：无公开区域/数据中心地图与驻留 SLA、上游调价时折价可能回涨、无中国大陆端点与支付方式。
+            </p>
+          </div>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">为何现在写 AIMLAPI</h2>
+          <p>
+            本周 APIRank 简报被 Anthropic IPO 路演与 Qwen3.8-Max 登顶 Code Arena WebDev 占据。而我自己的目录对<em>自托管</em>网关（LiteLLM、Portkey、Cloudflare/Vercel AI Gateway）与<em>开源权重</em>托管商（DeepInfra、Together、Novita）覆盖很强，唯独 OpenRouter 之外的单一 Key <em>专有转售</em>槽位偏薄。AIMLAPI 就是那个细分里体量最大且在持续运营的一家——其模型目录端点实时且当期，营销活动持续到 2026 年 9 月。还有个实用角度：当像本周这样 Claude/GPT 密集发版、模型本身已被覆盖时，仍值得单独评测的开发者决策，是<em>如何用一把 Key 把所有流量都便宜地路由过去</em>——这恰是 AIMLAPI 的卖点。
+          </p>
+          <p>
+            先说清定位前提：AIMLAPI 是转售商，不是模型持有者。其目录用命名空间标识（如 <code class="bg-gray-100 px-1 rounded">anthropic/claude-sonnet-5</code>），因为上游厂商会变、AIMLAPI 也随之改价。请把它当作带谈判价的路由层——与 OpenRouter 同一心智模型，只是谈判姿态不同、Gen-Media 面更宽。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">核验定价（2026-09-07）</h2>
+          <p>
+            AIMLAPI 在每个模型页发布按模型的输入/输出（及缓存输入）单价，实时 <code class="bg-gray-100 px-1 rounded">/v1/models</code> 目录则以 JSON 提供完整菜单。以下为我 2026-09-07 直接从模型页核验的快照：
+          </p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-gray-700 border border-gray-200">
+              <thead>
+                <tr class="bg-gray-100 text-left">
+                  <th class="px-3 py-2 font-medium">模型</th>
+                  <th class="px-3 py-2 font-medium">输入 $/M</th>
+                  <th class="px-3 py-2 font-medium">输出 $/M</th>
+                  <th class="px-3 py-2 font-medium">缓存输入</th>
+                  <th class="px-3 py-2 font-medium">备注</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="px-3 py-2 font-medium">Claude Sonnet 5</td><td class="px-3 py-2">$2.60</td><td class="px-3 py-2">$13.00</td><td class="px-3 py-2">$0.26</td><td class="px-3 py-2">1M 上下文；低于 Anthropic 一级价</td></tr>
+                <tr><td class="px-3 py-2 font-medium">GPT-5.2</td><td class="px-3 py-2">$2.275</td><td class="px-3 py-2">$18.20</td><td class="px-3 py-2">$0.2275</td><td class="px-3 py-2">400K 上下文；推理/Agent 旗舰</td></tr>
+                <tr><td class="px-3 py-2 font-medium">DeepSeek V4 Pro</td><td class="px-3 py-2">$0.5655</td><td class="px-3 py-2">$1.131</td><td class="px-3 py-2">$0.0047</td><td class="px-3 py-2">1M 上下文；缓存读极低</td></tr>
+                <tr><td class="px-3 py-2 font-medium">Gemini 3.6 Flash</td><td class="px-3 py-2">$1.95</td><td class="px-3 py-2">$9.75</td><td class="px-3 py-2">$0.195</td><td class="px-3 py-2">1.05M 上下文；低成本 Flash 档</td></tr>
+                <tr><td class="px-3 py-2 font-medium">Claude Fable 5</td><td class="px-3 py-2">$13.00</td><td class="px-3 py-2">$65.00</td><td class="px-3 py-2">—</td><td class="px-3 py-2">顶级前沿；对齐一级牌价</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-sm text-gray-500"><em>表注：所有单价于 2026-09-07 从各 AIMLAPI 模型页（aimlapi.com/models/&lt;slug&gt;）实时核验，为时点列表价。</em></p>
+          <p>
+            这些数字最扎眼之处在于多个<em>低于</em>对应一级厂商的牌价。Claude Sonnet 5 输入 $2.60，低于 Anthropic 约 $3 的牌价；GPT-5.2 的 $2.275 低于 OpenAI 同级约 $2.50 的档位；DeepSeek V4 Pro 的 $0.5655 也明显低于 DeepSeek 直连价。这正是聚合商的整个卖点——它谈下量价并把一部分让利给你。两点要记住：(1) AIMLAPI 并非样样都更便宜（Claude Fable 5 就停在了一级牌价）；(2) 折价锚定上游列表价，厂商调档可能在不经 AIMLAPI 任何动作的情况下抬高你的实际费率。投入大量流量前，务必复核你实际要用的那个模型页。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">API 形态与开发者体验</h2>
+          <p>
+            迁移就是换一个 base URL。AIMLAPI 是 OpenAI 兼容的：<code class="bg-gray-100 px-1 rounded">base_url: https://api.aimlapi.com/v1</code>，对话走 <code class="bg-gray-100 px-1 rounded">/v1/chat/completions</code>，使用账号后台（<code class="bg-gray-100 px-1 rounded">aimlapi.com/app/keys</code>）签发的 Bearer Key。文档开头即为 OpenAI(base_url='https://api.aimlapi.com/v1', api_key='...')——读作对已在用 OpenAI SDK 的人的"确认即用"。目录使用命名空间（anthropic/claude-sonnet-5、openai/gpt-5.2、deepseek/deepseek-v4-pro），消除了某些单一 Key API 的"这个 ID 属于哪家"困惑。
+          </p>
+          <p>
+            除对话外，同一把 Key 还开启 Gen-Media 端点——文生图与视频、TTS/STT、嵌入、OCR——以及约按实时价对半的<strong>异步批量</strong>，适合离线大批量。对已想通过一个厂商收敛所有模型调用的团队而言，这把五份账号鉴权与五份账单合并成一个余额。文档托管在 GitBook（docs.aimlapi.com），支持 Markdown 导出与 agent 友好的 <code class="bg-gray-100 px-1 rounded">ask</code> 问答端点；另有 GitHub org 与活跃的 Discord。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">AIMLAPI vs OpenRouter</h2>
+          <p>
+            对 APIRank 读者来说，最自然的对比是 OpenRouter：两者都是覆盖专有 + 开源模型的单一 Key 托管转售商。差异决定了路由选择。<strong>菜单广度：</strong>两者都很宽——AIMLAPI 约 785 去重 / 937 行与其宣称值、对比 OpenRouter 约 404 策展模型，实际用起来基本打平，差的是打包方式而非原始数量。<strong>定价姿态：</strong>AIMLAPI 偏好在部分旗舰上给出低于牌价的谈判价并主动宣传；OpenRouter 在整个菜单上铺开按 Provider 的折让，有透明的按 token 对比 UI。<strong>Gen-Media 面：</strong>AIMLAPI 更激进地把图像/视频/TTS/OCR 与文本推理压在同一把开发者 Key 上。<strong>透明度：</strong>OpenRouter 公开 Provider 级定价与额度；AIMLAPI 的折价依据不够可见——你得逐个读模型页。
+          </p>
+          <p>
+            实操建议：若要最宽的浏览-对比菜单、实时排行榜与按 Provider 透明度，OpenRouter 仍是默认。若你已确定想要的旗舰、并喜欢"打包的 Gen-Media + 单一余额下的谈判价"，值得在你<em>真正要调用的那几个模型</em>上和 OpenRouter 并排做一周 A/B，再决定投入生产。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">区域可用性与延迟</h2>
+          <p>
+            AIMLAPI 通过一个由 Cloudflare 前置的全球端点提供服务，未公布数据中心或区域地图，因此没有可绑定的分区延迟档或驻留 SLA。法律主体——爱沙尼亚 AIMLAPI OÜ 与迪拜 Boiler Labs FZ-LLC——让欧洲开发者有一个合理的 GDPR 视角，这是主要的区域优势。<strong>中国大陆没有端点</strong>、没有中国支付方式、没有中国数据驻留选项，因此大陆生产流量应走代理或转发。对面向中国大陆、延迟或驻留敏感的表层，请与处理任何海外聚合商一样，搭配国内厂商（通义、智谱、豆包）作为中国侧接入层。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">谁适合用 AIMLAPI？</h2>
+          <ul class="list-disc pl-5 space-y-2">
+            <li><strong>多厂商团队</strong>同时调用 Claude、GPT、Gemini、Grok 与一两个开源模型，想把五把 Key 与五个账单面板收敛成一个 OpenAI 兼容余额。</li>
+            <li><strong>价格敏感开发者</strong>想在旗舰模型上做 A/B——AIMLAPI 的谈判价在部分模型上低于一级牌价（请核验你要的模型，而非看横幅）。</li>
+            <li><strong>Gen-Media 构建者</strong>希望图像/视频/TTS/OCR 与文本推理共用一把 Key、一个余额。</li>
+            <li><strong>面向欧盟的团队</strong>看重 EU 注册运营商（爱沙尼亚 AIMLAPI OÜ），比纯美国转售商有更干净的 GDPR 姿态。</li>
+          </ul>
+          <p>
+            而不太适合：需要<em>有保障</em>的固定区域数据驻留 + SLA 的团队（AIMLAPI 不公布 DC/区域地图）；需要永久免费档原型验证的团队（免费档已暂停）；中国大陆生产直连；以及更喜欢 OpenRouter 按 Provider 透明度对比 UI、胜过逐个读模型页的人。
+          </p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-3">AIMLAPI FAQ</h2>
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">2026 年的 AIMLAPI 是什么？</h3>
+          <p>AIMLAPI（"AI/ML API"，aimlapi.com）是托管式转售聚合商：一个 OpenAI 兼容 Key（https://api.aimlapi.com/v1）路由到 785+ 去重模型（/v1/models 937 行，2026-09-07），含 Claude Sonnet 5、GPT-5.2、Gemini 3.6 Flash、Grok、DeepSeek V4 Pro 与开源权重，外加同 Key 的 Gen-Media。法律主体：爱沙尼亚 AIMLAPI OÜ 与迪拜 Boiler Labs FZ-LLC。</p>
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">AIMLAPI 比直连更便宜吗？</h3>
+          <p>就本快照的多个旗舰而言，是：Claude Sonnet 5 $2.60/$13.00（每百万 token，一级约 $3/$15）、DeepSeek V4 Pro $0.5655/$1.131、Gemini 3.6 Flash $1.95/$9.75、GPT-5.2 $2.275/$18.20。折价锚定上游列表价、调档会回涨——投入大量流量前先核验模型页。</p>
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">AIMLAPI 的 API 是否 OpenAI 兼容？</h3>
+          <p>是。base_url https://api.aimlapi.com/v1，对话走 /v1/chat/completions，Key 来自 aimlapi.com/app/keys。OpenAI SDK 换掉 base_url 即可。官方示例：OpenAI(base_url='https://api.aimlapi.com/v1', api_key='...')。</p>
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">AIMLAPI 有免费档吗？</h3>
+          <p>没有持续免费档。官方 FAQ："The Free Tier is currently paused."（免费档当前暂停）。注册试用 credits（由 $0 Developer 计划承载）让你起步，随后为按每 1M token 扣费的预充值按量付费，月费为零。</p>
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">AIMLAPI 提供多少模型？</h3>
+          <p>实时 /v1/models 端点在 2026-09-07 返回 937 行 / 785 去重模型 ID。营销宣称 "1000+ models"。请以 /v1/models 响应为权威且当期数字——它会随厂商发布与清理而变化。</p>
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">我从中国大陆能用 AIMLAPI 吗？</h3>
+          <p>生产环境不能直接使用——无大陆端点、无中国支付、无中国驻留。经代理/转发；对延迟或驻留敏感的面向中国大陆表层，以国内厂商（通义、智谱、豆包）作为中国侧接入层。</p>
+
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-3">AIMLAPI — 速览</h3>
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li><strong>类型：</strong>托管式转售聚合商（专有 + 开源）</li>
+              <li><strong>端点：</strong>api.aimlapi.com/v1（OpenAI 兼容）</li>
+              <li><strong>目录：</strong>785 去重 / 937 行（/v1/models，09-07 核验）</li>
+              <li><strong>法律：</strong>AIMLAPI OÜ（爱沙尼亚）+ Boiler Labs FZ-LLC（迪拜）</li>
+              <li><strong>免费档：</strong>已暂停（仅试用 credits）</li>
+              <li><strong>批量：</strong>async 约低于实时价 50%</li>
+            </ul>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-2">差异点</h3>
+            <ul class="text-sm text-gray-600 space-y-1 list-disc pl-4">
+              <li>一个 Key 覆盖专有前沿 + 开源权重 + Gen-Media</li>
+              <li>多个旗舰谈判价低于一级厂商</li>
+              <li>EU 注册运营商（爱沙尼亚）利于 GDPR</li>
+              <li>实时 JSON 模型目录（/v1/models）</li>
+              <li>批量窗口约 5 折，适合离线大批量</li>
+            </ul>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-3">相关评测</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="/tutorials/openrouter-review" class="text-blue-600 hover:underline">OpenRouter</a> —— 其竞争的转售聚合商</li>
+              <li><a href="/tutorials/chutes-api-review-2026" class="text-blue-600 hover:underline">Chutes</a> —— 去中心化开源权重聚合商</li>
+              <li><a href="/tutorials/litellm-api-review" class="text-blue-600 hover:underline">LiteLLM</a> —— 自托管网关替代</li>
+              <li><a href="/tutorials/eden-ai-api-review-2026" class="text-blue-600 hover:underline">Eden AI</a> —— EU AI Act 友好的聚合商</li>
+            </ul>
+          </div>
+
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-2">披露与最后核验时间</h3>
+            <p class="text-sm text-gray-600">
+              全部模型列表价、上下文窗口及免费档暂停声明于 <strong>2026-09-07</strong> 从 aimlapi.com 模型页、/v1/models 目录端点、/pricing JSON-LD 与 docs.aimlapi.com（免费档 FAQ）实时核验。APIRank 不接受付费换取好评；本条目无联盟链接。
+            </p>
+          </div>
+
+          <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center text-xs text-gray-400">
+            广告位
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
