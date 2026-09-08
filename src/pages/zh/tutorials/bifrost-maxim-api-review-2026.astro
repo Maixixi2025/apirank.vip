@@ -1,0 +1,295 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'bifrost-maxim-api-review-2026';
+const date = '2026-09-08';
+const locale = 'zh';
+
+const zhTitle = 'Bifrost 2026 评测：50× LiteLLM 的开源 AI 网关';
+const zhDescription = 'Bifrost 2026 评测：Apache-2.0 开源 AI 网关，Go 编写。500 RPS 下比 LiteLLM 快 50 倍、5k RPS 额外延迟 <100µs、1,000+ 模型 OpenAI 兼容 API。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "2026 年的 Bifrost（Maxim）是什么？", "acceptedAnswer": { "@type": "Answer", "text": "Bifrost 是由 Maxim（H3 Labs Inc.，总部位于旧金山）开源的 Apache-2.0 AI 网关，Go 编写。它把 23+ 上游提供商（OpenAI、Anthropic、AWS Bedrock、Google Vertex、Azure OpenAI、Cohere、Mistral、Groq、Cerebras、Ollama、Hugging Face、Replicate 以及自托管 vLLM 端点）统一到单个 OpenAI 兼容 /v1 端点背后，暴露 1,000+ 模型。截至 2026-09-08，GitHub 仓库 maximhq/bifrost 有 7,869 ⭐ 与 1,176 🍴，最新 commit 同日落地。OSS 版永久免费，Enterprise 提供 VPC / 私有化 / 离线部署的 14 天免费试用。" } },
+    { "@type": "Question", "name": "Bifrost 与 LiteLLM 相比如何（2026）？", "acceptedAnswer": { "@type": "Answer", "text": "Maxim 公开基准显示 Bifrost 在持续 500 RPS 对比中吞吐达 LiteLLM 的 50 倍、内存占用低 68%，在 5,000 RPS 下新增延迟低于 100 微秒。两者都是开源网关；差异在于 Bifrost 将网关自身视为 hot-path 性能问题（Go 数据面、单一二进制），而非 Python 派发器。Bifrost 还内置语义缓存、跨提供商自动故障切换、加权负载均衡、按团队预算隔离的虚拟 Key 以及 MCP 网关。" } },
+    { "@type": "Question", "name": "2026 年 Bifrost 的费用如何？", "acceptedAnswer": { "@type": "Answer", "text": "OSS 版 Apache-2.0 永久免费——你向 Bifrost 不付任何费用，上游模型的 token 价格 0 加价透传。自托管成本仅为你运行的 VPS 或 K8s 集群费用（小团队单机 2 核即可）。Enterprise 销售报价，含 SAML/OIDC SSO、Vault 集成、带联邦认证的 MCP、自适应负载均衡、集群模式、守门规则、日志导出、审计日志。无公开托管 SaaS 端点——每位客户都在自己的 VPC、私有化或离线环境运行 Bifrost。" } },
+    { "@type": "Question", "name": "Bifrost 是 OpenAI 兼容的吗？", "acceptedAnswer": { "@type": "Answer", "text": "是。自托管部署默认在 http://localhost:8080 提供单个 OpenAI 兼容 /v1/chat/completions 端点，任何 OpenAI SDK 只需替换 base_url 即可使用。Anthropic、Vercel AI SDK、LangChain 也只需一行 base_url 切换。Bifrost 统一模型命名（如 openai/gpt-4o-mini、anthropic/claude-sonnet-4、vertex/gemini-2.5-pro、bedrock/anthropic.claude-opus-4），同一套客户端代码即可路由到 1,000+ 模型，无需维护提供商专属 SDK。" } },
+    { "@type": "Question", "name": "可以在中国大陆运行 Bifrost 吗？", "acceptedAnswer": { "@type": "Answer", "text": "官方没有中国大陆镜像或托管 SaaS 端点，因此在大陆不能无代理访问 Maxim 官方 demo。标准做法是在国内云（阿里云、华为云、腾讯云）自托管 Bifrost，仅路由到自托管上游（如 Ollama 或 vLLM）运行的 Qwen、GLM、DeepSeek 权重。这样既能让每个 prompt 字节都留在境内、满足数据驻留要求，又能为全球开发者保留同一套统一的 OpenAI 兼容接口。Bifrost 网关本身在不同区域的开销都低于 100 微秒，延迟预算完全取决于你选择的上游。" } },
+    { "@type": "Question", "name": "Bifrost 支持多少提供商与模型？", "acceptedAnswer": { "@type": "Answer", "text": "Bifrost 官网与文档（2026-09-08 实测）描述 23+ 上游提供商与 1,000+ 模型可通过统一 OpenAI 兼容 API 访问。已验证提供商包括 OpenAI、Anthropic、AWS Bedrock、Google Vertex、Azure OpenAI、Cohere、Mistral、Groq、Cerebras、Ollama、Hugging Face、Replicate，以及任意自托管模型。该提供商列表在所有开源 AI 网关中最全面，是与 OpenRouter 托管目录最接近的竞品。" } }
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  type="article"
+  canonicalUrl={canonicalUrl}
+  lang="zh-CN"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Bifrost 2026：比现有方案快 50 倍的开源 AI 网关</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-09-08">2026 年 9 月 8 日</time>
+              <span>•</span>
+              <span>Maxim 厂商评测</span>
+              <span>•</span>
+              <span>约 12 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              2026 年大多数"开源 AI 网关"项目仍然是 Python 派发器——有用，但在真实生产 Agent 产生的高持续流量下速度不够。<strong>Bifrost</strong>（由 Maxim，即 AI 评测/可观测性公司推出）是首个把网关本身视为性能问题的项目。仓库 <code class="bg-gray-100 px-1 rounded">maximhq/bifrost</code> 采用 Apache-2.0，Go 编写，以单一二进制 / Docker 镜像 / npx 包形式分发，统一了 <strong>23+ 上游提供商与 1,000+ 模型</strong>到一个 OpenAI 兼容端点背后。Maxim 公开基准显示其吞吐达 <strong>LiteLLM 的 50 倍（500 RPS 持续压测）</strong>、<strong>内存占用低 68%</strong>、<strong>5,000 RPS 下新增延迟低于 100 微秒</strong>。本评测涵盖经实测价格（OSS 永久免费，Enterprise 自定义）、部署形态（Docker、K8s、Go 二进制、npx），以及 VPC / 私有化 / 离线部署的合规定位——这是 Bifrost 成为那些需要 OpenRouter 覆盖能力、却不能让 prompt 走托管 SaaS 的团队默认网关的原因。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR：</strong>Bifrost（maximhq/bifrost）是 Maxim（H3 Labs Inc.，旧金山）发布的 Apache-2.0 AI 网关，Go 编写。2026-09-08 实测：<strong>GitHub 7,869 ⭐</strong>、1,176 🍴、当日最新 commit、许可证为真实的 Apache-2.0（LICENSE 文件确认）。OSS 版<strong>永久免费且上游模型价格 0 加价</strong>；你可用 Docker、Kubernetes、Go 二进制，或 <code class="bg-gray-100 px-1 rounded">npx -y @maximhq/bifrost</code> 自托管。开箱即支持 OpenAI、Anthropic、AWS Bedrock、Google Vertex、Azure OpenAI、Cohere、Mistral、Groq、Cerebras、Ollama、Hugging Face、Replicate 以及自定义 vLLM/SGLang/Ollama 端点——<strong>23+ 提供商、1,000+ 模型</strong>，全部通过单一 OpenAI 兼容 <code class="bg-gray-100 px-1 rounded">/v1/chat/completions</code> 端点可达。公开基准：500 RPS 下比 LiteLLM 快 50×、内存少 68%、5,000 RPS 下延迟 &lt;100µs。内置自动故障切换、加权负载均衡、语义缓存、虚拟 Key 预算控制、MCP 网关与 OTel 兼容指标/trace。Enterprise 在此之上加入 SAML/OIDC SSO、Vault 集成、自适应负载均衡、集群模式、守门规则、日志导出与审计日志；价格通过 14 天免费试用销售对接。<strong>没有公开的托管 SaaS 端点</strong>——每位客户都在自己的 VPC、私有化或离线环境运行 Bifrost。中国大陆团队可在阿里云/华为云/腾讯云自托管，仅路由到境内 Ollama 或 vLLM 上游，让每个 prompt 字节都留在境内。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+
+            <h2>什么是 Bifrost？</h2>
+            <p>
+              Bifrost 是由 Maxim（位于旧金山的 AI 评测公司 H3 Labs Inc.，旗下有 Maxim SDK 与 Bifrost 可观测性工具链）推出的高性能<strong>AI 网关</strong>。OpenRouter 是把模型提供商统一到一份账单后的托管 SaaS，LiteLLM 是 Python 派发器库——Bifrost 介于两者之间：它是<strong>自托管开源软件</strong>，Go 数据面，像生产级网关产品一样运行，而不只是开发者便利库。仓库 <a href="https://github.com/maximhq/bifrost" target="_blank" rel="noopener">maximhq/bifrost</a> 采用 Apache-2.0，截至 2026-09-08 有 7,869 ⭐、1,176 🍴，最新 commit 同日落地，这意味着一旦采用不会继承被弃软件。
+            </p>
+            <p>
+              网关对外暴露单一<strong>OpenAI 兼容 /v1 端点</strong>。该端点位于 23+ 上游提供商之前——官方列表涵盖 OpenAI、Anthropic、AWS Bedrock、Google Vertex、Azure OpenAI、Cohere、Mistral、Groq、Cerebras、Ollama、Hugging Face、Replicate，以及任何用 vLLM、SGLang 或 Ollama 自托管的自定义模型。由于 Bifrost 同时统一了模型命名（使用 <code class="bg-gray-100 px-1 rounded">openai/</code>、<code class="bg-gray-100 px-1 rounded">anthropic/</code>、<code class="bg-gray-100 px-1 rounded">vertex/</code>、<code class="bg-gray-100 px-1 rounded">bedrock/</code>、<code class="bg-gray-100 px-1 rounded">ollama/</code> 等前缀）与请求/响应格式，同一套客户端代码可路由到网关暴露的任意<strong>1,000+ 模型</strong>——你无需在应用里维护提供商专属的 SDK。
+            </p>
+
+            <h2>实测价格：OSS 永久免费，Enterprise 销售报价</h2>
+            <p>
+              Bifrost 的价格模型直截了当，值得说清楚，因为它与 APIRank 上所有托管聚合器都截然不同。
+            </p>
+            <p>
+              <strong>OSS（开源）版——$0。</strong>OSS 版以 Apache-2.0 发布，永久免费。上游模型 token 价格 <strong>0 加价透传</strong>——你按 OpenAI list 价、Anthropic list 价、Google Vertex list 价、上游要多少付多少，Bifrost 一分钱不加。总成本就是上游模型账单 + 你跑网关本身的费用（多数团队单台 2 核 VPS 即可，QPS 极高时再加）。无每 token 平台费、无月费、无用量上限。
+            </p>
+            <p>
+              <strong>Enterprise——销售报价。</strong>Enterprise 解锁 SAML 与 OIDC SSO、HashiCorp Vault 集成、带联邦认证的 MCP、自适应负载均衡、集群模式、守门规则、日志导出与审计日志。价格自定义（官方价格页面写着"Custom pricing, book a demo"），并提供<strong>14 天免费试用</strong>。Enterprise 部署支持 VPC、私有化、离线环境，这是企业团队选择 Bifrost 而非 OpenRouter 或 Helicone Cloud 的唯一最大原因。
+            </p>
+            <p>
+              老实的免责说明：OSS 版<strong>无统一账单/对账面板</strong>——你通过每家提供商自己的控制台看 token 支出，而不是 Bifrost UI。Enterprise 加了面板，但如果你是纯 OSS 部署、想要按团队的支出报表，你需要在 Bifrost 已经发出的 OTel trace 之上自己接一套可观测性。
+            </p>
+
+            <h2>为什么比 LiteLLM 快 50 倍很重要</h2>
+            <p>
+              LiteLLM 是当前事实标准的开源 AI 网关，它确实有用——但它的数据面是 Python，意味着每个请求有 GIL 跳、解释器派发开销，以及不线性扩展的内存画像。对小项目这不可见；对每秒钟跑成千上万次 Agent 请求的团队，它表现为尾延迟悬崖。
+            </p>
+            <p>
+              Bifrost 用 <strong>Go</strong> 编写，把网关视为 hot-path 性能问题，而非开发者便利。Maxim 公开基准报告<strong>持续 500 RPS 下吞吐达 LiteLLM 的 50 倍</strong>、<strong>内存占用低 68%</strong>、<strong>5,000 RPS 下新增延迟低于 100 微秒</strong>。这些数字来自 5,000 RPS 持续压测、混合多家上游提供商，网关在这个速率下毫无压力。换句话说，Bifrost 的开销低到任何请求的延迟预算都由你选择的上游模型 API 主导，而不是网关本身。
+            </p>
+            <p>
+              实际意义是 Bifrost 是首个开源网关，<strong>生产级 Agent 舰队</strong>——自主 coder、RAG 流水线、多步工具调用 Agent——可以不付出有意义的延迟税就能跑过。任何想把 LiteLLM 放到高 RPS Agent 工作负载前的团队都会发现网关成为瓶颈，Bifrost 解决了这个问题。
+            </p>
+
+            <h2>部署形态：Docker、K8s、Go 二进制、npx</h2>
+            <p>
+              Bifrost 提供四种分发渠道，不到一分钟就能跑起完整功能的本地网关。最快的路径是任何带 Node.js 的目录下 <code class="bg-gray-100 px-1 rounded">npx -y @maximhq/bifrost</code>，它会下载并在 8080 端口启动网关。然后浏览器打开 <a href="http://localhost:8080" target="_blank" rel="noopener">http://localhost:8080</a> 即可配置提供商、设置虚拟 Key、观察实时流量。容器化的生产部署用 <code class="bg-gray-100 px-1 rounded">docker run -p 8080:8080 maximhq/bifrost</code>，Kubernetes 有 Helm chart，也可以丢一个独立 Go 二进制到任何 Linux 主机。
+            </p>
+            <p>
+              第一次 API 调用是 OpenAI 兼容的 curl <code class="bg-gray-100 px-1 rounded">/v1/chat/completions</code> 路径：
+            </p>
+            <pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto text-sm"><code is:raw>curl -X POST http://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "openai/gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Hello, Bifrost!"}]
+  }'</code></pre>
+            <p>
+              把 <code class="bg-gray-100 px-1 rounded">openai/</code> 换成 <code class="bg-gray-100 px-1 rounded">anthropic/</code>、<code class="bg-gray-100 px-1 rounded">vertex/</code>、<code class="bg-gray-100 px-1 rounded">bedrock/</code>、<code class="bg-gray-100 px-1 rounded">ollama/</code> 或任何已注册前缀，同一次调用路由到不同的上游提供商，客户端无需改动。这就是 OpenAI 兼容最锐利的价值主张。
+            </p>
+
+            <h2>故障切换、负载均衡、缓存、MCP</h2>
+            <p>
+              Bifrost 不只是路由器，而是带运维功能的网关，这些功能托管聚合器提供过的，开源实现同样做到。核心功能：
+            </p>
+            <ul>
+              <li><strong>自动故障切换。</strong>按路由配置故障切换跨提供商——如果 OpenAI 对你降级，Anthropic 自动接管，无需在客户端写重试胶水。每条路由权重可配置，能搭建成本优化或质量优化的路由策略。</li>
+              <li><strong>加权负载均衡。</strong>按权重在提供商之间分配流量——用于控制在单提供商速率限制下、或不超过企业合约上限。</li>
+              <li><strong>语义缓存。</strong>内置语义缓存，重复或近似 prompt 直接命中缓存减少 token 支出。这是真实的生产功能，不是营销幻灯片——同一客户端调用在 prompt 与最近一次语义等价时立即从缓存返回。</li>
+              <li><strong>虚拟 Key。</strong>通过虚拟 Key 实现按团队/按客户的预算隔离与速率限制。如果你在构建多租户 SaaS 暴露 LLM 调用，这是让你不暴露根 provider key 也能准确给客户计费的功能。</li>
+              <li><strong>MCP 网关。</strong>Bifrost 本身即是 MCP 网关——仓库带 <code class="bg-gray-100 px-1 rounded">mcp-gateway</code>、<code class="bg-gray-100 px-1 rounded">mcp-client</code>、<code class="bg-gray-100 px-1 rounded">mcp-server</code> 标签——MCP 工具调用走过与普通 LLM 调用相同的治理层。</li>
+              <li><strong>OTel 兼容可观测性。</strong>指标与 trace 以 OpenTelemetry 格式输出，可直接对接 Datadog、Honeycomb、Grafana 或 Prometheus，无需胶水代码。</li>
+            </ul>
+
+            <h2>中国访问与数据驻留</h2>
+            <p>
+              因为 Bifrost 是自托管软件，没有中国大陆专属托管端点可以讨论。生产中可行的模式很直接：在国内云（阿里云、华为云、腾讯云）部署 Bifrost，将其配置为仅路由到自托管上游（如 Ollama 或 vLLM）运行的 Qwen、GLM、DeepSeek 权重，你就拿到了全球开发者同样的统一 OpenAI 兼容接口，同时让每个 prompt 字节都留在境内。这是需要满足数据驻留、MLPS 或合同级义务的团队最干净的方案，不必放弃现代 LLM 工具链。
+            </p>
+            <p>
+              Bifrost 网关本身在不同区域的开销都低于 100 微秒 @ 5,000 RPS，因此任何请求的延迟预算完全由你选择的上游模型 API 主导，而不是网关本身。典型大陆配置——阿里云 cn-shanghai 上的 Bifrost 路由到同区域 vLLM 服务的 Qwen3 端点——网关一跳通常稳定在 50 ms 以内，其余延迟是上游推理本身。
+            </p>
+            <p>
+              大陆团队的两个注意事项：Maxim 在中国境内没有官方托管 demo 或镜像，因此无法在不开 VPN 的情况下用官方 quickstart 评估 Bifrost。OSS 版不含 SAML SSO 与 Vault 集成——任何有审计与凭据轮换要求的企业都需要 Enterprise 版。
+            </p>
+
+            <h2>Bifrost vs LiteLLM vs OpenRouter vs Cloudflare AI Gateway</h2>
+            <p>
+              Bifrost 最接近的同侪是 <strong>LiteLLM</strong>（开源 Python 派发器）、<strong>OpenRouter</strong>（托管多提供商路由器）、<strong>Cloudflare AI Gateway</strong>（基于 CF Workers 的网关），以及 <strong>Portkey</strong>（托管可观测性导向的网关）。Bifrost 的位置：
+            </p>
+            <ul>
+              <li><strong>对比 LiteLLM</strong>——同样的开源精神，同样的自托管部署，但 Bifrost 是 Go 写的，基准测试吞吐高 50 倍、内存少 68%。如果生产 RPS 高于几百，选 Bifrost。如果想在单个库里获得最成熟的提供商覆盖，选 LiteLLM。</li>
+              <li><strong>对比 OpenRouter</strong>——OpenRouter 是托管的，你付 OpenRouter 的加价（按模型不同，一般 5% 左右），你的 prompt 走 OpenRouter 服务器。Bifrost 是自托管、免费、零加价，但你自己运维。如果你想零运维，选 OpenRouter。如果你不能让 prompt 走第三方 SaaS，选 Bifrost。</li>
+              <li><strong>对比 Cloudflare AI Gateway</strong>——CF AI Gateway 是已经在用 Cloudflare Workers 时的最简单网关；零加价，免费额度慷慨。缺点是 CF 专属锁定（KV/Durable Objects 做缓存、CF Logs 做可观测）。Bifrost 跑在任意环境——笔记本、裸机、任何云——输出标准 OTel。</li>
+              <li><strong>对比 Portkey</strong>——Portkey 是最强的托管竞品，可观测性与治理强。Bifrost OSS 版默认不含 Portkey 出厂即带的仪表盘；Enterprise 加等价能力。如果你要带强治理的托管产品，选 Portkey。如果你想拥有网关的每个字节，选 Bifrost。</li>
+            </ul>
+
+            <h2>谁适合用 Bifrost？</h2>
+            <p>
+              满足以下任意两条以上就是 Bifrost 的合适场景：
+            </p>
+            <ul>
+              <li><strong>你需要 OSS 优先的自托管。</strong>你的 prompt 不能走第三方 SaaS，无论是合规、合同还是成本原因。Bifrost 跑在你的 VPC、你的私有化集群或你的离线环境。</li>
+              <li><strong>你有高 RPS Agent 工作负载。</strong>自主 coder、工具调用 Agent、多步 RAG 流水线。Bifrost 比 LiteLLM 高 50 倍的吞吐在每分钟跑几万次请求时才有意义。</li>
+              <li><strong>你想要上游模型价格零加价。</strong>Bifrost 透明透传上游 list 价。无 5% 平台费、无高级 tier、无用量上限。</li>
+              <li><strong>你需要 MCP 治理。</strong>Bifrost 本身就是 MCP 网关，所以 MCP 工具调用走过与普通 LLM 调用相同的身份验证、速率限制与可观测性。</li>
+              <li><strong>你在受监管的技术栈上。</strong>金融、医疗、政企、国防，或任何行业每个 prompt 字节都必须留在自有基础设施内。Bifrost Enterprise 支持 VPC / 私有化 / 离线部署，含 SAML SSO 与 Vault 集成。</li>
+            </ul>
+            <p>
+              如果你想要零运维托管 SaaS（选 OpenRouter 或 Portkey）、如果想要最广的提供商目录且不自托管（选 OpenRouter）、如果你的工作量小到 LiteLLM 的 Python 开销不显，选这些就不是 Bifrost 的目标场景。
+            </p>
+
+            <h2>最终结论</h2>
+            <p>
+              Bifrost 是 2026 年至今对认真自托管团队最有意思的 AI 基础设施发布。Apache-2.0、Go 数据面、23+ 提供商与 1,000+ 模型统一到一个 OpenAI 兼容端点背后、比 LiteLLM 高 50 倍吞吐与少 68% 内存、5k RPS 下 &lt;100µs 开销、MCP 网关、OTel 可观测性、以及支持 VPC / 私有化 / 离线部署的 Enterprise 版配合 SSO——这种组合在任意价位都很难复制。Enterprise 是真实的企业产品，有销售、合同与 SLA 支持。
+            </p>
+            <p>
+              如果你已经在跑 LiteLLM 并撞上吞吐或内存墙，迁到 Bifrost。如果你在跑 OpenRouter 并因合规原因需要把 prompt 留在自有基础设施内，迁到 Bifrost。如果你在跑 Cloudflare AI Gateway 并想摆脱 CF 专属锁定换成标准 OTel，迁到 Bifrost。迁移故事很简单：Bifrost 客户端是 OpenAI 兼容，base_url 替换通常就够了。
+            </p>
+
+          </div>
+
+          <div class="mt-12 pt-8 border-t border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Bifrost Maxim 常见问题</h2>
+
+            <div class="space-y-6">
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">2026 年的 Bifrost（Maxim）是什么？</h3>
+                <p class="text-gray-700">Bifrost 是由 Maxim（H3 Labs Inc.）开源的 Apache-2.0 AI 网关，Go 编写。它把 23+ 上游提供商（OpenAI、Anthropic、AWS Bedrock、Google Vertex、Azure OpenAI、Cohere、Mistral、Groq、Cerebras、Ollama、Hugging Face、Replicate 以及自托管 vLLM 端点）统一到单个 OpenAI 兼容 /v1 端点背后，暴露 1,000+ 模型。截至 2026-09-08，GitHub 仓库 maximhq/bifrost 有 7,869 ⭐ 与 1,176 🍴，最新 commit 同日落地。OSS 版永久免费，Enterprise 提供 VPC / 私有化 / 离线部署的 14 天免费试用。</p>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">Bifrost 与 LiteLLM 相比如何（2026）？</h3>
+                <p class="text-gray-700">Maxim 公开基准显示 Bifrost 在持续 500 RPS 对比中吞吐达 LiteLLM 的 50 倍、内存占用低 68%，在 5,000 RPS 下新增延迟低于 100 微秒。两者都是开源网关；差异在于 Bifrost 将网关自身视为 hot-path 性能问题（Go 数据面、单一二进制），而非 Python 派发器。Bifrost 还内置语义缓存、跨提供商自动故障切换、加权负载均衡、按团队预算隔离的虚拟 Key 以及 MCP 网关。</p>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">2026 年 Bifrost 的费用如何？</h3>
+                <p class="text-gray-700">OSS 版 Apache-2.0 永久免费——你向 Bifrost 不付任何费用，上游模型的 token 价格 0 加价透传。自托管成本仅为你运行的 VPS 或 K8s 集群费用。Enterprise 销售报价，含 SAML/OIDC SSO、Vault 集成、带联邦认证的 MCP、自适应负载均衡、集群模式、守门规则、日志导出、审计日志。无公开托管 SaaS 端点——每位客户都在自己的 VPC、私有化或离线环境运行 Bifrost。</p>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">Bifrost 是 OpenAI 兼容的吗？</h3>
+                <p class="text-gray-700">是。自托管部署默认在 http://localhost:8080 提供单个 OpenAI 兼容 /v1/chat/completions 端点，任何 OpenAI SDK 只需替换 base_url 即可使用。Anthropic、Vercel AI SDK、LangChain 也只需一行 base_url 切换。Bifrost 统一模型命名，同一套客户端代码即可路由到 1,000+ 模型，无需维护提供商专属 SDK。</p>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">可以在中国大陆运行 Bifrost 吗？</h3>
+                <p class="text-gray-700">官方没有中国大陆镜像或托管 SaaS 端点，因此在大陆不能无代理访问 Maxim 官方 demo。标准做法是在国内云（阿里云、华为云、腾讯云）自托管 Bifrost，仅路由到自托管上游（如 Ollama 或 vLLM）运行的 Qwen、GLM、DeepSeek 权重。这样既能让每个 prompt 字节都留在境内、满足数据驻留要求，又能为全球开发者保留同一套统一的 OpenAI 兼容接口。Bifrost 网关本身在不同区域的开销都低于 100 微秒。</p>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">Bifrost 支持多少提供商与模型？</h3>
+                <p class="text-gray-700">Bifrost 官网与文档（2026-09-08 实测）描述 23+ 上游提供商与 1,000+ 模型可通过统一 OpenAI 兼容 API 访问。已验证提供商包括 OpenAI、Anthropic、AWS Bedrock、Google Vertex、Azure OpenAI、Cohere、Mistral、Groq、Cerebras、Ollama、Hugging Face、Replicate，以及任意自托管模型。该提供商列表在所有开源 AI 网关中最全面，是与 OpenRouter 托管目录最接近的竞品。</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white rounded-xl border border-gray-200 p-6 sticky top-4">
+            <h3 class="font-bold text-gray-900 mb-4">⚡ 速览</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between"><span class="text-gray-500">提供商</span><span class="font-semibold">Bifrost (Maxim)</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">许可证</span><span class="font-semibold">Apache-2.0</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">GitHub ⭐</span><span class="font-semibold">7,869 ⭐</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">提供商数</span><span class="font-semibold">23+</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">模型数</span><span class="font-semibold">1,000+</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">OSS 版</span><span class="font-semibold text-green-600">永久免费</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Enterprise</span><span class="font-semibold">销售报价 (14天试用)</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">加价</span><span class="font-semibold text-green-600">0%（透传）</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">5k RPS 开销</span><span class="font-semibold">&lt;100 µs</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">vs LiteLLM 吞吐</span><span class="font-semibold">50×</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">数据面</span><span class="font-semibold">Go</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">OpenAI 兼容</span><span class="font-semibold text-green-600">✅ 是</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">MCP 网关</span><span class="font-semibold text-green-600">✅ 是</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">OTel 可观测</span><span class="font-semibold text-green-600">✅ 是</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">托管模式</span><span class="font-semibold">自托管</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">中国大陆</span><span class="font-semibold">⚠️ 国内云自托管</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">实测日期</span><span class="font-semibold">2026-09-08</span></div>
+            </div>
+
+            <a href="https://www.getmaxim.ai/bifrost" target="_blank" rel="noopener" class="btn-primary w-full text-center block mt-6">
+              访问 Bifrost →
+            </a>
+            <a href="https://github.com/maximhq/bifrost" target="_blank" rel="noopener" class="block text-center text-blue-600 text-sm font-medium py-2 mt-2 hover:underline">
+              GitHub 仓库 →
+            </a>
+
+            <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+              <p>价格更新于 2026-09-08</p>
+              <p class="mt-1">最新价格请以官方为准</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="font-bold text-gray-900 mb-4">相关聚合器</h3>
+            <div class="space-y-2">
+              <a href="/providers/openrouter" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+                <span>OpenRouter</span><span class="text-gray-400">#3</span>
+              </a>
+              <a href="/providers/portkey" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+                <span>Portkey</span><span class="text-gray-400">#8</span>
+              </a>
+              <a href="/providers/litellm" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+                <span>LiteLLM</span><span class="text-gray-400">#12</span>
+              </a>
+              <a href="/providers/cloudflare-ai-gateway" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+                <span>Cloudflare AI Gateway</span><span class="text-gray-400">#9</span>
+              </a>
+              <a href="/providers/eden-ai" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+                <span>Eden AI</span><span class="text-gray-400">#5</span>
+              </a>
+              <a href="/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">查看全部 →</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
