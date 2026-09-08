@@ -250,8 +250,8 @@ resp = client.responses.create(
 )
 
 print(resp.output_text)
-print(f"\nInput tokens: {{resp.usage.input_tokens}}, output tokens: {{resp.usage.output_tokens}}")
-print(f"Estimated cost: ${{resp.usage.input_tokens * 10 / 1e6 + resp.usage.output_tokens * 50 / 1e6:.2f}}")</code></pre>
+print(f"\nInput tokens: &#123;&#123;resp.usage.input_tokens&#125;&#125;, output tokens: &#123;&#123;resp.usage.output_tokens&#125;&#125;")
+print(f"Estimated cost: $&#123;&#123;resp.usage.input_tokens * 10 / 1e6 + resp.usage.output_tokens * 50 / 1e6:.2f&#125;&#125;")</code></pre>
   <p>At a 600K-token input the request sits well inside the 1.05M context window but above the 272K long-context threshold, so input is billed at $20/M (long-context multiplier) and output at $75/M. For a 600K input + 2K output response the bill is roughly $12.10. Run that on Fable 5.1 at the same parameters and you pay $12.10 (no long-context surcharge on Fable). The cache-read math matters for repeated prompts - see &sect;3.</p>
 
   <h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">Example 2 - Cybersecurity analysis with tool use</h3>
@@ -277,7 +277,7 @@ print(resp.output_text)</code></pre>
   <p>This is the workload Astra was designed for. The combination of file_search (to read the patch), code_interpreter (to execute the regression test), and <code>reasoning.effort=xhigh</code> is what gets you close to the 100% on ExploitBench-class tasks. Expect a 3-10 minute wall clock for a substantial patch review at <code>xhigh</code>; the per-token cost is unchanged.</p>
 
   <h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">Example 3 - Batch processing of distinct Q&amp;A</h3>
-  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code>import json
+  <pre class="bg-gray-900 text-gray-100 rounded p-4 overflow-x-auto text-sm"><code is:raw>import json
 from openai import OpenAI
 
 client = OpenAI()
