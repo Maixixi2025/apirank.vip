@@ -1,0 +1,308 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'exa-api-review-2026';
+const date = '2026-09-08';
+const locale = 'zh';
+
+const zhTitle = 'Exa API 2026 评测：为 AI Agent 而生的搜索引擎';
+const zhDescription = 'Exa 2026 评测：$7/1k 搜索、$12-$15/1k Deep Search、Agent $0.012-$1.00/次、$20 注册抵用金。六端点 API + MCP 原生。已实测。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "2026 年 Exa 是什么？", "acceptedAnswer": { "@type": "Answer", "text": "Exa 是 Exa Labs（旧金山应用 AI 研究实验室）旗下的 AI 原生搜索引擎，自建网络索引与自有检索模型。公司自 2021 年起持续为 AI 系统构建搜索基础设施；Exa 搜索引擎专为 AI Agent 检索设计，非为人类网页搜索。Exa 暴露六个目的驱动的端点（Search、Deep Search、Contents、Answer、Monitors、Agent）、官方 MCP 服务器 mcp.exa.ai/mcp（自托管仓库 4,987 stars）、Python SDK（exa-py，233 stars）与 JavaScript/TypeScript SDK（exa-js）。2026-09-08 实测：exa.ai 与 api.exa.ai 均 HTTP 200；定价页列出 Search $7/1k、Deep Search $12-$15/1k；免费层 $20 注册抵用金 + $10 每月。" } },
+    { "@type": "Question", "name": "2026 年 Exa 定价怎么算？", "acceptedAnswer": { "@type": "Answer", "text": "按量付费，无订阅无最低消费。Search $7/1k 请求（前 10 条结果，超出 10 条按 $1/1k，AI 摘要 $1/1k 页另计）。Deep Search 按档 $12-$15/1k（deep-lite、deep、deep-reasoning）。Contents $1/1k 页。Answer $5/1k。Monitors $15/1k。Agent 按 effort 档 $0.012-$1.00/次（minimal / low / medium / high / xhigh）或按用量计费，默认单次 $5 上限。注册即得 $20 抵用金 + 每月 $10 免费额度，无需绑卡。Enterprise 走销售报价（量大优惠、自定义索引、Zero Data Retention、SLA）。" } },
+    { "@type": "Question", "name": "Exa Dynamic Highlights 是什么？", "acceptedAnswer": { "@type": "Answer", "text": "Dynamic Highlights 是 2026-08 推出的研究预览特性，跨整个结果集选段而非逐页独立处理。Agent 的 token 预算被分配到有用来源上，而非“重复信息”的来源。开启方式：在 Search 或 Contents 请求上设 dynamic: true 并加 Exa-Beta: dynamic-highlights-2026-08-28 请求头。Exa 公开基准：单轮 RAG ~49% 更省 token + +2.4% 下游质量；Agent 全程 ~30% 更省 token + +1% 质量（BrowseComp、WideSearch 与内部公司/人物评测均值）。基准 harness 开源在 exa-labs/benchmarks（GitHub）。" } },
+    { "@type": "Question", "name": "Exa 有 MCP 服务器吗？", "acceptedAnswer": { "@type": "Answer", "text": "有——Exa 同时提供托管 MCP 服务器 https://mcp.exa.ai/mcp 与自托管 MCP 服务器（exa-labs/exa-mcp-server，4,987 GitHub stars，MIT 协议，最近 commit 2026-08-21）。托管路径让你无需任何基础设施就能把 Exa 接入 Claude Desktop、Cursor、Codex、VS Code（带 MCP 扩展）或任何 MCP 兼容客户端。自托管路径适合想把 API key 留在自有基础设施内的团队。两者都暴露 /search、/get_contents、/research、/company_research 为 MCP tools。" } },
+    { "@type": "Question", "name": "Exa 与 Tavily、Firecrawl 相比如何？", "acceptedAnswer": { "@type": "Answer", "text": "Exa、Tavily、Firecrawl 目标的是检索流水线的不同部分。Exa 是实时网页检索 + web、company、person、publication 垂直结构化查询的对路选择；Tavily 是最近的 Agent-builder 竞品，提供托管 SaaS 与精致 UI；Firecrawl 是抓已知站点 + 转换为 markdown 的对路工具。许多生产 Agent 的务实配置是把 Exa（实时检索）与 Firecrawl（静态摄取）配对使用，而非二选一。对 SerpAPI / Serper，Exa 在 Agent 形态特性（Dynamic Highlights、MCP、结构化输出）上胜出，但在 SERP 排名检查（需要 Google 形态结果）上落败。" } },
+    { "@type": "Question", "name": "Exa 能否在中国大陆使用？", "acceptedAnswer": { "@type": "Answer", "text": "exa.ai 与 api.exa.ai 没有官方中国大陆区域，直连依赖本地 ISP 出口与团队的合规网络路径。产品纯 API 不需要 GUI，所以典型模式是从非境内 worker 调用 Exa，或通过满足数据驻留要求的合规出口转发。对需要把每个 prompt 字节留在境内的团队，替代方案是把 Exa 与自托管爬虫 + embedding 流水线配对到同一垂直上——但会失去供应商维护索引的优势。" } }
+  ]
+};
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  type="article"
+  canonicalUrl={canonicalUrl}
+  lang="zh"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Exa API 2026 评测：为 AI Agent 而生的搜索引擎</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-09-08">2026 年 9 月 8 日</time>
+              <span>•</span>
+              <span>Exa 提供商评测</span>
+              <span>•</span>
+              <span>约 12 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              2026 年大多数搜索 API 仍是"打包后的 Google"——给 Agent 返回十个蓝链，再客气地说"你自己想办法"。<strong>Exa</strong> 反过来做：Exa Labs（旧金山应用 AI 研究实验室）自建网络索引与自有检索模型，索引同时覆盖实时网页 + 公司、人物、金融市场、代码、文档的结构化数据，并通过六个目的驱动的端点对外暴露：<code class="bg-gray-100 px-1 rounded">/search</code>、<code class="bg-gray-100 px-1 rounded">/search</code>（type=deep）、<code class="bg-gray-100 px-1 rounded">/contents</code>、<code class="bg-gray-100 px-1 rounded">/answer</code>、<code class="bg-gray-100 px-1 rounded">/monitors</code>、<code class="bg-gray-100 px-1 rounded">/agent</code>。2026-08 推出的 Dynamic Highlights 是这一思路最直接的体现：不再返回十条逐页摘要，而是跨整个结果集选段——让 Agent 的 context 预算分配到真正有用的来源上，而非“重复信息”的来源。2026-09-08 实测：exa.ai 与 api.exa.ai 均 HTTP 200；定价页列出 <strong>Search $7/1k 请求</strong>、<strong>Deep Search $12-$15/1k</strong>、<strong>Agent effort 五档 $0.012-$1.00/次</strong>；<strong>注册 $20 抵用金 + 每月 $10 免费额度</strong>无需绑卡；官方 MCP 服务器托管在 <code class="bg-gray-100 px-1 rounded">mcp.exa.ai/mcp</code>（自托管仓库 4,987 ⭐）；与 OpenAI Agents、Vercel AI SDK、LangChain、CrewAI、LlamaIndex、Pydantic AI、n8n 均有官方集成。本文覆盖验证后的按量计费结构、六端点 API 设计、MCP-native 部署路径，以及让 Exa 成为 AI 生态"默认网页检索层"的 effort 定价可预测性。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR：</strong>Exa 是 Exa Labs（旧金山应用 AI 研究实验室）的旗舰产品，自建网络索引与自有检索模型。2026-09-08 实测：exa.ai 与 api.exa.ai 均 HTTP 200；定价页列出 <strong>Search $7/1k</strong>、<strong>Deep Search $12-$15/1k</strong>、<strong>Contents $1/1k 页</strong>、<strong>Answer $5/1k</strong>、<strong>Monitors $15/1k</strong>、<strong>Agent $0.012-$1.00/次</strong>；<strong>注册 $20 抵用金 + 每月 $10 免费额度</strong>（起步约 2,800 次搜索）。六个目的驱动的 API：<strong>Search</strong>、<strong>Deep Search</strong>（deep-lite / deep / deep-reasoning）、<strong>Contents</strong>、<strong>Answer</strong>、<strong>Monitors</strong>、<strong>Agent</strong>。Python SDK <code class="bg-gray-100 px-1 rounded">exa-py</code>（GitHub 233 ⭐，最近 2.20.0 发布于 2026-09-01），JS SDK <code class="bg-gray-100 px-1 rounded">exa-js</code>。官方 MCP 服务器 <code class="bg-gray-100 px-1 rounded">mcp.exa.ai/mcp</code> + 自托管仓库 <code class="bg-gray-100 px-1 rounded">exa-labs/exa-mcp-server</code>（4,987 ⭐、MIT 协议），兼容 Claude / Cursor / Codex / VS Code。2026-08 推出 <strong>Dynamic Highlights</strong>（研究预览，需加 <code class="bg-gray-100 px-1 rounded">Exa-Beta: dynamic-highlights-2026-08-28</code> 请求头）：单轮 RAG <strong>~49% 更省 token</strong>、Agent 全程 <strong>~30% 更省 token</strong>、质量提升 <strong>+1-2.4%</strong>。2026-07 新增 <strong>3.5 亿条学术出版物</strong>垂直类目 + 公开检索基准（GitHub exa-labs/benchmarks）。Enterprise 走销售报价（高用量、自定义索引、Zero Data Retention、SLA、VPC）。<strong>无中国大陆官方区域</strong>——直连依赖本地出口。
+            </p>
+          </div>
+
+          <div class="prose prose-lg max-w-none">
+
+            <h2>Exa 是什么？</h2>
+            <p>
+              Exa 是由旧金山 AI 研究实验室 Exa Labs 打造的 <strong>AI 原生搜索引擎</strong>，自 2021 年起持续为 AI 系统构建搜索基础设施（GitHub 组织 exa-labs 创建于 2021-01-24，拥有 108 个公开仓库）。区别于 Tavily、SerpAPI、Serper 这些"把人用搜索重新打包给 Agent 用"的产品，Exa 自建索引、自建检索模型、自建爬虫，索引结构直接围绕 AI Agent 与 RAG 管道在生产环境中实际会发起的查询来组织。
+            </p>
+            <p>
+              这一定位在三个具体维度上落地。第一，API 是 <strong>六个端点而非一个</strong>：<code class="bg-gray-100 px-1 rounded">/search</code> 做检索、<code class="bg-gray-100 px-1 rounded">/search</code> 配合 <code class="bg-gray-100 px-1 rounded">type=deep-lite|deep|deep-reasoning</code> 做多步研究、<code class="bg-gray-100 px-1 rounded">/contents</code> 从已知 URL 提取干净内容、<code class="bg-gray-100 px-1 rounded">/answer</code> 给带引用链接的 LLM 答案、<code class="bg-gray-100 px-1 rounded">/monitors</code> 跑定时检索抓新事件、<code class="bg-gray-100 px-1 rounded">/agent</code> 跑异步多步研究与名单补全。第二，索引 <strong>自带垂直类目</strong>：一个 <code class="bg-gray-100 px-1 rounded">category</code> 参数就能在 web、company、person、publication、（遗留）github / pdf / tweet 之间切换；company 与 person 结果是包含出版物、合作者、研究领域、融资情况的丰富 profile。第三，2026-08 推出的 <strong>Dynamic Highlights</strong> 直接回应 Agent 场景的痛点：tokens 稀缺，跨结果集选段比逐页选段更省。
+            </p>
+
+            <h2>验证后的定价：$7/1k Search，$0.012-$1.00/Agent 次</h2>
+            <p>
+              Exa 是按量付费、无订阅、无最低消费、免费额度慷慨；下面每个数字都来自 2026-09-08 实测的定价页。
+            </p>
+            <p>
+              <strong>Search——$7/1k 请求（前 10 条结果），超出 10 条按 $1/1k 计费，AI 页面摘要按 $1/1k 页另计。</strong>基础请求包含最多 10 条结果与 token 高效的页面内容；第 11 条起按 $1/1k 计费；Exa 生成的 AI 摘要在基础价之上按 $1/1k 页另计。这是全家桶里最常用的端点——多数生产 Agent 都把 <code class="bg-gray-100 px-1 rounded">/search</code> 作为第一调用，只在问题真正是多跳研究任务时才升级到 <code class="bg-gray-100 px-1 rounded">/agent</code>。
+            </p>
+            <p>
+              <strong>Deep Search——按档位 $12-$15/1k 请求。</strong><code class="bg-gray-100 px-1 rounded">type=deep-lite</code> 约 4 秒 / $12/1k 适合轻量综合；<code class="bg-gray-100 px-1 rounded">type=deep</code> 4-15 秒 / $12/1k 适合多步推理 + 结构化输出；<code class="bg-gray-100 px-1 rounded">type=deep-reasoning</code> 12-40 秒 / $15/1k 适合硬研究任务。按 Agent 延迟预算挑档——deep-lite 用于扇出检索，deep-reasoning 仅用于硬多跳问题。
+            </p>
+            <p>
+              <strong>Contents——$1/1k 页。</strong>面向已知 URL：从任意 URL 抽取干净的 LLM-ready 网页内容（含 JS 渲染页、PDF、复杂布局）。全家桶里最便宜的端点，适合 RAG 管道已知道想抓哪些页时的批量摄取。
+            </p>
+            <p>
+              <strong>Answer——$5/1k 请求。</strong>带引用链接的直接 LLM 答案——适合"Agent 就要一个数字或一个事实 + 来源 URL"的场景。
+            </p>
+            <p>
+              <strong>Monitors——$15/1k 请求。</strong>定时检索抓新事件。超出 10 条按 $1/1k 计费，AI 摘要在基础价之上按 $1/1k 页另计。
+            </p>
+            <p>
+              <strong>Agent——按 effort 档 $0.012-$1.00/次，或按用量计费。</strong>在 <code class="bg-gray-100 px-1 rounded">/agent</code> 上设 effort=minimal|low|medium|high|xhigh 拿到可预测的按次价格：<code class="bg-gray-100 px-1 rounded">minimal $0.012</code>、<code class="bg-gray-100 px-1 rounded">low $0.025</code>、<code class="bg-gray-100 px-1 rounded">medium $0.10</code>、<code class="bg-gray-100 px-1 rounded">high $0.50</code>、<code class="bg-gray-100 px-1 rounded">xhigh $1.00</code>。按用量计费模式（<code class="bg-gray-100 px-1 rounded">auto</code> 默认 / <code class="bg-gray-100 px-1 rounded">max</code> beta）按实际计费：ACU $0.10/单位、搜索工具调用 $0.005/次、邮件补全 $0.02/次、电话补全 $0.07/次；<code class="bg-gray-100 px-1 rounded">auto</code> 默认单次 $5 上限，beta <code class="bg-gray-100 px-1 rounded">max</code> 默认 $20 上限。Connect 提供商（Fiber $0.02/credit、Baselayer $0.15-$4.00/order 等）按调用另计。
+            </p>
+            <p>
+              <strong>免费层——注册即得 $20 抵用金、每月再加 $10，无需支付方式。</strong>起步约 2,800 次搜索 + 每月持续约 1,400 次搜索的免费额度。<strong>免费层覆盖全部六个端点</strong>，不是阉割版子集。在 <code class="bg-gray-100 px-1 rounded">dashboard.exa.ai/api-keys</code> 自助签发 API key。
+            </p>
+            <p>
+              <strong>Enterprise——销售报价。</strong>量大优惠、自定义索引、严格安全、Zero Data Retention、更高速率限制、VPC 内部署、联邦认证、日志导出、审计日志、SLA。14 天免费试用。客观说明：Connect 数据源按次计费不可预测，且<strong>无中国大陆官方区域</strong>——直连依赖本地 ISP 出口。
+            </p>
+
+            <h2>为什么 Dynamic Highlights 是 2026-08 的重磅发布</h2>
+            <p>
+              大多数搜索 API 返回十条摘要（每页一条），由你的 Agent 挑看似最相关的那条。对人这是合理启发式——人可以几秒读完十条摘要；但对 Agent 来说每条摘要都吃 tokens，而第八、九条摘要的边际价值通常很低，因为它们已经在重复前三条说过的内容。
+            </p>
+            <p>
+              Dynamic Highlights 反过来做：不再逐页独立处理，而是跨<strong>整个结果集</strong>选段。Agent 的 tokens 被分配到"新增信息"的段落上，而非“重复信息”的段落上。开启方法：设 <code class="bg-gray-100 px-1 rounded">dynamic: true</code> 并加 <code class="bg-gray-100 px-1 rounded">Exa-Beta: dynamic-highlights-2026-08-28</code> 请求头。
+            </p>
+            <p>
+              Exa 公开了代表性基准数据，幅度大到任何跑 RAG 或 Agent 检索的团队都该针对真实负载测一下。公开指标：单轮 RAG <strong>~49% 更省 token</strong>、<strong>+2.4% 下游质量</strong>（在 coding 与通用 QA 评测上的 Exa Auto 测量）；Agent 全程 <strong>~30% 更省 token</strong>、<strong>+1% 质量</strong>（在 BrowseComp、WideSearch 与公司/人物评测上的均值）。底层 harness 开源在 <code class="bg-gray-100 px-1 rounded">exa-labs/benchmarks</code>（GitHub），数字可复现，不是单一供应商自吹。
+            </p>
+            <p>
+              对规模化跑 RAG 的团队，这是 2026 年最值得评估的单一特性。基准真实、beta header 有文档、灰度只需一个请求参数。
+            </p>
+
+            <h2>六个端点：用哪个</h2>
+            <p>
+              最难的决定是调哪个端点。Exa 给你六个，权衡明显不同。
+            </p>
+            <ul>
+              <li><strong>默认用 <code class="bg-gray-100 px-1 rounded">/search</code>。</strong>实时检索 + token 高效页面内容。$7/1k 起步（最多 10 条）。适合 RAG 扇出检索与大多数 Agent loop 第一调用。</li>
+              <li><strong>多跳时用 <code class="bg-gray-100 px-1 rounded">/search</code> + <code class="bg-gray-100 px-1 rounded">type=deep</code>。</strong>Deep Search 做多步推理 + 结构化输出 + 引用。deep-lite 用于轻量综合（~4 秒），deep 用于结构化输出（4-15 秒），deep-reasoning 仅用于硬问题（12-40 秒）。</li>
+              <li><strong>已知 URL 时用 <code class="bg-gray-100 px-1 rounded">/contents</code>。</strong>全家桶最便宜（$1/1k 页）——把已知 URL 摄取进 RAG 管道。处理 JS 渲染页、PDF、复杂布局。</li>
+              <li><strong>Agent 就要一个数字时用 <code class="bg-gray-100 px-1 rounded">/answer</code>。</strong>带引用链接的直接 LLM 答案，$5/1k——适合 Q&amp;A / 事实查询，URL 比全文更重要。</li>
+              <li><strong>新事件管道用 <code class="bg-gray-100 px-1 rounded">/monitors</code>。</strong>定时检索抓新内容——$15/1k 基础请求 + 另计。适合新闻监控、GTM 补全、潜客培育。</li>
+              <li><strong>异步多步研究用 <code class="bg-gray-100 px-1 rounded">/agent</code>。</strong>effort=minimal($0.012) 到 xhigh($1.00) 拿到可预测的按次价格；按用量计费（默认 $5 上限、beta max $20 上限）适合实际用量驱动场景。</li>
+            </ul>
+            <p>
+              实用心智模型：<strong>search</strong> 检索、<strong>deep search</strong> 推理、<strong>contents</strong> 抽取、<strong>answer</strong> 总结、<strong>monitors</strong> 跟踪、<strong>agent</strong> 异步 + 结构化输出。挑能解决该问题的最便宜端点。
+            </p>
+
+            <h2>MCP 原生：托管 + 自托管 MCP 服务器</h2>
+            <p>
+              MCP 支持是任何 2026 搜索 API 的头号部署故事。Exa 提供两条 MCP 路径。
+            </p>
+            <p>
+              <strong>托管 MCP 服务器。</strong>端点是 <code class="bg-gray-100 px-1 rounded">https://mcp.exa.ai/mcp</code>。POST 带 MCP initialize 握手返回有效 MCP 流；HEAD 返回 405（对只接受 POST 的 MCP 服务器是正确答案）。托管路径让你无需任何基础设施就能把 Exa 接入 Claude Desktop、Cursor、Codex、VS Code（带 MCP 扩展）或任意 MCP 兼容客户端——Agent 把 <code class="bg-gray-100 px-1 rounded">/search</code>、<code class="bg-gray-100 px-1 rounded">/get_contents</code>、<code class="bg-gray-100 px-1 rounded">/research</code>、<code class="bg-gray-100 px-1 rounded">/company_research</code> 注册为 tools，免费层 API key 足够做评估。
+            </p>
+            <p>
+              <strong>自托管 MCP 服务器。</strong>仓库 <code class="bg-gray-100 px-1 rounded">exa-labs/exa-mcp-server</code> 有 <strong>4,987 GitHub stars</strong>、383 forks、MIT 协议、最近 commit 2026-08-21（把容器镜像发布成单架构 Docker manifest）。暴露同样 tools；当你想把 API key 留在自有基础设施内，或想用内部 Exa 驱动的研究流程扩展 tool 表面时，自托管是正解。
+            </p>
+            <p>
+              两条路径都与 AI 工具栈集成得干净利落。Exa 已发布与 <strong>Vercel AI SDK</strong>、<strong>LangChain</strong>、<strong>CrewAI</strong>、<strong>LlamaIndex</strong>、<strong>Pydantic AI</strong>、<strong>n8n</strong>、<strong>OpenAI Agents</strong> 的集成页面，外加一个 Stripe Projects 集成——让编程 Agent 自助开户、签发 API key 并开始检索，无需人类介入。当 Agent 需要自助引导时这一点很关键。
+            </p>
+
+            <h2>开源 SDK、开源评测、开放索引决策</h2>
+            <p>
+              Exa 在 2026 年最与众不同的是<strong>供应商的基准可复现</strong>。多数搜索 API 供应商发布的 speed 与 recall 数字无从验证——Exa 把 harness 作为 <code class="bg-gray-100 px-1 rounded">exa-labs/benchmarks</code>（GitHub）发布，含 2026-07 与 3.5 亿 publication 扩张同步发布的公开检索基准。
+            </p>
+            <p>
+              同样的取向也体现在 SDK 上。<code class="bg-gray-100 px-1 rounded">exa-py</code>（Python SDK）<strong>233 stars</strong>、MIT 协议，最近 release <strong>2.20.0</strong> 于 2026-09-01 发布，最近 commit 于 2026-09-03 通过 <code class="bg-gray-100 px-1 rounded">betas</code> 参数新增 Dynamic Highlights（研究预览）。<code class="bg-gray-100 px-1 rounded">exa-js</code> 是官方 JavaScript / TypeScript SDK。两者保持一致的版本节奏与 REST API 表面。
+            </p>
+            <p>
+              还值得一提的是 <strong>索引开放度</strong>。Exa 持续爬取实时网页（与 Search API 同源的爬虫），索引实时可查——不像一些企业爬虫有"次日延迟"。2026-07 新增的 3.5 亿 publication 垂直是有力反例，反驳"搜索引擎在小众垂直上陈旧"的批评。
+            </p>
+
+            <h2>Exa vs Tavily vs Firecrawl vs SerpAPI vs Google Search</h2>
+            <p>
+              Exa 公开了与每个主要竞品的完整对比矩阵：<strong>Tavily</strong>、<strong>Parallel</strong>、<strong>Perplexity</strong>、<strong>Firecrawl</strong>、<strong>Google Search</strong>、<strong>Brave</strong>、<strong>SerpAPI</strong>、<strong>Serper</strong>、<strong>You.com</strong>。要点：
+            </p>
+            <ul>
+              <li><strong>vs Tavily。</strong>Tavily 是最直接竞品，以 SaaS 形态服务 Agent 开发者。Exa 在索引侧领先（自建爬虫，含 3.5 亿 publication 垂直）与 Agent effort 按档定价可预测性（$0.012-$1.00 vs Tavily 的 per-1k 定价）。Tavily 有更精致的 Agent-builder UI；Exa SDK 更干净、基准可复现。</li>
+              <li><strong>vs Firecrawl。</strong>Firecrawl 是抓已知站点 + 转换为 markdown 的对路工具——把 Firecrawl 与 Exa 配对使用，二选一并不合理。Firecrawl 用于站点级摄取，Exa 用于实时检索与结构化查询。</li>
+              <li><strong>vs SerpAPI / Serper。</strong>SerpAPI / Serper 是打包的 Google SERP 抓取。它们是"Google 会返回什么"的良好代理；Exa 是不同产品——索引围绕 AI Agent 查询组织而非人类查询，Dynamic Highlights 围绕 Agent token 预算设计。如果你的 Agent 在做 RAG，Exa 胜出；如果你的 Agent 在做 SERP 排名检查，SerpAPI 胜出。</li>
+              <li><strong>vs Perplexity。</strong>Perplexity 是面向终端用户的 AI 搜索产品，不是 API。Exa 是 Perplexity 风格产品的最近邻底层——许多 Agent 开发者把 Exa 选为自家 Perplexity 风格产品的检索层。</li>
+              <li><strong>vs Google Search (Custom Search JSON API)。</strong>Google 的 API 返回人类形态 SERP 结果，是对比集中最受限的一个（配额、计费摩擦、无 Agent 形态特性）。Exa 是任何 Agent 工作负载的更佳选择。</li>
+            </ul>
+
+            <h2>谁该用 Exa？</h2>
+            <p>
+              至少满足以下两条时 Exa 是对的选择：
+            </p>
+            <ul>
+              <li><strong>你在构建需要实时网页的 AI Agent。</strong>检索增强生成（RAG）、公司/人物研究、GTM 补全、销售线索资格审核、新闻监控、学术出版检索。Exa 的六个端点 + 2026-08 的 Dynamic Highlights 发布正是为这些工作负载而生。</li>
+              <li><strong>你需要与 AI IDE 的 MCP 原生集成。</strong>编程 Agent（Cursor、Codex、Claude Code）与 AI IDE（Claude Desktop、带 MCP 的 VS Code）需要托管或自托管 MCP 服务器。Exa 两条都提供。</li>
+              <li><strong>你要 token 高效的检索。</strong>Dynamic Highlights 公开的 49% token 效率基准是 Exa 把 Agent context 预算当一等公民对待的最有力证明。如果你的 Agent 对成本敏感，这点至关重要。</li>
+              <li><strong>你要可复现的供应商基准。</strong><code class="bg-gray-100 px-1 rounded">exa-labs/benchmarks</code> 在 GitHub。你能在承诺前针对自家工作负载跑一遍。</li>
+              <li><strong>你要按量付费、无订阅。</strong>无月最低消费、无按席位定价、无 per-seat fee——只有按请求计费，注册即得 $20 免费额度评估。</li>
+            </ul>
+            <p>
+              以下情况 Exa 不是合适的：工作负载是大批量 SERP 排名检查（选 SerpAPI）、你只做静态站点转 markdown（选 Firecrawl）、你需要完全在自有基础设施内运行的自托管方案（选某个开源替代品——Exa 仅托管 SaaS）。
+            </p>
+
+            <h2>最终结论</h2>
+            <p>
+              2026 年的 Exa 是市面上最值得关注的面向 AI Agent 的单一用途检索 API。供应商自有索引（3.5 亿 publication）、六个目的驱动的端点、按量付费 + $20 免费层、托管 MCP 服务器、自托管 MCP 服务器（4,987 stars）、2026-08 的 Dynamic Highlights 发布可证实节省 30-49% Agent tokens、与 OpenAI Agents / Vercel AI SDK / LangChain / CrewAI / LlamaIndex / Pydantic AI / n8n 的集成——这套组合难被超越。公开基准在 GitHub 可复现。免费层真实（起步 2,800 次搜索、每月持续 1,400 次）。
+            </p>
+            <p>
+              如果你正在构建需要实时网页的 AI Agent，在评估 Tavily / SerpAPI / Firecrawl 之前先评估 Exa——per-tier 定价可预测性、MCP-native 路径、Dynamic Highlights token 效率工作是生产工作负载真正在意的差异化点。如果你已经在跑 Tavily 或 SerpAPI 撞上 token 成本或新鲜度墙，Exa 是升级路径。迁移故事简单：<code class="bg-gray-100 px-1 rounded">exa-py</code> 与 <code class="bg-gray-100 px-1 rounded">exa-js</code> SDK 是一等公民，API 是单一端点 <code class="bg-gray-100 px-1 rounded">https://api.exa.ai</code> + Bearer Token 鉴权，注册 $20 免费额度足够把任何 Agent 工作负载端到端迁移完。
+            </p>
+
+          </div>
+
+          <div class="mt-12 pt-8 border-t border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Exa API 常见问题</h2>
+
+            <div class="space-y-6">
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">2026 年 Exa 是什么？</h3>
+                <p class="text-gray-700">Exa 是 Exa Labs（旧金山应用 AI 研究实验室）旗下的 AI 原生搜索引擎，自建网络索引与自有检索模型。公司自 2021 年起持续为 AI 系统构建搜索基础设施；Exa 搜索引擎专为 AI Agent 检索设计，非为人类网页搜索。Exa 暴露六个目的驱动的端点（Search、Deep Search、Contents、Answer、Monitors、Agent）、官方 MCP 服务器 mcp.exa.ai/mcp（自托管仓库 4,987 stars）、Python SDK（exa-py，233 stars）与 JavaScript/TypeScript SDK（exa-js）。2026-09-08 实测：exa.ai 与 api.exa.ai 均 HTTP 200；定价页列出 Search $7/1k、Deep Search $12-$15/1k；免费层 $20 注册抵用金 + $10 每月。</p>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">2026 年 Exa 定价怎么算？</h3>
+                <p class="text-gray-700">按量付费，无订阅无最低消费。Search $7/1k 请求（前 10 条结果，超出 10 条按 $1/1k，AI 摘要 $1/1k 页另计）。Deep Search 按档 $12-$15/1k（deep-lite、deep、deep-reasoning）。Contents $1/1k 页。Answer $5/1k。Monitors $15/1k。Agent 按 effort 档 $0.012-$1.00/次（minimal / low / medium / high / xhigh）或按用量计费，默认单次 $5 上限。注册即得 $20 抵用金 + 每月 $10 免费额度，无需绑卡。Enterprise 走销售报价（量大优惠、自定义索引、Zero Data Retention、SLA）。</p>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">Exa Dynamic Highlights 是什么？</h3>
+                <p class="text-gray-700">Dynamic Highlights 是 2026-08 推出的研究预览特性，跨整个结果集选段而非逐页独立处理。Agent 的 token 预算被分配到有用来源上，而非“重复信息”的来源。开启方式：在 Search 或 Contents 请求上设 dynamic: true 并加 Exa-Beta: dynamic-highlights-2026-08-28 请求头。Exa 公开基准：单轮 RAG ~49% 更省 token + +2.4% 下游质量；Agent 全程 ~30% 更省 token + +1% 质量（BrowseComp、WideSearch 与内部公司/人物评测均值）。基准 harness 开源在 exa-labs/benchmarks（GitHub）。</p>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">Exa 有 MCP 服务器吗？</h3>
+                <p class="text-gray-700">有——Exa 同时提供托管 MCP 服务器 https://mcp.exa.ai/mcp 与自托管 MCP 服务器（exa-labs/exa-mcp-server，4,987 GitHub stars，MIT 协议，最近 commit 2026-08-21）。托管路径让你无需任何基础设施就能把 Exa 接入 Claude Desktop、Cursor、Codex、VS Code（带 MCP 扩展）或任何 MCP 兼容客户端。自托管路径适合想把 API key 留在自有基础设施内的团队。两者都暴露 /search、/get_contents、/research、/company_research 为 MCP tools。</p>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">Exa 与 Tavily、Firecrawl 相比如何？</h3>
+                <p class="text-gray-700">Exa、Tavily、Firecrawl 目标的是检索流水线的不同部分。Exa 是实时网页检索 + web、company、person、publication 垂直结构化查询的对路选择；Tavily 是最近的 Agent-builder 竞品，提供托管 SaaS 与精致 UI；Firecrawl 是抓已知站点 + 转换为 markdown 的对路工具。许多生产 Agent 的务实配置是把 Exa（实时检索）与 Firecrawl（静态摄取）配对使用，而非二选一。对 SerpAPI / Serper，Exa 在 Agent 形态特性（Dynamic Highlights、MCP、结构化输出）上胜出，但在 SERP 排名检查（需要 Google 形态结果）上落败。</p>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-5">
+                <h3 class="font-bold text-gray-900 mb-2">Exa 能否在中国大陆使用？</h3>
+                <p class="text-gray-700">exa.ai 与 api.exa.ai 没有官方中国大陆区域，直连依赖本地 ISP 出口与团队的合规网络路径。产品纯 API 不需要 GUI，所以典型模式是从非境内 worker 调用 Exa，或通过满足数据驻留要求的合规出口转发。对需要把每个 prompt 字节留在境内的团队，替代方案是把 Exa 与自托管爬虫 + embedding 流水线配对到同一垂直上——但会失去供应商维护索引的优势。</p>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white rounded-xl border border-gray-200 p-6 sticky top-4">
+            <h3 class="font-bold text-gray-900 mb-4">⚡ 速览</h3>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between"><span class="text-gray-500">提供商</span><span class="font-semibold">Exa (Exa Labs)</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">总部</span><span class="font-semibold">旧金山</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">成立</span><span class="font-semibold">2021</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">端点数</span><span class="font-semibold">6 (搜索/深度/内容/问答/监控/Agent)</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">MCP 服务器</span><span class="font-semibold text-green-600">✅ 托管 + 自托管 (4,987 ⭐)</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">免费层</span><span class="font-semibold text-green-600">$20 + $10/月</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Search</span><span class="font-semibold">$7 / 1k 请求</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Deep Search</span><span class="font-semibold">$12-$15 / 1k 请求</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Contents</span><span class="font-semibold">$1 / 1k 页</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">Agent effort</span><span class="font-semibold">$0.012 - $1.00 / 次</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">计费</span><span class="font-semibold">按量付费</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">加价</span><span class="font-semibold text-green-600">0% (无订阅)</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">部署模式</span><span class="font-semibold">托管 SaaS</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">中国大陆</span><span class="font-semibold">⚠️ 无官方区域</span></div>
+              <div class="flex justify-between"><span class="text-gray-500">实测日期</span><span class="font-semibold">2026-09-08</span></div>
+            </div>
+
+            <a href="https://exa.ai" target="_blank" rel="noopener" class="btn-primary w-full text-center block mt-6">
+              访问 Exa →
+            </a>
+            <a href="https://github.com/exa-labs" target="_blank" rel="noopener" class="block text-center text-blue-600 text-sm font-medium py-2 mt-2 hover:underline">
+              查看 GitHub →
+            </a>
+
+            <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+              <p>价格更新于 2026/9/8</p>
+              <p class="mt-1">以官方站最新价格为准</p>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="font-bold text-gray-900 mb-4">相关搜索 API</h3>
+            <div class="space-y-2">
+              <a href="/providers/tavily" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+                <span>Tavily</span><span class="text-gray-400">#14</span>
+              </a>
+              <a href="/providers/firecrawl" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+                <span>Firecrawl</span><span class="text-gray-400">#11</span>
+              </a>
+              <a href="/providers/perplexity" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+                <span>Perplexity AI</span><span class="text-gray-400">#6</span>
+              </a>
+              <a href="/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">查看全部 →</a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
