@@ -1,0 +1,169 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'huggingface-api-review-2026';
+const date = '2026-09-09';
+const locale = 'en';
+
+const enTitle = 'Hugging Face API 2026: 200K Models, 18 Inference Providers';
+const enDescription = 'Hugging Face 2026 review: 200K+ models, 18 inference providers, PRO $9/mo, Inference Endpoints per-second billing, plus the $12.93B Nvidia acquisition. Verified.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is Hugging Face in 2026?", "acceptedAnswer": { "@type": "Answer", "text": "Hugging Face is the world's largest AI model and dataset community, hosting 200,000+ models, 1,000,000+ datasets, and 500,000+ Spaces as of September 9, 2026. Beyond being a model hub, it now operates an Inference Providers aggregator (18 third-party vendors behind one OpenAI-compatible endpoint at router.huggingface.co), Inference Endpoints for one-click dedicated GPU deployment, Spaces for free Gradio/Streamlit/Docker app hosting with a shared ZeroGPU pool, and a Datasets + Dataset Viewer layer for parquet/CSV/JSONL data engineering. On September 3, 2026, Nvidia announced its intent to acquire Hugging Face for approximately $12.93 billion ($12,930,300 per share), pending SEC and regulatory approval." } },
+    { "@type": "Question", "name": "How much does Hugging Face cost in 2026?", "acceptedAnswer": { "@type": "Answer", "text": "Free tier is $0/month with $0.10 of monthly inference credits and 200,000+ models readable. PRO is $9/month per user and includes 20× inference credits, 10× private storage, 2× public storage, 8× ZeroGPU Spaces quota, and the highest queue priority. Team is $20/month per user and adds SAML SSO, Storage Regions (EU/US data residency), Audit Logs, and Resource Groups. Enterprise is custom with dedicated support, legal/compliance processes, and on-prem options. Inference Endpoints bills dedicated GPU instances per second (A10G / L4 / A100 / H100), and Inference Providers routes through 18 third-party vendors with per-vendor pricing visible on huggingface.co/docs/inference-providers/pricing." } },
+    { "@type": "Question", "name": "What are Hugging Face Inference Providers?", "acceptedAnswer": { "@type": "Answer", "text": "Inference Providers is a multi-vendor aggregator that lets you route any model request through one OpenAI-compatible endpoint (router.huggingface.co) and pick the underlying vendor per call. The current 18 providers are Together, Fireworks, Replicate, Groq, Cerebras, Cohere, DeepInfra, Fal, Featherless, Novita, Nscale, OVHcloud AI Endpoints, Public AI, Scaleway, WaveSpeedAI, Z.ai, Baseten, and HF Inference (the in-house default). The provider parameter is set in the request body or via the inference-providers SDK in Python and JS/TS. Pricing differs per provider+model combination, so the canonical rate card lives on the docs site and is the only place to check the exact current cost for a given model." } },
+    { "@type": "Question", "name": "What is the Nvidia acquisition of Hugging Face?", "acceptedAnswer": { "@type": "Answer", "text": "On September 3, 2026, Nvidia announced an agreement to acquire Hugging Face for approximately $12.93 billion in total consideration, or $12,930,300 per share. The deal is subject to SEC review, regulatory approval, and customary closing conditions; the product surface is unchanged for now. The strategic signal is significant because the company that controls the dominant training-GPU supply chain (Nvidia) is also buying the dominant model and dataset distribution layer (Hugging Face). For developers, the practical implication is that the Inference Providers aggregator, the Inference Endpoints one-click GPU deploy path, the Spaces free hosting, and the Datasets platform continue to operate normally while the deal works through approval." } },
+    { "@type": "Question", "name": "Can I use Hugging Face from mainland China?", "acceptedAnswer": { "@type": "Answer", "text": "Direct access to huggingface.co is blocked in mainland China without a proxy. The two practical workarounds are: (a) use the community-maintained mirror at hf-mirror.com to browse models and download weights, then route inference through a self-hosted LiteLLM or Bifrost gateway deployed on Alibaba Cloud / Tencent Cloud / Huawei Cloud pointing at the public Inference Providers; or (b) deploy Inference Endpoints on a domestic cloud (Alibaba PAI, Tencent TI, Huawei Cloud Pangu) using a self-hosted open-weight model on H800 / H20 hardware, which is the cleanest end-to-end mainland-compliant path. Both patterns let you stay on Hugging Face model versions while keeping every prompt byte on-shore." } },
+    { "@type": "Question", "name": "How do Hugging Face Inference Endpoints compare to API providers like OpenAI?", "acceptedAnswer": { "@type": "Answer", "text": "Inference Endpoints is a dedicated-GPU deployment path (A10G / L4 / A100 / H100) where you own the running instance, pay per second, and can serve any model from the 200,000+ Hub. Cold start is 30-90 seconds, so it is not suitable for sub-second latency-sensitive traffic, but it is excellent for high-throughput batch jobs, privacy-sensitive enterprise workloads that need the model to run in your own VPC, and any case where you want to avoid the per-token markup of third-party APIs. For chat traffic that needs sub-second TTFT, the Inference Providers aggregator (Together / Fireworks / Groq) is faster and cheaper at small scale, with the trade-off that you route the request through the third-party vendor. Most production teams use both: Inference Providers for synchronous chat, Inference Endpoints for batch jobs and private workloads." } }
+  ]
+};
+
+const bodyContent = `
+<article class="prose prose-lg max-w-none">
+  <h2 id="overview">What Hugging Face Is in 2026</h2>
+  <p>Hugging Face is no longer just a model hub. In 2026 it operates as the open-source AI operating system: a community-owned distribution layer for 200,000+ models, 1,000,000+ datasets, and 500,000+ Spaces (live demo apps), plus a multi-vendor inference aggregator, a one-click dedicated-GPU deploy path, and a free hosting tier for Gradio / Streamlit / Docker demos. The September 3, 2026 announcement that Nvidia will acquire the company for ~$12.93 billion put the strategic question front and center: does the company that controls the dominant training-GPU supply chain also control the dominant model and dataset distribution layer? The deal is pending SEC and regulatory approval, but the product surface is unchanged for now.</p>
+
+  <p>The reason any API review needs to cover Hugging Face in 2026 is that the company's <strong>Inference Providers</strong> aggregator changed the developer experience in a structural way. Eighteen third-party vendors — Together, Fireworks, Replicate, Groq, Cerebras, Cohere, DeepInfra, Novita, Baseten, Fal, Featherless, Nscale, OVHcloud AI Endpoints, Public AI, Scaleway, WaveSpeedAI, Z.ai, and the in-house HF Inference backend — are now reachable through one OpenAI-compatible endpoint at <code>router.huggingface.co</code>. You pick the provider per request, you see the per-model price card on the docs site, and you pay with the same monthly PRO or Team credits that also cover Spaces, ZeroGPU, and Jobs.</p>
+
+  <h2 id="pricing-tiers">Pricing Tiers (Verified 2026-09-09)</h2>
+  <p>The free tier is the entry point: $0/month, $0.10 of monthly inference credits, public model and dataset browsing, free Spaces on the CPU baseline, and 100K of public storage. PRO at $9/month per user is the first paid tier and includes 20× the inference credits, 10× private storage, 2× public storage, 8× ZeroGPU quota, the highest queue priority, and the PRO badge. Team at $20/month per user adds SAML SSO (SAML 2.0 and OIDC), Storage Regions for EU/US data residency, Audit Logs, and Resource Groups for granular access control. Enterprise is custom via the demo form and adds dedicated support, legal and compliance processes, custom contracts, and on-prem / private cloud deployment options.</p>
+
+  <p><strong>Inference Endpoints</strong> is the dedicated-GPU path: A10G, L4, A100, or H100 instances, deployed from any model card, billed per second while running, with autoscale to zero. Cold start is 30-90 seconds, which is the main latency trade-off. <strong>Inference Providers</strong> is the multi-vendor aggregator: 18 third-party vendors reachable through the same OpenAI-compatible endpoint, with per-vendor pricing visible at <code>huggingface.co/docs/inference-providers/pricing</code>. PRO, Team, and Enterprise monthly credits apply on top of the provider's base rate when you route through Hugging Face.</p>
+
+  <h2 id="inference-providers">Inference Providers in Detail</h2>
+  <p>The aggregator is the most useful piece of the 2026 Hugging Face story. The flow is: a single OpenAI-compatible <code>POST /v1/chat/completions</code> at <code>router.huggingface.co</code>, with a <code>provider</code> field in the request body or the inference-providers SDK. The Python and JS/TS SDKs handle provider selection, retries, and streaming; the legacy <code>api-inference.huggingface.co</code> endpoint still works for older code paths. The 18 supported providers cover the full inference market: Together and Fireworks for cost-optimized open-weight inference, Replicate for the long tail of community models, Groq for ultra-low-latency LPU inference, Cerebras for wafer-scale speed, Cohere for enterprise Command R+, DeepInfra for budget serverless, Novita and Nscale for emerging providers, Baseten for production-grade deployments, Fal and Featherless for multimodal, OVHcloud AI Endpoints for EU data residency, Public AI and Scaleway for European cloud-native, WaveSpeedAI for video and image workloads, and Z.ai for the GLM family. HF Inference itself is the in-house default and the only provider that bills from your free $0.10 monthly credits.</p>
+
+  <p>The pricing model is honest and somewhat annoying: each provider sets its own per-model rate, so the rate card on the docs site is the only place to see the exact current cost for any given model. The HF markup on top of the provider's base rate is zero when you pay-as-you-go without a PRO / Team / Enterprise subscription; the monthly credits act as a discount on eligible providers. For batch jobs and price-sensitive workloads, this means the same model can be tried across multiple providers in a single function call, picking the cheapest available backend per request.</p>
+
+  <h2 id="nvidia-acquisition">The Nvidia Acquisition</h2>
+  <p>On September 3, 2026, Nvidia and Hugging Face jointly announced an agreement for Nvidia to acquire Hugging Face for approximately $12.93 billion in total consideration, or $12,930,300 per share. CNBC's September 3, 2026 report and the official Nvidia blog post the following day are the primary sources; the deal is subject to SEC review, regulatory approval, and customary closing conditions. The product surface is unchanged for now — Inference Providers, Inference Endpoints, Spaces, Datasets, the Hub, and the PRO/Team/Enterprise subscriptions all continue to operate as before — but the strategic signal is significant. Nvidia has been the dominant training-GPU supplier for the entire open-weight LLM era; Hugging Face has been the dominant model and dataset distribution layer. Combining the two is a vertical integration move that, if approved, will reshape the open AI stack.</p>
+
+  <p>For developers, the practical question is whether the open-source mission survives. The public statements from both companies emphasize that the Hugging Face brand and product will continue as a distinct unit, and that the open-source licensing across the Hub, Datasets, and Spaces is unchanged. The risk, which can only be assessed after the deal closes (if it closes), is whether Inference Providers continues to be a neutral multi-vendor aggregator or whether the routing prioritizes Nvidia-adjacent vendors. Until that question is settled, the safest assumption is that the 18-vendor roster is stable through 2026.</p>
+
+  <h2 id="inference-endpoints">Inference Endpoints for Dedicated Workloads</h2>
+  <p>Inference Endpoints is the one-click dedicated-GPU path: from any of the 200,000+ model cards, click Deploy -> Inference Endpoints -> pick the hardware (A10G for cost-optimized inference, L4 for newer low-power inference, A100 for high-memory workloads, H100 for the largest open-weight models) -> set min and max instances. Cold start is 30-90 seconds, which is the main latency trade-off; once running, the instance serves the model with no per-token markup and full control over the runtime. Autoscale to zero is supported, so you can park the endpoint when idle and pay nothing during off-hours. For batch jobs, the cost-per-token math often beats the Inference Providers aggregator by 2-5× because there is no third-party markup.</p>
+
+  <p>The SDKs and REST endpoints are production-ready: the Python <code>huggingface_hub</code> library handles auth, the inference endpoint URL, and the request format; the legacy <code>inference.endpoints.huggingface.co</code> flow still works for older deployments. Private Inference Endpoints (only accessible from your VPC) is the privacy tier for regulated workloads, and the Enterprise Hub adds custom security controls on top.</p>
+
+  <h2 id="spaces">Spaces for Free Demo Hosting</h2>
+  <p>Spaces hosts any Gradio, Streamlit, Docker, or static app. Free CPU spaces are unlimited; GPU spaces run on the shared ZeroGPU pool. PRO users get 8× the ZeroGPU quota and the highest queue priority; free users share the A10G tier. Spaces Dev Mode (PRO only) lets you publish personal blog posts to a HF-hosted subdomain, which is a useful side feature for indie developers and OSS maintainers. The 500,000+ Spaces fleet is the largest live-demo repository in the AI world, and it is what makes Hugging Face the de facto research showcase for the open-weight LLM ecosystem.</p>
+
+  <h2 id="datasets">Datasets + Dataset Viewer</h2>
+  <p>The Datasets platform hosts 1,000,000+ parquet, CSV, JSONL, and WebDataset datasets. The Dataset Viewer streams the first rows in-browser without a full download, which is the killer feature for data engineers exploring new training corpora. Statistical histograms, schema introspection, and search are all included for free public datasets; private datasets are gated by PRO. The combination of the Hub (models), Datasets, and Spaces is what makes Hugging Face a complete open-source AI workflow platform rather than just a model marketplace.</p>
+
+  <h2 id="enterprise">Enterprise Hub</h2>
+  <p>Enterprise Hub adds the compliance and governance layer that regulated teams need: SAML SSO, Audit Logs, Resource Groups for fine-grained access control, Storage Regions for EU/US data residency, dedicated support, legal and compliance processes, custom contracts, and on-prem / private cloud deployment options. The Inference Endpoints private tier (model runs in your VPC, not on HF infrastructure) is the privacy story for finance, healthcare, and government customers. The pricing is custom, but the structural promise is the same: the 200,000+ model Hub, the multi-vendor inference aggregator, and the dataset library are all reachable from inside the Enterprise Hub without leaving the customer's compliance boundary.</p>
+
+  <h2 id="china-access">Mainland China Access</h2>
+  <p>Direct access to <code>huggingface.co</code> is blocked in mainland China without a proxy. The two practical workarounds are: (a) use the community-maintained mirror at <code>hf-mirror.com</code> to browse models and download weights, then route inference through a self-hosted LiteLLM or Bifrost gateway deployed on Alibaba Cloud / Tencent Cloud / Huawei Cloud pointing at the public Inference Providers; or (b) deploy Inference Endpoints on a domestic cloud (Alibaba PAI, Tencent TI, Huawei Cloud Pangu) using a self-hosted open-weight model on H800 / H20 hardware, which is the cleanest end-to-end mainland-compliant path. Both patterns let you stay on Hugging Face model versions while keeping every prompt byte on-shore.</p>
+
+  <h2 id="verdict">Verdict</h2>
+  <p>Hugging Face in 2026 is less a single API provider and more the operating system for open AI: model discovery, dataset engineering, demo deployment, and multi-vendor inference all in one place. The $12.93 billion Nvidia acquisition pending regulatory approval makes it the most strategically important AI infrastructure deal of the year, but the day-to-day developer experience is unchanged for now. The Inference Providers aggregator is the standout feature for 2026 — one OpenAI-compatible endpoint, 18 third-party vendors, per-vendor pricing visible on the docs site, and the ability to switch providers per request. For any team that needs to stay close to the OSS-LLM frontier in 2026, Hugging Face remains the single most useful URL on the internet.</p>
+
+  <p>Trade-offs are real: the free tier is rate-limited enough that any production workload needs PRO at $9/month, huggingface.co is blocked in mainland China without a mirror or self-hosted workaround, Inference Endpoints cold-starts in 30-90 seconds, and the acquisition outcome introduces some strategic uncertainty. For batch jobs and privacy-sensitive enterprise workloads, Inference Endpoints remains the best path. For sub-second chat traffic, the Inference Providers aggregator with Groq or Together as the backend is the right call. For data engineering, the Datasets + Dataset Viewer combination is the only one in the industry. The combination is what makes Hugging Face irreplaceable in 2026.</p>
+</article>
+`;
+---
+
+<BaseLayout title={enTitle + ' | APIRank'} description={enDescription} canonicalUrl={canonicalUrl} lang="en">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Provider Review</span>
+        <time datetime="2026-09-09">September 9, 2026</time>
+        <span>·</span>
+        <span>13 min read</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{enTitle}</h1>
+      <p class="text-xl text-gray-600">{enDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <!-- Main content -->
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <!-- CTA -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">Try Hugging Face</h3>
+          <p class="text-gray-600 text-sm mb-4">Get started with $0.10 of free monthly inference credits, browse 200,000+ models, and deploy to a dedicated GPU endpoint in minutes.</p>
+          <a href="https://huggingface.co" target="_blank" rel="noopener" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">Open Hugging Face →</a>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Quick Facts</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">Founded</dt><dd class="font-medium">2016 (New York + Paris)</dd></div>
+            <div><dt class="text-gray-500">Models on Hub</dt><dd class="font-medium">200,000+</dd></div>
+            <div><dt class="text-gray-500">Inference Providers</dt><dd class="font-medium">18 third-party vendors</dd></div>
+            <div><dt class="text-gray-500">Free Tier</dt><dd class="font-medium">$0.10 / month credits</dd></div>
+            <div><dt class="text-gray-500">PRO</dt><dd class="font-medium">$9 / month</dd></div>
+            <div><dt class="text-gray-500">Team</dt><dd class="font-medium">$20 / user / month</dd></div>
+            <div><dt class="text-gray-500">Acquisition</dt><dd class="font-medium">Nvidia, ~$12.93B (Sept 3, 2026)</dd></div>
+            <div><dt class="text-gray-500">China Access</dt><dd class="font-medium text-amber-600">Mirror or self-host</dd></div>
+          </dl>
+          <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+            <p>Prices updated 9/9/2026</p>
+            <p class="mt-1">Check official site for latest pricing</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Related Aggregators</h3>
+          <div class="space-y-2">
+            <a href="/providers/openrouter" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>OpenRouter</span><span class="text-gray-400">#3</span>
+            </a>
+            <a href="/providers/bifrost-maxim" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Bifrost (Maxim)</span><span class="text-gray-400">#4</span>
+            </a>
+            <a href="/providers/together-ai" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Together AI</span><span class="text-gray-400">#7</span>
+            </a>
+            <a href="/providers/fireworks-ai" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Fireworks AI</span><span class="text-gray-400">#8</span>
+            </a>
+            <a href="/providers/replicate" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Replicate</span><span class="text-gray-400">#11</span>
+            </a>
+            <a href="/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">View All →</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
