@@ -1,0 +1,266 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'openai-navier-stokes-agent-cost-2026';
+const date = '2026-09-09';
+const locale = 'zh';
+
+const zhTitle = 'OpenAI Navier-Stokes 智能体成本：490 万消息、1500 万美元 Token 账单';
+const zhDescription = 'OpenAI 智能体求解 Navier-Stokes：4.9M 消息、300B 输出 token、约 1 万并发，按 GPT-6 Astra 牌价输出一项就超 1500 万美元，完整拆解。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "OpenAI 求解 Navier-Stokes 在 API token 上花了多少钱？",
+      "acceptedAnswer": { "@type": "Answer", "text": "据 OpenAI 官方公告（2026-09-08），该智能体组在所有尝试的问题上一共发送了 490 万条消息、消耗约 3000 亿输出 token；其中 Navier-Stokes 解答本身就涉及约 1 万个并发智能体。如果按 GPT-6 Astra 在 OpenRouter 上的牌价（2026-09-09 仍为 $50 / 百万输出 token）计算，仅输出 token 一项就约 1500 万美元。Noam Brown 证实这次证明花费数百万美元；输入 token 账单和未发布内部模型的调用成本均未披露。" } },
+    { "@type": "Question", "name": "OpenAI 求解 Navier-Stokes 用的是什么模型？",
+      "acceptedAnswer": { "@type": "Answer", "text": "两个不同的模型。据 OpenAI 公告：证明本身由一个尚未发布的下一代 OpenAI 模型生成，被描述为能力显著强于 GPT-6 Astra；GPT-6 Astra（2026-09-05 发布的 $10/$50 模型）则负责 Lean 4 形式化验证，耗时约 17 小时，占整体约 88 小时工作流的重要部分。同一个智能体组此前已经尝试过多个问题，4.9M 消息和 300B 输出 token 覆盖的是全部工作量，并非只算成功的那一次。" } },
+    { "@type": "Question", "name": "还有谁在同时做这个 Navier-Stokes blow-up 问题？",
+      "acceptedAnswer": { "@type": "Answer", "text": "NYU 数学家 Tristan Buckmaster 与 Anthropic 研究员 Alpöge 已经用 AI 合作做流体力学问题一年多。2026-08 中旬他们找到了简化版 Navier-Stokes 问题的反例；之后数周两个团队独立推进完整 blow-up 问题的研究。Buckmaster 在 2026-09-07 发布公开声明（cims.nyu.edu/~tristanb/statement.pdf），描述时间线和协调尝试。陶哲轩在 Mastodon（mathstodon.xyz/@tao/117233527638291447）评论了数学内容。Sam Altman 在 2026-09-08 公开回应，称对方只有 Euler 结果、双方协调失败，并以抄袭指控相威胁。" } },
+    { "@type": "Question", "name": "这对在 OpenAI API 上跑智能体工作负载的定价有什么影响？",
+      "acceptedAnswer": { "@type": "Answer", "text": "公开牌价没有变化。GPT-6 Astra 在 OpenRouter 上仍然为 $10/$50 每百万 token（截至 2026-09-09），批量档位为 $5/$25。可操作的启示是工程层面的，而非定价层面：大型多智能体研究工作负载按公开牌价算已是七位数级别，输入 token（按提示价收费）在智能体读取大量证明上下文时也常达到同一数量级。Noam Brown 预测的成本快速下降，是与 2024-25 推理价格曲线类似的趋势信号。" } },
+    { "@type": "Question", "name": "这个 Navier-Stokes 解法到底证明了什么？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Clay 千禧年大奖关于 Navier-Stokes 的题目问：三维不可压缩 Navier-Stokes 方程的光滑初值是否会在有限时间内产生奇点（blow-up）。OpenAI 公告称其智能体组产出了一个 blow-up 解，即一个光滑流动会变奇异的例子。证明配有由 GPT-6 Astra 完成的 Lean 4 形式化验证，机器逐步核对，比人类手写证明更强。陶哲轩等独立数学家的评估仍在进行；证明文本与公告一起托管在 OpenAI 网站。" } },
+    { "@type": "Question", "name": "OpenAI 的 Navier-Stokes 证明是真科学突破还是营销故事？",
+      "acceptedAnswer": { "@type": "Answer", "text": "两者都是。数学层面，已通过 Lean 4 验证的 blow-up 解将是一个实质性结果（在一个方向回答了千禧年大奖问题），不过独立评审尚未完成，而 Buckmaster 的声明对署名和协调提出了程序性关切。工程层面，这次公告是智能体能力与成本在规模化场景下的公开基准：4.9M 消息、300B 输出 token、约 1 万并发智能体、端到端约 88 小时。对 API 消费者来说，实践信号是「前沿智能体做研究」已经成为真实的产品层级——而且每个问题按当前牌价算就是七位数。" } }
+  ]
+};
+---
+<BaseLayout
+  title={zhTitle + ' | APIRank'}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  zhCanonicalUrl={enCanonicalUrl}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <link rel="alternate" hreflang="en-US" href={enCanonicalUrl} />
+  <link rel="alternate" hreflang="zh-CN" href={canonicalUrl} />
+  <link rel="alternate" hreflang="x-default" href={enCanonicalUrl} />
+
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <a href="/zh/tutorials" class="hover:text-blue-600">教程</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">OpenAI Navier-Stokes 智能体成本</span>
+      </nav>
+    </div>
+  </div>
+
+  <article class="py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-8">
+
+          <header>
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">OpenAI 求解 Navier-Stokes 的智能体账单：490 万消息、约 1 万并发智能体、1500 万美元 Token 费</h1>
+            <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+              <time datetime="2026-09-09">2026 年 9 月 9 日</time>
+              <span>•</span>
+              <span>新闻分析</span>
+              <span>•</span>
+              <span>约 11 分钟阅读</span>
+            </div>
+            <p class="text-lg text-gray-600 leading-relaxed">
+              2026-09-08 OpenAI 发布了一份论文、一份 Lean 4 形式化验证和一个 1103 点的 Hacker News 帖子，宣布一组 AI 智能体求解了 Navier-Stokes blow-up 千禧年大奖问题。数学故事是头条，但对 APIRank 读者来说更耐用的信号藏在公告的小字里：<strong>490 万条消息、约 3000 亿输出 token、约 1 万并发智能体、端到端约 88 小时</strong>。按 GPT-6 Astra 的公开牌价计算，这个工作负载光输出 token 一项就突破 <strong>1500 万美元</strong>——还没算输入 token、未发布的内部模型成本、以及协调这次运行的团队人力。本文是成本经济学的核实拆解、双模型架构（未发布前沿模型做证明 + GPT-6 Astra 做验证）的解读，以及与 NYU Tristan Buckmaster、Anthropic Alpöge 的并行工作争议。
+            </p>
+          </header>
+
+          <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded-r">
+            <p class="text-blue-800 text-sm">
+              <strong>TL;DR：</strong>OpenAI 智能体组在所有尝试的问题上发送了 490 万条消息、消耗约 3000 亿输出 token（不只是赢的那一道）；Navier-Stokes 解答本身涉及约 1 万个并发智能体跑约 88 小时；GPT-6 Astra 承担了 17 小时的 Lean 4 验证。按 GPT-6 Astra 在 OpenRouter 上 $50/M 的输出牌价，仅输出账单就约 1500 万美元——Noam Brown 证实运行成本为「数百万美元」。证明用了<strong>未发布的下一代 OpenAI 模型</strong>（显著强于 GPT-6 Astra）；GPT-6 Astra 只是验证那一环。NYU 的 Tristan Buckmaster 与 Anthropic 的 Alpöge 在独立推进同一道题；Sam Altman 9-8 的公开回应指责对方以抄袭投诉相威胁。对 API 消费者来说，实践信号是：前沿研究级智能体工作负载每个问题按当前牌价已是七位数，输入 token 那半账单尚未披露。
+            </p>
+          </div>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">OpenAI 实际宣布了什么</h2>
+
+          <p>OpenAI 公告（2026-09-08）——托管在 <code>openai.com/index/navier-stokes-solution/</code>、交叉发布到 HN 上 24 小时内拿到 1103 点和 955 条评论——描述了一个智能体组，在产出已验证的 Navier-Stokes blow-up 解之前曾尝试多个数学问题。引用 OpenAI 原话里的关键数字：</p>
+
+          <ul class="list-disc pl-6 space-y-2 text-gray-700">
+            <li><strong>「在所有尝试的问题上，智能体发送了 490 万条消息、消耗约 3000 亿输出 token」</strong>——这是多问题战役的累计账单，不只是赢的那道证明。</li>
+            <li><strong>「产出 Navier-Stokes 解答的那个组涉及约 1 万并发智能体」</strong>——HN 头号评论 <em>seizethecheese</em> 直接从公告里抽出了这一行。</li>
+            <li><strong>整体工作流约 88 小时端到端</strong>；Lean 4 形式化验证占约 17 小时，由 GPT-6 Astra（2026-09-05 发布的 $10/$50 模型）完成。</li>
+            <li>证明本身由一个<strong>未发布的下一代 OpenAI 模型</strong>生成，公告中描述为「能力显著强于 GPT-6 Astra」。</li>
+          </ul>
+
+          <p>这是一个结构性要点：证明步骤和验证步骤用了不同模型。OpenAI 公告小心地把 GPT-6 Astra 定位为验证器（可通过 API 审计并复现），同时把实际生成器的功劳留给一个尚未发布的模型。对 API 消费者评估「前沿智能体能力」来说，公开的 $10/$50 GPT-6 Astra 牌价是下限，做更难工作的模型还没上价目表。</p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">成本计算：按公开牌价 1500 万美元+</h2>
+
+          <p>GPT-6 Astra 在 OpenRouter 上的牌价（截至 2026-09-09）：</p>
+
+          <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">档位</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">提示 / 百万</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">生成 / 百万</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 text-sm">
+                <tr><td class="px-4 py-2">GPT-6 Astra（标准）</td><td class="px-4 py-2">$10.00</td><td class="px-4 py-2">$50.00</td></tr>
+                <tr><td class="px-4 py-2">GPT-6 Astra Pro（标准）</td><td class="px-4 py-2">$10.00</td><td class="px-4 py-2">$50.00</td></tr>
+                <tr><td class="px-4 py-2">GPT-6 Astra（批量）</td><td class="px-4 py-2">$5.00</td><td class="px-4 py-2">$25.00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">来源：openrouter.ai/api/v1/models，2026-09-09 抓取。GPT-6 Astra 在 OpenRouter 上 created=2026-09-05。</p>
+
+          <p>仅输出 token，按标准牌价：</p>
+
+          <pre><code class="text-gray-800">300,000,000,000 输出 token × $50 / 百万 token = $15,000,000</code></pre>
+
+          <p>这只是生成成本。提示侧账单 OpenAI 没有披露，但智能体工作流的典型形态是：每个智能体读取大量证明上下文、工具输出和上一步状态，提示成本常常是同一数量级。即使给予慷慨折扣，这次运行也是七位数。<strong>Noam Brown</strong>（OpenAI 推理团队负责人）在 X（2026-09-08）确认运行成本数百万美元，并加注「成本会快速下降」。内部下一代模型完全未定牌价——它没上 API。</p>
+
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">成本经济学告诉我们关于前沿智能体工作负载的事</h3>
+
+          <p>对运行大型智能体系统的任何人来说，两点可操作的启示：</p>
+
+          <ol class="list-decimal pl-6 space-y-2 text-gray-700">
+            <li><strong>缓存读取比头牌价更重要。</strong>17 小时的 Lean 验证相当于在同一证明上下文上重复成千上万次 LLM 调用。如果你的智能体架构不能缓存前缀读取，每次都得付完整 $50/M。Anthropic Claude Fable 5.1 把缓存读取砍到 $0.25/M（2026-09-01 从 $1.00/M 砍下 −75%）；OpenAI 批量档位直接对半；Workers AI 和 OpenRouter 上的缓存推理折扣在长前缀工作负载上还能再砍 50-90%。</li>
+            <li><strong>多模型架构把账单分散到多个价目表上。</strong>OpenAI 自己的架构里，前沿未发布模型负责创造性步骤、已发布前沿模型（GPT-6 Astra）负责验证步骤。Anthropic 的 Haiku 4.5（$1/$5）和 Sonnet 5（$2/$10）在许多公开的参考架构里承担路由与验证；把可重复的便宜步骤路由到更便宜的模型，可以在不改变「做难活的模型」的前提下把多智能体成本曲线砍下 5-10×。</li>
+          </ol>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">与 NYU 和 Anthropic 的并行工作争议</h2>
+
+          <p>Tristan Buckmaster（NYU 数学家）2026-09-07 发布公开声明（托管在 <code>cims.nyu.edu/~tristanb/statement.pdf</code>），描述他与 Anthropic 研究员 Alpöge 用 AI 合作做流体力学已有一年。他列出的时间线：</p>
+
+          <ul class="list-disc pl-6 space-y-2 text-gray-700">
+            <li>Buckmaster 与 Alpöge 用 AI 合作做流体力学问题已经超过一年。</li>
+            <li>2026-08 中旬他们找到了简化版 Navier-Stokes 问题的反例。</li>
+            <li>之后数周两个团队独立推进完整 blow-up 问题；双方尝试过沟通但未成功。</li>
+            <li>OpenAI 在 2026-09-08 公告并公开发布证明。</li>
+          </ul>
+
+          <p>Sam Altman 当天（2026-09-08）公开回应，发文较长，论点包括：对方只有 Euler 结果、双方协调失败、对方以抄袭投诉相威胁。<strong>Noam Brown</strong> 和 <strong>Daniel Imberman</strong> 就成本发表评论（Noam：「成本会快速下降」；Daniel：「让模型对所有人更好」）。<strong>Emad Mostaque</strong> 称这是迈向 ASI 的里程碑。<strong>Simon Willison</strong> 报道了争议但对署名问题保持中立。</p>
+
+          <p>数学侧，<strong>陶哲轩</strong>在 Mastodon（mathstodon.xyz/@tao/117233527638291447）发了技术内容讨论。陶哲轩尚未给出最终裁决；独立评审仍在进行。blow-up 解将是对千禧年大奖问题的实质性回答，但社区尚未完成对证明文本的核对。Buckmaster 的声明对署名归属提出了程序性关切，数学侧单独无法解决。</p>
+
+          <h3 class="text-xl font-semibold text-gray-900 mt-4">争议对 API 消费者意味着什么</h3>
+
+          <p>对 API 成本故事来说，署名问题的重要性低于它所确认的工程事实。两个独立团队用不同的机构基础设施（OpenAI 前沿未发布模型 + Lean 4 验证；NYU 的传统训练 + Anthropic 的内部工具）在数周内收敛到同一道题。可复现的能力信号——这种多智能体研究工作负载现在在多家机构可复现——才是耐用的结论，无论千禧年大奖的历史署名归谁。</p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">双模型架构：前沿生成器 + 公开验证器</h2>
+
+          <p>OpenAI 公告明确说有两个不同的模型参与。这个架构对任何设计「需要可审计输出」的智能体系统的人来说是有用的模板：</p>
+
+          <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">步骤</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">模型</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">大致成本基础</th>
+                  <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">可复现性</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 text-sm">
+                <tr><td class="px-4 py-2">证明生成（创造性步骤）</td><td class="px-4 py-2">未发布的下一代 OpenAI 模型</td><td class="px-4 py-2">未披露</td><td class="px-4 py-2">否（未上 API）</td></tr>
+                <tr><td class="px-4 py-2">Lean 4 形式化验证（17 小时）</td><td class="px-4 py-2">GPT-6 Astra</td><td class="px-4 py-2">$50/M 输出 × 17 小时</td><td class="px-4 py-2">是（OpenRouter / OpenAI API）</td></tr>
+                <tr><td class="px-4 py-2">多智能体编排</td><td class="px-4 py-2">约 1 万并发智能体</td><td class="px-4 py-2">全部计入 4.9M / 300B 总数</td><td class="px-4 py-2">否（内部协调）</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>这种拆分是耐用的设计模式。创造性步骤（证明、生成、构思）藏在 API 价格为前沿实验室发布时任意设定的前沿模型之后；验证步骤（形式核对、单元测试、静态分析）跑在已发布的、更便宜的模型上，每次调用都可审计、账单可预测。同样的模式出现在把 Haiku 4.5 或 Sonnet 5 路由到 Claude 流水线验证侧的生产部署里，也出现在把 GLM-5.3 Flash（$0.15/$0.50）路由到 Z.ai 工作流验证侧的设计中。</p>
+
+          <h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">这对 OpenAI API 价目表意味着什么</h2>
+
+          <p>公开数字没有变化。GPT-6 Astra 在 OpenRouter 上仍然是 $10/$50 每百万 token（2026-09-09），批量档 $5/$25，标准 Pro 档与标准相同。变化的是运营边界：</p>
+
+          <ul class="list-disc pl-6 space-y-2 text-gray-700">
+            <li><strong>前沿研究工作负载是真实的产品层级</strong>——按当前牌价每个问题数百万美元，成本趋势跟随 Noam Brown 的「会快速下降」预测。</li>
+            <li><strong>GPT-6 Astra 被定位为验证层</strong>而非前沿创造性模型，这是给所有在做多模型部署的人的信号：已发布前沿模型越来越多地成为内部更强生成器之上的审计层。</li>
+            <li><strong>输入侧成本纪律比以往更重要</strong>——490 万条消息下，即便提示侧效率的小幅提升（$0.50/M 缓存读取、提示缓存、智能体去重）也会在单次研究战役里复合成六位数的节省。</li>
+          </ul>
+
+          <p>Clay 千禧年大奖委员会尚未裁定该证明是否符合正式获奖条件；评审可能需要数月甚至数年。对 API 消费者来说，更实际的问题——前沿实验室能否可靠地协调成千上万的智能体在公开牌价上产出可审计、可验证的输出——已经有了答案：是的，每个问题七位数。</p>
+
+        </div>
+
+        <aside class="lg:col-span-1 space-y-6">
+          <div class="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-3">OpenAI Navier-Stokes — 速览</h3>
+            <ul class="text-sm text-gray-600 space-y-2">
+              <li><strong>公告时间：</strong>2026-09-08（openai.com/index/navier-stokes-solution）</li>
+              <li><strong>HN 帖子：</strong>24 小时内 1103 点、955 条评论</li>
+              <li><strong>消息数：</strong>490 万（覆盖所有尝试的问题）</li>
+              <li><strong>输出 token：</strong>约 3000 亿（累计）</li>
+              <li><strong>并发智能体：</strong>约 1 万（针对解答组）</li>
+              <li><strong>端到端时间：</strong>约 88 小时</li>
+              <li><strong>Lean 4 验证：</strong>约 17 小时，GPT-6 Astra 完成</li>
+              <li><strong>证明模型：</strong>未发布的下一代 OpenAI 模型</li>
+              <li><strong>验证器模型：</strong>GPT-6 Astra（$10/$50 每百万）</li>
+              <li><strong>按 GPT-6 Astra 牌价输出账单：</strong>约 1500 万美元</li>
+              <li><strong>总运行成本（Noam Brown）：</strong>「数百万美元」</li>
+            </ul>
+          </div>
+
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-2">对 API 的意义</h3>
+            <ul class="text-sm text-gray-600 space-y-1 list-disc pl-4">
+              <li>GPT-6 Astra 牌价未变（$10/$50，批量 $5/$25）</li>
+              <li>前沿研究工作负载 = 每个问题 $1M+ 按当前牌价</li>
+              <li>验证侧工作负载受益于缓存读取折扣</li>
+              <li>多模型架构（前沿生成 + 公开验证）是耐用模式</li>
+              <li>输入侧成本纪律与输出侧同等重要</li>
+              <li>成本曲线：Noam Brown「会快速下降」是相关趋势信号</li>
+            </ul>
+          </div>
+
+          <div class="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-3">相关评测</h3>
+            <ul class="space-y-2 text-sm">
+              <li><a href="/zh/tutorials/openai-gpt-6-astra-api-pricing-2026" class="text-blue-600 hover:underline">GPT-6 Astra API 定价</a> — $10/$50 基础牌价，批量 $5/$25</li>
+              <li><a href="/zh/tutorials/anthropic-claude-fable-5-1-mythos-5-1-2026" class="text-blue-600 hover:underline">Claude Fable 5.1 / Mythos 5.1</a> — 缓存读取 $0.25/M（−75%）</li>
+              <li><a href="/zh/tutorials/anthropic-517b-compute-deal-claude-api-pricing-2026" class="text-blue-600 hover:underline">Anthropic 5170 亿算力大单</a> — 成本曲线的供给侧背景</li>
+              <li><a href="/zh/tutorials/openai-ipo-api-ecosystem-2026" class="text-blue-600 hover:underline">OpenAI 2026 IPO</a> — 跨实验室 IPO 背景</li>
+            </ul>
+          </div>
+
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-6">
+            <h3 class="font-bold text-gray-900 mb-2">来源 &amp; 最后核实</h3>
+            <p class="text-sm text-gray-600">
+              490 万消息 / 3000 亿输出 token / 约 1 万并发 / 约 88 小时 / 17 小时 Lean 验证 均引自 OpenAI 公告（openai.com/index/navier-stokes-solution/，2026-09-08）；HN 帖子 1103 点通过 HN Algolia <code>49613262</code> 核实。并行工作时间线来自 Tristan Buckmaster 公开声明（cims.nyu.edu/~tristanb/statement.pdf，2026-09-07）；Sam Altman 回应与 Noam Brown 成本评论来自 X（2026-09-08）；陶哲轩技术评估来自 Mastodon（mathstodon.xyz/@tao/117233527638291447）。GPT-6 Astra 牌价 2026-09-09 通过 <code>openrouter.ai/api/v1/models</code> 实时核实。APIRank 不接受任何付费正面报道。
+            </p>
+          </div>
+
+          <div class="bg-gray-100 border border-gray-200 rounded-lg p-4 text-center text-xs text-gray-400">
+            广告位
+          </div>
+        </aside>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
