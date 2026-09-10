@@ -21928,5 +21928,562 @@
         "textZh": "Exa 是托管 SaaS 而非自托管。官方 api.exa.ai 端点由 Exa 自身基础设施服务（公开营销站 header 显示 Next.js + Vercel，索引爬虫由 Exa 自己的爬虫运行）。2026-09-08 实测 exa.ai 经 Vercel edge 返回 HTTP/2 200；api.exa.ai 接受 Bearer Token POST，可打 /search、/contents、/monitors、/answer、/agent；mcp.exa.ai/mcp HEAD 返回 405（对只接受 POST 的 MCP 服务器是正确答案），POST 可拉起 MCP 流。内地团队直连依赖本地出口——Exa 没有官方中国区——但 API-only 通常通过合规出口或非内地 worker 转发即可。Deep Search 延迟 4-40 秒（deep-reasoning 最慢），由 Exa 自己的多步检索与 LLM 推理主导，与网络往返无关。Agent API 单次运行上限 $5（auto）或 $20（beta max），多源丰富的失控任务有兜底。"
       }
     ]
+  },
+  {
+    "id": "upstage",
+    "name": "Upstage (Solar)",
+    "nameCn": "Upstage (Solar)",
+    "category": "international",
+    "website": "https://upstage.ai",
+    "apiDocs": "https://developers.upstage.ai",
+    "affiliateUrl": "",
+    "affiliateAvailable": false,
+    "models": [
+      "Solar Pro 4 (agentic flagship, 512K ctx, 128K max output, $0.30/$1.20; 90% off thru Sep 10 2026, 70% off thru Oct 10)",
+      "Solar Pro 3 (previous-gen flagship, 128K ctx, $0.15/$0.60)",
+      "Solar Pro 2 (enterprise reasoning, 128K ctx, $0.15/$0.60)",
+      "Solar Mini (lightweight cost-efficient tier)",
+      "Syn Pro (locally trained for the Japanese market)",
+      "Solar Open 2 (open-weights sibling, self-hostable — distinct from the Pro 4 API)"
+    ],
+    "modelCount": 6,
+    "pricing": {
+      "input": "Solar Pro 4: $0.30/M list (促销: 90% off = $0.03/M 至 2026-09-10, 70% off = $0.09/M 至 2026-10-10); Solar Pro 3 / Pro 2: $0.15/M",
+      "output": "Solar Pro 4: $1.20/M list (促销 $0.12/M → $0.36/M); 缓存输入 $0.06/M 标价 ($0.006 → $0.018 促销); Solar Pro 3 / Pro 2: $0.60/M",
+      "freeTier": "Studio 文档智能体 10 次免费运行（无需信用卡）；新 API Key 无长期免费 token，但两个月发布促销期近似免费"
+    },
+    "pricingEN": {
+      "input": "Solar Pro 4: $0.30/M list (launch promo: 90% off = $0.03/M through 2026-09-10; 70% off = $0.09/M through 2026-10-10); Solar Pro 3 / Pro 2: $0.15/M",
+      "output": "Solar Pro 4: $1.20/M list (promo $0.12/M then $0.36/M); cached input $0.06/M list ($0.006 then $0.018 in promo); Solar Pro 3 / Pro 2: $0.60/M",
+      "freeTier": "10 free Studio document-agent runs (no credit card); no perpetual free token grant on the raw API, but the two-month launch promo is effectively one"
+    },
+    "freeTier": "Studio 智能体 10 次免费运行（无需信用卡）",
+    "freeTierEN": "10 free Studio agent runs (no credit card required)",
+    "paidModel": "按量付费 + 预付承诺档（Explore $100+/月、Build $500+/月、Scale $5,000+/月、Enterprise 定制）；文档 AI 按页计费",
+    "paidModelEN": "Pay-as-you-go plus prepaid commitment tiers (Explore $100+/mo, Build $500+/mo, Scale $5,000+/mo, Enterprise custom); document AI billed per page",
+    "availabilityCN": "⚠️ 需代理 / 经 OpenRouter；支持本地与专用部署",
+    "availabilityEN": "⚠️ Proxy or OpenRouter from mainland China; on-premises and dedicated deployment available",
+    "speedRank": 6,
+    "priceRank": 4,
+    "overallRank": 30,
+    "highlights": [
+      "Solar Pro 4：512K 上下文 / 128K 输出的智能体模型，2026 年 8 月发布",
+      "发布促销 9 月 10 日前 90% 折扣（$0.03/$0.12 每百万），10 月 10 日前 70%",
+      "OpenAI 兼容 API，迁移仅需更换端点与模型名 solar-pro4",
+      "英/韩/日三语输入输出；推理力度可调（高低两档）",
+      "文档 AI 按页计费：Parse $0.01/页、Extract $0.03/页、Classify 免费",
+      "SOC 2 + ISO 27001 认证；AWS / Azure / Snowflake 市场上架"
+    ],
+    "highlightsEN": [
+      "Solar Pro 4: a 512K-context / 128K-output agentic model launched in August 2026",
+      "Launch promo: 90% off through Sep 10, 2026 ($0.03/$0.12 per 1M), then 70% off through Oct 10",
+      "OpenAI-compatible API — migrating means swapping the endpoint and the model name solar-pro4",
+      "English / Korean / Japanese input and output; adjustable reasoning effort (high / low)",
+      "Document AI billed per page: Parse $0.01/page, Extract $0.03/page, Classify free",
+      "SOC 2 + ISO 27001 certified; available on AWS, Azure, and Snowflake marketplaces"
+    ],
+    "cons": [
+      "促销价与标价随日期切换，定价页脚本按阶段替换显示，易误读",
+      "所有价格不含 10% 增值税",
+      "无中国大陆边缘节点，需代理或经 OpenRouter",
+      "AIME 2026（95.3 对 95.7）与日语 IFEval（81.6 对 82.5）相对 Solar Open 2 略降",
+      "Solar Pro 4 不自托管（自托管需选 Solar Open 2）"
+    ],
+    "consEN": [
+      "Promotional and list prices rotate by date — the pricing page script swaps them, which is easy to misread",
+      "All published prices are exclusive of 10% VAT",
+      "No mainland-China edge; proxy or OpenRouter required there",
+      "AIME 2026 (95.3 vs 95.7) and Japanese IFEval (81.6 vs 82.5) are marginally behind Solar Open 2",
+      "Solar Pro 4 is not self-hostable — that is Solar Open 2's job"
+    ],
+    "bestFor": "文档密集型、多步骤的智能体流水线：跨多份合同评审、在报告间核对数字、按政策筛选候选方案，以及任何错误数值会传播进下游交付物的场景；需要韩语/日语支持的团队；想在编译前用极低价评测前沿级长上下文模型的开发者。",
+    "bestForEN": "Document-heavy, multi-step agent pipelines: reviewing contracts across files, reconciling figures between reports, screening candidates against a policy, and any workflow where a wrong value propagates into a downstream deliverable; teams needing Korean or Japanese support; developers who want a cheap window to evaluate a frontier-class long-context model.",
+    "status": "active",
+    "addedDate": "2026-09-10",
+    "source": "2026-09-10 add-provider run — verified live against upstage.ai/pricing, upstage.ai/blog/en/solar-pro-4, Upstage developer docs, and OpenRouter /api/v1/models on 2026-09-10",
+    "reviewSections": [
+      {
+        "title": "💰 价格与方案",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": [
+          "Model",
+          "Input /1M",
+          "Cached /1M",
+          "Output /1M",
+          "Notes"
+        ],
+        "headersZh": [
+          "模型",
+          "输入 /百万",
+          "缓存 /百万",
+          "输出 /百万",
+          "备注"
+        ],
+        "rows": [
+          [
+            "Solar Pro 4",
+            "$0.30 (promo $0.03)",
+            "$0.06 (promo $0.006)",
+            "$1.20 (promo $0.12)",
+            "512K ctx / 128K out; 90% off thru Sep 10 2026, then 70% off thru Oct 10"
+          ],
+          [
+            "Solar Pro 3",
+            "$0.15",
+            "$0.015",
+            "$0.60",
+            "128K ctx; previous-gen flagship"
+          ],
+          [
+            "Solar Pro 2",
+            "$0.15",
+            "$0.015",
+            "$0.60",
+            "128K ctx; enterprise reasoning"
+          ],
+          [
+            "Solar Mini",
+            "Published on pricing page",
+            "—",
+            "Published on pricing page",
+            "Lightweight, cost-efficient tier"
+          ],
+          [
+            "Syn Pro",
+            "Published on pricing page",
+            "—",
+            "Published on pricing page",
+            "Locally trained for the Japanese market"
+          ],
+          [
+            "Document Parse",
+            "$0.01/page (Standard) · $0.03/page (Enhanced)",
+            "—",
+            "—",
+            "Structured, LLM-readable extraction"
+          ],
+          [
+            "Information Extract",
+            "$0.03/page (Standard) · $0.05/page (Enhanced)",
+            "—",
+            "—",
+            "Key-field extraction from unstructured text"
+          ],
+          [
+            "Classify / Instruct",
+            "Free (Beta)",
+            "—",
+            "—",
+            "Document sorting and custom natural-language LLM steps"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "Solar Pro 4",
+            "$0.30（促销 $0.03）",
+            "$0.06（促销 $0.006）",
+            "$1.20（促销 $0.12）",
+            "512K 上下文 / 128K 输出；2026-09-10 前 90% 折扣，10-10 前 70% 折扣"
+          ],
+          [
+            "Solar Pro 3",
+            "$0.15",
+            "$0.015",
+            "$0.60",
+            "128K 上下文；上一代旗舰"
+          ],
+          [
+            "Solar Pro 2",
+            "$0.15",
+            "$0.015",
+            "$0.60",
+            "128K 上下文；企业级推理"
+          ],
+          [
+            "Solar Mini",
+            "定价页已公布",
+            "—",
+            "定价页已公布",
+            "轻量、成本友好档"
+          ],
+          [
+            "Syn Pro",
+            "定价页已公布",
+            "—",
+            "定价页已公布",
+            "面向日本市场本地化训练"
+          ],
+          [
+            "Document Parse",
+            "$0.01/页（Standard）· $0.03/页（Enhanced）",
+            "—",
+            "—",
+            "结构化、可被 LLM 读取的抽取"
+          ],
+          [
+            "Information Extract",
+            "$0.03/页（Standard）· $0.05/页（Enhanced）",
+            "—",
+            "—",
+            "从非结构化文本抽取关键字段"
+          ],
+          [
+            "Classify / Instruct",
+            "免费（Beta）",
+            "—",
+            "—",
+            "文档分类与自定义自然语言 LLM 步骤"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "OpenAI-Compatible Base URL",
+            "value": "Solar Pro 4 is exposed through an OpenAI-compatible chat completions interface under the model name solar-pro4. If your stack already speaks the OpenAI protocol, the entire migration is the base URL plus the model string — no new SDK, no bespoke request format."
+          },
+          {
+            "label": "Reasoning by Default",
+            "value": "Solar Pro 4 reasons by default and the response carries the reasoning trace, so the mental model is closer to a reasoning model than a classic completion endpoint. Handle the trace in your client."
+          },
+          {
+            "label": "Adjustable Reasoning Effort",
+            "value": "Response speed is a dial rather than a fixed property: high reasoning effort favours deep analysis, low targets real-time interaction at what Upstage calls everyday-chatbot speed. For agent loops calling the model dozens of times per job, this is the main cost and latency lever."
+          },
+          {
+            "label": "Context Window",
+            "value": "512K-token input context with up to 128K output tokens — enough to load several contracts, reports, and data files into a single session without splitting them. OpenRouter lists the context at 524,288."
+          },
+          {
+            "label": "Languages",
+            "value": "English, Korean, and Japanese for both input and output. Japanese-specific instruction-following (IFEval JA 81.6) is marginally behind the open-weights sibling (82.5)."
+          },
+          {
+            "label": "Distribution",
+            "value": "Upstage Console (primary API), SolarChat (free browser playground, no key), OpenRouter (upstage/solar-pro4), Hermes Agent, Upstage Studio (no-code document agents), and dedicated / on-premises deployment."
+          },
+          {
+            "label": "Compliance & Procurement",
+            "value": "Upstage operates under SOC 2 and ISO 27001 certification; models are also available on AWS, Azure, and Snowflake marketplaces for buyers who procure through a cloud account rather than a new vendor relationship."
+          }
+        ]
+      },
+      {
+        "title": "📊 Benchmarks (Solar Pro 4 vs Solar Open 2)",
+        "titleZh": "📊 基准测试（Solar Pro 4 对 Solar Open 2）",
+        "type": "table",
+        "headers": [
+          "Category",
+          "Benchmark",
+          "Solar Open 2",
+          "Solar Pro 4",
+          "Gap"
+        ],
+        "headersZh": [
+          "类别",
+          "基准",
+          "Solar Open 2",
+          "Solar Pro 4",
+          "差值"
+        ],
+        "rows": [
+          [
+            "Agent execution",
+            "Terminal-Bench v2.1",
+            "43.2",
+            "57.0",
+            "+13.8"
+          ],
+          [
+            "Agent execution",
+            "GDPval-AA v2",
+            "31.4",
+            "38.8",
+            "+7.4"
+          ],
+          [
+            "Agent execution",
+            "BrowseComp*",
+            "37.3",
+            "49.2",
+            "+11.9"
+          ],
+          [
+            "Agent execution",
+            "SWE-Bench Verified (OpenHands)*",
+            "69.2",
+            "70.6",
+            "+1.4"
+          ],
+          [
+            "Agent execution",
+            "MCP-Atlas*",
+            "58.2",
+            "61.4",
+            "+3.2"
+          ],
+          [
+            "Agent execution",
+            "APEX-Agents*",
+            "16.6",
+            "18.7",
+            "+2.1"
+          ],
+          [
+            "Agent execution",
+            "t3-Banking",
+            "18.1",
+            "23.0",
+            "+4.9"
+          ],
+          [
+            "Long documents",
+            "AA-LCR",
+            "62.7",
+            "71.0",
+            "+8.3"
+          ],
+          [
+            "Knowledge / reasoning / coding",
+            "GPQA Diamond",
+            "85.6",
+            "89.0",
+            "+3.4"
+          ],
+          [
+            "Knowledge / reasoning / coding",
+            "MMLU-Pro*",
+            "86.2",
+            "86.3",
+            "+0.1"
+          ],
+          [
+            "Knowledge / reasoning / coding",
+            "LiveCodeBench*",
+            "87.0",
+            "87.8",
+            "+0.8"
+          ],
+          [
+            "Knowledge / reasoning / coding",
+            "AIME 2026*",
+            "95.7",
+            "95.3",
+            "-0.4"
+          ],
+          [
+            "Korean / Japanese work",
+            "KMMLU-Pro*",
+            "78.4",
+            "79.2",
+            "+0.8"
+          ],
+          [
+            "Korean / Japanese work",
+            "KBL (law)*",
+            "75.5",
+            "77.5",
+            "+2.0"
+          ],
+          [
+            "Korean / Japanese work",
+            "KorMedMCQA (medicine)*",
+            "93.0",
+            "93.2",
+            "+0.2"
+          ],
+          [
+            "Korean / Japanese work",
+            "Ko-GDPval*",
+            "86.8",
+            "87.3",
+            "+0.5"
+          ],
+          [
+            "Korean / Japanese work",
+            "Arena-Hard v2 (Japanese)*",
+            "75.3",
+            "81.9",
+            "+6.6"
+          ],
+          [
+            "Korean / Japanese work",
+            "MMLU (Japanese)*",
+            "89.5",
+            "89.5",
+            "+0.2"
+          ],
+          [
+            "Korean / Japanese work",
+            "IFEval (Japanese)*",
+            "82.5",
+            "81.6",
+            "-0.9"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "智能体执行",
+            "Terminal-Bench v2.1",
+            "43.2",
+            "57.0",
+            "+13.8"
+          ],
+          [
+            "智能体执行",
+            "GDPval-AA v2",
+            "31.4",
+            "38.8",
+            "+7.4"
+          ],
+          [
+            "智能体执行",
+            "BrowseComp*",
+            "37.3",
+            "49.2",
+            "+11.9"
+          ],
+          [
+            "智能体执行",
+            "SWE-Bench Verified (OpenHands)*",
+            "69.2",
+            "70.6",
+            "+1.4"
+          ],
+          [
+            "智能体执行",
+            "MCP-Atlas*",
+            "58.2",
+            "61.4",
+            "+3.2"
+          ],
+          [
+            "智能体执行",
+            "APEX-Agents*",
+            "16.6",
+            "18.7",
+            "+2.1"
+          ],
+          [
+            "智能体执行",
+            "t3-Banking",
+            "18.1",
+            "23.0",
+            "+4.9"
+          ],
+          [
+            "长文档",
+            "AA-LCR",
+            "62.7",
+            "71.0",
+            "+8.3"
+          ],
+          [
+            "知识 / 推理 / 编程",
+            "GPQA Diamond",
+            "85.6",
+            "89.0",
+            "+3.4"
+          ],
+          [
+            "知识 / 推理 / 编程",
+            "MMLU-Pro*",
+            "86.2",
+            "86.3",
+            "+0.1"
+          ],
+          [
+            "知识 / 推理 / 编程",
+            "LiveCodeBench*",
+            "87.0",
+            "87.8",
+            "+0.8"
+          ],
+          [
+            "知识 / 推理 / 编程",
+            "AIME 2026*",
+            "95.7",
+            "95.3",
+            "-0.4"
+          ],
+          [
+            "韩日工作负载",
+            "KMMLU-Pro*",
+            "78.4",
+            "79.2",
+            "+0.8"
+          ],
+          [
+            "韩日工作负载",
+            "KBL（法律）*",
+            "75.5",
+            "77.5",
+            "+2.0"
+          ],
+          [
+            "韩日工作负载",
+            "KorMedMCQA（医学）*",
+            "93.0",
+            "93.2",
+            "+0.2"
+          ],
+          [
+            "韩日工作负载",
+            "Ko-GDPval*",
+            "86.8",
+            "87.3",
+            "+0.5"
+          ],
+          [
+            "韩日工作负载",
+            "Arena-Hard v2（日语）*",
+            "75.3",
+            "81.9",
+            "+6.6"
+          ],
+          [
+            "韩日工作负载",
+            "MMLU（日语）*",
+            "89.5",
+            "89.5",
+            "+0.2"
+          ],
+          [
+            "韩日工作负载",
+            "IFEval（日语）*",
+            "82.5",
+            "81.6",
+            "-0.9"
+          ]
+        ]
+      },
+      {
+        "title": "🎯 Use Cases & Verdict",
+        "titleZh": "🎯 适用场景与结论",
+        "type": "list",
+        "items": [
+          {
+            "label": "Choose Solar Pro 4 if…",
+            "value": "your workload is genuinely multi-step and document-heavy: contract review across several files, reconciling figures between reports, screening candidates against a policy, or any pipeline where a wrong value propagates into a downstream deliverable. The 512K context removes the need to split document sets, and the model's trained habit of flagging what it cannot verify is exactly the property you want where a hallucinated number is expensive."
+          },
+          {
+            "label": "Be careful if…",
+            "value": "your work is math-heavy or Japanese-instruction-sensitive — AIME 2026 and Japanese IFEval are essentially flat or slightly down versus Solar Open 2, so the agentic uplift does not generalise automatically. And if you need to self-host for data-residency reasons, Solar Pro 4 is the wrong choice by design; look at Solar Open 2."
+          },
+          {
+            "label": "Watch the calendar",
+            "value": "The 90%-off phase ends September 10, 2026 at 23:59 UTC and steps down to 70% off on September 11 before reverting to standard pricing on October 11. The same tokens cost roughly 3x more three days later and 10x more five weeks later. That is the published price schedule, not artificial urgency."
+          },
+          {
+            "label": "Work agents & cookbook",
+            "value": "Upstage shipped seven work agents alongside the model (Excel workbook generation, evidence-based Word reports, PowerPoint decks with speaker notes), each with its system prompt, actual outputs, and pass criteria, plus a full English worked assignment so you can run the same job yourself rather than trusting a demo."
+          }
+        ]
+      }
+    ]
   }
 ]
