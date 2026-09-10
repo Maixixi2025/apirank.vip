@@ -1,0 +1,255 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'cloudflare-ai-gateway-custom-costs-2026';
+const date = '2026-09-10';
+const locale = 'zh';
+
+const zhTitle = 'Cloudflare AI Gateway 自定义成本：缓存 Token 计费解读';
+const zhDescription = 'Cloudflare AI Gateway 自定义成本（cf-aig-custom-cost）2026 解读：按 token 覆盖协商价、缓存读写费率、防重复计算规则，以及与 Portkey / LiteLLM 的对比。一手中文验证。';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Cloudflare AI Gateway 的 cf-aig-custom-cost 请求头是什么？", "acceptedAnswer": { "@type": "Answer", "text": "它是一个按请求生效的 HTTP 请求头，用于覆盖 AI Gateway 原本会记入该次调用的默认或公开模型价格。你传入一个 JSON 对象，包含 per_token_in、per_token_out，以及可选的 per_cache_read_token 和 per_cache_write_token。所有费率都是每单个 token 的价格，不是每百万 token，且 Cloudflare 文档说明小数位数不限。典型用途是协商价：合同价是每百万输入 token 1 美元，但模型卡上的公开标价是 2.5 美元。不加这个头，所有看板金额都会高估 2.5 倍；加上之后，日志、支出限额与成本分析才反映你实际支付的价格。" } },
+    { "@type": "Question", "name": "2026 年 9 月 9 日 Cloudflare AI Gateway 更新了什么？", "acceptedAnswer": { "@type": "Answer", "text": "变更日志标题为 AI Gateway custom costs support cache tokens。自定义成本请求头本身更早就存在，9 月 9 日新增的是两个字段 per_cache_read_token 与 per_cache_write_token，让 prompt 缓存的成本结构能被计入成本计算。这点很关键：缓存读取通常只有输入价格的 10% 到 25%，而缓存写入可能高于输入价，因此把每个输入 token 都按同一价格计费的成本模型，对任何有实质缓存命中率的 Anthropic 或 OpenAI 工作负载都是错的。当前该功能对所有套餐开放。" } },
+    { "@type": "Question", "name": "AI Gateway 如何避免缓存 token 被重复计算？", "acceptedAnswer": { "@type": "Answer", "text": "不同厂商上报缓存用量的方式不一致。有的把缓存读取和缓存写入 token 合并计入输入 token 总数；有的则把输入与缓存 token 分开上报。Cloudflare 自动处理两种情况：当缓存 token 已包含在输入计数中时，AI Gateway 会先减去它们再套用 per_token_in；当它们被分开上报时，AI Gateway 会在输入成本之外另行计算其成本。官方给的可算例是：一次响应上报 1,000 输入 token、600 缓存读取 token、200 缓存写入 token、100 输出 token，AI Gateway 先算出 1,000 减 600 减 200 等于 200 个新鲜输入 token，再把各档自定义费率分别套用到对应的 token 计数上。" } },
+    { "@type": "Question", "name": "设置了自定义成本后，缓存命中还要付费吗？", "acceptedAnswer": { "@type": "Answer", "text": "不用。Cloudflare 明确说明，如果响应由缓存命中返回，成本永远为 0，即使你设置了自定义成本。自定义成本只在请求真正到达模型供应商时生效。这对验证配置很有用：如果你故意设一个明显错误的费率而网关记录的支出完全没变，那要么是响应体里没有携带 token 用量，要么是每一次调用都被边缘缓存命中返回了。" } },
+    { "@type": "Question", "name": "Cloudflare AI Gateway 自定义成本是 Enterprise 专属功能吗？", "acceptedAnswer": { "@type": "Answer", "text": "不是。Cloudflare 说明 AI Gateway 对所有套餐开放，自定义成本并未被划为 Enterprise 专属。底层平台价格是每月包含 1,000 万次请求，超出后每百万次请求 0.05 美元；看板分析、缓存、速率限制等核心功能免费提供。网关背后的 Workers Paid 套餐是每账户每月 5 美元，包含 1,000 万次请求，超出后每百万次请求 0.30 美元。" } },
+    { "@type": "Question", "name": "还有哪些 AI 网关支持自定义成本覆盖？", "acceptedAnswer": { "@type": "Answer", "text": "我们在 2026-09-10 核对的六家网关中，只有 Portkey 和 LiteLLM 提供了对等的用户自定义覆盖。Portkey 在被 Palo Alto Networks 收购后已更名为 PRISMA AIRS AI Gateway，支持按模型设置自定义输入/输出成本，并可按集成设置定价调整倍数，用于协商折扣与内部成本分摊。LiteLLM 支持自定义价格表、按供应商的 cost_discount_config 折扣百分比，以及用于内部结算的 cost_margin_config 加成。Helicone、Vercel AI Gateway、Bifrost by Maxim 和 OpenRouter 都没有文档化的按请求自定义成本输入。OpenAI、Anthropic 和 Google 则完全没有网关层的协商价覆盖机制，因为这些厂商的企业议价走的是合同与开票流程，而不是 API 字段。" } }
+  ]
+};
+
+const bodyContent = `
+<article class="prose prose-lg max-w-none">
+  <h2 id="why-this-matters">为什么「可覆盖的成本数字」很重要</h2>
+  <p>每个 AI 网关看板都有同一个不易察觉的缺陷：右上角那个美元数字来自公开价目表，而不是你的合同。如果你的团队谈下了每百万输入 token 1 美元的价格，而该模型的公开标价是 2.5 美元，那么号称「追踪你的 AI 支出」的网关工具，正在以高出 150% 的数字向你汇报。财务看到一个数，采购签的是另一个数，唯一对账方式是人肉维护一张电子表格。</p>
+
+  <p>Cloudflare 的解法是一个请求头。<code>cf-aig-custom-cost</code> 让你按请求覆盖 AI Gateway 记入该次调用的默认或公开模型成本，用你真实的协商价。2026 年 9 月 9 日 Cloudflare 扩展了它：变更日志标题为 <a href="https://developers.cloudflare.com/changelog/post/2026-09-09-custom-cache-token-costs/" target="_blank" rel="noopener">AI Gateway custom costs support cache tokens</a>，为请求头新增了 <code>per_cache_read_token</code> 与 <code>per_cache_write_token</code>。这让一个原本粗放的输入/输出覆盖，变成了真正能刻画 prompt 缓存成本的成本模型——而缓存正是 2026 年任何跑在 Anthropic 或 OpenAI 模型上的 agent 工作负载中占比最大的成本变量。</p>
+
+  <p>这是一个很窄的功能，但它对一件事的影响极大：让网关自身的成本遥测可信到足以作为对账基准。它到底做了什么、缓存 token 的算法是什么、以及 Cloudflare 相对两家提供同类能力的竞品处在什么位置，都值得讲清楚。</p>
+
+  <h2 id="header-syntax">请求头字段逐个说明</h2>
+  <p>自定义成本在请求级别生效，而不是按账户或按密钥。你把它挂到原本就要通过网关发出的那次调用上：</p>
+
+  <pre is:raw><code class="language-bash">curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/openai/chat/completions \\
+  --header "Authorization: Bearer $UPSTREAM_KEY" \\
+  --header 'Content-Type: application/json' \\
+  --header 'cf-aig-custom-cost: {"per_token_in":0.000001,"per_token_out":0.000002,"per_cache_read_token":0.0000001,"per_cache_write_token":0.0000005}' \\
+  --data '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Summarize this changelog entry."}]
+  }'</code></pre>
+
+  <p>支持的四个字段是 <code>per_token_in</code>、<code>per_token_out</code>、<code>per_cache_read_token</code> 和 <code>per_cache_write_token</code>。第一次读容易踩的一个细节是：<strong>每个值都是「每单个 token」的价格，不是每百万 token</strong>。文档明确说明小数位数不限，所以上面的例子用 <code>0.000001</code> 来表达「每百万输入 token 1 美元」。同一组数字对应每百万输入 1 美元、输出 2 美元、缓存读取 0.10 美元、缓存写入 0.50 美元。</p>
+
+  <p>两条运维层面的约束和语法本身一样重要。第一，自定义成本只对<strong>在响应中返回 token 用量</strong>的请求生效；没有 token 信息的请求根本不会计算成本，因此省略 usage 字段的流式接口会悄悄保持未计价状态。第二，价格生效后你是看得见的：Cloudflare 会把使用自定义成本的那条日志金额加上下划线，让你一眼分辨哪些记录走的是协商价、哪些走的是公开标价。</p>
+
+  <h2 id="cache-math">缓存 Token 的算法与官方算例</h2>
+  <p>9 月 9 日这次更新里有意思的工程点不是那两个新字段本身，而是 Cloudflare 如何调和「不同厂商上报缓存用量方式不同」这件事。文档说得很直白：有些厂商把缓存读取和缓存写入 token 计入输入 token 总数，另一些则把输入与缓存 token 分开上报。</p>
+
+  <p>AI Gateway 把两种情况都归一化了。当缓存 token 已包含在输入计数中时，它会<strong>先减去它们再套用</strong> <code>per_token_in</code>；当它们被分开上报时，它会在输入成本<strong>之外另行计算</strong>其成本。官方说明的目标是防止缓存 token 被重复计算。</p>
+
+  <p>文档给出的算例是：一次响应上报 1,000 输入 token、600 缓存读取 token、200 缓存写入 token、100 输出 token。AI Gateway 先算出 <code>1,000 - 600 - 200 = 200</code> 个新鲜输入 token，再把各档自定义费率套用到对应的 token 计数上。如果你把缓存读取设为每百万 0.10 美元、缓存写入设为每百万 0.50 美元，那么计费口径就是：200 个输入 token 按输入价、600 个按缓存读取价、200 个按缓存写入价、100 个输出 token 按输出价——而不是 1,000 个输入 token 再额外叠加缓存 token。</p>
+
+  <p>启用规则被刻意设计得很宽容。缓存 token 计价是可选的，只要你指定<strong>至少一个</strong>缓存费率就会开启。如果只指定两个中的一个，另一个默认为 <code>per_token_in</code>。如果两个都不填，AI Gateway 会完全忽略缓存 token 计数，回退到原有的输入/输出计算——旧配置行为不变，可以直接升级。</p>
+
+  <p>在生产环境依赖这些数字之前，有一个边界情况值得先记住：<strong>缓存命中的成本永远是 0</strong>，即使你设置了自定义成本。自定义成本只在请求真正到达模型供应商时生效。这正是你想要的行为，但也意味着针对一个缓存已预热的网关做验证时，看起来会像请求头完全没起作用。</p>
+
+  <h2 id="worked-example">实际能省多少：一个协商价算例</h2>
+  <p>假设一个真实场景。某团队每月通过 Cloudflare AI Gateway 向一个前沿模型路由 4,000 万输入 token 与 1,200 万输出 token，另外跑一个大量使用 prompt 缓存的 agent 负载：每月 3,000 万缓存读取 token 与 400 万缓存写入 token。采购谈定每百万输入 1.00 美元、每百万输出 2.00 美元、每百万缓存读取 0.10 美元、每百万缓存写入 0.50 美元——而该模型的公开标价是输入 2.50 美元、输出 15.00 美元。</p>
+
+  <p>不加请求头时，AI Gateway 的成本分析按公开标价算：4,000 万输入按 2.50 美元、1,200 万输出按 15.00 美元，缓存 token 则被并入输入计数按标价计。看板会报告约 100 美元输入加 180 美元输出（缓存部分另计）——这个数字与账单毫无关系。建立在其上的支出限额会过早触发、阻断正常流量；异常检测会在虚假成本上误报；每个工程团队看到的单次请求成本，被公开价与合同价之间的差额倍数整体放大。</p>
+
+  <p>设置一次请求头并应用到调用链路上后，同样的流量会报告 40 美元输入、24 美元输出、3 美元缓存读取、2 美元缓存写入。头条数字相差 3.4 倍——这就是「可信的遥测系统」和「每次读数都要在心里打折的系统」之间的差别。请求头不会改变你付给模型供应商的钱，它改变的是网关自身的记账是否与账单一致。</p>
+
+  <h2 id="comparison">Cloudflare 与其他网关的对比</h2>
+  <p>Cloudflare 并不是唯一有成本覆盖方案的网关，但这个圈子比看上去小。我们核对了 apirank 读者最可能在这几家里做选择的六家网关的官方定价页与文档页。只有两家提供了与 <code>cf-aig-custom-cost</code> 对等的用户自定义覆盖。</p>
+
+  <div class="not-prose overflow-x-auto my-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-gray-50 border-b-2 border-gray-200">
+          <th class="text-left p-3 font-semibold">网关</th>
+          <th class="text-left p-3 font-semibold">自定义成本覆盖</th>
+          <th class="text-left p-3 font-semibold">实现方式</th>
+          <th class="text-left p-3 font-semibold">免费层</th>
+          <th class="text-left p-3 font-semibold">可否自托管</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-gray-100">
+          <td class="p-3 font-medium">Cloudflare AI Gateway</td>
+          <td class="p-3"><span class="text-green-700 font-medium">支持</span></td>
+          <td class="p-3"><code>cf-aig-custom-cost</code> 请求头；输入/输出 + 缓存读写四档；所有套餐</td>
+          <td class="p-3">有 — 含 1,000 万次请求/月，超出 $0.05/百万</td>
+          <td class="p-3">否（托管）</td>
+        </tr>
+        <tr class="border-b border-gray-100 bg-gray-50">
+          <td class="p-3 font-medium">Portkey <span class="text-xs text-gray-500">(PRISMA AIRS)</span></td>
+          <td class="p-3"><span class="text-green-700 font-medium">支持</span></td>
+          <td class="p-3">按模型的输入/输出成本覆盖 + 按集成的定价调整倍数（协商折扣、成本分摊）</td>
+          <td class="p-3">有 — Free Forever，1 万条日志/月</td>
+          <td class="p-3">是（OSS + VPC）</td>
+        </tr>
+        <tr class="border-b border-gray-100">
+          <td class="p-3 font-medium">LiteLLM</td>
+          <td class="p-3"><span class="text-green-700 font-medium">支持</span></td>
+          <td class="p-3">自定义价格表、按供应商的 <code>cost_discount_config</code> 折扣、用于结算的 <code>cost_margin_config</code></td>
+          <td class="p-3">有 — OSS，永久 $0</td>
+          <td class="p-3">是（核心）</td>
+        </tr>
+        <tr class="border-b border-gray-100 bg-gray-50">
+          <td class="p-3 font-medium">Helicone</td>
+          <td class="p-3"><span class="text-gray-500">文档未提供</span></td>
+          <td class="p-3">按供应商价目表自动计算；请求头目录中没有覆盖字段</td>
+          <td class="p-3">有 — 1 万次请求/月</td>
+          <td class="p-3">是（OSS）</td>
+        </tr>
+        <tr class="border-b border-gray-100">
+          <td class="p-3 font-medium">Vercel AI Gateway</td>
+          <td class="p-3"><span class="text-gray-500">文档未提供</span></td>
+          <td class="p-3">推理 0% 加价；BYOK 走你自己的合约额度，但没有手动成本字段</td>
+          <td class="p-3">有 — 每月 $5 额度</td>
+          <td class="p-3">否（托管）</td>
+        </tr>
+        <tr class="border-b border-gray-100 bg-gray-50">
+          <td class="p-3 font-medium">Bifrost (Maxim)</td>
+          <td class="p-3"><span class="text-gray-500">文档未提供</span></td>
+          <td class="p-3">预算、速率限制、虚拟密钥、成本追踪——无自定义成本输入</td>
+          <td class="p-3">有 — OSS，Apache-2.0</td>
+          <td class="p-3">是（OSS + VPC）</td>
+        </tr>
+        <tr class="border-b border-gray-100">
+          <td class="p-3 font-medium">OpenRouter</td>
+          <td class="p-3"><span class="text-gray-500">文档未提供</span></td>
+          <td class="p-3">推理 0% 加价；充值手续费 5.5%；BYOK 超过每月 $25K 额度后收 5%</td>
+          <td class="p-3">有 — 25+ 免费模型</td>
+          <td class="p-3">否（托管）</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="text-xs text-gray-500 mt-2">2026-09-10 从各厂商官方定价页与文档页核对。「文档未提供」指该厂商公开文档中没有按请求自定义成本的输入项——这不等同于技术上不可能，只是它不是受支持的公开能力。</p>
+  </div>
+
+  <p>这个格局值得点明。Portkey 从可观测性一侧切入：它给你按模型的成本覆盖，以及可以为整个集成表达协商折扣的倍数——当你的折扣是合同级而非模型级时，这是对形状。LiteLLM 从自托管代理一侧切入，是三家里最细的粒度——自定义价格表、按供应商的折扣百分比、以及为内部结算设计的加成配置，既能刻画你付了多少，也能刻画你如何分摊。Cloudflare 的版本最窄、运维负担最轻：一个请求头、无配置状态、所有套餐（含免费）可用，缓存 token 的归一化处理由它代劳。</p>
+
+  <p>而「窄」正是重点。如果你已经在通过 Cloudflare AI Gateway 路由——为了边缘缓存、235 个模型的目录，或 Workers 集成——那么在调用链路上加一个请求头，比为了成本归因专门再起一个 Portkey 或 LiteLLM 实例，摩擦要低得多。反过来，如果协商价记账本身就是核心需求，并且你需要按供应商折扣或结算加成作为一等配置，那么 Cloudflare 的单个请求头并不能替代 LiteLLM。</p>
+
+  <h2 id="implementation">如何落地而不破坏现有配置</h2>
+  <p>上线过程刻意做得很平淡，这本身是个优点。请求头是纯增量的——不传就与之前完全一致。这意味着你可以先在单条调用链路上试点，把网关的成本数字与已知的账单条目对比，确认无误后再推广。</p>
+
+  <p>文档里两条实操提示会改变你的测试方式。第一，因为自定义成本只对响应返回 token 的请求生效，在断定请求头没生效之前，先确认你的客户端与模型组合确实会返回 usage 数据。第二，因为缓存命中的成本永远是 0，对一个缓存已预热的服务做测试说明不了任何问题——要么在测试时关掉网关缓存，要么用一个不可能命中缓存的唯一 prompt。</p>
+
+  <p>对于跑多个模型、每个模型有不同协商价的团队，请求头是按请求设置的，意味着费率必须随调用一起传递。这比配置级覆盖要多一些搬运工作，也是诚实的权衡：Cloudflare 给了你能力，但没有给你一个集中声明费率表的地方。如果你维护的是一个很小且稳定的费率表，在客户端写一个按模型 ID 附加请求头的小包装，一个下午就能搞定。如果手里有几十个模型、几十份合同，你会希望这个包装从一个配置文件读取费率，而不是把费率硬编码在调用点——到了那个量级，LiteLLM 那种「配置优先」的模型就不再像负担，而更像正确的形状。</p>
+
+  <h2 id="verdict">结论</h2>
+  <p>自定义成本是个小功能，但它修的是一个具体而真实的问题：与账单不一致的网关成本遥测。9 月 9 日向缓存 token 的扩展，意义比听起来大——因为 prompt 缓存正是公开价与合同价之间差额放大最快的地方。一个缓存密集的 agent 负载，可能有 70% 的输入 token 按缓存费率计费；把成本模型里的这些 token 当作新鲜输入来计价，不是「略有偏差」，而是对支出去向的判断整体性错误。</p>
+
+  <p>Cloudflare 的实现方式契合它在市场中的位置。它对所有套餐（含免费）开放，自动处理「包含式 vs 分离式」的厂商上报差异而不用你解析，而且是「一个请求头」而不是一套配置面。它没有给的东西——集中的费率表声明、按供应商的折扣倍数、结算加成——恰好是 LiteLLM 已经做得很好的部分，而 Portkey 用合同级倍数覆盖了中间地带。如果你的网关选择本来就是基于其他原因定下的，这个功能消除了「为了成本归因再跑一个工具」的主要理由。如果成本归因本身就是你跑网关的首要原因，那么决定你选择的是上面的对比表，而不是这一个功能。</p>
+
+  <h2 id="faq">常见问题</h2>
+  <p><strong>使用 cf-aig-custom-cost 需要 Enterprise 套餐吗？</strong>不需要。Cloudflare 说明 AI Gateway 对所有套餐开放，自定义成本文档也没有对该功能设门槛。网关本身含每月 1,000 万次请求，超出后每百万次 0.05 美元，看板分析、缓存与速率限制等核心功能免费。</p>
+
+  <p><strong>可以为 Cloudflare 不原生支持的模型设置自定义成本吗？</strong>可以，而且文档自带的示例用的就是非 Cloudflare 的供应商端点（OpenAI）。AI Gateway 另有 Custom Providers 功能，可路由到任意 HTTPS API 端点，而自定义成本作用在请求层，并不绑定某个一方模型。</p>
+
+  <p><strong>只设置一个缓存费率会怎样？</strong>未指定的那个默认为 <code>per_token_in</code>。如果两个缓存费率都不填，AI Gateway 会完全忽略缓存 token 计数并保留原有的输入/输出计算——所以添加缓存字段是可选的，也是可回退的。</p>
+
+  <p><strong>为什么有些请求显示的自定义成本是 0？</strong>最可能的原因是响应由边缘缓存返回，此时 Cloudflare 明确说明成本永远为 0，与自定义成本设置无关。另一种可能是响应体没有携带 token 用量，因为自定义成本只对在响应中返回 token 的请求生效。</p>
+
+  <p><strong>如何确认自定义成本确实生效了？</strong>Cloudflare 会把使用自定义成本的日志金额加上下划线，因此无需交叉比对另一个看板，就能区分走协商价的记录与按公开标价计费的记录。</p>
+</article>
+`;
+
+const readTime = '11 分钟';
+---
+
+<BaseLayout title={zhTitle + ' | APIRank'} description={zhDescription} canonicalUrl={canonicalUrl} lang="zh">
+  <div class="max-w-6xl mx-auto px-4 py-12">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Provider Review</span>
+        <time datetime="2026-09-10">2026 年 9 月 10 日</time>
+        <span>·</span>
+        <span>{readTime}阅读</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{zhTitle}</h1>
+      <p class="text-xl text-gray-600">{zhDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">在 APIRank 上对比 AI 网关</h3>
+          <p class="text-gray-600 text-sm mb-4">Cloudflare AI Gateway、Portkey、LiteLLM 等 100 余家供应商的价格、模型数量与成本控制能力横向对比，全部从厂商自家定价页验证。</p>
+          <a href="/zh/providers" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">浏览供应商 →</a>
+        </div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">快速事实</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">请求头</dt><dd class="font-medium"><code class="text-xs">cf-aig-custom-cost</code></dd></div>
+            <div><dt class="text-gray-500">字段</dt><dd class="font-medium">输入 / 输出 / 缓存读 / 缓存写</dd></div>
+            <div><dt class="text-gray-500">作用范围</dt><dd class="font-medium">按请求</dd></div>
+            <div><dt class="text-gray-500">缓存 Token 支持</dt><dd class="font-medium">2026-09-09 新增</dd></div>
+            <div><dt class="text-gray-500">套餐门槛</dt><dd class="font-medium text-green-700">所有套餐</dd></div>
+            <div><dt class="text-gray-500">网关价格</dt><dd class="font-medium">1,000 万次/月，超出 $0.05/百万</dd></div>
+            <div><dt class="text-gray-500">模型目录</dt><dd class="font-medium">235 个模型</dd></div>
+            <div><dt class="text-gray-500">缓存命中成本</dt><dd class="font-medium">永远 $0</dd></div>
+          </dl>
+          <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+            <p>2026-09-10 依据 Cloudflare 文档核对</p>
+            <p class="mt-1">最新价格以官方文档为准</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">相关网关</h3>
+          <div class="space-y-2">
+            <a href="/zh/providers/cloudflare-ai-gateway" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Cloudflare AI Gateway</span><span class="text-gray-400">#10</span>
+            </a>
+            <a href="/zh/providers/portkey" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Portkey</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/litellm" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>LiteLLM</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/helicone" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Helicone</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">查看全部 →</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

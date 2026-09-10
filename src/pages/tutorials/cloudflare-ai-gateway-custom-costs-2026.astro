@@ -1,0 +1,263 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'cloudflare-ai-gateway-custom-costs-2026';
+const date = '2026-09-10';
+const locale = 'en';
+
+const enTitle = 'Cloudflare AI Gateway Custom Costs: 2026 Deep Dive';
+const enDescription = 'Use Cloudflare AI Gateway custom costs: cf-aig-custom-cost header, per-token overrides, cache-read/write rates, and how it stacks up vs Portkey + LiteLLM.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is the cf-aig-custom-cost header in Cloudflare AI Gateway?", "acceptedAnswer": { "@type": "Answer", "text": "It is a per-request header that overrides the default or public model cost that AI Gateway would otherwise attribute to a call. You pass a JSON object with per_token_in, per_token_out, and optionally per_cache_read_token and per_cache_write_token. All rates are expressed per single token, not per million, and Cloudflare documents no limit on decimal places. The use case is negotiated enterprise rates: your contract says $1 per million input tokens, but the public list price on the model card is $2.50. Without the header, every dashboard total is overstated by 2.5x. With it, logging, spend limits, and cost analytics reflect what you actually pay." } },
+    { "@type": "Question", "name": "What changed in Cloudflare AI Gateway on September 9, 2026?", "acceptedAnswer": { "@type": "Answer", "text": "The changelog entry is titled 'AI Gateway custom costs support cache tokens.' The custom-cost header itself is older; what shipped on September 9 is two additional fields, per_cache_read_token and per_cache_write_token, so prompt-caching economics can be reflected in the cost calculation. This matters because cache reads are typically 10 to 25 percent of the input rate and cache writes can be priced above it, so a cost model that treats every input token identically is wrong for any workload with meaningful cache hit rates on Anthropic or OpenAI models." } },
+    { "@type": "Question", "name": "How does AI Gateway avoid double-counting cache tokens?", "acceptedAnswer": { "@type": "Answer", "text": "Providers report cache usage in two incompatible ways. Some fold cache-read and cache-write tokens into the input token count; others report them as separate fields. Cloudflare handles both automatically. When cache tokens are included in the input count, AI Gateway subtracts them before applying per_token_in. When they are reported separately, AI Gateway applies their cost in addition to the input cost. The documented worked example is a response reporting 1,000 input tokens, 600 cache-read tokens, 200 cache-write tokens, and 100 output tokens: AI Gateway computes 1,000 minus 600 minus 200 equals 200 fresh input tokens, then applies each custom rate to its own token count." } },
+    { "@type": "Question", "name": "Does a cache hit still cost money with custom costs set?", "acceptedAnswer": { "@type": "Answer", "text": "No. Cloudflare states plainly that if a response is served from cache, the cost is always 0, even if you specified a custom cost. Custom costs only apply when the request actually reaches the model provider. That is a useful property for validating the config: if you set an obviously wrong custom rate and your gateway-attributed spend does not move at all, you are either not passing tokens in the response body or every call is being served from edge cache." } },
+    { "@type": "Question", "name": "Is Cloudflare AI Gateway custom costs an Enterprise-only feature?", "acceptedAnswer": { "@type": "Answer", "text": "No. Cloudflare states that AI Gateway is available on all plans, and custom costs are not carved out as an Enterprise tier feature. The underlying platform is priced at 10 million requests per month included, then $0.05 per additional million requests, with core features such as dashboard analytics, caching, and rate limiting available for free. The Workers Paid plan behind the gateway is $5 per month per account with 10 million requests included and $0.30 per additional million requests." } },
+    { "@type": "Question", "name": "Which other AI gateways support custom cost overrides?", "acceptedAnswer": { "@type": "Answer", "text": "Of the six gateways we checked on 2026-09-10, only Portkey and LiteLLM document an equivalent user-set override. Portkey, now branded PRISMA AIRS AI Gateway after the Palo Alto Networks acquisition, supports custom input and output cost per model plus a pricing-adjustment multiplier per integration for negotiated discounts and internal cost showback. LiteLLM supports custom pricing maps, a cost_discount_config percentage per provider, and a cost_margin_config for chargeback. Helicone, Vercel AI Gateway, Bifrost by Maxim, and OpenRouter have no documented per-request custom-cost input. OpenAI, Anthropic, and Google expose no gateway-level negotiated-rate override at all, because enterprise rates for those vendors flow through contracts and invoicing rather than an API field." } }
+  ]
+};
+
+const bodyContent = `
+<article class="prose prose-lg max-w-none">
+  <h2 id="why-this-matters">Why a Cost Number You Can Override Matters</h2>
+  <p>Every AI gateway dashboard has the same quiet flaw: the dollar figure in the top-right corner comes from a public price list, not from your contract. If your team negotiated $1 per million input tokens on a model whose list price is $2.50, the gateway tool that "tracks your AI spend" is overstating it by 150 percent. Finance sees one number, procurement signed a different one, and the only way to reconcile is a spreadsheet someone maintains by hand.</p>
+
+  <p>Cloudflare's fix is a single request header. <code>cf-aig-custom-cost</code> lets you override the default or public model cost that AI Gateway attributes to a call, per request, with your real negotiated rates. On September 9, 2026, Cloudflare extended it: the <a href="https://developers.cloudflare.com/changelog/post/2026-09-09-custom-cache-token-costs/" target="_blank" rel="noopener">changelog entry</a> titled "AI Gateway custom costs support cache tokens" added <code>per_cache_read_token</code> and <code>per_cache_write_token</code> to the header. That turns a blunt input/output override into a cost model that can actually represent prompt caching — which is the dominant cost variable for any agent workload running on Anthropic or OpenAI models in 2026.</p>
+
+  <p>This is a narrow feature with an outsized effect on one specific job: making a gateway's own cost telemetry trustworthy enough to be the source of truth. It is worth understanding exactly what it does, what the cache-token math is, and where Cloudflare sits relative to the two competitors that ship something comparable.</p>
+
+  <h2 id="header-syntax">The Header, Property by Property</h2>
+  <p>Custom costs apply at the request level, not per account or per key. You attach the header to the same call you would normally make through the gateway:</p>
+
+  <pre is:raw><code class="language-bash">curl https://gateway.ai.cloudflare.com/v1/{account_id}/{gateway_id}/openai/chat/completions \\
+  --header "Authorization: Bearer $CLOUDFLARE_UPSTREAM_KEY" \\
+  --header 'Content-Type: application/json' \\
+  --header 'cf-aig-custom-cost: {"per_token_in":0.000001,"per_token_out":0.000002,"per_cache_read_token":0.0000001,"per_cache_write_token":0.0000005}' \\
+  --data '{
+    "model": "gpt-4o-mini",
+    "messages": [{"role": "user", "content": "Summarize this changelog entry."}]
+  }'</code></pre>
+
+  <p>The four supported properties are <code>per_token_in</code>, <code>per_token_out</code>, <code>per_cache_read_token</code>, and <code>per_cache_write_token</code>. One detail trips people up on first read: <strong>every value is a cost per single token, not per million tokens</strong>. The docs note there is no limit on decimal places, which is why the example above uses <code>0.000001</code> to express "$1 per million input tokens." The same example maps to $1 input, $2 output, $0.10 cache-read, and $0.50 cache-write per million.</p>
+
+  <p>Two operational constraints matter as much as the syntax. First, custom costs only apply to requests that <strong>pass tokens in their response</strong>; a request with no token information gets no cost calculated at all, so streaming endpoints that omit usage blocks will silently stay uncosted. Second, when the pricing is applied you can see it: Cloudflare underlines custom-cost figures in the request logs specifically so you can tell at a glance which entries used your negotiated rates versus the public list.</p>
+
+  <h2 id="cache-math">The Cache-Token Math, With the Worked Example</h2>
+  <p>The interesting engineering in the September 9 update is not the two new fields — it is how Cloudflare reconciles providers that report cache usage differently. The docs put it plainly: some providers include cache-read and cache-write tokens within the input token count, while others report input and cache tokens as separate counts.</p>
+
+  <p>AI Gateway normalizes both. When cache tokens are included in the input count, it <strong>subtracts them before applying</strong> <code>per_token_in</code>. When they are reported separately, it <strong>applies their cost in addition to</strong> the input cost. The stated goal is to prevent cache tokens from being double-counted.</p>
+
+  <p>The documented example: a response reports 1,000 input tokens, 600 cache-read tokens, 200 cache-write tokens, and 100 output tokens. AI Gateway computes <code>1,000 - 600 - 200 = 200</code> fresh input tokens, then applies each custom rate to its corresponding token count. If you had set a cache-read rate of $0.10 per million and a cache-write rate of $0.50 per million, you would be billed for 200 input tokens at the input rate, 600 at the cache-read rate, 200 at the cache-write rate, and 100 output tokens at the output rate — not 1,000 input tokens plus cache tokens on top.</p>
+
+  <p>Activation is deliberately forgiving. Cache-token pricing is optional and turns on if you specify <strong>at least one</strong> cache rate. If you specify only one of the two, the other defaults to <code>per_token_in</code>. If you omit both, AI Gateway ignores cache-token counts entirely and falls back to its existing input/output calculation — your old configuration keeps working unchanged.</p>
+
+  <p>One edge case is worth internalizing before you rely on the numbers in production: <strong>a cache hit always costs 0</strong>, even with a custom cost set. Custom costs only apply when the request reaches the model provider. That is the behavior you want, but it also means a validation run against a cache-warm gateway can look like the header did nothing at all.</p>
+
+  <h2 id="worked-example">What This Actually Saves You: A Negotiated-Rate Walkthrough</h2>
+  <p>Take a realistic scenario. A team routes 40 million input tokens and 12 million output tokens per month through Cloudflare AI Gateway to a frontier model, and separately runs an agent workload with heavy prompt caching: 30 million cache-read tokens and 4 million cache-write tokens per month. Procurement negotiated $1.00 per million input, $2.00 per million output, $0.10 per million cache-read, and $0.50 per million cache-write — while the model's public list price is $2.50 input and $15.00 output.</p>
+
+  <p>Without the header, AI Gateway's cost analytics compute from list price: 40M input at $2.50 plus 12M output at $15.00, and cache tokens folded into the input count at list rate. The dashboard reports roughly $100 in input and $180 in output before cache — a figure that has no relationship to the invoice. Spend limits built on that number fire early and block legitimate traffic, alerts for anomaly detection trip on phantom cost, and the cost-per-request metric each engineering team sees is inflated by whatever the list-versus-contract spread happens to be.</p>
+
+  <p>With the header set once and applied to the calling path, the same traffic reports $40 of input, $24 of output, $3 of cache-read, and $2 of cache-write. That is a 3.4x difference in the headline number — and it is the difference between a telemetry system you can trust and one you have to mentally discount every time you read it. The header does not change what you pay the model provider; it changes whether the gateway's own accounting matches the invoice.</p>
+
+  <!-- DATA TABLE: gateways with custom-cost support, verified 2026-09-10 -->
+  <h2 id="comparison">How Cloudflare Compares to the Other Gateways</h2>
+  <p>Cloudflare is not the only gateway with a cost-override story, but the field is smaller than it looks. We checked the official pricing and documentation pages for the six gateways an apirank reader is most likely to be choosing between. Only two document a user-set override comparable to <code>cf-aig-custom-cost</code>.</p>
+
+  <div class="not-prose overflow-x-auto my-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-gray-50 border-b-2 border-gray-200">
+          <th class="text-left p-3 font-semibold">Gateway</th>
+          <th class="text-left p-3 font-semibold">Custom cost override</th>
+          <th class="text-left p-3 font-semibold">How it works</th>
+          <th class="text-left p-3 font-semibold">Free tier</th>
+          <th class="text-left p-3 font-semibold">Self-host</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-gray-100">
+          <td class="p-3 font-medium">Cloudflare AI Gateway</td>
+          <td class="p-3"><span class="text-green-700 font-medium">Yes</span></td>
+          <td class="p-3"><code>cf-aig-custom-cost</code> request header; per-token in/out + cache read/write; all plans</td>
+          <td class="p-3">Yes — 10M requests/mo included, then $0.05/million</td>
+          <td class="p-3">No (managed)</td>
+        </tr>
+        <tr class="border-b border-gray-100 bg-gray-50">
+          <td class="p-3 font-medium">Portkey <span class="text-xs text-gray-500">(PRISMA AIRS)</span></td>
+          <td class="p-3"><span class="text-green-700 font-medium">Yes</span></td>
+          <td class="p-3">Model Overrides per 1M tokens + Pricing Adjustment multiplier per integration (negotiated discounts, showback)</td>
+          <td class="p-3">Yes — Free Forever, 10K logs/mo</td>
+          <td class="p-3">Yes (OSS + VPC)</td>
+        </tr>
+        <tr class="border-b border-gray-100">
+          <td class="p-3 font-medium">LiteLLM</td>
+          <td class="p-3"><span class="text-green-700 font-medium">Yes</span></td>
+          <td class="p-3">Custom pricing maps, <code>cost_discount_config</code> per provider, <code>cost_margin_config</code> for chargeback</td>
+          <td class="p-3">Yes — OSS, $0 forever</td>
+          <td class="p-3">Yes (core)</td>
+        </tr>
+        <tr class="border-b border-gray-100 bg-gray-50">
+          <td class="p-3 font-medium">Helicone</td>
+          <td class="p-3"><span class="text-gray-500">Not documented</span></td>
+          <td class="p-3">Auto-calculates from provider price tables; no override header in the header directory</td>
+          <td class="p-3">Yes — 10K requests/mo</td>
+          <td class="p-3">Yes (OSS)</td>
+        </tr>
+        <tr class="border-b border-gray-100">
+          <td class="p-3 font-medium">Vercel AI Gateway</td>
+          <td class="p-3"><span class="text-gray-500">Not documented</span></td>
+          <td class="p-3">0% markup on inference; BYOK routes your commitments but no manual cost field</td>
+          <td class="p-3">Yes — $5/mo credits</td>
+          <td class="p-3">No (managed)</td>
+        </tr>
+        <tr class="border-b border-gray-100 bg-gray-50">
+          <td class="p-3 font-medium">Bifrost (Maxim)</td>
+          <td class="p-3"><span class="text-gray-500">Not documented</span></td>
+          <td class="p-3">Budgets, rate limits, virtual keys, cost tracking — no custom-cost input documented</td>
+          <td class="p-3">Yes — OSS, Apache-2.0</td>
+          <td class="p-3">Yes (OSS + VPC)</td>
+        </tr>
+        <tr class="border-b border-gray-100">
+          <td class="p-3 font-medium">OpenRouter</td>
+          <td class="p-3"><span class="text-gray-500">Not documented</span></td>
+          <td class="p-3">0% inference markup; 5.5% credit-purchase fee; 5% BYOK fee above a $25K monthly allowance</td>
+          <td class="p-3">Yes — 25+ free models</td>
+          <td class="p-3">No (managed)</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="text-xs text-gray-500 mt-2">Verified 2026-09-10 from each vendor's official pricing and docs pages. "Not documented" means no per-request custom-cost input appears in that vendor's published documentation — it does not mean the capability is impossible, only that it is not a supported, documented surface.</p>
+  </div>
+
+  <p>The pattern is worth naming. Portkey approaches the problem from the observability side: it gives you per-model cost overrides and a multiplier that can represent a negotiated discount on an entire integration, which is the right shape when your discounts are contract-level rather than model-level. LiteLLM approaches it from the self-hosted-proxy side and is the most granular of the three — custom pricing maps, a percentage discount per provider, and a margin config designed for internal chargeback, so you can model both what you pay and what you charge back. Cloudflare's version is the narrowest and the most operationally light: one header, no config state, available on every plan including free, with the cache-token normalization handled for you.</p>
+
+  <p>That narrowness is the point. If you are already routing through Cloudflare AI Gateway — for the edge caching, the 235-model catalog, or the Workers integration — then a header on the request path is a materially lower-friction way to fix cost telemetry than standing up a Portkey or LiteLLM instance whose primary job is cost attribution. Conversely, if negotiated-rate accounting is the core requirement and you need per-provider discounts or chargeback margins as first-class config, Cloudflare's single header is not a replacement for LiteLLM.</p>
+
+  <h2 id="implementation">Implementing It Without Breaking Your Existing Setup</h2>
+  <p>The rollout is deliberately boring, which is a feature. The header is additive — omit it and AI Gateway behaves exactly as before. That means you can pilot on a single calling path and compare the gateway's cost figure against a known invoice line before touching anything else.</p>
+
+  <p>Two practical notes from the docs that change how you should test. First, because custom costs only apply when tokens are returned in the response, verify your client and model combination actually surfaces usage data before concluding the header is broken. Second, because cache hits always cost 0, a test against a warm cache proves nothing — either disable caching on the gateway for the test, or use a unique prompt that cannot be a cache hit.</p>
+
+  <p>For teams running multiple models with different negotiated rates, the header is set per request, which means the rate has to travel with the call. That is more moving parts than a config-level override, and it is the honest trade-off: Cloudflare gives you the capability without giving you a central place to declare a rate card. If your rate card is small and stable, a small wrapper in your client that attaches the header by model ID solves it in an afternoon. If you have dozens of models under dozens of contracts, you will want that wrapper to read from a config file rather than hardcoding rates in call sites — and at that volume, LiteLLM's config-first model starts to look less like overhead and more like the right shape.</p>
+
+  <h2 id="verdict">The Verdict</h2>
+  <p>Custom costs are a small feature that fixes a specific, real problem: gateway cost telemetry that disagrees with the invoice. The September 9 extension to cache tokens matters more than it sounds, because prompt caching is where the list-versus-contract gap compounds fastest — a cache-heavy agent workload can have 70 percent of its input tokens billed at a cache rate, and a cost model that prices them as fresh input is not slightly wrong, it is directionally wrong about where the spend lives.</p>
+
+  <p>Cloudflare's execution is right for its position in the market. It is available on every plan including free, it handles the inclusive-versus-separate provider reporting divergence automatically rather than pushing that parsing onto you, and it is one header rather than a configuration surface. What it does not give you — a central rate-card declaration, per-provider discount multipliers, chargeback margins — is exactly what LiteLLM already does well, and Portkey covers the middle ground with contract-level multipliers. If your gateway choice was already made on other grounds, this feature removes the main reason to run a second tool just for cost attribution. If cost attribution is your primary reason for running a gateway at all, the comparison table above is the decision, not this one feature.</p>
+
+  <h2 id="faq">Frequently Asked Questions</h2>
+  <p><strong>Do I need an Enterprise plan to use cf-aig-custom-cost?</strong> No. Cloudflare states AI Gateway is available on all plans, and the custom-cost documentation does not gate the feature. The gateway itself includes 10 million requests per month, then $0.05 per additional million, with core analytics, caching, and rate limiting free.</p>
+
+  <p><strong>Can I set a custom cost for a model Cloudflare does not natively support?</strong> Yes, and the docs' own example uses a non-Cloudflare provider endpoint (OpenAI). AI Gateway's separate Custom Providers feature lets you route to any HTTPS API endpoint, and custom costs apply at the request layer rather than being tied to a specific first-party model.</p>
+
+  <p><strong>What happens if I set only one cache rate?</strong> The unspecified one defaults to <code>per_token_in</code>. If you omit both cache rates, AI Gateway ignores cache-token counts entirely and preserves your existing input/output calculation — so adding the cache fields is opt-in and reversible.</p>
+
+  <p><strong>Why is my custom cost showing zero on some requests?</strong> Most likely the response is being served from edge cache, in which case Cloudflare states the cost is always 0 regardless of custom cost settings. The other possibility is that the response did not include token usage data, since custom costs only apply to requests that pass tokens in their response.</p>
+
+  <p><strong>How do I confirm the custom cost actually applied?</strong> Cloudflare underlines custom-cost figures in the request logs, which makes it possible to distinguish entries that used your negotiated rates from entries priced at public list rates without cross-referencing a separate dashboard.</p>
+</article>
+`;
+
+const readTime = '11 min';
+---
+
+<BaseLayout title={enTitle + ' | APIRank'} description={enDescription} canonicalUrl={canonicalUrl} lang="en">
+  <div class="max-w-6xl mx-auto px-4 py-12">
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Provider Review</span>
+        <time datetime="2026-09-10">September 10, 2026</time>
+        <span>·</span>
+        <span>{readTime} read</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{enTitle}</h1>
+      <p class="text-xl text-gray-600">{enDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <!-- Main content -->
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <!-- CTA -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">Compare AI Gateways on APIRank</h3>
+          <p class="text-gray-600 text-sm mb-4">Side-by-side pricing, model counts, and cost-control features for Cloudflare AI Gateway, Portkey, LiteLLM, and 90+ more providers — all verified from the vendors' own pricing pages.</p>
+          <a href="/providers" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">Browse Providers →</a>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Quick Facts</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">Header</dt><dd class="font-medium"><code class="text-xs">cf-aig-custom-cost</code></dd></div>
+            <div><dt class="text-gray-500">Fields</dt><dd class="font-medium">in / out / cache-read / cache-write</dd></div>
+            <div><dt class="text-gray-500">Scope</dt><dd class="font-medium">Per request</dd></div>
+            <div><dt class="text-gray-500">Cache-token support</dt><dd class="font-medium">Added Sept 9, 2026</dd></div>
+            <div><dt class="text-gray-500">Plan gate</dt><dd class="font-medium text-green-700">All plans</dd></div>
+            <div><dt class="text-gray-500">Gateway pricing</dt><dd class="font-medium">10M req/mo, then $0.05/M</dd></div>
+            <div><dt class="text-gray-500">Model catalog</dt><dd class="font-medium">235 models</dd></div>
+            <div><dt class="text-gray-500">Cache hit cost</dt><dd class="font-medium">Always $0</dd></div>
+          </dl>
+          <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+            <p>Verified 9/10/2026 from Cloudflare docs</p>
+            <p class="mt-1">Check official docs for latest</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Related Gateways</h3>
+          <div class="space-y-2">
+            <a href="/providers/cloudflare-ai-gateway" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Cloudflare AI Gateway</span><span class="text-gray-400">#10</span>
+            </a>
+            <a href="/providers/portkey" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Portkey</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers/litellm" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>LiteLLM</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers/helicone" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Helicone</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/tutorials/ai-api-cost-control-tools-2026" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>3 Gateways Compared</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">View All →</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
