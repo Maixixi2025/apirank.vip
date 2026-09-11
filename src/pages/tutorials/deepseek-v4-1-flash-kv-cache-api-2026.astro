@@ -1,0 +1,213 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'deepseek-v4-1-flash-kv-cache-api-2026';
+const date = '2026-09-11';
+const locale = 'en';
+
+const enTitle = 'DeepSeek V4.1 Flash API: 890-Byte KV Cache';
+const enDescription = 'DeepSeek V4.1 Flash API pricing 2026: 552B MoE, 890-byte KV cache (1/4 of V4 Flash), $0.14/M cache-miss input, and V4 Pro retiring Sept 14.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is DeepSeek V4.1 Flash and when was it released?", "acceptedAnswer": { "@type": "Answer", "text": "DeepSeek V4.1 Flash is a multimodal Mixture-of-Experts model with 552B backbone parameters, released on September 10, 2026. It is the smallest member of DeepSeek's new model-structure family and replaces both DeepSeek-V4-Flash and the experimental DeepSeek-V4-Flash-Vision-Exp. The model natively processes images and text and supports contexts up to one million tokens. In the DeepSeek API the callable model name is now simply deepseek-flash; the legacy names deepseek-v4-flash and deepseek-v4-flash-vision-exp still resolve but are routed to V4.1 Flash and billed at V4.1 Flash rates." } },
+    { "@type": "Question", "name": "How much does DeepSeek V4.1 Flash cost per million tokens?", "acceptedAnswer": { "@type": "Answer", "text": "DeepSeek prices V4.1 Flash in Chinese yuan with a peak/off-peak split. Off-peak: 0.02 CNY per million cache-hit input tokens, 1 CNY per million cache-miss input tokens, and 4 CNY per million output tokens. Peak: 0.04 CNY cache-hit input, 2 CNY cache-miss input, and 8 CNY output. Peak hours are Beijing time Monday to Friday 09:00-12:00 and 14:00-18:00; everything else is off-peak, which costs exactly half. On OpenRouter the model lists at 0.30 USD per million input tokens, 1.20 USD per million output tokens, and 0.006 USD per million cache-read tokens." } },
+    { "@type": "Question", "name": "Why is the KV cache size of DeepSeek V4.1 Flash important?", "acceptedAnswer": { "@type": "Answer", "text": "DeepSeek reports a global KV cache footprint of 890 bytes per token for V4.1 Flash, roughly one quarter of DeepSeek-V4-Flash and about 437x smaller than the original DeepSeek-V1 generation. Because a one-million-token agent session must keep its key-value state resident in memory while the model works, a four-fold smaller cache is a direct reduction in the GPU memory a long-running agent needs - and GPU memory is what determines how many concurrent sessions a given cluster can serve. DeepSeek achieves this with FP4 main KV caching in E2M1 format, Compressed Sparse Attention 2 (CSA2) layer sharing, and SWA Bounded Replay, which cuts the persistent KV footprint to about one eighth of V4 Flash." } },
+    { "@type": "Question", "name": "What happens to DeepSeek V4 Pro on September 14, 2026?", "acceptedAnswer": { "@type": "Answer", "text": "DeepSeek is retiring the deepseek-v4-pro model. From 12:00 Beijing time on September 14, 2026 until a future V4.1 Pro ships, any request that specifies deepseek-v4-pro will be routed to V4.1 Flash and billed at V4.1 Flash prices. DeepSeek's stated reason is that, across multiple test rounds, V4.1 Flash has comprehensively surpassed V4 Pro on performance, cost, speed, and total time-to-completion. Teams with production code pinned to deepseek-v4-pro should treat this as a forced migration date, not a deprecation notice - the model ID keeps working but the underlying model and the price both change." } },
+    { "@type": "Question", "name": "Is DeepSeek V4.1 Flash open source?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The weights are published on Hugging Face under the MIT license at deepseek-ai/DeepSeek-V4.1-Flash, alongside a full technical report and an evaluation folder with reproduction instructions for the DeepSWE v1.1 benchmark. The model card describes a 40-layer Transformer split into a 20-layer causal encoder and a 20-layer decoder, 384 routed experts plus 1 shared expert per MoE layer, 6 routed experts activated per token, and pre-training on a 45-trillion-token multimodal corpus. The config also declares an Engram conditional memory block of 196B parameters and DSpark speculative decoding." } },
+    { "@type": "Question", "name": "Should long-context agent builders switch to DeepSeek V4.1 Flash?", "acceptedAnswer": { "@type": "Answer", "text": "The economics favor switching if your workload is input-heavy or agentic. Activating 8B parameters per token during prefill and 16B during decode, combined with an off-peak cache-miss input rate near one fifteenth of V4 Pro's and a cache-hit rate near one fourteenth, makes V4.1 Flash dramatically cheaper for long documents with reused prefixes. The trade-off is raw depth: on HLE it scores 36.8 against Opus-5.0's 56.3 and GPT-5.6 Sol's 44.5, and its ExploitGym score of 15.3 trails both frontier models. Treat it as a high-throughput workhorse and route your hardest reasoning steps elsewhere rather than assuming the cheaper model closes every gap." } }
+  ]
+};
+
+const enBody = `
+<header>
+  <h1 class="text-3xl font-bold text-gray-900 mb-4">DeepSeek V4.1 Flash API: 890-Byte KV Cache, 1M Context</h1>
+  <div class="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+    <time datetime="2026-09-11">September 11, 2026</time>
+    <span>•</span>
+    <span>DeepSeek API Analysis</span>
+    <span>•</span>
+    <span>About 12 min read</span>
+  </div>
+  <p class="text-lg text-gray-600 leading-relaxed">
+    On <strong>September 10, 2026</strong>, DeepSeek shipped <strong>DeepSeek-V4.1-Flash</strong> and did three things in the same announcement that most vendors spread across a quarter: it replaced two models, it cut prices, and it announced the retirement of the model it had promoted as its flagship only a month earlier. The model is a <strong>552-billion-parameter multimodal Mixture-of-Experts</strong> with a one-million-token context window, released under the MIT license with a full technical report. But the number that will actually change production architecture decisions is smaller and less glamorous: <strong>890 bytes of KV cache per token</strong>, roughly one quarter of the model it replaces. This is a release about memory math as much as about benchmark scores, so that is where this review starts.
+  </p>
+</header>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">The Real Headline: KV Cache Down 4x</h2>
+  <p>Every long-context agent session carries a hidden memory bill. As the model reads a one-million-token context, it must keep the key-value state for every token it has attended to resident in GPU memory for as long as the session stays alive - you cannot stream it back from disk between tool calls without paying a latency penalty that ruins the agent loop. So the size of that cache, measured in bytes per token, quietly determines how many concurrent sessions a cluster can serve and therefore how much each session costs the provider to host.</p>
+  <p>DeepSeek's technical report states a <strong>global KV cache footprint of 890 bytes per token</strong> for V4.1 Flash. The model card frames the same figure two ways: approximately <strong>4-fold smaller than DeepSeek-V4-Flash</strong>, and <strong>437-fold smaller than DeepSeek-V1</strong>. Both reductions matter for different reasons - the first is the upgrade case for anyone already running V4 Flash, and the second is the multi-year trend line showing that attention efficiency, not just parameter count, has been the real axis of competition in this family.</p>
+  <div class="overflow-x-auto my-4">
+    <table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Metric</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">DeepSeek V4.1 Flash</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Change</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr><td class="px-4 py-2 text-sm text-gray-700">Backbone parameters</td><td class="px-4 py-2 text-sm text-gray-700">552B MoE</td><td class="px-4 py-2 text-sm text-gray-700">New architecture family</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">Context window</td><td class="px-4 py-2 text-sm text-gray-700">1,048,576 tokens</td><td class="px-4 py-2 text-sm text-gray-700">Unchanged (1M)</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">KV cache per token</td><td class="px-4 py-2 text-sm text-gray-700">890 bytes</td><td class="px-4 py-2 text-sm text-gray-700">~1/4 vs V4 Flash</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">Persistent KV footprint</td><td class="px-4 py-2 text-sm text-gray-700">~1/8 of V4 Flash</td><td class="px-4 py-2 text-sm text-gray-700">SWA Bounded Replay</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">Active params (prefill / decode)</td><td class="px-4 py-2 text-sm text-gray-700">8B / 16B per token</td><td class="px-4 py-2 text-sm text-gray-700">CED architecture</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">Training corpus</td><td class="px-4 py-2 text-sm text-gray-700">45T tokens</td><td class="px-4 py-2 text-sm text-gray-700">Trained from scratch</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">License</td><td class="px-4 py-2 text-sm text-gray-700">MIT</td><td class="px-4 py-2 text-sm text-gray-700">Open weights</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Three mechanisms produce that compression, and they are worth naming because they are the parts a competitor would have to match. <strong>FP4 main KV caching</strong> stores the cache in E2M1 format with one E4M3 scale per 16 channels - a 4-bit path for the state that normally dominates memory. <strong>Compressed Sparse Attention 2 (CSA2)</strong> assigns each attention layer one of three static modes, Full, Reindex, or Reuse, so that layers share main KV and indexer K rather than each maintaining its own, and a Hierarchical Sparse Indexer bounds the cost of deeper indexing independently of context length. <strong>SWA Bounded Replay</strong> reconstructs missing sliding-window KV states by replaying only the most recent tokens instead of persisting them to SSD.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">The Architecture: A Causal Encoder-Decoder Split</h2>
+  <p>The model card describes a <strong>Causal Encoder-Decoder (CED)</strong> architecture: a 40-layer Transformer organised as a 20-layer causal encoder followed by a 20-layer decoder. The unusual part is where the decoder gets its memory from. With CED, the decoder's global KV cache is <em>projected from the final encoder hidden states</em> rather than derived from each decoder layer's own hidden states. That single change is what allows the model to activate only <strong>8 billion parameters per token during prefill</strong> and <strong>16 billion during decode</strong> - a tiny fraction of the 552B backbone, and the direct source of the cost efficiency claim for input-heavy agent workloads.</p>
+  <p>Beyond attention, the config declares several components that DeepSeek's previous Flash models did not carry. An <strong>Engram conditional memory</strong> block of 196B parameters is sparsely accessed via token-based lookup at layers 1 and 14 - a retrieval-like memory that is addressed rather than densely computed. <strong>DSpark speculative decoding</strong> generates semi-autoregressive drafts with confidence-scheduled verification across the final three layers. Routing runs <strong>1 shared expert and 384 routed experts per MoE layer</strong>, activating <strong>6 routed experts per token</strong>. Images enter through a from-scratch vision encoder (DeepSeek-ViT, trained with 2D-RoPE and 3x3 pixel-unshuffle downsampling) and a two-layer MLP projector, with visual embeddings processed jointly with text from the start of pre-training rather than bolted on in a later fine-tuning stage.</p>
+  <p>Pre-training used a multimodal corpus of <strong>45 trillion tokens</strong>, with sparse attention trained at a 64K sequence length and context extended to 1M tokens at the 34T-token mark. Post-training follows the standard SFT then RL then on-policy distillation paradigm with no algorithmic changes; DeepSeek states that all substantive changes were in the data pipeline, specifically large-scale automated synthesis of agent tasks and environments.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Verified API Pricing: Peak, Off-Peak, and the Cache Rate</h2>
+  <p>DeepSeek bills V4.1 Flash in Chinese yuan with a peak/off-peak split, and the cache-hit rate is the lever that matters for agent workloads with reused prefixes. Peak hours are Beijing time Monday to Friday 09:00-12:00 and 14:00-18:00; everything outside that window is off-peak and costs exactly half.</p>
+  <div class="overflow-x-auto my-4">
+    <table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Price (per 1M tokens)</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Off-peak (CNY)</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Peak (CNY)</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">vs V4 Pro (peak)</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr><td class="px-4 py-2 text-sm text-gray-700">Input (cache hit)</td><td class="px-4 py-2 text-sm text-gray-700">0.02</td><td class="px-4 py-2 text-sm text-gray-700">0.04</td><td class="px-4 py-2 text-sm text-gray-700">0.30 &rarr; ~7.5x cheaper</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">Input (cache miss)</td><td class="px-4 py-2 text-sm text-gray-700">1.00</td><td class="px-4 py-2 text-sm text-gray-700">2.00</td><td class="px-4 py-2 text-sm text-gray-700">9.00 &rarr; 4.5x cheaper</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">Output</td><td class="px-4 py-2 text-sm text-gray-700">4.00</td><td class="px-4 py-2 text-sm text-gray-700">8.00</td><td class="px-4 py-2 text-sm text-gray-700">27.00 &rarr; 3.4x cheaper</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">Concurrency limit</td><td class="px-4 py-2 text-sm text-gray-700" colspan="2">2,500</td><td class="px-4 py-2 text-sm text-gray-700">500 &rarr; 5x higher</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>On the international aggregator OpenRouter the same model lists at <strong>$0.30 per million input tokens</strong>, <strong>$1.20 per million output tokens</strong>, and <strong>$0.006 per million cache-read tokens</strong>, with a 1,048,576-token context. Note how much cheaper the cache read is than a fresh input: at those rates a workload that reuses a large system prompt or document prefix across many calls pays almost nothing for the repeated portion, which is precisely the pattern that a 4x-smaller KV cache makes economical to serve.</p>
+  <p>Concurrency also widened, from V4 Pro's 500 to <strong>2,500</strong>. For teams that were rate-limited on V4 Pro during peak hours, that is a bigger operational unlock than the headline price cut.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">V4 Pro Is Being Retired on September 14, 2026</h2>
+  <p>The most consequential line in the announcement is not about the new model at all. DeepSeek states that across multiple test rounds, V4.1 Flash has comprehensively surpassed V4 Pro on performance, cost, speed, and total time-to-completion, and that it therefore plans an orderly retirement of V4 Pro. Concretely:</p>
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li>From <strong>12:00 Beijing time on September 14, 2026</strong>, until a future V4.1 Pro ships, every request specifying <code>deepseek-v4-pro</code> is <strong>routed to V4.1 Flash</strong> and billed at V4.1 Flash prices.</li>
+    <li><code>deepseek-v4-flash</code> and <code>deepseek-v4-flash-vision-exp</code> are already offline as models; the IDs still resolve but are served by V4.1 Flash.</li>
+    <li>The new callable name is simply <code>deepseek-flash</code>.</li>
+  </ul>
+  <p>This is a forced migration, not a deprecation window. Code pinned to <code>deepseek-v4-pro</code> will keep returning HTTP 200 responses - it will just be a different model at a different price. That is the dangerous shape of API change: nothing falls over, so nothing alerts. If your evaluation suite assumes V4 Pro's reasoning depth, your scores will shift without any error in the logs. The honest framing is that DeepSeek has decided its cheaper model is good enough to absorb its flagship's traffic, and is asking customers to accept that judgement on a four-day notice.</p>
+  <div class="bg-amber-50 border-l-4 border-amber-400 p-4 my-4">
+    <p class="text-sm text-gray-800"><strong>Migration checklist.</strong> Grep your codebase for <code>deepseek-v4-pro</code> and <code>deepseek-v4-flash</code>. Replace both with <code>deepseek-flash</code>. Re-run your evaluation suite against V4.1 Flash before September 14 so you learn the score delta on your own terms rather than discovering it in production. If your app depends on the Anthropic-format endpoint, note that V4.1 Flash supports both the OpenAI and Anthropic formats at <code>api.deepseek.com/anthropic</code>, so that path needs no change beyond the model ID.</p>
+  </div>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Benchmarks: Strong for the Price, Short of the Frontier</h2>
+  <p>DeepSeek published a comparison table against Opus-5.0, GPT-5.6 Sol, Kimi K3, GLM-5.3, and its own V4 Pro and V4 Flash. The pattern is consistent: V4.1 Flash beats the models it replaces and lands within striking distance of the frontier on agentic coding, while trailing clearly on the hardest reasoning and security-exploitation tasks.</p>
+  <div class="overflow-x-auto my-4">
+    <table class="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Benchmark</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">V4.1 Flash</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">V4 Flash</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">V4 Pro</th>
+          <th class="px-4 py-2 text-left text-sm font-semibold text-gray-900">Best frontier</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200">
+        <tr><td class="px-4 py-2 text-sm text-gray-700">GPQA Diamond</td><td class="px-4 py-2 text-sm text-gray-700">90.9</td><td class="px-4 py-2 text-sm text-gray-700">89.9</td><td class="px-4 py-2 text-sm text-gray-700">92.4</td><td class="px-4 py-2 text-sm text-gray-700">94.1 (GPT-5.6 Sol)</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">HLE</td><td class="px-4 py-2 text-sm text-gray-700">36.8</td><td class="px-4 py-2 text-sm text-gray-700">37.8</td><td class="px-4 py-2 text-sm text-gray-700">42.7</td><td class="px-4 py-2 text-sm text-gray-700">56.3 (Opus-5.0)</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">Codeforces (Rating)</td><td class="px-4 py-2 text-sm text-gray-700"><strong>3471</strong></td><td class="px-4 py-2 text-sm text-gray-700">3289</td><td class="px-4 py-2 text-sm text-gray-700">3348</td><td class="px-4 py-2 text-sm text-gray-700">3471 (itself)</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">Terminal-Bench 2.1</td><td class="px-4 py-2 text-sm text-gray-700"><strong>90.6</strong></td><td class="px-4 py-2 text-sm text-gray-700">82.7</td><td class="px-4 py-2 text-sm text-gray-700">87.9</td><td class="px-4 py-2 text-sm text-gray-700">90.6 (itself)</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">DeepSWE v1.1</td><td class="px-4 py-2 text-sm text-gray-700"><strong>74.2</strong></td><td class="px-4 py-2 text-sm text-gray-700">54.4</td><td class="px-4 py-2 text-sm text-gray-700">62.7</td><td class="px-4 py-2 text-sm text-gray-700">74.2 (itself)</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">CyberGym</td><td class="px-4 py-2 text-sm text-gray-700"><strong>88.1</strong></td><td class="px-4 py-2 text-sm text-gray-700">76.7</td><td class="px-4 py-2 text-sm text-gray-700">83.3</td><td class="px-4 py-2 text-sm text-gray-700">88.1 (itself)</td></tr>
+        <tr><td class="px-4 py-2 text-sm text-gray-700">ExploitGym</td><td class="px-4 py-2 text-sm text-gray-700">15.3</td><td class="px-4 py-2 text-sm text-gray-700">1.8</td><td class="px-4 py-2 text-sm text-gray-700">5.4</td><td class="px-4 py-2 text-sm text-gray-700">33.7 (GPT-5.6 Sol)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Read that table carefully, because the headline framing and the underlying data tell different stories. V4.1 Flash leads this comparison set outright on Codeforces rating, Terminal-Bench 2.1, DeepSWE v1.1, and CyberGym - the agentic coding and security benchmarks. It is behind its own V4 Pro on GPQA Diamond and HLE, the two pure-reasoning tests. And on ExploitGym, which measures offensive security capability, it sits at 15.3 against GPT-5.6 Sol's 33.7.</p>
+  <p>DeepSeek also published scaffold sensitivity for its agent benchmarks, and this is the most usefully honest part of the report. DeepSWE v1.1 ranges from 65.5 (OpenCode) to 74.2 (mini-SWE) depending on which agent harness runs it; Terminal-Bench 2.1 ranges from 84.1 (Codex) to 90.6 (DSH Minimal). An 8.7-point swing from harness choice alone means that any single agentic benchmark number - theirs or a competitor's - is a statement about the scaffold as much as the model. If you are choosing a model on agentic scores, replicate the number in <em>your</em> harness before committing.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">What This Means If You Build on the API</h2>
+  <p><strong>Switch if your workload is input-heavy and prefix-reusing.</strong> Long documents, large retrieval contexts, agents with fat system prompts, batch classification over shared instructions - these are the shapes where a 1/4 KV cache and a $0.006-per-million cache-read rate compound. The off-peak discount is a real 50% lever if your batch jobs can be scheduled outside Beijing business hours.</p>
+  <p><strong>Hedge if your workload is depth-heavy.</strong> V4.1 Flash trades pure reasoning for throughput and cost. Its HLE score of 36.8 is the number to weigh against Opus-5.0's 56.3 if your app's value comes from hard multi-step reasoning rather than fast, cheap agentic execution. A routing setup that sends routine steps to V4.1 Flash and escalates the hardest ones elsewhere captures most of the saving without inheriting the ceiling.</p>
+  <p><strong>Verify your evaluation suite before September 14.</strong> The V4 Pro rerouting is the actionable risk in this announcement. Four days of notice, no error, and a different model answering your requests is precisely the kind of change that passes CI and fails in production.</p>
+  <p>One caveat worth stating plainly: all figures here come from DeepSeek's own published pricing page, model card, and technical report, plus the OpenRouter model listing. The benchmark comparisons are vendor-run. DeepSeek's evaluation notes its own harness choices - DeepSeek Harness Minimal for most code-agent tests, mini-SWE for DeepSWE v1.1, Claude Code for SEC-Bench Pro and the visual agent benchmarks. Independent reproduction has not happened at the time of writing. Treat the architecture numbers (KV cache bytes, parameter counts, active-parameter figures) as solid, because they are structural and derived from the released config, and treat the cross-vendor benchmark edges as directional until third parties rerun them.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Frequently Asked Questions</h2>
+
+  <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">What is DeepSeek V4.1 Flash and when was it released?</h3>
+  <p>DeepSeek V4.1 Flash is a multimodal Mixture-of-Experts model with 552B backbone parameters, released on September 10, 2026. It is the smallest member of DeepSeek's new model-structure family and replaces both DeepSeek-V4-Flash and the experimental DeepSeek-V4-Flash-Vision-Exp. It natively processes images and text and supports contexts up to one million tokens. In the DeepSeek API the callable model name is now simply <code>deepseek-flash</code>; the legacy names still resolve but are routed to V4.1 Flash and billed at V4.1 Flash rates.</p>
+
+  <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">How much does DeepSeek V4.1 Flash cost per million tokens?</h3>
+  <p>DeepSeek prices it in Chinese yuan with a peak/off-peak split. Off-peak: 0.02 CNY per million cache-hit input, 1 CNY per million cache-miss input, 4 CNY per million output. Peak: 0.04 / 2 / 8 CNY respectively. Peak hours are Beijing time Monday to Friday 09:00-12:00 and 14:00-18:00; everything else is off-peak at exactly half price. OpenRouter lists the same model at $0.30 per million input, $1.20 per million output, and $0.006 per million cache-read tokens.</p>
+
+  <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">Why does the 890-byte KV cache matter?</h3>
+  <p>A one-million-token agent session must keep its key-value state resident in memory while the model works; a four-fold smaller cache directly reduces the GPU memory a long-running agent needs, which determines how many concurrent sessions a cluster can serve and therefore the provider's cost per session. DeepSeek reports 890 bytes per token, about 1/4 of V4 Flash and roughly 437x smaller than DeepSeek-V1, achieved through FP4 main KV caching in E2M1 format, CSA2 layer sharing, and SWA Bounded Replay reducing the persistent footprint to about 1/8.</p>
+
+  <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">What happens to DeepSeek V4 Pro on September 14, 2026?</h3>
+  <p>From 12:00 Beijing time on September 14, 2026 until a future V4.1 Pro ships, any request specifying <code>deepseek-v4-pro</code> is routed to V4.1 Flash and billed at V4.1 Flash prices. DeepSeek's stated reason is that V4.1 Flash surpassed V4 Pro across performance, cost, speed, and total time-to-completion. Treat this as a forced migration date: the model ID keeps working, but the underlying model and the price both change without any error surfacing in logs.</p>
+
+  <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">Is DeepSeek V4.1 Flash open source?</h3>
+  <p>Yes - MIT license, weights at <code>deepseek-ai/DeepSeek-V4.1-Flash</code> on Hugging Face, with a full technical report and reproduction instructions for DeepSWE v1.1. The model card documents a 40-layer Transformer split into a 20-layer causal encoder and 20-layer decoder, 384 routed experts plus 1 shared expert per MoE layer, 6 routed experts per token, an Engram conditional memory block of 196B parameters, DSpark speculative decoding, and pre-training on 45 trillion multimodal tokens.</p>
+
+  <h3 class="text-lg font-semibold text-gray-900 mt-6 mb-2">Should long-context agent builders switch to it?</h3>
+  <p>The economics favor switching for input-heavy and agentic workloads: 8B active parameters per token during prefill, 16B during decode, and off-peak cache-miss input near one fifteenth of V4 Pro's rate make it dramatically cheaper for long documents with reused prefixes. The trade-off is depth - HLE 36.8 against Opus-5.0's 56.3, and ExploitGym 15.3 against GPT-5.6 Sol's 33.7. Use it as a high-throughput workhorse and route the hardest reasoning steps elsewhere.</p>
+</section>
+
+<section>
+  <h2 class="text-2xl font-bold text-gray-900 mt-10 mb-4">Sources</h2>
+  <ul class="list-disc pl-6 space-y-1 text-sm text-gray-600">
+    <li>DeepSeek API changelog, "DeepSeek-V4.1-Flash 发布", dated 2026-09-10 - <a href="https://api-docs.deepseek.com/zh-cn/updates" class="text-indigo-600 underline">api-docs.deepseek.com/zh-cn/updates</a></li>
+    <li>DeepSeek API model and pricing page (peak/off-peak table, concurrency, model details) - <a href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing" class="text-indigo-600 underline">api-docs.deepseek.com/zh-cn/quick_start/pricing</a></li>
+    <li>Hugging Face model card and configuration, <code>deepseek-ai/DeepSeek-V4.1-Flash</code> (MIT, created 2026-09-10) - <a href="https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash" class="text-indigo-600 underline">huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash</a></li>
+    <li>DeepSeek-V4.1-Flash Technical Report, "Pushing the Limits of KV Cache Compression" (PDF on the model repo)</li>
+    <li>OpenRouter model listing, <code>deepseek/deepseek-v4.1-flash</code> (1M context; $0.30/$1.20 per 1M; $0.006 per 1M cache read)</li>
+  </ul>
+  <p class="text-xs text-gray-500 mt-4">Last verified: 2026-09-11. Pricing, model IDs, and retirement dates on vendor pages change without notice - re-check the DeepSeek pricing page before pinning a production estimate.</p>
+</section>
+`;
+
+---
+<BaseLayout title={enTitle + ' | APIRank'} description={enDescription} canonicalUrl={canonicalUrl} lang="en">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <article class="prose prose-lg max-w-none" set:html={enBody} />
+</BaseLayout>

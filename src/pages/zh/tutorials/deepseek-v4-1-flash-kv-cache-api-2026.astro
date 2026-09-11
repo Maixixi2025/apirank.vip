@@ -1,0 +1,211 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'deepseek-v4-1-flash-kv-cache-api-2026';
+const date = '2026-09-11';
+const locale = 'zh';
+
+const zhTitle = "DeepSeek V4.1 Flash API 评测 2026：890 字节 KV 缓存";
+const zhDescription = "DeepSeek V4.1 Flash 评测：552B MoE、每 token 890 字节 KV 缓存（V4 Flash 的 1/4）、缓存未命中输入 1 元/百万，V4 Pro 于 9 月 14 日停用。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip/zh" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "DeepSeek V4.1 Flash 是什么？何时发布？", "acceptedAnswer": { "@type": "Answer", "text": "DeepSeek V4.1 Flash 是 2026 年 9 月 10 日发布的多模态混合专家（MoE）模型，主干参数 552B。它是 DeepSeek 全新模型结构系列中尺寸最小的成员，同时取代 DeepSeek-V4-Flash 与实验性的 DeepSeek-V4-Flash-Vision-Exp。模型原生支持图像与文本输入，上下文最长 100 万 token。在 DeepSeek API 中，可调用的模型名现在就是 deepseek-flash；旧名 deepseek-v4-flash 与 deepseek-v4-flash-vision-exp 仍可解析，但请求会被路由到 V4.1 Flash 并按 V4.1 Flash 价格计费。" } },
+    { "@type": "Question", "name": "DeepSeek V4.1 Flash 每百万 token 定价是多少？", "acceptedAnswer": { "@type": "Answer", "text": "DeepSeek 以人民币计价并区分高峰与空闲时段。空闲时段：缓存命中输入 0.02 元/百万 token，缓存未命中输入 1 元/百万，输出 4 元/百万。高峰时段：缓存命中 0.04 元，缓存未命中 2 元，输出 8 元。高峰时段为北京时间周一至周五 09:00-12:00 与 14:00-18:00，其余为空闲时段，价格恰为高峰的一半。在 OpenRouter 上，该模型标价为每百万输入 0.30 美元、每百万输出 1.20 美元、每百万缓存读取 0.006 美元。" } },
+    { "@type": "Question", "name": "为什么 DeepSeek V4.1 Flash 的 KV 缓存体积很重要？", "acceptedAnswer": { "@type": "Answer", "text": "一个 100 万 token 的智能体会话在运行期间必须把全部 key-value 状态常驻显存——不能为了省内存把它落到磁盘再读回，那样带来的延迟会毁掉智能体循环。因此每 token KV 缓存体积直接决定一个集群能同时服务多少会话，进而决定单次会话的托管成本。DeepSeek 公布 V4.1 Flash 的全球 KV 缓存占用为每 token 890 字节，约为 DeepSeek-V4-Flash 的 1/4，比 DeepSeek-V1 小约 437 倍。这一成果来自 E2M1 格式的 FP4 主 KV 缓存、CSA2 层间共享，以及把持久化 KV 压缩到约 1/8 的 SWA Bounded Replay。" } },
+    { "@type": "Question", "name": "2026 年 9 月 14 日 DeepSeek V4 Pro 会发生什么？", "acceptedAnswer": { "@type": "Answer", "text": "DeepSeek 正在有序下线 deepseek-v4-pro。自北京时间 2026 年 9 月 14 日 12:00 起，直至未来的 V4.1 Pro 上线之前，任何指定 deepseek-v4-pro 的请求都会被路由到 V4.1 Flash，并按 V4.1 Flash 价格计费。DeepSeek 给出的理由是多轮测试显示 V4.1 Flash 在性能、费用、速度与总用时上已全面超越 V4 Pro。生产代码里写死 deepseek-v4-pro 的团队应把这一天视为强制迁移日，而不是可选的弃用提醒——模型 ID 照常返回，但底层模型与价格同时改变。" } },
+    { "@type": "Question", "name": "DeepSeek V4.1 Flash 是开源的吗？", "acceptedAnswer": { "@type": "Answer", "text": "是。权重以 MIT 许可证发布在 Hugging Face 的 deepseek-ai/DeepSeek-V4.1-Flash，同时提供完整技术报告与 DeepSWE v1.1 基准的复现说明。模型卡描述为 40 层 Transformer，由一个 20 层因果编码器与一个 20 层解码器组成；每个 MoE 层含 384 个路由专家加 1 个共享专家，每 token 激活 6 个路由专家；另含 196B 参数的 Engram 条件记忆块、DSpark 推测解码，预训练语料为 45 万亿 token 的多模态数据。" } },
+    { "@type": "Question", "name": "长上下文智能体开发者应该切换到它吗？", "acceptedAnswer": { "@type": "Answer", "text": "若负载输入密集或属于智能体场景，经济性明确支持切换：预填充阶段每 token 仅激活 8B 参数、解码阶段 16B，配合空闲时段缓存未命中输入价约为 V4 Pro 的十五分之一，使长文档加重复前缀的场景成本大幅下降。代价是纯推理深度：HLE 得分为 36.8，而 Opus-5.0 为 56.3；ExploitGym 为 15.3，GPT-5.6 Sol 为 33.7。合理做法是把它当高吞吐工作马，把最难的推理步骤路由到别处，而不是假定便宜模型能填平所有差距。" } }
+  ]
+};
+
+const bodyContent = `
+<article class="prose prose-lg max-w-none">
+  <h2 id="overview">2026 年 9 月的 DeepSeek V4.1 Flash 是什么</h2>
+  <p>2026 年 9 月 10 日，DeepSeek 发布 <strong>DeepSeek-V4.1-Flash</strong>，并在同一份公告里做了三件通常会被厂商分摊到一个季度的事：替换两个模型、下调价格、宣布停用一个月前还在主推的旗舰。这是一个 <strong>5520 亿参数的多模态混合专家（MoE）模型</strong>，上下文窗口 100 万 token，以 MIT 许可证开源并附完整技术报告。</p>
+
+  <p>但真正会改变生产架构决策的数字更小、也更不显眼：<strong>每 token 890 字节的 KV 缓存</strong>，约为被它取代模型的四分之一。这是关于显存算术的一次发布，而不只是关于基准分数。因此本篇评测从这里切入。</p>
+
+  <h2 id="kv-cache">真正的头条：KV 缓存缩减 4 倍</h2>
+  <p>每一个长上下文智能体会话都背着一笔隐藏的显存账单。当模型读取 100 万 token 的上下文时，它必须为每一个已关注过的 token 把 key-value 状态常驻显存，只要会话还活着就不能释放——你不能在工具调用之间把它落盘再读回，那样产生的延迟会毁掉智能体循环。因此这个缓存的大小（以每 token 字节数计量）无声地决定了一个集群能并发服务多少会话，也就决定了单次会话的托管成本。</p>
+
+  <p>DeepSeek 的技术报告给出 V4.1 Flash 的<strong>全球 KV 缓存占用为每 token 890 字节</strong>。模型卡用两种方式描述同一个数字：约为 <strong>DeepSeek-V4-Flash 的 1/4</strong>，以及约为 <strong>DeepSeek-V1 的 1/437</strong>。两者意义不同——前者是已运行 V4 Flash 团队的升级理由，后者是多年的趋势线，说明这个家族真正的竞争轴心是注意力效率，而不只是参数规模。</p>
+
+  <table>
+    <thead><tr><th>指标</th><th>DeepSeek V4.1 Flash</th><th>变化</th></tr></thead>
+    <tbody>
+      <tr><td>主干参数</td><td>552B MoE</td><td>全新结构系列</td></tr>
+      <tr><td>上下文窗口</td><td>1,048,576 token</td><td>维持 1M</td></tr>
+      <tr><td>每 token KV 缓存</td><td>890 字节</td><td>约为 V4 Flash 的 1/4</td></tr>
+      <tr><td>持久化 KV 占用</td><td>约为 V4 Flash 的 1/8</td><td>SWA Bounded Replay</td></tr>
+      <tr><td>激活参数（预填充 / 解码）</td><td>每 token 8B / 16B</td><td>CED 架构</td></tr>
+      <tr><td>训练语料</td><td>45 万亿 token</td><td>从零训练</td></tr>
+      <tr><td>许可证</td><td>MIT</td><td>开放权重</td></tr>
+    </tbody>
+  </table>
+
+  <p>实现这一压缩的有三项机制，值得点名，因为它们是竞争对手必须对齐的部分。<strong>FP4 主 KV 缓存</strong>以 E2M1 格式存储缓存，每 16 通道配一个 E4M3 缩放因子——为通常主导显存占用的状态提供了 4 位通路。<strong>Compressed Sparse Attention 2（CSA2）</strong>给每个注意力层指定 Full、Reindex、Reuse 三种静态模式之一，使各层共享主 KV 与索引器 K，而非各持一份；同时用分层稀疏索引器把更深层索引的成本与上下文长度解耦。<strong>SWA Bounded Replay</strong> 通过只重放最近的 token 来重建缺失的滑窗 KV 状态，而不是把它们持久化到 SSD。</p>
+
+  <h2 id="architecture">架构：因果编码器-解码器拆分</h2>
+  <p>模型卡描述了 <strong>因果编码器-解码器（CED）</strong>架构：一个 40 层 Transformer，由一个 20 层因果编码器加一个 20 层解码器组成。不寻常之处在于解码器从哪里取得记忆。在 CED 下，解码器的全局 KV 缓存是<em>从编码器最终隐状态投影而来</em>，而不是由每个解码层自身的隐状态推导。这单一改动让模型在<strong>预填充阶段每 token 仅激活 80 亿参数</strong>、<strong>解码阶段激活 160 亿</strong>——只占 552B 主干的一小部分，也是输入密集型智能体负载成本效率宣称的直接来源。</p>
+
+  <p>在注意力之外，配置还声明了几项此前 Flash 系列没有的组件。一个 <strong>196B 参数的 Engram 条件记忆</strong>块在第 1、14 层通过基于 token 的查找稀疏访问——一种被寻址而非稠密计算的类检索记忆。<strong>DSpark 推测解码</strong>在最后三层生成半自回归草稿并按置信度调度验证。路由为<strong>每 MoE 层 1 个共享专家加 384 个路由专家</strong>，<strong>每 token 激活 6 个路由专家</strong>。图像经由从零训练的视觉编码器（DeepSeek-ViT，采用 2D-RoPE 与 3×3 像素反洗牌下采样）与两层 MLP 投影器进入，视觉 embedding 从语言模型预训练一开始就与文本联合处理，而不是在后期微调阶段补挂。</p>
+
+  <p>预训练使用 <strong>45 万亿 token</strong> 的多模态语料，稀疏注意力在 64K 序列长度上训练，并在 34 万亿 token 处把上下文扩展到 1M。后训练遵循标准 SFT → RL → 在线策略蒸馏范式，未做算法改动；DeepSeek 说明所有实质变化都在数据流水线，即大规模自动合成智能体任务与环境。</p>
+
+  <h2 id="pricing">已核实的 API 定价：高峰、空闲与缓存价</h2>
+  <p>DeepSeek 以人民币计价并区分高峰与空闲时段，而对带重复前缀的智能体负载，缓存命中价才是最关键的杠杆。高峰时段为北京时间周一至周五 09:00-12:00 与 14:00-18:00，窗口之外全部为空闲，价格恰为高峰的一半。</p>
+
+  <table>
+    <thead><tr><th>价格（每百万 token）</th><th>空闲时段（元）</th><th>高峰时段（元）</th><th>对比 V4 Pro（高峰）</th></tr></thead>
+    <tbody>
+      <tr><td>输入（缓存命中）</td><td>0.02</td><td>0.04</td><td>0.30 → 便宜约 7.5 倍</td></tr>
+      <tr><td>输入（缓存未命中）</td><td>1.00</td><td>2.00</td><td>9.00 → 便宜 4.5 倍</td></tr>
+      <tr><td>输出</td><td>4.00</td><td>8.00</td><td>27.00 → 便宜 3.4 倍</td></tr>
+      <tr><td>并发上限</td><td colspan="2">2,500</td><td>500 → 提高 5 倍</td></tr>
+    </tbody>
+  </table>
+
+  <p>在国际聚合平台 OpenRouter 上，同一模型标价为<strong>每百万输入 0.30 美元</strong>、<strong>每百万输出 1.20 美元</strong>、<strong>每百万缓存读取 0.006 美元</strong>，上下文长度 1,048,576。注意缓存读取比全新输入便宜多少：按这些费率，一个在多次调用间复用大型系统提示或文档前缀的负载，为重复部分支付的费用几乎可以忽略——而这正是四分之一 KV 缓存让其变得经济可服务的那种模式。</p>
+
+  <p>并发上限也从 V4 Pro 的 500 提升到 <strong>2,500</strong>。对高峰时段曾被 V4 Pro 限流的团队来说，这比标价下调本身更具运营意义。</p>
+
+  <h2 id="v4-pro-retirement">V4 Pro 将于 2026 年 9 月 14 日停用</h2>
+  <p>公告中最具影响的一句与新模型无关。DeepSeek 表示，多轮测试显示 V4.1 Flash 在性能、费用、速度与总用时上全面超越 V4 Pro，因此计划有序下线 V4 Pro。具体而言：</p>
+  <ul>
+    <li>自<strong>北京时间 2026 年 9 月 14 日 12:00</strong> 起，至未来 V4.1 Pro 上线之前，所有指定 <code>deepseek-v4-pro</code> 的请求都会被<strong>路由到 V4.1 Flash</strong>，并按 V4.1 Flash 价格计费。</li>
+    <li><code>deepseek-v4-flash</code> 与 <code>deepseek-v4-flash-vision-exp</code> 作为模型已下线；ID 仍可解析，但由 V4.1 Flash 提供服务。</li>
+    <li>新的可调用名就是 <code>deepseek-flash</code>。</li>
+  </ul>
+
+  <p>这是强制迁移，而不是弃用窗口。写死 <code>deepseek-v4-pro</code> 的代码会继续返回 HTTP 200——只是换了一个模型、换了一个价格。这正是 API 变更最危险的形态：没有任何东西崩掉，所以没有任何告警。如果你的评测套件假定 V4 Pro 的推理深度，分数会悄然改变，而日志里不会出现任何错误。坦率的说法是：DeepSeek 认定自家更便宜的模型已经好到足以承接旗舰流量，并要求客户在四天通知内接受这一判断。</p>
+
+  <p><strong>迁移清单。</strong>在代码库中检索 <code>deepseek-v4-pro</code> 与 <code>deepseek-v4-flash</code>，两者都替换为 <code>deepseek-flash</code>。在 9 月 14 日之前用 V4.1 Flash 重跑评测套件，让分数差异在你的掌控下暴露，而不是在生产环境里被发现。如果应用依赖 Anthropic 格式端点，注意 V4.1 Flash 同时支持 OpenAI 与 Anthropic 格式（<code>api.deepseek.com/anthropic</code>），因此除模型 ID 外该路径无需改动。</p>
+
+  <h2 id="benchmarks">基准测试：价格档位内很强，但未达前沿</h2>
+  <p>DeepSeek 公布了与 Opus-5.0、GPT-5.6 Sol、Kimi K3、GLM-5.3 以及自家 V4 Pro、V4 Flash 的对比表。规律一致：V4.1 Flash 胜过它所取代的模型，在智能体编程上逼近前沿，但在最难的推理与安全利用任务上明显落后。</p>
+
+  <table>
+    <thead><tr><th>基准</th><th>V4.1 Flash</th><th>V4 Flash</th><th>V4 Pro</th><th>前沿最佳</th></tr></thead>
+    <tbody>
+      <tr><td>GPQA Diamond</td><td>90.9</td><td>89.9</td><td>92.4</td><td>94.1（GPT-5.6 Sol）</td></tr>
+      <tr><td>HLE</td><td>36.8</td><td>37.8</td><td>42.7</td><td>56.3（Opus-5.0）</td></tr>
+      <tr><td>Codeforces（Rating）</td><td><strong>3471</strong></td><td>3289</td><td>3348</td><td>3471（自身）</td></tr>
+      <tr><td>Terminal-Bench 2.1</td><td><strong>90.6</strong></td><td>82.7</td><td>87.9</td><td>90.6（自身）</td></tr>
+      <tr><td>DeepSWE v1.1</td><td><strong>74.2</strong></td><td>54.4</td><td>62.7</td><td>74.2（自身）</td></tr>
+      <tr><td>CyberGym</td><td><strong>88.1</strong></td><td>76.7</td><td>83.3</td><td>88.1（自身）</td></tr>
+      <tr><td>ExploitGym</td><td>15.3</td><td>1.8</td><td>5.4</td><td>33.7（GPT-5.6 Sol）</td></tr>
+    </tbody>
+  </table>
+
+  <p>请仔细读这张表，因为标题式叙事与底层数据讲的不是同一个故事。V4.1 Flash 在 Codeforces 评分、Terminal-Bench 2.1、DeepSWE v1.1 与 CyberGym 这些智能体编程与安全基准上直接领先该对比集；但在 GPQA Diamond 与 HLE 这两项纯推理测试上落后于自家 V4 Pro。而在衡量攻击性安全能力的 ExploitGym 上，它为 15.3，GPT-5.6 Sol 为 33.7。</p>
+
+  <p>DeepSeek 还公布了智能体基准的框架敏感性，这是整份报告中最诚实的部分。DeepSWE v1.1 视所用智能体框架不同在 65.5（OpenCode）到 74.2（mini-SWE）之间浮动；Terminal-Bench 2.1 在 84.1（Codex）到 90.6（DSH Minimal）之间浮动。仅框架选择就带来 8.7 分的摆动，这意味着任何单一的智能体基准数字——无论来自他们还是竞争对手——既是对模型的陈述，也是对框架的陈述。如果你要基于智能体分数选型，先在<em>你自己的</em>框架里复现那个数字再决定。</p>
+
+  <h2 id="builders">如果你在 API 之上构建，这意味着什么</h2>
+  <p><strong>负载输入密集且前缀复用时，应该切换。</strong>长文档、大规模检索上下文、系统提示臃肿的智能体、共享指令的批量分类——这些形态正是四分之一 KV 缓存与每百万 0.006 美元缓存读取价产生复利的地方。如果批处理任务能安排在非北京工作时间，空闲时段折扣就是一个真实的 50% 杠杆。</p>
+
+  <p><strong>负载深度推理密集时，应该对冲。</strong>V4.1 Flash 用纯推理能力换取吞吐与成本。如果你的应用价值来自困难的多步推理而非快速廉价的智能体执行，那么 HLE 的 36.8 与 Opus-5.0 的 56.3 就是必须权衡的数字。把常规步骤交给 V4.1 Flash、把最难的部分升级到别处的路由方案，能在不继承天花板的前提下拿到大部分节省。</p>
+
+  <p><strong>在 9 月 14 日之前验证评测套件。</strong>本次公告中最具可操作性的风险就是 V4 Pro 的请求改路由。四天通知、无任何报错、由另一个模型应答你的请求——这正是能通过 CI 却在生产环境失败的那类变更。</p>
+
+  <p>有一点需要说明：本文所有数字均来自 DeepSeek 官方定价页、模型卡与技术报告，以及 OpenRouter 的模型列表。基准对比是厂商自行运行的。DeepSeek 的评测说明中披露了自身框架选择——多数代码智能体测试用 DeepSeek Harness Minimal、DeepSWE v1.1 用 mini-SWE、SEC-Bench Pro 与视觉智能体基准用 Claude Code。截至撰写时尚未有独立复现。建议把架构类数字（KV 缓存字节数、参数量、激活参数量）视为可靠——它们来自已发布的配置、属于结构性事实；而跨厂商基准上的领先幅度，在第三方重跑之前只应作为方向性参考。</p>
+
+  <h2 id="faq">常见问题</h2>
+
+  <h3>DeepSeek V4.1 Flash 是什么？何时发布？</h3>
+  <p>DeepSeek V4.1 Flash 是 2026 年 9 月 10 日发布的多模态 MoE 模型，主干参数 552B，是 DeepSeek 全新模型结构系列中尺寸最小的成员，取代 DeepSeek-V4-Flash 与实验性的 DeepSeek-V4-Flash-Vision-Exp。它原生支持图像与文本输入，上下文最长 100 万 token。在 DeepSeek API 中，可调用模型名现为 <code>deepseek-flash</code>；旧名仍可解析，但会被路由到 V4.1 Flash 并按 V4.1 Flash 价格计费。</p>
+
+  <h3>每百万 token 定价是多少？</h3>
+  <p>以人民币计价并区分峰谷。空闲时段：缓存命中输入 0.02 元、缓存未命中输入 1 元、输出 4 元（每百万）。高峰时段分别为 0.04 / 2 / 8 元。高峰为北京时间周一至周五 09:00-12:00 与 14:00-18:00，其余为空闲，价格恰为一半。OpenRouter 上同一模型标价每百万输入 0.30 美元、输出 1.20 美元、缓存读取 0.006 美元。</p>
+
+  <h3>为什么 890 字节的 KV 缓存很重要？</h3>
+  <p>100 万 token 的智能体会话在运行期间必须把 key-value 状态常驻显存；缓存缩小四倍直接减少长时智能体所需的显存，从而决定集群可并发服务的会话数与厂商的单会话成本。DeepSeek 报告为每 token 890 字节，约为 V4 Flash 的 1/4、比 DeepSeek-V1 小约 437 倍，来自 E2M1 格式的 FP4 主 KV 缓存、CSA2 层间共享，以及把持久化占用压到约 1/8 的 SWA Bounded Replay。</p>
+
+  <h3>2026 年 9 月 14 日 V4 Pro 会发生什么？</h3>
+  <p>自北京时间 2026 年 9 月 14 日 12:00 起，直至未来的 V4.1 Pro 上线之前，指定 <code>deepseek-v4-pro</code> 的请求都会被路由到 V4.1 Flash 并按 V4.1 Flash 价格计费。DeepSeek 的理由是 V4.1 Flash 在性能、费用、速度与总用时上全面超越 V4 Pro。请把这视为强制迁移日：模型 ID 照常工作，但底层模型与价格同时改变，且日志中不会浮现任何错误。</p>
+
+  <h3>DeepSeek V4.1 Flash 是开源的吗？</h3>
+  <p>是——MIT 许可证，权重位于 Hugging Face 的 <code>deepseek-ai/DeepSeek-V4.1-Flash</code>，附完整技术报告与 DeepSWE v1.1 复现说明。模型卡记录为 40 层 Transformer（20 层因果编码器 + 20 层解码器）、每 MoE 层 384 路由专家加 1 共享专家、每 token 激活 6 路由专家、196B 参数的 Engram 条件记忆块、DSpark 推测解码，以及 45 万亿 token 的多模态预训练。</p>
+
+  <h3>长上下文智能体开发者应该切换到它吗？</h3>
+  <p>输入密集与智能体负载的经济性支持切换：预填充每 token 激活 8B、解码 16B，空闲时段缓存未命中输入价约为 V4 Pro 的十五分之一，使长文档加重复前缀的场景成本大幅下降。代价是推理深度——HLE 36.8 对 Opus-5.0 的 56.3，ExploitGym 15.3 对 GPT-5.6 Sol 的 33.7。把它当高吞吐工作马、把最难推理步骤路由到别处。</p>
+
+  <h2 id="sources">资料来源</h2>
+  <ul>
+    <li>DeepSeek API 更新日志「DeepSeek-V4.1-Flash 发布」，日期 2026-09-10 — <a href="https://api-docs.deepseek.com/zh-cn/updates">api-docs.deepseek.com/zh-cn/updates</a></li>
+    <li>DeepSeek API 模型与价格页（峰谷价格表、并发限制、模型细节）— <a href="https://api-docs.deepseek.com/zh-cn/quick_start/pricing">api-docs.deepseek.com/zh-cn/quick_start/pricing</a></li>
+    <li>Hugging Face 模型卡与配置，<code>deepseek-ai/DeepSeek-V4.1-Flash</code>（MIT，创建于 2026-09-10）— <a href="https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash">huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash</a></li>
+    <li>DeepSeek-V4.1-Flash 技术报告《Pushing the Limits of KV Cache Compression》（模型仓库内 PDF）</li>
+    <li>OpenRouter 模型列表 <code>deepseek/deepseek-v4.1-flash</code>（1M 上下文；$0.30/$1.20 每百万；缓存读取 $0.006 每百万）</li>
+  </ul>
+  <p class="text-sm text-gray-500 italic">最后核实：2026 年 9 月 11 日。厂商页面的价格、模型 ID 与停用日期可能随时变动——在锁定生产预算前请重新核对 DeepSeek 定价页。</p>
+</article>
+`;
+
+---
+<BaseLayout title={zhTitle + ' | APIRank'} description={zhDescription} canonicalUrl={canonicalUrl} lang="zh-CN">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">新闻分析</span>
+        <time datetime="2026-09-11">2026年9月11日</time>
+        <span>•</span>
+        <span>约 12 分钟阅读</span>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-900 mb-4">{zhTitle}</h1>
+      <p class="text-lg text-gray-600 leading-relaxed">
+        2026 年 9 月 10 日，DeepSeek 发布 <strong>DeepSeek-V4.1-Flash</strong>：552B 多模态 MoE、100 万 token 上下文、每 token 890 字节 KV 缓存，并宣布 V4 Pro 将于 9 月 14 日改路由至该模型。本篇从显存算术而非基准分数切入，核对官方定价、架构与迁移影响。
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2">
+        <div set:html={bodyContent} />
+      </div>
+      <aside class="lg:col-span-1">
+        <div class="bg-gray-50 rounded-lg p-5 sticky top-8">
+          <h3 class="font-semibold text-gray-900 mb-3">相关厂商</h3>
+          <div class="space-y-1">
+            <a href="/zh/providers/deepseek" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>DeepSeek</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/openrouter" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>OpenRouter</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">查看全部 →</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
