@@ -1,0 +1,337 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'cloudflare-workers-64mib-size-limit-ai-api-2026';
+const date = '2026-09-12';
+const locale = 'en';
+
+const enTitle = "Cloudflare Workers 64 MiB: AI API Bundles";
+const enDescription = "Cloudflare Workers size limit 2026: compressed 3 MB/10 MB caps removed for a 64 MiB uncompressed bound, plus D1 free-tier hard limits.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Cloudflare Workers 64 MiB: AI API Bundles",
+  "description": "Cloudflare Workers size limit 2026: compressed 3 MB/10 MB caps removed for a 64 MiB uncompressed bound, plus D1 free-tier hard limits.",
+  "datePublished": "2026-09-12",
+  "dateModified": "2026-09-12",
+  "inLanguage": "en-US",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cloudflare Workers 64 MiB: AI API Bundles",
+      "item": canonicalUrl
+    }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What exactly changed about Cloudflare Workers size limits in 2026?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cloudflare removed the compressed Worker size limits that previously rejected deploys over 3 MB on the Workers Free plan or 10 MB on Workers Paid. Wrangler still compresses the bundle before upload, but Cloudflare now checks only the uncompressed bundle size, and that limit is 64 MiB across all plans. The gzip figure is still printed in build output but is informational only and no longer gates a deploy."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I check a Worker bundle size before deploying?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Run wrangler deploy --outdir bundled/ --dry-run. It bundles and reports without uploading. The output line reads something like Total Upload: 259.61 KiB / gzip: 47.23 KiB. The Total Upload value is your uncompressed bundle size and is what counts against the 64 MiB limit. Two details matter when auditing: the value is binary (1 MiB is 2^20 bytes), and it counts the entire bundle including every inlined dependency, not just your own source files."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the 64 MiB limit mean I can ignore Worker startup time?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Upload size and startup time are separate constraints. Worker startup time is capped at 1 second on both the Free and Paid plans, so a bundle that fits comfortably under 64 MiB can still fail to deploy if its top-level initialisation work pushes past that one-second budget. Relaxing the size limit did not relax the startup limit."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happened to D1 free tier limits on September 1, 2026?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "D1 stopped treating its free-tier row limits as advisory. Beginning September 1, 2026, D1 queries on Workers Free accounts that exceed the daily row read or row write limits fail and return errors through both the Workers Binding API and the REST API, until the limit resets at midnight UTC. Stored data is not affected, only the ability to query it. Cloudflare sends email alerts when the daily limit is reached."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the D1 free tier daily limits and which one is tighter?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Workers Free includes 5 million rows read per day and 100,000 rows written per day, plus 5 GB of total storage. The write budget is the tighter constraint by a 50 to 1 ratio, so write-heavy workloads are far more likely to fail than read-heavy ones. Row reads are counted per row examined, not per row returned, which means a query that scans a million rows and returns three has still spent a million rows of budget."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does a free-tier D1 workload fail suddenly in production?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Because full table scans consume row-read budget in proportion to table size, and the failure scales nonlinearly with growth. A table holding a few thousand rows during testing produces scans that are invisible against a 5-million-row daily budget. The same unindexed query against a table that has grown to a few hundred thousand rows costs roughly a hundred times more per call, and the first symptom is the hard error string rather than a slow query. The fix Cloudflare recommends is to inspect query activity and add indexes to reduce row reads."
+      }
+    }
+  ]
+};
+
+const bodyContent = `<article class="prose prose-lg max-w-none">
+  <h2 id="what-changed">A Ceiling Removed and a Floor Added in the Same Week</h2>
+  <p>Cloudflare's developer platform moved twice in the first week of September 2026, and the two changes point in opposite directions. On <strong>September 4</strong> Cloudflare deleted the compressed Worker size limit — the 3 MB cap on the Free plan and the 10 MB cap on Paid — and replaced it with a single <strong>64 MiB uncompressed</strong> bound that applies to every plan. On <strong>September 1</strong>, D1 stopped treating its free-tier row limits as advisory and started returning hard query errors when an account exceeds them.</p>
+
+  <p>For anyone running an AI API workload on Workers — a proxy in front of an OpenAI-compatible endpoint, a RAG service, an agent gateway, a streaming relay — this pair matters more than either headline suggests. The first change removes a packaging constraint that has quietly shaped how AI SDKs get bundled for the edge for the past two years. The second adds a runtime constraint that shows up as production errors rather than dashboard warnings. Read together, they are a trade: Cloudflare made it easier to <em>ship</em> a large Worker and harder to <em>run</em> a careless free database behind it.</p>
+
+  <p>This article works through both from the vendor's own documentation, then maps the specific bundle-size workarounds in AI API projects that are now unnecessary — and the D1 audit that replaces them as the thing you should actually be doing.</p>
+
+  <h2 id="size-limit">What Exactly Changed About Worker Size</h2>
+  <p>The mechanic is worth stating precisely because the number 64 MiB is easy to misread. Wrangler has always bundled your code and compressed it before upload. What changed is <strong>which of those two measurements Cloudflare checks</strong>.</p>
+
+  <p>Previously, Cloudflare checked the <strong>compressed</strong> size and rejected deploys above 3 MB on the Free plan or 10 MB on Paid. That check is gone. Cloudflare now checks only the <strong>uncompressed</strong> bundle size, and the limit is <strong>64 MiB across all plans</strong>.</p>
+
+  <p>That distinction changes the practical headroom dramatically, because compression ratios on JavaScript bundles are far from uniform. A bundle dominated by application logic typically gzips to roughly a fifth of its raw size — so the old 3 MB compressed Free ceiling was landing somewhere near 15 MB of real source. A bundle dominated by dense generated data tables, protobuf descriptors, or embedded JSON schemas compresses much better, and could previously approach 25-30 MB raw before tripping the 3 MB compressed gate.</p>
+
+  <table>
+    <thead><tr><th>Plan</th><th>Old limit (compressed)</th><th>New limit (uncompressed)</th><th>What Cloudflare checks now</th></tr></thead>
+    <tbody>
+      <tr><td>Workers Free</td><td>3 MB</td><td>64 MiB</td><td>Uncompressed bundle only</td></tr>
+      <tr><td>Workers Paid</td><td>10 MB</td><td>64 MiB</td><td>Uncompressed bundle only</td></tr>
+    </tbody>
+  </table>
+
+  <p>The gzip figure is still printed by Wrangler, but it is now <strong>informational</strong> — it no longer gates the deploy. If you have ever trimmed a dependency solely because the gzip number in your build output crept past a threshold, that pressure is gone.</p>
+
+  <h3 id="verify-size">How to Check Your Bundle Before You Deploy</h3>
+  <p>The dry-run flag is the cheapest way to see the number Cloudflare will actually enforce. It bundles and reports without uploading:</p>
+
+  <pre><code is:raw>wrangler deploy --outdir bundled/ --dry-run</code></pre>
+
+  <p>The output looks like this:</p>
+
+  <pre><code is:raw>Total Upload: 259.61 KiB / gzip: 47.23 KiB</code></pre>
+
+  <p>The <strong>Total Upload</strong> value is your uncompressed bundle size, and that is the number measured against the 64 MiB limit. The <strong>gzip</strong> value is shown for reference only. Two details matter if you are auditing an existing project: the value is binary (a MiB is 2^20 bytes, not 10^6), and it counts the <em>entire</em> bundle including every dependency Wrangler inlined — not just your own source files.</p>
+
+  <p>One caveat about interpreting that number: 64 MiB is the ceiling on what you can <em>upload</em>, and it is a separate limit from Worker <strong>startup time</strong>, which is capped at 1 second on both plans. A bundle that fits comfortably under 64 MiB can still fail to deploy if its top-level initialisation work pushes past that one-second budget. Size and startup cost are different constraints, and relaxing one does not relax the other.</p>
+
+  <h2 id="ai-bundling">The AI-Specific Bundling Workarounds You Can Now Delete</h2>
+  <p>This is the part that matters most for an AI API project, because edge-deployed AI services have an unusually dependency-heavy bundle profile. Three workarounds in particular became common specifically because of the old compressed ceiling.</p>
+
+  <h3 id="workaround-1">1. R2-Hosted Model Metadata and Schema Splitting</h3>
+  <p>The most common pattern was moving large static payloads out of the bundle into R2 (or KV) and fetching them at runtime. The usual candidates were OpenAPI specifications for the upstream API you were proxying, provider model catalogues (name, context window, pricing, capability flags for hundreds of models), and tokeniser vocabularies. Each of these is large, changes on a slower cadence than your code, and compresses unevenly — exactly the profile that made the compressed gate painful.</p>
+
+  <p>If your Worker was fetching a 2 MB model catalogue from R2 on every cold start just to stay under the upload limit, that fetch is now an avoidable cold-start cost. Inlining the catalogue is a legitimate option again — but measure before you move it, because the runtime latency you saved by not fetching may be worth less than the startup time you add. The 64 MiB budget is permission to inline, not an argument for it.</p>
+
+  <h3 id="workaround-2">2. Splitting One Logical Service Across Multiple Workers</h3>
+  <p>The second pattern was architectural: a service that logically should have been one Worker got split into several, with service bindings wiring them back together, purely to keep any single bundle under the compressed threshold. A typical AI gateway would end up as a routing Worker, a provider-adapter Worker, and a separate Worker for the request/response transform layer — not because the boundaries were meaningful, but because the size gate forced a cut somewhere.</p>
+
+  <p>Collapsing those back into one Worker is now possible, and it has real benefits: fewer network hops between your own components, simpler deployment, and one place to reason about request context. But the split may have acquired genuine value along the way — separate CPU budgets, independent deploys, isolated blast radius. Treat consolidation as a refactor to evaluate, not a cleanup to perform reflexively.</p>
+
+  <h3 id="workaround-3">3. Vendoring Reduced Copies of SDKs</h3>
+  <p>The third pattern was the most maintenance-heavy: keeping a locally patched, tree-shaken fork of an AI SDK so that only the endpoints you called were bundled. Teams did this because the official client often ships broad surface area — every model's request builder, every streaming variant, every tool-calling helper — and the compressed gate made the full package expensive.</p>
+
+  <p>Vendored forks are the workaround most worth revisiting, because they carry ongoing cost: every upstream release becomes a manual merge, and security fixes have to be tracked by hand. If your fork existed only for size, the official package is worth re-testing. If it existed for a functional reason — a missing endpoint, a proxy quirk, a custom retry policy — the size limit was never the real motivation and the fork should stay.</p>
+
+  <h3 id="still-limits">What Did Not Change</h3>
+  <p>The size increase does not loosen the constraints that actually bite AI workloads at runtime. These are unchanged on both plans and are the ones that determine whether a large Worker is usable once it is deployed:</p>
+
+  <table>
+    <thead><tr><th>Constraint</th><th>Workers Free</th><th>Workers Paid</th><th>Why it matters for AI APIs</th></tr></thead>
+    <tbody>
+      <tr><td>Memory</td><td>128 MB</td><td>128 MB</td><td>Streaming buffers and in-memory tokenisers still have a hard ceiling</td></tr>
+      <tr><td>CPU time per request</td><td>10 ms</td><td>5 min</td><td>The Free plan cannot do meaningful local inference or heavy transforms</td></tr>
+      <tr><td>Subrequests per request</td><td>50</td><td>10,000</td><td>Multi-provider fan-out and agent tool loops are capped on Free</td></tr>
+      <tr><td>Simultaneous open connections</td><td>6</td><td>6</td><td>Parallel upstream calls are limited identically on both plans</td></tr>
+      <tr><td>Startup time</td><td>1 second</td><td>1 second</td><td>Large bundles still pay for top-level initialisation</td></tr>
+      <tr><td>Requests</td><td>100,000/day</td><td>No limit</td><td>Free plan throttles before your AI spend does</td></tr>
+    </tbody>
+  </table>
+
+  <p>Note the shape of this table. Every constraint that governs <em>what runs inside</em> the Worker is either identical across plans or dramatically worse on Free. The 64 MiB limit is the one dimension where Free and Paid are now equal — which means a large bundle on the Free plan can be uploaded successfully and still fail in production on CPU time or memory. Upload capacity is not run capacity.</p>
+
+  <h2 id="d1">The Other Half: D1's Free Tier Got Teeth</h2>
+  <p>The second September change is the one more likely to page you. Effective <strong>September 1, 2026</strong>, D1 queries on the Workers Free plan <strong>fail and return errors</strong> when an account exceeds the daily row read or row write limits. Previously these were soft limits — you got a warning and the queries kept working. Now the Worker Binding API and the REST API both return errors <strong>until the limit resets at midnight UTC</strong>. Stored data is not affected; only the ability to query it is.</p>
+
+  <p>The thresholds that now hard-fail:</p>
+
+  <table>
+    <thead><tr><th>Metric</th><th>Workers Free</th><th>Workers Paid</th></tr></thead>
+    <tbody>
+      <tr><td>Rows read</td><td>5 million / day</td><td>First 25 billion / month included, then $0.001 / million rows</td></tr>
+      <tr><td>Rows written</td><td>100,000 / day</td><td>First 50 million / month included, then $1.00 / million rows</td></tr>
+      <tr><td>Storage</td><td>5 GB total</td><td>First 5 GB included, then $0.75 / GB-month</td></tr>
+    </tbody>
+  </table>
+
+  <p>Two errors identify the condition, and both are specific enough to route on:</p>
+
+  <pre><code is:raw>Your account has exceeded D1's free tier daily row read limit.
+Upgrade to a paid plan or wait until tomorrow (midnight UTC) to continue.</code></pre>
+  <pre><code is:raw>Your account has exceeded D1's free tier daily row write limit.
+Upgrade to a paid plan or wait until tomorrow (midnight UTC) to continue.</code></pre>
+
+  <p>Cloudflare sends email alerts when the daily limit is reached, so the first signal is a notification rather than a support ticket — but only if someone is reading that inbox.</p>
+
+  <h3 id="asymmetry">The Asymmetry That Catches Teams Out</h3>
+  <p>Look at the read and write limits together and the failure mode becomes obvious. You get <strong>5,000,000 row reads</strong> per day but only <strong>100,000 row writes</strong> — a <strong>50:1 ratio</strong>. Read-heavy agent workloads are therefore far more likely to be fine than write-heavy ones, and a workload that writes frequently is the one to audit first.</p>
+
+  <p>The trap is what a single mis-indexed query costs. A full table scan on a million-row table reads a million rows, so from a five-million-row budget that is <strong>five requests</strong> before the free tier is exhausted for the rest of the day. Row reads are counted per row <em>examined</em>, not per row returned — which means a query that returns three rows after scanning a million has still spent a million rows of budget. The cost is in the scan, not the result.</p>
+
+  <p>This is why the failure tends to arrive without warning in development and immediately in production. A table holding a few thousand rows during testing produces scans that are invisible against a five-million budget. The same query against a table that grew to a few hundred thousand rows costs a hundred times more per call, and the first symptom is not a slow query — it is the error string above.</p>
+
+  <h2 id="audit">The Audit That Replaces the Workarounds</h2>
+  <p>If the bundle workarounds described above were your main size-management strategy, the D1 enforcement is the work that should now occupy that attention. Cloudflare's own guidance is to inspect query activity and add indexes to reduce row reads. The practical version of that, in order:</p>
+
+  <ul>
+    <li><strong>Find the table scans first.</strong> Any query without a supporting index on its filter or join columns is a candidate for a full scan, and full scans are what consume row-read budget superlinearly as tables grow.</li>
+    <li><strong>Watch the meta object and the dashboard.</strong> D1 exposes row metrics through the Worker API's meta object, the GraphQL Analytics API, and the dashboard's Metrics → Row Metrics view. Measure before and after any index change rather than assuming it helped.</li>
+    <li><strong>Count writes separately from reads.</strong> The 100,000/day write budget is the tighter constraint. A logging table that writes one row per request, across 100,000 free-tier requests, consumes the entire daily write allowance on bookkeeping alone.</li>
+    <li><strong>Move writes off the request path where you can.</strong> Batching writes, or sending them to a queue that flushes, converts a per-request write cost into a per-batch one — usually the single largest reduction available to a free-tier workload.</li>
+    <li><strong>Price the upgrade against the value of the workload.</strong> A Workers Paid plan starts at $5 per account per month and removes the daily D1 limits entirely, replacing them with monthly included allowances. For a service that is already failing in production, that is frequently cheaper than the engineering time spent optimising around the cap.</li>
+  </ul>
+
+  <p>There is a second-order effect worth naming. Because the limits reset at midnight UTC, a workload that exhausts its budget has a fixed outage window rather than a degraded one. If your service is consumer-facing across time zones, midnight UTC lands squarely in the middle of the European working day — so the failure is exposed to users at exactly the moment your domestic traffic is lowest and your ability to respond is slowest. Design the alerting accordingly, and prefer alerting on <em>rate of consumption</em> rather than on the error, because the error arrives after the budget is already gone.</p>
+
+  <h2 id="verdict">What to Do This Week</h2>
+  <p>The honest summary is that the two changes are not symmetric in urgency. The 64 MiB limit removes a constraint and requires nothing of you — no migration, no flag, no deadline. It is an opportunity to simplify, and the right response is to identify which of your size-driven workarounds existed <em>only</em> for size, then revisit those selectively. Most teams should not rush this; a vendored SDK fork that works is not improved by an unforced refactor.</p>
+
+  <p>The D1 change is the opposite. It took effect on September 1, it converts warnings into errors, and its failure mode scales nonlinearly with table growth — which is the classic shape of a production incident that appears once and then never stops. If you run a free-tier D1 database behind an AI API workload, the useful action is to check today's row-read and row-write consumption against the 5,000,000 and 100,000 daily budgets, and to identify any query that performs a full table scan.</p>
+
+  <p>The connection between the two is the useful takeaway. Cloudflare relaxed what you can put <em>into</em> a Worker and tightened what you can cheaply do at <em>runtime</em>. Building a larger edge-native AI service is easier than it was last month; running one for free is harder. Plan against the second fact, and treat the first as latitude you can choose to use.</p>
+
+  <h3 id="sources">Sources</h3>
+  <ul>
+    <li>Cloudflare changelog, "Deploy larger Workers — up to 64 MiB for both free and paid plans", September 4, 2026</li>
+    <li>Cloudflare changelog, "D1 enforces free tier daily query limits", September 1, 2026</li>
+    <li>Cloudflare Workers platform limits documentation (Worker size, startup time, account plan limits)</li>
+    <li>Cloudflare D1 pricing documentation (billing metrics, free-tier read/write budgets)</li>
+  </ul>
+</article>
+`;
+---
+
+<BaseLayout
+  title={enTitle}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  ogType="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Platform Change</span>
+        <time datetime="2026-09-12">September 12, 2026</time>
+        <span>·</span>
+        <span>12 min read</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{enTitle}</h1>
+      <p class="text-xl text-gray-600">{enDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">Deploying an AI API on Cloudflare Workers?</h3>
+          <p class="text-gray-600 text-sm mb-4">Worker size is now 64 MiB uncompressed on every plan, but D1 free-tier row limits hard-fail at 5M reads and 100K writes per day. Check both before you ship.</p>
+          <a href="https://developers.cloudflare.com/workers/platform/limits/" target="_blank" rel="noopener" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">Workers Platform Limits →</a>
+        </div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Quick Facts</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">Change date</dt><dd class="font-medium">Sept 4, 2026</dd></div>
+            <div><dt class="text-gray-500">Old limit</dt><dd class="font-medium">3 MB / 10 MB compressed</dd></div>
+            <div><dt class="text-gray-500">New limit</dt><dd class="font-medium text-emerald-600">64 MiB uncompressed</dd></div>
+            <div><dt class="text-gray-500">Applies to</dt><dd class="font-medium">Free + Paid</dd></div>
+            <div><dt class="text-gray-500">Checked value</dt><dd class="font-medium">Total Upload (not gzip)</dd></div>
+            <div><dt class="text-gray-500">Memory cap</dt><dd class="font-medium">128 MB both plans</dd></div>
+            <div><dt class="text-gray-500">Startup time</dt><dd class="font-medium">1 second both plans</dd></div>
+            <div><dt class="text-gray-500">D1 free reads</dt><dd class="font-medium">5M rows / day</dd></div>
+            <div><dt class="text-gray-500">D1 free writes</dt><dd class="font-medium text-amber-600">100K rows / day</dd></div>
+            <div><dt class="text-gray-500">D1 enforcement</dt><dd class="font-medium text-amber-600">Hard fail since Sept 1</dd></div>
+          </dl>
+          <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+            <p>Prices updated 9/12/2026</p>
+            <p class="mt-1">Check official site for latest pricing</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Related Providers</h3>
+          <div class="space-y-2">
+            <a href="/providers/cloudflare-workers-ai" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Cloudflare Workers AI</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers/cloudflare-ai-gateway" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Cloudflare AI Gateway</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers/openrouter" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>OpenRouter</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers/bifrost-maxim" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Bifrost (Maxim)</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">View All →</a>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Related Articles</h3>
+          <div class="space-y-2 text-sm">
+            <a href="/tutorials/openai-agents-api-gpt-live-1-voice-2026" class="block py-1 hover:text-blue-600 transition-colors">OpenAI Agents API & GPT-Live 1 Voice</a>
+            <a href="/tutorials/cloudflare-ai-gateway-custom-costs-2026" class="block py-1 hover:text-blue-600 transition-colors">Cloudflare AI Gateway Custom Costs</a>
+            <a href="/tutorials/cloudflare-workers-ai-china-models-2026" class="block py-1 hover:text-blue-600 transition-colors">Cloudflare Workers AI: China Models</a>
+            <a href="/tutorials/bifrost-maxim-api-review-2026" class="block py-1 hover:text-blue-600 transition-colors">Bifrost Maxim OSS Gateway Review</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

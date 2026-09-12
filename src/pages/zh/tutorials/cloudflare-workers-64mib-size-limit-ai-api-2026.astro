@@ -1,0 +1,336 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'cloudflare-workers-64mib-size-limit-ai-api-2026';
+const date = '2026-09-12';
+const locale = 'zh';
+
+const zhTitle = "Cloudflare Workers 64 MiB 新上限：AI API 打包 2026";
+const zhDescription = "Cloudflare Workers 体积上限 2026：压缩后的 3 MB/10 MB 限制取消，改为 64 MiB 未压缩上限；同时 D1 免费额度开始硬性拦截。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Cloudflare Workers 64 MiB 新上限：AI API 打包 2026",
+  "description": "Cloudflare Workers 体积上限 2026：压缩后的 3 MB/10 MB 限制取消，改为 64 MiB 未压缩上限；同时 D1 免费额度开始硬性拦截。",
+  "datePublished": "2026-09-12",
+  "dateModified": "2026-09-12",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "教程",
+      "item": "https://apirank.vip/zh/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Cloudflare Workers 64 MiB 新上限：AI API 打包 2026",
+      "item": canonicalUrl
+    }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "2026 年 Cloudflare Workers 的体积上限具体改了什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cloudflare 删除了此前的压缩体积限制——免费版超过 3 MB、付费版超过 10 MB 时会拒绝部署。Wrangler 仍会在上传前压缩打包，但 Cloudflare 现在只检查未压缩的打包体积，且所有套餐统一为 64 MiB。构建输出里仍会打印 gzip 数值，但它只是参考信息，不再限制部署。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "部署前怎么检查 Worker 的打包体积？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "运行 wrangler deploy --outdir bundled/ --dry-run。它会打包并报告，但不上传。输出类似 Total Upload: 259.61 KiB / gzip: 47.23 KiB。Total Upload 就是未压缩打包体积，也是拿来和 64 MiB 比较的数字。审计时有两个细节要注意：该数值是二进制的（1 MiB 是 2^20 字节），而且它统计的是整个打包（含所有内联依赖），不只是你自己的源码。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "64 MiB 上限是否意味着可以忽略 Worker 启动时间？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不可以。上传体积和启动时间是两个独立约束。Worker 启动时间在免费版与付费版上都限制为 1 秒，所以一个舒适低于 64 MiB 的打包，如果顶层初始化耗时超出这一秒预算，仍然可能部署失败。放宽体积上限并没有放宽启动时间上限。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "2026 年 9 月 1 日 D1 免费额度发生了什么变化？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "D1 不再把免费版的每日读写行数上限当作提醒。自 2026 年 9 月 1 日起，Workers 免费版账户超出每日读行或写行上限时，D1 查询会失败，并通过 Worker Binding API 与 REST API 返回错误，直到上限在 UTC 午夜重置。已存储的数据不受影响，受影响的只是查询它的能力。达到每日上限时 Cloudflare 会发送邮件提醒。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "D1 免费版的每日上限是多少，哪一个更紧？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Workers 免费版每天包含 500 万行读取与 10 万行写入，总存储 5 GB。写入预算是更紧的那一个，比例达到 50 比 1，因此写密集型的负载远比读密集型的更容易失败。行读取按被检查的行计数，而不是按返回的行计数——也就是说，一条扫描一百万行后返回三行的查询，仍然花掉了一百万行的预算。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么免费版 D1 负载会在生产环境突然失败？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "因为全表扫描消耗读行预算的幅度与表大小成正比，而失败随增长非线性放大。测试阶段一张只有几千行的表，产生的扫描对每天 500 万行的预算来说可以忽略。同一条没有索引的查询打在长到几十万行的表上，单次调用成本约是上百倍，而第一个症状是硬报错，而不是慢查询。Cloudflare 建议的做法是检查查询活动并加索引以减少读行量。"
+      }
+    }
+  ]
+};
+
+const bodyContent = `<article class="prose prose-lg max-w-none">
+  <h2 id="what-changed">同一周内：一个上限被取消，一个底线被加上</h2>
+  <p>2026 年 9 月的第一周，Cloudflare 的开发者平台动了两次，而这两次改动方向相反。<strong>9 月 4 日</strong>，Cloudflare 删除了 Worker 的压缩体积上限——免费版的 3 MB 与付费版的 10 MB——改为对所有套餐统一适用的 <strong>64 MiB 未压缩</strong>上限。<strong>9 月 1 日</strong>，D1 不再把免费版的每日读写行数上限当作提醒，而是当账户超额时直接返回查询错误。</p>
+
+  <p>对任何在 Workers 上跑 AI API 负载的人来说——不管是 OpenAI 兼容端点前面的代理、RAG 服务、Agent 网关还是流式中继——这一对改动比单独看任何一条头条都更重要。第一项改动移除了一个过去两年里一直在悄悄塑造「AI SDK 如何为边缘打包」的约束；第二项改动加入了一个以生产报错、而非控制台警告形式出现的运行时约束。合起来看，这是一次交换：Cloudflare 让你更容易<em>部署</em>一个大 Worker，同时让你更难<em>运行</em>一个不小心的免费数据库。</p>
+
+  <p>本文依据厂商自己的文档梳理这两项改动，然后梳理 AI API 项目中那些现在已经没有必要的打包绕行方案——以及取代它们、真正值得你去做的 D1 审计。</p>
+
+  <h2 id="size-limit">Worker 体积到底改了什么</h2>
+  <p>机制值得说清楚，因为 64 MiB 这个数字很容易被误读。Wrangler 一直都会先把你的代码打包再压缩后上传。变的是 <strong>Cloudflare 检查这两个测量值中的哪一个</strong>。</p>
+
+  <p>此前，Cloudflare 检查的是<strong>压缩后</strong>的体积，超过免费版 3 MB 或付费版 10 MB 就拒绝部署。现在这个检查没有了。Cloudflare 只检查<strong>未压缩</strong>的打包体积，且所有套餐的限额统一为 <strong>64 MiB</strong>。</p>
+
+  <p>这个区别会大幅改变实际余量，因为 JavaScript 打包的压缩率远非一致。以应用逻辑为主的打包，gzip 后通常只有原始体积的五分之一左右——也就是说，旧的 3 MB 压缩上限大致对应 15 MB 的真实源码。而以密集的生成式数据表、protobuf 描述符或内嵌 JSON schema 为主的打包压缩率高得多，此前可以接近 25–30 MB 原始体积才会触到 3 MB 的压缩门槛。</p>
+
+  <table>
+    <thead><tr><th>套餐</th><th>旧上限（压缩后）</th><th>新上限（未压缩）</th><th>现在检查什么</th></tr></thead>
+    <tbody>
+      <tr><td>Workers 免费版</td><td>3 MB</td><td>64 MiB</td><td>仅未压缩打包体积</td></tr>
+      <tr><td>Workers 付费版</td><td>10 MB</td><td>64 MiB</td><td>仅未压缩打包体积</td></tr>
+    </tbody>
+  </table>
+
+  <p>Wrangler 仍会打印 gzip 数值，但它现在只是<strong>参考信息</strong>，不再限制部署。如果你曾经仅仅因为构建输出里的 gzip 数字逼近阈值就去裁剪某个依赖，那份压力已经没有了。</p>
+
+  <h3 id="verify-size">部署前如何检查打包体积</h3>
+  <p>dry-run 参数是查看 Cloudflare 实际会执行的那个数字最省事的方式。它会打包并报告，但不会上传：</p>
+
+  <pre><code is:raw>wrangler deploy --outdir bundled/ --dry-run</code></pre>
+
+  <p>输出长这样：</p>
+
+  <pre><code is:raw>Total Upload: 259.61 KiB / gzip: 47.23 KiB</code></pre>
+
+  <p><strong>Total Upload</strong> 就是你的未压缩打包体积，也是拿来和 64 MiB 比较的数字。<strong>gzip</strong> 数值仅供参照。审计现有项目时有两个细节要注意：这个数值是二进制的（1 MiB 是 2^20 字节，不是 10^6），而且它统计的是<em>整个</em>打包，包含 Wrangler 内联进去的每一个依赖，而不只是你自己的源码文件。</p>
+
+  <p>解读这个数字时还有一个前提：64 MiB 是你能<em>上传</em>的上限，它与 Worker 的<strong>启动时间</strong>是两个独立的限制，后者在两种套餐下都限制为 1 秒。一个舒适地低于 64 MiB 的打包，如果顶层初始化耗时超出这一秒预算，仍然可能部署失败。体积和启动成本是两种不同的约束，放宽其一并不会放宽另一个。</p>
+
+  <h2 id="ai-bundling">那些 AI 特有的、现在可以删掉的打包绕行方案</h2>
+  <p>这一段对 AI API 项目最要紧，因为部署在边缘的 AI 服务，其依赖结构异常沉重。尤其有三种绕行方案，正是因为旧的压缩上限才变得普遍。</p>
+
+  <h3 id="workaround-1">1. 把模型元数据与 schema 挪到 R2</h3>
+  <p>最常见的做法是把大块静态负载从打包里挪出去放到 R2（或 KV），运行时再取。典型候选包括你要代理的上游 API 的 OpenAPI 规范、厂商模型目录（数百个模型的名称、上下文长度、价格、能力标记），以及分词器词表。这些东西都很大，变更节奏比你的代码慢，压缩率又不均匀——正好是最容易被压缩门槛卡住的形态。</p>
+
+  <p>如果你的 Worker 此前仅仅为了不超上传上限，而在每次冷启动时都从 R2 拉一份 2 MB 的模型目录，那么这次拉取现在就是一笔可以省掉的冷启动开销。把目录内联回去重新成为一个合法选项——但动手前先测量，因为省下的运行时取数延迟，未必抵得过你新增的启动耗时。64 MiB 的额度是「可以内联」的许可，不是「应该内联」的论证。</p>
+
+  <h3 id="workaround-2">2. 把本该是一个服务的东西拆成多个 Worker</h3>
+  <p>第二种做法是架构层面的：一个逻辑上本该是单个 Worker 的服务，被拆成好几个，再用 service binding 把它们接回来，唯一目的就是让任何单个打包不超过压缩阈值。一个典型的 AI 网关会因此变成路由 Worker、provider 适配 Worker，再加一个独立负责请求/响应转换层的 Worker——不是因为这些边界有意义，而是因为体积门槛迫使你在某处切一刀。</p>
+
+  <p>现在把它们合并回一个 Worker 是可行的，而且有实打实的好处：自己的组件之间网络跳数更少、部署更简单、请求上下文只有一个地方需要推理。但拆分过程中可能顺带获得了真实价值——独立的 CPU 额度、各自的部署节奏、隔离的故障半径。把合并当成一次需要评估的重构，而不是一次反射式的清理。</p>
+
+  <h3 id="workaround-3">3. 自维护精简版 SDK</h3>
+  <p>第三种做法维护成本最高：自己留一份打过补丁、做过 tree-shaking 的 AI SDK 分支，只把你实际调用的端点打进去。团队这么做的原因是官方客户端往往表面面积很大——每个模型的请求构造器、每种流式变体、每个工具调用辅助函数——而压缩门槛让完整包显得很贵。</p>
+
+  <p>自维护分支是最值得重新审视的一种绕行方案，因为它带来持续成本：上游每次发版都变成一次手工合并，安全修复也得手动跟进。如果你的分支只是为了控制体积而存在，那么官方包值得重新测一遍。如果它存在的理由是功能性的——缺一个端点、某个代理的怪癖、自定义重试策略——那体积从来就不是真正的动因，分支应该保留。</p>
+
+  <h3 id="still-limits">没有改变的部分</h3>
+  <p>体积放宽并没有放松那些真正在运行时卡住 AI 负载的约束。这些在两个套餐下都没有变，而且正是它们决定了一个大 Worker 部署之后到底能不能用：</p>
+
+  <table>
+    <thead><tr><th>约束</th><th>Workers 免费版</th><th>Workers 付费版</th><th>对 AI API 的意义</th></tr></thead>
+    <tbody>
+      <tr><td>内存</td><td>128 MB</td><td>128 MB</td><td>流式缓冲区与内存内分词器仍有硬上限</td></tr>
+      <tr><td>单请求 CPU 时间</td><td>10 ms</td><td>5 分钟</td><td>免费版无法做有意义的本地推理或重转换</td></tr>
+      <tr><td>单请求子请求数</td><td>50</td><td>10,000</td><td>多 provider 扇出与 Agent 工具循环在免费版被卡住</td></tr>
+      <tr><td>同时打开的连接数</td><td>6</td><td>6</td><td>并行上游调用在两个套餐下限制相同</td></tr>
+      <tr><td>启动时间</td><td>1 秒</td><td>1 秒</td><td>大打包仍要付出顶层初始化的代价</td></tr>
+      <tr><td>请求数</td><td>10 万/天</td><td>无限制</td><td>免费版会在你的 AI 账单之前先限流</td></tr>
+    </tbody>
+  </table>
+
+  <p>注意这张表的形状。每一条决定 Worker <em>内部</em>能跑什么的约束，要么两种套餐完全相同，要么免费版差得多。64 MiB 是免费版与付费版现在已经相等的那一个维度——也就是说，免费版上的一个大打包可以上传成功，却仍然在 CPU 时间或内存上倒在生产环境。上传容量不等于运行容量。</p>
+
+  <h2 id="d1">另一半：D1 免费额度长牙齿了</h2>
+  <p>第二项改动才是更可能把你叫起来的那个。自 <strong>2026 年 9 月 1 日</strong>起，Workers 免费版上的 D1 查询在账户超出每日读行或写行上限时<strong>会失败并返回错误</strong>。此前这是软上限——你会收到警告，但查询照常工作。现在 Worker Binding API 与 REST API 都会返回错误，<strong>直到上限在 UTC 午夜重置</strong>。已存储的数据不受影响，受影响的只是查询它的能力。</p>
+
+  <p>现在会硬失败的那些阈值：</p>
+
+  <table>
+    <thead><tr><th>指标</th><th>Workers 免费版</th><th>Workers 付费版</th></tr></thead>
+    <tbody>
+      <tr><td>读取行数</td><td>500 万/天</td><td>每月前 250 亿行包含在内，之后 $0.001/百万行</td></tr>
+      <tr><td>写入行数</td><td>10 万/天</td><td>每月前 5000 万行包含在内，之后 $1.00/百万行</td></tr>
+      <tr><td>存储</td><td>共 5 GB</td><td>前 5 GB 包含在内，之后 $0.75/GB-月</td></tr>
+    </tbody>
+  </table>
+
+  <p>有两个错误标识了这种状态，而且都足够具体，可以据此做路由：</p>
+
+  <pre><code is:raw>Your account has exceeded D1's free tier daily row read limit.
+Upgrade to a paid plan or wait until tomorrow (midnight UTC) to continue.</code></pre>
+  <pre><code is:raw>Your account has exceeded D1's free tier daily row write limit.
+Upgrade to a paid plan or wait until tomorrow (midnight UTC) to continue.</code></pre>
+
+  <p>达到每日上限时 Cloudflare 会发邮件提醒，所以第一个信号是一封通知而不是一张工单——前提是有人在看那个邮箱。</p>
+
+  <h3 id="asymmetry">会被抓到的非对称性</h3>
+  <p>把读和写的上限放在一起看，失败模式就一目了然了。你每天有 <strong>500 万行读取</strong>，但只有 <strong>10 万行写入</strong>——比例是 <strong>50:1</strong>。因此读密集型的 Agent 负载远比写密集型的更安全，而写入频繁的负载才是第一个该审计的对象。</p>
+
+  <p>陷阱在于单条索引不当的查询代价有多高。对一张百万行的表做全表扫描会读取一百万行，从五百万的预算里算是 <strong>五次请求</strong>就能把当天免费额度耗光。行读取是按<em>被检查</em>的行计数的，不是按返回的行——也就是说，一条扫描一百万行后返回三行的查询，仍然花掉了一百万行的预算。成本在扫描里，不在结果里。</p>
+
+  <p>这解释了为什么这种失败在开发环境里往往无声无息，而在生产环境里立刻爆发。测试阶段一张只有几千行的表，产生的扫描对五百万预算来说可以忽略。同一条查询打在长到几十万行的表上，单次调用成本就是上百倍，而第一个症状不是慢查询——而是上面那行错误。</p>
+
+  <h2 id="audit">取代那些绕行方案的审计</h2>
+  <p>如果上面那些打包绕行方案此前是你的主要体积管理策略，那么 D1 的强制执行就是现在应该占据那份注意力的工作。Cloudflare 自己的建议是检查查询活动、加索引以减少读行量。落到实处的版本，按顺序：</p>
+
+  <ul>
+    <li><strong>先找全表扫描。</strong>任何在过滤或连接列上缺少支撑索引的查询都是全表扫描的候选，而全表扫描正是随表增长超线性消耗读行预算的东西。</li>
+    <li><strong>盯 meta 对象与控制台。</strong>D1 通过 Worker API 的 meta 对象、GraphQL Analytics API，以及控制台的 Metrics → Row Metrics 视图暴露行指标。改动索引前后都要测量，不要假定它起作用了。</li>
+    <li><strong>把写入和读取分开计数。</strong>每天 10 万行的写入预算才是更紧的约束。一张每个请求写一行的日志表，在免费版 10 万请求的规模下，光记账就会吃掉整份每日写入额度。</li>
+    <li><strong>尽可能把写操作移出请求路径。</strong>批量化写入，或写入一个队列再落盘，能把按请求计的写入成本转为按批次计——这通常是一个免费版负载能拿到的最大一笔削减。</li>
+    <li><strong>把升级价格和负载价值放在一起算。</strong>Workers 付费版每账户每月最低 $5，直接取消 D1 的每日限制，代之以每月包含额度。对一个已经在生产里失败的服务来说，这往往比围绕上限做优化花掉的工程时间更便宜。</li>
+  </ul>
+
+  <p>还有一个二阶效应值得点名。因为限制在 UTC 午夜重置，耗尽预算的负载面对的是一个固定的宕机窗口，而不是一个降级的窗口。如果你的服务跨时区面向消费者，UTC 午夜正好落在欧洲工作时段的正中间——所以故障暴露给用户的时刻，恰好是你本地流量最低、响应能力最慢的时刻。告警要据此设计，并且优先对<em>消耗速率</em>告警而不是对错误告警，因为错误到来时预算已经用完了。</p>
+
+  <h2 id="verdict">这周该做什么</h2>
+  <p>诚实的总结是：两项改动的紧迫性并不对称。64 MiB 上限是移除约束，对你没有任何要求——没有迁移、没有开关、没有截止日期。它是一个简化的机会，正确的应对是找出哪些体积驱动的绕行方案<em>仅仅</em>为了体积而存在，然后有选择地重看它们。多数团队不必着急；一个能正常工作的 SDK 自维护分支，不会因为一次非必要的重构而变好。</p>
+
+  <p>D1 的改动正相反。它在 9 月 1 日生效，把警告变成了错误，而它的失败模式随表增长非线性放大——这正是那种出现一次之后就再也不停的生产事故的形态。如果你在 AI API 负载后面跑着一个免费版 D1 数据库，有用的动作是今天就把读行与写行的消耗对照 500 万和 10 万这两个每日预算核一遍，并找出任何执行全表扫描的查询。</p>
+
+  <p>两者之间的联系才是真正有用的结论。Cloudflare 放宽了你能往 Worker 里<em>装</em>什么，同时收紧了你能在<em>运行时</em>便宜地做什么。搭建一个更大的边缘原生 AI 服务比上个月更容易了；免费地运行一个则更难了。请针对第二个事实做规划，并把第一个当作你可以选择去使用的余量。</p>
+
+  <h3 id="sources">来源</h3>
+  <ul>
+    <li>Cloudflare changelog，"Deploy larger Workers — up to 64 MiB for both free and paid plans"，2026 年 9 月 4 日</li>
+    <li>Cloudflare changelog，"D1 enforces free tier daily query limits"，2026 年 9 月 1 日</li>
+    <li>Cloudflare Workers 平台限额文档（Worker size、startup time、账户套餐限额）</li>
+    <li>Cloudflare D1 价格文档（计费指标、免费版读写预算）</li>
+  </ul>
+</article>
+`;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  ogType="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">平台变更</span>
+        <time datetime="2026-09-12">2026 年 9 月 12 日</time>
+        <span>·</span>
+        <span>12 分钟阅读</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{zhTitle}</h1>
+      <p class="text-xl text-gray-600">{zhDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">要在 Cloudflare Workers 上部署 AI API？</h3>
+          <p class="text-gray-600 text-sm mb-4">Worker 体积现在是所有套餐 64 MiB 未压缩，但 D1 免费版每天 500 万读行与 10 万写行会硬失败。上线前两个都要检查。</p>
+          <a href="https://developers.cloudflare.com/workers/platform/limits/" target="_blank" rel="noopener" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">Workers 平台限额 →</a>
+        </div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">关键数据</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">变更日期</dt><dd class="font-medium">2026 年 9 月 4 日</dd></div>
+            <div><dt class="text-gray-500">旧上限</dt><dd class="font-medium">3 MB / 10 MB（压缩后）</dd></div>
+            <div><dt class="text-gray-500">新上限</dt><dd class="font-medium text-emerald-600">64 MiB（未压缩）</dd></div>
+            <div><dt class="text-gray-500">适用范围</dt><dd class="font-medium">免费版 + 付费版</dd></div>
+            <div><dt class="text-gray-500">检查值</dt><dd class="font-medium">Total Upload（非 gzip）</dd></div>
+            <div><dt class="text-gray-500">内存上限</dt><dd class="font-medium">两种套餐均 128 MB</dd></div>
+            <div><dt class="text-gray-500">启动时间</dt><dd class="font-medium">两种套餐均 1 秒</dd></div>
+            <div><dt class="text-gray-500">D1 免费读</dt><dd class="font-medium">500 万行/天</dd></div>
+            <div><dt class="text-gray-500">D1 免费写</dt><dd class="font-medium text-amber-600">10 万行/天</dd></div>
+            <div><dt class="text-gray-500">D1 执行方式</dt><dd class="font-medium text-amber-600">9 月 1 日起硬失败</dd></div>
+          </dl>
+          <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+            <p>价格更新于 2026/9/12</p>
+            <p class="mt-1">请以官网最新定价为准</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">相关厂商</h3>
+          <div class="space-y-2">
+            <a href="/zh/providers/cloudflare-workers-ai" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Cloudflare Workers AI</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/cloudflare-ai-gateway" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Cloudflare AI Gateway</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/openrouter" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>OpenRouter</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/bifrost-maxim" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Bifrost (Maxim)</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">查看全部 →</a>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">相关文章</h3>
+          <div class="space-y-2 text-sm">
+            <a href="/zh/tutorials/openai-agents-api-gpt-live-1-voice-2026" class="block py-1 hover:text-blue-600 transition-colors">OpenAI Agents API 与 GPT-Live 1 语音</a>
+            <a href="/zh/tutorials/cloudflare-ai-gateway-custom-costs-2026" class="block py-1 hover:text-blue-600 transition-colors">Cloudflare AI Gateway 自定义成本</a>
+            <a href="/zh/tutorials/cloudflare-workers-ai-china-models-2026" class="block py-1 hover:text-blue-600 transition-colors">Cloudflare Workers AI：中国模型</a>
+            <a href="/zh/tutorials/bifrost-maxim-api-review-2026" class="block py-1 hover:text-blue-600 transition-colors">Bifrost Maxim 开源网关评测</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
