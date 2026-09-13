@@ -1,0 +1,284 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-6-astra-lean-prompts-agent-skills-2026';
+const date = '2026-09-13';
+const locale = 'en';
+
+const enTitle = "GPT-6 Astra Prompting: Lean Skills, Fewer Rules";
+const enDescription = "OpenAI says GPT-6 Astra needs leaner prompts and fewer guardrails. What to cut from AGENTS.md and skill files, and what to add instead.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "GPT-6 Astra Prompting: Lean Skills, Fewer Rules",
+  "description": "OpenAI says GPT-6 Astra needs leaner prompts and fewer guardrails. What to cut from AGENTS.md and skill files, and what to add instead.",
+  "datePublished": "2026-09-13",
+  "dateModified": "2026-09-13",
+  "inLanguage": "en-US",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "GPT-6 Astra Prompting: Lean Skills, Fewer Rules",
+      "item": canonicalUrl
+    }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why does GPT-6 Astra need leaner prompts than GPT-5.6 Sol?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "GPT-6 Astra handles nuance and ambiguity better on its own, so step-by-step scaffolding that helped earlier models now works against it. OpenAI engineer Eric Provencher writes that instructions which have piled up over time can eat context or cause Astra to stop work too early. Long skill descriptions, blanket reading requirements, and rigid approval rules are the three patterns he singles out. The corrective is not a total teardown: it is reviewing skills, AGENTS.md, and task prompts at every model switch instead of carrying them forward unchanged."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What exactly changed in OpenAI's GPT-6 Astra prompting guidance?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Two documents landed a day apart in September 2026. On September 11 OpenAI published model-documentation prompting tips covering clarification behaviour, action bias, and output style. On September 12, Provencher's post extended that guidance to skill files and project instructions. The combined recommendation set is: keep scope descriptions short and precise, tie instructions to specific tasks, define what done means upfront, and revisit old approval rules when switching models."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I stop GPT-6 Astra from asking for confirmation too often?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "OpenAI's documented fix is an explicit action-bias instruction plus a narrowing of your approval rules. The prompt it publishes tells the model to infer intent and scope from the instructions and conversation context, to show a bias towards action, and to keep working until the user's intended goal is achieved unless an action is clearly destructive or irreversible. Phrases like can you, I want to, or help me should be read as calls to act rather than invitations for follow-up questions. Separately, AGENTS.md can name the specific safe operations that do not need re-confirmation, for example running local tests on throwaway data."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What should I remove from AGENTS.md when moving to GPT-6 Astra?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The highest-value removals are blanket read requirements and approval rules written for a less capable model. OpenAI's example is a rule that forces the agent to read architecture.md, database.md, and deployment.md before every change, which is overkill for a typo fix. The replacement is selective pointing: architecture docs when working on service boundaries, database docs when changing schemas, deployment notes when shipping. Old restrictions deserve particular scrutiny, because Astra can interpret them so literally that it stops even when you want it to continue."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I find which skill file made GPT-6 Astra stop working?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "OpenAI publishes a debugging prompt for exactly this. It instructs the model, when a skill causes it to ask for permission or confirmation, pause, leave work unfinished, or diverge from the user's intent, to name and link to the exact SKILL.md file it read, quote the relevant instruction, and briefly explain how it applies. The prompt also asks the model to distinguish explicit skill requirements from its own interpretation of guidelines, which is what separates a genuine conflict from a misreading."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does leaner prompting change GPT-6 Astra API costs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Indirectly, and in Astra's favour. Astra lists at $10 per million input tokens and $50 per million output tokens, with cached input at $1.00 per million. Shorter skill files and project instructions reduce the fixed context prepended to every request, and because cache reads are one tenth of the input rate, context that stays stable across a session is cheap while context that churns is not. Trimming instructions that the model does not need therefore lowers both the token bill and the risk of premature stopping."
+      }
+    }
+  ]
+};
+
+const bodyContent = `<article class="prose prose-lg max-w-none">
+  <h2 id="what-changed">OpenAI Told Developers to Write Less, Not More</h2>
+  <p>In the second week of September 2026 OpenAI published two documents that point in the same, slightly counter-intuitive direction: the more capable the model, the less scaffolding it wants. On <strong>September 11</strong> the company's model documentation spelled out where <strong>GPT-6 Astra</strong> tends toward unwanted behaviour and how to work around it. On <strong>September 12</strong>, OpenAI engineer <strong>Eric Provencher</strong> extended that guidance to the files most teams never think to update: skills, <code>AGENTS.md</code>, and the task prompts that have accumulated over a year of model switches.</p>
+
+  <p>His central claim is blunt. Instructions that have piled up over time can eat up context or cause GPT-6 Astra to stop work too early, and more capable models need less hand-holding. That inverts the instinct most teams have when a new frontier model lands. The default move is to add guardrails: more examples, more reading requirements, more explicit approvals. For Astra, OpenAI says the default move is wrong.</p>
+
+  <p>This article works through what to cut, what to add instead, and how to trace the specific file that is causing the model to stall. It is written for the people who own an API integration or an agent harness, because that is where the cost of over-prompting shows up first.</p>
+
+  <h2 id="two-documents">Two Documents, One Day Apart</h2>
+  <p>It helps to separate the two publications, because they cover different layers of the stack.</p>
+
+  <p>The <strong>September 11 model-documentation guidance</strong> covers how the model itself behaves. OpenAI reports that GPT-6 Astra asks clarifying questions more often than GPT-5.6 Sol instead of making assumptions on its own, which the company frames as the model being a more effective collaborator. The trade-off is the one developers feel immediately: the model sometimes stops where the user expected it to keep going. OpenAI's fix is prompt-level, and the company publishes the text.</p>
+
+  <p>The <strong>September 12 skill and project-instruction guidance</strong> covers the environment around the model. Provencher's argument is that skill files and <code>AGENTS.md</code> are prompts too, and they carry the same risks as any other prompt. Skills whose names and descriptions are too broad get loaded when they should not fire. Detailed step-by-step sequences slow newer models down. Approval rules written to contain an earlier, less predictable model now read as hard stops.</p>
+
+  <p>The reason the two matter together is that a fix at one layer does not survive a problem at the other. You can write a perfect action-bias prompt and still watch the agent stop halfway through, because a note in <code>AGENTS.md</code> told it to check in after the first implementation.</p>
+
+  <h2 id="what-to-cut">What to Cut</h2>
+  <p>OpenAI names three patterns specifically, and each maps to something you can grep for today.</p>
+
+  <h3 id="cut-scope">1. Overly broad skill scopes</h3>
+  <p>Skills are prompts stored as Markdown files, and their names and descriptions go into the model's context so the harness can pick the right one. When there are too many skills, the descriptions get truncated and the model loses the information it needs to choose correctly. Conflicting descriptions, or a scope broad enough to match unrelated tasks, load instructions the model does not need.</p>
+  <p>Provencher's corrective is precision about when a skill fires. His worked example: a skill for Postgres schema migrations should only trigger when creating or modifying a migration, or when checking its rollout. If a skill legitimately covers several workflows, its main document should briefly point to the right supplementary docs and scripts rather than inlining all of them, so the model reads only what the task needs.</p>
+
+  <h3 id="cut-reading">2. Blanket read requirements</h3>
+  <p>The canonical offender is a rule that forces a full project orientation before every change. Requiring the model to read multiple documents or a complete project overview before every commit is overkill for a typo fix, and Astra can figure out what it needs on its own.</p>
+  <p>The replacement is selective pointing. Instead of mandating <code>architecture.md</code>, <code>database.md</code>, and <code>deployment.md</code> on every task, the instructions name each document in the context where it applies: architecture info when working on service boundaries, database docs when changing schemas, deployment notes when shipping. Every avoided read is context the model does not spend, and context it does not get pushed toward summarising mid-task.</p>
+
+  <h3 id="cut-approvals">3. Approval rules that outlived their model</h3>
+  <p>This is the pattern with the sharpest edge. Teams that watched an earlier model go rogue locked things down with strict approval rules, and those rules have been carried forward ever since. OpenAI's position is that switching to Astra is the moment to revisit them, because the model can interpret old restrictions so literally that it stops even when you want it to keep going.</p>
+  <p>The counterweight is explicit permission for known-safe operations. The published example is local tests using throwaway data with no production access: <code>AGENTS.md</code> can state outright that the agent may run those tests, fix errors caused by the requested change, and re-run the affected tests without asking again. The rule is narrow, written in the file the model actually reads, and scoped to operations where the downside is bounded.</p>
+
+  <h2 id="what-to-add">What to Add Instead</h2>
+  <p>Cutting scaffolding is only half the change. OpenAI's guidance pairs every removal with a replacement, and the replacements are short.</p>
+
+  <h3 id="add-action-bias">An action-bias instruction</h3>
+  <p>To push Astra toward initiative, OpenAI recommends a prompt that tells the model to infer intent from context and show a bias towards action. The company publishes the wording, and the load-bearing sentences are the ones about scope and follow-through: the model should demonstrate a tendency to act and to follow the user's intended task through to completion, working independently unless an action is clearly destructive or irreversible.</p>
+  <p>The same guidance reclassifies a class of user phrasing. Phrases like <em>can you</em>, <em>I want to</em>, or <em>help me</em> should be treated as calls to act, not as invitations for follow-up questions. That single clarification removes a whole category of round-trips for anyone building on top of the API.</p>
+
+  <h3 id="add-done">An explicit definition of done</h3>
+  <p>Provencher notes that even without restrictions Astra may stop earlier than GPT-5.6 Sol, so the prompt needs to define upfront what done means. If the agent is supposed to implement something, run it, check the results, and fix errors, all four steps have to be stated. His specific warning is worth quoting in spirit: a requirement to check in after the first implementation sets an earlier stopping point, which turns a helpful-sounding rule into a premature exit.</p>
+
+  <h3 id="add-approval-timing">A rule about when approval is requested</h3>
+  <p>OpenAI's phrasing here is precise: the user should be approving a concrete, reviewable result. That reframes the confirmation loop from &#8220;ask before doing&#8221; to &#8220;prepare, then ask.&#8221; The companion instruction is to drop unsolicited warnings, disclaimers, and safety checklists that are based on hypothetical risks rather than the task at hand.</p>
+
+  <h3 id="add-debug">A debugging prompt for stalls</h3>
+  <p>The most practical item in the set is a prompt that makes the model explain itself. When a skill causes it to ask for permission or confirmation, pause, leave requested work unfinished, or diverge from the user's intent, the model should name and link to the exact <code>SKILL.md</code> file it read, quote the relevant instruction, and briefly explain how it applies. The published version also asks the model to distinguish explicit skill requirements from its own interpretation of guidelines.</p>
+  <p>That distinction is what makes the tool useful. A stall caused by an explicit rule is a rule you should probably delete; a stall caused by the model's interpretation is a wording problem you should probably tighten.</p>
+
+  <h3 id="add-style">An output-style instruction if you want prose</h3>
+  <p>One smaller finding worth acting on: Astra tends to structure responses with lists, tables, and Markdown formatting, and it reuses the same phrases across sessions. If the deliverable is prose, OpenAI's guidance is to say so explicitly, asking for concise paragraphs in plain language and the active voice. Left unspecified, you get the formatting-rich default.</p>
+
+  <h2 id="the-migration-checklist">The Migration Checklist</h2>
+  <p>Assembling the guidance into an order of operations, the sequence that fits an existing agent harness is:</p>
+  <ol>
+    <li><strong>Audit every skill file the model can reach.</strong> Shorten scope descriptions to the trigger conditions. Check for descriptions that conflict with each other.</li>
+    <li><strong>Delete blanket read requirements.</strong> Replace each with a pointer that fires in the context where the document matters.</li>
+    <li><strong>Re-read <code>AGENTS.md</code> for approval rules written before this model existed.</strong> Delete the ones that no longer describe a real risk, and keep the ones that do with tighter wording.</li>
+    <li><strong>Add the action-bias instruction and the definition of done.</strong> Both are short, and they operate at the prompt layer rather than the environment layer.</li>
+    <li><strong>Add the stalled-skill debugging prompt.</strong> It converts an opaque behaviour into a file path and a quoted line.</li>
+    <li><strong>Set explicit permissions for known-safe operations</strong> so the agent stops re-asking about local tests on throwaway data.</li>
+    <li><strong>Re-test the workflow end to end.</strong> The failure mode of over-prompting is silence, not an error, so the check is whether the task completes without a check-in, not whether the command exits zero.</li>
+  </ol>
+
+  <h2 id="why-it-matters-for-api-teams">Why This Matters for API Teams</h2>
+  <p>For a pure API integration — a proxy, a RAG service, a classification pipeline — the skill-file guidance is less directly applicable, but the underlying economics still are. Astra lists at <strong>$10 per million input tokens</strong> and <strong>$50 per million output tokens</strong>, with cached input at <strong>$1.00 per million</strong> and cache writes at $12.50 per million. Context that stays stable across calls is cheap to read; context that churns is charged at the full input rate.</p>
+
+  <p>That asymmetry means instructions that exist because a previous model needed them are not free. They are re-sent, re-read, and in many setups re-billed. The five-minute audit OpenAI is recommending is, read literally, a context-reduction exercise with a measurable line item attached.</p>
+
+  <p>The second-order effect is subtler. In an agent harness, a premature stop costs a full round-trip plus the user's attention, and it can cost the whole task if nobody notices. A check-in rule that made sense for an unpredictable model becomes an expensive interruption for a more reliable one. That is the whole argument for treating prompt and skill files as versioned artifacts tied to a model version, not as configuration written once and inherited forever.</p>
+
+  <h3 id="sources">Sources</h3>
+  <ul>
+    <li>THE DECODER, &#8220;GPT-6 Astra needs leaner prompts and fewer guardrails, OpenAI recommends&#8221; — Matthias Bastian, September 12, 2026 (covering OpenAI engineer Eric Provencher's guidance on skills, AGENTS.md, and task prompts)</li>
+    <li>THE DECODER, &#8220;OpenAI shares prompting tips for GPT-6 Astra, including a blocklist of slop words&#8221; (covering OpenAI's model-documentation prompting guidance: clarification behaviour, action bias, approval timing, output style)</li>
+    <li>OpenAI news feed, &#8220;Perplexity trusts GPT-6 Astra with end-to-end systems&#8221; — September 14, 2026 (third-party production case study: communications, software changes, production monitoring, reduced check-in frequency)</li>
+    <li>OpenAI news feed, &#8220;Cognition helps Devin test its own work with GPT-6 Astra&#8221; — September 11, 2026 (companion case study on agentic testing)</li>
+    <li>OpenAI GPT-6 Astra API pricing, as documented on this site (September 2026 verification): $10/$50 per million input/output, $1.00 cached input, $12.50 cache write</li>
+  </ul>
+</article>
+`;
+---
+
+<BaseLayout
+  title={enTitle}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  ogType="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Developer Guide</span>
+        <time datetime="2026-09-13">September 13, 2026</time>
+        <span>·</span>
+        <span>11 min read</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{enTitle}</h1>
+      <p class="text-xl text-gray-600">{enDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">Tuning prompts for GPT-6 Astra?</h3>
+          <p class="text-gray-600 text-sm mb-4">Astra is $10/$50 per million input/output tokens with cached input at $1.00. Compare the cached-input rate against every other frontier API before you rewrite your context strategy.</p>
+          <a href="https://apirank.vip/providers" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">Compare API Pricing →</a>
+        </div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Quick Facts</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">Model</dt><dd class="font-medium">GPT-6 Astra</dd></div>
+            <div><dt class="text-gray-500">Guidance date</dt><dd class="font-medium">Sept 11-12, 2026</dd></div>
+            <div><dt class="text-gray-500">Cut 1</dt><dd class="font-medium text-amber-600">Overly broad skill scopes</dd></div>
+            <div><dt class="text-gray-500">Cut 2</dt><dd class="font-medium text-amber-600">Blanket read requirements</dd></div>
+            <div><dt class="text-gray-500">Cut 3</dt><dd class="font-medium text-amber-600">Stale approval rules</dd></div>
+            <div><dt class="text-gray-500">Add 1</dt><dd class="font-medium text-emerald-600">Action-bias instruction</dd></div>
+            <div><dt class="text-gray-500">Add 2</dt><dd class="font-medium text-emerald-600">Explicit definition of done</dd></div>
+            <div><dt class="text-gray-500">Add 3</dt><dd class="font-medium text-emerald-600">Stalled-skill debug prompt</dd></div>
+            <div><dt class="text-gray-500">Input</dt><dd class="font-medium">$10 / 1M tokens</dd></div>
+            <div><dt class="text-gray-500">Cached input</dt><dd class="font-medium">$1.00 / 1M tokens</dd></div>
+            <div><dt class="text-gray-500">Output</dt><dd class="font-medium">$50 / 1M tokens</dd></div>
+          </dl>
+          <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+            <p>Prices updated 9/13/2026</p>
+            <p class="mt-1">Check official site for latest pricing</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Related Providers</h3>
+          <div class="space-y-2">
+            <a href="/providers/openai" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>OpenAI</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers/anthropic" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Anthropic</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers/openrouter" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>OpenRouter</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">View All →</a>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Related Articles</h3>
+          <div class="space-y-2 text-sm">
+            <a href="/tutorials/gpt-6-astra-api-pricing-2026" class="block py-1 hover:text-blue-600 transition-colors">GPT-6 Astra API Pricing 2026</a>
+            <a href="/tutorials/openai-agents-api-gpt-live-1-voice-2026" class="block py-1 hover:text-blue-600 transition-colors">OpenAI Agents API &amp; GPT-Live 1 Voice</a>
+            <a href="/tutorials/anthropic-517b-compute-deal-claude-api-pricing-2026" class="block py-1 hover:text-blue-600 transition-colors">Anthropic $517B Compute Deal</a>
+            <a href="/tutorials/cloudflare-workers-64mib-size-limit-ai-api-2026" class="block py-1 hover:text-blue-600 transition-colors">Cloudflare Workers 64 MiB Limit</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

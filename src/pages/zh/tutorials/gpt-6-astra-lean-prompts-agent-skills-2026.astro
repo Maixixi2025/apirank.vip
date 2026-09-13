@@ -1,0 +1,283 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-6-astra-lean-prompts-agent-skills-2026';
+const date = '2026-09-13';
+const locale = 'zh';
+
+const zhTitle = "GPT-6 Astra 提示词精简：技能与权限瘦身 2026";
+const zhDescription = "OpenAI 建议 GPT-6 Astra 使用更精简的提示词和更少的护栏：AGENTS.md 与技能文件该删什么、该加什么，以及如何定位导致模型中途停下的文件。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "GPT-6 Astra 提示词精简：技能与权限瘦身 2026",
+  "description": "OpenAI 建议 GPT-6 Astra 使用更精简的提示词和更少的护栏：AGENTS.md 与技能文件该删什么、该加什么，以及如何定位导致模型中途停下的文件。",
+  "datePublished": "2026-09-13",
+  "dateModified": "2026-09-13",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "教程",
+      "item": "https://apirank.vip/zh/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "GPT-6 Astra 提示词精简：技能与权限瘦身 2026",
+      "item": canonicalUrl
+    }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "为什么 GPT-6 Astra 需要的提示词比 GPT-5.6 Sol 更精简？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "GPT-6 Astra 自身对细微差别和模糊表述的处理能力更强，因此过去用来帮助旧模型的分步脚手架，现在反而会拖累它。OpenAI 工程师 Eric Provencher 指出，随着时间累积起来的指令会吃掉上下文，或导致 Astra 过早停止工作。他特别点出三种模式：过长的技能描述、一刀切的阅读要求、以及僵化的审批规则。修正方式不是全部推倒重建，而是在每次切换模型时重新审查技能、AGENTS.md 和任务提示词，而不是原样沿用。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "OpenAI 这次关于 GPT-6 Astra 的提示词指导具体改了什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "2026 年 9 月相隔一天发布了两份文档。9 月 11 日 OpenAI 发布模型文档层面的提示词技巧，涵盖澄清行为、行动偏向与输出风格。9 月 12 日 Provencher 的文章把同一套指导延伸到技能文件和项目指令。合并后的建议是：范围描述要简短精确、指令要与具体任务绑定、事先定义什么叫完成，并在切换模型时重新审视旧的审批规则。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "怎么让 GPT-6 Astra 不要频繁请求确认？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "OpenAI 给出的方案是一条明确的行动偏向指令，加上收紧审批规则。官方发布的提示词要求模型从指令和对话上下文中推断用户意图与任务范围，表现出行动偏向，并持续工作直到达成用户的目标，除非某个操作明显具有破坏性或不可逆。像“你能……”“我想……”“帮我……”这类表述应被理解为行动指令，而不是追问的邀请。此外，AGENTS.md 可以明确列出不需要再次确认的安全操作，例如在一次性数据上运行本地测试。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "迁移到 GPT-6 Astra 时，AGENTS.md 里应该删掉什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "最值得删除的是为能力较弱模型编写的阅读要求和审批规则。OpenAI 举的例子是：要求智能体在每次改动前都读取 architecture.md、database.md 和 deployment.md，这对修一个拼写错误来说完全是过度设计。替代方案是选择性指向：处理服务边界时看架构文档，修改 schema 时看数据库文档，上线时看部署说明。旧限制尤其需要重新审查，因为 Astra 可能把它们理解得过于字面，即使你希望它继续也会停下来。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "如何定位是哪个技能文件导致 GPT-6 Astra 停止工作？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "OpenAI 专门发布了用于此场景的调试提示词。当某个技能导致模型请求许可或确认、暂停、留下未完成的工作、或偏离用户意图时，该提示词要求模型指出并链接它读取的那个 SKILL.md 文件、引用相关指令，并简要说明其适用方式。提示词还要求模型区分技能的明确要求与自己对该指南的解读，这正是区分真实冲突与误读的关键。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "精简提示词会影响 GPT-6 Astra 的 API 成本吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "会，但方向对 Astra 有利。Astra 的价格为输入每百万 token 10 美元、输出每百万 token 50 美元，缓存输入为每百万 1.00 美元。更短的技能文件和项目指令会减少每次请求都要前置的固定上下文；由于缓存读取价格仅为输入价的十分之一，跨会话保持稳定的上下文很便宜，而不断变化的上下文则不然。因此删掉模型并不需要的指令，既降低了 token 账单，也减少了任务提前中断的风险。"
+      }
+    }
+  ]
+};
+
+const bodyContent = `<article class="prose prose-lg max-w-none">
+  <h2 id="what-changed">OpenAI 让开发者少写，而不是多写</h2>
+  <p>2026 年 9 月的第二周，OpenAI 发布了两份指向同一方向的文档，而这个方向略微反直觉：模型能力越强，它需要的脚手架越少。9 月 <strong>11 日</strong>，官方模型文档说明了 <strong>GPT-6 Astra</strong> 在哪些地方容易产生不期望的行为，以及开发者如何规避；9 月 <strong>12 日</strong>，OpenAI 工程师 <strong>Eric Provencher</strong> 把这套指导延伸到了大多数团队从来不会想到去更新的文件：技能（skills）、<code>AGENTS.md</code>，以及一年来不断累积的任务提示词。</p>
+
+  <p>他的核心判断很直接：随着时间累积起来的指令会吃掉上下文，或导致 GPT-6 Astra 过早停止工作，而能力更强的模型需要更少的“手把手”。这与大多数团队的直觉恰好相反。新前沿模型发布时，默认动作通常是加护栏：更多示例、更多必读文档、更明确的审批。但对 Astra，OpenAI 说默认动作是错的。</p>
+
+  <p>这篇文章梳理该删什么、该加什么，以及如何定位到那个让模型卡住的具体文件。目标读者是负责 API 集成或智能体框架的人，因为过度提示的成本最先在那里体现出来。</p>
+
+  <h2 id="two-documents">相隔一天的两份文档</h2>
+  <p>把两份文档分开看会更容易理解，因为它们覆盖的是技术栈的不同层次。</p>
+
+  <p><strong>9 月 11 日的模型文档指导</strong>讲的是模型本身的行为。OpenAI 指出，GPT-6 Astra 比 GPT-5.6 Sol 更倾向于提出澄清性问题，而不是自行做假设——官方把这一点定位为模型是“更有效的协作者”。代价则是开发者能立刻感受到的：模型有时会在用户期望它继续的地方停下来。OpenAI 的解法在提示词层，而且官方直接公布了措辞。</p>
+
+  <p><strong>9 月 12 日的技能与项目指令指导</strong>讲的是模型周围的环境。Provencher 的论点在于：技能文件与 <code>AGENTS.md</code> 本质上也是提示词，因此会承担与任何提示词相同的风险。描述范围过宽的技能会在不该触发时被加载；详尽的逐步流程会拖慢更新的模型；而为了约束一个更早、更不可预测的模型而写下的审批规则，现在会被当作硬性停止条件来执行。</p>
+
+  <p>两者需要合起来看的原因是：只修一层并不能覆盖另一层的问题。你可以写出一条完美的行动偏向提示词，却仍然看着智能体做到一半就停下，因为 <code>AGENTS.md</code> 里有一句话要求它在第一次实现之后先汇报。</p>
+
+  <h2 id="what-to-cut">该删什么</h2>
+  <p>OpenAI 明确点出了三种模式，每一种都能对应到你今天就能 grep 到的东西。</p>
+
+  <h3 id="cut-scope">1. 范围过宽的技能</h3>
+  <p>技能是以 Markdown 文件形式存储的提示词，它们的名称和描述会进入模型上下文，以便框架挑选正确的技能。当技能数量过多时，描述会被截断，模型就失去了做出正确选择所需的信息。描述之间互相冲突，或者范围宽到能匹配无关任务，都会加载模型并不需要的指令。</p>
+  <p>Provencher 的修正方案是精确界定技能何时触发。他给出的例子是：一个用于 Postgres schema 迁移的技能，应该只在创建或修改迁移、或检查其上线状态时触发。如果某个技能确实覆盖多个工作流，它的主文档应简要指向对应的补充文档与脚本，而不是把它们全部内联进去，这样模型只读取任务真正需要的内容。</p>
+
+  <h3 id="cut-reading">2. 一刀切的阅读要求</h3>
+  <p>最典型的例子是要求每次改动前都先做完整的项目导览。要求模型在每次提交前读取多份文档或整个项目概览，对一个拼写错误的修复来说完全是过度设计，而 Astra 有能力自己判断需要什么。</p>
+  <p>替代方案是选择性指向。与其在每次任务中强制读取 <code>architecture.md</code>、<code>database.md</code> 和 <code>deployment.md</code>，不如让指令在真正相关的上下文里点名对应文档：处理服务边界时看架构信息，修改 schema 时看数据库文档，上线时看部署说明。每省下的一次读取，都是模型不必消耗、也不会被推入摘要环节的上下文。</p>
+
+  <h3 id="cut-approvals">3. 已经比模型活得更久的审批规则</h3>
+  <p>这是三种模式里边缘最锋利的一种。曾经目睹旧模型“失控”的团队，会用严格的审批规则把一切锁死，而这些规则此后一直被沿用。OpenAI 的立场是：切换到 Astra 就是重新审视它们的时机，因为模型可能把旧限制理解得过于字面，即使你希望它继续也会停下来。</p>
+  <p>平衡点是为已知安全的操作给出明确许可。官方给出的例子是：在没有任何生产访问权限的一次性数据上运行本地测试时，<code>AGENTS.md</code> 可以直接声明，智能体可以运行这些测试、修复由本次改动引入的错误、并重新运行受影响的测试，而无需再次询问。这条规则很窄，写在模型真正会读取的文件里，并且限定在下行风险可控的操作范围内。</p>
+
+  <h2 id="what-to-add">该加什么</h2>
+  <p>删掉脚手架只是改动的一半。OpenAI 的指导为每一处删除都配了一个替代项，而这些替代项都很短。</p>
+
+  <h3 id="add-action-bias">一条行动偏向指令</h3>
+  <p>为了让 Astra 更有主动性，OpenAI 建议使用一条提示词，要求模型从上下文中推断意图，并表现出行动偏向。官方公布了措辞，其中承重的句子是关于范围与贯彻到底：模型应展示出行动的倾向，并持续跟进用户的既定任务直至完成；除非某个操作明显具有破坏性或不可逆，否则应独立推进。</p>
+  <p>同一份指导还重新界定了一类用户表述。像“你能……”“我想……”“帮我……”这样的说法，应被视为行动指令，而不是追问的邀请。仅这一条澄清，就能为基于 API 构建的团队消除一整类往返确认。</p>
+
+  <h3 id="add-done">一个明确的“完成”定义</h3>
+  <p>Provencher 指出，即使没有任何限制，Astra 也可能比 GPT-5.6 Sol 更早停下，因此提示词需要事先定义什么叫完成。如果智能体应当实现某个功能、运行它、检查结果并修复错误，这四个步骤都必须写出来。他特别提醒：把“在第一次实现后先汇报”写成要求，实际上就是把停止点提前了，会让一条听起来很贴心的规则变成提前退出。</p>
+
+  <h3 id="add-approval-timing">一条关于何时请求审批的规则</h3>
+  <p>OpenAI 在这里的措辞很精确：用户应该是在审批一个具体、可复查的成果。这把确认循环从“先问再做”重新定义为“先准备好，再问”。配套指令是删掉那些基于假想风险、而非当前任务本身的无谓警告、免责声明与安全检查清单。</p>
+
+  <h3 id="add-debug">一条用于定位卡顿的调试提示词</h3>
+  <p>整套内容里最实用的一项，是让模型解释自己行为的提示词。当某个技能导致模型请求许可或确认、暂停、留下未完成的请求工作、或偏离用户意图时，模型应指出并链接它读取的那个 <code>SKILL.md</code> 文件、引用相关指令，并简要说明其适用方式。官方版本还要求模型区分技能的明确要求与自己对该指南的解读。</p>
+  <p>正是这种区分让这个工具真正有用。由明确规则导致的卡顿，通常是该删掉的规则；由模型自身解读导致的卡顿，通常是该收紧措辞的问题。</p>
+
+  <h3 id="add-style">如果你要的是散文，就明确说</h3>
+  <p>还有一个值得处理的小发现：Astra 倾向于用列表、表格和 Markdown 格式来组织回答，并且在不同会话间重复使用同样的措辞。如果交付物是散文，OpenAI 的指导是明确提出来，要求用简洁的段落、平实的语言和主动语态。不作说明的话，你得到的就是格式丰富的默认输出。</p>
+
+  <h2 id="the-migration-checklist">迁移检查清单</h2>
+  <p>把这些指导整理成执行顺序，对于已有的智能体框架，合适的次序是：</p>
+  <ol>
+    <li><strong>审查模型能触及的每一个技能文件。</strong>把范围描述压缩到触发条件本身，并检查描述之间是否存在冲突。</li>
+    <li><strong>删除一刀切的阅读要求。</strong>把每一条替换成在真正相关的上下文中才触发的指向。</li>
+    <li><strong>重读 <code>AGENTS.md</code> 中早于本模型存在的审批规则。</strong>删除那些已不再描述真实风险的规则，保留仍有必要的，并把措辞收得更紧。</li>
+    <li><strong>加入行动偏向指令与完成定义。</strong>两者都很短，而且作用于提示词层而非环境层。</li>
+    <li><strong>加入定位卡顿技能的调试提示词。</strong>它能把一个不透明的行为转换成一条文件路径和一行被引用的指令。</li>
+    <li><strong>为已知安全的操作设置明确许可，</strong>让智能体不再反复询问一次性数据上的本地测试。</li>
+    <li><strong>端到端重测整个工作流。</strong>过度提示的失效方式是沉默，而不是报错，所以要检查的是任务能否不再中途确认就跑完，而不是命令是否以零退出。</li>
+  </ol>
+
+  <h2 id="why-it-matters-for-api-teams">这对 API 团队意味着什么</h2>
+  <p>对纯 API 集成——一个代理、一套 RAG 服务、一条分类流水线——技能文件那部分指导的适用性相对有限，但底层的经济账依然成立。Astra 的定价是输入每百万 token <strong>10 美元</strong>、输出每百万 token <strong>50 美元</strong>，缓存输入为每百万 <strong>1.00 美元</strong>，缓存写入为每百万 12.50 美元。跨调用保持稳定的上下文读取很便宜，而不断变化的上下文则按完整输入价计费。</p>
+
+  <p>这种不对称意味着：仅仅因为上一个模型需要而存在的指令并不免费。它们会被重复发送、重复读取，在很多部署里还会被重复计费。OpenAI 建议的这份五分钟审查，直白地读就是一次有明确账单数字可衡量的上下文缩减。</p>
+
+  <p>二阶效应更微妙。在智能体框架里，一次提前停止的代价是一个完整的往返加上用户的注意力，而如果没人注意到，代价可能是整个任务。对不可预测的模型来说合理的确认规则，对更可靠的模型来说就变成了一次昂贵的打断。这正是把提示词与技能文件当作与模型版本绑定的版本化产物、而不是写一次就永久继承的配置的全部理由。</p>
+
+  <h3 id="sources">资料来源</h3>
+  <ul>
+    <li>THE DECODER，《GPT-6 Astra needs leaner prompts and fewer guardrails, OpenAI recommends》——Matthias Bastian，2026 年 9 月 12 日（转述 OpenAI 工程师 Eric Provencher 关于技能、AGENTS.md 与任务提示词的指导）</li>
+    <li>THE DECODER，《OpenAI shares prompting tips for GPT-6 Astra, including a blocklist of slop words》（转述 OpenAI 模型文档层面的提示词指导：澄清行为、行动偏向、审批时机、输出风格）</li>
+    <li>OpenAI 新闻源，《Perplexity trusts GPT-6 Astra with end-to-end systems》——2026 年 9 月 14 日（第三方生产案例：通信撰写、软件变更、生产系统监控、检查频率显著下降）</li>
+    <li>OpenAI 新闻源，《Cognition helps Devin test its own work with GPT-6 Astra》——2026 年 9 月 11 日（配套案例：智能体自我测试）</li>
+    <li>GPT-6 Astra API 价格，本站 2026 年 9 月核实：输入/输出每百万 10/50 美元，缓存输入 1.00 美元，缓存写入 12.50 美元</li>
+  </ul>
+</article>
+`;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  ogType="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">开发指南</span>
+        <time datetime="2026-09-13">2026 年 9 月 13 日</time>
+        <span>·</span>
+        <span>11 分钟阅读</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{zhTitle}</h1>
+      <p class="text-xl text-gray-600">{zhDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">正在为 GPT-6 Astra 调优提示词？</h3>
+          <p class="text-gray-600 text-sm mb-4">Astra 输入/输出每百万 token 分别为 10/50 美元，缓存输入 1.00 美元。在重写上下文策略之前，先对比各家前沿 API 的缓存输入价格。</p>
+          <a href="https://apirank.vip/providers" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">对比 API 价格 →</a>
+        </div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">关键信息</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">模型</dt><dd class="font-medium">GPT-6 Astra</dd></div>
+            <div><dt class="text-gray-500">指导发布</dt><dd class="font-medium">2026 年 9 月 11-12 日</dd></div>
+            <div><dt class="text-gray-500">该删 1</dt><dd class="font-medium text-amber-600">范围过宽的技能</dd></div>
+            <div><dt class="text-gray-500">该删 2</dt><dd class="font-medium text-amber-600">一刀切阅读要求</dd></div>
+            <div><dt class="text-gray-500">该删 3</dt><dd class="font-medium text-amber-600">过期的审批规则</dd></div>
+            <div><dt class="text-gray-500">该加 1</dt><dd class="font-medium text-emerald-600">行动偏向指令</dd></div>
+            <div><dt class="text-gray-500">该加 2</dt><dd class="font-medium text-emerald-600">明确的完成定义</dd></div>
+            <div><dt class="text-gray-500">该加 3</dt><dd class="font-medium text-emerald-600">卡顿定位调试提示词</dd></div>
+            <div><dt class="text-gray-500">输入</dt><dd class="font-medium">$10 / 百万 token</dd></div>
+            <div><dt class="text-gray-500">缓存输入</dt><dd class="font-medium">$1.00 / 百万 token</dd></div>
+            <div><dt class="text-gray-500">输出</dt><dd class="font-medium">$50 / 百万 token</dd></div>
+          </dl>
+          <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+            <p>价格更新于 2026-09-13</p>
+            <p class="mt-1">请以官方页面最新价格为准</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">相关厂商</h3>
+          <div class="space-y-2">
+            <a href="/zh/providers/openai" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>OpenAI</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/anthropic" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Anthropic</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/openrouter" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>OpenRouter</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">查看全部 →</a>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">相关文章</h3>
+          <div class="space-y-2 text-sm">
+            <a href="/zh/tutorials/gpt-6-astra-api-pricing-2026" class="block py-1 hover:text-blue-600 transition-colors">GPT-6 Astra API 价格 2026</a>
+            <a href="/zh/tutorials/openai-agents-api-gpt-live-1-voice-2026" class="block py-1 hover:text-blue-600 transition-colors">OpenAI Agents API 与 GPT-Live 1 语音</a>
+            <a href="/zh/tutorials/cloudflare-workers-64mib-size-limit-ai-api-2026" class="block py-1 hover:text-blue-600 transition-colors">Cloudflare Workers 64 MiB 上限</a>
+            <a href="/zh/tutorials/deepseek-v4-1-flash-kv-cache-api-2026" class="block py-1 hover:text-blue-600 transition-colors">DeepSeek V4.1 Flash KV 缓存</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
