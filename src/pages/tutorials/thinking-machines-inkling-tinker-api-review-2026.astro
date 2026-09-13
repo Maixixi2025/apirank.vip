@@ -1,0 +1,310 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'thinking-machines-inkling-tinker-api-review-2026';
+const date = '2026-09-13';
+const locale = 'en';
+
+const enTitle = "Thinking Machines Inkling API: Tinker Pricing";
+const enDescription = "Thinking Machines Inkling API 2026: 975B/41B open-weight MoE at $1.00/$4.05 per 1M, Tinker fine-tuning rates, and Inkling-Small at $0.30/$1.20. Verified.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Thinking Machines Inkling API: Tinker Pricing",
+  "description": "Thinking Machines Inkling API 2026: 975B/41B open-weight MoE at $1.00/$4.05 per 1M, Tinker fine-tuning rates, and Inkling-Small at $0.30/$1.20. Verified.",
+  "datePublished": "2026-09-13",
+  "dateModified": "2026-09-13",
+  "inLanguage": "en-US",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Thinking Machines Inkling API: Tinker Pricing",
+      "item": canonicalUrl
+    }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does the Thinking Machines Inkling API cost per million tokens?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Thinking Machines publishes two separate price lists. Tinker serverless inference for Inkling is $1.00 per million input tokens, $0.17 per million cached input tokens, and $4.05 per million output tokens at the 256K context tier. Inkling-Small, the 276B/12B sibling, is $0.30 per million input, $0.06 cached input, and $1.20 per million output at the same context. The numbers are published as machine-readable JSON at tinker-docs.thinkingmachines.ai/tinker/serverless.json, so they can be pulled programmatically rather than scraped."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Inkling open weights, and can I self-host it instead of paying an API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Inkling and Inkling-Small are both released with full weights on Hugging Face under the thinkingmachines organisation, so self-hosting is a real alternative to the hosted endpoint. The intended division of labour is that the weights are for people who want to own and modify the model, while Tinker is for people who want to fine-tune without owning GPU infrastructure. Note that Inkling itself is 975B parameters with 41B active per token, so self-hosting means a genuinely large MoE deployment, whereas Inkling-Small at 276B total and 12B active is the practical self-host target."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Tinker and how is it different from an ordinary inference API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tinker is a training API, not a chat API. Its surface is four functions: forward_backward to run a forward and backward pass and accumulate gradients, optim_step to apply the accumulated gradient, sample to generate tokens for evaluation or RL actions, and save_state to checkpoint. You write LoRA fine-tuning loops against that, and Thinking Machines handles scheduling and the GPU clusters. The practical consequence for budgeting is that Tinker bills per million tokens on prefill, cached prefill, sample, and train, so training a model has its own line item that is distinct from inference. Checkpoint storage is charged separately at $0.10 per GB-month."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Inkling-Small compare to Inkling on benchmarks?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Thinking Machines reports that Inkling-Small matches or exceeds its larger sibling on reasoning and agentic tasks. On Humanity's Last Exam it scores 31.6% against Inkling's 29.7%, and the company says the advantage holds at every thinking budget, meaning the test-time compute curve sits above Inkling's throughout. On SWEBench-Verified it exceeds 80%. Inkling retains an advantage on knowledge coverage and factuality, which is the expected trade for a model a quarter of the size. On the GDPval-AA v2 Elo measure, Inkling-Small is credited with 1269 at roughly 23k output tokens per task versus Inkling's 1238 at 28.6k tokens."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the Inkling API support images and audio, or only text?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Both models are natively multimodal on input. The model specification lists text, image, and audio as supported inputs, and the Tinker model table types both entries as Hybrid plus Audio plus Vision. What that means in practice is that the documented context window of up to 1M tokens applies across modalities; the hosted serverless tiers, however, are documented at a 256K context rather than the full million. If you need the longest context, check which tier you are being billed against before assuming the headline figure applies."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the 50% discount on Inkling training permanent?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Thinking Machines labels the current training prices as a limited-time 50% discount, which is why the published table carries both a discounted figure and an original figure for each model. For Inkling at the 64K tier the current prefill is $1.87 against an original $3.74, and the train rate is $5.61 against an original $11.22. The machine-readable JSON exposes these as original_prefill, original_cached_prefill, original_sample, and original_train fields alongside a note field, so you can compute what a workload costs after the discount ends without guessing. Budget against the original rate, not the promotional one."
+      }
+    }
+  ]
+};
+
+const bodyContent = `<article class="prose prose-lg max-w-none">
+  <h2 id="what-it-is">An Open-Weights Model Family With a Training API Attached</h2>
+  <p>Thinking Machines Lab released <strong>Inkling</strong> on July 15, 2026, followed by <strong>Inkling-Small</strong> on July 30. Both ship with full weights, both are served through <strong>Tinker</strong>, and both are listed with per-million-token pricing that the company publishes as machine-readable JSON. For anyone maintaining an API cost comparison, that combination is unusual enough to be worth a careful look: most open-weight releases either lack a first-party hosted endpoint, or hide the pricing behind a sales conversation.</p>
+
+  <p>This article covers what the two models are, what the hosted endpoints charge, what Tinker's training rates add on top, and where the pricing structure creates traps for a cost model.</p>
+
+  <h2 id="model-lineup">The Model Lineup</h2>
+  <p>The two models are Mixture-of-Experts transformers trained from scratch. The headline numbers come straight from the model page and the release posts.</p>
+
+  <table>
+    <thead>
+      <tr><th>Model</th><th>Total params</th><th>Active params</th><th>Architecture</th><th>Context</th><th>Inputs</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Inkling</td><td>975B</td><td>41B</td><td>MoE</td><td>1M tokens</td><td>Text, image, audio</td></tr>
+      <tr><td>Inkling-Small</td><td>276B</td><td>12B</td><td>MoE</td><td>1M tokens</td><td>Text, image, audio</td></tr>
+    </tbody>
+  </table>
+
+  <p>Inkling was pretrained on 45 trillion tokens of text, images, audio, and video. The company is unusually direct about where it sits competitively: the release post states that Inkling is <em>not</em> the strongest overall model available today, open or closed, and instead argues that the combination of multimodal input, efficient and controllable thinking effort, and Tinker availability makes it a good open-weights base for customisation. That is a positioning statement worth taking at face value when you are deciding between Inkling and a frontier hosted model.</p>
+
+  <p>Inkling-Small is the more interesting of the two for most teams. It began training after its larger sibling, which let Thinking Machines adjust the pretraining data mix and recipe, and it was post-trained partly via on-policy distillation with Inkling as the teacher before two further weeks of scaled agentic coding RL. The result, per the company, is a model that surpassed Inkling on reasoning and agentic coding while retaining the multimodal input and variable thinking effort.</p>
+
+  <h2 id="serverless-pricing">Serverless Inference Pricing</h2>
+  <p>This is the price list that matters if you want to call the models rather than train them. Both entries are documented at a 256K context tier, and both are billed per million tokens with a separate cached-input rate.</p>
+
+  <table>
+    <thead>
+      <tr><th>Model</th><th>Context</th><th>Input /1M</th><th>Cached input /1M</th><th>Output /1M</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Inkling-Small</td><td>256K</td><td>$0.30</td><td>$0.06</td><td>$1.20</td></tr>
+      <tr><td>Inkling</td><td>256K</td><td>$1.00</td><td>$0.17</td><td>$4.05</td></tr>
+    </tbody>
+  </table>
+
+  <p>Two things stand out. First, the cached-input discount is substantial: Inkling-Small's cached rate is one fifth of its input rate, and Inkling's is slightly better than one sixth. For an agent that carries a long system prompt or a persistent skill file, that ratio is the single biggest lever on your bill. Second, the gap between the two models is not uniform. Inkling costs 3.3x Inkling-Small on input but only 3.4x on output, so there is no tier where the larger model is proportionally cheaper to run.</p>
+
+  <p>The 256K context in the pricing table is worth flagging separately. The model page advertises a 1M-token context window, and the release post repeats that figure. The serverless table documents 256K. If your workload depends on the headline number, confirm which tier you are actually being routed to before you size the context budget.</p>
+
+  <h2 id="tinker-pricing">Tinker Training Pricing</h2>
+  <p>Tinker is the part of the offering that has no direct equivalent in most API catalogs. It is a training API built on LoRA fine-tuning, exposed through four functions: <code>forward_backward</code>, <code>optim_step</code>, <code>sample</code>, and <code>save_state</code>. You bring a dataset of supervised examples or reinforcement-learning environments, pick a base model, and Thinking Machines handles scheduling and the GPU clusters behind the API.</p>
+
+  <p>Pricing is per million tokens across four line items: prefill, cached prefill, sample, and train. The current rates carry a limited-time 50% discount, which the published table exposes by showing both the discounted and the original figure.</p>
+
+  <table>
+    <thead>
+      <tr><th>Base model</th><th>Context</th><th>Prefill /1M</th><th>Cached prefill /1M</th><th>Sample /1M</th><th>Train /1M</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Inkling</td><td>64K</td><td>$1.87</td><td>$0.374</td><td>$4.68</td><td>$5.61</td></tr>
+      <tr><td>Inkling (256K)</td><td>256K</td><td>$3.74</td><td>$0.748</td><td>$9.36</td><td>$11.23</td></tr>
+      <tr><td>Inkling-Small</td><td>64K</td><td>$0.58</td><td>$0.116</td><td>$1.44</td><td>$1.73</td></tr>
+      <tr><td>Inkling-Small (256K)</td><td>256K</td><td>$1.16</td><td>$0.232</td><td>$2.89</td><td>$3.47</td></tr>
+      <tr><td>Nemotron-3-Ultra-550B-A55B</td><td>64K</td><td>$2.49</td><td>$0.498</td><td>$6.225</td><td>$5.478</td></tr>
+      <tr><td>Nemotron-3-Super-120B-A12B</td><td>64K</td><td>$0.57</td><td>$0.114</td><td>$1.44</td><td>$1.276</td></tr>
+      <tr><td>GLM-5.3</td><td>256K</td><td>$4.86</td><td>$0.972</td><td>$12.15</td><td>$14.58</td></tr>
+      <tr><td>Kimi-K2.6</td><td>32K</td><td>$2.205</td><td>$0.441</td><td>$5.49</td><td>$4.84</td></tr>
+      <tr><td>Qwen3.8-27B</td><td>64K</td><td>$1.86</td><td>$0.372</td><td>$5.595</td><td>$4.103</td></tr>
+      <tr><td>GPT-OSS-120B</td><td>32K</td><td>$0.33</td><td>$0.066</td><td>$0.84</td><td>$0.737</td></tr>
+      <tr><td>Qwen3-8B</td><td>32K</td><td>$0.195</td><td>$0.039</td><td>$0.60</td><td>$0.44</td></tr>
+      <tr><td>DeepSeek-V3.1</td><td>32K</td><td>$1.695</td><td>$0.339</td><td>$4.215</td><td>$3.718</td></tr>
+    </tbody>
+  </table>
+
+  <p>Note that training a model is not restricted to Thinking Machines' own weights. The base-model roster independently includes NVIDIA Nemotron variants, Z.AI GLM-5.3, Moonshot Kimi-K2.6, five Qwen checkpoints, OpenAI's GPT-OSS pair, and DeepSeek-V3.1. That makes Tinker a plausible substitute for a self-managed fine-tuning stack even if you have no interest in Inkling itself, which is the more commercially relevant reading of the product.</p>
+
+  <p>Checkpoint storage is billed separately at <strong>$0.10 per GB-month</strong>. Tinker also exposes an endpoint for downloading any saved checkpoint, so fine-tuned weights are portable off the platform rather than trapped on it. On the data question, Thinking Machines states that customer training data is used solely to fine-tune the customer's own models and is not used to train Thinking Machines' models.</p>
+
+  <h2 id="reading-the-json">Why the Machine-Readable Pricing Matters</h2>
+  <p>The documentation page carries a note that is, for anyone building a cost dashboard, more useful than the tables themselves. It warns against scraping the HTML, states that the tables are presentational and may change, and points instead at two JSON files published alongside the page.</p>
+
+  <p><code>models.json</code> covers the training table. Each object carries <code>name</code>, <code>tinker_id</code>, <code>context</code>, <code>size</code>, <code>params</code>, <code>active_params</code>, <code>arch</code>, <code>type</code>, <code>url</code>, and the four per-million-token prices as strings. Models on a temporary discount additionally carry <code>original_prefill</code>, <code>original_cached_prefill</code>, <code>original_sample</code>, and <code>original_train</code> fields plus a <code>note</code>. <code>serverless.json</code> covers the inference table with <code>input</code>, <code>cached_input</code>, and <code>output</code>.</p>
+
+  <p>Two details in that schema are worth building around. The <code>params</code> and <code>active_params</code> values are integers rather than abbreviated strings, and the documentation states they are as published by the model's publisher, with the two values equal for dense models. The price fields are strings with a dollar sign, not floats, so a parser has to strip the symbol before doing arithmetic. The presence of paired original and discounted fields also means you can compute the post-promotion cost of a workload directly from the feed instead of maintaining a parallel table of your own.</p>
+
+  <h2 id="benchmarks">Where the Two Models Actually Land</h2>
+  <p>The benchmark story is the reason Inkling-Small is the more strategically interesting release. Thinking Machines' own summary is that Inkling-Small matches or exceeds Inkling on reasoning and agentic tasks while Inkling keeps an advantage on knowledge coverage and factuality.</p>
+
+  <p>The specific figures the company publishes: Inkling-Small scores <strong>31.6%</strong> on Humanity's Last Exam against Inkling's <strong>29.7%</strong>, with the advantage holding at every thinking budget, meaning Inkling-Small's test-time compute curve sits above Inkling's across the sweep. On SWEBench-Verified it exceeds <strong>80%</strong>. On the GDPval-AA v2 Elo measure it is credited with <strong>1269</strong> against Inkling's <strong>1238</strong>, achieved at roughly 23k output tokens per task versus Inkling's 28.6k.</p>
+
+  <p>Two caveats belong with those numbers. They are vendor-reported, and the comparison set in the published charts includes DeepSeek V4 Flash, Gemini 3.5 Flash-Lite, GPT 5.6 Luna, Qwen3.5-397B-A17B, MiMo V2.5, MiniMax M2.7, Kimi K2.5 and K2.6, GLM 5.2, and the Nemotron 3 tiers, so any cross-vendor read should be treated as indicative rather than settled. The token-count figures underlying the cost charts come from Thinking Machines' own evaluations or from Artificial Analysis, which the company discloses.</p>
+
+  <h2 id="tradeoffs">The Trade-Offs to Weigh Before You Commit</h2>
+  <p><strong>The discount is temporary.</strong> Every Inkling and Nemotron row in the training table carries a limited-time 50% discount note. Inkling's 64K train rate of $5.61 doubles to $11.22 when that lapses. A cost model built on the promotional rate will be wrong within months, so build on the original fields.</p>
+
+  <p><strong>Context varies by surface.</strong> The models advertise 1M tokens. The serverless table documents 256K. The training table offers 64K and 256K tiers at different prices. Three surfaces, three numbers, and the price moves with the tier. This is the most likely source of an estimate that is off by a factor of two.</p>
+
+  <p><strong>Self-hosting and hosting are different products.</strong> The weights being open means self-hosting is real, but Inkling at 975B total parameters is not a casual deployment. Inkling-Small at 276B total and 12B active is the tier where self-hosting starts to make economic sense, and it is also the tier that beats the larger model on the reasoning benchmarks. The sensible default for most teams evaluating this family is Inkling-Small for both API calls and any self-host plan.</p>
+
+  <p><strong>Tinker's value is not limited to Inkling.</strong> The base-model roster spans eight vendors' checkpoints, so the training API stands on its own. If your interest is LoRA fine-tuning without owning GPUs, evaluate Tinker against your current stack on that basis and treat Inkling as one model option inside it rather than as the reason to sign up.</p>
+
+  <p><strong>Not every model carries the discount.</strong> GLM-5.3, Kimi-K2.6, Qwen3.8-27B, Qwen3.6-27B, Qwen3.5-397B-A17B, the Qwen3.5 base and small models, Qwen3-8B, GPT-OSS-120B, GPT-OSS-20B, and DeepSeek-V3.1 are all listed at full price with no note. The discounted set is Inkling, Inkling-Small, and the four Nemotron checkpoints. If you were assuming a flat promotional rate across the catalog, that assumption is wrong.</p>
+
+  <h2 id="bottom-line">The Bottom Line</h2>
+  <p>Thinking Machines has shipped something structurally different from the usual model release: a small open-weight family whose pricing is published in a parseable format, paired with a training API whose base-model roster extends well beyond the company's own weights. The rate card itself is competitive for the parameter counts involved, particularly Inkling-Small at $0.30 input and $1.20 output, and the cached-input ratios are aggressive enough to matter for long-context agent workloads.</p>
+
+  <p>The three things to verify before you build a budget on it are the tier you are actually billed at, whether the discount is still in force for the specific models you plan to use, and whether Tinker's training rates beat your current fine-tuning path once checkpoint storage is included. All three are answerable from the published JSON rather than from the marketing page, which is more than can be said for most vendors in this category.</p>
+
+  <ul>
+    <li>Tinker serverless inference: Inkling $1.00 input / $0.17 cached / $4.05 output per 1M at 256K; Inkling-Small $0.30 / $0.06 / $1.20</li>
+    <li>Machine-readable pricing: <code>tinker-docs.thinkingmachines.ai/tinker/models.json</code> and <code>serverless.json</code></li>
+    <li>Discounts are temporary and flagged with paired <code>original_*</code> fields; budget against the original rates</li>
+    <li>Checkpoint storage $0.10 per GB-month; checkpoints are downloadable, so fine-tuned weights stay portable</li>
+  </ul>
+</article>
+`;
+---
+
+<BaseLayout
+  title={enTitle}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  ogType="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Provider Review</span>
+        <time datetime="2026-09-13">September 13, 2026</time>
+        <span>·</span>
+        <span>12 min read</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{enTitle}</h1>
+      <p class="text-xl text-gray-600">{enDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">Comparing open-weight API pricing?</h3>
+          <p class="text-gray-600 text-sm mb-4">Inkling-Small is $0.30/$1.20 per million with cached input at $0.06. Put those rates next to every other open-weight hosted endpoint before you commit a workload.</p>
+          <a href="https://apirank.vip/providers" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">Compare API Pricing →</a>
+        </div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Quick Facts</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">Vendor</dt><dd class="font-medium">Thinking Machines Lab</dd></div>
+            <div><dt class="text-gray-500">Models</dt><dd class="font-medium">Inkling, Inkling-Small</dd></div>
+            <div><dt class="text-gray-500">Inkling size</dt><dd class="font-medium">975B total / 41B active</dd></div>
+            <div><dt class="text-gray-500">Inkling-Small size</dt><dd class="font-medium">276B total / 12B active</dd></div>
+            <div><dt class="text-gray-500">Weights</dt><dd class="font-medium text-emerald-600">Open on Hugging Face</dd></div>
+            <div><dt class="text-gray-500">Inkling input</dt><dd class="font-medium">$1.00 / 1M tokens</dd></div>
+            <div><dt class="text-gray-500">Inkling cached input</dt><dd class="font-medium">$0.17 / 1M tokens</dd></div>
+            <div><dt class="text-gray-500">Inkling output</dt><dd class="font-medium">$4.05 / 1M tokens</dd></div>
+            <div><dt class="text-gray-500">Inkling-Small output</dt><dd class="font-medium">$1.20 / 1M tokens</dd></div>
+            <div><dt class="text-gray-500">HLE (Small / base)</dt><dd class="font-medium">31.6% / 29.7%</dd></div>
+            <div><dt class="text-gray-500">Checkpoint storage</dt><dd class="font-medium">$0.10 / GB-month</dd></div>
+          </dl>
+          <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+            <p>Prices updated 9/13/2026</p>
+            <p class="mt-1">Check official site for latest pricing</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Related Providers</h3>
+          <div class="space-y-2">
+            <a href="/providers/nvidia-nim" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>NVIDIA NIM</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers/huggingface" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Hugging Face</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers/qwen" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Alibaba Qwen</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">View All →</a>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Related Articles</h3>
+          <div class="space-y-2 text-sm">
+            <a href="/tutorials/huggingface-api-review-2026" class="block py-1 hover:text-blue-600 transition-colors">Hugging Face API Review 2026</a>
+            <a href="/tutorials/nvidia-hugging-face-acquisition-2026" class="block py-1 hover:text-blue-600 transition-colors">NVIDIA Acquires Hugging Face</a>
+            <a href="/tutorials/qwen3-8-max-0902-code-arena-webdev-2026" class="block py-1 hover:text-blue-600 transition-colors">Qwen3.8 Max 0902 Code Arena</a>
+            <a href="/tutorials/deepseek-v4-1-flash-kv-cache-api-2026" class="block py-1 hover:text-blue-600 transition-colors">DeepSeek V4.1 Flash KV Cache</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

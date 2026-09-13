@@ -1,0 +1,309 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'thinking-machines-inkling-tinker-api-review-2026';
+const date = '2026-09-13';
+const locale = 'zh';
+
+const zhTitle = "Thinking Machines Inkling API 定价：Tinker 训练费率 2026";
+const zhDescription = "Thinking Machines Inkling API 2026：975B/41B 开源 MoE 定价 $1.00/$4.05 每百万，Inkling-Small $0.30/$1.20，含 Tinker 训练费率与自动读取价格 JSON。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Thinking Machines Inkling API 定价：Tinker 训练费率 2026",
+  "description": "Thinking Machines Inkling API 2026：975B/41B 开源 MoE 定价 $1.00/$4.05 每百万，Inkling-Small $0.30/$1.20，含 Tinker 训练费率与自动读取价格 JSON。",
+  "datePublished": "2026-09-13",
+  "dateModified": "2026-09-13",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "教程",
+      "item": "https://apirank.vip/zh/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Thinking Machines Inkling API 定价：Tinker 训练费率 2026",
+      "item": canonicalUrl
+    }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Thinking Machines Inkling API 每百万 token 多少钱？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Thinking Machines 公布了两套独立价目表。Tinker 无服务器推理的 Inkling 为输入每百万 1.00 美元、缓存输入 0.17 美元、输出 4.05 美元，上下文档位为 256K。体量更小的 Inkling-Small（276B/12B）在同一档位为输入 0.30 美元、缓存输入 0.06 美元、输出 1.20 美元。这些数字以机器可读 JSON 形式发布在 tinker-docs.thinkingmachines.ai/tinker/serverless.json，可以直接程序化拉取而不必抓取页面。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Inkling 是开源权重吗？我可以自托管而不付 API 费用吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "是。Inkling 与 Inkling-Small 都在 Hugging Face 的 thinkingmachines 组织下发布了完整权重，自托管是真实可行的替代方案。厂商设定分工是：权重给想拥有并改造模型的人，Tinker 给想微调但不想自己维护 GPU 的人。需要注意 Inkling 本身是 975B 总参数、每 token 激活 41B，自托管意味着真正的大型 MoE 部署；而 Inkling-Small 的 276B 总量、12B 激活才是实际可自托管的档位。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Tinker 是什么？它和普通推理 API 有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tinker 是训练 API，不是对话 API。它的接口只有四个函数：forward_backward 执行前向与反向传播并累积梯度，optim_step 应用累积的梯度，sample 生成 token 用于评估或强化学习动作，save_state 保存检查点。你基于这套接口编写 LoRA 微调循环，调度与 GPU 集群由 Thinking Machines 负责。对预算的实际影响是：Tinker 按 prefill、cached prefill、sample、train 四项分别按每百万 token 计费，训练有独立于推理的账单；检查点存储另行按每 GB 每月 0.10 美元计费。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Inkling-Small 与 Inkling 在基准测试上表现如何？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Thinking Machines 表示 Inkling-Small 在推理与智能体任务上追平甚至超过更大的同门模型。在 Humanity's Last Exam 上它得 31.6%，Inkling 为 29.7%，厂商称该优势在每一档思考预算下都成立，即其测试时计算曲线全程位于 Inkling 之上。在 SWEBench-Verified 上它超过 80%。Inkling 在知识覆盖面与事实准确性上仍保留优势，这是体量缩小到四分之一后符合预期的取舍。在 GDPval-AA v2 的 Elo 指标上，Inkling-Small 记为 1269、每任务约 2.3 万输出 token，Inkling 为 1238、2.86 万 token。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Inkling API 只支持文本，还是也支持图像与音频？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "两个模型都在输入端原生多模态。模型规格列出支持文本、图像与音频输入，Tinker 模型表中两者类型均标注为 Hybrid + Audio + Vision。实际含义是文档所述最高 100 万 token 的上下文窗口适用于所有模态；但托管的无服务器档位文档标注的是 256K 而非完整的一百万。如果你依赖最长上下文，先确认自己实际被计费的档位，再假设标题数字适用。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Inkling 训练价 50% 折扣是永久的吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不是。Thinking Machines 将当前训练价格标注为限时 5 折，因此公布的表格中每个模型同时带有折后价与原价两列。以 64K 档位的 Inkling 为例，当前 prefill 为 1.87 美元而原价为 3.74 美元，train 费率为 5.61 美元而原价 11.22 美元。机器可读 JSON 通过 original_prefill、original_cached_prefill、original_sample、original_train 字段以及 note 字段暴露这些信息，因此可以直接算出折扣结束后的成本而无需猜测。做预算请按原价而非促销价。"
+      }
+    }
+  ]
+};
+
+const bodyContent = `<article class="prose prose-lg max-w-none">
+  <h2 id="what-it-is">一个自带训练 API 的开源权重模型家族</h2>
+  <p>Thinking Machines Lab 于 2026 年 7 月 15 日发布 <strong>Inkling</strong>，7 月 30 日发布 <strong>Inkling-Small</strong>。两者都发布完整权重，都通过 <strong>Tinker</strong> 提供服务，并且都以每百万 token 为单位公布价格——更关键的是，这家公司把价格表以机器可读 JSON 的形式一并发布。对于维护 API 成本对比表的人来说，这个组合罕见得值得仔细看一遍：多数开源权重发布要么缺少第一方托管端点，要么把定价藏在销售沟通后面。</p>
+
+  <p>本文覆盖两个模型是什么、宿主端点如何收费、Tinker 训练费率在此基础上增加多少，以及定价结构中哪些地方容易让成本模型算错。</p>
+
+  <h2 id="model-lineup">模型阵容</h2>
+  <p>两个模型都是从零训练的混合专家（MoE）Transformer。以下数字直接来自模型页与发布公告。</p>
+
+  <table>
+    <thead>
+      <tr><th>模型</th><th>总参数</th><th>激活参数</th><th>架构</th><th>上下文</th><th>输入模态</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Inkling</td><td>975B</td><td>41B</td><td>MoE</td><td>100 万 token</td><td>文本、图像、音频</td></tr>
+      <tr><td>Inkling-Small</td><td>276B</td><td>12B</td><td>MoE</td><td>100 万 token</td><td>文本、图像、音频</td></tr>
+    </tbody>
+  </table>
+
+  <p>Inkling 在 45 万亿 token 的文本、图像、音频与视频上预训练。厂商对竞争位置的表述相当直接：发布公告明确写道 Inkling <em>不是</em> 当前最强的模型，无论开源还是闭源，而是主张「多模态输入 + 高效可控的思考力度 + Tinker 可微调」这一组合使它成为一个好的开源权重定制基座。在拿它和前沿托管模型做取舍时，这句话值得按字面理解。</p>
+
+  <p>对多数团队而言，Inkling-Small 才是更有意思的那个。它比大模型更晚开始训练，因此 Thinking Machines 得以调整预训练数据配比与训练配方；后训练阶段一部分通过以 Inkling 为教师模型的在线策略蒸馏完成，随后又进行了两周规模化的智能体编程强化学习。厂商称结果是一个在推理与智能体编程上反超 Inkling、同时保留多模态输入与可变思考力度的模型。</p>
+
+  <h2 id="serverless-pricing">无服务器推理定价</h2>
+  <p>如果你只是想调用模型而不训练，这是真正重要的价目表。两条记录都标注为 256K 上下文档位，均按每百万 token 计费，且缓存输入单独计价。</p>
+
+  <table>
+    <thead>
+      <tr><th>模型</th><th>上下文</th><th>输入 /百万</th><th>缓存输入 /百万</th><th>输出 /百万</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Inkling-Small</td><td>256K</td><td>$0.30</td><td>$0.06</td><td>$1.20</td></tr>
+      <tr><td>Inkling</td><td>256K</td><td>$1.00</td><td>$0.17</td><td>$4.05</td></tr>
+    </tbody>
+  </table>
+
+  <p>有两点值得注意。第一，缓存输入折扣力度很大：Inkling-Small 的缓存价是输入价的五分之一，Inkling 的略优于六分之一。对于一个携带长系统提示词或常驻技能文件的智能体，这个比例是账单上最大的单一杠杆。第二，两个模型之间的价差并不均匀。Inkling 在输入上是大模型的 3.3 倍，输出上只有 3.4 倍，因此不存在某个档位上大模型反而更划算的情况。</p>
+
+  <p>价格表中的 256K 上下文需要单独提示。模型页宣传的是 100 万 token 上下文窗口，发布公告也重复了这个数字，而无服务器表格标注的是 256K。如果你的负载依赖标题数字，请在规划上下文预算前先确认实际路由到的是哪个档位。</p>
+
+  <h2 id="tinker-pricing">Tinker 训练定价</h2>
+  <p>Tinker 是这套产品中在多数 API 目录里找不到直接对应物的部分。它是构建在 LoRA 微调之上的训练 API，通过四个函数暴露：<code>forward_backward</code>、<code>optim_step</code>、<code>sample</code>、<code>save_state</code>。你提供监督学习样本数据集或强化学习环境，选好基座模型，调度与 GPU 集群由 Thinking Machines 负责。</p>
+
+  <p>计费按每百万 token 分四项：prefill、cached prefill、sample、train。当前费率带限时 5 折，公布的表格同时展示折后价与原价。</p>
+
+  <table>
+    <thead>
+      <tr><th>基座模型</th><th>上下文</th><th>Prefill /百万</th><th>缓存 Prefill /百万</th><th>Sample /百万</th><th>Train /百万</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Inkling</td><td>64K</td><td>$1.87</td><td>$0.374</td><td>$4.68</td><td>$5.61</td></tr>
+      <tr><td>Inkling (256K)</td><td>256K</td><td>$3.74</td><td>$0.748</td><td>$9.36</td><td>$11.23</td></tr>
+      <tr><td>Inkling-Small</td><td>64K</td><td>$0.58</td><td>$0.116</td><td>$1.44</td><td>$1.73</td></tr>
+      <tr><td>Inkling-Small (256K)</td><td>256K</td><td>$1.16</td><td>$0.232</td><td>$2.89</td><td>$3.47</td></tr>
+      <tr><td>Nemotron-3-Ultra-550B-A55B</td><td>64K</td><td>$2.49</td><td>$0.498</td><td>$6.225</td><td>$5.478</td></tr>
+      <tr><td>Nemotron-3-Super-120B-A12B</td><td>64K</td><td>$0.57</td><td>$0.114</td><td>$1.44</td><td>$1.276</td></tr>
+      <tr><td>GLM-5.3</td><td>256K</td><td>$4.86</td><td>$0.972</td><td>$12.15</td><td>$14.58</td></tr>
+      <tr><td>Kimi-K2.6</td><td>32K</td><td>$2.205</td><td>$0.441</td><td>$5.49</td><td>$4.84</td></tr>
+      <tr><td>Qwen3.8-27B</td><td>64K</td><td>$1.86</td><td>$0.372</td><td>$5.595</td><td>$4.103</td></tr>
+      <tr><td>GPT-OSS-120B</td><td>32K</td><td>$0.33</td><td>$0.066</td><td>$0.84</td><td>$0.737</td></tr>
+      <tr><td>Qwen3-8B</td><td>32K</td><td>$0.195</td><td>$0.039</td><td>$0.60</td><td>$0.44</td></tr>
+      <tr><td>DeepSeek-V3.1</td><td>32K</td><td>$1.695</td><td>$0.339</td><td>$4.215</td><td>$3.718</td></tr>
+    </tbody>
+  </table>
+
+  <p>注意可训练的基座模型并不局限于 Thinking Machines 自家的权重。基座清单独立包含 NVIDIA Nemotron 若干档、Z.AI GLM-5.3、月之暗面 Kimi-K2.6、五个 Qwen 检查点、OpenAI 的 GPT-OSS 两款以及 DeepSeek-V3.1。这意味着即使你对 Inkling 本身毫无兴趣，Tinker 也可能是自建微调栈的合理替代品——这是该产品在商业上更值得关注的一面。</p>
+
+  <p>检查点存储单独按 <strong>每 GB 每月 0.10 美元</strong> 计费。Tinker 同时提供下载任一已保存检查点的端点，因此微调后的权重可移植出平台而非被困其中。关于数据，Thinking Machines 声明客户训练数据仅用于微调客户自己的模型，不会用于训练 Thinking Machines 的模型。</p>
+
+  <h2 id="reading-the-json">为什么机器可读定价很重要</h2>
+  <p>文档页上有一条对成本看板开发者而言比表格本身更有用的说明。它明确警告不要抓取 HTML，指出表格只是展示层且可能变化，并把使用者引向与页面一同发布的两个 JSON 文件。</p>
+
+  <p><code>models.json</code> 覆盖训练表。每个对象带 <code>name</code>、<code>tinker_id</code>、<code>context</code>、<code>size</code>、<code>params</code>、<code>active_params</code>、<code>arch</code>、<code>type</code>、<code>url</code>，以及四项每百万 token 价格（字符串形式）。处于临时折扣的模型额外带 <code>original_prefill</code>、<code>original_cached_prefill</code>、<code>original_sample</code>、<code>original_train</code> 字段与一个 <code>note</code> 字段。<code>serverless.json</code> 覆盖推理表，含 <code>input</code>、<code>cached_input</code>、<code>output</code>。</p>
+
+  <p>该模式有两个细节值得在实现时围绕设计。其一，<code>params</code> 与 <code>active_params</code> 是整数而非缩写字符串，文档说明其数值按模型发布方公布为准，稠密模型两者相等。其二，价格字段是带美元符号的字符串而非浮点数，解析器需要先去掉符号再运算。折后价与原价成对出现，也意味着你可以直接从数据源算出促销结束后的负载成本，而不必自己维护一份平行表格。</p>
+
+  <h2 id="benchmarks">两个模型的实际表现</h2>
+  <p>基准表现是 Inkling-Small 在战略上更值得关注的原因。Thinking Machines 自己的总结是：Inkling-Small 在推理与智能体任务上追平或超过 Inkling，而 Inkling 在知识覆盖与事实准确性上保留优势。</p>
+
+  <p>厂商公布的具体数字：Inkling-Small 在 Humanity's Last Exam 上得 <strong>31.6%</strong>，Inkling 为 <strong>29.7%</strong>，且该优势在每一档思考预算下都成立，即 Inkling-Small 的测试时计算曲线在整个扫描区间内位于 Inkling 之上。在 SWEBench-Verified 上超过 <strong>80%</strong>。在 GDPval-AA v2 的 Elo 指标上记为 <strong>1269</strong>，Inkling 为 <strong>1238</strong>，且达成时每任务约 2.3 万输出 token，而 Inkling 为 2.86 万。</p>
+
+  <p>这些数字有两点需要注意。它们是厂商自报数据；且公布图表中的对比集包括 DeepSeek V4 Flash、Gemini 3.5 Flash-Lite、GPT 5.6 Luna、Qwen3.5-397B-A17B、MiMo V2.5、MiniMax M2.7、Kimi K2.5 与 K2.6、GLM 5.2 以及 Nemotron 3 各档，因此任何跨厂商解读都只能视为参考而非定论。成本曲线背后的 token 计数来自 Thinking Machines 自身评测或 Artificial Analysis，厂商对此已作披露。</p>
+
+  <h2 id="tradeoffs">投入前需要权衡的取舍</h2>
+  <p><strong>折扣是临时的。</strong> 训练表中每一行 Inkling 与 Nemotron 都带限时 5 折标注。Inkling 64K 档的 train 费率 5.61 美元会在折扣结束后翻倍至 11.22 美元。按促销价建立的成本模型在几个月内就会失效，因此请基于 original 字段建模。</p>
+
+  <p><strong>上下文随展示面而变。</strong> 模型宣传 100 万 token，无服务器表标注 256K，训练表提供 64K 与 256K 两个不同价位的档位。三个展示面给出三个数字，且价格随档位变化。这最可能让估算偏差达到两倍。</p>
+
+  <p><strong>自托管与托管是两种产品。</strong> 权重开源意味着自托管真实可行，但 Inkling 的 975B 总参数不是随手可部署的规模。276B 总量、12B 激活的 Inkling-Small 才是自托管开始具备经济性的档位——而它恰好也是在推理基准上超过大模型的那个档位。对多数评估该家族的团队来说，无论 API 调用还是自托管规划，默认选 Inkling-Small 都是合理起点。</p>
+
+  <p><strong>Tinker 的价值不局限于 Inkling。</strong> 基座清单横跨八个厂商的检查点，因此训练 API 本身是独立成立的。如果你的兴趣是在不拥有 GPU 的前提下做 LoRA 微调，请以此为标准把 Tinker 与现有方案对比，并把 Inkling 视为其中一个模型选项，而不是签约的理由。</p>
+
+  <p><strong>并非所有模型都带折扣。</strong> GLM-5.3、Kimi-K2.6、Qwen3.8-27B、Qwen3.6-27B、Qwen3.5-397B-A17B、Qwen3.5 基座与小模型、Qwen3-8B、GPT-OSS-120B、GPT-OSS-20B 以及 DeepSeek-V3.1 均按全价列出且无标注。折扣集只有 Inkling、Inkling-Small 以及四个 Nemotron 检查点。如果你以为整个目录都享受统一促销价，这个假设是错的。</p>
+
+  <h2 id="bottom-line">结论</h2>
+  <p>Thinking Machines 发布的是一样结构上不同于常规模型发布的东西：一个体量不大、价格以可解析格式公开的开源权重家族，外加一套基座模型清单远超自家权重的训练 API。就所涉参数规模而言，价目表本身具备竞争力，尤其是输入 0.30 美元、输出 1.20 美元的 Inkling-Small；而缓存输入的比例对长上下文智能体负载而言足够激进，值得纳入考量。</p>
+
+  <p>在据此制定预算之前需要核实三件事：你实际被计费的档位、计划使用的具体模型折扣是否仍然有效、以及把检查点存储计入后 Tinker 的训练费率是否优于现有微调路径。这三者都可以从公布的 JSON 而非营销页得到答案——在这类厂商中，这已经算是难得的了。</p>
+
+  <ul>
+    <li>Tinker 无服务器推理：Inkling 输入 $1.00 / 缓存 $0.17 / 输出 $4.05 每百万（256K）；Inkling-Small $0.30 / $0.06 / $1.20</li>
+    <li>机器可读定价：<code>tinker-docs.thinkingmachines.ai/tinker/models.json</code> 与 <code>serverless.json</code></li>
+    <li>折扣为临时性质并以成对的 <code>original_*</code> 字段标注；请按原价做预算</li>
+    <li>检查点存储 $0.10 每 GB 每月；检查点可下载，微调后权重保持可移植</li>
+  </ul>
+</article>
+`;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  ogType="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">厂商测评</span>
+        <time datetime="2026-09-13">2026 年 9 月 13 日</time>
+        <span>·</span>
+        <span>12 分钟阅读</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{zhTitle}</h1>
+      <p class="text-xl text-gray-600">{zhDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">正在对比开源权重 API 定价？</h3>
+          <p class="text-gray-600 text-sm mb-4">Inkling-Small 每百万输入/输出为 0.30/1.20 美元，缓存输入 0.06 美元。在确定负载前，先把这些费率与其他开源权重托管端点放在一起比较。</p>
+          <a href="https://apirank.vip/providers" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">对比 API 价格 →</a>
+        </div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">关键信息</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">厂商</dt><dd class="font-medium">Thinking Machines Lab</dd></div>
+            <div><dt class="text-gray-500">模型</dt><dd class="font-medium">Inkling、Inkling-Small</dd></div>
+            <div><dt class="text-gray-500">Inkling 规模</dt><dd class="font-medium">975B 总量 / 41B 激活</dd></div>
+            <div><dt class="text-gray-500">Inkling-Small 规模</dt><dd class="font-medium">276B 总量 / 12B 激活</dd></div>
+            <div><dt class="text-gray-500">权重</dt><dd class="font-medium text-emerald-600">Hugging Face 开源</dd></div>
+            <div><dt class="text-gray-500">Inkling 输入</dt><dd class="font-medium">$1.00 / 百万 token</dd></div>
+            <div><dt class="text-gray-500">Inkling 缓存输入</dt><dd class="font-medium">$0.17 / 百万 token</dd></div>
+            <div><dt class="text-gray-500">Inkling 输出</dt><dd class="font-medium">$4.05 / 百万 token</dd></div>
+            <div><dt class="text-gray-500">Inkling-Small 输出</dt><dd class="font-medium">$1.20 / 百万 token</dd></div>
+            <div><dt class="text-gray-500">HLE（Small / 大）</dt><dd class="font-medium">31.6% / 29.7%</dd></div>
+            <div><dt class="text-gray-500">检查点存储</dt><dd class="font-medium">$0.10 / GB-月</dd></div>
+          </dl>
+          <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+            <p>价格更新于 2026/9/13</p>
+            <p class="mt-1">以官方网站最新价格为准</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">相关厂商</h3>
+          <div class="space-y-2">
+            <a href="/zh/providers/nvidia-nim" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>NVIDIA NIM</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/huggingface" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Hugging Face</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/qwen" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>阿里通义千问</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">查看全部 →</a>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">相关文章</h3>
+          <div class="space-y-2 text-sm">
+            <a href="/zh/tutorials/huggingface-api-review-2026" class="block py-1 hover:text-blue-600 transition-colors">Hugging Face API 测评 2026</a>
+            <a href="/zh/tutorials/nvidia-hugging-face-acquisition-2026" class="block py-1 hover:text-blue-600 transition-colors">NVIDIA 收购 Hugging Face</a>
+            <a href="/zh/tutorials/qwen3-8-max-0902-code-arena-webdev-2026" class="block py-1 hover:text-blue-600 transition-colors">Qwen3.8 Max 0902 Code Arena</a>
+            <a href="/zh/tutorials/deepseek-v4-1-flash-kv-cache-api-2026" class="block py-1 hover:text-blue-600 transition-colors">DeepSeek V4.1 Flash KV 缓存</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
