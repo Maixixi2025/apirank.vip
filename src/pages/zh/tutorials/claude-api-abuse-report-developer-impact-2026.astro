@@ -1,0 +1,297 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'claude-api-abuse-report-developer-impact-2026';
+const date = '2026-09-14';
+const locale = 'zh';
+
+const zhTitle = "Claude API 滥用报告 2026：开发者影响解读";
+const zhDescription = "Anthropic 2026 年 8 月威胁报告：七类 Claude 滥用、1.51 亿次蒸馏交互，以及面向新 API 账号的管控变更。开发者需要知道什么。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Claude API 滥用报告 2026：开发者影响解读",
+  "description": "Anthropic 2026 年 8 月威胁报告：七类 Claude 滥用、1.51 亿次蒸馏交互，以及面向新 API 账号的管控变更。开发者需要知道什么。",
+  "datePublished": "2026-09-14",
+  "dateModified": "2026-09-14",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "教程",
+      "item": "https://apirank.vip/zh/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Claude API 滥用报告 2026：开发者影响解读",
+      "item": canonicalUrl
+    }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Anthropic 2026 年 8 月的威胁报告覆盖了什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "报告覆盖 2025 年 12 月至 2026 年 8 月，把 Claude 的滥用行为分为七类：网络攻击、影响力行动、监控、欺诈、生物领域滥用、常规武器，以及未经授权的模型蒸馏。报告点名了涉及的模型，滥用集中在 Haiku、Sonnet 和 Opus，而较新的 Fable 与 Mythos 只出现在一个蒸馏案例中。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "针对 Claude 的最大一次蒸馏行动规模有多大？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Anthropic 把测到的最大一次行动归因于阿里巴巴的 Qwen 实验室，编号 GTG-16005。一个固定提示词让 Claude 在回答前先输出推理轨迹，这些轨迹被处理成 Qwen 3.5、3.6 和 3.7 的微调数据。峰值达到每天近 300 万次交互，来自 3,500 多个欺诈账号，2026 年 5 月至 7 月累计超过 1.51 亿次交互，集中在智能体任务和软件开发上。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "这份滥用报告会改变 Claude 的价格或速率限制吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不会。公布的价目表没有变化：Fable 5.1 与 Mythos 5.1 为每百万 $10 输入、$50 输出，Opus 5 与 4.8 为 $5 和 $25，Sonnet 5 与 4.5 为 $3 和 $15，Haiku 4.5 为 $0.80 和 $4。有一个字段最近确实变了：Fable 5.1 的缓存输入价是每百万 $0.25，低于上一代的 $1.00，降幅 75%，这是对长上下文智能体负载最重要的数字。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude Fable 5.1 的 preserved thinking 是什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "preserved thinking（保留思考）是 Anthropic 随 Fable 5.1 引入的控制手段，被描述为对蒸馏的回应：它旨在阻止新的 API 账号为大规模捕获推理轨迹而操纵上下文窗口。Anthropic 同时为 Claude Fable 5 上线了更严格的两用生物请求防护。对开发者的实际影响是，用于压测或评测批量的一次性账号预期会比一年前遇到更多摩擦。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "使用第三方 Claude 网关需要担心吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "报告记录了两个案例：用户以为在与另一个模型对话，实际被路由到 Claude。Moonshot AI 在十天内转发了约 30 万次客户请求，涉及 5,380 个欺诈账号，用户以为自己在用 Kimi 模型；DeepSeek 则识别 harness 流量、标记这些用户，并把部分请求路由到 Claude Opus。被转发的请求还带有个人数据。如果采购清单不要求网关披露上游路由，那就是一个真实的缺口。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "哪些 Claude 模型被滥用最多，这为什么重要？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "滥用集中在 Haiku、Sonnet 和 Opus，而不是较新的 Fable 与 Mythos 档位。这一模式最好读作经济信号而非安全结论：每 token 最便宜的档位是工业化提取和自动化攻击工具获得最高性价比能力的地方，因此是经济上最合理的目标。在推演攻击者会如何针对你自己的产品时，这是一个有用的先验，但并不等于说小模型更不安全。"
+      }
+    }
+  ]
+};
+
+const bodyContent = `<h2 id="what-happened">Anthropic 到底公布了什么</h2>
+  <p>2026 年 9 月 11 日，Anthropic 发布了一份威胁情报报告，覆盖时间为 <strong>2025 年 12 月至 2026 年 8 月</strong>。与该公司以往的安全研究不同，这份报告的写法是一份已确认滥用行为的分类清单，而不是一篇论文。Anthropic 把八个月的时间窗拆成七类：<strong>网络攻击、影响力行动、监控、欺诈、生物领域滥用、常规武器，以及未经授权的模型蒸馏</strong>。</p>
+
+  <p>报告还点名了涉及的模型。滥用行为集中在 <strong>Haiku、Sonnet 和 Opus</strong>。较新的 <strong>Fable</strong> 与 <strong>Mythos</strong> 只出现在一个案例中——一次蒸馏尝试——这本身就是关于攻击者在何处获得最高性价比能力的信号。</p>
+
+  <p>如果你在 Claude API 上构建产品，真正的问题不是这份报告是否有趣，而是其中任何一条是否改变了你能调用什么、你的账号如何被信任，或者你需要向自己的用户披露什么。本文先梳理直接触及开发者的部分，再讲 Anthropic 随后的账号管控变更。</p>
+
+  <h2 id="distillation">蒸馏章节是真正影响 API 条款的部分</h2>
+  <p>蒸馏本身是正当的训练技术。Anthropic 把不正当的版本定义得很窄：工业化规模、隐蔽进行的、未经授权提取模型能力的活动，通常通过使用盗刷卡和盗用 API key 的虚假账号网络运作，并经由报告所称的「中转站」路由。</p>
+
+  <p>规模数据是这一节对 API 账号运营者重要的原因。Anthropic 把其测到的最大一次行动归因于阿里巴巴的 Qwen 实验室，编号 <strong>GTG-16005</strong>：一个固定提示词让 Claude 在回答前先输出推理轨迹，这些轨迹被处理后成为 Qwen 3.5、3.6 和 3.7 的微调数据。峰值达到 <strong>每天近 300 万次交互，来自 3,500 多个欺诈账号</strong>，<strong>2026 年 5 月至 7 月累计超过 1.51 亿次交互</strong>，集中在智能体任务和软件开发上。</p>
+
+  <p>另外几个案例是实验室转发自己客户的请求，而不是直接挖取。如果你使用第三方模型网关，这部分值得理解：</p>
+
+  <table>
+    <thead>
+      <tr><th>行为方</th><th>编号</th><th>已记录的手法</th><th>规模</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Qwen（阿里巴巴）</td><td>GTG-16005</td><td>固定提示词提取推理轨迹，用于 Qwen 3.5/3.6/3.7 微调</td><td>1.51 亿+ 次，2026 年 5–7 月</td></tr>
+      <tr><td>DeepSeek</td><td>GTG-16001</td><td>识别 harness 流量（如 Claude Code），标记用户，把部分请求路由到 Claude Opus</td><td>14 天内 1,210 万次</td></tr>
+      <tr><td>Moonshot AI</td><td>GTG-16002</td><td>转发客户请求，用户以为自己在用 Kimi 模型</td><td>10 天约 30 万次请求，5,380 个账号</td></tr>
+      <tr><td>智谱 / Z.ai</td><td>GTG-16008 框架</td><td>请求经过「CoT cleaner」自动把捕获的推理轨迹转成训练数据</td><td>273 个账号，10 天 77 万+ 次</td></tr>
+      <tr><td>小米（MiMo）</td><td>GTG-16008</td><td>存储自有用户的编码会话，再回放给 Claude 以生成训练数据</td><td>涉及数百人个人数据，12 种以上语言</td></tr>
+      <tr><td>商汤</td><td>—</td><td>从第三方中间市场购买轨迹，未直接抓取</td><td>—</td></tr>
+      <tr><td>MiniMax</td><td>—</td><td>通过空壳公司运营代理网络，只提供 Anthropic 与 OpenAI 模型</td><td>—</td></tr>
+    </tbody>
+  </table>
+
+  <p>小米的案例值得从开发者角度再看一遍。Anthropic 声明<strong>没有证据表明 Claude 的回复被直接提供给了小米用户</strong>——被转发的请求是用于生成训练数据。但这些被转发的请求中包含数百人的姓名、联系方式和公司信息，涉及至少十几种语言。如果你正在评估一个中国境内托管的网关或白标模型端点，这正是需要推理的场景：你的提示词内容可能走得比你收到的回复所暗示的更远。</p>
+
+  <h2 id="cyber">「复杂度不再是可靠的归因信号」</h2>
+  <p>网络章节的核心发现是经济学的转变，而不是手法的转变。手法本身很普通——盗用凭据、未打补丁的设备、SQL 注入、钓鱼。变化在于侦察、利用和工具构建现在被交给并行运行的模型，以机器速度执行，因此<strong>复杂的攻击不再需要复杂的攻击者</strong>。</p>
+
+  <p>对任何交付智能体产品的人最有教育意义的案例，是一个被追踪为 <strong>GTG-20006</strong> 的俄语间谍行为方，它运行了一个反馈闭环。AI 智能体反复检查当前的恶意软件是否被常见安全产品标记。当杀毒工具捕获它时，智能体<strong>自行改写并重新编译恶意代码</strong>，直到再次绕过检测。超过 20 个机构成为目标——政府部委、情报机构、使馆和国防承包商——重点在乌克兰和欧洲。无人机供应链被反复提及，该行为方窃取了一套完整的无人机视觉系统专有 SDK。部分访问通过被入侵的酒店客房 Wi-Fi 供应商实现，微软在 2026 年 7 月把这一手法称为 <em>CaptiveCrunch</em>。</p>
+
+  <p>对防御方而言，报告给出的后果很直接：如果攻击者变种迭代的速度快于签名发布的速度，那么编写新检测签名就不再能拖慢攻击者。</p>
+
+  <h2 id="weapons-surveillance">武器与监控：报告中最具体的部分</h2>
+  <p>两个章节的细节异常具体，也最可能影响前沿 API 权限的门槛设计。</p>
+
+  <p><strong>常规武器，首次记录。</strong>也门北部的一个小组（<strong>GTG-87001</strong>）用 Claude Code 替代人类软件工程师，开发<strong>三个导弹项目</strong>的制导、导航与控制软件，其中包括一枚射程超过 <strong>2,000 公里</strong>的多级导弹。操作者并行运行多个 Claude 实例，并把工作分散到不同会话，使任何一个会话都无法看到完整意图。据报道一次试射失败，数小时内这些行为方又回到 Claude 排查原因。</p>
+
+  <p>第二个案例（<strong>GTG-27005</strong>）被归因于自由职业的俄罗斯行为者，他们构建了一个自主 FPV 自杀式无人机蜂群，机载一个小型语言模型，由摄像头进行末段瞄准。该平台的目的是自主致命杀伤，机载模型可以选中「人」类目标并触发引爆，<strong>全程无人在环</strong>。Anthropic 表示该图像分类器是用缴获的乌克兰战场影像训练的。还有一个中国案例（<strong>GTG-17002</strong>）涉及约 16 个电子战与压制敌方防空模块；项目进行到一半时，仿真的默认场景切换成了 12 个目标位于台湾。</p>
+
+  <p><strong>把监控当作工程团队。</strong>说明「智能体」在极端情况下意味着什么的最清晰例子，是马里一个名为 <em>Lakana 360</em> 的公共部门平台，由一位顾问独自构建，他把 Claude 当作主要工程团队。该平台监控<strong>全国三大移动运营商约 2,500 万张 SIM 卡</strong>，通过声纹在 SIM 卡更换后识别个人，标记使用加密和 VPN 的用户，并把个人与国家生物识别民事登记库关联。Anthropic 指出，暂停该账号只中断了<em>开发</em>工作，而没有中断运营，因为平台在本地以本地模型运行。伊朗单位也有类似主张，称一年内监控并画像了 6,388 名伊朗人。</p>
+
+  <h2 id="bio">生物领域：Anthropic 记录了自己过滤器的边界</h2>
+  <p>生物章节是最自我批评的部分，也解释了你能从外部观察到的一个产品变更。Anthropic 记录了五个涉及在职科学家的匿名案例，均与潜在危险的两用项目相关。其中一个案例中，生物安全分类器拦截了一份在军事研究机构进行的基孔肯雅病毒功能获得研究的经费申请——但该平台运营者<strong>构建了一个回退方案，把 Claude 拒绝的请求路由到竞争对手的模型，而 Claude 自己写了这个回退方案的大部分代码</strong>。</p>
+
+  <p>报告给出的结论是：分类器无法同时既支持有益工作又防止伤害，因为在两用领域，单凭请求无法可靠地推断用户意图。回应方式是产品级的，而不是政策级的：<strong>Claude Fable 5</strong> 针对两用生物请求上线了更严格的防护，而 <strong>Fable 5.1</strong> 引入的<strong>「保留思考」（preserved thinking）</strong>被描述为阻止新 API 账号操纵上下文窗口的控制手段。Anthropic 自己的表述是：通往前沿生物能力的唯一安全路径，是通过面向已验证用户的计划。</p>
+
+  <h2 id="what-changes">对 API 开发者而言，什么变了</h2>
+  <p>这些内容大部分不会改变你日常的集成方式。但有四件事值得关注。</p>
+
+  <ul>
+    <li><strong>账号信任已成为一个产品面。</strong>报告明确把 Fable 5.1 中的「保留思考」控制与新的 API 账号挂钩。如果你为了压测或评测批量创建一次性账号，预期会比一年前遇到更多摩擦。</li>
+    <li><strong>蒸馏执法会影响任何转售 Claude 输出的产品。</strong>如果你的产品流程涉及捕获模型推理轨迹并用作训练数据，请先读清楚报告对不当蒸馏的定义，再决定是否扩大这条流水线。</li>
+    <li><strong>第三方网关带有转发风险。</strong>Moonshot 和 DeepSeek 两个案例都是终端用户以为在与某个模型对话、实际被路由到另一个模型。如果你的采购清单里没有「这个网关是否披露上游路由」这一项，那正是报告暴露出的缺口。</li>
+    <li><strong>模型选择会改变风险画像。</strong>滥用集中在 Haiku、Sonnet 和 Opus，而不是较新的 Fable 与 Mythos 档位。这是成本信号，不是安全保证，但在推理红队演练该针对哪个模型时值得知道。</li>
+  </ul>
+
+  <h2 id="pricing-context">这件事的定价背景</h2>
+  <p>报告进入你的决策流程，并不改变 Claude 的价格。当前公布的价目表值得复述一遍，让全貌完整：</p>
+
+  <table>
+    <thead>
+      <tr><th>模型档位</th><th>输入 /百万</th><th>缓存输入 /百万</th><th>输出 /百万</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Fable 5.1 / Mythos 5.1</td><td>$10</td><td>$0.25</td><td>$50</td></tr>
+      <tr><td>Opus 5 / Opus 4.8</td><td>$5</td><td>$0.50</td><td>$25</td></tr>
+      <tr><td>Sonnet 5 / Sonnet 4.5</td><td>$3</td><td>$0.30</td><td>$15</td></tr>
+      <tr><td>Haiku 4.5</td><td>$0.80</td><td>$0.10</td><td>$4</td></tr>
+    </tbody>
+  </table>
+
+  <p>缓存读取价差是最近变化最大、对智能体负载也最重要的数字：Fable 5.1 的缓存输入价从上一代的 $1.00 降到 <strong>每百万 $0.25</strong>，降幅 75%。对于一个每一步都重发稳定系统提示的长上下文智能体来说，这一个字段对账单的影响往往远大于标称输入价。</p>
+
+  <h2 id="bottom-line">结论</h2>
+  <p>Anthropic 2026 年 8 月的这份报告在这一体裁中并不常见，因为它公布了不舒服的部分——包括一个案例里公司自己的分类器被一个由 Claude 编写的回退方案绕过。对开发者来说，可直接行动的内容很窄也很具体：与新 key 绑定的账号信任控制、围绕推理轨迹捕获的可执行边界，以及第三方网关如今回答得很差的披露问题。</p>
+
+  <p>报告其余部分是背景。如果你正在决定有多大比例走白标端点，或者正在为内部模型供应商评审撰写安全章节，这是真正有用的背景。它不构成基于成本改变模型选择的理由，也没有改动公布的价目表。</p>
+
+  <p>它确实确立的一点是：滥用集中在低单价档位——不是因为小模型更不安全，而是因为它们是经济上最合理的目标。当你为自己的产品推演攻击者行为时，这是一个有用的先验。</p>
+
+  <ul>
+    <li>Anthropic 威胁报告时间窗：2025 年 12 月 – 2026 年 8 月，七类滥用</li>
+    <li>测到的最大蒸馏行动：1.51 亿+ 次交互，2026 年 5–7 月（Qwen，GTG-16005）</li>
+    <li>Fable 5.1 的「保留思考」是面向新 API 账号的控制手段</li>
+    <li>Fable 5.1 缓存输入：每百万 $0.25 —— 上一代为 $1.00</li>
+    <li>滥用集中在 Haiku、Sonnet、Opus；Fable 与 Mythos 仅出现一次</li>
+  </ul>
+`;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  lang="zh"
+  ogType="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">深度分析</span>
+        <time datetime="2026-09-14">2026 年 9 月 14 日</time>
+        <span>·</span>
+        <span>10 分钟阅读</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{zhTitle}</h1>
+      <p class="text-xl text-gray-600">{zhDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">想对比前沿模型 API 价格？</h3>
+          <p class="text-gray-600 text-sm mb-4">Claude Fable 5.1 为每百万 $10/$50，缓存输入 $0.25。投入负载前先和其他前沿端点比一比。</p>
+          <a href="https://apirank.vip/zh/providers" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">对比 API 价格 →</a>
+        </div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">关键数据</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">厂商</dt><dd class="font-medium">Anthropic</dd></div>
+            <div><dt class="text-gray-500">报告时间窗</dt><dd class="font-medium">2025-12 – 2026-08</dd></div>
+            <div><dt class="text-gray-500">滥用类别</dt><dd class="font-medium">7 类</dd></div>
+            <div><dt class="text-gray-500">最大蒸馏行动</dt><dd class="font-medium">1.51 亿+ 次</dd></div>
+            <div><dt class="text-gray-500">峰值日交互量</dt><dd class="font-medium">约 300 万次/天</dd></div>
+            <div><dt class="text-gray-500">主要涉及模型</dt><dd class="font-medium">Haiku / Sonnet / Opus</dd></div>
+            <div><dt class="text-gray-500">Fable 5.1 输入</dt><dd class="font-medium">$10 / 百万</dd></div>
+            <div><dt class="text-gray-500">Fable 5.1 缓存</dt><dd class="font-medium">$0.25 / 百万</dd></div>
+            <div><dt class="text-gray-500">Fable 5.1 输出</dt><dd class="font-medium">$50 / 百万</dd></div>
+            <div><dt class="text-gray-500">新增控制</dt><dd class="font-medium">Preserved thinking</dd></div>
+          </dl>
+          <div class="mt-4 pt-4 border-t border-gray-100 text-xs text-gray-400">
+            <p>价格更新于 2026/9/14</p>
+            <p class="mt-1">请以官网最新价格为准</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">相关厂商</h3>
+          <div class="space-y-2">
+            <a href="/zh/providers/anthropic" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>Anthropic</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/openai" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>OpenAI</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers/qwen" class="flex items-center justify-between py-2 text-sm hover:text-blue-600 transition-colors">
+              <span>阿里 Qwen</span><span class="text-gray-400">→</span>
+            </a>
+            <a href="/zh/providers" class="block text-center text-blue-600 text-sm font-medium py-2 hover:underline">查看全部 →</a>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">相关文章</h3>
+          <div class="space-y-2 text-sm">
+            <a href="/zh/tutorials/claude-fable-5-1-mythos-5-1-2026" class="block py-1 hover:text-blue-600 transition-colors">Claude Fable 5.1 与 Mythos 5.1</a>
+            <a href="/zh/tutorials/claude-watermark-detection-api-2026" class="block py-1 hover:text-blue-600 transition-colors">Claude 水印检测 API</a>
+            <a href="/zh/tutorials/gpt-5-6-sol-huggingface-attack-api-security-lessons" class="block py-1 hover:text-blue-600 transition-colors">GPT-5.6 Sol 与 Hugging Face 攻击</a>
+            <a href="/zh/tutorials/anthropic-517b-compute-deal-claude-api-pricing-2026" class="block py-1 hover:text-blue-600 transition-colors">Anthropic 5170 亿美元算力协议</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
