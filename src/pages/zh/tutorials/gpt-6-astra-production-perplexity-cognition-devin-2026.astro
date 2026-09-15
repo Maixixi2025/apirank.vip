@@ -1,0 +1,340 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-6-astra-production-perplexity-cognition-devin-2026';
+const date = '2026-09-15';
+const locale = 'zh';
+
+const zhTitle = "GPT-6 Astra 生产实践：Perplexity + Cognition Devin";
+const zhDescription ="一周之内两份 GPT-6 Astra 生产案例：Perplexity 把它跑在端到端系统上，Cognition Devin 把它放在 Fusion 里当主代理。基准、提示词与定价算式。";
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "GPT-6 Astra 生产实践：Perplexity + Cognition Devin",
+  "description": "一周之内两份 GPT-6 Astra 生产案例：Perplexity 把它跑在端到端系统上，Cognition Devin 把它放在 Fusion 里当主代理。基准、提示词与定价算式。",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "教程",
+      "item": "https://apirank.vip/zh/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "GPT-6 Astra 生产实践：Perplexity + Cognition Devin",
+      "item": canonicalUrl
+    }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Perplexity 在生产里实际拿 GPT-6 Astra 来做什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Perplexity 联合创始人 Johnny Ho 在 OpenAI 2026 年 9 月 14 日的厂商代笔帖子里点出四类场景：起草内外部沟通、修改真实运行的软件系统、监控生产系统、编写能模拟真实服务响应的测试程序。他的定位是 Astra 处理过去属于人类员工的任务，复审频次也降了下来——Ho 说团队放心把端到端的整套系统交给它，比前几代模型少得多的频次去看一眼。运营层面的影响是模型拥有更多环节，而人的注意力从“逐 turn 复审”转向“按节奏复审”。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Cognition 的 Fusion harness 是什么，怎么用 GPT-6 Astra？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fusion 是 Cognition 2026 年 9 月 11 日随 Devin Desktop 与 CLI 一起发布的多代理架构。它在同一个任务上跑两个并行代理：一个跑在某个前沿模型上（公开数字里是 Fable 5.1 或 GPT-6 Astra）当主代理，掌管计划、解释模糊地带、复审副代理的工作；另一个跑在更便宜的模型上（公开数字里是 Cognition 自家的 SWE-2）当副代理，负责读代码、改代码、跑测试、回传结果。两个代理之间不互传完整对话历史，只交换简报、结果、反馈，各自从自己的持续上下文里把 prompt cache 的优势吃满。在 Cognition 与 Artificial Analysis 和 Vals AI 合作公布的基准表上，Fusion + Fable 5.1 + SWE-2 拿到 61.7 分、单任务 4.54 美元，比 Codex 基线（100 分、7.47 美元）便宜 39%；Fusion + Astra + SWE-2 拿到 61.6 分，与 Fable 5.1 配对基本打平。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么在 Fusion 里主代理更贵反而总体更便宜？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cognition 报告，把主代理从 Opus 4.8 换成 Fable 5，平均会话成本下降了 9%，尽管 Fable 的单 token 价格是 Opus 的两倍。机制写在原文里：Fable 更早把任务派出去、给副代理的简报更清楚；Opus 一直在微观管理、把副代理的活返工了一遍。Perplexity 的故事是同一种形状的另一种计量：需要更少人工监督的模型，跑起来更便宜，因为决定成本的瓶颈是“人为复审”和“模型自己重复验证”这两件事，而不是单 token 标价。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "GPT-6 Astra 的 cached input 定价对 Fusion 的经济学有什么影响？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Astra 的 cached input 1 美元/百万 token、cache write 12.5 美元/百万 token，对照 uncached input 10 美元/百万 token。cached 与 uncached 输入比 10:1，cache write 与 cache read 比在另一个方向是 12.5:1。这条不对称是让 Fusion 架构在经济学上能自洽的根。Fusion 的双代理设计比单代理从 cache 里多拿一份收益，因为每个代理各自的工作上下文在自己那侧多个 turn 上保持稳定，哪怕两个代理之间的上下文彼此不同。公开的 39% 成本削减一部分来自模型选择，一部分来自 cache 架构。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "我应该让 GPT-6 Astra 当唯一模型、当主代理、还是当副代理？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "对今天大多数多步工程负载来说，正确的角色是主代理。Cognition 的公开数字把 Fusion + Astra + SWE-2 放在 61.6 分，与 Fusion + Fable 5.1 + SWE-2 几乎打平，意味着 harness 干了大部分活、主代理具体是谁反而没那么要紧。单代理 Astra 适合低调用量、每次回答质量决定一切、prompt 小且稳定能被 cache 反复读的场景。Astra 当副代理是 Cognition 没公布过基准的那种配置，原文的隐含结论是“主代理的质量主导架构的质量”，所以对大多数编程代理负载来说，更便宜、更专注的模型才是更合适的副代理。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "9 月 12 日那份 OpenAI 提示词指南跟这两个案例怎么对得上？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "两个案例在干的事恰好是 9 月 12 日提示词指南描述的那件事。OpenAI 工程师 Eric Provencher 的建议是：把 skill 的 scope 收窄、删掉一刀切的读要求、回头审一遍为更早一代模型写的权限规则。Perplexity 之所以能把复审频次降下来，前提是 Astra 不会在前几代模型需要硬编码规则防的那种假阳性“请确认”上中途停。Cognition 的主+副代理架构之所以能跑通，前提是主代理写出的简报够清楚，副代理照着干就行而不用反复反问。同周、同一模型、形态大致相同的两个独立生产部署同时存在，就是迄今最强的外部证据：瘦提示词不是优化项，是默认值。"
+      }
+    }
+  ]
+};
+
+const bodyContent = `<article class="prose prose-lg max-w-none">
+  <h2 id=“two-case-studies”>一周之内，两个生产案例，同一个模型</h2>
+  <p>2026 年 9 月第二周，外界同时拿到两份关于 <strong>GPT-6 Astra</strong> 在真实工程环境里如何表现的难得一见的第三方资料。9 月 11 日，<strong>Cognition</strong> 团队旗下的 <strong>Devin</strong> 发布长文，介绍 <strong>Fusion</strong> 这种“主代理 + 副代理”架构——其中 Astra 承担每个编程任务的廉价那一半。三天后的 9 月 14 日，OpenAI 的 news feed 发布了一篇由厂商代笔的帖子，介绍 <strong>Perplexity</strong> 怎样使用 Astra，全文以 Perplexity 联合创始人 <strong>Johnny Ho</strong> 的一段引语作为锚点。</p>
+  <p>两份材料最值得注意的共同点是：发声的这两家都不是为了卖 Astra，他们在讲自己拿 Astra 做了什么。这和基准测试榜单是不同的证据来源，也是大多数 API 买家从厂商自己的文档里拿不到的那种材料。本文把这两份材料并排放在一起，提炼出模式，再把它翻译成开发者在把真实业务流量路由到 Astra 之前需要想清楚的四五件事。</p>
+
+  <h2 id=“perplexity-end-to-end”>Perplexity：Astra 接管整条链路</h2>
+  <p>Perplexity 的故事比较好概括，也比另一份更激进——激进在它愿意把多少事情交给 Astra 去办。Ho 把 Astra 描述为一个“处理过去属于人类员工的任务”的系统，他点名的几类任务都很具体：起草内外部沟通、修改真实运行的系统、监控生产环境的软件，以及编写能够模拟真实服务响应的测试程序。</p>
+  <p>对 API 团队来说，最关键的那句话是文末的引语。<em>我们真的能放心把端到端的整套系统交给它，并且比前几代模型少得多的频次上去看一眼。</em>这不是一个基准测试分数。这是工作姿态的变化：人类检查点的频率降低，更多环节由模型自己拥有，而“什么算值得人工监督的工作”这条线被划得更高。</p>
+  <p>Ho 提出的二阶命题是：这件事会反过来回馈到产品本身。<em>Astra 写出更好的代码，几乎会直接变成 Perplexity 更好的搜索产品。</em>这个说法的形态很重要，因为它和 9 月 12 日 OpenAI 工程师 Eric Provencher 给出的提示词指南是同一个形状：Astra 编码能力的提升不会被局限在开发工具里，它会外溢到模型所接触到的任何产品上。Perplexity 是第一个有名字的、把这道外溢在面向消费者的生产产品里显化出来的案例。</p>
+
+  <h3 id=“perplexity-four-categories”>四类生产场景</h3>
+  <ol>
+    <li><strong>沟通文案</strong>——起草内外部消息。隐含的转变是“由 Astra 起草、人类编辑”变成“Astra 直接发出、人类按节奏复审”。</li>
+    <li><strong>代码修改</strong>——直接改生产代码库的代码，不是改 draft 分支或沙箱克隆。</li>
+    <li><strong>生产环境监控</strong>——观察运行中的服务、对异常作出响应。这里的失误成本是有上界的，但行动迟缓的成本没有。</li>
+    <li><strong>能够模拟真实服务响应的测试程序</strong>——四类里最特别的一类。Perplexity 让 Astra 写出 mock 服务（一个语言模型 API、一个连接器），让真实的应用代码能跟这些模拟出来的、贴近真实形态的响应去做测试。Ho 专门把这条列为模型“最有用的应用之一”，原因是人工测试的节奏跟不上软件变更的速度。</li>
+  </ol>
+  <p>贯穿这四类的是同一条主线：每一类都是模型比人类更耐心、并且偶尔的失误成本被周围的代码或周围的人工复审节奏所框定的任务。Perplexity 并不是在无人监督地运行 Astra——他们是在用一种更宽松的监督节奏运行 Astra，结果就是每个任务上“人时/模型时”的比例发生了变化。</p>
+
+  <h2 id=“cognition-fusion”>Cognition：套在模型外面的一层 harness</h2>
+  <p>Cognition 那篇的体裁不同。它不是用户证言，它是基础设施的发布说明。Fusion 已经在 Devin Cloud 上跑了好几个月，9 月 11 日这篇只是把同一套 harness 搬到了 Devin Desktop 和 CLI 上，而它也是 Cognition 第一次把“用前沿模型当主代理、便宜模型当副代理”的真实基准测试表公开放出来的地方。</p>
+
+  <h3 id=“fusion-architecture”>一段话说清 Fusion 架构</h3>
+  <p>Fusion 在同一个任务上开两个并行代理，每个代理各自维护一份持续累积的上下文，各自有各自的工具接口。主代理跑在某个前沿模型上——公开数字里是 Fable 5.1 或 Astra——并掌管整个会话：它拥有计划、解释模糊地带、复审副代理的工作。副代理跑在更便宜的模型上——公开数字里是 Cognition 自家的 <strong>SWE-2</strong>——并负责干体力活：读代码、改代码、跑测试、回传结果。</p>
+  <p>两个代理之间不会互传完整的对话历史。它们只交换简报、结果和反馈。副代理实现改动时不需要主代理的完整历史，主代理复审时也不需要看到每一个中间工具调用结果。两侧各自构建自己的持续上下文，这正是让成本算式能跑通的关键——每一边都能在“不变化的那部分上下文”上把 prompt cache 的优势吃满。</p>
+  <p>对 API 团队来说，这是真正要紧的设计选择。Fusion 不是传统意义上的路由层——后者会看一眼 prompt，然后决定把它丢给哪个模型。Fusion 是两个代理一起跑，主代理始终保留最终决定权和“把控制权拿回来”的能力。Cognition 用的措辞是：前沿智能“始终在位”，副代理的存在意义是用更低的 token 花销把体力活接过去，又不交出复审权。</p>
+
+  <h3 id=“fusion-benchmarks”>公开的基准测试表</h3>
+  <p>这些数字来自 Cognition 与 <strong>Artificial Analysis</strong> 和 <strong>Vals AI</strong> 合作、跨多个编程代理基准测试跑出来的，是迄今最干净的“前沿模型 + 便宜副代理”对照“单前沿模型”的公开度量。</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Harness + 主代理</th>
+        <th>分数</th>
+        <th>单任务成本（美元）</th>
+        <th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Codex（基线，无 Fusion）</td>
+        <td>100</td>
+        <td>$7.47</td>
+        <td>同一套基准上的对照运行。</td>
+      </tr>
+      <tr>
+        <td>Devin Fusion，Fable 5.1 + SWE-2</td>
+        <td>61.7</td>
+        <td>$4.54</td>
+        <td>比 Codex 基线便宜 39%。</td>
+      </tr>
+      <tr>
+        <td>Devin Fusion，Astra + SWE-2</td>
+        <td>61.6</td>
+        <td>未公开</td>
+        <td>与 Fable 5.1 作主代理的 Fusion 配对成本相当。</td>
+      </tr>
+      <tr>
+        <td>Codex + Astra（max）</td>
+        <td>61.6</td>
+        <td>未公开</td>
+        <td>单代理运行，无副代理。</td>
+      </tr>
+      <tr>
+        <td>Claude Code，Fable 5.1（max）</td>
+        <td>62.2</td>
+        <td>比基线低 36%+</td>
+        <td>单代理 Fable 5.1，无副代理。</td>
+      </tr>
+      <tr>
+        <td>Claude Code，Opus 5（max）</td>
+        <td>60</td>
+        <td>本表中最高</td>
+        <td>更贵主代理的对照运行。</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>三件事浮出水面。第一，<strong>Fusion + Fable 5.1 + SWE-2 是成本故事</strong>：比 Codex 基线便宜 39%，同时分数只比最强的单代理前沿运行低 0.5。第二，<strong>Fusion + Astra + SWE-2 拿到 61.6，与 Fable 5.1 当主代理的 Fusion 几乎打平</strong>，意味着 harness 干了大部分活、主代理具体是谁反而没那么要紧。第三，<strong>单代理前沿运行集中挤在 60 到 62.2 这条窄带里</strong>，这正是文章在隐含警告的事：模型之间的差距很小，harness 之间的差距很大。</p>
+
+  <h3 id=“fusion-9-percent”>那个 9% 的 Fable 发现</h3>
+  <p>整篇里最值得引用的一项发现，来自 Cognition 内部做过的一次主代理替换实验：他们把主代理从 Opus 4.8 换成 Fable 5，Fable 的单 token 标价是 Opus 的两倍。<em>但配上同一个副代理之后，Fable 主导的会话平均便宜 9%，并且在 FrontierCode 上分数更高。</em>原因写在原文里：Fable 更早把任务派出去、写出的简报更清楚；Opus 一直在微观管理副代理、把它的活返工了一遍。</p>
+  <p>这跟 Perplexity 的故事是同一种形状。真正要紧的不是模型的单 token 成本，而是主代理给副代理制造了多少没必要的来回，以及主代理因为不信任副代理的输出而自己重做了多少活。一个派活派得干净的模型，跑起来更便宜，即便它单 token 价格更高。</p>
+
+  <h2 id=“shared-pattern”>共同的模式：Astra 把价值加在哪里</h2>
+  <p>两个独立团队，都把 Astra 跑在生产里，都对“Astra 改变了什么”做了同一个观察。模式不是“Astra 更便宜”——它的单 token 价格是 1000 万输入 10 美元、1000 万输出 50 美元、1000 万 cache 读取 1 美元、1000 万 cache 写入 12.5 美元。模式是：<em>Astra 更高的单 token 成本，被它从主代理的回路里省掉的工作抵消掉了</em>。</p>
+  <p>对 Perplexity 来说，被省掉的是人的注意力。工程师看它的频次更低，因为模型的修改足够准，复审回路可以用更长的周期跑下去。对一个 API 团队来说这个账很好算：如果你付钱雇开发者来复审模型的输出，而复审就是瓶颈，那么一个需要更少复审的模型，哪怕单 token 更贵，跑到最后也更便宜。</p>
+  <p>对 Cognition 来说，被省掉的是主代理的重复验证。Fable 主导的会话比 Opus 主导的便宜 9%，哪怕 Fable 单 token 价格是 Opus 的两倍，原因是主代理不再把副代理的活返工了。对一个 API 团队来说这个账同样好算：一个把活派得干净的模型，交给一个便宜模型，合计更便宜——单 token 价格是个会误导成本模型的输入。</p>
+  <p>Fusion 那个 39% 的节省和 Fable 压过 Opus 那 9% 的节省是同一件事的不同计量单位。它们都在说同一句话：模型选择是一种系统属性，不是单 token 属性；这个系统包含一个主代理、一个副代理、一条复审回路。</p>
+
+  <h2 id=“context-cache-math”>Cache 这笔账，1 美元的 cached input 把它改写了</h2>
+  <p>两个案例都重度依赖 prompt cache，这也是 Astra 的定价里被现有文档低估的部分。1000 万 cached input 1 美元、1000 万 cache write 12.5 美元，对照 1000 万 uncached input 10 美元——cached 与 uncached 输入的成本比是 <strong>10:1</strong>，cache write 与 cache read 的成本比在另一个方向上是 <strong>12.5:1</strong>。这种不对称才是让 Fusion 架构在经济学上能自洽的根。</p>
+  <p>单代理场景下，这笔账很直白。每条 system prompt、每份 AGENTS.md、每个 skill 的描述，要么按 10 美元/百万 token 的全价送出去，要么 cache 写一次、再以 1 美元/百万 token 反复读回来。一个 prompt 在一次会话里被读几次，是 cache 盈亏的分水岭；大约 10 次以下时 cache write 的费用会吃掉节省，10 次以上 cache 才占上风。</p>
+  <p>双代理 Fusion 场景下，这笔账对 cache 友好得多。主代理的上下文是面向用户的那条会话，体量小、变化频繁。副代理的上下文是它自己的工作集，体量也小，但每次主代理派一个新的简报过来就重置一次。Fusion 那篇文章的关键论断——“每个代理各自构建自己的持续上下文”——正是让 cache 命中率足够高的原因：每个代理自己的上下文会在自己那侧的多个 turn 上保持稳定，哪怕两个代理之间的上下文彼此不一样。</p>
+  <p>对任何想自建一个“类似 Fusion”的东西的 API 团队来说，实操含义是：</p>
+  <ul>
+    <li><strong>稳定的 system prompt 是 cache 收益最高的资产。</strong>一个 4000 token 的 system prompt 在 50 次请求里被重发，uncached 成本 2 美元，加上 cache 大约 0.45 美元。在还没引入副代理之前，每 50 次请求就省下 1.55 美元。</li>
+    <li><strong>Cache write 贵到一定程度，“每个会话写一次”也不是白赚。</strong>12.5 美元/百万 token 的价格下，一次 4000 token 的 cache write 单次会话成本 0.05 美元。如果会话短到这条 prompt 只能被重读两次，cache 反而是净亏。那条 10:1 的比价给出的底线是：每次 cache write 至少要被读大约 10 次才打平。</li>
+    <li><strong>“主代理 + 副代理”架构在 cache 上的获益比单代理架构大</strong>，因为每个代理各自的工作上下文比“把两个代理合并成一个大上下文”更稳定。Fusion 的数字（39% 成本削减）一部分来自模型选择，一部分来自 cache 架构。</li>
+  </ul>
+
+  <h2 id=“decision-matrix”>决策矩阵：Astra 当主代理、副代理，还是不参与</h2>
+  <p>对 API 团队来说，Astra 在多模型工作流里能扮演的三种角色差异够大，值得分开来看。</p>
+  <table>
+    <thead>
+      <tr>
+        <th>角色</th>
+        <th>你买的是什么</th>
+        <th>什么时候划算</th>
+        <th>什么时候不划算</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Astra 当唯一模型</strong></td>
+        <td>1000 万输入 10 美元、1000 万输出 50 美元、1000 万 cached input 1 美元</td>
+        <td>单次调用型负载，你最在意每次回答的质量，并且调用量小到单 token 价格被别的成本压住。</td>
+        <td>高吞吐流水线或长上下文代理运行，单 token 数学变成约束。</td>
+      </tr>
+      <tr>
+        <td><strong>Astra 在 Fusion 里当主代理</strong></td>
+        <td>单 token 价格同上，但花出去的 token 占总花销的份额小得多（大部分是副代理的）。</td>
+        <td>多步工程类工作、复审质量要紧、副代理能把体力活接过去的场景。Cognition 的 39% 成本削减就是这里的头条数字。</td>
+        <td>任务本身就是主代理瓶颈的场景（例如规划重活，副代理其实没什么事可干）。</td>
+      </tr>
+      <tr>
+        <td><strong>Astra 当副代理</strong></td>
+        <td>和主代理角色相反——你买的是“由一个更聪明的主代理指挥、可靠地逐 token 执行”的能力。</td>
+        <td>罕见。Cognition 没公布过 Astra 当副代理的基准，从原文的隐含结论看，主代理的质量主导了整个架构的质量。</td>
+        <td>今天大多数编程代理负载。更便宜、更专注的模型是更合适的副代理。</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>实操结论：今天 API 团队默认应该从“<strong>Astra 在一个 Fusion 风格的 harness 里当主代理，副代理选一个跟负载匹配的模型</strong>”入手。这正是 Cognition 在生产里跑了好几个月的配置，也是 Perplexity 那条“监督频次下降”的发现指向的方向——区别只是 Perplexity 那边只有 Astra 一个代理，没有成对。</p>
+
+  <h2 id=“what-changed”>这改变了什么：提示词指南视角</h2>
+  <p>9 月 12 日那份 OpenAI 提示词指南——<em>把 skill 的 scope 收窄、删掉一刀切的读要求、回头审一遍权限规则</em>——恰好能嵌进这两个案例里。Perplexity 的“复审节奏更松”之所以可能，前提是 Astra 不会在前几代模型需要硬编码规则来防的那种假阳性“请确认”上中途停下。Cognition 的主+副代理架构之所以可行，前提是主代理写出的简报够清楚，副代理照着干就行而不用反复反问。</p>
+  <p>两家团队说的是同一种语言的两种方言，都在干 OpenAI 提示词指南里描述的那件事。他们都在一个“周围脚手架很瘦”的环境里跑模型。两家都没公开过自己用的 prompt，但同周、同一模型、形态大致相同的两个独立生产部署同时存在，就是迄今最强的外部证据：瘦提示词不是优化项，是默认值。</p>
+  <p>对今天要把 Astra 集成进来的开发者来说，主线很短：让它当主代理，不要让它当唯一的代理；把上下文里稳定的那部分做 cache；回头审一遍 AGENTS.md 和 skill 文件里那些为更早一代模型写的规则；准备好复审节奏会下降这个事实——把日志和回滚方案按“低频监督”来设计，而不是按上一代所需的“逐 turn 监督”来设计。</p>
+
+  <h3 id=“sources”>资料来源</h3>
+  <ul>
+    <li>Cognition 博客，<em>Introducing Fusion in Devin Desktop &amp; CLI</em>——2026 年 9 月 11 日（Fusion 主+副代理架构、与 Artificial Analysis 和 Vals AI 合作的基准表、Fable 5.1 + SWE-2 配对的 39% 成本削减、Fable 压过 Opus 那 9% 的发现）。</li>
+    <li>OpenAI news feed，<em>Perplexity trusts GPT-6 Astra with end-to-end systems</em>——2026 年 9 月 14 日（Johnny Ho 谈沟通、代码修改、生产监控、mock 服务测试程序；复审频次降低；Astra 代码更好 → Perplexity 搜索产品更好）。</li>
+    <li>OpenAI news feed，<em>Cognition helps Devin test its own work with GPT-6 Astra</em>——2026 年 9 月 11 日（配套的厂商代笔文章，把 Astra 列为 Devin 测试流程的默认项）。</li>
+    <li>OpenAI 提示词指南，<em>GPT-6 Astra needs leaner prompts and fewer guardrails</em>——Eric Provencher，2026 年 9 月 12 日（这两份案例所处的“模型侧”论证）。</li>
+    <li>apirank，<em>GPT-6 Astra API Pricing 2026</em>（9 月复核）：1000 万输入 10 美元、1000 万输出 50 美元、1000 万 cached input 1 美元、1000 万 cache write 12.5 美元；cached/uncached 输入比 10:1。</li>
+  </ul>
+</article>
+`;
+
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  ogType="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">案例研究</span>
+        <time datetime="2026-09-15">2026 年 9 月 15 日</time>
+        <span>·</span>
+        <span>14 分钟阅读</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{zhTitle}</h1>
+      <p class="text-xl text-gray-600">{zhDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">要把真实业务流量路由到 GPT-6 Astra？</h3>
+          <p class="text-gray-600 text-sm mb-4">Astra 1000 万输入 10 美元、1000 万输出 50 美元，cached input 1 美元，cache write 12.5 美元。在把它接进一个 Fusion 风格的 harness 之前，先把这条数字和别的所有前沿端点比一比。</p>
+          <a href="https://apirank.vip/zh/providers" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">对比 API 价格 →</a>
+        </div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">速查</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">主题</dt><dd class="font-medium">GPT-6 Astra 生产实践</dd></div>
+            <div><dt class="text-gray-500">案例 1</dt><dd class="font-medium">Perplexity（9 月 14 日）</dd></div>
+            <div><dt class="text-gray-500">案例 2</dt><dd class="font-medium">Cognition Devin Fusion（9 月 11 日）</dd></div>
+            <div><dt class="text-gray-500">架构</dt><dd class="font-medium">主代理 + 副代理</dd></div>
+            <div><dt class="text-gray-500">Fusion 节省</dt><dd class="font-medium text-emerald-600">相比 Codex 基线 −39%</dd></div>
+            <div><dt class="text-gray-500">Fable 压过 Opus</dt><dd class="font-medium text-emerald-600">平均成本 −9%</dd></div>
+            <div><dt class="text-gray-500">输入价</dt><dd class="font-medium">$10 / 百万 token</dd></div>
+            <div><dt class="text-gray-500">输出价</dt><dd class="font-medium">$50 / 百万 token</dd></div>
+            <div><dt class="text-gray-500">缓存输入</dt><dd class="font-medium">$1.00 / 百万 token</dd></div>
+            <div><dt class="text-gray-500">缓存写入</dt><dd class="font-medium">$12.50 / 百万 token</dd></div>
+            <div><dt class="text-gray-500">缓存比</dt><dd class="font-medium">读/写 10:1</dd></div>
+          </dl>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">相关文章</h3>
+          <ul class="space-y-3 text-sm">
+            <li>
+              <a href="/zh/tutorials/gpt-6-astra-api-pricing-2026" class="text-blue-600 hover:underline">GPT-6 Astra API 价格 2026</a>
+              <p class="text-gray-500 text-xs mt-1">已核实的定价、基准、推广节奏</p>
+            </li>
+            <li>
+              <a href="/zh/tutorials/gpt-6-astra-lean-prompts-agent-skills-2026" class="text-blue-600 hover:underline">GPT-6 Astra 提示词精简</a>
+              <p class="text-gray-500 text-xs mt-1">AGENTS.md 和 skill 里该删什么</p>
+            </li>
+            <li>
+              <a href="/zh/tutorials/claude-fable-5-mythos-5-2026" class="text-blue-600 hover:underline">Claude Fable 5 / Mythos 5 API</a>
+              <p class="text-gray-500 text-xs mt-1">Fable 5.1 cache read 定价</p>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>

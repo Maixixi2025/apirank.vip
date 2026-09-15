@@ -1,0 +1,341 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-6-astra-production-perplexity-cognition-devin-2026';
+const date = '2026-09-15';
+const locale = 'en';
+
+const enTitle = 'GPT-6 Astra in Production: Perplexity + Devin';
+const enDescription = 'Two production case studies of GPT-6 Astra, one week apart: Perplexity running it on end-to-end systems and Cognition Devin running it as the lead in Fusion. Benchmarks, prompts, and pricing math.';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "GPT-6 Astra in Production: Perplexity + Devin",
+  "description": "Two production case studies of GPT-6 Astra, one week apart: Perplexity running it on end-to-end systems and Cognition Devin running it as the lead in Fusion. Benchmarks, prompts, and pricing math.",
+  "datePublished": "2026-09-15",
+  "dateModified": "2026-09-15",
+  "inLanguage": "en-US",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": canonicalUrl
+  }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "GPT-6 Astra in Production: Perplexity + Devin",
+      "item": canonicalUrl
+    }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does Perplexity actually use GPT-6 Astra for in production?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Perplexity co-founder Johnny Ho named four categories in OpenAI's September 14, 2026 vendor post: drafting internal and external communications, editing real-world software systems, monitoring production systems, and writing test programs that simulate realistic service responses. The framing is that Astra handles tasks once reserved for human staff, and the verification cadence is reduced: Ho says the team trusts it with full end-to-end systems and checks in much less frequently than with previous generations of models. The operational effect is that more of the loop is owned by the model and human attention shifts from per-turn review to scheduled review."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Cognition's Fusion harness, and how does it use GPT-6 Astra?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fusion is a multi-agent architecture Cognition introduced in Devin Cloud and extended to Devin Desktop and the CLI on September 11, 2026. It runs two parallel agents on the same task: a lead agent on a frontier model (Fable 5.1 or GPT-6 Astra in the published benchmarks) and a sidekick on a cheaper model (Cognition's SWE-2 in the published numbers). Each agent keeps its own persistent context, and the two agents exchange briefs and results rather than full transcripts. In the published Artificial Analysis and Vals AI benchmark table, Fusion with Fable 5.1 plus SWE-2 scores 61.7 at $4.54 per task, a 39% cost reduction versus the Codex baseline at 100 score and $7.47 per task. Fusion with Astra plus SWE-2 scores 61.6, essentially tied with the Fable 5.1 lead."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does a more expensive lead model cost less overall in Fusion?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cognition reports that swapping Opus 4.8 for Fable 5 as the lead reduced average session cost by 9% even though Fable's per-token price is twice as high. The reason is that the lead's quality changes how much redundant work the pair does: Fable delegated earlier and gave the sidekick better briefs, while Opus micromanaged and redid much of the sidekick's work. The same finding shows up in Perplexity's account: a model that needs less frequent supervision is cheaper to run than its per-token price suggests, because the cost of human review and of the model's own redundant verification is the binding constraint rather than the token cost."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does GPT-6 Astra's cached input price affect Fusion's economics?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Astra lists at $1.00 per million cached input tokens and $12.50 per million cache writes, against $10 per million uncached input. The 10:1 cached-to-uncached ratio and the 12.5:1 cache-write-to-cache-read ratio set a crossover at roughly ten cache reads per write for caching to break even. Fusion's two-agent design benefits more from caching than a single-agent run does, because each agent's working context stays stable across many of its own turns even as the contexts differ between agents. The published 39% cost reduction is partly a function of the model choice and partly a function of the cache architecture that Fusion enables."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I run GPT-6 Astra as the only model, as the lead, or as the sidekick?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For most multi-step engineering workloads today, the right role is the lead. Cognition's published numbers put Fusion with Astra plus SWE-2 at 61.6 score, essentially tied with Fusion with Fable 5.1 plus SWE-2, which means the harness does most of the work and the lead's specific identity matters less than the architecture. Single-agent Astra makes sense for low-volume calls where per-call answer quality dominates the cost, and where the prompt is small and stable enough to be cached across many calls. Astra as the sidekick is the configuration Cognition did not benchmark, and the implicit finding from the post is that the lead's quality dominates, so a cheaper, more focused model is the better sidekick choice for most coding-agent workloads."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the September 12 OpenAI prompting guidance fit with these case studies?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The two case studies are doing in production what the September 12 prompting guidance describes in theory. OpenAI engineer Eric Provencher's recommendation is to cut broad skill scopes, drop blanket read requirements, and revisit approval rules written for an earlier model. Perplexity's reduced check-in cadence is only possible because Astra does not stop on the kind of false-positive approval requests that earlier models needed hard-coded rules to prevent. Cognition's lead-and-sidekick architecture is only viable because the lead's briefs are precise enough that the sidekick can execute them without re-asking. The presence of two independent production deployments in the same week, on the same model, in roughly the same shape, is the strongest external evidence yet that lean prompting is the default rather than an optimization."
+      }
+    }
+  ]
+};
+
+const bodyContent = `<article class="prose prose-lg max-w-none">
+  <h2 id="two-case-studies">Two Production Case Studies, One Week, One Model</h2>
+  <p>The week of September 11, 2026 produced two unusually candid third-party accounts of how <strong>GPT-6 Astra</strong> behaves once it is wired into a real engineering workflow. On September 11, the team behind <strong>Devin</strong> at Cognition published a long post on the architecture of <strong>Fusion</strong>, a lead-plus-sidekick harness in which Astra does the cheap half of every coding task. Three days later, on September 14, OpenAI's news feed published a vendor-written post on <strong>Perplexity</strong>'s use of Astra, anchored on a quote from Perplexity co-founder <strong>Johnny Ho</strong>.</p>
+  <p>Both posts have a striking common feature: neither team is selling Astra. They are explaining what they are doing with it. That is a different kind of evidence than a benchmark table, and it is the kind most API buyers cannot get from the vendor's own documentation. This article pulls the two accounts side by side, extracts the patterns, and turns them into the four or five things a developer actually has to think about before routing a real workload to Astra.</p>
+
+  <h2 id="perplexity-end-to-end">Perplexity: Astra Owns the Loop</h2>
+  <p>Perplexity's account is the easier of the two to summarize, and the more aggressive of the two about what Astra is allowed to do. Ho describes Astra as a system that <em>handles tasks once reserved for human staff</em>, and the categories he names are concrete: drafting internal and external communications, editing real-world systems, monitoring production software, and writing test programs that simulate realistic service responses.</p>
+  <p>The line that matters for an API team is the quote at the end. <em>We're actually able to trust it with full end-to-end systems and check in on it much less frequently than previous generations of models.</em> That is not a benchmark number. It is a change in operating posture: less frequent human checkpoints, more of the loop owned by the model, and a higher bar for what counts as supervision-worthy work.</p>
+  <p>The second-order claim Ho makes is that this loops back into the product. <em>Better code from GPT-6 Astra translates almost directly into a sharper search product for Perplexity.</em> The framing matters because it is the same shape as the September 12 prompting guidance from OpenAI engineer Eric Provencher: improvements in Astra's coding ability do not stay contained in developer tools, they ripple outward into whatever product the model touches. Perplexity is the first named case study of that ripple being visible in a production consumer product.</p>
+
+  <h3 id="perplexity-four-categories">The four production categories</h3>
+  <ol>
+    <li><strong>Communications</strong> — drafting internal and external messages. The implicit shift is from "Astra proposes copy, a human edits" to "Astra ships copy, a human reviews on a schedule."</li>
+    <li><strong>Software edits</strong> — real changes to real code in the production codebase, not draft branches or sandboxed clones.</li>
+    <li><strong>Production monitoring</strong> — observing running services and responding to anomalies. The cost of a bad action here is bounded, but the cost of slow action is not.</li>
+    <li><strong>Test programs that simulate realistic service responses</strong> — the most novel of the four. Perplexity uses Astra to build mock services (a language model API, a connector) so that real application code can be tested against simulated realistic responses. This is the loop Ho specifically calls out as one of the model's <em>most useful applications</em>, because manual testing does not scale with the pace of software changes.</li>
+  </ol>
+  <p>The through-line across all four is the same: each is a task where the model has more patience than a human, and where the cost of occasional mistakes is bounded by the surrounding code or the surrounding human review schedule. Perplexity is not running Astra unsupervised — it is running Astra with a different, looser cadence of supervision, and the result is a different ratio of human-time to model-time per task.</p>
+
+  <h2 id="cognition-fusion">Cognition: A Harness Around the Model</h2>
+  <p>The Cognition post is a different kind of artifact. It is not a testimonial, it is a release note for a piece of infrastructure. The team has been running <strong>Fusion</strong> on Devin Cloud for months; the September 11 post announces the same harness in Devin Desktop and the CLI, and it is the first place Cognition has published a real benchmark table comparing frontier models as lead and sidekick.</p>
+
+  <h3 id="fusion-architecture">The Fusion architecture in one paragraph</h3>
+  <p>Fusion runs two parallel agents on the same task, each with its own persistent context and its own tool surface. The lead agent runs on a frontier model — in the published numbers, Fable 5.1 or Astra — and is in charge of the session: it owns the plan, the interpretation of ambiguity, and the review of the sidekick's work. The sidekick is a cheaper model — Cognition's own <strong>SWE-2</strong> in the published numbers — and it does the mechanical work: exploring code, implementing changes, running tests, and reporting back.</p>
+  <p>The two agents do not pass full transcripts between each other. They exchange briefs, results, and feedback. The sidekick never needs the lead's full conversation history to implement a change, and the lead never needs every intermediate tool result to review the work. Each side builds up its own persistent context, and that is what makes the cost math work — every agent gets to take full advantage of prompt caching on the context that does not change.</p>
+  <p>This is the design choice that matters for an API team. Fusion is not a routing layer in the conventional sense, where the dispatcher looks at the prompt and decides which model to send it to. Fusion is two agents that run together, with the lead retaining final authority and the right to take control back. Cognition's framing is that frontier intelligence is <em>always in charge</em>, and the sidekick exists to keep token spend on mechanical work low without giving up review.</p>
+
+  <h3 id="fusion-benchmarks">The published benchmark table</h3>
+  <p>The numbers come from a partnership with <strong>Artificial Analysis</strong> and <strong>Vals AI</strong> across several coding agent benchmarks, and they are worth reproducing because they are the cleanest public measurement of "frontier model + cheaper sidekick" versus "frontier model alone."</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Harness + lead</th>
+        <th>Score</th>
+        <th>Cost per task (USD)</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Codex (baseline, no Fusion)</td>
+        <td>100</td>
+        <td>$7.47</td>
+        <td>Reference run on the same benchmark suite.</td>
+      </tr>
+      <tr>
+        <td>Devin Fusion, Fable 5.1 + SWE-2</td>
+        <td>61.7</td>
+        <td>$4.54</td>
+        <td>39% lower cost than the Codex baseline.</td>
+      </tr>
+      <tr>
+        <td>Devin Fusion, Astra + SWE-2</td>
+        <td>61.6</td>
+        <td>Not stated</td>
+        <td>Cost-equivalent pairing with Fable 5.1 as the lead.</td>
+      </tr>
+      <tr>
+        <td>Codex + Astra (max)</td>
+        <td>61.6</td>
+        <td>Not stated</td>
+        <td>Single-agent run, no sidekick.</td>
+      </tr>
+      <tr>
+        <td>Claude Code, Fable 5.1 (max)</td>
+        <td>62.2</td>
+        <td>36%+ lower than baseline</td>
+        <td>Single-agent Fable 5.1 run, no sidekick.</td>
+      </tr>
+      <tr>
+        <td>Claude Code, Opus 5 (max)</td>
+        <td>60</td>
+        <td>Highest in this set</td>
+        <td>Reference run for the more expensive lead.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Three patterns are visible. First, <strong>Fusion with Fable 5.1 + SWE-2 is the cost story</strong>: 39% cheaper than the Codex baseline while scoring within 0.5 of the best single-agent frontier run. Second, <strong>Fusion with Astra + SWE-2 lands at 61.6, essentially tied</strong> with Fusion's Fable 5.1 lead, suggesting the harness does the heavy lifting and the lead's specific identity matters less than the architecture. Third, <strong>the single-agent frontier runs cluster in a tight band</strong> (60 to 62.2), which is the part the post implicitly warns against: the gap between models is small, and the gap between harnesses is large.</p>
+
+  <h3 id="fusion-9-percent">The 9% Fable finding</h3>
+  <p>The single most quotable finding in the post is from a model swap Cognition ran internally. They replaced the lead from Opus 4.8 to Fable 5; Fable nominally costs twice as much per token. <em>But with the same sidekick, Fable-led sessions cost 9% less on average, while scoring higher on FrontierCode.</em> The mechanism is in the post: Fable delegated earlier and gave better briefs, while Opus micromanaged the sidekick and redid much of its work.</p>
+  <p>That is the same shape as the Perplexity story. The work that matters is not the model's per-token cost. It is how much unnecessary back-and-forth the lead creates for the sidekick, and how much redundant work the lead does because it does not trust the sidekick's output. A model that delegates cleanly is cheaper to run, even when its per-token price is higher.</p>
+
+  <h2 id="shared-pattern">The Shared Pattern: Where Astra Adds Value</h2>
+  <p>Two independent teams, both running Astra in production, both making the same observation about how it changes the operating model. The pattern is not "Astra is cheaper" — its per-token price is $10 per million input, $50 per million output, $1.00 per million cached input, $12.50 per million cache writes. The pattern is "Astra's higher per-token cost is offset by the work it removes from the lead's loop."</p>
+  <p>For Perplexity, the work that is removed is human attention. Engineers check in less frequently because the model's edits are correct enough that the review loop can run on a longer cadence. The economics for an API team are direct: if you are paying a developer to review model output and the review is the bottleneck, a model that needs less frequent review is cheaper even at a higher per-token rate.</p>
+  <p>For Cognition, the work that is removed is the lead's redundant verification. Fable-led sessions cost 9% less than Opus-led sessions at twice the per-token price because the lead stops redoing the sidekick's work. The economics for an API team are again direct: a model that delegates cleanly to a cheaper model is cheaper in total, and the per-token price is a misleading input to the cost model.</p>
+  <p>The 39% Fusion saving and the 9% Fable-over-Opus saving are the same finding in different units. They are both saying: model selection is a system property, not a per-token property, and the system has a lead, a sidekick, and a review loop.</p>
+
+  <h2 id="context-cache-math">The Context Math Is Different at $1.00 Cached Input</h2>
+  <p>Both case studies lean on prompt caching, and that is the part of Astra's pricing that the existing documentation under-emphasizes. At $1.00 per million cached input tokens and $12.50 per million cache writes, the cost ratio between cached and uncached input is <strong>10:1</strong>, and the cost ratio between a cache write and a cache read is <strong>12.5:1</strong> in the other direction. That asymmetry is what makes Fusion's architecture economically coherent.</p>
+  <p>For a single-agent run, the math is straightforward. Every system prompt, every AGENTS.md, every skill description is either sent at the full $10/M rate or written to cache once and re-read at $1/M. The crossover point for a given prompt's lifetime in a session is around 10 reads; below that, the cache write fee eats the savings. Above that, the cache dominates.</p>
+  <p>For a two-agent Fusion run, the math is much friendlier to caching. The lead's context is the user-facing session, which is small and changes constantly. The sidekick's context is its own working set, which is also small but is reset every time the lead hands off a new brief. The Fusion post's key claim — that each agent builds up its own persistent context — is what makes the cache hit reliably: each agent's context stays stable across many of its own turns, even as it changes between agents.</p>
+  <p>For an API team building anything like Fusion, the practical implications are:</p>
+  <ul>
+    <li><strong>Stable system prompts are the highest-leverage thing to cache.</strong> A 4,000-token system prompt that is re-sent 50 times costs $2.00 uncached or about $0.45 with cache. That is $1.55 saved per 50 requests, before any sidekick is even in the picture.</li>
+    <li><strong>Cache writes are expensive enough that a write-once-per-session prompt is not a free win.</strong> At $12.50/M, a 4,000-token cache write costs $0.05 per session. If the session is short enough that the prompt only gets re-read twice, the cache is a net loss. The 10:1 ratio sets a floor of about 10 reads per write for caching to break even.</li>
+    <li><strong>Lead-and-sidekick architectures get more out of caching than single-agent runs</strong> because each agent's working context is more stable than a merged single-agent context would be. The Fusion numbers (39% cost reduction) are partly a function of the model choice and partly a function of the cache architecture.</li>
+  </ul>
+
+  <h2 id="decision-matrix">Decision Matrix: Astra as Lead, Sidekick, or Neither</h2>
+  <p>For an API team, the three roles Astra can play in a multi-model workflow are distinct enough to be worth separating.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Role</th>
+        <th>What you are paying for</th>
+        <th>When it pays</th>
+        <th>When it does not</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Astra as the only model</strong></td>
+        <td>$10/M input, $50/M output, $1/M cached input</td>
+        <td>Single-call workloads where you want the highest answer quality per call and the call volume is low enough that the per-token price is dominated by other costs.</td>
+        <td>High-volume pipelines or long-context agent runs, where the per-token math is the binding constraint.</td>
+      </tr>
+      <tr>
+        <td><strong>Astra as the lead in Fusion</strong></td>
+        <td>Same per-token prices, but a much smaller fraction of the token spend (most of the work is the sidekick's).</td>
+        <td>Multi-step engineering work where review quality matters and a cheap sidekick can carry the mechanical load. Cognition's 39% cost reduction is the headline number.</td>
+        <td>Tasks where the lead is the bottleneck anyway (e.g. planning-heavy work where the sidekick has nothing to do).</td>
+      </tr>
+      <tr>
+        <td><strong>Astra as the sidekick</strong></td>
+        <td>The opposite of the lead role. You are buying reliable per-token execution under a more capable lead's direction.</td>
+        <td>Rare. Cognition did not publish a benchmark with Astra as the sidekick, and the implicit finding from the post is that the lead's quality dominates the architecture's quality.</td>
+        <td>Most coding-agent workloads today. A cheaper, more focused model is the better sidekick choice.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>The practical reading: the default for an API team today is to start with <strong>Astra as the lead in a Fusion-style harness with a sidekick model that is appropriate to the workload</strong>. That is the configuration Cognition has been running in production for months, and it is the configuration that Perplexity's reduced-supervision finding points to as well, with the lead in their case being the only agent rather than a pair.</p>
+
+  <h2 id="what-changed">What This Changes About Prompting Guidance</h2>
+  <p>The September 12 OpenAI prompting guidance — the one that says <em>cut broad skill scopes, drop blanket read requirements, revisit approval rules</em> — fits cleanly into the two case studies. Perplexity's reduced check-in cadence is only possible because the model does not stop mid-task on the kind of false-positive approval requests that earlier models needed hard-coded rules to prevent. Cognition's lead-and-sidekick architecture is only viable because the lead's briefs are precise enough that the sidekick can execute them without re-asking.</p>
+  <p>Both teams are, in different language, doing what the OpenAI prompting guidance describes. Both are running the model in an environment where the surrounding scaffolding is lean. Neither team publishes a copy of the prompts they use, but the existence of two independent production deployments in the same week, on the same model, in roughly the same shape, is the strongest external evidence yet that lean prompting is the default rather than an optimization.</p>
+  <p>For a developer integrating Astra today, the through-line is short. Use it as a lead, not as an only-agent. Cache the parts of the context that are stable. Audit your AGENTS.md and skill files for rules that were written for an earlier model. Expect the review cadence to drop, and design your logs and your rollback plan for that lower cadence rather than for the per-turn supervision that the previous generation required.</p>
+
+  <h3 id="sources">Sources</h3>
+  <ul>
+    <li>Cognition blog, <em>Introducing Fusion in Devin Desktop &amp; CLI</em> — September 11, 2026 (Fusion lead-and-sidekick architecture, benchmark table with Artificial Analysis and Vals AI, 39% cost reduction with Fable 5.1 + SWE-2 pairing, 9% Fable-over-Opus finding).</li>
+    <li>OpenAI news feed, <em>Perplexity trusts GPT-6 Astra with end-to-end systems</em> — September 14, 2026 (Johnny Ho on communications, software edits, production monitoring, mock-service test programs; reduced check-in cadence; better Astra code → better Perplexity search product).</li>
+    <li>OpenAI news feed, <em>Cognition helps Devin test its own work with GPT-6 Astra</em> — September 11, 2026 (companion vendor-written post that names Astra as a default in Devin's testing flow).</li>
+    <li>OpenAI prompting guidance, <em>GPT-6 Astra needs leaner prompts and fewer guardrails</em> — Eric Provencher, September 12, 2026 (the model-side argument for the environment in which the two case studies are running).</li>
+    <li>apirank, <em>GPT-6 Astra API Pricing 2026</em> (September verification): $10/M input, $50/M output, $1.00/M cached input, $12.50/M cache writes; 10:1 cached-to-uncached input ratio.</li>
+  </ul>
+</article>
+`;
+
+---
+
+<BaseLayout
+  title={enTitle}
+  description={enDescription}
+  canonicalUrl={canonicalUrl}
+  ogType="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <div class="container mx-auto px-4 py-8 max-w-5xl">
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Case Study</span>
+        <time datetime="2026-09-15">September 15, 2026</time>
+        <span>·</span>
+        <span>14 min read</span>
+      </div>
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">{enTitle}</h1>
+      <p class="text-xl text-gray-600">{enDescription}</p>
+    </header>
+
+    <div class="grid lg:grid-cols-[1fr_300px] gap-8">
+      <div>
+        <article class="prose prose-lg max-w-none" set:html={bodyContent} />
+
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6 mt-12">
+          <h3 class="font-bold text-gray-900 mb-2">Routing real workloads to GPT-6 Astra?</h3>
+          <p class="text-gray-600 text-sm mb-4">Astra runs $10/$50 per million input/output with cached input at $1.00 and cache writes at $12.50. Put those numbers next to every other frontier endpoint before you wire it into a Fusion-style harness.</p>
+          <a href="https://apirank.vip/providers" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">Compare API Pricing →</a>
+        </div>
+      </div>
+
+      <aside class="space-y-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Quick Facts</h3>
+          <dl class="space-y-3 text-sm">
+            <div><dt class="text-gray-500">Subject</dt><dd class="font-medium">GPT-6 Astra in production</dd></div>
+            <div><dt class="text-gray-500">Case study 1</dt><dd class="font-medium">Perplexity (Sept 14)</dd></div>
+            <div><dt class="text-gray-500">Case study 2</dt><dd class="font-medium">Cognition Devin Fusion (Sept 11)</dd></div>
+            <div><dt class="text-gray-500">Architecture</dt><dd class="font-medium">Lead + sidekick</dd></div>
+            <div><dt class="text-gray-500">Fusion saving</dt><dd class="font-medium text-emerald-600">39% vs Codex baseline</dd></div>
+            <div><dt class="text-gray-500">Fable over Opus</dt><dd class="font-medium text-emerald-600">−9% avg cost</dd></div>
+            <div><dt class="text-gray-500">Input</dt><dd class="font-medium">$10 / 1M tokens</dd></div>
+            <div><dt class="text-gray-500">Output</dt><dd class="font-medium">$50 / 1M tokens</dd></div>
+            <div><dt class="text-gray-500">Cached input</dt><dd class="font-medium">$1.00 / 1M tokens</dd></div>
+            <div><dt class="text-gray-500">Cache write</dt><dd class="font-medium">$12.50 / 1M tokens</dd></div>
+            <div><dt class="text-gray-500">Cache ratio</dt><dd class="font-medium">10:1 read-to-write</dd></div>
+          </dl>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 class="font-bold text-gray-900 mb-4">Related Articles</h3>
+          <ul class="space-y-3 text-sm">
+            <li>
+              <a href="/tutorials/gpt-6-astra-api-pricing-2026" class="text-blue-600 hover:underline">GPT-6 Astra API Pricing 2026</a>
+              <p class="text-gray-500 text-xs mt-1">Verified pricing, benchmarks, rollout</p>
+            </li>
+            <li>
+              <a href="/tutorials/gpt-6-astra-lean-prompts-agent-skills-2026" class="text-blue-600 hover:underline">GPT-6 Astra Prompting: Lean Skills</a>
+              <p class="text-gray-500 text-xs mt-1">What to cut from AGENTS.md and skills</p>
+            </li>
+            <li>
+              <a href="/tutorials/claude-fable-5-mythos-5-2026" class="text-blue-600 hover:underline">Claude Fable 5 / Mythos 5 API</a>
+              <p class="text-gray-500 text-xs mt-1">Fable 5.1 cache read pricing</p>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
