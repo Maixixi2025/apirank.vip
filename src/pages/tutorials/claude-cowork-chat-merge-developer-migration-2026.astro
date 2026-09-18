@@ -1,0 +1,236 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'claude-cowork-chat-merge-developer-migration-2026';
+const date = '2026-09-18';
+const locale = 'en';
+
+const enTitle = "Claude Cowork Merge 2026: Developer Migration";
+const enDescription = "Claude Cowork and chat merged into one Claude: what API teams must change, plus verified pricing for Fable 5.1, Opus 5, and Sonnet 5. Verified 2026-09-18.";
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What changed when Claude Cowork and chat merged into one Claude?", "acceptedAnswer": { "@type": "Answer", "text": "On September 16, 2026, Anthropic merged Claude Cowork and chat into a single Claude surface. Cowork had been a separate workspace for larger work and Design a separate space for visual work; users reported that deciding where a task belonged was the frustrating part and that work started in one did not carry into the other. After the merge, Claude determines what a task needs, and Cowork and Design capabilities are available from any conversation with the existing context, skills, and connectors. The rollout is live on Pro and Max plans, spreading across web, desktop, and mobile over the coming weeks, with Team and Free plans to follow." } },
+    { "@type": "Question", "name": "Did Anthropic change its per-token API prices at the same time?", "acceptedAnswer": { "@type": "Answer", "text": "No. As of September 18, 2026, Anthropic's published list rates are unchanged. Claude Fable 5.1 and Mythos 5.1 remain at $10 input and $50 output per million tokens, Claude Opus 5 at $5/$25, Claude Sonnet 5 at $2/$10, and Claude Haiku 4.5 at $1/$5. Two footnotes matter for budgeting: cache writes on Claude Mythos 5.1 are priced at 0.025x the base input price while all other models use the standard 0.1x, and the $2/$10 Sonnet 5 pricing is now the standard price rather than introductory." } },
+    { "@type": "Question", "name": "What is the scheduled Sonnet 5 price increase and did it happen?", "acceptedAnswer": { "@type": "Answer", "text": "It did not happen. Anthropic states in its pricing documentation that the $2/$10 per million input/output token pricing for Claude Sonnet 5, announced at launch as introductory pricing through August 31, 2026, is now the standard price, and that the previously scheduled increase to $3/$15 per million input/output tokens on September 1, 2026 will not occur. If you budgeted for a Sonnet price increase in Q3 2026, that line item can be removed." } },
+    { "@type": "Question", "name": "How does the consumer merge map to Claude API primitives?", "acceptedAnswer": { "@type": "Answer", "text": "The API primitives Anthropic already documents map closely to the merged consumer experience. A long Cowork or Projects task is a session (agent plus environment plus events) under the managed-agents-2026-04-01 beta header. Parallel threads under a coordinator are multiagent orchestration, where all agents share a sandbox, filesystem, and vault credentials but each runs in its own context-isolated thread. Persistent cross-session memory is a memory store. The spend ceiling described in project usage is a session budget, priced at public list rates. Claude asking before taking an action maps to permission policies and tool approval." } },
+    { "@type": "Question", "name": "What is a Managed Agents session budget and how does it behave?", "acceptedAnswer": { "@type": "Answer", "text": "A session budget is an optional hard spend ceiling set when you create a session. The platform continuously prices everything the session consumes at public list rates and stops issuing new model requests once that cost reaches the budget. The request in flight when the cap is crossed still finishes, so the final list cost can land a fraction past the budget. A session at its budget pauses and goes idle rather than terminating, and changing or removing the budget resumes its work automatically. The budget field is type limit with max_list_cost, where the amount is a whole number of US cents written as a string, so 125 in quotes means $1.25; decimal forms such as 25.00 are rejected." } },
+    { "@type": "Question", "name": "Why do memory store calls return a 400 error?", "acceptedAnswer": { "@type": "Answer", "text": "Combining beta headers causes it. Anthropic's memory documentation states you should not combine agent-memory-2026-07-22 with managed-agents-2026-04-01 on a memory store request, because sending both returns a 400 error. The correct pattern is to replace managed-agents-2026-04-01 with agent-memory-2026-07-22 on memory store calls rather than adding a second value. Session endpoints, including attaching a memory store to a session, still use managed-agents-2026-04-01." } },
+    { "@type": "Question", "name": "Is Claude Managed Agents eligible for Zero Data Retention or HIPAA BAA?", "acceptedAnswer": { "@type": "Answer", "text": "Not currently. Anthropic states that because Claude Managed Agents is stateful by design, with long-running sessions that store conversation history, sandbox state, and outputs server-side, it is not currently eligible for Zero Data Retention or HIPAA Business Associate Agreement coverage. You retain control of the data: you can delete sessions and separately delete any files you uploaded at any time through the API. If your compliance model requires ZDR, this surface is not suitable for that workload yet." } },
+    { "@type": "Question", "name": "What did Anthropic ship in the redesigned Claude Code projects?", "acceptedAnswer": { "@type": "Answer", "text": "Announced September 17, 2026, redesigned projects replace the old handoff workflow with a coordinator that directs threads. You select a goal plus a repo or context, and Claude scopes the request, delegates work, coordinates parallel threads, reviews outputs, and assembles the result. Each thread is a full Claude Code cloud session working on its own branch and copy of the repo; overlaps resolve as merge conflicts like any other PR. Every thread adds to and draws from a shared memory. Access started with select Pro and Max subscribers using cloud sessions who had no existing web or desktop projects, expanding over the following week." } },
+    { "@type": "Question", "name": "What should an API team change first after this merge?", "acceptedAnswer": { "@type": "Answer", "text": "Model the unit of work as a session rather than a request, because sessions are stateful by design, resume cleanly after pauses, and store history, sandbox state, and outputs server-side. Then add a budget before adding autonomy, using max_list_cost in whole US cents sent as a quoted string. Get the beta headers right: managed-agents-2026-04-01 on session and orchestration calls, agent-memory-2026-07-22 on memory store calls. Finally, plan around the stateful-data trade-off, since Managed Agents is not currently ZDR or HIPAA BAA eligible, and check the rollout sequence before committing to a launch date." } }
+  ]
+};
+
+const bodyContent = `<article class="prose prose-lg max-w-none">
+  <h2 id="announcement">Anthropic Merged Its Two Biggest Surfaces Into One Claude</h2>
+  <p>On <strong>September 16, 2026</strong>, Anthropic published <em>Claude Cowork and chat are now one Claude</em>, ending a split that had existed since Cowork launched as a separate workspace for larger work. The post is short and the framing is deliberately non-technical, but the developer-facing consequence is not: the company is collapsing product boundaries around a single conversation surface, and it shipped three new content artifacts — Claude Docs, Claude Slides, and Claude Design now working inside conversations — on the same day. The rollout is live on Pro and Max plans now, spreading across the Claude app on web, desktop, and mobile over the coming weeks, with Team and Free to follow.</p>
+
+  <p>If you only read the marketing language you would call this a UI change. It is not. Every time Anthropic merges a surface, the underlying primitives — sessions, memory, tool permission, context windows, effort levels — get re-examined, because the merge only works if the same conversation can do both a five-second lookup and a four-hour job. That re-examination is where the API-side migration cost lives, and it is what this article is about.</p>
+
+  <p>The headline for API teams: <strong>your per-token prices did not change</strong>, but the way you model a "unit of work" should. Anthropic's own docs already ship the pieces — Managed Agents with sessions, memory stores, budgets, and multiagent orchestration — and the consumer merge is a strong signal about which of those pieces become the default mental model.</p>
+
+  <h2 id="what-shipped">What Actually Shipped on September 16</h2>
+  <p>Three things in one post, and they compound:</p>
+
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Cowork and chat became one Claude.</strong> Cowork was built as a separate place for bigger work; Design was built for visual work. Anthropic says users "used both, and told us the frustrating part was deciding where a task belonged," and that work started in one did not carry into the other. The merge removes the choice: Claude decides what a task needs, and Cowork/Design capabilities become available from any conversation with the context, skills, and connectors the user already has.</li>
+    <li><strong>Claude Docs and Claude Slides shipped (beta, paid plans).</strong> Both are generated inside the conversation. Anthropic's worked example: a weekly report is due at noon; the user asks what moved in the pipeline, adds "write it the way we always do, flag anything that slipped, and put the highlights in five slides for the leadership meeting," and gets a doc plus slides out of the <em>same</em> conversation — so the slides already match the report. You can download as PowerPoint or PDF, present straight from Claude, or edit inline.</li>
+    <li><strong>Claude Design works inside conversations now.</strong> If you used Design standalone it keeps working as before — the change is additive for existing Design users and new for everyone else.</li>
+  </ul>
+
+  <p>Two details in that post matter more than they look. First, <strong>Claude now asks before taking an action by default</strong>, and you can flip it to work continuously and check in only when something needs a closer look — Anthropic's phrasing is "You keep the final say." Second, anything you make with Design, Slides, or Docs <strong>lives at one shareable link</strong>. Those two sentences describe an agent permission model and a durable artifact store. Neither is new to the API, but both are now the default consumer experience, which is how Anthropic normalizes the developer model.</p>
+
+  <h2 id="companion">The Companion Post a Day Later Is the Real Signal</h2>
+  <p>On <strong>September 17, 2026</strong> — the next day — Anthropic published <em>Projects redesigned: from folder to conversation</em>, and this one is explicitly about Claude Code and cloud sessions. It is the developer-side half of the same story, and it is where the architecture becomes concrete.</p>
+
+  <p>The old model: "Managing multiple sessions across a build used to require you to divide the work, juggle handoffs, and stitch the results back together." The new model: "you describe what needs to get done and Claude manages the work. Claude scopes the request, delegates the work, coordinates parallel threads, reviews the outputs, and assembles the finished result." Anthropic's own example is a goal like <em>reduce your app's checkout p75 latency</em>, after which Claude profiles each endpoint, tests optimizations, and opens PRs in parallel threads.</p>
+
+  <p>The structural details here are the useful part for anyone building on the API:</p>
+
+  <ul class="list-disc pl-6 space-y-1 text-gray-700">
+    <li><strong>Projects have a coordinator and threads.</strong> Threads do the work; a coordinator directs them. You select a goal plus a repo or context, and Claude suggests work it can pick up immediately.</li>
+    <li><strong>Each thread is a full Claude Code cloud session</strong> working on its own branch and its own copy of the repo. If two threads touch the same code, the overlap resolves as a merge conflict "just like any other PR."</li>
+    <li><strong>Threads can split further.</strong> Each one can decompose delegated work using subagents, loops, and workflows so large assignments finish faster.</li>
+    <li><strong>Memory is shared and cumulative.</strong> "Every thread now adds to and draws from a shared memory, reducing the need for complex prompt engineering." Anthropic's examples of what gets remembered: that the release moved to Friday, why the export was dropped, who to check in with before touching the billing service.</li>
+    <li><strong>Usage limits are a first-class concern.</strong> Because each thread is a full session, "projects can reach usage limits faster." Anthropic's answer is that you can check project-specific usage and select the model and effort levels for the coordinator chat as well as the worker threads.</li>
+  </ul>
+
+  <p>Access for the redesigned projects started with select Pro and Max subscribers using cloud sessions in Claude Code who had no existing web or desktop projects, expanding over a week, with chat and Cowork upgrades following and Team/Enterprise after that. Existing projects keep working as they do today.</p>
+
+  <h2 id="api-mapping">Mapping the Consumer Merge to API Primitives</h2>
+  <p>Here is the part that saves you money. Anthropic's platform docs already expose every primitive the two blog posts describe, and the naming is close enough that you can plan a migration without waiting for a consumer-feature changelog.</p>
+
+  <div class="overflow-x-auto my-6">
+    <table class="min-w-full text-sm border border-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-3 py-2 text-left font-semibold text-gray-900 border-b">Consumer surface</th>
+          <th class="px-3 py-2 text-left font-semibold text-gray-900 border-b">API primitive</th>
+          <th class="px-3 py-2 text-left font-semibold text-gray-900 border-b">Beta header / status</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-700">
+        <tr>
+          <td class="px-3 py-2 border-b">A long Cowork/Projects task</td>
+          <td class="px-3 py-2 border-b">Session (agent + environment + events)</td>
+          <td class="px-3 py-2 border-b"><code class="bg-gray-100 px-1 rounded text-xs">managed-agents-2026-04-01</code></td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 border-b">Parallel threads under a coordinator</td>
+          <td class="px-3 py-2 border-b">Multiagent orchestration (threads share sandbox/filesystem/vault, isolated context)</td>
+          <td class="px-3 py-2 border-b"><code class="bg-gray-100 px-1 rounded text-xs">managed-agents-2026-04-01</code></td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 border-b">"Claude remembers the release moved to Friday"</td>
+          <td class="px-3 py-2 border-b">Memory store (mounted as a directory in the sandbox)</td>
+          <td class="px-3 py-2 border-b"><code class="bg-gray-100 px-1 rounded text-xs">agent-memory-2026-07-22</code></td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 border-b">"Projects can reach usage limits faster"</td>
+          <td class="px-3 py-2 border-b">Session budget (hard dollar ceiling, list-rate priced)</td>
+          <td class="px-3 py-2 border-b"><code class="bg-gray-100 px-1 rounded text-xs">managed-agents-2026-04-01</code></td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 border-b">"Claude asks before taking an action"</td>
+          <td class="px-3 py-2 border-b">Permission policies / tool approval</td>
+          <td class="px-3 py-2 border-b">Documented per-tool</td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 border-b">Docs / Slides / Design artifacts</td>
+          <td class="px-3 py-2 border-b">Files API + Artifacts on the messages surface</td>
+          <td class="px-3 py-2 border-b">GA on Messages API</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>The single most important caveat in that table is the <strong>budget</strong>. Anthropic's docs are unusually precise about how it behaves, and the behaviour is friendlier than most people expect from a spend cap: the platform "continuously prices everything the session consumes at public list rates" and "stops issuing new model requests once that cost reaches the budget." The in-flight request finishes, so the final cost can land slightly past the cap. Critically, <strong>"a session at its budget pauses and goes idle rather than terminating"</strong> — and changing or removing the budget resumes the work automatically. If you were about to build your own kill-switch around a runaway agent, this is the supported version of it.</p>
+
+  <p>The budget field is also a good example of something that will bite you if you skim. It is <code class="bg-gray-100 px-1 rounded text-sm">type: limit</code> with <code class="bg-gray-100 px-1 rounded text-sm">max_list_cost</code>, and the amount is <strong>a whole number of US cents written as a string</strong> — <code class="bg-gray-100 px-1 rounded text-sm">"125"</code> is $1.25. Decimal forms like <code class="bg-gray-100 px-1 rounded text-sm">"25.00"</code> are rejected, and the docs specifically warn to keep the amount quoted so it is sent as a string rather than a number. That is a classic JSON-schema trap dressed as documentation.</p>
+
+  <h2 id="memory-caveat">The Memory Header Conflicts With the Agent Header</h2>
+  <p>If you take exactly one operational detail from this article, take this one. Memory stores and Managed Agents use <em>different</em> beta headers, and combining them incorrectly produces a hard failure rather than a degraded one.</p>
+
+  <p>Per Anthropic's memory documentation: do not combine <code class="bg-gray-100 px-1 rounded text-sm">agent-memory-2026-07-22</code> with <code class="bg-gray-100 px-1 rounded text-sm">managed-agents-2026-04-01</code> on a memory-store request — sending both returns a <strong>400 error</strong>. The correct pattern is to replace the Managed Agents header with the memory header on memory-store calls, rather than appending a second value. Session endpoints — including attaching a memory store to a session — continue to use <code class="bg-gray-100 px-1 rounded text-sm">managed-agents-2026-04-01</code>.</p>
+
+  <p>This is the kind of detail that turns a "why is my agent silently forgetting things" debugging session into a two-line fix, and it is exactly the sort of thing that gets buried when a platform ships fast. A memory store itself is a workspace-scoped collection of text documents "optimized for Claude," mounted as a directory inside the session's sandbox. The agent reads and writes it with the same file tools it uses for the rest of the filesystem, and a note describing each mount is added to the system prompt so the agent knows where to look. That design choice — memory as a mounted directory rather than a magic retrieval layer — is why the memory toolset must be enabled for it to work.</p>
+
+  <h2 id="what-it-costs">What It Costs: The Prices Did Not Change</h2>
+  <p>Worth stating plainly, because merges like this often arrive with a price change attached: <strong>as of September 18, 2026, Anthropic's published per-token API prices are unchanged</strong>. The verified list rates from Anthropic's own pricing documentation:</p>
+
+  <div class="overflow-x-auto my-6">
+    <table class="min-w-full text-sm border border-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-3 py-2 text-left font-semibold text-gray-900 border-b">Model</th>
+          <th class="px-3 py-2 text-left font-semibold text-gray-900 border-b">Input / MTok</th>
+          <th class="px-3 py-2 text-left font-semibold text-gray-900 border-b">Output / MTok</th>
+          <th class="px-3 py-2 text-left font-semibold text-gray-900 border-b">5m cache write</th>
+          <th class="px-3 py-2 text-left font-semibold text-gray-900 border-b">Cache hit</th>
+        </tr>
+      </thead>
+      <tbody class="text-gray-700">
+        <tr>
+          <td class="px-3 py-2 border-b">Claude Fable 5.1</td>
+          <td class="px-3 py-2 border-b">$10</td>
+          <td class="px-3 py-2 border-b">$50</td>
+          <td class="px-3 py-2 border-b">$12.50</td>
+          <td class="px-3 py-2 border-b">$0.25</td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 border-b">Claude Mythos 5.1 (limited availability)</td>
+          <td class="px-3 py-2 border-b">$10</td>
+          <td class="px-3 py-2 border-b">$50</td>
+          <td class="px-3 py-2 border-b">$12.50</td>
+          <td class="px-3 py-2 border-b">$0.25</td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 border-b">Claude Opus 5</td>
+          <td class="px-3 py-2 border-b">$5</td>
+          <td class="px-3 py-2 border-b">$25</td>
+          <td class="px-3 py-2 border-b">$6.25</td>
+          <td class="px-3 py-2 border-b">$0.50</td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 border-b">Claude Sonnet 5</td>
+          <td class="px-3 py-2 border-b">$2</td>
+          <td class="px-3 py-2 border-b">$10</td>
+          <td class="px-3 py-2 border-b">$2.50</td>
+          <td class="px-3 py-2 border-b">$0.20</td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 border-b">Claude Haiku 4.5</td>
+          <td class="px-3 py-2 border-b">$1</td>
+          <td class="px-3 py-2 border-b">$5</td>
+          <td class="px-3 py-2 border-b">$1.25</td>
+          <td class="px-3 py-2 border-b">$0.10</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Two footnotes from the same page are worth knowing because they change long-run budgeting. First, cache writes on Claude Mythos 5.1 are priced at <strong>0.025× the base input price</strong> rather than the usual multiplier — Anthropic states all other models use the standard 0.1× for cache writes. That is a meaningful advantage if your workload is cache-heavy on Mythos. Second, and more broadly useful: the <strong>$2/$10 per-million Sonnet 5 pricing is now the standard price</strong>, not introductory. Anthropic states explicitly that the previously scheduled increase to $3/$15 per million on September 1, 2026 <em>will not occur</em>. If you budgeted for a Sonnet price increase this quarter, remove it.</p>
+
+  <p>What you <em>should</em> budget for is the thing Anthropic itself flags: because each project thread is a full session, projects reach usage limits faster. On the consumer side that is a plan-tier question. On the API side it is a token-volume question, and the two levers Anthropic names — selecting the model and effort levels for the coordinator <em>and</em> the worker threads — are the ones that actually move the bill. A coordinator on Fable 5.1 at $10/$50 dispatching workers on Haiku 4.5 at $1/$5 is a very different invoice from the reverse, and the redesigned projects surface makes that split explicit for the first time.</p>
+
+  <h2 id="migration">A Short Migration Checklist</h2>
+  <p>If you have a working chat-based integration and you want to move toward the model Anthropic is normalizing:</p>
+
+  <ol class="list-decimal pl-6 space-y-2 text-gray-700">
+    <li><strong>Model your work unit as a session, not a request.</strong> Sessions are stateful by design: they run long, resume cleanly after pauses, and store conversation history, sandbox state, and outputs server-side. That is the shape both blog posts describe.</li>
+    <li><strong>Add a budget before you add autonomy.</strong> A <code class="bg-gray-100 px-1 rounded text-sm">max_list_cost</code> in whole US cents, sent as a quoted string. It pauses rather than terminates at the cap, and removing it resumes work — so it is safe to set conservatively and raise later.</li>
+    <li><strong>Get the beta headers right.</strong> <code class="bg-gray-100 px-1 rounded text-sm">managed-agents-2026-04-01</code> on session and orchestration calls; <code class="bg-gray-100 px-1 rounded text-sm">agent-memory-2026-07-22</code> on memory-store calls, <em>replacing</em> rather than combining with the managed-agents header. Sending both on a memory-store request is a 400.</li>
+    <li><strong>Plan for the stateful-data trade-off.</strong> Anthropic states that because Managed Agents is stateful by design, it is <strong>not currently eligible for Zero Data Retention or HIPAA BAA coverage</strong>. You retain control — you can delete sessions and separately delete uploaded files through the API — but if your compliance model requires ZDR, this is not the surface for that workload yet.</li>
+    <li><strong>Check the rollout sequence before you promise a date.</strong> Cowork/chat merge is on Pro and Max first; redesigned projects started with select Pro/Max Code users on cloud sessions who had no existing projects, expanding over a week; Team and Free follow; Enterprise admins hear "at least 30 days before anything changes for their organizations."</li>
+  </ol>
+
+  <h2 id="bottom-line">The Bottom Line</h2>
+  <p>Anthropic's two posts are a product announcement and a Claude Code feature note, and neither says the word "API" in a way you would notice. But together they describe a platform consolidating on one mental model: a persistent session with its own memory, a coordinator that delegates to isolated threads, a permission boundary the user controls, and a hard dollar cap. The consumer version of that shipped this week. The developer version has been sitting in Anthropic's platform docs the whole time, under beta headers, with the exact field shapes and the exact failure modes already written down.</p>
+
+  <p>The migration cost here is almost entirely conceptual, not financial — the per-token prices are unchanged, Sonnet 5's scheduled increase is cancelled, and the primitives you need are already GA or in documented beta. What you should actually spend time on is the unit-of-work refactor: if your integration is built around a single request/response, the merge is a nudge to rebuild around sessions, budgets, and threads before your competitor does.</p>
+
+  <aside class="bg-gray-50 border-l-4 border-blue-600 p-5 my-8 rounded-r">
+    <p class="text-sm text-gray-700 mb-2"><strong>Last verified: 2026-09-18.</strong> Sources: Anthropic <em>Claude Cowork and chat are now one Claude</em> (September 16, 2026) and <em>Projects redesigned: from folder to conversation</em> (September 17, 2026), both at claude.com/blog; Anthropic platform documentation at platform.claude.com/docs for Managed Agents (overview, budgets, memory, multiagent orchestration); Anthropic model pricing documentation. Per-token prices are Anthropic list rates and exclude batch discounts, regional processing premiums, and long-context surcharges. Managed Agents and memory stores are beta and behaviour may change between releases.</p>
+    <p class="text-xs text-gray-500">APIRank tracks AI API pricing and platform changes that affect what developers actually pay. Prices verified against first-party documentation, not third-party summaries.</p>
+  </aside>
+
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 my-8">
+    <h3 class="font-bold text-gray-900 mb-2">Compare AI API pricing before you commit</h3>
+    <p class="text-gray-700 text-sm mb-3">Model prices move fast, and a merge like this one is a good moment to re-check what your stack actually costs per million tokens. APIRank tracks input, output, and cache rates across the major providers with a date-stamped last-verified field.</p>
+    <a href="/calculator" class="inline-block bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded hover:bg-blue-700">Open the API cost calculator →</a>
+  </div>
+</article>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={bodyContent} />
+</BaseLayout>
