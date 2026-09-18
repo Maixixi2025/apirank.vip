@@ -1,0 +1,370 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'ovhcloud-ai-endpoints-api-review-2026';
+const enTitle = 'OVHcloud AI Endpoints Review 2026: Per-Token Pricing';
+const enDescription = "OVHcloud AI Endpoints review: EUR per-1M pricing for gpt-oss and Qwen3.5, the Batch API's 50% GA rate, 400 req/min limits and the decommission 404 trap.";
+const date = '2026-09-18';
+const canonicalUrl = `https://apirank.vip/tutorials/ovhcloud-ai-endpoints-api-review-2026/`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/ovhcloud-ai-endpoints-api-review-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "OVHcloud AI Endpoints Review 2026: Per-Token Pricing",
+  "description": "OVHcloud AI Endpoints review: EUR per-1M pricing for gpt-oss and Qwen3.5, the Batch API's 50% GA rate, 400 req/min limits and the decommission 404 trap.",
+  "datePublished": "2026-09-18",
+  "dateModified": "2026-09-18",
+  "author": {
+    "@type": "Person",
+    "name": "Jason Mai"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/og-image.png",
+      "width": 1200,
+      "height": 630
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/tutorials/ovhcloud-ai-endpoints-api-review-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "OVHcloud AI Endpoints Review 2026: Per-Token Pricing",
+      "item": "https://apirank.vip/tutorials/ovhcloud-ai-endpoints-api-review-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is OVHcloud AI Endpoints OpenAI-compatible?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The documentation states the platform is designed to be compatible with the OpenAI API, and the Batch API is explicitly compatible with OpenAI's Batch interface using a 24h completion window. The documented exception is image generation models. Request bodies are capped at 2 MB for most endpoints and 10 MB for visual language models, and exceeding the rate limit returns a 429."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much does OVHcloud AI Endpoints cost per million tokens?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Rates are per model. As of 2026-09-18 the cheapest reasoning model is gpt-oss-20b at 0.04 / 0.15 EUR per 1M in and out, and gpt-oss-120b at 0.08 / 0.40 EUR. The newest multimodal Qwen tier, Qwen3.5-397B-A17B, is 0.60 / 3.60 EUR. Embeddings run from 0.01 EUR per 1M input for bge-m3 up to 0.10 EUR for Qwen3-Embedding-8B. Whisper transcription is 0.00004083 EUR per second for large-v3. All published prices exclude VAT."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a free tier on OVHcloud AI Endpoints?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, in four forms: the playground lets you try every catalog model free with LLMs capped at 1024 output tokens; an anonymous tier allows 2 requests per minute per IP per model without an API key; the Batch API is free during its two-month Beta; and Qwen3Guard plus the image-generation and TTS models are listed at 0 on the current price list. The Base API has no perpetual free token grant."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where does the inference run and is my data stored?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "OVHcloud states the infrastructure is located in Gravelines, France, and that data is not stored or shared during or after model use. The service is governed by Appendix 10, Specific Conditions for AI Endpoints, of the OVHcloud Public Cloud Special Conditions. Because this is compliance-relevant, read the contract appendix directly rather than relying on a review."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens when OVHcloud retires a model?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "There is a formal four-step process: usage monitoring identifies a candidate; the decision is emailed to the billing contact and posted in the OVHcloud Discord ai-news channel; a three-month grace period follows in which the model serves requests but is hidden from the catalog; then the model is removed and returns 404. Five models were on the published decommission table as of 2026-09-18, including Mistral-Small-3.2-24B-Instruct-2506 with a 2026-11-04 deadline."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use it for batch workloads cheaper than real-time calls?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, that is the Batch API's purpose, and it is currently free during a two-month Beta. At General Availability the documented price is 50 percent off the Base rate. Constraints: up to 50,000 rows per JSONL file, files up to 200 MB, a 24-hour SLO target, no uptime SLA, and MVP coverage limited to LLMs and embeddings. A batch that misses the window becomes expired and is not retried automatically."
+      }
+    }
+  ]
+};
+
+const enBody = `
+<article>
+  <div class="tldr">
+    <strong>TL;DR</strong>
+    <ul>
+      <li>OVHcloud's <strong>AI Endpoints</strong> is the only major European cloud with a self-published, per-1M-token LLM price list — and the rates are individually published in <strong>EUR and USD</strong> on a <em>catalog</em> page, not buried in a PDF.</li>
+      <li>Four entry points matter to a developer: <strong>Base API</strong> (GA, 400 req/min per project per model), <strong>Batch API</strong> (Beta, 50% off at GA, 24h SLO, 50k rows / 200 MB per file), <strong>free playground</strong> (all models, but 1024 output tokens cap) and an <strong>anonymous tier of 2 req/min per IP</strong> for smoke tests.</li>
+      <li>The migration story is a two-line change: the endpoint is OpenAI-compatible, so you swap <code>base_url</code> and the model name. Image generation is the documented exception.</li>
+      <li>The real differentiator is <strong>where the data lives</strong>: Gravelines, France, "not stored or shared during or after model use", and the platform is wrapped by Appendix 10 of the OVHcloud Public Cloud Special Conditions.</li>
+      <li>The trap is <strong>model lifecycle</strong>: OVHcloud decommissions models on a 3-month public clock and returns <strong>404</strong> after the deadline. Six models are on the current decommission list.</li>
+    </ul>
+  </div>
+
+  <h2>What OVHcloud AI Endpoints actually is</h2>
+
+  <p>OVHcloud is a French cloud provider that has operated its own datacenters since 1999. AI Endpoints is its serverless inference product: you pick a model from a catalog, create a Public Cloud API key, and call it over an OpenAI-compatible HTTP API. There is no GPU instance to boot, no container to size, and no endpoint to keep warm.</p>
+
+  <p>Two things separate it from the dozen other OpenAI-compatible gateways I have priced for this site. First, it is <strong>operated by the infrastructure owner</strong>, not resold on top of someone else's compute — the inference runs in OVHcloud's own Gravelines datacenter in France. Second, the price list is <strong>published by the vendor in EUR</strong>, per model, per million tokens, on a public page. That sounds unremarkable until you try to price European inference: most EU-sovereign AI offers I have looked at route you to "contact sales".</p>
+
+  <h2>The catalog: what you can actually call</h2>
+
+  <p>The catalog page lists <strong>20 results</strong> as of 2026-09-18, filterable by task (LLM, reasoning, visual, embeddings, speech-to-text, image generation, guardrails, TTS). The current line-up, transcribed from the vendor's own pricing table with the EUR catalog rates beside them:</p>
+
+  <table>
+    <thead>
+      <tr><th>Model</th><th>Category</th><th>Context</th><th>€ / 1M in</th><th>€ / 1M out</th><th>$ / 1M in</th><th>$ / 1M out</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Qwen3.8-27B</td><td>Visual LLM</td><td>262K</td><td>0.40</td><td>2.70</td><td>$0.47</td><td>$3.19</td></tr>
+      <tr><td>Qwen3.6-27B</td><td>Visual LLM</td><td>262K</td><td>0.40</td><td>2.70</td><td>$0.47</td><td>$3.19</td></tr>
+      <tr><td>Qwen3.5-397B-A17B</td><td>Visual LLM (MoE)</td><td>262K</td><td>0.60</td><td>3.60</td><td>$0.71</td><td>$4.25</td></tr>
+      <tr><td>Qwen3.5-9B</td><td>Visual LLM</td><td>262K</td><td>0.10</td><td>0.15</td><td>$0.12</td><td>$0.18</td></tr>
+      <tr><td>gpt-oss-120b</td><td>Reasoning LLM</td><td>131K</td><td>0.08</td><td>0.40</td><td>$0.09</td><td>$0.47</td></tr>
+      <tr><td>gpt-oss-20b</td><td>Reasoning LLM</td><td>131K</td><td>0.04</td><td>0.15</td><td>$0.05</td><td>$0.18</td></tr>
+      <tr><td>Meta-Llama-3.3-70B-Instruct</td><td>LLM</td><td>131K</td><td>0.67</td><td>0.67</td><td>$0.74</td><td>$0.74</td></tr>
+      <tr><td>Qwen2.5-VL-72B-Instruct</td><td>Visual LLM</td><td>32K</td><td>0.91</td><td>0.91</td><td>$1.01</td><td>$1.01</td></tr>
+      <tr><td>Qwen3-Coder-30B-A3B-Instruct</td><td>Code LLM</td><td>—</td><td>0.07</td><td>0.26</td><td>$0.07</td><td>$0.26</td></tr>
+      <tr><td>Mistral-Small-3.2-24B-Instruct-2506</td><td>LLM</td><td>—</td><td>0.10</td><td>0.31</td><td>$0.10</td><td>$0.31</td></tr>
+      <tr><td>Mistral-7B-Instruct-v0.3</td><td>LLM</td><td>—</td><td>0.11</td><td>0.11</td><td>$0.11</td><td>$0.11</td></tr>
+      <tr><td>Qwen3-Embedding-8B</td><td>Embeddings</td><td>—</td><td>0.10</td><td>—</td><td>$0.12</td><td>—</td></tr>
+      <tr><td>bge-m3 / bge-multilingual-gemma2</td><td>Embeddings</td><td>—</td><td>0.01</td><td>—</td><td>$0.01</td><td>—</td></tr>
+      <tr><td>whisper-large-v3</td><td>Speech to text</td><td>—</td><td>0.00004083 €/s</td><td>—</td><td>$0.163/hr</td><td>—</td></tr>
+      <tr><td>whisper-large-v3-turbo</td><td>Speech to text</td><td>—</td><td>0.00001278 €/s</td><td>—</td><td>$0.051/hr</td><td>—</td></tr>
+      <tr><td>Qwen3Guard-Gen-8B / 0.6B</td><td>Guard (Beta)</td><td>32K</td><td>Free</td><td>Free</td><td>Free</td><td>Free</td></tr>
+      <tr><td>stable-diffusion-xl-base-v10</td><td>Image generation</td><td>—</td><td>Free</td><td>—</td><td>Free</td><td>—</td></tr>
+      <tr><td>nvr-tts-en-us / it-it / de-de / es-es</td><td>Text to speech</td><td>—</td><td>Free</td><td>—</td><td>Free</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Prices transcribed 2026-09-18 from OVHcloud's public catalog (EUR, excl. VAT) and the Public Cloud price list (USD, excl. VAT). Whisper's EUR rate is billed per second; the USD column shows the vendor's own hourly equivalent. Last verified 2026-09-18.</p>
+
+  <p>Three observations from reading that table rather than the marketing copy:</p>
+
+  <ul>
+    <li><strong>gpt-oss-120b at €0.08 / €0.40 per 1M is the cheapest serious reasoning model on the list</strong> — cheaper per input token than every Qwen and Mistral entry, at a 117B parameter size with reasoning support.</li>
+    <li><strong>The Qwen3.5/3.6/3.8 generation is priced identically within each size class</strong> (0.40/2.70 for both 27B variants, 0.10/0.15 for the 9B). You are not penalised for choosing the newest snapshot — but you also are not rewarded.</li>
+    <li><strong>Output tokens cost 4-7x input tokens on the multimodal Qwen tiers</strong> and roughly 2.5x on the cheap reasoning tiers. If you are budgeting, that ratio decides more than the headline input price.</li>
+  </ul>
+
+  <h2>The four ways in: Base, Batch, playground, anonymous</h2>
+
+  <p>OVHcloud splits access into four tiers, and the differences are documented precisely enough to plan against:</p>
+
+  <table>
+    <thead>
+      <tr><th></th><th>Base API (GA)</th><th>Batch API (Beta)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Mode</td><td>Synchronous</td><td>Asynchronous</td></tr>
+      <tr><td>Models</td><td>All catalog</td><td>MVP: LLMs &amp; embeddings</td></tr>
+      <tr><td>Prompt volume</td><td>1 per call (1&ndash;25 for embeddings)</td><td>Up to 50k rows per file, file &le; 200 MB</td></tr>
+      <tr><td>Response time</td><td>Standard</td><td>SLO target 24h</td></tr>
+      <tr><td>Rate limit</td><td>400 req/min per project, per model</td><td>N/A</td></tr>
+      <tr><td>Uptime SLA</td><td>99.8%</td><td>No SLA</td></tr>
+      <tr><td>Price</td><td>Catalog rate</td><td>50% off vs Base (at GA)</td></tr>
+      <tr><td>OpenAI compatible</td><td>Yes</td><td>Yes (except image generation)</td></tr>
+    </tbody>
+  </table>
+
+  <p>Batch is currently <strong>free of charge during a two-month Beta</strong>, with the documented post-GA price being <em>half of the Base rate</em>. The workflow is the OpenAI Batch shape: write a JSONL file where each line is one request, upload it through the Files API with <code>purpose="batch"</code>, create a batch referencing that file and a target endpoint, then poll until <code>completed</code> and download the output file. The <code>completion_window</code> parameter accepts <code>"24h"</code>, and you can point the official OpenAI Python or TypeScript SDK at the endpoint by changing <code>base_url</code>.</p>
+
+  <p>Two Batch details are worth reading twice, because they are where asynchronous workloads go wrong:</p>
+
+  <ul>
+    <li><strong>Expiry is terminal.</strong> A batch that misses the 24-hour window transitions to <code>expired</code> and is <em>not retried automatically</em>. You resubmit. Budget for that in any pipeline with an external deadline.</li>
+    <li><strong>You are only billed for successful requests.</strong> Internal errors and requests never reached before expiry are not charged. Combined with the free Beta, the downside risk on a first batch experiment is close to zero.</li>
+  </ul>
+
+  <p>The two remaining entry points are the ones most reviewers skip. The <strong>playground</strong> lets you try every model in the catalog for free, but LLMs are capped at <strong>1024 output tokens</strong> in that UI — fine for verifying a prompt shape, useless for evaluating a long generation. And there is an <strong>anonymous tier</strong>: 2 requests per minute per IP, per model, without an API key. That is enough to smoke-test <code>curl</code> plumbing from a CI container before you provision anything, and it is the reason you should not conclude "the API is down" from a single 429.</p>
+
+  <h2>Connecting from your code</h2>
+
+  <p>Because the API is OpenAI-compatible, the migration is the endpoint and the model name. This is the shape the official documentation uses:</p>
+
+  <pre><code is:raw>export OVH_AI_ENDPOINTS_ACCESS_TOKEN="your-api-key"
+
+curl -X POST https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/chat/completions \
+  -H "Authorization: Bearer $OVH_AI_ENDPOINTS_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '&#123; "model": "gpt-oss-120b", "messages": [&#123;"role": "user", "content": "Summarise this changelog in five bullets."&#125;] &#125;'</code></pre>
+
+  <p class="note">Header and payload from the OVHcloud AI Endpoints getting-started guide (last updated 2026-03-19). Verify the base URL against your own project's AI Endpoints page before shipping — OVHcloud serves the same API from multiple hostnames and the Control Panel is the authoritative source for your project.</p>
+
+  <p>The Python path is the standard OpenAI client with two substitutions:</p>
+
+  <pre><code is:raw>import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+    api_key=os.environ["OVH_AI_ENDPOINTS_ACCESS_TOKEN"],
+)
+
+resp = client.chat.completions.create(
+    model="Qwen3.5-397B-A17B",
+    messages=[&#123;"role": "user", "content": "List the three highest-impact changes in this diff."&#125;],
+)
+print(resp.choices[0].message.content)</code></pre>
+
+  <p>If you are already running against another OpenAI-compatible provider, your diff is two lines. That is the entire compatibility argument, and it is a genuinely good one — it means you can A/B a European endpoint against your incumbent without rewriting an SDK integration.</p>
+
+  <h2>Feature support: what is in, what is not</h2>
+
+  <p>The platform's capabilities page is unusually candid, which makes it quotable rather than marketing. Supported: <strong>JSON mode</strong> (output guaranteed syntactically valid JSON), <strong>function calling</strong> (tools), and <strong>structured outputs</strong> (JSON Schema enforcement). Also documented as available: per-model metrics in the Control Panel (call counts, input/output tokens), and per-project API keys with optional expiry dates.</p>
+
+  <p>The limits are equally specific:</p>
+
+  <ul>
+    <li><strong>Rate limit:</strong> anonymous 2 req/min per IP per model; authenticated 400 req/min per Public Cloud project per model. Exceeding it returns <strong>429</strong>.</li>
+    <li><strong>Payload size:</strong> most endpoints cap the request body at <strong>2 MB</strong>; visual language models get <strong>10 MB</strong>; audio transcription endpoints have their own per-model limits.</li>
+    <li><strong>No usage cap:</strong> there is currently no spend limit or token ceiling on an API key. The capabilities page says a usage-limit feature is under consideration. Until it ships, the only thing standing between a runaway loop and your invoice is your own client-side budgeting.</li>
+  </ul>
+
+  <p>That last point deserves emphasis. On a platform with no usage cap, a retry loop in a background worker is not a bug you fix at leisure — it is an open-ended charge. Put a hard token budget in the calling code and check it before every batch submission.</p>
+
+  <h2>The part that actually differentiates: where the data sits</h2>
+
+  <p>Every OpenAI-compatible gateway can claim compatibility. Far fewer can tell you where the inference runs and what happens to the payload. OVHcloud's answer is specific: the infrastructure is located in <strong>Gravelines, France</strong>, the platform states that <strong>data is not stored or shared during or after model use</strong>, and the service is covered by the OVHcloud Public Cloud Special Conditions — <strong>Appendix 10, "Specific Conditions – AI Endpoints"</strong> — rather than a generic wrapper agreement.</p>
+
+  <p>For a team with an EU data-residency requirement, this is the load-bearing fact. It is also the one to verify yourself rather than take from a review: open the contract appendix linked from the documentation, and confirm it matches your own compliance reading. I am reporting what OVHcloud publishes, not certifying it.</p>
+
+  <h2>The trap nobody mentions: model lifecycle and the 404</h2>
+
+  <p>This is the operational risk I would lead with in an internal review, and it is documented on a page most buyers never open. OVHcloud runs a formal decommissioning process:</p>
+
+  <ol>
+    <li>Usage monitoring identifies an underutilised model.</li>
+    <li>A retirement decision is announced <strong>by email to the billing contact</strong> and in the <code>#ai-news</code> channel of the OVHcloud Discord.</li>
+    <li>A <strong>3-month grace period</strong> follows, during which the model still responds but is removed from the public catalog.</li>
+    <li>At the end of the grace period the model is removed from the API and <strong>returns 404 for new requests</strong>.</li>
+  </ol>
+
+  <p>The current decommission table, as published:</p>
+
+  <table>
+    <thead><tr><th>Model</th><th>Announced</th><th>Decommissioned</th></tr></thead>
+    <tbody>
+      <tr><td>Qwen3-32B</td><td>2026-06-18</td><td>2026-09-16</td></tr>
+      <tr><td>Mistral-7B-Instruct-v0.3</td><td>2026-07-02</td><td>2026-10-01</td></tr>
+      <tr><td>Qwen3-Coder-30B-A3B-Instruct-FP8</td><td>2026-07-02</td><td>2026-10-01</td></tr>
+      <tr><td>Mistral-Nemo-Instruct-2407</td><td>2026-08-04</td><td>2026-11-04</td></tr>
+      <tr><td>Mistral-Small-3.2-24B-Instruct-2506</td><td>2026-08-04</td><td>2026-11-04</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Source: OVHcloud "AI Endpoints – Billing and lifecycle", last updated 2026-08-04. Qwen3-32B's window closed 2026-09-16 — it is already gone. Last verified 2026-09-18.</p>
+
+  <p>Read the second column and the third column together. <strong>Mistral-Small-3.2-24B-Instruct-2506 is on the decommission list and still appears in the live pricing table at $0.10/$0.31.</strong> If you had picked it on price alone last month, you now have until 2026-11-04 to migrate. The pricing page will not warn you; the lifecycle page will.</p>
+
+  <p>There is also an email-delivery caveat the documentation flags itself: notifications go to the <strong>billing contact</strong> of the OVHcloud account. If the team actually running the inference uses a different account than the one paying the bill, that team receives nothing. The fix is to add the engineers' addresses as additional contacts in the Control Panel message settings, or subscribe the team to the Discord <code>#ai-news</code> channel. Either works; doing neither means discovering a 404 in production.</p>
+
+  <h2>Pricing math: when this beats your incumbent</h2>
+
+  <p>Two worked comparisons, using the verified rates. The point is not that OVHcloud is universally cheaper — it is not — but that on specific shapes it wins clearly.</p>
+
+  <p><strong>Shape 1: high-volume batch classification of English documents.</strong> You process 50,000 short documents a month, averaging 800 input tokens and 120 output tokens each.</p>
+
+  <ul>
+    <li>Model: <code>gpt-oss-120b</code> at the Base rate of €0.08 / €0.40 per 1M.</li>
+    <li>Input: 50,000 &times; 800 = 40M tokens &rarr; 40 &times; €0.08 = <strong>€3.20</strong></li>
+    <li>Output: 50,000 &times; 120 = 6M tokens &rarr; 6 &times; €0.40 = <strong>€2.40</strong></li>
+    <li>Base total: <strong>€5.60 / month</strong>. Through Batch at the documented 50% off: <strong>€2.80</strong>.</li>
+  </ul>
+
+  <p>The distinguishing fact is not the total — it is that a job this size fits the Batch shape exactly (asynchronous, no sub-second latency requirement, less than 50k rows, well under the 200 MB file cap), so the discount applies without any architectural compromise.</p>
+
+  <p><strong>Shape 2: long-context coding assistance on the 262K models.</strong> Assume 2,000 calls a month at 60,000 input tokens and 4,000 output tokens on <code>Qwen3.5-397B-A17B</code> (€0.60 / €3.60 per 1M).</p>
+
+  <ul>
+    <li>Input: 2,000 &times; 60,000 = 120M tokens &rarr; 120 &times; €0.60 = <strong>€72.00</strong></li>
+    <li>Output: 2,000 &times; 4,000 = 8M tokens &rarr; 8 &times; €3.60 = <strong>€28.80</strong></li>
+    <li>Total: <strong>€100.80 / month</strong>, before any batch discount.</li>
+  </ul>
+
+  <p>Run the same arithmetic against your current provider before switching. On this shape the output rate dominates, and OVHcloud's output rate is not the lowest in the market. Where it wins is when <em>residency is a requirement</em> and the alternative is a US-hosted endpoint plus a compliance exception.</p>
+
+  <h2>Limitations, stated plainly</h2>
+
+  <ul>
+    <li><strong>Catalog breadth is narrow.</strong> Twenty models, no frontier proprietary LLM. If you need the newest closed-model flagships, AI Endpoints is not where you get them — it is the open-weights and speech/embedding layer, plus Qwen's newest generation.</li>
+    <li><strong>Regional availability is "WW (out of US)".</strong> That is OVHcloud's own phrasing on the Batch comparison table. If US-based inference is a hard requirement, this is disqualifying.</li>
+    <li><strong>No usage cap on API keys</strong> — no spend ceiling, no token ceiling. Client-side budgeting only.</li>
+    <li><strong>The 1024-token playground cap</strong> makes the free tier useful for prompt shape, not output quality.</li>
+    <li><strong>Image generation is outside the OpenAI-compatibility promise</strong> and sits at $0 on the current price list; treat it as non-production until you see the commercial terms.</li>
+    <li><strong>Batch is Beta.</strong> The pricing says 50% off <em>at General Availability</em>. It is free now; plan for the day it is not.</li>
+    <li><strong>Anthropic's own model line is absent.</strong> If your stack depends on a specific vendor's model family rather than an OpenAI-compatible interface, this platform does not host it.</li>
+  </ul>
+
+  <h2>Who should use this</h2>
+
+  <p><strong>Good fit:</strong> European teams with a data-residency or procurement requirement who are currently using a US-hosted OpenAI-compatible endpoint and paying a compliance cost for it. Batch and embedding workloads where volume matters more than latency — document classification, knowledge-base vectorisation, dataset preparation — especially during the free Beta. Anyone who wants one vendor relationship covering LLM, embeddings, speech-to-text, guardrails and TTS with a single price list and a single contract appendix.</p>
+
+  <p><strong>Poor fit:</strong> teams that need frontier proprietary models or the widest catalog and are already comfortable with a US endpoint. US-inference-mandated workloads. Real-time workloads that cannot tolerate a queue. Anyone who wants an automatic retry on a missed deadline — Batch's terminal <code>expired</code> state means you own the retry logic.</p>
+
+  <h2>Frequently asked questions</h2>
+
+  <details><summary>Is OVHcloud AI Endpoints OpenAI-compatible?</summary>
+  <p>Yes. The documentation states the platform is designed to be compatible with the OpenAI API, and the Batch API is explicitly compatible with OpenAI's Batch interface (with <code>completion_window: "24h"</code>). The documented exception is image generation models, which are outside the OpenAI-compatibility guarantee. Notable differences to plan for: request bodies are capped at 2 MB for most endpoints and 10 MB for visual language models, and exceeding the rate limit returns 429.</p></details>
+
+  <details><summary>How much does OVHcloud AI Endpoints cost per million tokens?</summary>
+  <p>Rates are per model. As of 2026-09-18 the cheapest reasoning model is gpt-oss-20b at €0.04/€0.15 per 1M in/out, and gpt-oss-120b at €0.08/€0.40. The newest multimodal Qwen tier (Qwen3.5-397B-A17B) is €0.60/€3.60. Embeddings run from €0.01 per 1M input for bge-m3 up to €0.10 for Qwen3-Embedding-8B. Whisper transcription is €0.00004083 per second for large-v3. The USD price list quotes $0.09/$0.47 for gpt-oss-120b. All published prices exclude VAT.</p></details>
+
+  <details><summary>Is there a free tier?</summary>
+  <p>Yes, in four forms: (1) the playground lets you try every catalog model at no charge, with LLMs capped at 1024 output tokens; (2) an anonymous tier allows 2 requests per minute per IP per model without an API key; (3) the Batch API is free of charge during its two-month Beta; (4) Qwen3Guard and the image-generation and TTS models are listed at $0 on the current price list. The Base API itself has no perpetual free token grant — you need a Public Cloud project with a valid payment method.</p></details>
+
+  <details><summary>Where does the inference run, and is my data stored?</summary>
+  <p>OVHcloud states the infrastructure is located in Gravelines, France, and that data is not stored or shared during or after model use. The service is governed by Appendix 10 "Specific Conditions – AI Endpoints" of the OVHcloud Public Cloud Special Conditions. Because this is a compliance-relevant claim, read the contract appendix directly rather than relying on a review — I am reporting what the vendor publishes.</p></details>
+
+  <details><summary>What happens when OVHcloud retires a model?</summary>
+  <p>There is a formal four-step process: usage monitoring identifies a candidate, the retirement decision is emailed to the billing contact and posted in the OVHcloud Discord <code>#ai-news</code> channel, a 3-month grace period follows during which the model serves requests but is hidden from the catalog, and then the model is removed from the API and returns 404. Five models were on the published decommission table as of 2026-09-18, including Mistral-Small-3.2-24B-Instruct-2506 (deadline 2026-11-04) — which still appears in the live pricing table. If the team using the API is not the account's billing contact, they will not receive the notification unless you add them as message recipients.</p></details>
+
+  <details><summary>Do I need a Public Cloud project and a payment method?</summary>
+  <p>Yes. The documentation is explicit: access keys created from Public Cloud projects in Discovery mode — that is, without a payment method defined — cannot use the service. You create an API key from the AI Endpoints section of your Public Cloud project, optionally with an expiry date, and it can be revoked at any time. One IAM caveat is documented: on shared projects, administrators cannot see or revoke keys created by team members added with Read &amp; Write permissions; the only way to revoke such a key is to remove that account's access to the project.</p></details>
+
+  <details><summary>Can I use it for batch workloads cheaper than real-time calls?</summary>
+  <p>Yes, that is the Batch API's purpose, and it is currently free during a two-month Beta. At General Availability the documented price is 50% off the Base rate. Constraints: up to 50,000 rows per JSONL file, file size up to 200 MB, a 24-hour SLO target, no uptime SLA, and MVP coverage limited to LLMs and embeddings. A batch that misses the 24-hour window becomes <code>expired</code> and is not retried automatically. You are billed only for successfully processed requests.</p></details>
+
+  <h2>Sources</h2>
+  <ul>
+    <li>OVHcloud, "AI Endpoints – Getting started" (docs.ovhcloud.com, last updated 2026-03-19) — API key flow, rate limits, OpenAI compatibility</li>
+    <li>OVHcloud, "AI Endpoints – Billing and lifecycle" (last updated 2026-08-04) — the decommission table and 3-month grace period</li>
+    <li>OVHcloud, "AI Endpoints – Features, Capabilities and Limitations" (last updated 2026-02-03) — JSON mode, function calling, payload and rate limits, no usage cap</li>
+    <li>OVHcloud, "AI Endpoints – Batch API" (labs.ovhcloud.com) — Beta terms, 50% GA pricing, FAQ, OpenAI Batch compatibility</li>
+    <li>OVHcloud, AI Endpoints catalog page (ovhcloud.com/en/public-cloud/ai-endpoints/catalog/) — EUR per-model rates, transcribed 2026-09-18</li>
+    <li>OVHcloud, Public Cloud price list, AI &amp; Machine Learning section — USD rates and hourly speech-to-text equivalents, transcribed 2026-09-18</li>
+  </ul>
+</article>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={enBody} />
+</BaseLayout>

@@ -1,0 +1,368 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'ovhcloud-ai-endpoints-api-review-2026';
+const zhTitle = 'OVHcloud AI Endpoints 评测 2026：按 token 计价';
+const zhDescription = "OVHcloud AI Endpoints 评测：gpt-oss 与 Qwen3.5 的每百万 EUR 价目、Batch API 正式版五折、400 请求/分钟限制，以及模型下线后返回 404 的坑。";
+const date = '2026-09-18';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/ovhcloud-ai-endpoints-api-review-2026/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/ovhcloud-ai-endpoints-api-review-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "OVHcloud AI Endpoints 评测 2026：按 token 计价",
+  "description": "OVHcloud AI Endpoints 评测：gpt-oss 与 Qwen3.5 的每百万 EUR 价目、Batch API 正式版五折、400 请求/分钟限制，以及模型下线后返回 404 的坑。",
+  "datePublished": "2026-09-18",
+  "dateModified": "2026-09-18",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Person",
+    "name": "Jason Mai"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/og-image.png",
+      "width": 1200,
+      "height": 630
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/zh/tutorials/ovhcloud-ai-endpoints-api-review-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://apirank.vip/zh/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "教程",
+      "item": "https://apirank.vip/zh/tutorials/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "OVHcloud AI Endpoints 评测 2026：按 token 计价",
+      "item": "https://apirank.vip/zh/tutorials/ovhcloud-ai-endpoints-api-review-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "OVHcloud AI Endpoints 兼容 OpenAI 吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "兼容。文档写明平台设计上兼容 OpenAI API，Batch API 也明确兼容 OpenAI 的批处理接口（completion_window 使用 24h）。文档标明的例外是图像生成模型。多数端点请求体上限 2 MB，视觉大模型 10 MB；超限速率返回 429。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "OVHcloud AI Endpoints 每百万 token 多少钱？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "按模型计价。截至 2026-09-18，最便宜的推理模型是 gpt-oss-20b，0.04 / 0.15 欧元每百万输入输出；gpt-oss-120b 为 0.08 / 0.40 欧元。最新的多模态 Qwen 档 Qwen3.5-397B-A17B 为 0.60 / 3.60 欧元。嵌入从 bge-m3 的 0.01 欧元每百万输入到 Qwen3-Embedding-8B 的 0.10 欧元。Whisper large-v3 转写为每秒 0.00004083 欧元。USD 价目表里 gpt-oss-120b 报 0.09/0.47 美元。所有公开价格不含税。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "OVHcloud AI Endpoints 有免费额度吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "有，分四种形态：Playground 可免费试所有目录模型，大模型输出上限 1024 token；匿名档不用密钥每 IP 每模型 2 请求每分钟；Batch API 在两个月 Beta 期间免费；Qwen3Guard 以及图像生成、语音合成模型在当前价目里标价为 0。Base API 本身没有永久免费 token 额度，需要开通带有效支付方式的公有云项目。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "推理在哪里运行，我的数据会被存储吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "OVHcloud 声明基础设施位于法国 Gravelines，且数据在模型使用期间与使用之后都不被存储、不被共享。服务由 OVHcloud 公有云特别条款附录 10 AI Endpoints 专门条款约束。因为这属于合规相关陈述，请直接阅读合同附录本身，不要依赖第三方评测。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "模型被下线时会发生什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "有一套正式的四步流程：用量监控识别候选；退役决定通过邮件发往账单联系人并同步到 OVHcloud Discord 的 ai-news 频道；随后三个月宽限期，模型仍可响应但从目录隐藏；宽限期结束后从 API 移除并返回 404。截至 2026-09-18 公开下线表上有五个模型，其中 Mistral-Small-3.2-24B-Instruct-2506 的期限是 2026-11-04。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "批量任务能比实时调用便宜吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "能，这正是 Batch API 的用途，目前两个月 Beta 期间免费。正式版文档记载的价格是 Base 费率的五折。约束：单个 JSONL 文件最多 5 万行、文件不超过 200 MB、24 小时 SLO 目标、无可用性 SLA、MVP 阶段仅覆盖大模型与嵌入。超过 24 小时窗口的批次变为 expired 且不会自动重试。"
+      }
+    }
+  ]
+};
+
+const zhBody = `
+<article>
+  <div class="tldr">
+    <strong>摘要</strong>
+    <ul>
+      <li>OVHcloud 的 <strong>AI Endpoints</strong> 是目前唯一把大模型推理价格按每百万 token 公开标注的欧洲主流云厂商 —— 而且 EUR 与 USD 两套价目都写公开目录页上，不需要联系销售。</li>
+      <li>对开发者真正重要的是四个入口：<strong>Base API</strong>（正式版，每项目每模型 400 请求/分钟）、<strong>Batch API</strong>（Beta，正式版承诺五折，24 小时 SLO，单文件最多 5 万行）、<strong>免费 Playground</strong>（全模型可试，但输出上限 1024 token）、以及<strong>匿名档 2 请求/分钟</strong>可做冒烟测试。</li>
+      <li>迁移成本极低：接口兼容 OpenAI 规范，改 <code>base_url</code> 与模型名即可。文档明确标注的例外是图像生成模型。</li>
+      <li>真正的差异化在<strong>数据放在哪里</strong>：基础设施位于法国 Gravelines，官方表述为模型使用期间与使用之后都不存储、不共享数据，服务由《OVHcloud 公有云特别条款》附录 10 专门约束。</li>
+      <li>最容易踩的坑是<strong>模型生命周期</strong>：OVHcloud 以三个月的公开倒计时下线模型，到期后直接返回 <strong>404</strong>；当前下线名单上有五个模型。</li>
+    </ul>
+  </div>
+
+  <h2>OVHcloud AI Endpoints 到底是什么</h2>
+
+  <p>OVHcloud 是一家从 1999 年就开始自建机房的法国云厂商。AI Endpoints 是它的无服务器推理产品：从模型目录里挑一个模型，在公有云项目里创建 API 密钥，然后用兼容 OpenAI 规范的 HTTP 接口调用。不需要开机、不需要选容器规格、不需要保持端点常驻。</p>
+
+  <p>我在本站已经核过十几家兼容 OpenAI 接口的网关，这家有两处不一样。第一，它是<strong>基础设施的自有方在运营</strong>，不是转售别人的算力 —— 推理跑在 OVHcloud 自家的法国 Gravelines 机房。第二，价目表是<strong>厂商自己按 EUR 公开标注</strong>的，按模型、按百万 token，写在公开页面上。这句听上去平平无奇，直到你真的去给欧洲推理询价：我看过的大多数欧洲主权 AI 方案，最后一步都是让你联系销售。</p>
+
+  <h2>模型目录：你实际能调到什么</h2>
+
+  <p>目录页在 2026-09-18 显示 <strong>20 个条目</strong>，可按任务筛选（大模型、推理、视觉、嵌入、语音转文字、图像生成、内容审核、语音合成）。以下是按厂商价目表逐条誊写的当前阵容，EUR 目录价与 USD 价目并列：</p>
+
+  <table>
+    <thead>
+      <tr><th>模型</th><th>类别</th><th>上下文</th><th>€ / 百万 in</th><th>€ / 百万 out</th><th>$ / 百万 in</th><th>$ / 百万 out</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Qwen3.8-27B</td><td>视觉大模型</td><td>262K</td><td>0.40</td><td>2.70</td><td>$0.47</td><td>$3.19</td></tr>
+      <tr><td>Qwen3.6-27B</td><td>视觉大模型</td><td>262K</td><td>0.40</td><td>2.70</td><td>$0.47</td><td>$3.19</td></tr>
+      <tr><td>Qwen3.5-397B-A17B</td><td>视觉大模型（MoE）</td><td>262K</td><td>0.60</td><td>3.60</td><td>$0.71</td><td>$4.25</td></tr>
+      <tr><td>Qwen3.5-9B</td><td>视觉大模型</td><td>262K</td><td>0.10</td><td>0.15</td><td>$0.12</td><td>$0.18</td></tr>
+      <tr><td>gpt-oss-120b</td><td>推理大模型</td><td>131K</td><td>0.08</td><td>0.40</td><td>$0.09</td><td>$0.47</td></tr>
+      <tr><td>gpt-oss-20b</td><td>推理大模型</td><td>131K</td><td>0.04</td><td>0.15</td><td>$0.05</td><td>$0.18</td></tr>
+      <tr><td>Meta-Llama-3.3-70B-Instruct</td><td>大模型</td><td>131K</td><td>0.67</td><td>0.67</td><td>$0.74</td><td>$0.74</td></tr>
+      <tr><td>Qwen2.5-VL-72B-Instruct</td><td>视觉大模型</td><td>32K</td><td>0.91</td><td>0.91</td><td>$1.01</td><td>$1.01</td></tr>
+      <tr><td>Qwen3-Coder-30B-A3B-Instruct</td><td>代码大模型</td><td>—</td><td>0.07</td><td>0.26</td><td>$0.07</td><td>$0.26</td></tr>
+      <tr><td>Mistral-Small-3.2-24B-Instruct-2506</td><td>大模型</td><td>—</td><td>0.10</td><td>0.31</td><td>$0.10</td><td>$0.31</td></tr>
+      <tr><td>Mistral-7B-Instruct-v0.3</td><td>大模型</td><td>—</td><td>0.11</td><td>0.11</td><td>$0.11</td><td>$0.11</td></tr>
+      <tr><td>Qwen3-Embedding-8B</td><td>嵌入</td><td>—</td><td>0.10</td><td>—</td><td>$0.12</td><td>—</td></tr>
+      <tr><td>bge-m3 / bge-multilingual-gemma2</td><td>嵌入</td><td>—</td><td>0.01</td><td>—</td><td>$0.01</td><td>—</td></tr>
+      <tr><td>whisper-large-v3</td><td>语音转文字</td><td>—</td><td>0.00004083 €/秒</td><td>—</td><td>$0.163/小时</td><td>—</td></tr>
+      <tr><td>whisper-large-v3-turbo</td><td>语音转文字</td><td>—</td><td>0.00001278 €/秒</td><td>—</td><td>$0.051/小时</td><td>—</td></tr>
+      <tr><td>Qwen3Guard-Gen-8B / 0.6B</td><td>审核（Beta）</td><td>32K</td><td>免费</td><td>免费</td><td>免费</td><td>免费</td></tr>
+      <tr><td>stable-diffusion-xl-base-v10</td><td>图像生成</td><td>—</td><td>免费</td><td>—</td><td>免费</td><td>—</td></tr>
+      <tr><td>nvr-tts-en-us / it-it / de-de / es-es</td><td>语音合成</td><td>—</td><td>免费</td><td>—</td><td>免费</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <p class="note">价格于 2026-09-18 誊自 OVHcloud 公开目录页（EUR，不含税）与公有云价目页（USD，不含税）。Whisper 的 EUR 单价按秒计费，USD 列显示厂商自己给出的每小时等价价。最后核验日期 2026-09-18。</p>
+
+  <p>把这张表当数据读而不是当宣传读，有三点值得记下来：</p>
+
+  <ul>
+    <li><strong>gpt-oss-120b 报 €0.08 / €0.40 每百万，是清单上最便宜的像样推理模型</strong> —— 输入价比所有 Qwen 与 Mistral 条目都低，而参数规模是 117B 且支持推理。</li>
+    <li><strong>Qwen3.5 / 3.6 / 3.8 三代在同一尺寸档内报价完全一致</strong>（两个 27B 变体都是 0.40 / 2.70，9B 是 0.10 / 0.15）。你选最新快照不会被加价，但也拿不到任何优惠。</li>
+    <li><strong>多模态 Qwen 档位的输出单价是输入的 4 到 7 倍</strong>，廉价推理档大约 2.5 倍。做预算时，这个比值比首页那个输入价重要得多。</li>
+  </ul>
+
+  <h2>四个入口：Base、Batch、Playground、匿名档</h2>
+
+  <p>OVHcloud 把访问方式分成四档，差异写得很具体，可以直接据此做规划：</p>
+
+  <table>
+    <thead><tr><th></th><th>Base API（正式版）</th><th>Batch API（Beta）</th></tr></thead>
+    <tbody>
+      <tr><td>调用模式</td><td>同步</td><td>异步</td></tr>
+      <tr><td>可用模型</td><td>全部目录</td><td>MVP 阶段：大模型与嵌入</td></tr>
+      <tr><td>批量规模</td><td>每次 1 条（嵌入 1 到 25 条）</td><td>单文件最多 5 万行，文件不超过 200 MB</td></tr>
+      <tr><td>响应时间</td><td>标准</td><td>SLO 目标 24 小时</td></tr>
+      <tr><td>速率限制</td><td>每项目每模型 400 请求/分钟</td><td>不适用</td></tr>
+      <tr><td>可用性 SLA</td><td>99.8%</td><td>无 SLA</td></tr>
+      <tr><td>价格</td><td>目录价</td><td>相对 Base 打五折（正式版）</td></tr>
+      <tr><td>OpenAI 兼容</td><td>是</td><td>是（图像生成模型除外）</td></tr>
+    </tbody>
+  </table>
+
+  <p>Batch 目前处于<strong>为期两个月的 Beta，期间免费</strong>，文档记载的正式版价格是 Base 费率的<em>一半</em>。工作流沿用 OpenAI Batch 的形状：写一个 JSONL 文件，每行一条请求；通过 Files API 以 <code>purpose="batch"</code> 上传；创建 batch 引用该文件与目标端点；轮询到 <code>completed</code> 后下载输出文件。<code>completion_window</code> 参数接受 <code>"24h"</code>，并且可以直接把 OpenAI 官方 Python / TypeScript SDK 的 <code>base_url</code> 指过来复用。</p>
+
+  <p>有两个 Batch 细节值得读两遍，因为异步任务正是最容易出问题的地方：</p>
+
+  <ul>
+    <li><strong>超时是终态。</strong>超过 24 小时窗口的批次会进入 <code>expired</code> 状态，并且<em>不会自动重试</em>，必须重新提交。任何带外部交付期限的流水线都要把这个算进去。</li>
+    <li><strong>只对成功的请求计费。</strong>内部错误与窗口结束前未被处理到的请求不收费。叠加免费 Beta，第一次做批量实验的下行风险接近于零。</li>
+  </ul>
+
+  <p>另外两个入口是大多数评测会跳过的。<strong>Playground</strong> 可以免费试所有目录模型，但大模型在该界面里的输出被限制在 <strong>1024 token</strong> —— 用来验证提示词结构足够，用来评估长文生成不够。此外还有一个<strong>匿名档</strong>：不用 API 密钥，每 IP 每模型 2 请求/分钟。这足够在 CI 容器里先跑通 <code>curl</code> 链路再决定是否开通，也是为什么你不该凭一次 429 就断言服务挂了。</p>
+
+  <h2>从代码接入</h2>
+
+  <p>因为兼容 OpenAI 规范，迁移就是换端点和模型名。官方文档给出的形状是这样：</p>
+
+  <pre><code is:raw>export OVH_AI_ENDPOINTS_ACCESS_TOKEN="your...curl -X POST https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/chat/completions \
+  -H "Authorization: Bearer $OVH_A...EN" \
+  -H "Content-Type: application/json" \
+  -d '&#123; "model": "gpt-oss-120b", "messages": [&#123;"role": "user", "content": "Summarise this changelog in five bullets."&#125;] &#125;'</code></pre>
+
+  <p class="note">请求头与载荷来自 OVHcloud AI Endpoints 快速上手文档（最后更新 2026-03-19）。上线前请以你自己项目 AI Endpoints 页面上的端点为准 —— OVHcloud 会从多个主机名提供同一套 API，控制台才是你项目的权威来源。</p>
+
+  <p>Python 侧就是标准 OpenAI 客户端加两处替换：</p>
+
+  <pre><code is:raw>import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://oai.endpoints.kepler.ai.cloud.ovh.net/v1",
+    api_key=os.environ["OVH_AI_ENDPOINTS_ACCESS_TOKEN"],
+)
+
+resp = client.chat.completions.create(
+    model="Qwen3.5-397B-A17B",
+    messages=[&#123;"role": "user", "content": "List the three highest-impact changes in this diff."&#125;],
+)
+print(resp.choices[0].message.content)</code></pre>
+
+  <p>如果你本来就在用另一家兼容 OpenAI 的服务，你的改动是两行。兼容性论证整个就这么长，而且确实站得住 —— 它意味着你可以在不重写 SDK 集成的前提下，把欧洲端点与现有供应商做 A/B。</p>
+
+  <h2>功能支持：有什么，没有什么</h2>
+
+  <p>平台的能力说明页写得相当坦白，可以直接引用而不必当成宣传文案。已支持：<strong>JSON 模式</strong>（保证输出语法合法的 JSON）、<strong>函数调用</strong>（tools）、<strong>结构化输出</strong>（按 JSON Schema 强制约束）。同时文档写明：控制台可按模型查看调用次数与输入输出 token 等指标；API 密钥按项目发放，可设置有效期。</p>
+
+  <p>限制同样具体：</p>
+
+  <ul>
+    <li><strong>速率限制：</strong>匿名档每 IP 每模型 2 请求/分钟；带密钥每公有云项目每模型 400 请求/分钟。超限返回 <strong>429</strong>。</li>
+    <li><strong>请求体大小：</strong>多数端点限制为 <strong>2 MB</strong>；视觉大模型放宽到 <strong>10 MB</strong>；语音转写端点另有一套按模型的限制。</li>
+    <li><strong>没有用量上限：</strong>当前 API 密钥既无消费上限也无 token 上限。能力页说明用量限制功能在考虑中。在它上线之前，挡在失控循环和你的账单之间的只有你自己的客户端预算逻辑。</li>
+  </ul>
+
+  <p>最后这点值得强调。在一个没有用量上限的平台上，后台 worker 里一个重试循环不是可以慢慢修的 bug —— 它是一笔没有封顶的账单。请在调用代码里写死 token 预算，并在每次提交批次之前检查它。</p>
+
+  <h2>真正的差异化：数据放在哪里</h2>
+
+  <p>任何兼容 OpenAI 的网关都能宣称兼容。能清楚告诉你推理跑在哪、载荷怎么处理的不多。OVHcloud 的回答很具体：基础设施位于<strong>法国 Gravelines</strong>，平台声明<strong>模型使用期间与使用之后都不存储、不共享数据</strong>，服务由《OVHcloud 公有云特别条款》<strong>附录 10「AI Endpoints 专门条款」</strong>约束，而不是套一份通用协议。</p>
+
+  <p>对一家有欧盟数据驻留要求的团队来说，这才是承重的事实。它也是你该自己去核而不是从评测里抄的一条：打开文档里链接的那份合同附录，确认它与你自己法务的理解一致。我这里报告的是 OVHcloud 公开的表述，不是替它背书认证。</p>
+
+  <h2>没人提的坑：模型生命周期与那个 404</h2>
+
+  <p>这是我会在内审里放在第一条的运营风险，而它写在大多数买家根本不会打开的页面上。OVHcloud 有一套正式的下线流程：</p>
+
+  <ol>
+    <li>用量监控识别出使用率过低的模型。</li>
+    <li>退役决定<strong>通过邮件发给账单联系人</strong>，并同步到 OVHcloud Discord 的 <code>#ai-news</code> 频道。</li>
+    <li>随后是<strong>三个月的宽限期</strong>，期间模型仍能响应，但会从公开目录里隐藏。</li>
+    <li>宽限期结束，模型从 API 移除，新请求<strong>返回 404</strong>。</li>
+  </ol>
+
+  <p>当前已公开的下线表如下：</p>
+
+  <table>
+    <thead><tr><th>模型</th><th>公告日期</th><th>下线日期</th></tr></thead>
+    <tbody>
+      <tr><td>Qwen3-32B</td><td>2026-06-18</td><td>2026-09-16</td></tr>
+      <tr><td>Mistral-7B-Instruct-v0.3</td><td>2026-07-02</td><td>2026-10-01</td></tr>
+      <tr><td>Qwen3-Coder-30B-A3B-Instruct-FP8</td><td>2026-07-02</td><td>2026-10-01</td></tr>
+      <tr><td>Mistral-Nemo-Instruct-2407</td><td>2026-08-04</td><td>2026-11-04</td></tr>
+      <tr><td>Mistral-Small-3.2-24B-Instruct-2506</td><td>2026-08-04</td><td>2026-11-04</td></tr>
+    </tbody>
+  </table>
+  <p class="note">来源：OVHcloud《AI Endpoints – Billing and lifecycle》，最后更新 2026-08-04。Qwen3-32B 的窗口已在 2026-09-16 关闭，即已经下架。最后核验日期 2026-09-18。</p>
+
+  <p>把第二列与第三列连起来读。注意 <strong>Mistral-Small-3.2-24B-Instruct-2506 已经在下线名单上，同时仍然出现在实时价目表里，标着 $0.10/$0.31。</strong>如果你上个月只看价格选了它，你现在到 2026-11-04 为止要完成迁移。价目页不会提醒你，生命周期页会。</p>
+
+  <p>还有一个文档自己点出来的邮件送达注意事项：通知只发给 OVHcloud 账户的<strong>账单联系人</strong>。如果真正跑推理的团队用的账户和付费账户不是同一个，那个团队什么都收不到。补救方式是在控制台的消息设置里把工程师地址加为额外联系人，或者让团队订阅 Discord 的 <code>#ai-news</code> 频道。两种都行；两种都不做，就意味着在生产环境里发现 404。</p>
+
+  <h2>算笔账：什么情况下比你现在用的便宜</h2>
+
+  <p>两段按已核验费率做的计算。想说明的不是 OVHcloud 普遍更便宜 —— 它并不是 —— 而是它在特定形状上赢得干净。</p>
+
+  <p><strong>场景一：英文文档的高吞吐批量分类。</strong>每月处理 5 万份短文档，平均每份 800 输入 token、120 输出 token。</p>
+
+  <ul>
+    <li>模型：<code>gpt-oss-120b</code>，Base 价 €0.08 / €0.40 每百万。</li>
+    <li>输入：50,000 &times; 800 = 4,000 万 token，即 40 &times; €0.08 = <strong>€3.20</strong></li>
+    <li>输出：50,000 &times; 120 = 600 万 token，即 6 &times; €0.40 = <strong>€2.40</strong></li>
+    <li>Base 合计：<strong>€5.60 / 月</strong>。走 Batch 按文档记载的五折：<strong>€2.80</strong>。</li>
+  </ul>
+
+  <p>关键结论不是总额，而是这个规模的作业恰好完全落在 Batch 的形状里（异步、不需要亚秒延迟、行数少于 5 万、文件远小于 200 MB），所以折扣可以拿，且不需要任何架构妥协。</p>
+
+  <p><strong>场景二：262K 长上下文上的编码辅助。</strong>假设每月 2,000 次调用，每次 6 万输入 token、4,000 输出 token，模型用 <code>Qwen3.5-397B-A17B</code>（€0.60 / €3.60 每百万）。</p>
+
+  <ul>
+    <li>输入：2,000 &times; 60,000 = 1.2 亿 token，即 120 &times; €0.60 = <strong>€72.00</strong></li>
+    <li>输出：2,000 &times; 4,000 = 800 万 token，即 8 &times; €3.60 = <strong>€28.80</strong></li>
+    <li>合计：<strong>€100.80 / 月</strong>，尚未计入批量折扣。</li>
+  </ul>
+
+  <p>切换之前请把同样的算式套在你当前供应商上。这个形状里输出费率占主导，而 OVHcloud 的输出费率并不是市场上最低的。它真正赢的场景是：<em>数据驻留本身是硬要求</em>，而替代方案是把端点放在美国再走一次合规例外。</p>
+
+  <h2>局限，直说</h2>
+
+  <ul>
+    <li><strong>目录窄。</strong>20 个模型，没有前沿闭源大模型。如果你要最新的闭源旗舰，这里拿不到 —— 这里是开源权重加上语音、嵌入这一层，再加上 Qwen 的最新一代。</li>
+    <li><strong>区域标注是 WW（除美国）。</strong>这是 OVHcloud 自己在 Batch 对比表上的措辞。如果美国境内推理是硬性要求，这一条直接排除。</li>
+    <li><strong>API 密钥没有用量上限</strong> —— 没有消费上限也没有 token 上限，只有客户端侧的预算管理。</li>
+    <li><strong>Playground 的 1024 token 上限</strong>让免费层适合验证提示词结构，不适合评估输出质量。</li>
+    <li><strong>图像生成不在 OpenAI 兼容承诺范围内</strong>，且当前价目列为 0；在看清商业条款之前按非生产用途对待。</li>
+    <li><strong>Batch 仍是 Beta。</strong>价目写的是<em>正式版</em>五折。现在是免费，但请为收费的那天做好规划。</li>
+    <li><strong>缺少 Claude 系列模型。</strong>如果你的技术栈绑定某一家的模型家族而不只是兼容接口，这个平台不提供。</li>
+  </ul>
+
+  <h2>适合谁</h2>
+
+  <p><strong>适合：</strong>有数据驻留或采购合规要求、当前用美国托管的兼容 OpenAI 端点并为合规付出额外成本的欧洲团队。批量与嵌入类工作负载 —— 文档分类、知识库向量化、数据集准备 —— 这类场景下吞吐比延迟重要，尤其在免费 Beta 期间。想要一个供应商同时覆盖大模型、嵌入、语音转写、内容审核与语音合成，并且只有一份价目表、一份合同附录的团队。</p>
+
+  <p><strong>不适合：</strong>需要前沿闭源模型或最广目录、并且对美国端点没有顾虑的团队。强制要求美国境内推理的工作负载。无法容忍排队等待的实时工作负载。以及期望超时自动重试的团队 —— Batch 的 <code>expired</code> 是终态，重试逻辑要你自己写。</p>
+
+  <h2>常见问题</h2>
+
+  <details><summary>OVHcloud AI Endpoints 兼容 OpenAI 吗？</summary>
+  <p>兼容。文档写明平台设计上兼容 OpenAI API，Batch API 也明确兼容 OpenAI 的批处理接口（<code>completion_window</code> 使用 <code>"24h"</code>）。文档标明的例外是图像生成模型，它们不在兼容承诺内。需要提前规划的其他差异：多数端点请求体上限 2 MB，视觉大模型 10 MB；超限速率返回 429。</p></details>
+
+  <details><summary>每百万 token 多少钱？</summary>
+  <p>按模型计价。截至 2026-09-18，最便宜的推理模型是 gpt-oss-20b，€0.04 / €0.15 每百万输入输出；gpt-oss-120b 为 €0.08 / €0.40。最新的多模态 Qwen 档 Qwen3.5-397B-A17B 为 €0.60 / €3.60。嵌入从 bge-m3 的 €0.01 每百万输入到 Qwen3-Embedding-8B 的 €0.10。Whisper large-v3 转写为每秒 €0.00004083。USD 价目表里 gpt-oss-120b 报 $0.09/$0.47。所有公开价格均不含税。</p></details>
+
+  <details><summary>有免费额度吗？</summary>
+  <p>有，分四种形态：一是 Playground 可免费试所有目录模型，大模型输出上限 1024 token；二是匿名档，不用密钥每 IP 每模型 2 请求/分钟；三是 Batch API 在两个月 Beta 期间免费；四是 Qwen3Guard 以及图像生成、语音合成模型在当前价目里标价为 0。Base API 本身没有永久免费 token 额度，需要开通带有效支付方式的公有云项目。</p></details>
+
+  <details><summary>推理在哪里运行，我的数据会被存储吗？</summary>
+  <p>OVHcloud 声明基础设施位于法国 Gravelines，且数据在模型使用期间与使用之后都不被存储、不被共享。服务由《OVHcloud 公有云特别条款》附录 10「AI Endpoints 专门条款」约束。因为这属于合规相关陈述，请直接阅读合同附录本身，不要依赖第三方评测 —— 本文报告的是厂商公开的表述。</p></details>
+
+  <details><summary>模型被下线时会发生什么？</summary>
+  <p>有一套正式的四步流程：用量监控识别候选；退役决定通过邮件发往账单联系人并同步到 OVHcloud Discord 的 <code>#ai-news</code> 频道；随后三个月宽限期，模型仍可响应但从目录隐藏；宽限期结束后从 API 移除并返回 404。截至 2026-09-18 公开下线表上有五个模型，其中 Mistral-Small-3.2-24B-Instruct-2506 的期限是 2026-11-04，而它仍出现在实时价目表里。如果使用 API 的团队不是账户的账单联系人，除非手动添加消息接收人，否则收不到通知。</p></details>
+
+  <details><summary>必须要有公有云项目和支付方式吗？</summary>
+  <p>是。文档写得很明确：从处于 Discovery 模式（即未绑定支付方式）的公有云项目创建的访问密钥无法使用该服务。你在项目的 AI Endpoints 板块创建密钥，可设置有效期，也可随时吊销。有一处 IAM 注意事项已写明：在共享项目中，以读写权限加入的团队成员所创建的密钥，项目管理员看不到也无法管理；唯一吊销方式是移除该账户对项目的访问权。</p></details>
+
+  <details><summary>批量任务能比实时调用便宜吗？</summary>
+  <p>能，这正是 Batch API 的用途，目前两个月 Beta 期间免费。正式版文档记载的价格是 Base 费率的五折。约束：单个 JSONL 文件最多 5 万行、文件不超过 200 MB、24 小时 SLO 目标、无可用性 SLA、MVP 阶段仅覆盖大模型与嵌入。超过 24 小时窗口的批次变为 <code>expired</code> 且不会自动重试。只对成功处理的请求计费。</p></details>
+
+  <h2>来源</h2>
+  <ul>
+    <li>OVHcloud《AI Endpoints – Getting started》（docs.ovhcloud.com，最后更新 2026-03-19）—— 密钥流程、速率限制、OpenAI 兼容性</li>
+    <li>OVHcloud《AI Endpoints – Billing and lifecycle》（最后更新 2026-08-04）—— 下线表与三个月宽限期</li>
+    <li>OVHcloud《AI Endpoints – Features, Capabilities and Limitations》（最后更新 2026-02-03）—— JSON 模式、函数调用、载荷与速率限制、无用量上限</li>
+    <li>OVHcloud《AI Endpoints – Batch API》（labs.ovhcloud.com）—— Beta 条款、正式版五折、FAQ、OpenAI Batch 兼容性</li>
+    <li>OVHcloud AI Endpoints 目录页（ovhcloud.com/en/public-cloud/ai-endpoints/catalog/）—— EUR 按模型费率，2026-09-18 誊写</li>
+    <li>OVHcloud 公有云价目页 AI &amp; Machine Learning 板块 —— USD 费率与语音转写的每小时等价价，2026-09-18 誊写</li>
+  </ul>
+</article>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>
