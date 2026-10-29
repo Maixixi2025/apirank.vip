@@ -1,0 +1,301 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'scaleway-generative-apis-api-review-2026';
+const zhTitle = 'Scaleway Generative APIs 评测 2026：欧盟按 token 计价';
+const zhDescription = 'Scaleway Generative APIs 评测：17 个无服务器模型，输入价低至每百万 0.10 欧元，99.9% SLA，仅在巴黎境内托管，Batch 折扣 50%。完整价格拆解。';
+const date = '2026-10-29';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+ {
+  "@type": "Question",
+  "name": "2026 年 Scaleway Generative APIs 怎么收费？",
+  "acceptedAnswer": {
+   "@type": "Answer",
+   "text": "无服务器按每百万 token 计价，输入价从每百万 0.10 欧元起，输出价最高到每百万 5.50 欧元。最便宜的模型是 Qwen 3 Embedding 8B 和 BGE Multilingual Gemma2，输入价均为每百万 0.10 欧元；其次是 Mistral Small 3.2 24B，输入每百万 0.15 欧元、输出每百万 0.35 欧元；GPT-OSS 120B 输入每百万 0.15 欧元、输出每百万 0.60 欧元。最贵的对话模型是 Mistral Medium 3.5 128B，输入每百万 1.50 欧元、输出每百万 7.50 欧元；GLM-5.3 与 GLM-5.2 同价，均为输入每百万 1.80 欧元、输出每百万 5.50 欧元。Whisper Large v3 语音转写按每音频分钟 0.003 欧元计费。专用部署按 GPU 小时计费，从 L4 的每时 0.93 欧元到 H100-SXM-8-80G 的每小时 30.06 欧元。所有价格均为税前价。"
+  }
+ },
+ {
+  "@type": "Question",
+  "name": "Scaleway 的无服务器推理服务器托管在哪里？",
+  "acceptedAnswer": {
+   "@type": "Answer",
+   "text": "所有无服务器模型目前托管在法国巴黎的一个安全数据中心，由 OPCORE 运营。Scaleway 声明通过 api.scaleway.ai 访问的无服务器模型将始终留在欧洲境内，并且当托管位置从仅法国扩展到其他欧洲区域时会通知客户。如需确保处理过程留在单一区域，Scaleway 建议使用专用部署。"
+  }
+ },
+ {
+  "@type": "Question",
+  "name": "Scaleway 的 API 兼容 OpenAI SDK 吗？",
+  "acceptedAnswer": {
+   "@type": "Answer",
+   "text": "兼容。Scaleway Generative APIs 专为兼容 OpenAI 库与 SDK 而设计，包括 OpenAI Python 客户端库和 LangChain SDK。端点为 api.scaleway.ai，提供标准的 /v1/chat/completions 与 /v1/embeddings 路由，鉴权使用标准 Bearer Token，因此大多数集成只需替换 base URL。"
+  }
+ },
+ {
+  "@type": "Question",
+  "name": "Scaleway 免费额度包含什么？",
+  "acceptedAnswer": {
+   "@type": "Answer",
+   "text": "无服务器服务提供免费额度：按 token 计费的模型可免费处理最多 1,000,000 个 token，按音频分钟计费的模型可免费转写 60 分钟音频，全程不产生费用。超出后按每百万 token 和每音频分钟计费，从第 1,000,001 个 token 开始计费。定价页法律声明注明价格均为税前价。"
+  }
+ },
+ {
+  "@type": "Question",
+  "name": "Scaleway Batch API 能省多少钱？",
+  "acceptedAnswer": {
+   "@type": "Answer",
+   "text": "所有通过 Batches API 发起的请求都比标准模型价格优惠 -50%。Batch API 同时没有速率限制，因为它专为止批处理工作负载设计。这两者叠加使它成为大批量离线任务（如批量分类、抽取与评测运行）最省钱的路径。"
+  }
+ },
+ {
+  "@type": "Question",
+  "name": "Scaleway Generative APIs 提供什么 SLA 和速率限制？",
+  "acceptedAnswer": {
+   "@type": "Answer",
+   "text": "无服务器按 Generative APIs 服务等级协议承诺 99.9% 的月度可用性。专用部署不强制速率限制，因为你获得的是专属容量，仅受总配置容量约束，但 Scaleway 仍在制定其专用 SLA。无服务器使用三层限制模型：按每分钟 token 计量的组织配额、你自行设置且不得超过组织配额的目级速率限制，以及按日或月度 token 量强制执行的用户预算。"
+  }
+ },
+ {
+  "@type": "Question",
+  "name": "Scaleway 无服务器推理有多快？",
+  "acceptedAnswer": {
+   "@type": "Answer",
+   "text": "开启流式输出时，Scaleway 表示对输入少于 1,000 个 token 的大多数标准对话请求，首 token 时间应低于 1 秒；对于 GPT-OSS 120B、Mistral Small 3.2 24B 等较新的中小模型，输出生成速度应高于每秒 100 个 token。这些是数量级参考而非硬性保证。对延迟要求严格的场景，官方推荐使用专用部署。"
+  }
+ },
+ {
+  "@type": "Question",
+  "name": "中国大陆能使用 Scaleway Generative APIs 吗？",
+  "acceptedAnswer": {
+   "@type": "Answer",
+   "text": "Scaleway 没有中国大陆区域。api.scaleway.ai 是欧洲端点，无 ICP 备案，因此服务中国用户的生产流量需要香港、新加坡或日本等稳定的海外出口，或使用聚合路由。若工作负载必须让每个提示词字节都留在境内，建议将国内厂商与多上游 OpenAI 兼容路由搭配使用，而非直连 Scaleway。"
+  }
+ }
+]
+};
+
+const zhBody = `
+<h1 id="top">Scaleway Generative APIs 评测 2026：欧盟按 token 计价，以及「只在巴黎」这条硬规则</h1>
+
+<p>Scaleway 是一家法国云厂商，最初做的是裸金属和 GPU 托管，后来成长为完整的欧洲超大规模云厂商，拥有 GPU 实例、对象存储、容器服务，以及一套叫作 <strong>Generative APIs</strong> 的托管推理产品。对一个 API 目录来说，ScaleWay 值得关注的原因只有一个，而且它压过其他所有理由：它是极少数能以欧元直接公布干净的自营按 token 价目表、模型确实可调用、托管在欧盟境内、没有市场聚合加价、也没有中间转售链的厂商。</p>
+
+<p>这个组合把 Scaleway 放进了一个很窄的区间。它不是全网最便宜——Groq、Cerebras、DeepInfra、Fireworks 在美元口径下的多个模型都比它便宜。它也不是目录最宽的——OpenRouter 有 457 个模型，Scaleway 无服务器只有 17 个。Scaleway 真正是（而且几乎只有它是）<strong>一家第一方欧洲云，以公开的欧元价格售卖欧洲境内托管的推理</strong>，并且带 SLA、带免费额度、带 Batch 折扣。如果你的采购清单里有一行「数据驻留」，这就是你该看完这篇评测的理由。</p>
+
+<p>本文所有价格均于 <strong>2026 年 10 月 29 日</strong>对照 Scaleway Model-as-a-Service 定价页与 Generative APIs 官方文档核实。距离我们上次抓取已过去 42 天，模型阵容已有明显变化：新增了 GLM-5.3、GLM-5.2、DeepSeek V4.1 Flash、Qwen 3.8 27B 和 Gemma 4 26B A4B，同时 Qwen 3 235B Thinking 2507 已从无服务器列表中消失。所有价格以欧元计价、均为税前价，不做任何货币折算。</p>
+
+<h2 id="two-modes">两种部署模式，两套计费逻辑</h2>
+
+<p>Scaleway 把推理产品拆成两个独立形态，看错定价页最常见的原因就是把这两者混为一谈。</p>
+
+<p><strong>无服务器（Serverless）</strong>是按 token 计费的产品。你调用预配置好的端点，按消耗的 token 付费，完全不碰 GPU。前 100 万 token 免费，从第 1,000,001 个 token 开始计费。绝大多数开发者应该从这里起步，下面那张按模型标价的价格表对应的就是它。</p>
+
+<p><strong>专用部署（Dedicated Deployment）</strong>是在你选定的 GPU 实例上跑一个你指定的模型。你从 Scaleway 硬件阵容里挑实例类型，平台完成置备，你把优化过的模型部署上去，按 GPU 小时计费。关键规则是：<strong>只有模型真正部署完成之后才开始计费</strong>，等待期间不收费。费率从 L4 的每小时 0.93 欧元一直到 8 卡 H100 SXM 的每小时 30.06 欧元。</p>
+
+<p>实务上的判断是：无服务器适合尖峰、不可预测、或上线前的流量；专用部署适合流量稳定、需要可预期吞吐、无速率限制、且要自己选硬件的工作负载。生产系统最终往往两者并用——长尾小模型走无服务器，承载主要流量的那一个模型上专用实例。</p>
+
+<h2 id="serverless-pricing">无服务器价格：完整 17 模型表</h2>
+
+<p>以下是官方公布的完整无服务器阵容，输入与输出均为每百万 token 价格；缓存输入价仅在官方单列时列出。</p>
+
+<table>
+<thead><tr><th>模型</th><th>任务类型</th><th>输入</th><th>缓存输入</th><th>输出</th></tr></thead>
+<tbody>
+<tr><td>qwen3-embedding-8b</td><td>向量嵌入</td><td>0.10 欧元/百万</td><td>—</td><td>—</td></tr>
+<tr><td>bge-multilingual-gemma2</td><td>向量嵌入</td><td>0.10 欧元/百万</td><td>—</td><td>—</td></tr>
+<tr><td>mistral-small-3.2-24b-instruct-2506</td><td>对话与视觉</td><td>0.15 欧元/百万</td><td>—</td><td>0.35 欧元/百万</td></tr>
+<tr><td>gpt-oss-120b</td><td>对话</td><td>0.15 欧元/百万</td><td>—</td><td>0.60 欧元/百万</td></tr>
+<tr><td>gemma-4-26b-a4b-it</td><td>对话、代码、视觉</td><td>0.25 欧元/百万</td><td>—</td><td>0.50 欧元/百万</td></tr>
+<tr><td>qwen3.6-35b-a3b</td><td>对话、代码、视觉</td><td>0.25 欧元/百万</td><td>—</td><td>1.50 欧元/百万</td></tr>
+<tr><td>deepseek-v4-flash-0731</td><td>对话与代码</td><td>0.40 欧元/百万</td><td>0.08 欧元/百万</td><td>0.80 欧元/百万</td></tr>
+<tr><td>deepseek-v4.1-flash</td><td>对话、代码、视觉</td><td>0.60 欧元/百万</td><td>0.12 欧元/百万</td><td>1.80 欧元/百万</td></tr>
+<tr><td>qwen3.5-397b-a17b</td><td>对话、代码、视觉</td><td>0.60 欧元/百万</td><td>—</td><td>3.60 欧元/百万</td></tr>
+<tr><td>qwen3.8-27b</td><td>对话、代码、视觉</td><td>0.60 欧元/百万</td><td>0.12 欧元/百万</td><td>3.30 欧元/百万</td></tr>
+<tr><td>qwen3-235b-a22b-instruct-2507</td><td>对话</td><td>0.75 欧元/百万</td><td>—</td><td>2.25 欧元/百万</td></tr>
+<tr><td>llama-3.3-70b-instruct</td><td>对话</td><td>0.90 欧元/百万</td><td>—</td><td>0.90 欧元/百万</td></tr>
+<tr><td>mistral-medium-3.5-128b</td><td>对话、代码、视觉</td><td>1.50 欧元/百万</td><td>—</td><td>7.50 欧元/百万</td></tr>
+<tr><td>glm-5.3</td><td>对话与代码</td><td>1.80 欧元/百万</td><td>—</td><td>5.50 欧元/百万</td></tr>
+<tr><td>glm-5.2</td><td>对话与代码</td><td>1.80 欧元/百万</td><td>—</td><td>5.50 欧元/百万</td></tr>
+<tr><td>lightonocr-3-0.8b</td><td>OCR</td><td>2.20 欧元/百万</td><td>—</td><td>—</td></tr>
+<tr><td>whisper-large-v3</td><td>音频转写</td><td>0.003 欧元/音频分钟</td><td>—</td><td>—</td></tr>
+</tbody>
+</table>
+
+<p>表里有三点，比单个价格本身更值得关注。</p>
+
+<p><strong>只有 DeepSeek 系公布了缓存输入价。</strong>DeepSeek V4 Flash 0731 和 DeepSeek V4.1 Flash 都明确标出缓存输入价，恰好是标准输入价的五分之一。其余模型在这一页没有单列缓存价——这不等于不支持缓存，而是价格没有在这里单独成行。如果你的负载被重复的系统提示词主导，DeepSeek 这两行是全表唯一能直接算出缓存命中成本的条目。</p>
+
+<p><strong>嵌入模型只按输入 token 计价，没有输出费用。</strong>Qwen 3 Embedding 8B 和 BGE Multilingual Gemma2 都是每百万 0.10 欧元。嵌入模型最容易迁移——体积小、无状态、重新索引成本低——所以它是测试一家新厂商时风险最低的起点。</p>
+
+<p><strong>两个 GLM 同价，而 5.3 是更该选的那个。</strong>GLM-5.3 和 GLM-5.2 都是输入每百万 1.80 欧元、输出每百万 5.50 欧元。更新的模型卖同一个价，这本身就是选 5.3 的理由；但同时也是个值得留意的信号——跨代同价在这个市场里不常见，说不准什么时候就调了。</p>
+
+<h2 id="dedicated-pricing">专用部署：按 GPU 小时计价</h2>
+
+<p>当模型部署到专属硬件上时，你付的是 GPU 时间而不是 token。Scaleway 公布了巴黎区域的托管推理价目表，这张表值得仔细读，因为折算后的月度数字相当可观。</p>
+
+<table>
+<thead><tr><th>实例</th><th>价格（欧元/小时）</th><th>约合每月</th></tr></thead>
+<tbody>
+<tr><td>L4-1-24G</td><td>0.93</td><td>678.90 欧元</td></tr>
+<tr><td>L40S-1-48G</td><td>1.72</td><td>1,255.31 欧元</td></tr>
+<tr><td>H100-1-80G</td><td>3.40</td><td>2,481.71 欧元</td></tr>
+<tr><td>H100-2-80G</td><td>6.68</td><td>4,876.25 欧元</td></tr>
+<tr><td>H100-SXM-2-80G</td><td>7.95</td><td>5,803.50 欧元</td></tr>
+<tr><td>H100-SXM-4-80G</td><td>15.22</td><td>11,110.57 欧元</td></tr>
+<tr><td>H100-SXM-8-80G</td><td>30.06</td><td>21,943.80 欧元</td></tr>
+</tbody>
+</table>
+
+<p>盈亏平衡的算法很直白，动手前值得先算一遍。一台 H100-1-80G 每小时 3.40 欧元，如果 7×24 持续运行，一个月约 2,481 欧元。对照这个固定成本，无服务器只有在某个吞吐量之上才划算：当同样流量按 token 计费已超过每小时 3.40 欧元时，专用实例更划算；低于这个数就不划算。还要注意计费规则：你付的是部署，不是 token。一个空转的专用实例会以全价计费却什么也不产出。</p>
+
+<h2 id="residency">驻留规则：今天是巴黎，未来是欧洲</h2>
+
+<p>这一节是多数转述文章最容易写错的地方，所以我们说得精确一些。</p>
+
+<p>Scaleway 官方文档明确写道：<strong>所有无服务器模型目前托管在法国巴黎的一个安全数据中心，由 OPCORE 运营</strong>。Scaleway 给出的承诺是，通过 <code>api.scaleway.ai</code> 访问的无服务器模型将始终留在欧洲境内，并且当托管位置从仅法国扩展到更广的欧洲范围时会通知客户。</p>
+
+<p>由此推出两个方向相反的结论。</p>
+
+<p>第一，你获得的承诺是<strong>欧洲级，而非法国级</strong>。你的数据不会离开欧盟。但如果你的约束是法国特定的数据驻留要求——部分法国公共部门与医疗相关采购规则，或内部指定国家的政策——Scaleway 当前的部署形态并不满足，因为只有一个位置且就是法国。第三方文章里常提到的阿姆斯特丹区域是 Scaleway 其他产品的云区域，并不是第二个无服务器推理站点。</p>
+
+<p>第二，官方对「严格限定单一区域处理」的建议是<strong>专用部署</strong>，因为你可以把部署钉在特定区域和特定实例上。于是出现了一个有意思的结果：主打主权合规的厂商，却把最严格的需求导向了更贵的产品线。这在逻辑上自洽——专属硬件才是获得确定性位置的途径——但这意味着「只要欧盟境内」和「我必须锁定具体区域」这两类需求落在不同档位上。</p>
+
+<p>实际含义是：如果你的要求是「不得离开欧盟」，每百万 0.10 欧元的无服务器是很划算的选择；如果要求是「必须待在这个确切位置」，那就要为专用部署做预算。</p>
+
+<h2 id="batch">Batch API：-50% 折扣且无速率限制</h2>
+
+<p>Batch API 是这份目录里最被低估的价值，因为两个好处叠加在一起。</p>
+
+<p>第一，所有通过 Batch 提交的请求都比标准模型价格<strong>便宜 50%</strong>。第二，<strong>Batch 请求没有速率限制</strong>，因为该端点明确为非实时工作负载而设计。</p>
+
+<p>两者叠加，使 Batch 成为任何不需要在请求超时内拿到响应的任务的最省路径。上表的有效费率随之变成：嵌入模型输入每百万 0.05 欧元，Mistral Small 3.2 输入每百万 0.075 欧元，GLM-5.3 输入每百万 0.90 欧元、输出每百万 2.75 欧元。做批量重新索引、分类扫描或离线评测时，就该用这个配置。</p>
+
+<p>代价当然是延迟，而且官方对 Batch 周转时间的说明相当坦率：取决于队列深度，也取决于你怎么拆分工作。提交 1 万个小请求要等一个队列周期；提交更少但更大的请求则每条等更久，往往整体反而更快。Scaleway 给交互式负载的官方建议是把查询拆成尽可能小的有意义单元。</p>
+
+<h2 id="integration">集成：兼容 OpenAI，但有一个诚实的坑</h2>
+
+<p>Scaleway Generative APIs 专为兼容 OpenAI 库与 SDK 而设计，包括 OpenAI Python 客户端库和 LangChain。端点是 <code>api.scaleway.ai</code>，提供标准的 <code>/v1/chat/completions</code> 与 <code>/v1/embeddings</code> 路由，使用标准 Bearer 鉴权。对大多数集成来说这就是换一下 base URL。</p>
+
+<pre><code>from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.scaleway.ai/v1",
+    api_key="SCWXXXXXXXXXXXXXXXXX",
+)
+
+resp = client.chat.completions.create(
+    model="mistral-small-3.2-24b-instruct-2506",
+    messages=[{"role": "user", "content": "用一句话总结这段内容。"}],
+    stream=True,
+)
+
+for chunk in resp:
+    if chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end="")
+</code></pre>
+
+<p>同样的调用用纯 HTTP 写，适合走 Batch 的场景：</p>
+
+<pre><code>curl -s https://api.scaleway.ai/v1/chat/completions \\
+  -H "Authorization: Bearer *** \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "glm-5.3",
+    "messages": [{"role": "user", "content": "写一首关于欧盟数据驻留的俳句。"}]
+  }'</code></pre>
+
+<p>需要提醒的坑在模型命名，而不在协议。Scaleway 使用自己的模型 ID——<code>glm-5.3</code>、<code>qwen3.5-397b-a17b</code>、<code>mistral-small-3.2-24b-instruct-2506</code>——与 OpenRouter、Hugging Face 或模型厂商使用的 ID 并不完全一致。任何厂商切换层都需要维护一张按厂商区分的 ID 映射表；如果你打算在 Scaleway 与多模型聚合器之间迁移，真正消耗工程时间的恰恰是这张映射表。API 形态可移植，模型名不可移植。</p>
+
+<p>还有一条集成信息值得记住：Scaleway 也出现在 Hugging Face Inference Providers 路由上，你可以在同一个 OpenAI 兼容端点里按请求选择它。如果你已经在用 HF 路由，Scaleway 就从一个独立集成变成了一个可按需选择的欧盟驻留后端。</p>
+
+<h2 id="limits">速率限制、配额与预算</h2>
+
+<p>Scaleway 在无服务器上使用三层管控模型，搞清楚是哪一层在卡你，能省一张工单。</p>
+
+<ul>
+<li><strong>组织配额</strong>是 Scaleway 管理的系统级限制，作用于你整个组织，按每分钟 token 量计量，用于控制突发流量。</li>
+<li><strong>项目级速率限制</strong>是你自己在项目层设置的限制，不能超过顶层组织配额，同样按每分钟 token 计量。</li>
+<li><strong>用户预算</strong>是按终端用户设置的使用量上限，以日或月度周期强制执行，按 token 量计量。这是成本控制，不是吞吐控制。</li>
+</ul>
+
+<p>需要更高吞吐时，官方按优先级列了三条路：把非实时工作挪到 Batch API（同时没有速率限制且便宜 50%）；转用专用部署获取不限速率限制的专属容量；或者联系客户经理谈量级承诺，按比例提升配额。</p>
+
+<p>注意计量单位是「每分钟 token」。这不是某些美国厂商那种「每秒请求数」的限制——它意味着你的限额会随提示词体积缩放，所以在请求频率相同的情况下，输入很大的负载消耗预算更快。</p>
+
+<h2 id="performance">性能：哪些有承诺，哪些没有</h2>
+
+<p>无服务器按 Generative APIs 服务等级协议承诺 <strong>99.9% 月度可用性</strong>。专用部署目前没有公布 SLA——Scaleway 表示仍在制定中——如果要把专用部署写进带可用性承诺的合同，这一点必须注意。</p>
+
+<p>延迟方面，官方给的是数量级参考而非保证，而且说得很具体：开启流式输出时，对输入少于 1,000 个 token 的大多数标准对话请求，首 token 时间应低于 1 秒；对 GPT-OSS 120B、Mistral Small 3.2 24B 等较新的中小模型，输出生成速度应高于每秒 100 个 token。</p>
+
+<p>实务中两个因素主导表现。一是模型规模与架构——更小更新的模型表现更好；二是对话的首 token 时间在超过某个阈值后会随输入上下文长度成比例增长，也就是说「低于 1 秒」这个数字是专门针对短提示词的。Scaleway 明确表示不严格保证性能，并对有严格延迟要求的应用推荐专用部署。</p>
+
+<p>关于吞吐的粗略校验，我们把公布费率与同一批模型在 OpenRouter 价目表上的价格做了对照。按美元同口径计算，GLM-5.3 在 OpenRouter 上的输出价约每百万 1.40 美元，而 Scaleway 是每百万 5.50 欧元；Mistral Small 3.2 在 OpenRouter 约每百万 0.20 美元，对应 Scaleway 的每百万 0.35 欧元。把欧元兑美元汇率以及 OpenRouter 自带路由层这两项因素算进去，两者比裸数字看起来接近得多。Scaleway 的优势未必是 token 最便宜，而是驻留、欧元开票，以及与第一方厂商的直接关系。</p>
+
+<h2 id="licenses">许可、合规，以及诚实的缺口</h2>
+
+<p>两个档位都适用模型许可。你必须遵守所调用模型的许可条款，对于目录内模型，需要在接受适用许可（包括潜在 EULA）之后才能创建专用部署。若是你自行导入的自定义模型，合规责任在你。每个模型的许可都在文档和控制台 Playground 中列出。</p>
+
+<p>接下来是缺口，直说。</p>
+
+<p><strong>目录小，而且会变。</strong>17 个无服务器模型放到 2026 年标准下偏窄，而且阵容在我们上次抓取的 42 天里发生了实质变化——GLM-5.3 和 DeepSeek V4.1 Flash 是新条目，Qwen 3 235B Thinking 2507 已从无服务器消失。如果你的架构依赖某一个特定模型，Scaleway 就是一个会自己变动的单点。务必准备一个兜底厂商。</p>
+
+<p><strong>没有中国大陆路径。</strong>没有中国区域，没有 ICP 备案，没有本地端点。服务中国用户的生产流量需要海外出口或聚合路由。像 FreeModel 这样的多上游 OpenAI 兼容路由器，可以把面向中国的流量导到国内上游，同时把 Scaleway 欧盟端点留作欧盟业务的兜底，不必维护两套客户端实现。</p>
+
+<p><strong>专用部署暂无 SLA。</strong>如果你为可预期性能购买专用部署，买到的其实是并不适用于该专用实例的 99.9% 无服务器 SLA。请据此评估风险，或者保持一条无服务器兜底链路在线。</p>
+
+<p><strong>欧元定价无法即时换算。</strong>这里所有费率都是税前欧元。如果你的财务以美元做预算，那么在对冲之前，汇率敞口由你承担。这就是主权合规的代价，对多数欧洲买家而言，这恰恰是重点而不是缺点。</p>
+
+<h2 id="verdict">结论</h2>
+
+<p>Scaleway Generative APIs 回答了大多数 API 目录从不问的问题：<strong>我要的推理真正托管在欧洲、由第一方运营、以欧元计价、带 99.9% SLA，而且中间没有一个不告诉我数据实际落在哪里的聚合层——去哪里买？</strong>前 100 万 token 的免费额度让首次测试零风险，OpenAI 兼容的接入面意味着这个测试只需一个下午，而 -50% 且不限速的 Batch 对离线任务则是实打实的好价。</p>
+
+<p>它不是买 token 最便宜的方式，目录也不够宽。如果你的唯一诉求是某个特定模型的每百万 token 最低成本，去看 Groq、Cerebras、DeepInfra 或 Fireworks。如果你的诉求是「责任主体有欧盟布局、有公开 SLA、没有隐藏的转售加价」，Scaleway 是能同时满足这三条的少数选项之一。</p>
+
+<p>建议路径是：先用免费额度跑一个嵌入模型，再把一个真实的对话负载迁到 Mistral Small 3.2 或 GPT-OSS 120B，然后实测每个任务的欧元成本与你当前厂商的对比。如果驻留这一项在你的采购流程里真的挂着真金白银，这个对比甚至可能不必做——但还是做吧，毕竟前 100 万 token 免费，这个实验成本你一个下午。</p>
+
+<p><strong>资料来源：</strong>Scaleway Model-as-a-Service 定价页、Scaleway Generative APIs 官方文档（FAQ、支持模型列表、OpenAI 兼容性说明），以及用于跨厂商比对的 OpenRouter 模型价目表。全部于 2026 年 10 月 29 日核验。</p>
+`;
+
+const zhFaq = faqJsonLd;
+---
+
+<BaseLayout
+  title={zhTitle}
+  description={zhDescription}
+  canonicalUrl={canonicalUrl}
+  enCanonicalUrl={enCanonicalUrl}
+  locale={locale}
+  type="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)}></script>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)}></script>
+  <script type="application/ld+json" set:html={JSON.stringify(zhFaq)}></script>
+  <Fragment set:html={zhBody} />
+</BaseLayout>
