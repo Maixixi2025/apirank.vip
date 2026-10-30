@@ -25994,5 +25994,102 @@
         "textZh": "Poolside 的推理服务只在单一美国区域：inference.poolside.ai 解析到 35.244.129.243 —— Google LLC 位于密苏里州堪萨斯城的地址，响应头带有 via: 1.1 google。2026 年 10 月 30 日从阿里云马来西亚节点实测，未鉴权的 /v1/models 请求 TTFB 落在 254–279ms（中位数 263ms）；对美国源站而言算快，但中国大陆的每次请求仍要跨太平洋。Poolside 在全部文档中没有公布任何面向中国的端点、区域或可用性承诺，因此从大陆直连应视为需要代理，叠加代理后单次请求大致 400–900ms：跑后台 Agent 任务可以接受，交互式补全则能被明显感知。控制台体验好得多 —— platform.poolside.ai 走 CloudFront，命中马来西亚 Sepang 边缘节点，实测 237–675ms。对中国团队有三条实用路径。其一，走 OpenRouter 或 Vercel AI Gateway，两者均为 Cloudflare 前置、国内可达性好，模型费率完全一致。其二，也是更彻底的方案：自托管 —— Helm 推理栈可部署到你在香港、新加坡或上海的 Kubernetes 或本地 GPU 机房，仍是同一个 OpenAI 兼容的 /v1 base URL，代码不出你自己的基础设施。其三，下载开放权重，用 vLLM、SGLang、Ollama 或 MLX 完全离线运行。"
       }
     ]
+  },
+  {
+    "id": "scaleway",
+    "name": "Scaleway Generative APIs",
+    "nameCn": "Scaleway Generative APIs",
+    "category": "international",
+    "website": "https://www.scaleway.com/en/generative-apis/",
+    "apiDocs": "https://www.scaleway.com/en/docs/generative-apis/",
+    "affiliateUrl": "",
+    "affiliateAvailable": false,
+    "models": [
+      "qwen3-embedding-8b (Embeddings, 32k ctx, EUR 0.10/M input, output free)",
+      "bge-multilingual-gemma2 (Embeddings, 8k ctx, EUR 0.10/M input, output free)",
+      "mistral-small-3.2-24b-instruct-2506 (Chat and Vision, 128k ctx, EUR 0.15/0.35)",
+      "gpt-oss-120b (Chat, 128k ctx, EUR 0.15/0.60)",
+      "gemma-4-26b-a4b-it (Chat and Vision, 256k ctx, EUR 0.25/0.50)",
+      "qwen3.6-35b-a3b (Chat, code, and Vision, 256k ctx, EUR 0.25/1.50)",
+      "deepseek-v4-flash-0731 (Chat and code, 256k ctx, EUR 0.40/0.80, cached input EUR 0.08)",
+      "deepseek-v4.1-flash (Chat, code, and Vision, 256k ctx, EUR 0.60/1.80, cached input EUR 0.12)",
+      "qwen3.5-397b-a17b (Chat, code, and Vision, 250k ctx, EUR 0.60/3.60)",
+      "qwen3.8-27b (Chat, code, and Vision, 256k ctx, EUR 0.60/3.30, cached input EUR 0.12)",
+      "qwen3-235b-a22b-instruct-2507 (Chat, 250k ctx, EUR 0.75/2.25)",
+      "llama-3.3-70b-instruct (Chat, 100k serverless / 128k dedicated, EUR 0.90/0.90)",
+      "mistral-medium-3.5-128b (Chat and Vision, 180k ctx, EUR 1.50/7.50)",
+      "glm-5.3 (Chat and code, 256k ctx, EUR 1.80/5.50)",
+      "glm-5.2 (Chat and code, 256k ctx, EUR 1.80/5.50; deprecation 2026-10-16, EOL 2026-11-16)",
+      "lightonocr-3-0.8b (OCR, PDF only, EUR 2.20/M input, output free)",
+      "whisper-large-v3 (Audio transcription, EUR 0.003 per audio minute, output free)",
+      "devstral-2-123b-instruct-2512 (Chat and code, 200k serverless / 260k dedicated)",
+      "qwen3-coder-30b-a3b-instruct (Code, 128k ctx)",
+      "voxtral-small-24b-2507 (Chat and audio understanding, 32k ctx)",
+      "pixtral-12b-2409 (Chat and Vision, 128k ctx, 12 images per request, 4k max output)",
+      "holo2-30b-a3b (Chat and Vision, GUI analysis, 22k ctx, CC-BY-NC-4.0)"
+    ],
+    "modelCount": 22,
+    "pricing": {
+      "input": "按每百万 token 计费，EUR 目录价（未含税）：qwen3-embedding-8b 与 bge-multilingual-gemma2 0.10、mistral-small-3.2 0.15、gpt-oss-120b 0.15、gemma-4-26b-a4b-it 与 qwen3.6-35b-a3b 0.25、deepseek-v4-flash-0731 0.40、deepseek-v4.1-flash / qwen3.5-397b-a17b / qwen3.8-27b 0.60、qwen3-235b-a22b-instruct-2507 0.75、llama-3.3-70b-instruct 0.90、mistral-medium-3.5-128b 1.50、glm-5.3 与 glm-5.2 1.80、lightonocr-3-0.8b 2.20",
+      "output": "按每百万 token 计费，EUR 目录价（未含税）：gemma-4-26b-a4b-it 0.50、gpt-oss-120b 0.60、deepseek-v4-flash-0731 0.80、llama-3.3-70b-instruct 0.90、qwen3.6-35b-a3b 1.50、qwen3-235b-a22b-instruct-2507 2.25、qwen3.8-27b 3.30、qwen3.5-397b-a17b 3.60、glm-5.3 与 glm-5.2 5.50、mistral-medium-3.5-128b 7.50；嵌入与 OCR 模型不计输出费",
+      "cached": "官方价目表只对三个模型单列缓存输入价，均为标准输入价的五分之一：deepseek-v4-flash-0731 EUR 0.08/M、deepseek-v4.1-flash EUR 0.12/M、qwen3.8-27b EUR 0.12/M；其余模型未在价格页公开单列缓存价",
+      "speech": "whisper-large-v3 按音频分钟计费：EUR 0.003/分钟（约 USD 1.80/小时），输出免费；voxtral-small-24b-2507 为音频理解而非转写",
+      "batch": "Batches API 的全部请求按标准价五折计费（-50%），且 Batches 请求没有速率限制；折算后 qwen3-embedding-8b 输入 EUR 0.05/M、mistral-small-3.2 输入 EUR 0.075/M、glm-5.3 输入 EUR 0.90/M 输出 EUR 2.75/M",
+      "freeTier": "免费额度覆盖首批 100 万 token，并含 60 分钟音频转写；从第 1,000,001 个 token 起开始计费",
+      "dedicated": "Dedicated Deployment 按 GPU 小时计费，不按 token：L4-1-24G EUR 0.93/小时（约 678.90/月）、L40S-1-48G 1.72（1,255.31）、H100-1-80G 3.40（2,481.71）、H100-2-80G 6.68（4,876.25）、H100-SXM-2-80G 7.95（5,803.50）、H100-SXM-4-80G 15.22（11,110.57）、H100-SXM-8-80G 30.06（21,943.80）；模型部署完成后才开始计费"
+    },
+    "pricingEN": {
+      "input": "Billed per 1M tokens, EUR list prices before tax: qwen3-embedding-8b and bge-multilingual-gemma2 0.10, mistral-small-3.2 0.15, gpt-oss-120b 0.15, gemma-4-26b-a4b-it and qwen3.6-35b-a3b 0.25, deepseek-v4-flash-0731 0.40, deepseek-v4.1-flash / qwen3.5-397b-a17b / qwen3.8-27b 0.60, qwen3-235b-a22b-instruct-2507 0.75, llama-3.3-70b-instruct 0.90, mistral-medium-3.5-128b 1.50, glm-5.3 and glm-5.2 1.80, lightonocr-3-0.8b 2.20",
+      "output": "Billed per 1M tokens, EUR list prices before tax: gemma-4-26b-a4b-it 0.50, gpt-oss-120b 0.60, deepseek-v4-flash-0731 0.80, llama-3.3-70b-instruct 0.90, qwen3.6-35b-a3b 1.50, qwen3-235b-a22b-instruct-2507 2.25, qwen3.8-27b 3.30, qwen3.5-397b-a17b 3.60, glm-5.3 and glm-5.2 5.50, mistral-medium-3.5-128b 7.50; embeddings and OCR carry no output charge",
+      "cached": "The price list publishes a cached-input rate for only three models, each at exactly one fifth of the standard input rate: deepseek-v4-flash-0731 at EUR 0.08/M, deepseek-v4.1-flash at EUR 0.12/M and qwen3.8-27b at EUR 0.12/M. Every other model shows no separate cached line on the page",
+      "speech": "whisper-large-v3 is billed per audio minute at EUR 0.003/minute (about USD 1.80/hour) with no output charge; voxtral-small-24b-2507 is audio understanding rather than transcription",
+      "batch": "Every request submitted through the Batches API is priced at 50% off the standard rate, and Batches requests carry no rate limit. Effective rates: qwen3-embedding-8b input EUR 0.05/M, mistral-small-3.2 input EUR 0.075/M, glm-5.3 input EUR 0.90/M and output EUR 2.75/M",
+      "freeTier": "The free tier covers the first 1,000,000 tokens and includes 60 minutes of audio transcription; billing starts at token number 1,000,001",
+      "dedicated": "Dedicated Deployment is billed per GPU hour rather than per token: L4-1-24G at EUR 0.93/hour (about 678.90/month), L40S-1-48G 1.72 (1,255.31), H100-1-80G 3.40 (2,481.71), H100-2-80G 6.68 (4,876.25), H100-SXM-2-80G 7.95 (5,803.50), H100-SXM-4-80G 15.22 (11,110.57) and H100-SXM-8-80G 30.06 (21,943.80). Billing starts only once the model is deployed"
+    },
+    "freeTier": "免费额度覆盖首批 100 万 token，并含 60 分钟音频转写；从第 1,000,001 个 token 起开始计费",
+    "freeTierEN": "The free tier covers the first 1,000,000 tokens and includes 60 minutes of audio transcription; billing starts at token number 1,000,001",
+    "paidModel": "纯按量付费，无月费、无最低承诺。Serverless 按每百万 token 计费；Dedicated Deployment 按 GPU 小时计费，模型部署完成后才开始计费，空转实例照常收费",
+    "paidModelEN": "Pure pay-as-you-go with no monthly fee and no minimum commitment. Serverless bills per 1M tokens; Dedicated Deployment bills per GPU hour, starting only once the model is deployed, so an idle instance bills at full rate while serving nothing",
+    "availabilityCN": "⚠️ 无中国大陆节点，需代理。服务仅部署在法国巴黎（单区域，欧洲境内），中国大陆访问延迟与稳定性均需实测评估",
+    "availabilityEN": "⚠️ Proxy required for mainland China. The service runs in a single region (Paris, France) inside the EU, so latency and stability from the Chinese mainland need your own measurement",
+    "speedRank": 6,
+    "priceRank": 4,
+    "overallRank": 45,
+    "highlights": [
+      "欧洲主权云中少数公开标注每百万 token 欧元价目表的厂商，17 个无服务器模型、18 档价格，未含税",
+      "OpenAI 兼容端点 api.scaleway.ai，迁移只需改 base_url 与模型名，官方 OpenAI Python SDK 与 LangChain 可直接复用",
+      "Batches API 全额五折且不限速率，折算后嵌入模型输入低至每百万 0.05 欧元，是批量重嵌入与离线评测的最省路径",
+      "数据驻留写进文档：无服务器模型全部托管在法国巴黎 OPCORE 的单一安全数据中心，官方承诺服务器less 模型留在欧洲",
+      "Generative APIs 公开 99.9% 月度可用率（SLA），未达标按 99.0–99.9% / 95.0–99.0% / <95.0% 分档补偿",
+      "DeepSeek V4 Flash 0731 与 V4.1 Flash 的缓存输入价恰好是标准输入价的五分之一，是目录里最便宜的重复提示词路径"
+    ],
+    "highlightsEN": [
+      "One of the few European sovereign clouds publishing a per-1M-token EUR price list: 17 serverless models across 18 price points, before tax",
+      "OpenAI-compatible endpoint at api.scaleway.ai - migration means changing base_url and the model name; the official OpenAI Python SDK and LangChain work unchanged",
+      "The Batches API is a flat 50% discount with no rate limit, which puts bulk re-embedding at EUR 0.05/M input and is the cheapest route for offline evaluation runs",
+      "Residency is documented, not implied: every serverless model is hosted in a single secure data center in Paris, France operated by OPCORE, with the vendor stating serverless models stay hosted in Europe",
+      "Generative APIs publish a 99.9% Monthly Availability Rate, with credits at 99.0-99.9% / 95.0-99.0% / below 95.0% of the monthly invoice",
+      "DeepSeek V4 Flash 0731 and V4.1 Flash price cached input at exactly one fifth of the standard input rate, the cheapest repeated-prompt path in the catalog"
+    ],
+    "cons": [
+      "无中国大陆节点，服务只在巴黎单一区域，需代理访问；延迟需自行实测",
+      "缓存输入价只对三个模型公开，其余模型无法从官方价目表直接算出缓存命中成本",
+      "严格单区域驻留需求只能走 Dedicated Deployment，成本从每百万 token 直接跳到每 GPU 小时（H100-SXM-8 约每月 2.19 万欧元）",
+      "无服务器模型输出上限普遍偏低（多数模型 16k–32k，pixtral-12b 仅 4k），长输出场景需挑模型",
+      "模型生命周期有明确退场表，glm-5.2 已定于 2026-10-16 弃用、2026-11-16 停止服务并改路由到 glm-5.3，接入前需核对弃用清单"
+    ],
+    "consEN": [
+      "No mainland China endpoint and a single Paris region, so traffic from the Chinese mainland needs a proxy and your own latency measurement",
+      "Cached-input pricing is published for only three models; for everything else you cannot derive the cache-hit cost from the official price list",
+      "A strict single-region residency requirement forces you onto Dedicated Deployment, where the bill jumps from per-million-tokens to per-GPU-hour (H100-SXM-8 is roughly EUR 21,944/month)",
+      "Serverless output caps are modest across the board (typically 16k-32k, and pixtral-12b only 4k), so long-output workloads need careful model selection",
+      "The model roster has a published retirement schedule: glm-5.2 was deprecated on 2026-10-16 with EOL on 2026-11-16 and traffic rerouted to glm-5.3, so check the deprecation list before you integrate"
+    ],
+    "bestFor": "需要欧盟境内数据驻留的团队；把 OpenAI 兼容接口当作第二供应商以规避单点故障；批量离线任务（重嵌入、分类扫描、评测跑批）想用 Batches 五折的预算；以及愿意用 GPU 小时费换确定位置的合规场景",
+    "bestForEN": "Teams that need EU data residency; anyone keeping OpenAI as a second supplier to avoid a single point of failure; bulk offline work (re-embedding, classification sweeps, evaluation runs) that can use the 50% Batches rate; and compliance cases where a fixed location is worth a per-GPU-hour bill",
+    "status": "active",
+    "addedDate": "2026-10-30",
+    "source": "apirank-cron-74aa76f6b770"
   }
 ]
