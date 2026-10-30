@@ -25795,6 +25795,204 @@
     "bestForEN": "Long-context (1M) + native-reasoning + open-weight agentic coding workloads; single-machine local deployment (36GB-RAM Mac or DGX Spark); teams already routing through OpenRouter add it with zero friction",
     "status": "active",
     "addedDate": "2026-09-16",
-    "source": "apirank-cron-74aa76f6b770"
+    "source": "apirank-cron-74aa76f6b770",
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": [
+          "Model / Access path",
+          "Input ($/1M tokens)",
+          "Output ($/1M tokens)",
+          "Notes"
+        ],
+        "headersZh": [
+          "模型 / 接入方式",
+          "输入（$/百万 token）",
+          "输出（$/百万 token）",
+          "备注"
+        ],
+        "rows": [
+          [
+            "Laguna S 2.1 (OpenRouter)",
+            "$0.09",
+            "$0.18",
+            "1M context, 118B/8B MoE; 10% off the $0.10/$0.20 list price"
+          ],
+          [
+            "Laguna S 2.1 - cached input",
+            "$0.009",
+            "-",
+            "10x cheaper than standard input; 10% off the $0.01 cache-read list"
+          ],
+          [
+            "Laguna XS 2.1 (OpenRouter)",
+            "$0.06",
+            "$0.12",
+            "256K context, 33B/3B MoE; 40% off the $0.10/$0.20 list price"
+          ],
+          [
+            "Laguna XS 2.1 - cached input",
+            "$0.003",
+            "-",
+            "40% off the $0.05 cache-read list price"
+          ],
+          [
+            "Laguna S 2.1 :free / XS 2.1 :free",
+            "$0",
+            "$0",
+            "Rate-limited free variants on OpenRouter; 256K context, 32K max completion"
+          ],
+          [
+            "Vercel AI Gateway",
+            "$0.09",
+            "$0.18",
+            "poolside/laguna-s-2.1 at the same rates, billed through Vercel"
+          ],
+          [
+            "Poolside-hosted inference",
+            "Not published",
+            "Not published",
+            "No first-party price list; keys from platform.poolside.ai, contract pricing"
+          ],
+          [
+            "Self-managed Poolside Inference",
+            "Quote",
+            "Quote",
+            "Helm deployment on AWS EKS, OpenShift, upstream Kubernetes or on-prem GPUs"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "Laguna S 2.1（OpenRouter）",
+            "$0.09",
+            "$0.18",
+            "100 万上下文，118B/8B MoE；较 $0.10/$0.20 标价 9 折"
+          ],
+          [
+            "Laguna S 2.1 - 缓存输入",
+            "$0.009",
+            "—",
+            "为普通输入价的 1/10；较 $0.01 缓存标价 9 折"
+          ],
+          [
+            "Laguna XS 2.1（OpenRouter）",
+            "$0.06",
+            "$0.12",
+            "25.6 万上下文，33B/3B MoE；较 $0.10/$0.20 标价 6 折"
+          ],
+          [
+            "Laguna XS 2.1 - 缓存输入",
+            "$0.003",
+            "—",
+            "较 $0.05 缓存标价 6 折"
+          ],
+          [
+            "Laguna S 2.1 :free / XS 2.1 :free",
+            "$0",
+            "$0",
+            "OpenRouter 上的限速免费档；25.6 万上下文，最大补全 3.2 万 token"
+          ],
+          [
+            "Vercel AI Gateway",
+            "$0.09",
+            "$0.18",
+            "poolside/laguna-s-2.1 同价，走 Vercel 计费"
+          ],
+          [
+            "Poolside 托管推理",
+            "未公开",
+            "未公开",
+            "官方无价目表；密钥在 platform.poolside.ai 申请，商务定价"
+          ],
+          [
+            "自管 Poolside Inference",
+            "询价",
+            "询价",
+            "Helm 部署到 AWS EKS、OpenShift、上游 Kubernetes 或本地 GPU 机房"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "OpenAI-compatible Chat Completions API",
+            "value": "Base URL https://inference.poolside.ai/v1 exposes GET /v1/models and POST /v1/chat/completions, so any OpenAI SDK works by swapping base_url; OpenRouter serves the same models at https://openrouter.ai/api/v1"
+          },
+          {
+            "label": "Native reasoning, on by default",
+            "value": "Responses carry reasoning_content alongside content; turn it off per request with chat_template_kwargs.enable_thinking=false. Poolside ships only two settings (off and max) - there is no xhigh/high/medium/low effort ladder"
+          },
+          {
+            "label": "Tool calling with parallel execution",
+            "value": "The tools array is OpenAI-style and parallel_tool_calls defaults to true; set it to false to force one call per response. In agentic loops, keep reasoning_content from earlier turns in the request history or later steps lose their reasoning"
+          },
+          {
+            "label": "Generation and streaming controls",
+            "value": "max_tokens defaults to 32768 and accepts up to 262144, temperature runs 0-2, plus top_k and min_p. Streaming uses SSE with running usage totals on every chunk and the final total on the closing chunk; logprobs and stop_reason are not returned"
+          },
+          {
+            "label": "Poolside Agent CLI (pool) as the native harness",
+            "value": "The models were trained with reinforcement learning inside this agent, so they perform best in it: pool for interactive sessions, pool exec for one-shot CI tasks, with plan mode, skills, subagents, hooks, MCP servers and turn rewind"
+          },
+          {
+            "label": "Editor, agent and CI integrations",
+            "value": "ACP editors (JetBrains, Zed, Neovim/CodeCompanion), VS Code and Visual Studio extensions (Poolside Assistant, Cline, Kilo Code, GitHub Copilot), desktop apps (Goose), automation (GitHub Actions, n8n) and MCP over stdio, Streamable HTTP or SSE"
+          },
+          {
+            "label": "Self-hosted inference and gateways",
+            "value": "Deploy the Helm stack on AWS EKS, OpenShift, upstream Kubernetes or on-prem single-node GPU hosts, then front it with Bifrost or LiteLLM for virtual keys, budgets, rate limits and request logging; vLLM Prometheus metrics are exposed on /metrics"
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "OpenAI 兼容的 Chat Completions API",
+            "value": "Base URL 为 https://inference.poolside.ai/v1，提供 GET /v1/models 与 POST /v1/chat/completions，任何 OpenAI SDK 改 base_url 即可用；OpenRouter 同一批模型挂在 https://openrouter.ai/api/v1"
+          },
+          {
+            "label": "原生推理，默认开启",
+            "value": "响应在 content 之外还会返回 reasoning_content；可用 chat_template_kwargs.enable_thinking=false 按请求关闭。Poolside 只提供两档（off 与 max），没有 xhigh/high/medium/low 这种细粒度 effort 梯度"
+          },
+          {
+            "label": "工具调用与并行执行",
+            "value": "tools 数组与 OpenAI 写法一致，parallel_tool_calls 默认为 true；置为 false 可强制每次只调一个工具。Agent 循环中务必把上一轮的 reasoning_content 一并带进历史，否则后续步骤会丢失推理链路"
+          },
+          {
+            "label": "生成与流式控制",
+            "value": "max_tokens 默认 32768、最高 262144，temperature 取值 0-2，另支持 top_k 与 min_p。流式走 SSE，每个分片都带累计 usage，收尾分片给出最终用量；不返回 logprobs 与 stop_reason"
+          },
+          {
+            "label": "原生 Agent CLI（pool）",
+            "value": "模型是在这套 Agent 里用强化学习训出来的，所以在它里面表现最好：pool 用于交互式会话，pool exec 用于 CI 单次任务，另有 plan mode、skills、subagents、hooks、MCP servers 与对话回溯"
+          },
+          {
+            "label": "编辑器、Agent 与 CI 集成",
+            "value": "ACP 编辑器（JetBrains、Zed、Neovim/CodeCompanion）、VS Code 与 Visual Studio 扩展（Poolside Assistant、Cline、Kilo Code、GitHub Copilot）、桌面应用（Goose）、自动化（GitHub Actions、n8n），以及 stdio / Streamable HTTP / SSE 三种 MCP 连接方式"
+          },
+          {
+            "label": "自托管推理与网关",
+            "value": "Helm 栈可部署到 AWS EKS、OpenShift、上游 Kubernetes 或本地单节点 GPU 主机，前面再挂 Bifrost 或 LiteLLM 做虚拟密钥、预算、限流与请求日志；vLLM 的 Prometheus 指标暴露在 /metrics"
+          }
+        ]
+      },
+      {
+        "title": "🧠 RL-Trained In-House, Shipped Open-Weight",
+        "titleZh": "🧠 自研强化学习训练，权重完全开放",
+        "type": "text",
+        "text": "Poolside trains every Laguna model from scratch on its own data and infrastructure, then post-trains it with reinforcement learning inside its own agent harness - the same pool loop you can run yourself. Laguna S 2.1 was trained on 30T tokens and reaches 70.2% on Terminal-Bench 2.1 and 40.4% on DeepSWE with 118B total and only 8B active parameters, competitive with models an order of magnitude larger. What happens after training is the unusual part: the weights ship open, so you can pull BF16, FP8, INT4, NVFP4, GGUF or MLX checkpoints from Hugging Face and serve them with vLLM, SGLang, Ollama, llama.cpp, MLX or TensorRT-LLM, or install the full inference stack on your own GPUs. A 36GB-RAM Mac runs XS 2.1; a single NVIDIA DGX Spark runs S 2.1.",
+        "textZh": "Poolside 的每一个 Laguna 模型都从零自研：自建数据、自建算力，再用自家 Agent 框架内的强化学习做后训练 —— 也就是你本地能跑的那套 pool 循环。Laguna S 2.1 在 30 万亿 token 上训练完成，以 118B 总参数、每 token 仅激活 8B 的体量，在 Terminal-Bench 2.1 上拿到 70.2%、DeepSWE 拿到 40.4%，可与参数量大一个数量级的模型竞争。真正特别的是训练之后的那一步：权重完全开放，你可以从 Hugging Face 拉取 BF16、FP8、INT4、NVFP4、GGUF 或 MLX 量化权重，用 vLLM、SGLang、Ollama、llama.cpp、MLX、TensorRT-LLM 自行部署，也可以把整套推理栈装进自己的 GPU 机房。36GB 内存的 Mac 跑得动 XS 2.1，单台 NVIDIA DGX Spark 跑得动 S 2.1。"
+      },
+      {
+        "title": "🌐 China Access & Latency",
+        "titleZh": "🌐 中国访问与延迟",
+        "type": "text",
+        "text": "Poolside serves inference from a single US region: inference.poolside.ai resolves to 35.244.129.243, a Google LLC address in Kansas City, Missouri, and answers with a via: 1.1 google header. Measured from an Alibaba Cloud Malaysia host on 30 October 2026, an unauthenticated /v1/models call returned TTFB in 254-279ms (median 263ms) - fast for a US origin, but every mainland request still crosses the Pacific. Poolside publishes no China endpoint, region or availability commitment anywhere in its docs, so treat direct calls from the Chinese mainland as proxy-dependent and expect roughly 400-900ms per request behind a proxy: fine for background agent runs, visible for interactive completions. The console is friendlier - platform.poolside.ai sits behind CloudFront with a Sepang, Malaysia edge at 237-675ms. Three workarounds matter for China-facing teams. Route through OpenRouter or the Vercel AI Gateway, both Cloudflare-fronted with wide domestic reach, at identical model rates. Better still, self-host: the Helm-based inference stack deploys to your own Kubernetes or on-prem GPUs in Hong Kong, Singapore or Shanghai, served over the same OpenAI-compatible /v1 base URL, with code never leaving your infrastructure. Or download the open weights and run fully offline via vLLM, SGLang, Ollama or MLX.",
+        "textZh": "Poolside 的推理服务只在单一美国区域：inference.poolside.ai 解析到 35.244.129.243 —— Google LLC 位于密苏里州堪萨斯城的地址，响应头带有 via: 1.1 google。2026 年 10 月 30 日从阿里云马来西亚节点实测，未鉴权的 /v1/models 请求 TTFB 落在 254–279ms（中位数 263ms）；对美国源站而言算快，但中国大陆的每次请求仍要跨太平洋。Poolside 在全部文档中没有公布任何面向中国的端点、区域或可用性承诺，因此从大陆直连应视为需要代理，叠加代理后单次请求大致 400–900ms：跑后台 Agent 任务可以接受，交互式补全则能被明显感知。控制台体验好得多 —— platform.poolside.ai 走 CloudFront，命中马来西亚 Sepang 边缘节点，实测 237–675ms。对中国团队有三条实用路径。其一，走 OpenRouter 或 Vercel AI Gateway，两者均为 Cloudflare 前置、国内可达性好，模型费率完全一致。其二，也是更彻底的方案：自托管 —— Helm 推理栈可部署到你在香港、新加坡或上海的 Kubernetes 或本地 GPU 机房，仍是同一个 OpenAI 兼容的 /v1 base URL，代码不出你自己的基础设施。其三，下载开放权重，用 vLLM、SGLang、Ollama 或 MLX 完全离线运行。"
+      }
+    ]
   }
 ]
