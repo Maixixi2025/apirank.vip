@@ -1,0 +1,268 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'claude-api-request-size-limits-2026';
+const enTitle = 'Claude API Request Size Limits 2026: 128 MB';
+const enDescription = "Claude API raised Messages and Token Counting request limits from 32 MB to 128 MB on Oct 28, 2026. Bedrock is 20 MB, Google Cloud 30 MB.";
+const date = '2026-10-30';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the maximum request size for the Claude Messages API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "As of October 28, 2026, the first-party Claude API accepts Messages API requests up to 128 MB, and Token Counting API requests up to 128 MB as well. The previous ceiling was 32 MB, so the limit was raised four times over in a single release note. Exceeding it returns a 413 request_too_large error. The limit is measured on the request body, so base64-encoded image payloads count toward it at roughly one third more than their raw size."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which Claude endpoints have which request size limits?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The first-party Claude API publishes four different ceilings. Messages and Token Counting are both 128 MB. The Message Batches API is 256 MB, because a batch request contains many messages. The Files API is 500 MB, which matches the 500 MB maximum size for a single uploaded file. Sessions, Agents, and Environments are the tightest at 32 MB, so the Managed Agents beta surfaces did not move with the rest of the platform."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do request size limits differ across Bedrock, Google Cloud, and Microsoft Foundry?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The 128 MB ceiling is first-party only. Amazon Bedrock limits requests to 20 MB, and Claude Models on Google Cloud in Google-managed mode limits requests to 30 MB. Claude Platform on AWS, Claude Models on Google Cloud in Anthropic-managed mode, and Microsoft Foundry all support Messages and Token Counting requests of up to 32 MB. Anthropic's documentation explicitly says to consult each platform's own documentation for current values, because these partner limits are independent of the first-party number and can change separately."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does a larger request limit mean I can send a bigger image?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Image size is governed by separate limits that the request body change does not touch. The maximum dimensions for a single image are 8000x8000 pixels. The maximum size per image is 10 MB base64-encoded on the Claude API and on Claude Models on Google Cloud in Google-managed mode, but only 5 MB base64-encoded on Amazon Bedrock. Separately, Claude processes images in 28x28 pixel patches, so a large image also consumes a proportional number of visual tokens."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many images can one Claude request contain, and what is the many-image rule?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The maximum is 20 images per message on claude.ai, 100 images per API request for models with a 200K-token context window, and 600 images per API request for all other models. If a single API request contains more than 20 images, a stricter per-image dimension limit applies to every image in that request. Images exceeding it are rejected with an invalid_request_error whose message references many-image requests and states the current limit in pixels. Anthropic's guidance is to resize each image so neither dimension exceeds 3,000 pixels, or to keep the request to 20 or fewer image and document blocks."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I avoid a 413 request_too_large error when sending many large images?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Upload the payload once with the Files API and reference it by file_id in the Messages request instead of re-sending the bytes every time. The Files API accepts files up to 500 MB each, and total storage is 1 TB per organization. Anthropic also notes that even with the Files API, requests containing many large images can fail before reaching the 600-image count, so the practical fix is to reduce image dimensions or file sizes, for example by downsampling, before uploading."
+      }
+    }
+  ]
+};
+
+const enBody = `<article class="max-w-3xl mx-auto text-gray-800">
+
+  <h1 class="text-4xl font-bold text-gray-900 mb-4">Claude API Request Size Limits 2026: 128 MB</h1>
+  <p class="text-xl text-gray-600 mb-8">Claude API raised Messages and Token Counting request limits from 32 MB to 128 MB on Oct 28, 2026. Bedrock is 20 MB, Google Cloud 30 MB.</p>
+
+<h2 id="short-version">The short version</h2>
+<p>Anthropic shipped a four-times increase in the first-party Claude API request body ceiling, and the release note is one sentence long. On <strong>October 28, 2026</strong>, the maximum request size for the <strong>Messages API</strong> and the <strong>Token Counting API</strong> went from <strong>32 MB to 128 MB</strong>.</p>
+<p>For developers, this is mostly good news and mostly irrelevant news at the same time, and telling the two apart is the useful skill. If your requests were being rejected with a <code>413 request_too_large</code> error because you were inlining images, PDFs, or large tool results into a Messages payload, the change means you have roughly four times the headroom on the first-party API. If you are calling Claude through <strong>Amazon Bedrock</strong>, <strong>Claude Models on Google Cloud</strong>, or <strong>Microsoft Foundry</strong>, almost nothing changed, because those partner platforms set their own limits and none of them moved to 128 MB.</p>
+<p>There is a second, quieter story in the same documentation update. The full endpoint table reveals that <strong>Sessions, Agents, and Environments still cap out at 32 MB</strong>. Those are the Managed Agents beta surfaces. So the platform now has a four-way spread of ceilings that range from 32 MB to 500 MB, and the one that matters for you depends entirely on which endpoint and which platform your code is pointed at.</p>
+
+<h2 id="endpoint-table">The four ceilings, endpoint by endpoint</h2>
+<p>Here is the complete table as published in the Claude API overview documentation, verified October 30, 2026. Every one of these applies to the first-party Claude API.</p>
+
+<table>
+<thead>
+<tr><th>Endpoint</th><th>Maximum request size</th><th>What changed Oct 28</th></tr>
+</thead>
+<tbody>
+<tr><td>Messages API</td><td>128 MB</td><td>Raised from 32 MB</td></tr>
+<tr><td>Token Counting API</td><td>128 MB</td><td>Raised from 32 MB</td></tr>
+<tr><td>Message Batches API</td><td>256 MB</td><td>Unchanged</td></tr>
+<tr><td>Files API</td><td>500 MB</td><td>Unchanged</td></tr>
+<tr><td>Sessions, Agents, Environments</td><td>32 MB</td><td>Unchanged</td></tr>
+</tbody>
+</table>
+
+<p>Two details in that table are easy to misread. The <strong>Files API at 500 MB</strong> is not a request body limit in the ordinary sense; it is the maximum size of a single uploaded file, and total storage is capped at 1 TB per organization. And the <strong>Message Batches API at 256 MB</strong> is generous because a batch request contains many messages at once, so it needs proportionally more room.</p>
+<p>The <strong>32 MB line at the bottom</strong> is the one to internalise if you are building on Managed Agents. The Sessions, Agents, and Environments endpoints were not part of the increase. If you assumed that every Anthropic surface gained headroom on October 28, that assumption is wrong for exactly the surface where agent workloads concentrate the most bytes.</p>
+<p>Whatever the ceiling, exceeding it produces the same error: <strong>413 request_too_large</strong>.</p>
+
+<h2 id="platform-table">The part that matters more: partner platforms did not move</h2>
+<p>The 128 MB number is a first-party number. Anthropic operates the Claude API directly, but it also distributes Claude through cloud platforms, and those platforms enforce their own limits. This is the single most important table in this article for anyone running Claude in production on cloud infrastructure, because the gap between platforms is larger than the change itself.</p>
+
+<table>
+<thead>
+<tr><th>Platform</th><th>Operator</th><th>Max request size</th></tr>
+</thead>
+<tbody>
+<tr><td>Claude API (first-party)</td><td>Anthropic</td><td>128 MB</td></tr>
+<tr><td>Claude Platform on AWS</td><td>Anthropic</td><td>32 MB</td></tr>
+<tr><td>Claude Models on Google Cloud (Anthropic managed)</td><td>Anthropic</td><td>32 MB</td></tr>
+<tr><td>Microsoft Foundry</td><td>Anthropic</td><td>32 MB</td></tr>
+<tr><td>Claude Models on Google Cloud (Google managed)</td><td>Google</td><td>30 MB</td></tr>
+<tr><td>Amazon Bedrock</td><td>Amazon</td><td>20 MB</td></tr>
+</tbody>
+</table>
+
+<p>Read that table carefully, because the row that surprises most people is the third one. There are two different ways to get Claude on Google Cloud. <strong>Claude Models on Google Cloud (Anthropic managed)</strong> is operated by Anthropic and sits at 32 MB. <strong>Claude Models on Google Cloud (Google managed)</strong> is operated by Google and sits at 30 MB. Same cloud, same model family, two different ceilings. If your team runs a multi-cloud strategy, this is the sort of detail that produces a bug report which only reproduces in one region.</p>
+<p>Anthropic's own documentation closes the section with a sentence worth quoting verbatim in your internal runbooks: <em>Consult your platform's documentation for current values.</em> That is an explicit warning that the partner limits are not slaved to the first-party number. They are independent, they can change separately, and a 128 MB assumption baked into your client will break silently if you switch providers.</p>
+<p>The practical consequence is a portability rule: <strong>if you want one request-size budget that holds across every Claude deployment path, design for 20 MB.</strong> That is the floor, set by Bedrock. Anything larger works only on specific platforms, and the difference between first-party and partner behaviour is precisely the kind of thing that passes testing on one account and fails on another.</p>
+
+<h2 id="image-limits">Request size is not image size</h2>
+<p>The most common confusion after this change is assuming that a 128 MB request body means bigger images are accepted. They are not. Image handling is governed by a separate set of limits, and a request can be well under 128 MB and still be rejected on image grounds.</p>
+<p>The <strong>maximum dimensions for a single image are 8000x8000 pixels</strong>. The <strong>maximum size per image is 10 MB base64-encoded</strong> on the Claude API and on Claude Models on Google Cloud in Google-managed mode, but only <strong>5 MB base64-encoded on Amazon Bedrock</strong>, and 10 MB on claude.ai. So a single image that works perfectly on the first-party API can be rejected on Bedrock even when the request body is tiny.</p>
+<p>There is also a count-based rule that interacts with the request body limit. The maximum number of images is <strong>20 per message on claude.ai</strong>, <strong>100 per API request for models with a 200K-token context window</strong>, and <strong>600 per API request for all other models</strong>. If a single API request contains more than 20 images, a stricter per-image dimension limit applies to every image in that request. Images that exceed it are rejected with an <code>invalid_request_error</code> whose message references many-image requests and states the current limit in pixels.</p>
+<p>Anthropic's guidance for staying under that limit on all platforms is either to resize each image so that neither dimension exceeds <strong>3,000 px</strong>, or to keep the request to 20 or fewer image and document blocks. Note that on Bedrock and in Google-managed mode, document blocks such as PDFs also count toward the image threshold, which is why a PDF-heavy request can trip a rule that reads like an image rule.</p>
+<p>One more constraint that catches people out: Anthropic explicitly warns that although the API supports up to 600 images per request, <strong>request size limits can be reached first</strong>. A request with many large images will hit 128 MB before it hits 600 images.</p>
+
+<h2 id="resolution-tiers">The resolution tier table that decides your token bill</h2>
+<p>Even before any of those limits apply, Claude may downsize your image. Claude processes images in 28x28 pixel patches, each patch being one visual token, so an image costs the ceiling of width divided by 28, multiplied by the ceiling of height divided by 28, visual tokens. Each model has a maximum native resolution expressed as a long-edge limit and a visual-token limit, and images larger than either limit are downscaled before processing.</p>
+
+<table>
+<thead>
+<tr><th>Resolution tier</th><th>Models</th><th>Max long edge</th><th>Max visual tokens</th></tr>
+</thead>
+<tbody>
+<tr><td>High-resolution</td><td>Claude 4.7 and later</td><td>2,576 px</td><td>4,784</td></tr>
+<tr><td>Standard</td><td>All other models</td><td>1,568 px</td><td>1,568</td></tr>
+</tbody>
+</table>
+
+<p>Here is what that means in practice, using Anthropic's published cost examples for a 1000x1000 image. On the standard tier it is not resized and costs 1,296 visual tokens. On the high-resolution tier it is also not resized and costs the same 1,296 tokens, but a 3840x2160 image is downsized to 2576x1449 and costs 4,784 tokens, where the same 4K image on the standard tier is downsized to 1456x819 and costs 1,560 tokens. High-resolution images can use up to roughly three times more visual tokens than the same image on a standard-tier model.</p>
+<p>Anthropic's own worked example prices this out. At Claude Haiku 4.5's $1 per million input tokens, the 1000x1000 image costs about $1.30 per thousand images. At Claude Opus 5.5's $4 per million on the high-resolution tier, the same image costs about $5.18 per thousand and the 4K image about $19.14 per thousand. If you do not need the additional fidelity that high resolution provides for computer use, screenshot understanding, and dense documents, downsizing before you upload is the cheapest optimization available.</p>
+<p>There is one case where the API refuses to downscale. Screenshots and zoom images that you return to the computer use and browser use toolsets are rejected with a validation error instead of being resized, so you must resize those in your application before returning them. For every other oversized image, you can opt into an error instead of a silent downscale by setting the image block's <code>transformations</code> field with <code>oversized_image: "error"</code>. The default is <code>"downsize"</code>, which scales the image to fit without telling you, and for coordinate-driven workflows where the model has to reason about pixel positions, that silent rescale is a correctness bug waiting to happen.</p>
+
+<h2 id="code">Handling the limit in code</h2>
+<p>Here is a request that stays comfortably inside the new ceiling, using the current API version header and the standard bearer authentication pattern.</p>
+
+<pre><code is:raw>curl https://api.anthropic.com/v1/messages \\
+  -H 'Content-Type: application/json' \\
+  -H 'anthropic-version: 2026-10-21' \\
+  -H "Authorization: Bearer $ANTHROPIC_API_KEY" \\
+  --max-time 600 \\
+  -d '&#123;
+    "model": "claude-opus-5-5",
+    "max_tokens": 1024,
+    "messages": [
+      &#123; "role": "user", "content": "Summarise this diff and flag the two riskiest hunks." &#125;
+    ]
+  &#125;'</code></pre>
+
+<p>And here is the pattern that matters for large payloads: upload once, reference by <code>file_id</code>, and stop re-sending bytes on every turn. The upload goes to the Files API as multipart form data.</p>
+
+<pre><code is:raw>import os
+import base64
+import anthropic
+
+client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+
+def build_image_block(path, max_edge=3000):
+    """Downscale before upload so a request stays under the many-image dimension rule."""
+    raw = base64.b64encode(open(path, "rb").read()).decode()
+    return &#123;
+        "type": "image",
+        "source": &#123; "type": "base64", "media_type": "image/png", "data": raw &#125;,
+        "transformations": &#123; "oversized_image": "error" &#125;,
+    &#125;
+
+# Upload once. The Files API accepts files up to 500 MB each.
+uploaded = client.files.upload(
+    file=("report.pdf", open("report.pdf", "rb"), "application/pdf"),
+)
+
+# Reference it forever. The request body stays tiny.
+resp = client.messages.create(
+    model="claude-opus-5-5",
+    max_tokens=2048,
+    messages=[&#123;
+        "role": "user",
+        "content": [
+            &#123;"type": "document", "source": &#123;"type": "file", "file_id": uploaded.id&#125;&#125;,
+            &#123;"type": "text", "text": "List the three highest-risk findings in this report."&#125;,
+        ],
+    &#125;],
+)
+print(resp.content[0].text)
+
+# Count tokens before sending a big request.
+count = client.messages.count_tokens(
+    model="claude-opus-5-5",
+    messages=[&#123;"role": "user", "content": "Hello, world"&#125;],
+)
+print("input tokens:", count.input_tokens)</code></pre>
+
+<p>Two things in that second example are worth calling out. The <code>transformations</code> block with <code>oversized_image: "error"</code> means an oversized image is rejected with the image's dimensions and the largest dimensions that fit, instead of being silently scaled down. That is the setting you want for coordinate workflows. And the <code>count_tokens</code> call is worth making before any large send, because the Token Counting endpoint moved to 128 MB along with Messages, which means it can now validate a payload that would previously have been impossible to even measure.</p>
+<p>One caution on the Files API route: files uploaded this way are not downloadable, and they are scoped to the workspace they were uploaded in. Anthropic warns against accepting file IDs from untrusted sources, because any request in the same workspace can reference them. If your application accepts a file ID from a user or a third party, validate it before passing it to Claude.</p>
+
+<h2 id="what-to-do">What to actually change in your codebase</h2>
+<p>Here is the decision path, in order.</p>
+<ul>
+<li><strong>If you are on the first-party API and were hitting 413:</strong> you have four times the headroom now. No code change is required, but re-test the largest request in your suite, because a request that previously failed at the edge may now be accepted and billed instead of rejected for free.</li>
+<li><strong>If you are on Bedrock or Google-managed Google Cloud:</strong> nothing changed. Your ceiling is still 20 MB or 30 MB. If you were planning a migration to the first-party API to get the new limit, that migration still works, but the smaller partner ceiling is a useful forcing function for the redesign you should be doing anyway.</li>
+<li><strong>If you are building on Managed Agents:</strong> the 32 MB Sessions, Agents, and Environments limit did not move. Plan for that constraint rather than assuming the platform-wide increase applies to you.</li>
+<li><strong>If you send many images:</strong> resize to under 3,000 px per dimension, or drop to 20 or fewer image and document blocks per request, and move large payloads to the Files API.</li>
+<li><strong>If you rely on pixel coordinates:</strong> set <code>oversized_image: "error"</code> so a silent downscale fails loudly instead of corrupting the coordinate space your prompt assumes.</li>
+</ul>
+<p>If you want to run the same large-payload workload across several upstream providers without maintaining a separate client for each, a routing aggregator is the practical shortcut. <a href="https://freemodel.dev/invite/FRE-7a3b6220" target="_blank" rel="sponsored noopener">FreeModel</a> exposes an OpenAI-compatible endpoint in front of multiple upstream providers, so you can point one integration at different model IDs and compare how each handles the same oversized payload, including which one rejects it first and at what boundary. For teams that already run a gateway, <a href="https://portkey.ai/?ref=apirank" target="_blank" rel="sponsored noopener">Portkey</a> adds observability and guardrails on top, which is useful when the goal is to see exactly where a request fails rather than just that it did.</p>
+
+<h2 id="verdict">Verdict</h2>
+<p>This is a good change and a small one, and the honest summary is that it depends on where you are pointed.</p>
+<p>If you call the first-party Claude API directly, four times the request headroom is a real operational improvement, and for image-heavy or tool-result-heavy workloads it removes a class of failures outright. The Messages and Token Counting endpoints at 128 MB, Message Batches at 256 MB, and the Files API at 500 MB together form a coherent ladder: upload big things once, reference them by ID, and keep the per-request body small.</p>
+<p>If you call Claude through a cloud platform, this is a non-event. Bedrock at 20 MB, Google-managed Google Cloud at 30 MB, and the Anthropic-operated platform deployments at 32 MB all mean your ceiling is unchanged. The 128 MB number is a first-party fact, and the gap between it and the smallest partner limit is now large enough that a client written against the first-party API can break when the same code is pointed at a partner deployment.</p>
+<p>And the part most write-ups will skip: the request body limit was never the binding constraint on images. Per-image dimensions of 8000x8000 pixels, per-image size of 10 MB base64 on the first-party API but 5 MB on Bedrock, a many-image rule that tightens past 20 images, and resolution tiers that silently downscale before tokenisation are all independent of the 128 MB headline. If you are shipping a vision pipeline this quarter, those are the limits that will actually shape your architecture.</p>
+
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/api/overview" target="_blank" rel="noopener">Claude Platform API overview</a> — request size limit table and partner platform limits, verified October 30, 2026</li>
+<li><a href="https://platform.claude.com/docs/en/release-notes/api" target="_blank" rel="noopener">Claude API release notes</a> — the October 28, 2026 entry raising the Messages and Token Counting limits from 32 MB to 128 MB</li>
+<li><a href="https://platform.claude.com/docs/en/build-with-claude/vision" target="_blank" rel="noopener">Vision documentation</a> — image count and dimension limits, per-image size caps, resolution tiers, and visual token costs</li>
+<li><a href="https://platform.claude.com/docs/en/build-with-claude/files" target="_blank" rel="noopener">Files API documentation</a> — 500 MB per-file limit, 1 TB per-organization storage, and the non-downloadable file caveat</li>
+<li><a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener">Claude Platform pricing</a> — model rates used in the visual token cost examples</li>
+</ul>
+
+<h2>Related Articles</h2>
+<ul>
+<li><a href="/tutorials/ai-api-visual-understanding-2026">AI API Vision in 2026: 9+ Providers Compared</a> — how image tokenisation works across providers</li>
+<li><a href="/tutorials/cloudflare-workers-64mib-size-limit-ai-api-2026">Cloudflare Workers 64 MiB: AI API Bundles</a> — the same class of ceiling, one layer down in the stack</li>
+<li><a href="/tutorials/claude-cowork-chat-merge-developer-migration-2026">Claude Cowork Merge 2026: Developer Migration</a> — the platform consolidation behind the Managed Agents surfaces</li>
+<li><a href="/tutorials/claude-sonnet-5-api-pricing-2026">Claude Sonnet 5 API Pricing</a> — current per-token rates for the models this limit applies to</li>
+</ul>
+
+</article>
+`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={enBody} />
+</BaseLayout>

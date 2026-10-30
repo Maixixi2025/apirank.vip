@@ -1,0 +1,268 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'claude-api-request-size-limits-2026';
+const zhTitle = 'Claude API 请求体上限 2026：128 MB 全文对照';
+const zhDescription = 'Claude API 于 2026-10-28 把 Messages 与 Token Counting 的请求体上限从 32 MB 提到 128 MB。Bedrock 仍是 20 MB，Google Cloud 30 MB。';
+const date = '2026-10-30';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Claude Messages API 的请求体上限现在是多少？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "自 2026 年 10 月 28 日起，第一方 Claude API 的 Messages API 请求体上限为 128 MB，Token Counting API 同样是 128 MB。此前的上限是 32 MB，一次发布就翻了四倍。超出后返回 413 request_too_large 错误。这个上限按请求体本身计算，所以 base64 编码的图片负载会比原始体积多算三分之一左右。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude 各端点的请求体上限分别是多少？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "第一方 Claude API 一共公布四档上限。Messages 与 Token Counting 都是 128 MB。Message Batches API 是 256 MB，因为一个批请求里装了很多条消息。Files API 是 500 MB，这正好对应单个上传文件的大小上限。Sessions、Agents、Environments 最紧，只有 32 MB，也就是说 Managed Agents 这批 beta 接口并没有跟着整体上调。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Bedrock、Google Cloud 和 Microsoft Foundry 的请求上限有差别吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "128 MB 只适用于第一方。Amazon Bedrock 把请求限制在 20 MB，Claude Models on Google Cloud 的 Google 托管模式限制在 30 MB。Claude Platform on AWS、Anthropic 托管的 Google Cloud 版本，以及 Microsoft Foundry 都支持最大 32 MB 的 Messages 与 Token Counting 请求。Anthropic 的文档明确写着要以各平台自己的文档为准，因为这些合作方上限与第一方数字相互独立，也可能各自调整。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "请求体上限变大，是不是就能发更大的图片了？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不是。图片有另一套独立限制，这次调整完全没有触及。单张图片的最大尺寸是 8000x8000 像素。单张图片的体积上限在 Claude API 和 Google 托管的 Google Cloud 上是 base64 编码后的 10 MB，但在 Amazon Bedrock 上只有 5 MB，claude.ai 上是 10 MB。另外 Claude 按 28x28 像素的图块处理图片，图越大消耗的视觉 token 也越多。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "一个 Claude 请求最多能带多少张图片？多图规则是什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "claude.ai 上每个消息最多 20 张图；API 侧，200K 上下文窗口的模型每个请求最多 100 张，其他模型每个请求最多 600 张。如果单个 API 请求里超过 20 张图，那么请求中每一张图都会适用一个更严格的单图尺寸上限。超限的图会返回 invalid_request_error，错误信息里会提到 many-image requests 并写明当前的像素上限。Anthropic 给出的通用做法是：要么把每张图缩到任一边不超过 3000 像素，要么把请求控制在 20 个以内的图片或文档块。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "怎么避免发大量大图时撞上 413 request_too_large？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "用 Files API 把负载上传一次，之后在 Messages 请求里用 file_id 引用，而不是每一轮都重新发送字节。Files API 单文件最大 500 MB，每个组织总存储 1 TB。Anthropic 也提醒：即使用了 Files API，带大量大图的请求仍可能在达到 600 张之前就失败，所以真正的解法是上传前先压缩图片体积，比如降采样。"
+      }
+    }
+  ]
+};
+
+const zhBody = `<article class="max-w-3xl mx-auto text-gray-800">
+
+  <h1 class="text-4xl font-bold text-gray-900 mb-4">Claude API 请求体上限 2026：128 MB 全文对照</h1>
+  <p class="text-xl text-gray-600 mb-8">Claude API 于 2026-10-28 把 Messages 与 Token Counting 的请求体上限从 32 MB 提到 128 MB。Bedrock 仍是 20 MB，Google Cloud 30 MB。</p>
+
+<h2 id="short-version">先说结论</h2>
+<p>Anthropic 把第一方 Claude API 的请求体上限一次性放大了四倍，而发布说明只有一句话。<strong>2026 年 10 月 28 日</strong>起，<strong>Messages API</strong> 与 <strong>Token Counting API</strong> 的最大请求体从 <strong>32 MB 提升到 128 MB</strong>。</p>
+<p>对开发者来说，这既是好消息，也是基本无关的消息——把这两者区分开才是真正有用的能力。如果你之前因为在 Messages 请求里内联图片、PDF 或超大的工具结果而被 <code>413 request_too_large</code> 拦下来，那么在第一方 API 上你的余量大约翻了两番。如果你走的是 <strong>Amazon Bedrock</strong>、<strong>Claude Models on Google Cloud</strong> 或 <strong>Microsoft Foundry</strong>，那几乎什么都没变，因为这几个合作平台各自设限，而且没有一个跟着涨到 128 MB。</p>
+<p>同一份文档更新里还藏着第二个更安静的故事。完整的端点表显示，<strong>Sessions、Agents、Environments 仍然卡在 32 MB</strong>，这几个正是 Managed Agents 的 beta 接口。所以现在整个平台的上限分成四档，从 32 MB 到 500 MB 不等，而你实际受哪一档约束，完全取决于你的代码指向哪个端点、哪个平台。</p>
+
+<h2 id="endpoint-table">四档上限逐端点对照</h2>
+<p>下面是 Claude API 官方概览文档里公布的完整表格，2026 年 10 月 30 日核验。以下都适用于第一方 Claude API。</p>
+
+<table>
+<thead>
+<tr><th>端点</th><th>最大请求体</th><th>10 月 28 日是否变动</th></tr>
+</thead>
+<tbody>
+<tr><td>Messages API</td><td>128 MB</td><td>由 32 MB 上调</td></tr>
+<tr><td>Token Counting API</td><td>128 MB</td><td>由 32 MB 上调</td></tr>
+<tr><td>Message Batches API</td><td>256 MB</td><td>未变</td></tr>
+<tr><td>Files API</td><td>500 MB</td><td>未变</td></tr>
+<tr><td>Sessions、Agents、Environments</td><td>32 MB</td><td>未变</td></tr>
+</tbody>
+</table>
+
+<p>这张表里有两个容易看错的地方。<strong>Files API 的 500 MB</strong>并不是通常意义上的请求体上限，而是单个上传文件的大小上限，每个组织的总存储量上限是 1 TB。<strong>Message Batches API 的 256 MB</strong>之所以更宽松，是因为一个批请求里塞了很多条消息，需要成比例的更多空间。</p>
+<p><strong>最下面那行的 32 MB</strong>是使用 Managed Agents 时最该记住的。Sessions、Agents、Environments 这几个端点不在本次上调范围内。如果你以为 10 月 28 日 Anthropic 的所有接口都跟着涨了余量，那么在恰好最消耗字节的智能体场景上，这个假设是错的。</p>
+<p>无论上限是多少，超限抛出的都是同一个错误：<strong>413 request_too_large</strong>。</p>
+
+<h2 id="platform-table">更关键的部分：合作平台根本没动</h2>
+<p>128 MB 是第一方数字。Anthropic 自己运营 Claude API，同时也把 Claude 分发到各家云平台，而那些平台执行自己的上限。对任何在云基础设施上跑 Claude 生产的团队来说，这篇文章里最重要的其实是下面这张表，因为平台之间的差距比这次改动本身还大。</p>
+
+<table>
+<thead>
+<tr><th>平台</th><th>运营方</th><th>最大请求体</th></tr>
+</thead>
+<tbody>
+<tr><td>Claude API（第一方）</td><td>Anthropic</td><td>128 MB</td></tr>
+<tr><td>Claude Platform on AWS</td><td>Anthropic</td><td>32 MB</td></tr>
+<tr><td>Claude Models on Google Cloud（Anthropic 托管）</td><td>Anthropic</td><td>32 MB</td></tr>
+<tr><td>Microsoft Foundry</td><td>Anthropic</td><td>32 MB</td></tr>
+<tr><td>Claude Models on Google Cloud（Google 托管）</td><td>Google</td><td>30 MB</td></tr>
+<tr><td>Amazon Bedrock</td><td>Amazon</td><td>20 MB</td></tr>
+</tbody>
+</table>
+
+<p>这张表要慢慢看，因为最容易出乎意料的是第三行。Google Cloud 上其实有<b>两种</b>接入 Claude 的方式。<strong>Claude Models on Google Cloud（Anthropic 托管）</strong>由 Anthropic 运营，上限 32 MB；<strong>Claude Models on Google Cloud（Google 托管）</strong>由 Google 运营，上限 30 MB。同一个云，同一系列模型，两个不同的天花板。如果你的团队跑多云策略，这类细节会生产出一个只在线上某个区域复现的缺陷报告。</p>
+<p>Anthropic 文档在这一节结尾写了一句值得原样抄进内部规范的话：<em>请以你所用平台的文档为准，获取当前数值。</em>这是一句明确的警告：合作方上限并不从属于第一方数字，它们彼此独立、可以各自变动，而把 128 MB 写死在客户端里的假设，一旦切换供应商就会悄悄失效。</p>
+<p>实际结论是一条可移植性规则：<strong>如果你希望一个请求体预算在所有 Claude 部署路径上都成立，就按 20 MB 设计。</strong>这是由 Bedrock 划定的地板线。更大的额度只在特定平台上成立，而第一方与合作方行为的差异，正是那种在一个账号上测过、换个账号就挂掉的问题。</p>
+
+<h2 id="image-limits">请求体上限不等于图片上限</h2>
+<p>这次改动之后最常见的误解，就是以为 128 MB 的请求体意味着能发更大的图片。并不是。图片处理由另一套独立规则约束，一个远小于 128 MB 的请求完全可能因为图片规则被拒。</p>
+<p><strong>单张图片的最大尺寸是 8000x8000 像素</strong>。<strong>单张图片的体积上限</strong>在 Claude API 和 Google 托管的 Google Cloud 上是 base64 编码后的 10 MB，但在 <strong>Amazon Bedrock 上只有 5 MB</strong>，claude.ai 上是 10 MB。也就是说，一张在第一方 API 上完全正常的图片，搬到 Bedrock 可能被拒，哪怕整个请求体小得可以忽略。</p>
+<p>还有一条基于数量的规则会和请求体上限互相影响。图片数量上限是 <strong>claude.ai 上每个消息 20 张</strong>，<strong>API 侧 200K 上下文窗口的模型每个请求 100 张</strong>，<strong>其他模型每个请求 600 张</strong>。如果单个 API 请求里超过 20 张图，那么请求中每一张图都会适用一个更严格的单图尺寸上限。超限的图会返回 <code>invalid_request_error</code>，错误信息里会提到 many-image requests 并写明当前的像素上限。</p>
+<p>Anthropic 给出的通用做法是：要么把每张图缩到<b>任一边不超过 3000 像素</b>，要么把请求控制在 20 个以内的图片或文档块。注意在 Bedrock 和 Google 托管模式下，PDF 这类文档块也算进图片阈值，所以一个 PDF 密集的请求会撞上一条看起来像图片规则的限制。</p>
+<p>还有一个容易忽略的约束：Anthropic 明确提醒，虽然 API 支持每个请求最多 600 张图，但<b>请求体上限往往先到</b>。带大量大图的请求会先撞上 128 MB，而不是 600 张。</p>
+
+<h2 id="resolution-tiers">决定你 token 账单的分辨率档位表</h2>
+<p>在上述任何一条限制生效之前，Claude 可能已经把你的图缩小了。Claude 按 28x28 像素的图块处理图片，每块算一个视觉 token，所以一张图的代价是宽度除以 28 向上取整，再乘以高度除以 28 向上取整。每个模型都有一个用长边上限和视觉 token 上限表示的最大原生分辨率，超过任一上限的图片会在处理前被降采样。</p>
+
+<table>
+<thead>
+<tr><th>分辨率档位</th><th>模型</th><th>最大长边</th><th>最大视觉 token</th></tr>
+</thead>
+<tbody>
+<tr><td>高分辨率</td><td>Claude 4.7 及更新</td><td>2,576 像素</td><td>4,784</td></tr>
+<tr><td>标准</td><td>其他所有模型</td><td>1,568 像素</td><td>1,568</td></tr>
+</tbody>
+</table>
+
+<p>用 Anthropic 公布的 1000x1000 图片成本示例来看实际影响。在标准档位下这张图不会被缩放，消耗 1,296 个视觉 token；在高分辨率档位下同样不缩放，token 数也是 1,296，但一张 3840x2160 的图会被缩到 2576x1449，消耗 4,784 个 token，而同一张 4K 图在标准档位会被缩到 1456x819，只消耗 1,560 个 token。高分辨率图片消耗的视觉 token 最多可以达到标准档位同一张图的三倍。</p>
+<p>Anthropic 自己给了成本换算示例。在 Claude Haiku 4.5 的每百万输入 token 1 美元下，1000x1000 的图大约每千张 1.30 美元；在 Claude Opus 5.5 的每百万 4 美元高分辨率档位下，同一张图大约每千张 5.18 美元，那张 4K 图则大约每千张 19.14 美元。如果你并不需要高分辨率在电脑操作、截图理解、密集文档上的额外保真度，那么上传前降采样就是性价比最高的优化。</p>
+<p>有一种情况 API 拒绝降采样：返回给电脑操作和浏览器操作工具集的截图与缩放图，会直接以校验错误被拒，而不是被缩放，所以你必须在自己的应用里先把这些图缩好。对于其他超大图片，可以通过图片块的 <code>transformations</code> 字段设置 <code>oversized_image: "error"</code>，让 API 报错而不是静默缩小。默认是 <code>"downsize"</code>，它会缩放到刚好放得下并且不告诉你——对于依赖像素坐标的工作流来说，这种静默缩放就是一个等着爆的正确性缺陷。</p>
+
+<h2 id="code">代码里怎么处理这个上限</h2>
+<p>下面这个请求稳稳落在新上限之内，使用当前版本的 API 头和标准的 bearer 认证写法。</p>
+
+<pre><code is:raw>curl https://api.anthropic.com/v1/messages \\
+  -H 'Content-Type: application/json' \\
+  -H 'anthropic-version: 2026-10-21' \\
+  -H "Authorization: Bearer $ANTHROPIC_API_KEY" \\
+  --max-time 600 \\
+  -d '&#123;
+    "model": "claude-opus-5-5",
+    "max_tokens": 1024,
+    "messages": [
+      &#123; "role": "user", "content": "Summarise this diff and flag the two riskiest hunks." &#125;
+    ]
+  &#125;'</code></pre>
+
+<p>大负载真正该用的模式是：上传一次，用 <code>file_id</code> 引用，不要每一轮都重发字节。上传走 Files API 的 multipart 表单。</p>
+
+<pre><code is:raw>import os
+import base64
+import anthropic
+
+client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+
+def build_image_block(path, max_edge=3000):
+    """上传前先降采样，让请求落在多图尺寸规则之内。"""
+    raw = base64.b64encode(open(path, "rb").read()).decode()
+    return &#123;
+        "type": "image",
+        "source": &#123; "type": "base64", "media_type": "image/png", "data": raw &#125;,
+        "transformations": &#123; "oversized_image": "error" &#125;,
+    &#125;
+
+# 只上传一次。Files API 单文件最大 500 MB。
+uploaded = client.files.upload(
+    file=("report.pdf", open("report.pdf", "rb"), "application/pdf"),
+)
+
+# 之后一直引用。请求体保持很小。
+resp = client.messages.create(
+    model="claude-opus-5-5",
+    max_tokens=2048,
+    messages=[&#123;
+        "role": "user",
+        "content": [
+            &#123;"type": "document", "source": &#123;"type": "file", "file_id": uploaded.id&#125;&#125;,
+            &#123;"type": "text", "text": "List the three highest-risk findings in this report."&#125;,
+        ],
+    &#125;],
+)
+print(resp.content[0].text)
+
+# 大请求发送前先数 token。
+count = client.messages.count_tokens(
+    model="claude-opus-5-5",
+    messages=[&#123;"role": "user", "content": "Hello, world"&#125;],
+)
+print("input tokens:", count.input_tokens)</code></pre>
+
+<p>第二段代码里有两点值得单独说。带 <code>oversized_image: "error"</code> 的 <code>transformations</code> 块，表示超大图片会被拒绝，并告诉你这张图的尺寸和能放下的最大尺寸，而不是被悄悄缩小——这正是坐标类工作流需要的设置。<code>count_tokens</code> 调用则值得在大负载发送前做一次，因为 Token Counting 端点和 Messages 一起涨到了 128 MB，这意味着它现在能校验一份过去根本无从测量的负载。</p>
+<p>走 Files API 有一条要小心：通过这种方式上传的文件不可下载，并且作用域限定在上传它的工作区内。Anthropic 明确警告不要接受来自不可信来源的文件 ID，因为同一工作区里的任何请求都能引用它们。如果你的应用会接收用户或第三方传来的 file ID，务必先校验再传给 Claude。</p>
+
+<h2 id="what-to-do">代码库里到底要改什么</h2>
+<p>下面是按顺序的决策路径。</p>
+<ul>
+<li><strong>如果你在第一方 API 上撞过 413：</strong>现在余量多了四倍，代码不用改。但请重跑一遍测试集里最大的那个请求，因为过去在边缘被拒的请求，现在可能被接受并计费，而不是免费失败。</li>
+<li><strong>如果你在 Bedrock 或 Google 托管的 Google Cloud 上：</strong>什么都没变，上限还是 20 MB 或 30 MB。如果你本来就打算迁到第一方 API 来吃新上限，这个迁移依然可行，但合作平台更小的上限恰好可以倒逼你把该做的重构做了。</li>
+<li><strong>如果你在做 Managed Agents：</strong>32 MB 的 Sessions、Agents、Environments 上限没有上调。请按这个约束做设计，而不是默认全平台涨了余量。</li>
+<li><strong>如果你发很多图：</strong>把每张图缩到任一边 3000 像素以内，或者把请求控制在 20 个以内的图片或文档块，并把大负载挪到 Files API。</li>
+<li><strong>如果你依赖像素坐标：</strong>设置 <code>oversized_image: "error"</code>，让静默缩放直接报错，而不是悄悄破坏提示词假设的坐标系。</li>
+</ul>
+<p>如果想在多家上游之间跑同一套大负载工作流，又不想为每家维护一套客户端，用路由聚合器是最省事的捷径。<a href="https://freemodel.dev/invite/FRE-7a3b6220" target="_blank" rel="sponsored noopener">FreeModel</a> 在多家上游前面提供 OpenAI 兼容端点，你可以用同一套集成指向不同的 model ID，比较各家对同一个超大负载的处理方式，包括谁先拒绝、在哪个边界拒绝。已经跑网关的团队，则可以用 <a href="https://portkey.ai/?ref=apirank" target="_blank" rel="sponsored noopener">Portkey</a> 在上面加可观测性与护栏，这在目标是看清楚请求究竟在哪里失败、而不只是知道它失败了的时候特别有用。</p>
+
+<h2 id="verdict">结论</h2>
+<p>这是一个好改动，也是一个小改动，诚实的总结取决于你指向哪里。</p>
+<p>如果你直接调用第一方 Claude API，四倍的请求余量是实实在在的运维改善，对图片密集或工具结果密集的工作负载来说，它一次性消掉了一整类失败。Messages 与 Token Counting 的 128 MB、Message Batches 的 256 MB，加上 Files API 的 500 MB，构成了一条自洽的阶梯：大件只上传一次，之后用 ID 引用，让每次请求体保持轻量。</p>
+<p>如果你通过云平台调用 Claude，这基本等于无事发生。Bedrock 的 20 MB、Google 托管的 Google Cloud 的 30 MB，以及 Anthropic 运营的平台部署的 32 MB，意味着你的上限原封不动。128 MB 是第一方的事实，而它与最小合作方上限之间的差距已经大到：按第一方 API 写的客户端，换到合作方部署上就会出问题。</p>
+<p>还有一点是大多数解读会略过的：请求体上限从来不是图片的真正约束。8000x8000 像素的单图尺寸上限、第一方 10 MB 而 Bedrock 只有 5 MB 的单图体积上限、超过 20 张图就会收紧的多图规则，以及在 token 化之前就静默降采样的分辨率档位，这些都与 128 MB 这个标题数字无关。如果你这个季度要上线视觉流水线，真正决定架构的是这些限制。</p>
+
+<h2 id="sources">资料来源</h2>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/api/overview" target="_blank" rel="noopener">Claude Platform API 概览</a> — 请求体上限表与合作平台上限，2026 年 10 月 30 日核验</li>
+<li><a href="https://platform.claude.com/docs/en/release-notes/api" target="_blank" rel="noopener">Claude API 发布说明</a> — 2026 年 10 月 28 日把 Messages 与 Token Counting 上限从 32 MB 提到 128 MB 的条目</li>
+<li><a href="https://platform.claude.com/docs/en/build-with-claude/vision" target="_blank" rel="noopener">视觉能力文档</a> — 图片数量与尺寸限制、单图体积上限、分辨率档位与视觉 token 成本</li>
+<li><a href="https://platform.claude.com/docs/en/build-with-claude/files" target="_blank" rel="noopener">Files API 文档</a> — 单文件 500 MB、每组织 1 TB 存储，以及文件不可下载的限制</li>
+<li><a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noopener">Claude Platform 定价</a> — 视觉 token 成本示例所用的模型费率</li>
+</ul>
+
+<h2>相关文章</h2>
+<ul>
+<li><a href="/zh/tutorials/ai-api-visual-understanding-2026">AI API 视觉理解 2026：9 家厂商横向对比</a> — 各家图片 token 化是怎么做的</li>
+<li><a href="/zh/tutorials/cloudflare-workers-64mib-size-limit-ai-api-2026">Cloudflare Workers 64 MiB：AI API 打包</a> — 同一类上限，只是往下挪了一层栈</li>
+<li><a href="/zh/tutorials/claude-cowork-chat-merge-developer-migration-2026">Claude Cowork 合并 2026：开发者迁移指南</a> — Managed Agents 这些接口背后的平台整合</li>
+<li><a href="/zh/tutorials/claude-sonnet-5-api-pricing-2026">Claude Sonnet 5 API 定价</a> — 这个上限所适用模型的当前每 token 费率</li>
+</ul>
+
+</article>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>
