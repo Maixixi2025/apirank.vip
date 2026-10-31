@@ -1,0 +1,325 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'mistral-large-4-api-pricing-2026';
+const zhTitle = 'Mistral Large 4 API 定价 2026：$0.70/$2.10';
+const zhDescription = 'Mistral Large 4 是 1T 参数开放权重 MoE，每百万 $0.70/$2.10、上下文 1M。为什么价格没降、许可到底允许什么、自托管什么时候划算。';
+const date = '2026-10-31';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Mistral Large 4 每百万 token 多少钱？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mistral Large 4 在标准档的定价为每百万输入 token $0.70、缓存输入 $0.07、输出 $2.10。Batch 处理把所有费率打五折，即输入 $0.35、缓存 $0.035、输出 $1.05。区域推理（EU 或 US 端点）加 10%，Priority Tier 在此基础上加 75%。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mistral Large 4 的上下文长度和参数量是多少？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mistral Large 4 拥有 1M token 上下文窗口，约 1.05 万亿总参数、每 token 激活 520 亿参数（其中前馈计算 490 亿）。它是一个细粒度混合专家（MoE）模型：128 个路由专家每 token 激活 4 个，外加 1 个共享专家，共 72 个解码层。图像输入由一个独立的 16 亿参数 Pixtral 视觉编码器处理。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mistral Large 4 能商用吗？能不能拿它对外提供 API？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "商用可以，但有一个条件。Mistral Ecosystem Open-Weight License 是修改版 MIT：你可以自由使用、修改、微调并商用该模型。但如果你或你的关联方经营 Model-as-a-Service（模型即服务）业务——即让第三方对模型或其衍生版本进行推理或后训练，并让其对输入、参数或训练数据拥有实质控制——则必须先与 Mistral 另行签署商业许可。内部使用以及通过 Mistral 官方产品使用不受此限。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mistral Large 4 比它取代的模型便宜吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不便宜，这恰恰是最容易被误读的地方。Mistral Large 4 是每百万输入 $0.70、输出 $2.10；Mistral Large 3 是 $0.50 输入、$1.50 输出；Mistral Medium 3.5 是 $1.50 输入、$7.50 输出。所以 Large 4 每 token 比 Large 3 贵约 40%，它同时取代了 Large 3 和 Medium 3.5，这两款都已标记弃用、于 2026 年 10 月 31 日退役。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "自托管 Mistral Large 4 要多少钱？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Hugging Face 上的 FP8 检查点约 1.06 TB、54 个 safetensors 分片，NVFP4 检查点约 0.61 TB。仅权重就需要 6 张 B200 180GB 或 8 张 H100 SXM 80GB，还没算 KV 缓存、激活与推理开销。按 RunPod 社区价约 $48/小时（6 张 B200）或 $32/小时（8 张 H100 SXM）。要追平 $0.70/$2.10 的 API 价格，这套集群需按 50/50 输入输出混合跑出约每小时 4500 万 token，即每秒约 1.27 万 token。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mistral Large 4 的推理档位有哪些？能关闭吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "有三档推理力度：low、medium、high，默认 high。推理无法完全关闭——即使传 reasoning_effort=none，模型仍按 high 运行。Mistral 的建议是：简单任务和快速回复用 low，日常工作用 medium，最难的 Agent 与高精度任务用 high。三个档位都推荐 temperature=1.0、top_p=0.95 采样。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mistral Large 4 在欧洲以外和中国能用吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mistral API 由欧洲基础设施提供，并提供 EU 与 US 的区域推理端点（标准价 1.1 倍）。中国大陆没有区域端点、也没有官方中国访问计划，因此国内生产使用需要稳定的海外代理或一个前置 Mistral API 的聚合器，直连通常会超时。把权重自托管在中国境内的基础设施上不受此限制。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mistral Large 4 支持哪些 API 端点？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "模型标识符为 mistral-large-4，别名 mistral-large-4-0 固定具体版本。支持 /v1/chat/completions、Conversations、Function Calling、严格 JSON schema 的结构化输出、Document QnA、/v1/batch 的 Batch 处理，以及 /v1/agents 的 Agents 与 Conversations。Mistral 也通过 Microsoft Foundry、NVIDIA 托管的 NIM 容器以及 OpenRouter 提供该模型。"
+      }
+    }
+  ]
+};
+
+const zhBody = `<article class="max-w-3xl mx-auto text-gray-800">
+
+  <h1 class="text-4xl font-bold text-gray-900 mb-4">Mistral Large 4 API 定价 2026：$0.70/$2.10</h1>
+  <p class="text-xl text-gray-600 mb-8">Mistral Large 4 是 1T 参数开放权重 MoE，每百万 $0.70/$2.10、上下文 1M。为什么价格没降、许可到底允许什么、自托管什么时候划算。</p>
+
+<h2 id="short-version">先说结论</h2>
+<p><strong>2026 年 10 月 29 日</strong>，Mistral 放出了 <strong>Mistral Large 4</strong>（代号 Le Chonk）的权重，并公布了托管 API 定价。核心数字：<strong>每百万输入 token $0.70、缓存输入 $0.07、输出 $2.10</strong>，<strong>1M token 上下文</strong>，<strong>1.05 万亿总参数 / 每 token 激活 520 亿</strong>的混合专家架构，原生多模态、支持 160+ 语言。</p>
+<p>关于这次发布有两件事经常被写错，而这两件事对你是否要迁移至关重要。第一，<strong>价格并没有降</strong>。Mistral Large 4 的 $0.70 输入 / $2.10 输出，比它取代的 Mistral Large 3（$0.50 / $1.50）<strong>贵了约 40%</strong>。它同时取代 Large 3 和 Medium 3.5，这两款都已标记弃用、<strong>退役日期是 2026 年 10 月 31 日——也就是今天</strong>。如果你看到的摘要声称价格大约降了一半，那是错的，而这个错误会直接污染你的成本模型。</p>
+<p>第二，这里的「开放权重」不等于「开源」，区别在于一个商用许可触发点。<strong>Mistral Ecosystem Open-Weight License</strong> 是修改版 MIT：你可以自由使用、修改、微调并商用该模型，但如果你在它之上经营模型即服务（MaaS）业务，必须先与 Mistral 另行签署商业许可。它比完整开源许可窄，又远比专有 API 宽，但它是真实存在的部署约束。</p>
+
+<h2 id="pricing">价格表，以及每一个会改变价格的乘数</h2>
+<p>以下是 Mistral Large 4 的完整目录价，已于 2026 年 10 月 31 日对照 Mistral 官方推理定价文档核实。所有数字均为每百万 token 的美元价格。</p>
+
+<table>
+<thead>
+<tr><th>档位</th><th>输入</th><th>缓存输入</th><th>输出</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td>Standard（默认）</td><td>$0.70</td><td>$0.07</td><td>$2.10</td><td>大多数人支付的价格</td></tr>
+<tr><td>Batch</td><td>$0.35</td><td>$0.035</td><td>$1.05</td><td>五折，异步，24 小时窗口</td></tr>
+<tr><td>Regional 推理</td><td>$0.77</td><td>$0.077</td><td>$2.31</td><td>EU 或 US 端点 1.1x</td></tr>
+<tr><td>Priority Tier</td><td>$1.225</td><td>$0.1225</td><td>$3.675</td><td>1.75x，需账户开通</td></tr>
+</tbody>
+</table>
+
+<p>三行值得细看。<strong>缓存输入 $0.07 是 90% 的折扣</strong>（相对 $0.70 输入价）。对每一轮都要重放大段系统提示词、工具定义或检索文档的 Agent 工作流来说，这个数字决定你的账单；在提示词占大头的 Agent 循环里，它可能占你输入成本的大部分。</p>
+<p><strong>Regional 推理按 1.1x 计费</strong>，输入、输出、缓存读、缓存写都加 10%：这是为「推理执行发生在 EU 或 US 境内」这个保证付的钱。注意 Mistral 文档里写明了范围限制——它不提供控制面数据的区域存储，所以账户配置、API key 和账单可能仍在你所选地域之外。</p>
+<p><strong>Priority Tier 是 1.75x</strong>，且不是自助开通：需要与 Mistral 签约并定制每模型限流，换取高峰时段排在 Standard 流量之前的优先队列。一个能省一张工单的细节：用 <code>service_tier: "auto"</code> 时，超出 Priority 限额会把请求<strong>降级到 Standard 而不是报错</strong>，<code>usage.service_tier</code> 会告诉你实际由哪档服务。</p>
+<p>还有一条值得提前规划的行为：<strong>Batch 处理是固定五折</strong>。Batch 是把一批 API 请求以 JSONL 上传、排队异步处理、在 24 小时内计费。如果你的负载能容忍数小时延迟，五折是仅次于自托管的最大省钱杠杆。</p>
+
+<h2 id="lineup">Mistral Large 4 在整个产品线中的位置</h2>
+<p>Large 4 是刚围绕它完成整合的产品线顶端。它取代的两个模型都带着相同的 2026 年 10 月 31 日退役日期。</p>
+
+<table>
+<thead>
+<tr><th>模型</th><th>输入</th><th>缓存</th><th>输出</th><th>上下文</th><th>状态</th></tr>
+</thead>
+<tbody>
+<tr><td>Mistral Large 4</td><td>$0.70</td><td>$0.07</td><td>$2.10</td><td>1M</td><td>Public Preview</td></tr>
+<tr><td>Mistral Large 3</td><td>$0.50</td><td>$0.05</td><td>$1.50</td><td>256K</td><td>已弃用，10/31/2026 退役</td></tr>
+<tr><td>Mistral Medium 3.5</td><td>$1.50</td><td>—</td><td>$7.50</td><td>256K</td><td>已弃用，10/31/2026 退役</td></tr>
+<tr><td>Mistral Small 4</td><td>$0.15</td><td>$0.015</td><td>$0.60</td><td>256K</td><td>GA</td></tr>
+<tr><td>Codestral</td><td>$0.30</td><td>$0.03</td><td>$0.90</td><td>256K</td><td>GA</td></tr>
+<tr><td>Mistral Embed</td><td>$0.10</td><td>$0.01</td><td>—</td><td>—</td><td>GA</td></tr>
+</tbody>
+</table>
+
+<p>两个观察。<strong>Mistral Small 4 在 $0.15 / $0.60、256K 上下文下仍是 GA，输入比 Large 4 便宜 4.7 倍</strong>，在一个模型里统一了指令跟随、推理和编码。对很多生产流量来说，Small 4 是更好的默认选择，Large 4 是升级路径。另一个是 <strong>Public Preview</strong>：按 Mistral 的生命周期政策，Preview 模型「价格与 GA 相同」但「允许静默更新」「不保证一定有 GA 路径」。你今天读到的价格就是你要付的价格，但权重可能在无版本号的情况下在你脚下变化。政策还规定了迁移窗口：<strong>GA 模型 6 个月</strong>，Preview 1 个月。Large 3 和 Medium 3.5 是 GA，拿到了 6 个月；Large 4 是 Preview，如果有一天弃用，你只有 1 个月。</p>
+
+<h2 id="architecture">架构，以及为什么 token 效率的说法成立</h2>
+<p>Mistral Large 4 是细粒度混合专家模型，架构解释了那些核心数字。</p>
+<ul>
+<li><strong>1.05 万亿总参数，每 token 激活 520 亿</strong>（前馈计算 490 亿，其余为嵌入与输出层）。</li>
+<li><strong>128 个路由专家，每 token 激活 4 个</strong>，外加 1 个共享专家，即每 token 共 5 个活跃专家。</li>
+<li><strong>72 个解码层</strong>，隐层维度 6144，64 个注意力头。</li>
+<li><strong>Multi-head Latent Attention 加上 DeepSeek Sparse Attention 索引器</strong>：每 query 最多选 2048 个 key 位置，3:1 的 RoPE 与 NoPE 比例，KV 状态跨层共享，LeRope（按频率学习乘数的 YaRN 缩放 RoPE）。</li>
+<li><strong>独立的 16 亿参数 Pixtral 视觉编码器</strong>：30 层，隐层维度 2048，14x14 patch，合并尺寸 2。</li>
+</ul>
+<p>两种独立的稀疏性在这里叠加：路由选择哪些前馈网络运行，注意力索引器选择关注上下文的哪些位置。这就是为什么一个 1T 参数模型能以一个 1T 稠密模型永远到不了的价格点对外服务。</p>
+<p>检查点还内置了 <strong>DSpark 投机解码头</strong>：3 层稠密 MLA 草稿层（BF16），用一个递归 Markov 头一次提议 3 个 token，实测比只跑目标模型最高 <strong>1.9x 吞吐</strong>。因为草稿头就打包在检查点里而非独立模型，对 vLLM 或 SGLang 只需一个开关即可启用；又因为投机解码不改变目标模型的输出，它是纯收益、没有精度代价。</p>
+
+<h2 id="benchmarks">基准测试到底说明了什么</h2>
+<p>Mistral 公布了一大堆数字。以下是经过独立佐证、于 2026 年 10 月 31 日核实的那部分。</p>
+
+<table>
+<thead>
+<tr><th>基准</th><th>得分</th><th>衡量什么</th></tr>
+</thead>
+<tbody>
+<tr><td>Artificial Analysis Coding Agent Index</td><td>48%</td><td>Agent 编码，token 效率加权</td></tr>
+<tr><td>Artificial Analysis Intelligence Index v5</td><td>26</td><td>综合智能，西方开放权重模型中最高</td></tr>
+<tr><td>Artificial Analysis Cyber Index</td><td>51%</td><td>发现、复现与修补漏洞</td></tr>
+<tr><td>FrontierCode 2.0（Cognition，私有）</td><td>19.7%</td><td>端到端代码质量，开放权重模型领先</td></tr>
+<tr><td>Terminal-Bench 4.0</td><td>41%</td><td>终端编码，比预览版高 13 分</td></tr>
+<tr><td>BrowseComp</td><td>84.5%</td><td>网页浏览，比 SFT 检查点的 75% 提升</td></tr>
+<tr><td>FinWorkBench（Finch）</td><td>73.3%</td><td>金融工作流，开放模型中仅次于 Kimi K3</td></tr>
+<tr><td>B3 Agent Security Benchmark</td><td>97.1% 抗攻击</td><td>提示注入与系统提示词窃取</td></tr>
+<tr><td>DeepSWE v1.1</td><td>61.7%</td><td>软件工程任务</td></tr>
+</tbody>
+</table>
+
+<p>两点保留。<strong>FrontierCode 2.0 是 Cognition 的私有基准</strong>，该数字由 Mistral 报告、无法独立复现。而「每任务少用 47% token」是与该指数领先者 GLM-5.3 的相对比较。由于 48% 的指数得分实际上是平手，token 效率才是差异点——这个数字值得你用自己的负载去验证。</p>
+<p>安全侧是双向的。Mistral 报告对恶意网络请求的平均<strong>拒答率 96.6%</strong>，称为开放模型中最高。但它也披露：模型会对针对真实目标的黑盒攻击拒绝，同时「看到了用于真实攻击的潜在提升空间」，并正在相应调整护栏。这是一个具备真实进攻能力、护栏仍在积极调整的模型，所以要为托管 API 的行为变化做好准备。另外，<strong>Surge Code 盲测 pairwise 评测中，人类偏好 Large 4 胜过 GLM-5.3、Kimi K3 和 DeepSeek V4.1 Flash，仅排在 Claude Opus 5.5 之后</strong>：来自第三方服务的人类偏好，与基准分数是不同性质的证据。</p>
+
+<h2 id="reasoning">推理档位，以及那个你无法关闭的设置</h2>
+<p>Mistral Large 4 有三档推理力度：<code>low</code>、<code>medium</code>、<code>high</code>，默认 <code>high</code>。low 用于简单任务和快速回复，medium 用于日常工作，high 用于最难的 Agent 与高精度任务。三档都推荐 <code>temperature=1.0</code>、<code>top_p=0.95</code> 采样，推理内容与消息内容分开返回。</p>
+<p>让人意外的是<strong>推理无法关闭</strong>。模型卡写得很明确：即使把 <code>reasoning_effort</code> 设为 none，模型仍按 high 运行。由于思考 token 按输出计费（每百万 $2.10），「推理永远开启」是内建在这款模型里的成本决策，而不是你可以调掉的默认值。如果你需要一条便宜的无思考路径，Mistral Small 4（输出 $0.60）是另一个模型，而不是这款模型上的另一个设置。</p>
+
+<h2 id="code">调用 API</h2>
+<p>API 兼容 OpenAI。模型标识符为 <code>mistral-large-4</code>，别名 <code>mistral-large-4-0</code> 固定具体版本。Mistral 的生命周期文档警告：使用移动别名会让你暴露在行为与定价静默更新的风险中，所以如果需要可复现性，请固定版本。</p>
+
+<pre><code class="language-bash">curl -sS https://api.mistral.ai/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer $MISTRAL_API_KEY" \\
+  -d '&#123;
+    "model": "mistral-large-4-0",
+    "reasoning_effort": "medium",
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "messages": [
+      &#123;"role": "user", "content": "总结这份事故日志并列出三个最高风险发现。"&#125;
+    ]
+  &#125;'
+</code></pre>
+
+<p>Python SDK 路径，推理内容分开返回：</p>
+
+<pre><code class="language-python">import os
+from mistralai import Mistral
+
+client = Mistral(api_key=os.environ["MISTRAL_API_KEY"])
+
+resp = client.chat.complete(
+    model="mistral-large-4-0",
+    reasoning_effort="medium",
+    temperature=1.0,
+    top_p=0.95,
+    messages=[
+        &#123;"role": "user", "content": "写一个合并两个有序链表的 Python 函数。"&#125;,
+    ],
+)
+
+# 推理按输出 token 计费，所以请测量它。
+print("reasoning tokens:", resp.usage.completion_tokens)
+print("answer:", resp.choices[0].message.content)
+</code></pre>
+
+<p>两个值得带进生产的请求细节。<strong>严格 JSON schema 原生支持</strong>，包括带 <code>"strict": true</code> 的 <code>response_format</code>；函数调用配合 <code>tool_choice</code> 可在 <code>/v1/chat/completions</code>、<code>/v1/conversations</code>、<code>/v1/agents</code> 上使用。在 Batch 中，每个请求的 body 与你发给正常端点的完全相同，模型字段可在创建任务时省略。</p>
+
+<h2 id="license">许可条款，逐字读一遍</h2>
+<p>这一节要读两遍，因为「开放权重」在营销里被用得很松，而这里的条件非常具体。</p>
+<p><strong>Mistral Ecosystem Open-Weight License</strong> 是修改版 MIT。它免费授予你使用、复制、修改、合并、发布、分发、再许可并销售模型副本的权利，以及运行、部署、进一步训练或以其他方式修改它并创作衍生作品的权利。有两个条件。必须在模型的所有副本或实质部分中保留版权与许可声明。以及真正要紧的那条：<strong>「如果被许可人或其任何关联方经营 Model as a Service 业务，则被许可人必须先与 Mistral 签订单独的商业许可，才能将本模型或其衍生作品用于任何商业目的。」</strong></p>
+<p>「Model as a Service」指：让第三方访问模型或其衍生版本进行推理或后训练，并让该第三方对输入、参数或训练数据拥有实质控制。被排除的：将模型嵌入到特定功能或 harness 中的终端用户产品，以及对他方托管模型的单纯转发。内部使用也被豁免。所以实用指引是：<strong>内部工具、面向你自己用户的 Agent、或把模型嵌入到某个功能里的产品，都没问题。</strong>但在权重前面放一个托管端点、让外部方能控制他们的提示词或微调这个模型，就不行——除非先和 Mistral 签约。如果你在基于这些权重构建推理服务商、微调服务或托管编码 Agent，先联系 Mistral。</p>
+
+<h2 id="self-host">自托管的账，以及什么时候它才有意义</h2>
+<p>这是发布会报道跳过、而「开放权重」这个说法要么兑现、要么落空的地方。先看体积。Hugging Face 上的 FP8 检查点约 <strong>1.06 TB、54 个 safetensors 分片</strong>；NVFP4 检查点约 <strong>0.61 TB</strong>。这是下限：再加上 1M 上下文的 KV 缓存、激活与推理开销，你的硬件规划要远高于原始权重数字。仅按权重计算每个检查点最少需要的 GPU 数量：</p>
+
+<table>
+<thead>
+<tr><th>检查点</th><th>权重</th><th>B200 180GB</th><th>H200 141GB</th><th>H100 SXM 80GB</th></tr>
+</thead>
+<tbody>
+<tr><td>FP8 / BF16</td><td>1.06 TB</td><td>6 张</td><td>8 张</td><td>14 张</td></tr>
+<tr><td>NVFP4</td><td>0.61 TB</td><td>4 张</td><td>5 张</td><td>8 张</td></tr>
+</tbody>
+</table>
+
+<p>这些数字只算了权重，是 KV 缓存之前的下限。Mistral 公布的 NVFP4 vLLM 配方用 <code>--tensor-parallel-size 8</code> 加 <code>--decode-context-parallel-size 8</code> 加 <code>--enable-expert-parallel</code>，所以八张 GPU 是参考配置，不是下限。按 2026 年 10 月 31 日核实的 RunPod 社区价，B200 为 $7.99/小时，H100 SXM 为 $3.99/小时。</p>
+
+<table>
+<thead>
+<tr><th>配置</th><th>每小时</th><th>每月（730 小时）</th></tr>
+</thead>
+<tbody>
+<tr><td>8x B200 社区</td><td>$63.92</td><td>$46,662</td></tr>
+<tr><td>8x B200 安全</td><td>$86.32</td><td>$63,014</td></tr>
+<tr><td>8x H200 SXM</td><td>$50.80</td><td>$37,084</td></tr>
+<tr><td>8x H100 SXM</td><td>$31.92</td><td>$23,302</td></tr>
+</tbody>
+</table>
+
+<p>一套自托管集群要跑赢托管 API，必须每小时吐出足够多的 token，使这些 token 的 API 价格超过你的 GPU 账单：</p>
+
+<table>
+<thead>
+<tr><th>集群</th><th>token 混合</th><th>所需 token/小时</th><th>token/秒</th></tr>
+</thead>
+<tbody>
+<tr><td>8x B200（$63.92/hr）</td><td>100% 输出</td><td>3040 万</td><td>约 8,455</td></tr>
+<tr><td>8x B200（$63.92/hr）</td><td>50/50 输入输出</td><td>4570 万</td><td>约 12,683</td></tr>
+<tr><td>8x B200（$63.92/hr）</td><td>80% 输入 / 20% 输出</td><td>6520 万</td><td>约 18,118</td></tr>
+<tr><td>8x H100 SXM（$31.92/hr）</td><td>50/50 输入输出</td><td>2280 万</td><td>约 6,333</td></tr>
+<tr><td>8x H100 SXM（$31.92/hr）</td><td>80% 输入 / 20% 输出</td><td>3260 万</td><td>约 9,048</td></tr>
+</tbody>
+</table>
+
+<p>对照参考吞吐数字来读。Hugging Face 报告：在单台 512GB 统一内存的 M3 Ultra 上，2-bit GGUF 量化约 90 token/s 预填充、15 token/s 生成；四张 RTX 6000 Pro 上的 NVFP4 构建为 130-590 token/s 预填充、约 10 token/s 生成。<strong>在消费级与单节点硬件上，3 到 30 token/s 的生成速度是这类模型现实的工作区间。</strong>而八张 B200 的集群要在一个聊天负载上做到每小时盈亏平衡，需要 6000 到 18000 token/s 的聚合吞吐：这是数据中心级别的利用率目标，不是爱好者目标。</p>
+<p>诚实的结论：<strong>对大多数团队，托管 API 在成本上赢了；开放权重赢的是控制权</strong>。你自托管是为了数据驻留、为了在不能外发的数据上微调、为了部署策略、或为了 API 不暴露的定制。如果你的约束纯粹是 token 单价，那就用 $0.70/$2.10 的 API，或半价的 Batch，把 1.06 TB 的下载留给一个真正需要它的问题。要在承诺前跨上游比较同一负载，<a href="https://freemodel.dev/invite/FRE-7a3b6220" target="_blank" rel="sponsored noopener">FreeModel</a> 在多家厂商前面暴露一个 OpenAI 兼容端点，你可以把同一个集成指向不同的模型 ID，测量各自如何处理同样的提示词与推理设置。对已经在跑网关的团队，<a href="https://portkey.ai/?ref=apirank" target="_blank" rel="sponsored noopener">Portkey</a> 提供可观测性与缓存层，让这种比较可复现、而不是靠轶事。</p>
+
+<h2 id="availability">可用性，以及被它取代的模型的下场</h2>
+<p>两个运营事实比基准测试更影响规划。</p>
+<p><strong>今天，2026 年 10 月 31 日，Mistral Large 3 和 Mistral Medium 3.5 标记弃用并到达退役日期。</strong>按 Mistral 的生命周期政策，弃用模型「在退役日期前仍可访问」，退役后对其标识符的请求会返回 404。如果你还在用 <code>mistral-large-2512</code> 或 <code>mistral-medium-3-5</code>，这是硬期限。两款模型的文档替代项都是 Large 4。</p>
+<p><strong>地理可用性是许多读者的真实约束。</strong>API 由欧洲基础设施提供，EU 与 US 区域推理为标准价 1.1 倍。中国大陆没有区域端点、也没有官方中国访问计划，因此国内生产流量需要稳定的海外代理或前置 Mistral API 的聚合器，直连通常超时。延迟主要由跨境往返决定，不适合延迟敏感的交互负载。把权重自托管在中国境内的基础设施不受影响——这是开放权重的一个真实论点。</p>
+
+<h2 id="verdict">结论</h2>
+<p>按 $0.70 输入、$2.10 输出计价，Mistral Large 4 <strong>比它取代的模型更贵</strong>，而把它包装成降价的发布叙事在定价页面面前站不住脚。溢价的正当性在 token 效率：与领先者基本打平的指数得分下，每任务少用 47% 的 token，外加 90% 的缓存输入折扣——只要你为缓存而构造提示词，长上下文 Agent 循环就能真正便宜。用你自己的 token 数来评判它，而不是 headline 费率。</p>
+<p>开放权重的故事是真的，但不免费。许可允许直接的商用、微调和修改，只有一个例外：经营 MaaS 业务需要与 Mistral 另签商业许可。在你构建托管推理产品之前读这条，因为它是唯一有牙齿的部分。</p>
+<p>自托管经济对大多数团队不利。1.06 TB FP8 权重意味着 KV 缓存之前就要 8 张 B200 或 14 张 H100，约 $32 到 $64 每小时，而且你需要每秒数千 token 的聚合生成才能跑赢 API。为主权、为在不能外发的数据上微调、为部署策略来自托管。别为 token 单价自托管：Batch 五折和 $0.07 的缓存输入费率已经把你送到大半路程。</p>
+<p>并且现在就规划迁移。Large 3 和 Medium 3.5 今天退役。Large 4 是 Public Preview，所以价格锁定但权重可在无感知的情况下更新；如果有一天它弃用，你只有 1 个月而不是 6 个月。固定 <code>mistral-large-4-0</code>，把 1M 上下文和缓存输入费率当作真正值得围绕构建的两件事。</p>
+
+<h2 id="sources">来源</h2>
+<ul>
+<li><a href="https://mistral.ai/news/mistral-large-4-oss/" target="_blank" rel="noopener">Mistral — Mistral Large 4 (Le Chonk) 现已开放权重</a> — 发布说明，2026 年 10 月 29 日</li>
+<li><a href="https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B" target="_blank" rel="noopener">Hugging Face 模型卡 — Mistral-Large-4-1T-A52B</a></li>
+<li><a href="https://docs.mistral.ai/inference/pricing" target="_blank" rel="noopener">Mistral 推理定价</a></li>
+<li><a href="https://docs.mistral.ai/models/mistral-large-4-0" target="_blank" rel="noopener">Mistral 模型页 — Mistral Large 4</a></li>
+<li><a href="https://docs.mistral.ai/inference/model-lifecycle" target="_blank" rel="noopener">Mistral 模型生命周期政策</a></li>
+<li><a href="https://docs.mistral.ai/inference/priority-tier" target="_blank" rel="noopener">Mistral Priority Tier</a></li>
+<li><a href="https://docs.mistral.ai/inference/regional-inference" target="_blank" rel="noopener">Mistral 区域推理</a></li>
+<li><a href="https://docs.mistral.ai/capabilities/batch" target="_blank" rel="noopener">Mistral Batch 处理</a></li>
+<li><a href="https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/main/LICENSE" target="_blank" rel="noopener">Mistral Ecosystem Open-Weight License</a> — 全文</li>
+<li><a href="https://www.runpod.io/pricing" target="_blank" rel="noopener">RunPod GPU 定价</a></li>
+</ul>
+
+<h2>相关文章</h2>
+<ul>
+<li><a href="/zh/tutorials/mistral-ai-api-review">Mistral AI API 评测 2026</a> — 产品线整合前的厂商层总览</li>
+<li><a href="/zh/tutorials/mistral-ocr-4-api-review-2026">Mistral OCR 4 API 评测 2026</a> — 平台文档 AI 的一面</li>
+<li><a href="/zh/tutorials/ai-api-long-context-2026">AI API 长上下文 2026</a> — 各厂商 1M token 上下文对比</li>
+<li><a href="/zh/tutorials/ai-api-code-generation-2026">AI API 代码生成 2026</a> — 编码基准全景</li>
+</ul>
+
+</article>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>

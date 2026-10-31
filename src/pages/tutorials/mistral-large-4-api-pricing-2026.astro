@@ -1,0 +1,327 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'mistral-large-4-api-pricing-2026';
+const enTitle = 'Mistral Large 4 API Pricing 2026: $0.70/$2.10';
+const enDescription = 'Mistral Large 4 is a 1T-parameter open-weight MoE at $0.70/$2.10 per 1M tokens with a 1M context. Here is the license and self-host cost math.';
+const date = '2026-10-31';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does Mistral Large 4 cost per million tokens?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mistral Large 4 is priced at $0.70 per million input tokens, $0.07 per million cached input tokens, and $2.10 per million output tokens on the standard Mistral API tier. Batch processing cuts every rate by half, so a batch request costs $0.35 input, $0.035 cached input, and $1.05 output per million. Regional inference in the EU or US adds a 10% multiplier, and Priority Tier adds a 75% multiplier on top of standard list pricing."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the context length and parameter counts of Mistral Large 4?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mistral Large 4 has a 1M token context window, about 1.05 trillion total parameters, and 52 billion active parameters per token including embeddings and output layers, or 49 billion active in the feed-forward compute. It is a granular Mixture-of-Experts model with 128 routed experts of which 4 are active per token, plus one shared expert, across 72 decoder layers. A separate 1.6 billion parameter Pixtral vision encoder handles image input."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use Mistral Large 4 commercially, and can I offer it as an API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes for commercial use, with one condition. The Mistral Ecosystem Open-Weight License is a modified MIT license. You may use, modify, fine-tune, and commercialize the model freely. But if you or any affiliate operates a Model-as-a-Service business, meaning you give third parties access to the model or its derivatives for inference or post-training with meaningful control over inputs, parameters, or training data, you must sign a separate commercial license with Mistral first. Internal use and use through Mistral's own official products are exempt from that condition."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Mistral Large 4 cheaper than the model it replaces?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, and this is the most common misreading of the launch. Mistral Large 4 costs $0.70 input and $2.10 output per million tokens. Mistral Large 3 cost $0.50 input and $1.50 output, and Mistral Medium 3.5 cost $1.50 input and $7.50 output. So Large 4 is roughly 40% more expensive than Large 3 per token, and it replaces both Large 3 and Medium 3.5, both of which are marked deprecated with a retirement date of October 31, 2026."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does it cost to self-host Mistral Large 4?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The FP8 checkpoint on Hugging Face is about 1.06 TB of weights across 54 safetensors shards, and the NVFP4 checkpoint is about 0.61 TB. Weights alone therefore need 6 B200 180GB GPUs, or 8 H100 SXM 80GB GPUs, before any KV cache, activations, or serving overhead. At RunPod community rates that is about $48 per hour for 6 B200s, or $32 per hour for 8 H100 SXM. To match the $0.70 input and $2.10 output API price, that cluster must serve roughly 45 million tokens per hour on a 50/50 input-output mix, about 12,700 tokens per second."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the reasoning effort options and can reasoning be disabled?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "There are three reasoning efforts, low, medium, and high, with high as the default. Reasoning cannot be turned off entirely. If you pass reasoning_effort set to none, the model still uses high. Mistral's guidance is low for simple tasks and fast chat replies, medium for everyday work, and high for the hardest agentic and precision tasks. Mistral recommends sampling with temperature 1.0 and top_p 0.95 across all three effort levels."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Mistral Large 4 available outside Europe and in China?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Mistral API is served from European infrastructure and supports optional regional inference endpoints for the European Union and the United States, billed at 1.1 times standard list pricing. There is no mainland China regional endpoint and no official China access program, so production use from mainland China requires a stable overseas proxy or an aggregator that fronts the Mistral API, and direct connections typically time out. Self-hosting the weights on your own infrastructure in China is unaffected by that restriction."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which API endpoints does Mistral Large 4 support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The model identifier on the API is mistral-large-4, with an alias mistral-large-4-0 pinning the specific version. It supports Chat Completions at /v1/chat/completions, Conversations, Function Calling, Structured Outputs with strict JSON schema, Document QnA, Batch processing at /v1/batch, and Agents and Conversations at /v1/agents. Mistral also serves it through Microsoft Foundry, NVIDIA-hosted endpoints as an optimized NIM container, and OpenRouter."
+      }
+    }
+  ]
+};
+
+const enBody = `<article class="max-w-3xl mx-auto text-gray-800">
+
+  <h1 class="text-4xl font-bold text-gray-900 mb-4">Mistral Large 4 API Pricing 2026: $0.70/$2.10</h1>
+  <p class="text-xl text-gray-600 mb-8">Mistral Large 4 is a 1T-parameter open-weight MoE at $0.70/$2.10 per 1M tokens with a 1M context. Here is the license and self-host cost math.</p>
+
+<h2 id="short-version">The short version</h2>
+<p>On <strong>October 29, 2026</strong>, Mistral released the weights of <strong>Mistral Large 4</strong>, the model it calls "Le Chonk", and published its hosted API pricing. The headline numbers: <strong>$0.70 per million input tokens, $0.07 per million cached input tokens, $2.10 per million output tokens</strong>, a <strong>1M token context window</strong>, and a <strong>1.05 trillion total / 52 billion active parameter</strong> Mixture-of-Experts architecture. It is natively multimodal and fluent in 160+ languages.</p>
+<p>Two things about this launch are routinely reported wrong, and both matter if you are about to migrate. First, <strong>the price did not go down</strong>. Mistral Large 4 at $0.70 input and $2.10 output is <strong>more expensive than Mistral Large 3</strong> at $0.50 and $1.50. It replaces Large 3 and Medium 3.5, and both are marked <strong>deprecated with a retirement date of October 31, 2026</strong>, which is today. If you read a summary claiming the price was cut roughly in half, that summary is wrong, and the mistake lands straight in your cost model.</p>
+<p>Second, "open weight" does not mean "open source" here, and the difference is a commercial license trigger. The <strong>Mistral Ecosystem Open-Weight License</strong> is a modified MIT: you can use, modify, fine-tune, and commercialize the model freely, but if you run a Model-as-a-Service business on top of it you must sign a separate commercial license with Mistral first. That is narrower than a full open-source license and much narrower than a proprietary API, but it is a real condition on how you deploy it.</p>
+
+
+<h2 id="pricing">The price table, and every multiplier that changes it</h2>
+<p>Here is the complete list price for Mistral Large 4, verified against the Mistral inference pricing documentation on October 31, 2026. All figures are US dollars per million tokens.</p>
+
+<table>
+<thead>
+<tr><th>Tier</th><th>Input</th><th>Cached input</th><th>Output</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td>Standard (default)</td><td>$0.70</td><td>$0.07</td><td>$2.10</td><td>What most people pay</td></tr>
+<tr><td>Batch</td><td>$0.35</td><td>$0.035</td><td>$1.05</td><td>50% off, asynchronous, 24-hour window</td></tr>
+<tr><td>Regional inference</td><td>$0.77</td><td>$0.077</td><td>$2.31</td><td>1.1x for EU or US endpoint</td></tr>
+<tr><td>Priority Tier</td><td>$1.225</td><td>$0.1225</td><td>$3.675</td><td>1.75x, requires an account setup</td></tr>
+</tbody>
+</table>
+
+<p>Three rows deserve a closer look. <strong>Cached input at $0.07 is a 90% discount</strong> on the $0.70 input rate. For agentic workloads replaying a large system prompt, tool definitions, or retrieved documents on every turn, this is the number that decides your bill, and on a prompt-heavy agent loop it can be the majority of your input cost.</p>
+<p><strong>Regional inference is billed at 1.1x</strong> on input, output, cached reads, and cache writes alike: 10% for the guarantee that inference execution happens inside the EU or the US. Note the scope limit Mistral documents, it does not give you regional storage for control-plane data, so account configuration, API keys, and billing may still sit outside the selected geography.</p>
+<p><strong>Priority Tier is 1.75x</strong> and is not self-serve: it requires an agreement with Mistral and custom per-model rate limits, in exchange for priority queueing ahead of Standard Tier traffic at peak load. One detail saves a support ticket: with <code>service_tier: "auto"</code>, exceeding your Priority limits makes the request <strong>fall back to Standard Tier instead of failing</strong>, and <code>usage.service_tier</code> says which tier served it.</p>
+<p>And one more behaviour to plan around: <strong>batch processing is a flat 50% discount</strong>. A batch is a list of API requests uploaded as JSONL, queued for asynchronous processing, and billed over a 24-hour period. If your workload tolerates hours of latency, halving the bill is the largest lever available short of self-hosting.</p>
+
+<h2 id="lineup">Where Mistral Large 4 sits in the lineup</h2>
+<p>Large 4 is the top of a lineup just consolidated around it. Both models it replaces carry deprecation notices with the same October 31, 2026 retirement date.</p>
+
+<table>
+<thead>
+<tr><th>Model</th><th>Input</th><th>Cached</th><th>Output</th><th>Context</th><th>Status</th></tr>
+</thead>
+<tbody>
+<tr><td>Mistral Large 4</td><td>$0.70</td><td>$0.07</td><td>$2.10</td><td>1M</td><td>Public Preview</td></tr>
+<tr><td>Mistral Large 3</td><td>$0.50</td><td>$0.05</td><td>$1.50</td><td>256K</td><td>Deprecated, retires 10/31/2026</td></tr>
+<tr><td>Mistral Medium 3.5</td><td>$1.50</td><td>—</td><td>$7.50</td><td>256K</td><td>Deprecated, retires 10/31/2026</td></tr>
+<tr><td>Mistral Small 4</td><td>$0.15</td><td>$0.015</td><td>$0.60</td><td>256K</td><td>GA</td></tr>
+<tr><td>Codestral</td><td>$0.30</td><td>$0.03</td><td>$0.90</td><td>256K</td><td>GA</td></tr>
+<tr><td>Mistral Embed</td><td>$0.10</td><td>$0.01</td><td>—</td><td>—</td><td>GA</td></tr>
+</tbody>
+</table>
+
+<p>Two observations. <strong>Mistral Small 4 at $0.15 and $0.60 with a 256K context is still GA and is 4.7x cheaper on input than Large 4</strong>, unifying instruction following, reasoning, and coding in one model. For a lot of production traffic Small 4 is the better default and Large 4 the escalation path. The other is <strong>Public Preview</strong>: per Mistral's lifecycle policy, Preview models "are priced at the same rate as General Availability models" but "allow silent updates" and have "no guaranteed path to General Availability". The price you read today is the price you get, but the weights can change under you without a version bump. The policy also sets migration windows: <strong>6 months for GA models</strong>, 1 month for Preview. Large 3 and Medium 3.5 were GA and got their 6 months; Large 4 is Preview, so if it ever deprecates you get a month.</p>
+
+<h2 id="architecture">The architecture, and why the token efficiency claim holds</h2>
+<p>Mistral Large 4 is a granular Mixture-of-Experts model, and the architecture explains the headline numbers.</p>
+<ul>
+<li><strong>1.05T total parameters, 52B active per token</strong> (49B in feed-forward compute, the rest embeddings and output layers).</li>
+<li><strong>128 routed experts, 4 active per token</strong>, plus one shared expert, so 5 active experts per token in total.</li>
+<li><strong>72 decoder layers</strong>, hidden size 6,144, 64 attention heads.</li>
+<li><strong>Multi-head Latent Attention plus a DeepSeek Sparse Attention indexer</strong> that selects up to 2,048 key positions per query, with a 3:1 RoPE-to-NoPE pattern, KV state shared across layers, and LeRope (YaRN-scaled RoPE with a learned multiplier per frequency)</li>
+<li><strong>A separate 1.6B Pixtral vision encoder</strong>: 30 layers, hidden dimension 2,048, 14x14 patches, merge size 2.</li>
+</ul>
+<p>Two independent forms of sparsity compound here: the router selects which feed-forward networks run, the attention indexer selects which context positions to attend to. That is why a 1T-parameter model serves at a price point a 1T dense model could never reach.</p>
+<p>The checkpoint also ships with an embedded <strong>DSpark speculative decoding draft head</strong>: 3 dense MLA draft layers in BF16 that propose a block of 3 tokens with a recurrent Markov head, measuring up to <strong>1.9x higher throughput</strong> than serving the target model alone. Because the drafter ships inside the checkpoint rather than as a separate model, you enable it with one flag to vLLM or SGLang, and because speculative decoding does not change the target model's outputs, it is a pure win with no accuracy trade-off.</p>
+
+<h2 id="benchmarks">What the benchmarks actually say</h2>
+<p>Mistral published a lot of numbers. Here is the set with independent corroboration, verified October 31, 2026.</p>
+
+<table>
+<thead>
+<tr><th>Benchmark</th><th>Score</th><th>What it measures</th></tr>
+</thead>
+<tbody>
+<tr><td>Artificial Analysis Coding Agent Index</td><td>48%</td><td>Agentic coding, token-efficiency adjusted</td></tr>
+<tr><td>Artificial Analysis Intelligence Index v5</td><td>26</td><td>Aggregate intelligence, highest among western open-weight models</td></tr>
+<tr><td>Artificial Analysis Cyber Index</td><td>51%</td><td>Finding, reproducing, and patching vulnerabilities</td></tr>
+<tr><td>FrontierCode 2.0 (Cognition, private)</td><td>19.7%</td><td>End-to-end code quality, lead among open-weight models</td></tr>
+<tr><td>Terminal-Bench 4.0</td><td>41%</td><td>Terminal-based coding, up 13 points from preview</td></tr>
+<tr><td>BrowseComp</td><td>84.5%</td><td>Web browsing, up from 75% at the SFT checkpoint</td></tr>
+<tr><td>FinWorkBench (Finch)</td><td>73.3%</td><td>Finance workflows, second only to Kimi K3 among open models</td></tr>
+<tr><td>B3 Agent Security Benchmark</td><td>97.1% attack resistance</td><td>Prompt injection and system-prompt exfiltration</td></tr>
+<tr><td>DeepSWE v1.1</td><td>61.7%</td><td>Software engineering tasks</td></tr>
+</tbody>
+</table>
+
+<p>Two caveats. <strong>FrontierCode 2.0 is Cognition's private benchmark</strong>, so that number is reported by Mistral and not independently reproducible. And the "47% fewer tokens per task" figure is a comparison against GLM-5.3, the index leader, making it a relative claim. Since the 48% index score is effectively a tie, token efficiency is the differentiator, and it is the number to test against your own workload.</p>
+<p>The safety side cuts both ways. Mistral reports an average <strong>96.6% refusal rate on malicious cyber requests</strong>, claimed as the highest among open models. But it also discloses that it observed the model refusing black-box attacks against live targets while seeing "a potential for uplift to conduct real attacks", and that it is modifying guardrails accordingly. This is a model with real offensive capability whose guardrails are actively being tuned, so plan for behaviour changes in the hosted API. Separately, <strong>Surge Code blind pairwise evaluations preferred Large 4 over GLM-5.3, Kimi K3, and DeepSeek V4.1 Flash, behind only Claude Opus 5.5</strong>: human preference from a third-party service, a different kind of evidence from a benchmark score.</p>
+
+<h2 id="reasoning">Reasoning effort, and the one setting you cannot change</h2>
+<p>Mistral Large 4 has three reasoning efforts: <code>low</code>, <code>medium</code>, and <code>high</code>, with <code>high</code> as the default. Low is for simple tasks and fast replies, medium for everyday work, high for the hardest agentic and precision-critical runs. Recommended sampling across all three is <code>temperature=1.0</code> and <code>top_p=0.95</code>, and reasoning content is returned separately from the message content.</p>
+<p>The part that surprises people is that <strong>reasoning cannot be disabled</strong>. The model card is explicit: pass <code>reasoning_effort</code> set to none and the model still uses high. Since thinking tokens are billed as output tokens at $2.10 per million, "reasoning always on" is a cost decision baked into the model, not a default you can dial away. If you need a cheap non-thinking path, Mistral Small 4 at $0.60 output is a different model, not a different setting on this one.</p>
+
+
+<h2 id="code">Calling the API</h2>
+<p>The API is OpenAI-compatible. The model identifier is <code>mistral-large-4</code>, with an alias <code>mistral-large-4-0</code> that pins the version. Mistral's lifecycle documentation warns that a moving alias exposes you to silent updates in behaviour and pricing, so pin it if reproducibility matters.</p>
+
+<pre><code class="language-bash">curl -sS https://api.mistral.ai/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer $MISTRAL_API_KEY" \\
+  -d '&#123;
+    "model": "mistral-large-4-0",
+    "reasoning_effort": "medium",
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "messages": [
+      &#123;"role": "user", "content": "Summarise this incident log and list the three highest-risk findings."&#125;
+    ]
+  &#125;'
+</code></pre>
+
+<p>The Python SDK path, with reasoning returned separately:</p>
+
+<pre><code class="language-python">import os
+from mistralai import Mistral
+
+client = Mistral(api_key=os.environ["MISTRAL_API_KEY"])
+
+resp = client.chat.complete(
+    model="mistral-large-4-0",
+    reasoning_effort="medium",
+    temperature=1.0,
+    top_p=0.95,
+    messages=[
+        &#123;"role": "user", "content": "Write a Python function to merge two sorted linked lists."&#125;,
+    ],
+)
+
+# Reasoning is billed as output tokens, so measure it.
+print("reasoning tokens:", resp.usage.completion_tokens)
+print("answer:", resp.choices[0].message.content)
+</code></pre>
+
+<p>Two request-shaping details worth carrying into production. <strong>Strict JSON schema is natively enforced</strong>, including <code>response_format</code> with <code>"strict": true</code>, and function calling with <code>tool_choice</code> works on <code>/v1/chat/completions</code>, <code>/v1/conversations</code>, and <code>/v1/agents</code>. In Batch, the per-request body is exactly the body you would send to the normal endpoint, with the model field optional if you set it at job creation time.</p>
+
+<h2 id="license">The license, read literally</h2>
+<p>This is the section to read twice, because "open weight" gets used loosely in marketing and the conditions are specific.</p>
+<p>The <strong>Mistral Ecosystem Open-Weight License</strong> is a modified MIT license. You are granted, free of charge, the right to use, copy, modify, merge, publish, distribute, sublicense, and sell copies of the model, and to run, deploy, further train, or otherwise modify it and create derivative works. There are two conditions. The copyright and permission notice must be included in all copies or substantial portions of the model. And the one that matters: <strong>"If the Licensee or any of its affiliates operates a Model as a Service business, the Licensee must enter into a separate commercial license with Mistral before using the Model or its derivative works for any commercial purpose."</strong></p>
+<p>"Model as a Service" means giving a third party access to the model or its derivatives for inference or post-training, in a manner that lets that third party exercise meaningful control over inputs, parameters, or training data. Excluded: end-user products with the model embedded in specific features or harnesses, and mere relaying of requests to models hosted by others. Internal use is also exempt. So the practical guidance: <strong>an internal tool, an agent for your own users, or a product with the model embedded in a feature is fine.</strong> Putting a hosted endpoint in front of the weights that lets outside parties control their prompts or fine-tune the model is not, without a Mistral agreement. If you are building an inference provider, a fine-tuning service, or a hosted coding agent on these weights, contact Mistral first.</p>
+
+<h2 id="self-host">The self-hosting math, and when it makes sense</h2>
+<p>This is the part the launch coverage skipped, and it is where the "open weight" claim either pays off or does not. Start with size. The FP8 checkpoint on Hugging Face is about <strong>1.06 TB of weights across 54 safetensors shards</strong>; the NVFP4 checkpoint, about <strong>0.61 TB</strong>. That is the floor: add KV cache for a 1M context, activations, and serving overhead and you plan hardware well above the raw weights figure. Minimum GPU count per checkpoint, weights only:</p>
+
+<table>
+<thead>
+<tr><th>Checkpoint</th><th>Weights</th><th>B200 180GB</th><th>H200 141GB</th><th>H100 SXM 80GB</th></tr>
+</thead>
+<tbody>
+<tr><td>FP8 / BF16</td><td>1.06 TB</td><td>6 GPUs</td><td>8 GPUs</td><td>14 GPUs</td></tr>
+<tr><td>NVFP4</td><td>0.61 TB</td><td>4 GPUs</td><td>5 GPUs</td><td>8 GPUs</td></tr>
+</tbody>
+</table>
+
+<p>Those counts are weights only, and the bare minimum before KV cache. Mistral's published vLLM recipe for NVFP4 uses <code>--tensor-parallel-size 8</code> with <code>--decode-context-parallel-size 8</code> and <code>--enable-expert-parallel</code>, so eight GPUs is the reference configuration, not the floor. Using RunPod community rates verified October 31, 2026, a B200 costs $7.99/hour and an H100 SXM $3.99/hour.</p>
+
+<table>
+<thead>
+<tr><th>Configuration</th><th>Per hour</th><th>Per month (730h)</th></tr>
+</thead>
+<tbody>
+<tr><td>8x B200 community</td><td>$63.92</td><td>$46,662</td></tr>
+<tr><td>8x B200 secure</td><td>$86.32</td><td>$63,014</td></tr>
+<tr><td>8x H200 SXM</td><td>$50.80</td><td>$37,084</td></tr>
+<tr><td>8x H100 SXM</td><td>$31.92</td><td>$23,302</td></tr>
+</tbody>
+</table>
+
+<p>For a self-hosted cluster to beat the hosted API, it must serve enough tokens per hour that the API price for those tokens exceeds your GPU bill:</p>
+
+<table>
+<thead>
+<tr><th>Cluster</th><th>Token mix</th><th>Tokens/hour needed</th><th>Tokens/sec</th></tr>
+</thead>
+<tbody>
+<tr><td>8x B200 ($63.92/hr)</td><td>100% output</td><td>30.4M</td><td>~8,455</td></tr>
+<tr><td>8x B200 ($63.92/hr)</td><td>50/50 in-out</td><td>45.7M</td><td>~12,683</td></tr>
+<tr><td>8x B200 ($63.92/hr)</td><td>80% in / 20% out</td><td>65.2M</td><td>~18,118</td></tr>
+<tr><td>8x H100 SXM ($31.92/hr)</td><td>50/50 in-out</td><td>22.8M</td><td>~6,333</td></tr>
+<tr><td>8x H100 SXM ($31.92/hr)</td><td>80% in / 20% out</td><td>32.6M</td><td>~9,048</td></tr>
+</tbody>
+</table>
+
+<p>Read that against the reference throughput figures. Hugging Face reports a 2-bit GGUF quant on a single M3 Ultra with 512 GB of unified RAM at about 90 tokens per second prefill and 15 tokens per second generation, and the NVFP4 build on four RTX 6000 Pro cards at 130 to 590 tokens per second prefill with roughly 10 tokens per second generation. <strong>Generation speeds in the 3 to 30 tokens per second range are the realistic operating envelope for this model class on consumer and single-node hardware.</strong> An eight-B200 cluster needs 6,000 to 18,000 tokens per second of aggregate throughput to break even on a chat workload: a datacenter-scale utilisation target, not a hobbyist one.</p>
+<p>The honest conclusion: <strong>for most teams the hosted API wins on cost, and the open weights win on control</strong>. You self-host for data residency, fine-tuning on data you cannot send, deployment policy, or customisation the API does not expose. If your constraint is purely token price, use the API at $0.70 and $2.10, or Batch at half that, and save the 1.06 TB download for a problem that actually needs it. To compare the same workload across upstreams before committing, <a href="https://freemodel.dev/invite/FRE-7a3b6220" target="_blank" rel="sponsored noopener">FreeModel</a> exposes an OpenAI-compatible endpoint in front of multiple providers, so you can point one integration at different model IDs and measure how each handles the same prompts and reasoning settings. For teams already running a gateway, <a href="https://portkey.ai/?ref=apirank" target="_blank" rel="sponsored noopener">Portkey</a> adds the observability and caching layer that makes such a comparison reproducible rather than anecdotal.</p>
+
+<h2 id="availability">Availability, and what happens to the models it replaces</h2>
+<p>Two operational facts affect planning more than benchmarks do.</p>
+<p><strong>Today, October 31, 2026, Mistral Large 3 and Mistral Medium 3.5 are marked deprecated and reach their retirement date.</strong> Under Mistral's lifecycle policy deprecated models "remain accessible until the retirement date", and once retired, requests to their identifiers fail with a 404. If you are still on <code>mistral-large-2512</code> or <code>mistral-medium-3-5</code>, this is a hard deadline. The documented replacement for both is Large 4.</p>
+<p><strong>Geographic availability is the real constraint for many readers.</strong> The API is served from European infrastructure, with regional inference for the EU and US at 1.1x list price. There is no mainland China regional endpoint and no official China access program, so production traffic from mainland China needs a stable overseas proxy or an aggregator fronting the Mistral API, and direct connections typically time out. Latency is dominated by the cross-border round trip, a poor fit for latency-sensitive interactive workloads. Self-hosting the weights inside China is unaffected, a genuine argument for the open weights.</p>
+
+<h2 id="verdict">Verdict</h2>
+<p>At $0.70 input and $2.10 output, Mistral Large 4 is <strong>more expensive than the model it replaces</strong>, and the launch narrative that framed it as a price cut does not survive contact with the pricing page. What justifies the premium is token efficiency: an index score effectively tied with the leader while using 47% fewer tokens per task, and a 90% cached-input discount that makes long-context agent loops genuinely cheap if you structure prompts for caching. Judge it on your own token counts, not on the headline rate.</p>
+<p>The open-weight story is real but not free. The license permits commercial use, fine-tuning, and modification outright, with one exception: running a Model-as-a-Service business requires a separate commercial license from Mistral. Read that clause before you build a hosted inference product, because it is the one part with teeth.</p>
+<p>The self-hosting economics do not favour most teams. 1.06 TB of FP8 weights means 8 B200s or 14 H100s before KV cache, roughly $32 to $64 per hour, and you need thousands of tokens per second of aggregate generation to beat the API. Self-host for sovereignty, fine-tuning on data you cannot send, or deployment policy. Do not self-host for the token price: Batch at 50% off and the $0.07 cached-input rate already get you most of the way there.</p>
+<p>And plan the migration now. Large 3 and Medium 3.5 retire today. Large 4 is Public Preview, so the price is locked but the weights can be updated silently underneath you, and if it ever deprecates you get a month rather than six. Pin <code>mistral-large-4-0</code> and treat the 1M context and the cached-input rate as the two things worth building around.</p>
+
+<h2 id="sources">Sources</h2>
+<ul>
+<li><a href="https://mistral.ai/news/mistral-large-4-oss/" target="_blank" rel="noopener">Mistral — Mistral Large 4 (Le Chonk) is now open weight</a> — release announcement, October 29, 2026</li>
+<li><a href="https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B" target="_blank" rel="noopener">Hugging Face model card — Mistral-Large-4-1T-A52B</a></li>
+<li><a href="https://docs.mistral.ai/inference/pricing" target="_blank" rel="noopener">Mistral inference pricing</a></li>
+<li><a href="https://docs.mistral.ai/models/mistral-large-4-0" target="_blank" rel="noopener">Mistral model page — Mistral Large 4</a></li>
+<li><a href="https://docs.mistral.ai/inference/model-lifecycle" target="_blank" rel="noopener">Mistral model lifecycle policy</a></li>
+<li><a href="https://docs.mistral.ai/inference/priority-tier" target="_blank" rel="noopener">Mistral Priority Tier</a></li>
+<li><a href="https://docs.mistral.ai/inference/regional-inference" target="_blank" rel="noopener">Mistral regional inference</a></li>
+<li><a href="https://docs.mistral.ai/capabilities/batch" target="_blank" rel="noopener">Mistral batch processing</a></li>
+<li><a href="https://huggingface.co/mistralai/Mistral-Large-4-1T-A52B/blob/main/LICENSE" target="_blank" rel="noopener">Mistral Ecosystem Open-Weight License</a> — full text</li>
+<li><a href="https://www.runpod.io/pricing" target="_blank" rel="noopener">RunPod GPU pricing</a></li>
+</ul>
+
+<h2>Related Articles</h2>
+<ul>
+<li><a href="/tutorials/mistral-ai-api-review">Mistral AI API Review 2026</a> — the provider-level overview, before the line-up consolidation</li>
+<li><a href="/tutorials/mistral-ocr-4-api-review-2026">Mistral OCR 4 API Review 2026</a> — the document AI side of the platform</li>
+<li><a href="/tutorials/ai-api-long-context-2026">AI API Long Context Windows 2026</a> — 1M-token contexts across providers</li>
+<li><a href="/tutorials/ai-api-code-generation-2026">AI API Code Generation 2026</a> — the coding benchmark landscape</li>
+</ul>
+
+</article>
+`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={enBody} />
+</BaseLayout>
