@@ -1,0 +1,305 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'ai-api-key-security-black-october-2026';
+const zhTitle = 'AI API Key 安全 2026：9 家平台集体泄露';
+const zhDescription = '2026 年 10 月 9 家 AI 开发平台集体曝安全事件，被盗 Key 引发 250 万次 AWS Bedrock 调用。三个 ARN 加一条 deny，堵住全球路由。';
+const date = '2026-11-01';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "2026 年 10 月有哪些 AI 开发平台被曝泄露？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "至少 9 家：Fireworks AI（10 月 6 日）、Andromeda（10 月 9 日）、Zeabur（10 月 14 日）、Lightning AI（10 月 15 日）、OpenCode（10 月 16 至 17 日）、Railway（10 月 20 日）、Warp（10 月 23 日）、CommandCode（10 月 28 日）、Northflank（10 月 30 日）。Wiz 于 2026 年 10 月 30 日发布了这份合并分析。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "攻击者到底从这些平台拿走了什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "是能访问 AI 的环境变量，不是模型权重。Fireworks、Zeabur、Lightning AI 都把根因指向凭据访问而非模型层缺陷。Zeabur 自己的事故报告写明：平台数据库中有 3,218,965 条环境变量记录和 321,810 条账号记录被读取，集群管理员 token 永不过期，长期管理员凭据以明文存储且可从公网访问。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "被盗的 Bedrock Key 让受害者损失了多少？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Wiz 观察到其中一例约 80 万次 Bedrock 调用，另一例约 170 万次，成功率分别约 90% 和超过 100 万次。按官方价折算，仅这两起就很可能产生超过 10 万美元的用量费用。流量特征与转售的编码 agent 流量一致；另有社区报告称 Railway 上存储的 Key 被用于盗取加密货币，金额约 37.1 万美元。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么全球跨区推理配置会让被盗 Key 的破坏力更大？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Amazon Bedrock 的跨区推理按调用来源 Region 计价，与请求实际在哪个 Region 处理无关，因此 global 配置可以把流量分发到所有受支持的商用 Region。由于负载被摊薄到多个 Region，某案例中 80 万次调用只有约 6% 被限流；而限制在 us 配置的 Key 则会撞上区域配额，超出部分几乎全部被限流。AWS 文档还写明，Global 配置相比地理配置在输入输出 token 价格上可省约 10%。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "如何限制 Bedrock Key，让被盗凭据无法走全球路由？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "用 IAM 策略把 bedrock:InvokeModel 只允许到具体的推理配置 ARN 和具体的 foundation model ARN，再加一条显式 deny：当 aws:RequestedRegion 为 unspecified 时拒绝所有推理类操作。AWS 文档明确指出，全球跨区推理在评估那个不含 Region 的全局 foundation model 资源时，会把 aws:RequestedRegion 置为 unspecified，因此写 us-west-2 这类具体 Region 名的 deny 完全拦不住它。另外，全球跨区推理需要同时放行三个资源 ARN，而不是一个。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "平台被曝之后，我的 API Key 还需要轮换吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "需要，而且 Zeabur 的建议比日常轮换更强：8 月那次凭据轮换并没有覆盖 10 月事故用到的凭据。Zeabur 要求用户替换平台上存储的每一个密码和 Key，哪怕你在 8 月事故后已经换过一轮，因为泄露的数据仍可能被滥用。同时值得抄的一条经验是：8 月之后已经把环境变量迁到自己专属服务器的项目，完全不在平台数据库泄露范围内。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "有证据证明那些转卖站点就是这轮攻击的幕后黑手吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "没有直接证据。Wiz 明确说明目前没有证据把这些转卖站点与「黑色十月」的攻击关联起来。它能证明的是，这些站点的运营者确实持有被盗 Key 并对其做过可用性检查，这说明凭据存在活跃交易市场，但不能证明这是一场单一主体策划的协同行动。"
+      }
+    }
+  ]
+};
+
+const zhBody = `<article class="max-w-3xl mx-auto text-gray-800">
+
+  <h1 class="text-4xl font-bold text-gray-900 mb-4">AI API Key 安全 2026：9 家平台集体泄露</h1>
+  <p class="text-xl text-gray-600 mb-8">2026 年 10 月，9 家 AI 开发平台集体曝出安全事件。被盗 Key 引发约 250 万次 AWS Bedrock 调用。本文给出真正能拦住它的 IAM 改法。</p>
+
+<h2 id="what-happened">2026 年 10 月到底发生了什么</h2>
+<p><strong>2026 年 10 月 30 日</strong>，Wiz 发布了一份名为<strong>「黑色十月」（Black October for AI Developer Platforms）</strong>的合并分析：在同一个月里，至少 <strong>9 家</strong> AI 开发平台公开披露了安全事件。研究人员发现，虽然这些事件之间没有任何一个共同漏洞把它们串起来，但它们共享同一种<strong>形态</strong>。</p>
+<p>Wiz 列出的平台与日期如下：</p>
+
+<table>
+<thead>
+<tr><th>平台</th><th>披露日期</th><th>官方给出的根因</th></tr>
+</thead>
+<tbody>
+<tr><td>Fireworks AI</td><td>10 月 6 日</td><td>凭据访问</td></tr>
+<tr><td>Andromeda</td><td>10 月 9 日</td><td>称为「行业范围的攻击」</td></tr>
+<tr><td>Zeabur</td><td>10 月 14 日</td><td>长期管理员凭据明文存储</td></tr>
+<tr><td>Lightning AI</td><td>10 月 15 日</td><td>凭据访问；此前刚受 Mini-Shai Hulud 供应链活动影响</td></tr>
+<tr><td>OpenCode</td><td>10 月 16 至 17 日</td><td>一个「遗留系统」；报告了 agent swarm 攻击</td></tr>
+<tr><td>Railway</td><td>10 月 20 日</td><td>「构建基础设施中的权限提升」</td></tr>
+<tr><td>Warp</td><td>10 月 23 日</td><td>第三方厂商依赖</td></tr>
+<tr><td>CommandCode</td><td>10 月 28 日</td><td>归因于一次蒸馏尝试</td></tr>
+<tr><td>Northflank</td><td>10 月 30 日</td><td>尚未发布</td></tr>
+</tbody>
+</table>
+
+<p>其中 Fireworks、OpenCode、Warp 三家报告了 <strong>agent swarm</strong>（智能体蜂群）攻击迹象，OpenCode 和 CommandCode 明确把事件归因于一次<strong>模型蒸馏</strong>尝试。所有公开报告的共同模式，用 Wiz 的原话是：<strong>有针对性的定向利用，明确在搜寻存储的环境变量，重点是那些授予 AI 访问权限的变量</strong>。如果你把 LLM 服务商的 Key 放在托管平台的环境变量里，这就是在找你的那波攻击。</p>
+
+<h2 id="no-single-vulnerability">没有单一漏洞，这恰恰是最难受的地方</h2>
+<p>多数泄露复盘都会以一个补丁和一个版本号收尾。这次没有。Fireworks、Zeabur、Lightning AI 都指向凭据访问；Railway 指向构建基础设施里的权限提升；Warp 指向第三方依赖；OpenCode 指向遗留系统；Lightning AI 在此之前刚被 Mini-Shai Hulud 供应链活动打过一次。</p>
+<p>真正统一的不是 AI 平台上的某个漏洞，而是两件事的组合：<strong>长期有效的凭据存在一个可触达的位置</strong>，加上<strong>一台每分钟能试上千个 Key 的机器</strong>。Wiz 指出两个在推动这一切的力量：一是 agentic 攻击让攻击者能更快拿下目标；二是 LLMJacking 的兴起，以及配套的「LLM 经纪人」基础设施——被偷的 API 访问权可以直接转卖，这给了盗窃行为一条变现路径，这在几年前并不存在。对模型输出做蒸馏的需求也在往同一个方向推。</p>
+
+<h2 id="what-attackers-did">攻击者在拿到凭据之后做了什么</h2>
+<p>这部分对 API 开发者最重要，因为被黑只是无聊的一半。Wiz 观察到两起企业 AWS 案例：平台厂商处泄露的凭据，随后被用来打客户自己的 AWS 账号，而使用模式高度一致。</p>
+<p>两起案例中，第一次未授权活动都发生在凭据暴露报告后的 <strong>30 分钟内</strong>。那是一次来自住宅 IP 的 InvokeModel 调用，用一分钟时间扫过多个组织来测试这把 Key。调用先请求一个 Claude 模型失败，然后回退到另一个成功的模型。之后几天里两把 Key 都只有零星流量，每天 14 到 120 次调用，来自同一个小型客户端，且两把 Key 的调用时间前后只差约一分钟、像被同一条任务驱动。那是一次<strong>验活</strong>：攻击者在确认 Key 还能用。</p>
+<p>然后是洪水。在案例 A 里，验活后第四天，一个轮换代理池跑了一次目录探测，对十余家厂商的每个模型各发一次调用，包括 Amazon Nova、DeepSeek、GLM、Kimi、Grok 和 GPT-6 Astra。几小时后，一个 boto3 脚本开始枚举 Bedrock 与 EC2 配额；又过了半小时，第二个主机用不到一分钟做了上千次调用，把各 Region 的配额与模型可用性摸了一遍。在大约三十小时内，攻击者发出了约 <strong>80 万次 Bedrock 调用</strong>，其中约 90% 成功。</p>
+<p>案例 B 走向相反。那把 Key 原本就被限制在特定地理区域，前两天调用全部失败；直到一个共享 VPN 出口上的探针找到真正可用的模型 ID，闸门才打开。那个地址在十三小时内发起约 <strong>170 万次 Bedrock 调用</strong>，其中超过一百万次成功。Wiz 的估算：按官方价，仅这两起就很可能产生超过 <strong>10 万美元</strong>的用量费用。</p>
+
+<h2 id="cross-region">决定你会被打多狠的那个跨区细节</h2>
+<p>这是整件事的技术核心，也是大多数开发者不知道它的原因。Amazon Bedrock 提供两类跨区推理配置：<strong>地理型</strong>配置带地理前缀，比如 <code>us.</code>、<code>eu.</code>、<code>apac.</code>、<code>in.</code>，处理始终留在该地理范围内；<strong>全球型</strong>配置前缀是 <code>global.</code>，可以把请求路由到全球任意受支持的商用 Region。AWS 文档写明，Global 配置在输入输出 token 价格上可省约 10%，且价格永远按调用来源 Region 计算，与请求实际在哪儿跑无关。</p>
+<p>在案例 A 中，被盗 Key 的策略允许 <code>global.*</code> 配置，于是攻击者把所有调用都走全球路由。因为全球路由把负载摊到了多个 Region，那 80 万次调用中只有约 <strong>6%</strong> 被限流。案例 B 的 Key 只允许 <code>us.*</code>：攻击者对 global 的调用全部失败，找到真正可用的区域模型 ID 之后，洪峰仍然大多被限流，因为流量撞上了账号的区域配额，超出部分几乎全被挡下。</p>
+<p>由此有两个直接结论。第一，<strong>global 配置会放大被盗 Key 的破坏半径</strong>，因为它把一个区域配额变成了一个全球配额池。第二，<strong>你监控的配额数字不是攻击者消耗的那个配额</strong>。如果你盯的是区域级的每分钟 token 上限，一把走 global 配置的 Key 对这个监控是隐形的。</p>
+<p>AWS 还有一个让修复方案不直观的细节：启用全球跨区推理需要同时放行 <strong>三个</strong>资源 ARN，而不是一个——区域推理配置 ARN、区域 foundation model ARN，以及不含 Region 也不含账号的全局 foundation model ARN。全局 ARN 的「空」是刻意设计的。只放前两个的策略会静默地无法启用全球路由，而三个全放、没有 deny 的策略则等于把它打开。</p>
+
+<h2 id="zeabur">平台泄露到底意味着什么：Zeabur 的数字</h2>
+<p>Zeabur 写出了这个月最完整的一份事故说明，并因此决定关停：共享集群服务自 2026 年 12 月 1 日起暂停，所有专属服务器与共享集群在 12 月 31 日前全部停止。它 10 月 19 日发布的初步报告，最清楚地说明了托管平台被黑对里面的 API Key 意味着什么。</p>
+<p>10 月 14 日至 15 日，攻击者使用泄露的内部凭据进入共享集群、部分专属服务器与 Zeabur 内部系统，最终读到平台数据库。共享集群的管理接口当时<strong>暴露在公网</strong>，管理员 token <strong>永不过期</strong>。攻击者在 <strong>865 个数据库服务</strong>里执行命令，规模化读取 n8n 实例，并逐表翻阅 PostgreSQL 数据库，随后又从密钥管理服务读走了约 53 个生产密钥。</p>
+
+<table>
+<thead>
+<tr><th>被读取的数据</th><th>规模</th><th>Zeabur 自述的确定性</th></tr>
+</thead>
+<tbody>
+<tr><td>服务环境变量（名称与值）</td><td>3,218,965 条</td><td>已确认</td></tr>
+<tr><td>账号记录（邮箱、用户名、手机号）</td><td>321,810 个账号</td><td>已确认</td></tr>
+<tr><td>明文存储的 zSend API Key</td><td>566 个，已吊销</td><td>已确认</td></tr>
+<tr><td>平台访问令牌</td><td>11,536 个，仅存哈希不可逆，已全部吊销</td><td>已确认</td></tr>
+<tr><td>共享集群全部服务的环境变量与密钥</td><td>9 个 Region</td><td>部分确认，其余按泄露处理</td></tr>
+<tr><td>用户数据库内容</td><td>865 个数据库服务</td><td>评估判定</td></tr>
+<tr><td>GCP 专属服务器上的全部数据</td><td>101 台服务器，92 个用户</td><td>登录已确认</td></tr>
+</tbody>
+</table>
+
+<p>表里有两处值得强调：访问令牌只存哈希、无法还原，而 zSend 的 API Key 是明文存储——同一个设计错误在两个不同层面重复出现；以及官方建议比日常轮换更强——由于 8 月那次凭据轮换没有覆盖本次用到的凭据，Zeabur 要求用户替换平台上存储的每一个密码和 Key，哪怕 8 月之后已经换过一轮，因为泄露数据仍可能被滥用。同样有效的一条缓解措施也值得照抄：8 月之后已经把环境变量迁到自己专属服务器的项目，完全不在平台数据库泄露范围内。</p>
+
+<h2 id="resale">转售市场才是这件事反复发生的原因</h2>
+<p>Wiz 识别出两个正在公开交易被盗 Key 的团伙。其中一个以单个 IP 为中心，Zeabur 的自查报告也点名了这个 IP；该站点公开宣传以折扣价提供前沿模型访问，并接受 USDT 支付。其基础设施可追溯到 2025 年，陆续承载过多个 LLM 转卖页面，包括 2026 年 3 月的 ChatGPT 账号池管理站，以及在 Zeabur 时间线点名该 IP 之前四天上线的一个自主渗透测试控制台。另一个转卖枢纽在另一个地址上，对多起事件中的被盗 Key 做权限检查。</p>
+<p>第二个团伙有一处细节值得读两遍，因为它解释了经济逻辑：它的域名曾被快照到一个标题为「蒸馏检测监控」的页面，按高风险、观察、正常三类给用户打分。研究人员认为，这是运营方在尽量让自己的账号远离看起来像蒸馏的流量，因为蒸馏正是账号被封的原因。这是有合规职能的转售生意，不是一个拿着泄露 Key 乱跑的脚本小子。</p>
+<p>Wiz 对证据边界很明确：它没有证据把这些转卖基础设施与「黑色十月」的攻击直接关联起来。它能证明的是，这些运营者确实持有被盗 Key 并对其做过测试，这证明凭据存在活跃交易市场。</p>
+
+<h2 id="controls">真正能改变结果的五项措施</h2>
+<p>防御建议并不复杂，五条都是你这周就能做完、不需要买新的安全产品的事。</p>
+<p><strong>一、把每把 Key 限定到单一模型和单一 Region。</strong>一个策略里 <code>bedrock:InvokeModel</code> 只允许命中某个具体推理配置 ARN 和某个具体 foundation model ARN 的 IAM 角色，对攻击者毫无价值，因为那次横跨十余家厂商的目录探测会立刻失败。AWS 自己就写明，可以把 InvokeModel 语句的 Resource 换成具体的模型与推理配置 ARN，机制就是这一句。</p>
+
+<pre><code class="language-json">&#123;
+  "Version": "2012-10-17",
+  "Statement": [
+    &#123;
+      "Sid": "AllowOneScopedProfile",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+      ],
+      "Resource": [
+        "arn:aws:bedrock:us-east-1:123456789012:inference-profile/us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+        "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0"
+      ]
+    &#125;,
+    &#123;
+      "Sid": "DenyGlobalCrossRegionRouting",
+      "Effect": "Deny",
+      "Action": [
+        "bedrock:InvokeModel*",
+        "bedrock:Converse*",
+        "bedrock:ConverseStream*"
+      ],
+      "Resource": "*",
+      "Condition": &#123;
+        "StringEquals": &#123; "aws:RequestedRegion": "unspecified" &#125;
+      &#125;
+    &#125;
+  ]
+&#125;
+</code></pre>
+
+<p>上面这段里最容易写错的是 deny 那一块。AWS 文档明确指出，全球跨区推理在评估那个不含 Region 的全局 foundation model 资源时，会把 <code>aws:RequestedRegion</code> 置为 <code>unspecified</code>，而不是实际的目标 Region，所以传统的、针对具体 Region 名（例如 <code>us-west-2</code>）的 deny 根本匹配不到它。如果你的组织用服务控制策略屏蔽未启用的 Region，全球路由还要求你在那里放行 <code>unspecified</code>，否则请求会在到达模型之前就被策略拒绝。</p>
+<p><strong>二、给每把 Key 加硬性支出上限。</strong>Wiz 的案例给出了理由：一例中约 80 万次调用成功，另一例超过一百万次成功，而使用特征是一个把众多终端用户藏在同一把凭据后面的转售商。每个 Key 的预算加自动熔断，能把无上限的损失变成有上限的损失。网关能提供这个能力加上真正可审计的请求日志。如果你还没有网关，<a href="https://portkey.ai/?ref=apirank" target="_blank" rel="sponsored noopener">Portkey</a> 是放逐 Key 虚拟 Key 与支出上限的合理落点，比你为每一家服务商各配一套省钱机制省事。</p>
+<p><strong>三、盯目录探测，而不是只盯流量尖峰。</strong>两起 Wiz 案例中的第一个恶意动作，都是一次扫过十多个模型的探测调用。正常业务不会长这样。下面的脚本查 CloudTrail 的 Bedrock 事件，把 Wiz 公布的做凭据检测的 IP 标出来，同时标出那些在大量不同模型之间发起大量调用的来源地址——那就是目录探测的特征。</p>
+
+<pre><code class="language-python">import boto3
+from collections import defaultdict
+from datetime import datetime, timedelta, timezone
+
+# Wiz 公布的用于检测被盗 Key 的 IP。请对照自己的日志确认这些地址。
+WIZ_IOC = {
+    "23.106.46.239",    # 转卖枢纽，Zeabur 也点名过
+    "38.246.114.118",   # 对多把被盗 Key 做权限检查
+    "104.243.32.50",    # 对多把被盗 Key 做权限检查
+    "31.57.201.201",    # 被发现使用多把被盗 Key
+}
+
+client = boto3.client("cloudtrail")
+
+def bedrock_events(days=14):
+    start = datetime.now(timezone.utc) - timedelta(days=days)
+    token = None
+    while True:
+        kwargs = dict(
+            LookupAttributes=[&#123;
+                "AttributeKey": "EventSource",
+                "AttributeValue": "bedrock.amazonaws.com",
+            &#125;],
+            StartTime=start,
+            EndTime=datetime.now(timezone.utc),
+            MaxResults=50,
+        )
+        if token:
+            kwargs["NextToken"] = token
+        response = client.lookup_events(**kwargs)
+        for event in response.get("Events", []):
+            yield event
+        token = response.get("NextToken")
+        if not token:
+            break
+
+by_ip = defaultdict(lambda: &#123;"calls": 0, "models": set()&#125;)
+for event in bedrock_events():
+    ip = event.get("sourceIPAddress")
+    if not ip:
+        continue
+    by_ip[ip]["calls"] += 1
+    for resource in event.get("resources") or []:
+        by_ip[ip]["models"].add(resource.get("ARN", "").split("/")[-1])
+
+for ip, agg in sorted(by_ip.items(), key=lambda kv: -kv[1]["calls"]):
+    if ip in WIZ_IOC:
+        print(f"[IOC] &#123;ip&#125; 发起了 &#123;agg['calls']&#125; 次 Bedrock 调用")
+    elif agg["calls"] > 200 and len(agg["models"]) > 5:
+        print(f"[目录探测] &#123;ip&#125;：&#123;agg['calls']&#125; 次调用，横跨 &#123;len(agg['models'])&#125; 个模型")
+</code></pre>
+
+<p><strong>四、按周期轮换 Key，出事故时也要轮换，不能只轮换一次。</strong>Zeabur 自己的案例暴露了陷阱：一次轮换如果漏掉某一类凭据，或漏掉轮换之后新建的凭据，门就还开着。唯一能扛住你事先不知道的平台泄露的版本，是自动化。</p>
+<p><strong>五、把最值钱的 Key 整个搬离共享托管。</strong>Zeabur 唯一被证实有效的缓解措施，就是把环境变量搬出平台、搬进客户自己控制的专属服务器。如果一把 Key 能触达输出价每百万 5 到 25 美元的前沿模型，它就该待在你自己的密钥管理服务里，而不是共享集群上的一个环境变量。</p>
+
+<h2 id="limitations">本文不覆盖的部分</h2>
+<p>有几点限制需要说清楚。多数平台的根因分析仍是初步阶段，Northflank 在写作时尚未发布，因此这份名单可能还会变长。Wiz 无法把转卖站点与整场攻击行动关联起来。那两起 AWS 企业案例只是样本而非完整统计，受影响客户总数未知，总成本也就高于已披露的 10 万美元。最后，本文没有、也不可能说明哪家 AI 模型服务商被攻破：漏洞出在托管与部署平台，API Key 是被搬运的货物，不是漏洞本身。</p>
+
+<h2 id="verdict">结论</h2>
+<p>对「黑色十月」最诚实的解读是：这不是一场 AI 特有的危机。它就是那个普通的凭据盗窃问题，只不过被一个新激励加速了——模型访问权现在有一个干净的转售市场，于是被盗 Key 有了一个明确的价格，而这个价格又供养了让这类攻击能规模化、低成本运行的自动化。</p>
+<p>对 API 开发者来说，动作都不炫酷，而且大多早就知道：把 Key 限定到单一模型与单一 Region；显式 deny 掉全球跨区路由，因为这条 deny 必须匹配 <code>unspecified</code> 这个字符串；给每把 Key 设支出上限；盯住那些在大量不同模型之间来回调用的来源地址；按周期轮换；再把那些真的能伤到你的 Key 搬离共享基础设施。</p>
+<p>唯一真正新的信息就是跨区那个细节。一把 Key 有多受限，取决于它策略里允许哪些推理配置；而一个 global 配置能把一个区域配额变成一个九成可用的全球配额。如果你只从这篇文章带走一件事，就带走这一件。</p>
+
+<h2 id="faq">常见问题</h2>
+<p><strong>2026 年 10 月有哪些 AI 开发平台被曝泄露？</strong>至少 9 家：Fireworks AI、Andromeda、Zeabur、Lightning AI、OpenCode、Railway、Warp、CommandCode、Northflank。Wiz 于 2026 年 10 月 30 日发布合并分析。</p>
+<p><strong>攻击者拿走了什么？</strong>是授予 AI 访问权的环境变量，不是模型权重。所有公开报告都描述了对存储环境变量的定向搜寻，Zeabur 确认平台数据库中 3,218,965 条环境变量记录被读取。</p>
+<p><strong>被盗 Key 造成多少损失？</strong>按官方价折算，Wiz 记录的两起 AWS 案例合计超过 10 万美元，总计约 250 万次 Bedrock 调用。另有社区报告称，Railway 上存储的 Key 被用于盗取加密货币，金额约 37.1 万美元。</p>
+<p><strong>如何阻断全球跨区路由？</strong>加一条显式 deny，作用于 <code>bedrock:InvokeModel*</code> 与 converse 系列操作，条件用 <code>StringEquals</code> 匹配 <code>aws:RequestedRegion</code> 为 <code>unspecified</code>。针对具体 Region 名的 deny 匹配不到全局资源评估。</p>
+<p><strong>有证据证明转卖站点是这轮攻击的幕后黑手吗？</strong>没有。Wiz 明确表示没有。它记录到的是这些站点运营者持有被盗 Key 并对其做过检查，这说明凭据存在活跃市场。</p>
+
+<h2>参考来源</h2>
+<ul>
+<li><a href="https://www.wiz.io/blog/black-october-for-ai-developer-platforms" target="_blank" rel="noopener">Wiz —「Black October」for AI Developer Platforms</a> — 合并事件分析，2026 年 10 月 30 日</li>
+<li><a href="https://zeabur.com/blogs/october-2026-security-incident" target="_blank" rel="noopener">Zeabur — 2026 年 10 月安全事件初步报告</a> — 2026 年 10 月 19 日</li>
+<li><a href="https://zeabur.com/blogs/zeabur-is-shutting-down" target="_blank" rel="noopener">Zeabur 即将关停：接下来会怎样</a> — 2026 年 10 月 17 日</li>
+<li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html" target="_blank" rel="noopener">Amazon Bedrock — 跨区推理</a> — 地理型与全球型对比</li>
+<li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/global-cross-region-inference.html" target="_blank" rel="noopener">Amazon Bedrock — 全球跨区推理</a> — 三段式 IAM 策略与 unspecified deny 模式</li>
+<li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/geographic-cross-region-inference.html" target="_blank" rel="noopener">Amazon Bedrock — 地理跨区推理</a> — 地理前缀与 IAM 示例</li>
+<li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html" target="_blank" rel="noopener">Amazon Bedrock — 支持推理配置的 Region 与模型</a></li>
+<li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/security_iam_id-based-policy-examples.html" target="_blank" rel="noopener">Amazon Bedrock — IAM 策略示例</a> — 把 InvokeModel 限制到具体模型与推理配置</li>
+</ul>
+
+<h2>相关文章</h2>
+<ul>
+<li><a href="/zh/tutorials/claude-api-abuse-report-developer-impact-2026">Claude API 滥用报告 2026：对开发者的影响</a> — 同一个市场的需求侧，来自 Anthropic 自己的报告</li>
+<li><a href="/zh/tutorials/ai-api-cost-control-tools-2026">AI API 成本控制工具 2026</a> — 网关支出上限与逐 Key 预算横评</li>
+<li><a href="/zh/tutorials/gpt-5-6-sol-huggingface-attack-api-security-lessons">GPT-5.6 Sol 袭击 Hugging Face：API 启示</a> — 能扛住模型层攻击的护栏模式</li>
+<li><a href="/zh/tutorials/amazon-bedrock-api-review">Amazon Bedrock API 评测</a> — 平台层的定价与模型总览</li>
+</ul>
+
+</article>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>

@@ -1,0 +1,305 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'ai-api-key-security-black-october-2026';
+const enTitle = 'AI API Key Security 2026: 9 Platform Breaches';
+const enDescription = 'Nine AI developer platforms disclosed breaches in October 2026. Stolen keys drove 2.5M AWS Bedrock calls. Here is the IAM fix that stops it.';
+const date = '2026-11-01';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Which AI developer platforms were breached in October 2026?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "At least nine disclosed incidents during October 2026: Fireworks AI on October 6, Andromeda on October 9, Zeabur on October 14, Lightning AI on October 15, OpenCode on October 16 and 17, Railway on October 20, Warp on October 23, CommandCode on October 28, and Northflank on October 30. Wiz published the consolidated analysis on October 30, 2026."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What did the attackers actually steal from these platforms?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Environment variables that grant AI access. Fireworks, Zeabur, and Lightning AI all attributed the root cause to credential access rather than a model-level flaw. Zeabur's own incident report states that 3,218,965 environment variable records and 321,810 account records were read from its platform database, that the cluster admin tokens had no expiry, and that long-lived admin credentials were stored in plaintext and reachable from the public internet."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much did the stolen Bedrock keys cost the victims?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Wiz observed roughly 800,000 Bedrock calls in one case and roughly 1.7 million in another, with 90 percent and more than one million calls succeeding respectively. At list price, Wiz estimates these two cases alone likely ran up over 100,000 dollars in usage. The traffic profile resembles resold coding-agent traffic, and a separate social media report put a cryptocurrency theft enabled by keys stored on Railway at roughly 371,000 dollars."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why did global cross-Region inference profiles make the abuse worse?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Amazon Bedrock charges cross-Region inference at the price of the source Region regardless of where the request is processed, so a global profile routes traffic across every supported commercial Region. Because it spreads load across Regions, only about 6 percent of the 800,000 calls in one case were throttled, while a key restricted to us profiles ran into regional quotas and had nearly all of its excess calls throttled instead. AWS also documents that Global profiles save approximately 10 percent on input and output token pricing compared with geographic profiles."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I restrict a Bedrock key so a stolen credential cannot route globally?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use an IAM policy that allows bedrock:InvokeModel only against the specific inference profile ARN and the specific foundation model ARN, then add an explicit deny on all invoke actions conditioned on aws:RequestedRegion set to unspecified. AWS documents that Global cross-Region inference evaluates the Region-agnostic global foundation model resource with aws:RequestedRegion set to unspecified, so a deny on a concrete Region name such as us-west-2 does not stop it. Global cross-Region inference also requires three separate resource ARNs to be allowed, not one."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I still rotate my API keys after a platform breach?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, and Zeabur's guidance is stronger than a routine rotation because the August credential rotation did not cover the credentials used in the October incident. Zeabur tells users to replace every password and key stored on the platform even if they already replaced them after the earlier incident, because leaked data can still be misused. Projects that had already moved their environment variables to their own dedicated server were outside the scope of the platform database read."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there evidence linking the credential resale sites to the platform breaches?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not directly. Wiz states explicitly that it has no evidence linking the resale infrastructure it identified to the Black October attacks. What it can show is that the operators of the resale sites had access to the stolen keys and performed credential checks against them, which indicates an active market for the credentials rather than proving a single coordinated campaign."
+      }
+    }
+  ]
+};
+
+const enBody = `<article class="max-w-3xl mx-auto text-gray-800">
+
+  <h1 class="text-4xl font-bold text-gray-900 mb-4">AI API Key Security 2026: 9 Platform Breaches</h1>
+  <p class="text-xl text-gray-600 mb-8">Nine AI developer platforms disclosed breaches in October 2026. Stolen keys drove 2.5 million AWS Bedrock calls. Here is the IAM fix that stops it.</p>
+
+<h2 id="what-happened">What happened in October 2026</h2>
+<p>On <strong>October 30, 2026</strong>, Wiz published a consolidated analysis of what it called <strong>"Black October" for AI Developer Platforms</strong>: at least nine AI developer platforms disclosed security incidents over the course of that single month, and the researchers found that the incidents share a common shape even though no single vulnerability links them.</p>
+<p>The platforms and dates, as listed by Wiz:</p>
+
+<table>
+<thead>
+<tr><th>Platform</th><th>Disclosure date</th><th>Root cause as reported</th></tr>
+</thead>
+<tbody>
+<tr><td>Fireworks AI</td><td>October 6</td><td>Credential access</td></tr>
+<tr><td>Andromeda</td><td>October 9</td><td>Called an "industry-wide attack"</td></tr>
+<tr><td>Zeabur</td><td>October 14</td><td>Plaintext long-lived admin credentials</td></tr>
+<tr><td>Lightning AI</td><td>October 15</td><td>Credential access; previously hit by the Mini-Shai Hulud supply chain campaign</td></tr>
+<tr><td>OpenCode</td><td>October 16 and 17</td><td>A "legacy system"; reported an agent swarm attack</td></tr>
+<tr><td>Railway</td><td>October 20</td><td>"Privilege escalation in our build infrastructure"</td></tr>
+<tr><td>Warp</td><td>October 23</td><td>A third-party vendor dependency</td></tr>
+<tr><td>CommandCode</td><td>October 28</td><td>Attributed to an attempt at distillation</td></tr>
+<tr><td>Northflank</td><td>October 30</td><td>Not yet published</td></tr>
+</tbody>
+</table>
+
+<p>Three platforms (Fireworks, OpenCode, and Warp) reported indications of an <strong>agent swarm</strong> attack, and OpenCode and CommandCode explicitly attributed their incidents to an attempt at model distillation. The pattern across all public reports, in Wiz's words, is <strong>targeted exploitation that explicitly hunts stored environment variables</strong>, with the focus on those granting AI access. If you keep an LLM provider key in an environment variable on a managed platform, this is the attack that was looking for it.</p>
+
+<h2 id="no-single-vulnerability">There is no single vulnerability, and that is the uncomfortable part</h2>
+<p>Most breach roundups end with a patch and a version number. This one does not. Fireworks, Zeabur, and Lightning AI all point at credential access. Railway points at privilege escalation in its build infrastructure. Warp points at a third-party dependency. OpenCode points at a legacy system. Lightning AI had already been hit once by the Mini-Shai Hulud supply chain campaign before this.</p>
+<p>The unifying element is not a vulnerability in an AI platform. It is the combination of <strong>long-lived credentials stored in a reachable place</strong> plus <strong>an attacker with a machine that can try thousands of them per minute</strong>. Wiz points at two forces driving that: agentic attacks, which let an attacker compromise victims faster, and the rise of LLMJacking, where stolen API access is resold through what the researchers call LLM brokers, giving the theft a monetisation path that did not exist a few years ago. Demand for model outputs to distill also pushes in the same direction.</p>
+
+<h2 id="what-attackers-did">What the attackers did after the breach</h2>
+<p>This is the part that matters most for API developers, because the breach is the boring half. Wiz observed two enterprise AWS cases where credentials compromised at a vendor platform were then used against the customer's own AWS accounts, and the usage patterns were remarkably consistent.</p>
+<p>In both cases the first unauthorized activity happened <strong>within 30 minutes</strong> of the reported credential access. It was a single InvokeModel call from a residential IP address, in a one-minute sweep that tested the stolen key against multiple organizations. The call asked for one Claude model, failed, and fell back to another that worked. Over the following days, both keys saw only a trickle of traffic, 14 to 120 calls a day from the same small client, with the two keys running in lockstep about a minute apart. That is a validation job: an actor checking the keys were still alive.</p>
+<p>Then the floods. In Case A, four days after validation, a rotating proxy pool ran a catalog probe across dozens of addresses, sending one call per model across vendors including Amazon Nova, DeepSeek, GLM, Kimi, Grok, and GPT-6 Astra. A few hours later a boto3 script enumerated Bedrock and EC2 quotas, and within the next half hour a second host mapped quotas and model availability across Regions with more than a thousand calls in under a minute. Over roughly thirty hours the actor made about <strong>800,000 Bedrock calls</strong>, around 90 percent of which succeeded.</p>
+<p>Case B went the other way. The key was already restricted to a specific geography, and the calls failed for two days until a checker on a shared VPN exit identified the working model IDs, at which point the floodgates opened. That single address made about <strong>1.7 million Bedrock calls</strong> over thirteen hours, with over a million successful. Wiz's estimate: at list price, these two cases alone likely ran up over <strong>$100,000</strong> in usage.</p>
+
+<h2 id="cross-region">The cross-Region detail that decides whether you get hammered</h2>
+<p>Here is the technical heart of the incident, and it is the part most developers do not know exists. Amazon Bedrock offers two kinds of cross-Region inference profile. A <strong>geographic</strong> profile is prefixed by a geography, such as <code>us.</code>, <code>eu.</code>, <code>apac.</code>, or <code>in.</code>, and keeps processing inside that geography. A <strong>global</strong> profile is prefixed by <code>global.</code> and routes requests to any supported commercial Region worldwide. AWS documents that Global profiles save approximately 10 percent on input and output token pricing, and that the price is always calculated from the source Region regardless of where the request actually runs.</p>
+<p>In Case A the stolen key's policy allowed <code>global.*</code> profiles, so the attacker routed every call through them. Because global routing spreads load across Regions, only about <strong>6 percent</strong> of the 800,000 calls were throttled. In Case B the key was limited to <code>us.*</code> profiles; the attacker's global attempts failed, and once it found the working regional model IDs, the flood was still mostly throttled because the traffic ran into the account's regional quotas. Nearly all of that excess was throttled rather than served.</p>
+<p>Two operational consequences follow. First, <strong>a global profile multiplies the blast radius of a stolen key</strong>, because it converts one regional quota into a worldwide pool. Second, <strong>the quota numbers you monitor are not the quota the attacker burns</strong>. If you are watching regional token-per-minute limits, a global-profile key is invisible to that monitor.</p>
+<p>AWS also documents a detail that makes the IAM fix non-obvious: enabling Global cross-Region inference requires <strong>three</strong> separate resource ARNs to be allowed, not one. The regional inference profile ARN, the regional foundation model ARN, and the global foundation model ARN that has no Region and no account in it. The global ARN's emptiness is intentional. A policy that allows only the first two silently fails to enable global routing, and a policy that allows all three without a deny opens it.</p>
+
+<h2 id="zeabur">What a platform breach actually exposes: the Zeabur numbers</h2>
+<p>Zeabur published the most complete write-up of the month and is shutting down as a result, with shared cluster services pausing from December 1, 2026 and all dedicated servers and shared clusters stopping by December 31. Its own October 19 preliminary report gives the clearest picture of what a hosting platform breach means for the API keys sitting inside it.</p>
+<p>On October 14 and 15 the attacker used leaked internal credentials to reach the shared cluster, some dedicated servers, and Zeabur internal systems, eventually reading the platform database. The shared cluster's admin interface was open to the public internet and the admin tokens had <strong>no expiry</strong>. The attacker ran commands inside user database containers across <strong>865 database services</strong>, reading n8n instances at scale and walking through PostgreSQL databases table by table, then read about 53 production secrets from the secrets management service.</p>
+
+<table>
+<thead>
+<tr><th>Data read</th><th>Volume</th><th>Certainty (per Zeabur)</th></tr>
+</thead>
+<tbody>
+<tr><td>Service environment variables (names and values)</td><td>3,218,965 records</td><td>Confirmed</td></tr>
+<tr><td>Account records (email, username, phone)</td><td>321,810 accounts</td><td>Confirmed</td></tr>
+<tr><td>zSend API keys stored in plaintext</td><td>566 keys, revoked</td><td>Confirmed</td></tr>
+<tr><td>Platform access tokens</td><td>11,536 tokens, stored only as hashes, all revoked</td><td>Confirmed</td></tr>
+<tr><td>Environment variables and secrets of all shared-cluster services</td><td>9 Regions</td><td>Partly confirmed, the rest treated as leaked</td></tr>
+<tr><td>Contents of user databases</td><td>865 database services</td><td>Assessed</td></tr>
+<tr><td>Data on GCP dedicated servers</td><td>101 servers, 92 users</td><td>Sign-ins confirmed</td></tr>
+</tbody>
+</table>
+
+<p>Two details in that table deserve emphasis. The access tokens were stored only as hashes and could not be reversed, while the zSend API keys were stored in plaintext, which is the same design mistake repeated at two different layers. And the guidance is stronger than a routine rotation: because the August credential rotation did not cover the credentials used this time, Zeabur tells users to replace every password and key stored on the platform even if they already replaced them after the earlier incident. One mitigation did work, and it is worth copying. Projects that had moved their environment variables to their own dedicated server after August were outside the scope of the platform database read.</p>
+
+<h2 id="resale">The resale market is the reason this keeps happening</h2>
+<p>Wiz identified two operations that were actively trading on stolen keys. One operator, centred on a single IP address that Zeabur also named in its own disclosure, runs a site advertising discounted access to frontier models with payment accepted in USDT. The infrastructure behind it goes back to 2025 and has hosted a series of LLM resale pages, including a chat account pool management site in March 2026 and, four days before Zeabur's timeline identified the IP address, an autonomous penetration testing console. A second hub at a different address performs permission checks against stolen keys across multiple organizations.</p>
+<p>One detail in that second operation is worth reading twice, because it explains the economics. Its domain was snapshotted hosting a page titled "Distillation behaviour detection" that scored users as high risk, watch, or normal. The researchers read that as the operator trying to keep their accounts away from traffic that would look like distillation, because distillation is what gets accounts suspended. That is a resale operation with a compliance function, not a script kiddie with a leaked key.</p>
+<p>Wiz is explicit about the limit of the evidence: it has no evidence linking the resale infrastructure directly to the Black October attacks. What it can show is that these operators had access to the stolen keys and were testing them, which is evidence of an active market for the credentials.</p>
+
+<h2 id="controls">Five controls that actually change the outcome</h2>
+<p>The defensive advice is not complicated, and all five items are things you can do this week without buying a new security product.</p>
+<p><strong>One. Scope every key to a single model and a single Region.</strong> An IAM role whose policy allows <code>bedrock:InvokeModel</code> against one specific inference profile ARN and one specific foundation model ARN is useless to an attacker, because the catalog probe across a dozen vendors fails immediately. AWS's own note that you can replace the InvokeModel statement's Resource with specific model and inference profile ARNs is the entire mechanism.</p>
+
+<pre><code class="language-json">&#123;
+  "Version": "2012-10-17",
+  "Statement": [
+    &#123;
+      "Sid": "AllowOneScopedProfile",
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+      ],
+      "Resource": [
+        "arn:aws:bedrock:us-east-1:123456789012:inference-profile/us.anthropic.claude-sonnet-4-5-20250929-v1:0",
+        "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-sonnet-4-5-20250929-v1:0"
+      ]
+    &#125;,
+    &#123;
+      "Sid": "DenyGlobalCrossRegionRouting",
+      "Effect": "Deny",
+      "Action": [
+        "bedrock:InvokeModel*",
+        "bedrock:Converse*",
+        "bedrock:ConverseStream*"
+      ],
+      "Resource": "*",
+      "Condition": &#123;
+        "StringEquals": &#123; "aws:RequestedRegion": "unspecified" &#125;
+      &#125;
+    &#125;
+  ]
+&#125;
+</code></pre>
+
+<p>The deny block is the part people get wrong. AWS documents that Global cross-Region inference evaluates the Region-agnostic global foundation model resource with <code>aws:RequestedRegion</code> set to <code>unspecified</code> rather than the actual destination Region, so a conventional deny on a concrete Region name such as <code>us-west-2</code> does not target it at all. If your organization blocks unused Regions with a service control policy, Global routing also requires you to allow <code>unspecified</code> there, or the request is denied by policy before it reaches the model.</p>
+<p><strong>Two. Put a hard spend cap on every key.</strong> The Wiz case studies show why: roughly 800,000 calls succeeded in one case and over a million in another, and the usage profile is a reseller running many end users behind one credential. A per-key budget with automatic cutoff converts an unbounded loss into a bounded one. A gateway gives you that plus a request log you can actually audit, which is why <a href="https://portkey.ai/?ref=apirank" target="_blank" rel="sponsored noopener">Portkey</a> is a reasonable place to put per-key virtual keys and spend limits if you do not already run one, rather than bolting spend control onto every provider separately.</p>
+<p><strong>Three. Watch for the catalog probe, not just for a spike.</strong> The first malicious act in both Wiz cases was a one-minute sweep that tried one call per model across a dozen vendors. A normal workload does not look like that. The following script queries CloudTrail for Bedrock events, flags the IP addresses Wiz published as credential checkers, and flags any source address that made a large number of calls across many distinct models, which is the catalog probe signature.</p>
+
+<pre><code class="language-python">import boto3
+from collections import defaultdict
+from datetime import datetime, timedelta, timezone
+
+# The IPs Wiz published as testing stolen keys. Confirm these against your own logs.
+WIZ_IOC = {
+    "23.106.46.239",    # resale hub, also named by Zeabur
+    "38.246.114.118",   # permission checks across several stolen keys
+    "104.243.32.50",    # permission checks across several stolen keys
+    "31.57.201.201",    # identified using multiple stolen keys
+}
+
+client = boto3.client("cloudtrail")
+
+def bedrock_events(days=14):
+    start = datetime.now(timezone.utc) - timedelta(days=days)
+    token = None
+    while True:
+        kwargs = dict(
+            LookupAttributes=[&#123;
+                "AttributeKey": "EventSource",
+                "AttributeValue": "bedrock.amazonaws.com",
+            &#125;],
+            StartTime=start,
+            EndTime=datetime.now(timezone.utc),
+            MaxResults=50,
+        )
+        if token:
+            kwargs["NextToken"] = token
+        response = client.lookup_events(**kwargs)
+        for event in response.get("Events", []):
+            yield event
+        token = response.get("NextToken")
+        if not token:
+            break
+
+by_ip = defaultdict(lambda: &#123;"calls": 0, "models": set()&#125;)
+for event in bedrock_events():
+    ip = event.get("sourceIPAddress")
+    if not ip:
+        continue
+    by_ip[ip]["calls"] += 1
+    for resource in event.get("resources") or []:
+        by_ip[ip]["models"].add(resource.get("ARN", "").split("/")[-1])
+
+for ip, agg in sorted(by_ip.items(), key=lambda kv: -kv[1]["calls"]):
+    if ip in WIZ_IOC:
+        print(f"[IOC] &#123;ip&#125; made &#123;agg['calls']&#125; Bedrock calls")
+    elif agg["calls"] > 200 and len(agg["models"]) > 5:
+        print(f"[CATALOG PROBE] &#123;ip&#125;: &#123;agg['calls']&#125; calls across &#123;len(agg['models'])&#125; models")
+</code></pre>
+
+<p><strong>Four. Rotate keys on a schedule and on every incident, not once.</strong> Zeabur's own case shows the trap: a rotation that misses one credential class, or misses the credentials created after the rotation, leaves the door open. Automation is the only version of this that survives a platform breach you did not know about.</p>
+<p><strong>Five. Move the highest-value keys off shared hosting entirely.</strong> The one Zeabur mitigation that demonstrably worked was moving environment variables off the platform into a dedicated server the customer controls. If a key can reach a frontier model at $5 to $25 per million output tokens, that key belongs in a secrets manager you control, not in a variable on a shared cluster.</p>
+
+<h2 id="limitations">What this article does not cover</h2>
+<p>Several limits are worth stating plainly. Most of the platform root causes are still preliminary, and Northflank had not published at the time of writing, so the list may grow. Wiz cannot link the resale sites to the campaign. The two enterprise AWS cases are examples, not a complete count of affected customers, so the total cost is unknown and higher than the reported $100,000. And nothing here establishes that any particular AI model provider was compromised: the vulnerabilities were in hosting and deployment platforms, and the API keys were the payload, not the flaw.</p>
+
+<h2 id="verdict">Verdict</h2>
+<p>The honest read on Black October is that this is not an AI-specific crisis. It is the ordinary credential theft problem, accelerated by a new incentive: model access has a clean resale market, so a stolen key now has a price. That price funds the automation that makes these campaigns cheap to run at scale.</p>
+<p>For API developers the actions are unglamorous and mostly already known. Scope keys to one model and one Region. Deny global cross-Region routing explicitly, because the deny has to match the string <code>unspecified</code>. Cap spend per key. Watch for a single source address calling many different models. Rotate on a schedule. And move the keys that can actually hurt you off shared infrastructure.</p>
+<p>The one genuinely new piece of guidance is the cross-Region detail. A restricted key is only as restricted as the inference profiles its policy allows, and a global profile turns a regional quota into a worldwide one that is 90 percent servable. If you take one thing from this, take that one.</p>
+
+<h2 id="faq">Frequently asked questions</h2>
+<p><strong>Which AI developer platforms were breached in October 2026?</strong> At least nine: Fireworks AI, Andromeda, Zeabur, Lightning AI, OpenCode, Railway, Warp, CommandCode, and Northflank. Wiz published the consolidated analysis on October 30, 2026.</p>
+<p><strong>What did the attackers steal?</strong> Environment variables granting AI access, not model weights. Every public report describes targeted hunting of stored environment variables, and Zeabur confirmed that 3,218,965 environment variable records were read from its platform database.</p>
+<p><strong>How much did the stolen keys cost?</strong> Over $100,000 at list price across the two AWS cases Wiz documented, with roughly 2.5 million Bedrock calls in total. A separate social media report put cryptocurrency theft enabled by keys stored on Railway at around $371,000.</p>
+<p><strong>How do I block global cross-Region routing?</strong> Add an explicit deny on <code>bedrock:InvokeModel*</code> and the converse actions with a <code>StringEquals</code> condition on <code>aws:RequestedRegion</code> set to <code>unspecified</code>. A deny on a concrete Region name does not match the global resource evaluation.</p>
+<p><strong>Is there proof the resale sites are behind the breaches?</strong> No. Wiz states it has no evidence linking them. What it documents is that their operators had access to the stolen keys and were checking them, which shows a live market for the credentials.</p>
+
+<h2>Sources</h2>
+<ul>
+<li><a href="https://www.wiz.io/blog/black-october-for-ai-developer-platforms" target="_blank" rel="noopener">Wiz — "Black October" for AI Developer Platforms</a> — the consolidated incident analysis, October 30, 2026</li>
+<li><a href="https://zeabur.com/blogs/october-2026-security-incident" target="_blank" rel="noopener">Zeabur — October 2026 security incident (preliminary report)</a> — October 19, 2026</li>
+<li><a href="https://zeabur.com/blogs/zeabur-is-shutting-down" target="_blank" rel="noopener">Zeabur is shutting down: what happens next</a> — October 17, 2026</li>
+<li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html" target="_blank" rel="noopener">Amazon Bedrock — cross-Region inference</a> — geographic versus global comparison</li>
+<li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/global-cross-region-inference.html" target="_blank" rel="noopener">Amazon Bedrock — Global cross-Region inference</a> — three-part IAM policy and the unspecified deny pattern</li>
+<li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/geographic-cross-region-inference.html" target="_blank" rel="noopener">Amazon Bedrock — Geographic cross-Region inference</a> — geography prefixes and IAM example</li>
+<li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles-support.html" target="_blank" rel="noopener">Amazon Bedrock — Supported Regions and models for inference profiles</a></li>
+<li><a href="https://docs.aws.amazon.com/bedrock/latest/userguide/security_iam_id-based-policy-examples.html" target="_blank" rel="noopener">Amazon Bedrock — IAM policy examples</a> — restricting InvokeModel to a specific model and inference profile</li>
+</ul>
+
+<h2>Related Articles</h2>
+<ul>
+<li><a href="/tutorials/claude-api-abuse-report-developer-impact-2026">Claude API Abuse Report 2026: Developer Impact</a> — the demand side of the same market, from Anthropic's own report</li>
+<li><a href="/tutorials/ai-api-cost-control-tools-2026">AI API Cost Control Tools 2026</a> — gateway spend limits and per-key budgets compared</li>
+<li><a href="/tutorials/gpt-5-6-sol-huggingface-attack-api-security-lessons">GPT-5.6 Sol Hits Hugging Face: API Lessons</a> — the guardrail patterns that survive model-layer attacks</li>
+<li><a href="/tutorials/amazon-bedrock-api-review">Amazon Bedrock API Review</a> — the platform-level pricing and model overview</li>
+</ul>
+
+</article>
+`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={enBody} />
+</BaseLayout>
