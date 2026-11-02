@@ -1,0 +1,295 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'relace-api-review-2026';
+const enTitle = 'Relace API Review 2026: Agentic Coding Infra';
+const enDescription = 'Relace API review: three agent endpoints (Compact, Instant Apply, Fast Agentic Search), 12 models on OpenRouter, and three conflicting price lists.';
+const date = '2026-11-02';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does the Relace API cost per million tokens?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Relace prices eleven hosted open-weight models plus two Relace own models. The own models are Relace Search at 1.00 dollars per 1M input and 3.00 dollars per 1M output, and Relace Apply 3 at 0.85 dollars per 1M input and 1.25 dollars per 1M output. The hosted models are priced per endpoint, and the live Relace endpoint on OpenRouter ranged from 0.0065 dollars per 1M input on GLM 5.2 up to 0.90 dollars per 1M input on DeepSeek V4 Pro as of November 2, 2026. Relace states that the price returned by the API at request time is the price you pay."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Relace Compact?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Relace Compact is a trace compaction endpoint at POST /v1/code/compact that compresses a long agent trace down to a target token budget, defaulting to 96000 tokens. Relace states it processes traces at more than 50000 tokens per second so compaction finishes within a couple of seconds. The point is that as a conversation prefix grows, cache-read cost grows quadratically, and regular compaction converts the cost of a trace from quadratic to linear. Relace states that compacting on cache miss nearly halves the cost of a 50-turn trace."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Relace Instant Apply and relace-apply-3?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Relace Apply is a code merge model at POST /v1/code/apply that merges an LLM-authored edit snippet into existing source files instead of rewriting the whole file. The current model is relace-apply-3, which Relace documents at roughly 10000 tokens per second with 128k max input and 128k max output, and which replaced all earlier apply versions. Relace also publishes an OpenAI compatible endpoint at https://models.relace.ai/v1/apply and lists the model on OpenRouter at 0.85 dollars per 1M input and 1.25 dollars per 1M output."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the Relace API OpenAI-compatible?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Point any OpenAI SDK at https://models.relace.ai/v1 with a Relace API key, which is a 32 character key prefixed with rlc-. The hosted open-weight models are served over an OpenAI-compatible chat completions route, and an Anthropic-compatible Messages route is also available. The Relace own search model has its own OpenAI-compatible base URL at https://models.relace.ai/v1/search, and the apply model at https://models.relace.ai/v1/apply. The API key is passed in an Authorization header as a bearer token."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Relace have zero data retention?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, for API-accessible models. The Zero Data Retention Policy, effective September 21, 2026, states that prompt content and output are held only transiently in memory for the time needed to process the request, are discarded immediately, are not used to train or fine-tune any model, and are not made available to Relace personnel. KV cache entries stay in volatile memory, are never written to persistent storage, and are automatically evicted. Billing metadata such as token counts and timestamps is still retained. The policy does not cover the separate Jacq product."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which Relace price list should I trust?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "None of the static ones. Relace publishes at least three: the marketing pricing page dated October 29, 2026, a hand-maintained table in the chat completions documentation, and the live per-endpoint prices on OpenRouter. All three disagree, sometimes by an order of magnitude. Relace itself says the price returned by the API at the time of your request is the one you pay, and that the GET /v1/models endpoint is the source of truth because the documentation tables can lag. Read the models endpoint at integration time and treat any published table as a snapshot."
+      }
+    }
+  ]
+};
+
+const enBody = `
+<h1 id="top">Relace API Review 2026: The Inference Layer Built for Coding Agents</h1>
+
+<p>Relace is not a chatbot API company, and that is the single most important fact about it. Every other provider in this catalog sells you a model that takes a prompt and returns text. Relace sells you the unglamorous plumbing that makes a long-running coding agent affordable: a trace compactor, a file-merge model, a codebase search model, and a git-like source control layer designed for automated agents. It also happens to host ten open-weight models from DeepSeek, Z.ai and Moonshot on its own GPUs. Those are the commodity part. The agent infrastructure is the point.</p>
+
+<p>We verified every price, limit and endpoint in this review against the Relace documentation, the live OpenRouter endpoint catalog, the Relace status page, and the Relace Zero Data Retention Policy on <strong>November 2, 2026</strong>. One finding came out of that process that changes how you should read every price table in this article: Relace publishes three different price lists and they disagree. We will show you exactly where and by how much, because the fix is simple and the failure mode is expensive.</p>
+
+<h2 id="what-relace-is">What Relace actually sells</h2>
+
+<p>Relace, legally Squack, Inc., describes itself as one of the fastest-growing open-weight inference providers, and on its own homepage it states that it served 30 trillion tokens in the last 30 days and is usually the cheapest option for the models it serves. It is a top provider on OpenRouter by daily tokens. The homepage also carries an unusually candid line: we have not updated our website in a while, we have grown a lot faster than we expected, and most of our time has gone into keeping up with demand. That is worth keeping in mind for any provider that reprices often.</p>
+
+<p>But the three products Relace builds itself are the reason to care:</p>
+
+<ul>
+<li><strong>Relace Compact</strong> at <code>POST /v1/code/compact</code> compresses a long agent trace down to a token budget you choose.</li>
+<li><strong>Relace Instant Apply</strong> at <code>POST /v1/code/apply</code> merges an LLM-authored edit snippet into your existing source file at roughly 10,000 tokens per second.</li>
+<li><strong>Relace Fast Agentic Search</strong> at <code>POST /v1/search/chat/completions</code> explores a codebase with parallel file-view and grep tools and reports back the relevant files.</li>
+</ul>
+
+<p>None of these three is a general-purpose language model. They are specialised models trained for one job each. That is the category difference, and it is the reason Relace pricing does not look like the rest of this catalog: you are not buying tokens of intelligence, you are buying a specific operation performed cheaply and quickly.</p>
+
+<p>Around those three sits <strong>Relace Repos</strong>, a managed version control system for AI applications, and a <strong>MCP server</strong> that exposes the search subagent to any MCP-capable coding agent.</p>
+
+<h2 id="model-lineup">The model lineup: two Relace models plus ten hosted ones</h2>
+
+<p>Relace serves twelve models through OpenRouter. Two are Relace own models; ten are open-weight models hosted on Relace infrastructure in FP4 quantization, every one of them with a 1M token context window.</p>
+
+<table>
+<thead><tr><th>Model</th><th>Context</th><th>Input</th><th>Output</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>relace-search</td><td>256K</td><td>$1.00/M</td><td>$3.00/M</td><td>Own model, BF16, Fast Agentic Search</td></tr>
+<tr><td>relace-apply-3</td><td>256K</td><td>$0.85/M</td><td>$1.25/M</td><td>Own model, FP8, Instant Apply</td></tr>
+<tr><td>deepseek-v4-pro</td><td>1M</td><td>$0.90/M</td><td>$1.50/M</td><td>FP4, 393K max completion</td></tr>
+<tr><td>deepseek-v4-flash</td><td>1M</td><td>$0.05/M</td><td>$0.45/M</td><td>FP4, 943K max completion</td></tr>
+<tr><td>deepseek-v4.1-flash</td><td>1M</td><td>$0.035/M</td><td>$0.50/M</td><td>FP4, cheapest input on OpenRouter</td></tr>
+<tr><td>glm-5.3</td><td>1M</td><td>$0.0703/M</td><td>$4.3843/M</td><td>FP4, 131K max completion</td></tr>
+<tr><td>glm-5.3-flash</td><td>1M</td><td>$0.0285/M</td><td>$0.0923/M</td><td>FP4, cheapest on both axes of 40 endpoints</td></tr>
+<tr><td>glm-5.2</td><td>1M</td><td>$0.0065/M</td><td>$7.9057/M</td><td>FP4, cheapest input tier on the platform</td></tr>
+<tr><td>kimi-k3</td><td>1M</td><td>$0.1824/M</td><td>$9.3388/M</td><td>FP4, 943K max completion</td></tr>
+</tbody>
+</table>
+
+<p>All prices above are the live Relace endpoint prices observed on OpenRouter on November 2, 2026. Note that Relace Compact does not appear in any of Relace own price lists or in the OpenRouter catalog at all. It is billed as part of the underlying hosted model, not as a separate line item.</p>
+
+<h2 id="three-price-lists">Three price lists, three different answers</h2>
+
+<p>Relace publishes its prices in three places. They do not agree, and in one case they differ by more than an order of magnitude on the same model ID.</p>
+
+<table>
+<thead><tr><th>Model (input / output per 1M)</th><th>Marketing page, Oct 29 2026</th><th>Docs chat-completions table</th><th>Live Relace endpoint</th></tr></thead>
+<tbody>
+<tr><td>DeepSeek V4.1 Flash</td><td>$0.07 / $0.50</td><td>$0.20 / $0.60</td><td>$0.035 / $0.50</td></tr>
+<tr><td>GLM 5.2</td><td>$0.75 / $2.40</td><td>$0.40 / $4.00</td><td>$0.0065 / $7.9057</td></tr>
+<tr><td>GLM 5.3</td><td>$0.75 / $2.40</td><td>$0.75 / $2.40</td><td>$0.0703 / $4.3843</td></tr>
+<tr><td>Kimi K3</td><td>$2.00 / $14.00</td><td>$2.00 / $14.00</td><td>$0.1824 / $9.3388</td></tr>
+</tbody>
+</table>
+
+<p>The sharpest example is the DeepSeek V4 Pro 0813 snapshot. Relace own documentation lists it at $0.50 input and $2.00 output per 1M. The live Relace endpoint on OpenRouter for that same snapshot ID shows $0.1035 input and $8.00 output. That is a 4.8x difference on input and a 4x difference on output, for the same model ID, at the same moment.</p>
+
+<p>Relace is upfront about why. The marketing pricing page carries the line that prices are as of October 29, 2026, that they reprice often, and that the price returned by the API at the time of your request is the one you pay. The chat completions documentation says the same thing about its own table: prices are subject to change, the List Models endpoint returns the current per-token price of every hosted model, and the tables in the docs are updated by hand and can lag.</p>
+
+<p>So the actionable answer is not to pick the cheapest-looking list. It is to read the price at integration time and store it. The <code>GET /v1/models</code> endpoint on <code>models.relace.ai</code> returns OpenAI-style model objects with a context limit, modalities and per-token pricing, and the docs state it is the source of truth.</p>
+
+<pre><code>import requests
+
+resp = requests.get(
+    "https://models.relace.ai/v1/models",
+    headers={"Authorization": "Bearer " + RELACE_API_KEY},
+    timeout=30,
+)
+catalog = resp.json()["data"]
+
+for m in catalog:
+    if m["id"] == "deepseek-ai/DeepSeek-V4.1-Flash":
+        p = m["input_modalities"][0]["pricing"]
+        print(m["id"], p["prompt"], p["cached_prompt"], m["output_modalities"][0]["pricing"]["completion"])
+</code></pre>
+
+<p>Note that price fields are decimal dollar strings, not numbers, and that cached-input pricing only appears where the model has a prefix cache. If you build a cost dashboard for an agent workload, poll this endpoint on a schedule rather than hard-coding the numbers in this article. On a high-volume coding agent, a 4x output price drift on one snapshot is a real line item, not a rounding error.</p>
+
+<h2 id="cheapest">Where Relace is cheapest, and where it is not</h2>
+
+<p>Relace markets itself as the cheapest option for the models it serves. On OpenRouter that claim holds on input far more often than on output, and the gaps in both directions are large enough to change which provider you should pick for a given workload.</p>
+
+<table>
+<thead><tr><th>Model</th><th>Relace in / out</th><th>Cheapest other input</th><th>Cheapest other output</th><th>Relace rank</th></tr></thead>
+<tbody>
+<tr><td>DeepSeek V4 Pro</td><td>$0.90 / $1.50</td><td>$0.9553 StreamLake</td><td>$1.9105 StreamLake</td><td>1st of 15, both</td></tr>
+<tr><td>DeepSeek V4 Flash</td><td>$0.05 / $0.45</td><td>$0.0826 StreamLake</td><td>$0.1652 StreamLake</td><td>1st in, 14th out</td></tr>
+<tr><td>DeepSeek V4.1 Flash</td><td>$0.035 / $0.50</td><td>$0.035 OpenInference</td><td>$0.192 Morph</td><td>tied 1st in, 7th out</td></tr>
+<tr><td>GLM 5.3</td><td>$0.0703 / $4.3843</td><td>$0.0699 Wafer</td><td>$0.88 Baidu</td><td>2nd in, 27th out</td></tr>
+<tr><td>GLM 5.3 Flash</td><td>$0.0285 / $0.0923</td><td>$0.03 OpenInference</td><td>$0.16 OpenInference</td><td>1st of 40, both</td></tr>
+<tr><td>GLM 5.2</td><td>$0.0065 / $7.9057</td><td>$0.006 Wafer</td><td>$1.40 Morph</td><td>2nd in, 31st out</td></tr>
+<tr><td>Kimi K3</td><td>$0.1824 / $9.3388</td><td>$0.149 Wafer</td><td>$7.15 Sail Research</td><td>3rd in, 2nd out</td></tr>
+</tbody>
+</table>
+
+<p>Three practical takeaways.</p>
+
+<p><strong>Relace is a prefill machine, and the pricing reflects that.</strong> Its input rates are at or near the floor across every model it serves, often several times cheaper than the next provider. Its output rates are inconsistent: on DeepSeek V4 Pro it is the cheapest of fifteen endpoints on both axes, while on GLM 5.2 its output rate of $7.9057 per 1M is 5.6x Morph's $1.40. The mechanism is not documented, but the pattern is consistent across models: Relace's serving stack is extremely good at consuming context, and less differentiated on generating long completions. If your workload is long-context reading with short answers, Relace is hard to beat. If your workload is long-form generation on GLM, it is not the right provider.</p>
+
+<p><strong>FP4 is the open-weight serving format, not a Relace own format.</strong> All ten hosted open-weight endpoints report FP4 quantization. Relace own two models do not: search runs BF16 and apply-3 runs FP8. If you are comparing Relace against another provider serving the same weights in FP8, the quality gap is a serving-precision question, not a model question.</p>
+
+<p><strong>Max completion tokens vary per model even at 1M context.</strong> The GLM models cap at 131,072 completion tokens while the DeepSeek V4 Flash family allows 943,718. A 1M context window with a 131K output cap behaves very differently from a 1M context with a 943K output cap, and both are advertised as 1M.</p>
+
+<h2 id="compact">Relace Compact and the quadratic cache-cost problem</h2>
+
+<p>Compact is the most interesting of the three products, because it addresses a cost curve that every long-horizon agent hits. Relace own framing: models now perform long horizon tasks that regularly hit 1M+ tokens, as the conversation prefix grows cache read costs grow quadratically and eventually outweigh all other token costs, and clearing the accumulated history with regular compactions converts the cost of a trace from quadratic to linear.</p>
+
+<p>The additional wrinkle is timing. If you compact while the user is idle long enough for the prefix cache to have expired, you also reduce the severity of cache write costs, because you rewrite a short summary instead of a long transcript. Relace states that compacting on cache miss nearly halves the cost of a 50-turn trace, and that the practical target is to keep the conversation as close to 96K tokens as possible.</p>
+
+<p>Relace Compact runs at more than 50,000 tokens per second, so a compaction finishes within a couple of seconds. Relace contrasts this with summary-based compactions that take one to two minutes, which disrupt the user flow.</p>
+
+<pre><code>response = requests.post(
+    "https://models.relace.ai/v1/code/compact",
+    headers={"Authorization": "Bearer " + RELACE_API_KEY},
+    json={
+        "messages": messages,
+        "target_tokens": 96000,
+        "agent_model": "claude-fable-5",
+    },
+)
+result = response.json()
+</code></pre>
+
+<p>The request format is detected automatically. You can send messages in OpenAI Chat Completions, OpenAI Responses, or Anthropic Messages format, and the compressed messages come back in the same format you sent, ready to replace your live message list. The <code>agent_model</code> parameter tells Relace which model produced the trace so it can count the budget in the right tokenizer and apply model-specific improvements. If you omit it, the budget is counted in Relace own tokenizer, which will be wrong for your agent.</p>
+
+<h2 id="apply">Relace Apply and the 18-cent merge argument</h2>
+
+<p>Instant Apply solves a specific, very common, and surprisingly expensive problem: when a frontier model edits your codebase, you pay premium rates for the unchanged sections of the file too. Relace own blog post, A Year of Fast Apply, makes the arithmetic concrete. Rewriting a thousand-line file, roughly 10,000 tokens, from scratch with Claude 4.5 Sonnet takes over 100 seconds and costs at least $0.18. For a coding agent, that is infeasible from a product perspective.</p>
+
+<p>The fix is separation of concerns: have the frontier model emit a minimal diff, and use a lightweight model to merge that diff into the pre-existing code. Cursor pioneered this pattern with a small fast apply model but never made the model available outside the IDE. Relace trained its own, and has now open-sourced the dataset curation, training methods and inference techniques behind it. The evaluation used 500 randomly sampled production merge requests.</p>
+
+<p>The current model is <code>relace-apply-3</code>, which runs at roughly 10,000 tokens per second with 128K max input and 128K max output. Relace has deprecated every earlier apply version in favour of it, on the grounds that it is more performant on accuracy, speed and long-context requests. It is available at <code>POST /v1/code/apply</code>, through an OpenAI-compatible endpoint at <code>https://models.relace.ai/v1/apply</code>, and on OpenRouter at $0.85 input and $1.25 output per 1M tokens.</p>
+
+<p>Two details in the documentation are worth flagging before you build on this. First, the fallback story is honest: Relace recommends GPT-4.1-mini with predictive edits as a fallback, which is 10 to 20x slower but useful for redundancy, and GPT-4o-mini with its 1M context for inputs that exceed the 128K limit, since the apply models return HTTP 400 when input exceeds context limits. Second, Relace explicitly recommends proactively refactoring files larger than 32K tokens, because even frontier LLMs struggle with long context. That is a real engineering constraint, not a documentation footnote.</p>
+
+<h2 id="search">Fast Agentic Search and the MCP path</h2>
+
+<p>Relace Search is the model behind Fast Agentic Search. It uses 4 to 12 parallel <code>view_file</code> and <code>grep</code> tools to explore a codebase and return the relevant files. Unlike RAG, it performs agentic exploration rather than retrieving against a pre-built index, so it does not need an embedding pipeline or an index that goes stale the moment you push a commit.</p>
+
+<p>The important operational detail: outside of Relace Repos, you supply the agent harness yourself. Relace documents five search tools, <code>view_file</code>, <code>view_directory</code>, <code>grep_search</code>, <code>bash</code> and <code>report_back</code>, a specific system prompt, and a flow of four to five turns of parallel tool calls before the agent reports back. The documentation carries an explicit warning that deviating from the defined toolsets and schemas can lead to unexpected behaviour, because the model is reinforced to format tool calls with those specific parameters. You can point an OpenAI SDK at <code>https://models.relace.ai/v1/search</code> and call model <code>relace-search</code> directly.</p>
+
+<p>For the fastest evaluation path, Relace ships an MCP server. It needs <code>uv</code> and <code>ripgrep</code> installed, since <code>grep_search</code> shells out to ripgrep.</p>
+
+<pre><code>{
+  "mcpServers": {
+    "Relace": {
+      "command": "uvx",
+      "args": ["relace-mcp-server"],
+      "env": {
+        "RELACE_API_KEY": "YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}
+</code></pre>
+
+<p>For Claude Code the equivalent is <code>claude mcp add Relace --scope user --env RELACE_API_KEY=YOUR_KEY -- uvx relace-mcp-server</code>, and Relace recommends adding a line to your CLAUDE.md instructing the agent to use relace_search for codebase exploration and not to call it in parallel with other tools. That last instruction is not cosmetic: the model is tuned for parallel tool calls within its own harness, and mixing it with a competing parallel tool strategy is what the warning in the docs is about.</p>
+
+<h2 id="repos">Relace Repos: version control for agents</h2>
+
+<p>Relace Repos is a fully managed version control system built for AI applications rather than humans. Relace lists lightweight read and write operations for backend integration, agentic search that stays low-latency on large codebases, multi-tenancy that scales to millions of repositories across thousands of users, permissive rate limits for interacting with many repos at once, and full git compatibility so the git CLI still works.</p>
+
+<p>The pitch against GitHub is quantitative. GitHub documents a 100,000 repository limit per account or organization, and REST API request limits of 5,000 per hour, or 15,000 for an enterprise GitHub app. Relace argues those limits were sized for humans interacting occasionally through a website or the git CLI, and are insufficient for large-scale automated AI applications. If you are running many agents against many sandboxes, those ceilings are the constraint you will actually hit.</p>
+
+<h2 id="zdr">Zero data retention, effective September 21, 2026</h2>
+
+<p>Relace publishes a Zero Data Retention Policy for its API-accessible models, effective September 21, 2026, and it is one of the more explicit ones we have read. Prompt content and output are held only transiently in memory for the time needed to process the request and are discarded immediately afterwards. Covered data is not used to train, fine-tune or evaluate any model, and is not made available to Relace personnel.</p>
+
+<p>The policy also handles the part most policies gloss over. KV cache entries are described as a compressed, model-specific encoding of prompt content; they live only in the volatile memory of the serving hardware, are automatically evicted after a short period of inactivity or when memory is needed for other requests, are never written to persistent storage, are not human-readable, are not used to reconstruct prompt content or output, and are not used to train anything. Relace routes covered data only to subprocessors that are contractually and technically configured for equivalent zero retention, and states it will not route to a subprocessor that cannot provide it. The current subprocessor list is available to customers on request.</p>
+
+<p>Two carve-outs are worth reading carefully. Metadata is not restricted: token counts, request timestamps and API call volumes are retained for billing, fraud prevention, rate limiting and service reliability. And the policy does not cover Jacq, Relace separate desktop and API product, which is governed by the Terms of Use and the Privacy Policy instead. If you are evaluating Relace for source-code workloads, the ZDR commitment covers the model endpoints, which is the part that matters.</p>
+
+<h2 id="gaps">The honest gaps</h2>
+
+<p><strong>Three price lists is too many.</strong> Even with the documentation explicitly warning you to read the API, publishing a marketing page, a hand-maintained docs table and per-endpoint prices that disagree by up to 4x is a self-inflicted wound for a provider whose entire pitch is being cheap. We would like to see the marketing page link directly to the models endpoint.</p>
+
+<p><strong>Compact has no published standalone rate.</strong> It appears in no price list and in no catalog entry, so you cannot cost compaction as a line item without reading your own invoice. For a product whose entire argument is about cost curves, that is an odd gap.</p>
+
+<p><strong>Three narrow products, no general model.</strong> Search, apply and compact each solve one problem. If you want a frontier chat model, Relace is a relay to other peoples models, not a destination. There is no Relace general-purpose reasoning model on the catalog.</p>
+
+<p><strong>The free tier is thin.</strong> Rate limits are a per-key request budget over a rolling 60 second window, and free accounts start at 15 requests per minute, scaling with account tier up to unlimited. Fifteen requests per minute is fine for evaluation and not much else.</p>
+
+<p><strong>Relace Repos locks a second vendor into your stack.</strong> You can keep GitHub and use the model endpoints, but the agent-native path through Repos puts your source control and your agent runtime under the same vendor. That is a reasonable trade for teams that want it and a real one for teams with existing GitHub governance.</p>
+
+<p><strong>The status page shows a provider in scale, not a settled one.</strong> Thirty-day uptime figures across the model families sit between 99.6 and 99.9 percent, with DeepSeek V4 Pro 0813 at 99.635 percent. Those are good numbers, but they are the numbers of a fast-growing operation.</p>
+
+<h2 id="verdict">Verdict</h2>
+
+<p>Relace is the most interesting infrastructure-shaped provider we have written about in 2026, and it is not a close call. If you are building a coding agent that runs for dozens of turns, the three endpoints it sells are the parts of the stack that everyone else still leaves you to solve. Compact turns a quadratic cost curve into a linear one. Apply replaces a 100-second, 18-cent file rewrite with a merge that finishes in milliseconds. Search gives an agent real codebase navigation without an index to maintain. Each of those is a real engineering problem with a real solution, and none of them is solved by a bigger context window.</p>
+
+<p>What Relace is not is a general-purpose model provider, and the hosted open-weight models, while genuinely cheap on input, are not uniformly cheap on output. If your agent is read-heavy and write-light, Relace is an excellent default. If it generates a lot of tokens on GLM, route that traffic elsewhere.</p>
+
+<p>Then read the prices at integration time rather than trusting any table, ours included. GET <code>/v1/models</code> is the only source that will not lie to you, and on a provider that reprices as often as Relace does, that distinction is worth an afternoon of engineering.</p>
+
+<p><strong>Sources:</strong> Relace documentation (introduction, chat completions, list models, compact, apply code, fast agentic search, MCP installation, repos overview), Relace pricing page (prices dated October 29, 2026), Relace Zero Data Retention Policy (effective September 21, 2026), Relace status page, OpenRouter model and endpoint catalog, and the Relace blog post A Year of Fast Apply. All verified November 2, 2026.</p>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={enBody} />
+</BaseLayout>

@@ -1,0 +1,295 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'relace-api-review-2026';
+const zhTitle = 'Relace API 评测 2026：给 Coding Agent 用的推理基建';
+const zhDescription = 'Relace API 评测：三个 agent 专属端点（Compact、Instant Apply、Fast Agentic Search），OpenRouter 上 12 个模型，三套相互冲突的价目表。';
+const date = '2026-11-02';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Relace API 每百万 token 多少钱？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Relace 托管 11 个开放权重模型外加两个自家模型。自家模型为 Relace Search 每百万 1.00 美元输入、3.00 美元输出，Relace Apply 3 每百万 0.85 美元输入、1.25 美元输出。托管模型按端点定价，截至 2026 年 11 月 2 日，OpenRouter 上 Relace 活跃端点从 GLM 5.2 的每百万 0.0065 美元到 DeepSeek V4 Pro 的每百万 0.90 美元不等。Relace 声明请求时 API 返回的价格即为你要支付的价格。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "什么是 Relace Compact？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Relace Compact 是 POST /v1/code/compact 下的轨迹压缩端点，把长 agent 轨迹压到目标 token 预算，默认 96000 token。Relace 宣称处理速度超过每秒 50000 token，压缩在数秒内完成。核心逻辑是：对话前缀变长时缓存读取成本按二次方增长，定期压缩把轨迹成本从二次方转为线性。Relace 称在缓存未命中时压缩，一个 50 轮轨迹的成本几乎减半。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "什么是 Relace Instant Apply 和 relace-apply-3？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Relace Apply 是 POST /v1/code/apply 下的代码合并模型，把大模型写的编辑片段合并进现有源文件，而不是重写整个文件。当前模型为 relace-apply-3，Relace 文档标注约每秒 10000 token，最大输入 128k、最大输出 128k，已取代所有早期 apply 版本。Relace 同时提供 OpenAI 兼容端点 https://models.relace.ai/v1/apply，并在 OpenRouter 上按每百万 0.85 美元输入、1.25 美元输出计价。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Relace API 兼容 OpenAI 吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "兼容。把任意 OpenAI SDK 指向 https://models.relace.ai/v1 并传入 Relace API key（rlc- 前缀、32 位）即可。托管的开放权重模型走 OpenAI 兼容的 chat completions 路由，也提供 Anthropic 兼容的 Messages 路由。自家搜索模型有独立 OpenAI 兼容 base URL https://models.relace.ai/v1/search，apply 模型为 https://models.relace.ai/v1/apply。API key 以 Bearer token 形式放入 Authorization 头。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Relace 有零数据保留吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "有，针对 API 可访问的模型。零数据保留政策自 2026 年 9 月 21 日生效，声明 prompt 内容与输出仅瞬态驻留内存以处理请求，随后立即丢弃，不用于训练或微调任何模型，也不对 Relace 员工可见。KV 缓存条目驻留在易失内存中，从不写入持久存储，空闲后自动驱逐。账单元数据（token 计数、时间戳）仍会保留。该政策不覆盖独立的 Jacq 产品。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Relace 的三套价目表该信哪套？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "哪套都别信死的。Relace 至少发布了三套：标注 2026 年 10 月 29 日的营销定价页、chat completions 文档里手工维护的表格、以及 OpenRouter 上按端点的实时价格。三套互相矛盾，有时相差一个数量级。Relace 自己声明请求时 API 返回的价格才是你要付的，且 GET /v1/models 端点是唯一权威来源，因为文档表格可能滞后。请在集成时读取 models 端点，把任何公布的表格当作快照。"
+      }
+    }
+  ]
+};
+
+const zhBody = `
+<h1 id="top">Relace API 评测 2026：为 Coding Agent 而生的推理基建</h1>
+
+<p>Relace 不是一家聊天机器人 API 公司，这是理解它的最重要的一点。本目录里其他厂商卖的都是一个接受 prompt、返回文本的模型。Relace 卖的是让长时间运行的 coding agent 变得可负担的那些不起眼的管道：一个轨迹压缩器、一个文件合并模型、一个代码库搜索模型，外加一套为自动化 agent 设计的类 git 源代码控制层。它顺带在自己的 GPU 上托管了来自 DeepSeek、智谱和月之暗面的十个开放权重模型。那些只是商品部分，agent 基建才是重点。</p>
+
+<p>我们在 <strong>2026 年 11 月 2 日</strong> 对照 Relace 文档、OpenRouter 实时端点目录、Relace 状态页和 Relace 零数据保留政策，核实了本文每一项价格、上限和端点。在这个过程中我们发现了一个会改变你阅读本文每张价格表方式的结论：Relace 发布了三套不同的价目表，而它们互相矛盾。我们会精确展示分歧在哪、差多少，因为修复方法很简单，而踩坑的代价很高。</p>
+
+<h2 id="what-relace-is">Relace 到底卖什么</h2>
+
+<p>Relace 在法律主体上叫 Squack, Inc.，它自称是最快增长的开放权重推理厂商之一，并在自家首页上声明过去 30 天处理了 30 万亿 token，通常是它服务模型的最低价。按 OpenRouter 日 token 量计，它是头部提供商之一。首页上还有一句格外坦率的话：我们很久没更新网站了，增长远超预期，大部分时间都花在跟上需求上。对一家频繁调价的厂商，这句话值得记住。</p>
+
+<p>但 Relace 自研的三个产品才是值得关注的理由：</p>
+
+<ul>
+<li><strong>Relace Compact</strong>，<code>POST /v1/code/compact</code>，把长 agent 轨迹压缩到你指定的 token 预算。</li>
+<li><strong>Relace Instant Apply</strong>，<code>POST /v1/code/apply</code>，把大模型生成的编辑片段以约每秒 10000 token 的速度合并进现有源文件。</li>
+<li><strong>Relace Fast Agentic Search</strong>，<code>POST /v1/search/chat/completions</code>，用并行的文件查看与 grep 工具探索代码库，返回相关文件。</li>
+</ul>
+
+<p>这三个没有一个是大模型。它们是各为单一任务训练的专用模型。这是品类层面的差异，也是 Relace 的定价看起来与本目录其他厂商不同的原因：你买的不是智能 token，而是某个具体操作被廉价且快速地执行。</p>
+
+<p>围绕这三个产品的是 <strong>Relace Repos</strong>，一个为 AI 应用设计的托管版本控制系统，以及一个把搜索子 agent 暴露给任何 MCP 兼容 coding agent 的 <strong>MCP server</strong>。</p>
+
+<h2 id="model-lineup">模型阵容：两个自家模型加十个托管模型</h2>
+
+<p>Relace 通过 OpenRouter 提供 12 个模型。两个是 Relace 自家模型，十个是托管在 Relace 基础设施上的开放权重模型，全部为 FP4 量化，每一个都带 1M token 上下文窗口。</p>
+
+<table>
+<thead><tr><th>模型</th><th>上下文</th><th>输入</th><th>输出</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td>relace-search</td><td>256K</td><td>$1.00/M</td><td>$3.00/M</td><td>自家模型，BF16，Fast Agentic Search</td></tr>
+<tr><td>relace-apply-3</td><td>256K</td><td>$0.85/M</td><td>$1.25/M</td><td>自家模型，FP8，Instant Apply</td></tr>
+<tr><td>deepseek-v4-pro</td><td>1M</td><td>$0.90/M</td><td>$1.50/M</td><td>FP4，最大补全 393K</td></tr>
+<tr><td>deepseek-v4-flash</td><td>1M</td><td>$0.05/M</td><td>$0.45/M</td><td>FP4，最大补全 943K</td></tr>
+<tr><td>deepseek-v4.1-flash</td><td>1M</td><td>$0.035/M</td><td>$0.50/M</td><td>FP4，OpenRouter 上最便宜输入</td></tr>
+<tr><td>glm-5.3</td><td>1M</td><td>$0.0703/M</td><td>$4.3843/M</td><td>FP4，最大补全 131K</td></tr>
+<tr><td>glm-5.3-flash</td><td>1M</td><td>$0.0285/M</td><td>$0.0923/M</td><td>FP4，40 个端点中输入输出双料最低</td></tr>
+<tr><td>glm-5.2</td><td>1M</td><td>$0.0065/M</td><td>$7.9057/M</td><td>FP4，平台最便宜输入档</td></tr>
+<tr><td>kimi-k3</td><td>1M</td><td>$0.1824/M</td><td>$9.3388/M</td><td>FP4，最大补全 943K</td></tr>
+</tbody>
+</table>
+
+<p>上表价格均为 2026 年 11 月 2 日观察到的 OpenRouter 上 Relace 活跃端点价格。注意 Relace Compact 不出现在 Relace 任何自有价目表或 OpenRouter 目录中，它随底层托管模型计费，不是独立条目。</p>
+
+<h2 id="three-price-lists">三套价目表，三个不同答案</h2>
+
+<p>Relace 在三个地方公布价格。它们不一致，在个别情况下同一个模型 ID 的定价相差超过一个数量级。</p>
+
+<table>
+<thead><tr><th>模型（输入 / 输出，每百万）</th><th>营销定价页 2026-10-29</th><th>文档 chat-completions 表</th><th>Relace 实时端点</th></tr></thead>
+<tbody>
+<tr><td>DeepSeek V4.1 Flash</td><td>$0.07 / $0.50</td><td>$0.20 / $0.60</td><td>$0.035 / $0.50</td></tr>
+<tr><td>GLM 5.2</td><td>$0.75 / $2.40</td><td>$0.40 / $4.00</td><td>$0.0065 / $7.9057</td></tr>
+<tr><td>GLM 5.3</td><td>$0.75 / $2.40</td><td>$0.75 / $2.40</td><td>$0.0703 / $4.3843</td></tr>
+<tr><td>Kimi K3</td><td>$2.00 / $14.00</td><td>$2.00 / $14.00</td><td>$0.1824 / $9.3388</td></tr>
+</tbody>
+</table>
+
+<p>最尖锐的例子是 DeepSeek V4 Pro 0813 快照。Relace 自家文档对该快照 ID 标注每百万 $0.50 输入、$2.00 输出。同一时刻 OpenRouter 上该快照 ID 的 Relace 活跃端点显示每百万 $0.1035 输入、$8.00 输出。同一个模型 ID，输入差 4.8 倍，输出差 4 倍。</p>
+
+<p>Relace 对原因并不讳言。营销定价页声明价格为 2026 年 10 月 29 日数据，他们经常调价，且请求时 API 返回的价格才是你要付的。chat completions 文档对自己的表格也说了同样的话：价格会变，List Models 端点返回每个托管模型的当前按 token 价格，文档里的表格是手工维护的，可能滞后。</p>
+
+<p>所以可操作的答案不是挑看起来最便宜的那张表，而是在集成时读取价格并存储下来。<code>models.relace.ai</code> 上的 <code>GET /v1/models</code> 端点返回 OpenAI 风格的模型对象，带上下文上限、模态和按 token 定价，文档声明它是唯一权威来源。</p>
+
+<pre><code>import requests
+
+resp = requests.get(
+    "https://models.relace.ai/v1/models",
+    headers={"Authorization": "Bearer " + RELACE_API_KEY},
+    timeout=30,
+)
+catalog = resp.json()["data"]
+
+for m in catalog:
+    if m["id"] == "deepseek-ai/DeepSeek-V4.1-Flash":
+        p = m["input_modalities"][0]["pricing"]
+        print(m["id"], p["prompt"], p["cached_prompt"], m["output_modalities"][0]["pricing"]["completion"])
+</code></pre>
+
+<p>注意价格字段是十进制美元字符串而非数字，且只有带前缀缓存的模型才会出现缓存输入价。如果你要为 agent 工作量搭成本看板，请按周期轮询这个端点，而不是把本文的数字硬编码进去。在高吞吐 coding agent 上，某个快照输出价漂移 4 倍是一笔真实的账单，不是四舍五入的误差。</p>
+
+<h2 id="cheapest">Relace 哪里最便宜，哪里不是</h2>
+
+<p>Relace 的市场定位是它服务的模型中最便宜。在 OpenRouter 上这个说法在输入侧远多于输出侧成立，且两个方向的差距都大到足以改变你该为哪种工作量选哪家。</p>
+
+<table>
+<thead><tr><th>模型</th><th>Relace 输入 / 输出</th><th>其他厂商最便宜输入</th><th>其他厂商最便宜输出</th><th>Relace 排名</th></tr></thead>
+<tbody>
+<tr><td>DeepSeek V4 Pro</td><td>$0.90 / $1.50</td><td>$0.9553 StreamLake</td><td>$1.9105 StreamLake</td><td>15 家中双料第 1</td></tr>
+<tr><td>DeepSeek V4 Flash</td><td>$0.05 / $0.45</td><td>$0.0826 StreamLake</td><td>$0.1652 StreamLake</td><td>输入第 1，输出第 14</td></tr>
+<tr><td>DeepSeek V4.1 Flash</td><td>$0.035 / $0.50</td><td>$0.035 OpenInference</td><td>$0.192 Morph</td><td>输入并列第 1，输出第 7</td></tr>
+<tr><td>GLM 5.3</td><td>$0.0703 / $4.3843</td><td>$0.0699 Wafer</td><td>$0.88 Baidu</td><td>输入第 2，输出第 27</td></tr>
+<tr><td>GLM 5.3 Flash</td><td>$0.0285 / $0.0923</td><td>$0.03 OpenInference</td><td>$0.16 OpenInference</td><td>40 家中双料第 1</td></tr>
+<tr><td>GLM 5.2</td><td>$0.0065 / $7.9057</td><td>$0.006 Wafer</td><td>$1.40 Morph</td><td>输入第 2，输出第 31</td></tr>
+<tr><td>Kimi K3</td><td>$0.1824 / $9.3388</td><td>$0.149 Wafer</td><td>$7.15 Sail Research</td><td>输入第 3，输出第 2</td></tr>
+</tbody>
+</table>
+
+<p>三条实战结论。</p>
+
+<p><strong>Relace 是一台 prefill 机器，定价反映了这一点。</strong> 它服务的每个模型的输入价都处于或接近地板价，常常比下一家便宜好几倍。输出价则不均衡：DeepSeek V4 Pro 上它在 15 个端点中双料最低，而 GLM 5.2 上它每百万 $7.9057 的输出价是 Morph $1.40 的 5.6 倍。机制没有公开文档，但跨模型的规律一致：Relace 的服务栈在消费上下文上极强，在长补全生成上差异不大。如果你的工作量是长上下文阅读配短回答，Relace 难逢对手；如果是在 GLM 上做长文生成，它不是正确的厂商。</p>
+
+<p><strong>FP4 是开放权重的服务格式，不是 Relace 自有格式。</strong> 十个托管的开放权重端点全部报告 FP4 量化。Relace 自家两个模型则不是：search 跑 BF16，apply-3 跑 FP8。如果你在拿 Relace 和另一家以 FP8 提供同权重模型的厂商对比，质量差距是服务精度问题，不是模型本身的问题。</p>
+
+<p><strong>同为 1M 上下文，最大补全 token 数因模型而异。</strong> GLM 系列封顶 131,072 补全 token，DeepSeek V4 Flash 家族允许 943,718。一个 131K 输出上限的 1M 上下文，和一个 943K 输出上限的 1M 上下文，行为完全不同，而两者都宣传为 1M。</p>
+
+<h2 id="compact">Relace Compact 与二次方缓存成本问题</h2>
+
+<p>Compact 是三个产品中最有趣的一个，因为它针对的是每个长程 agent 都会撞上的成本曲线。Relace 的表述：模型现在执行的长程任务常规超过 1M token，对话前缀变长时缓存读取成本按二次方增长，最终超过所有其他 token 成本，定期用压缩清除累积历史能把轨迹成本从二次方转为线性。</p>
+
+<p>额外的细节是时机。如果趁用户空闲、前缀缓存已过期时压缩，你还能降低缓存写入成本的严重程度，因为你重写的是简短摘要而不是长 transcript。Relace 称在缓存未命中时压缩，一个 50 轮轨迹的成本几乎减半，并建议把会话维持在尽量接近 96K token。</p>
+
+<p>Relace Compact 以超过每秒 50000 token 运行，压缩在数秒内完成。Relace 把它与耗时一到两分钟、打断用户流程的基于摘要的压缩做了对比。</p>
+
+<pre><code>response = requests.post(
+    "https://models.relace.ai/v1/code/compact",
+    headers={"Authorization": "Bearer " + RELACE_API_KEY},
+    json={
+        "messages": messages,
+        "target_tokens": 96000,
+        "agent_model": "claude-fable-5",
+    },
+)
+result = response.json()
+</code></pre>
+
+<p>请求格式自动检测。你可以用 OpenAI Chat Completions、OpenAI Responses 或 Anthropic Messages 格式发送 messages，压缩后的 messages 以你发送的同一格式返回，可直接替换你的在线消息列表。<code>agent_model</code> 参数告诉 Relace 轨迹由哪个模型生成，以便按正确的 tokenizer 计算预算并应用模型特定优化。省略它，预算会按 Relace 自家 tokenizer 计算，对你的 agent 是错的。</p>
+
+<h2 id="apply">Relace Apply 与 18 美分的合并论证</h2>
+
+<p>Instant Apply 解决的是一个具体、常见且出人意料地昂贵的问题：前沿模型编辑代码库时，你连同未改动的部分一起按溢价付费。Relace 自己的博客文章《A Year of Fast Apply》把账算得很清楚。用 Claude 4.5 Sonnet 从头重写一个千行文件（约 10000 token）耗时超过 100 秒、成本至少 $0.18。对 coding agent 而言，这在产品层面不可行。</p>
+
+<p>解法是分而治之：让前沿模型输出最小化 diff，再用轻量模型把 diff 合并进现有代码。Cursor 用一个小型快速 apply 模型率先开创了这一模式，但从未把模型开放给 IDE 之外的厂商使用。Relace 训练了自己的版本，并开源了背后的数据集整理、训练方法和推理技术。评测使用了 500 个随机抽样的生产合并请求。</p>
+
+<p>当前模型为 <code>relace-apply-3</code>，约每秒 10000 token，最大输入 128K、最大输出 128K。Relace 已弃用所有早期版本，理由是它在准确率、速度和长上下文请求上表现更强。它可通过 <code>POST /v1/code/apply</code>、OpenAI 兼容端点 <code>https://models.relace.ai/v1/apply</code> 以及 OpenRouter（每百万 $0.85 输入、$1.25 输出）使用。</p>
+
+<p>文档里有两个细节值得在动手之前留意。第一，回退方案是诚实的：Relace 建议用带预测编辑的 GPT-4.1-mini 做回退，速度慢 10 到 20 倍但有冗余价值；输入超过 128K 时建议用 1M 上下文的 GPT-4o-mini，因为 apply 模型输入超限时返回 HTTP 400。第二，Relace 明确建议主动重构超过 32K token 的文件，因为即使前沿 LLM 在长上下文上也吃力。这是真实的工程约束，不是文档脚注。</p>
+
+<h2 id="search">Fast Agentic Search 与 MCP 路径</h2>
+
+<p>Relace Search 是 Fast Agentic Search 背后的模型。它用 4 到 12 个并行的 <code>view_file</code> 与 <code>grep</code> 工具探索代码库并返回相关文件。与 RAG 不同，它执行的是 agentic 探索而非对预建索引检索，所以不需要嵌入管道，也不存在你一提交 commit 索引就过期的问题。</p>
+
+<p>关键的运营细节：在 Relace Repos 之外，你需要自己提供 agent harness。Relace 文档定义了五个搜索工具，<code>view_file</code>、<code>view_directory</code>、<code>grep_search</code>、<code>bash</code> 和 <code>report_back</code>，一个特定系统提示，以及 agent 回报前的四到五轮并行工具调用流程。文档明确警告偏离已定义的工具集与 schema 可能导致意外行为，因为该模型被强化训练为按那些特定参数格式化工具调用。你可以把 OpenAI SDK 指向 <code>https://models.relace.ai/v1/search</code> 直接调用 <code>relace-search</code> 模型。</p>
+
+<p>最快的评估路径是 Relace 自带的 MCP server。它需要安装 <code>uv</code> 和 <code>ripgrep</code>，因为 <code>grep_search</code> 调用 ripgrep。</p>
+
+<pre><code>{
+  "mcpServers": {
+    "Relace": {
+      "command": "uvx",
+      "args": ["relace-mcp-server"],
+      "env": {
+        "RELACE_API_KEY": "YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}
+</code></pre>
+
+<p>Claude Code 下等价命令为 <code>claude mcp add Relace --scope user --env RELACE_API_KEY=*** -- uvx relace-mcp-server</code>，Relace 建议在 CLAUDE.md 里加一行，指示 agent 用 relace_search 做代码库探索、不要与其他工具并行调用。最后一条指示不是装饰：该模型在其自有 harness 内为并行工具调用调优，把它与竞争性并行工具策略混用正是文档警告的场景。</p>
+
+<h2 id="repos">Relace Repos：为 agent 设计的版本控制</h2>
+
+<p>Relace Repos 是一个为 AI 应用而非人类设计的全托管版本控制系统。Relace 列出了面向后端集成的轻量读写操作、在大代码库上保持低延迟的 agentic 搜索、可扩展到数百万仓库数千租户的多租户、允许同时操作多个仓库的宽松速率限制，以及让 git CLI 仍然可用的完整 git 兼容性。</p>
+
+<p>对比 GitHub 的论点是量化的。GitHub 文档规定单个账户或组织不超过 100,000 个仓库，REST API 请求每小时不超过 5000 次（企业 GitHub app 为 15000 次）。Relace 认为这些上限是按人类偶尔通过网站或 git CLI 交互的规模设定的，不足以支撑大规模自动化 AI 应用。如果你在跑许多 agent 针对许多沙箱，这些天花板才是你真正会撞上的约束。</p>
+
+<h2 id="zdr">零数据保留，2026 年 9 月 21 日生效</h2>
+
+<p>Relace 为其 API 可访问模型发布了零数据保留政策，2026 年 9 月 21 日生效，是我们读过的最明确的同类政策之一。prompt 内容与输出仅瞬态驻留内存以处理请求，随后立即丢弃。覆盖数据不用于训练、微调或评估任何模型，也不对 Relace 员工可见。</p>
+
+<p>政策也处理了多数政策含糊带过的部分。KV 缓存条目被描述为 prompt 内容的压缩、模型特定编码；它们只存在于服务硬件的易失内存中，空闲一段短时间后或内存被其他请求占用时自动驱逐，从不写入持久存储，不可读，不用于重建 prompt 内容或输出，也不用于训练。Relace 只把覆盖数据路由给在合同和技术上都配置了等效零保留的 subprocessor，并声明不会路由给无法提供的 subprocessor。当前 subprocessor 列表可应客户要求提供。</p>
+
+<p>两条例外值得细读。元数据不受限：token 计数、请求时间戳和 API 调用量会为账单、反欺诈、速率限制和服务可靠性而保留。且该政策不覆盖 Jacq，Relace 独立的桌面和 API 产品，后者受服务条款和隐私政策约束。如果你在为源代码工作量评估 Relace，ZDR 承诺覆盖的是模型端点，那才是要紧的部分。</p>
+
+<h2 id="gaps">诚实的不足</h2>
+
+<p><strong>三套价目表太多了。</strong> 即使文档明确警告你去读 API，营销页、手工维护的文档表和按端点价格之间最高 4 倍的分歧，对一家以便宜为核心卖点的厂商是自伤。我们希望看到营销页直接链接 models 端点。</p>
+
+<p><strong>Compact 没有独立的公布费率。</strong> 它不出现在任何价目表和任何目录条目中，不看自己的账单就无法把压缩作为独立条目核算成本。对一个论点完全围绕成本曲线的产品，这是个奇怪的缺口。</p>
+
+<p><strong>三个窄产品，没有通用模型。</strong> 搜索、apply、compact 各解决一个问题。如果你想要前沿聊天模型，Relace 是别人模型的中转，不是目的地。目录上没有 Relace 通用推理模型。</p>
+
+<p><strong>免费层很薄。</strong> 速率限制是按 key 在 60 秒滚动窗口内的请求预算，免费账户从每分钟 15 次请求起步，随账户等级扩展直至不限。每分钟 15 次够做评估，仅此而已。</p>
+
+<p><strong>Relace Repos 把第二个厂商锁进你的栈。</strong> 你可以保留 GitHub、只用模型端点，但经 Repos 的 agent 原生路径会让你的源代码控制和 agent 运行时归属同一厂商。对想要的团队是合理取舍，对有既有 GitHub 治理的团队是真取舍。</p>
+
+<p><strong>状态页显示的是扩张中的厂商，不是已稳定的厂商。</strong> 各模型家族的 30 天可用率在 99.6% 到 99.9% 之间，DeepSeek V4 Pro 0813 为 99.635%。这些数字不错，但它们是一家快速增长公司的数字。</p>
+
+<h2 id="verdict">总结</h2>
+
+<p>Relace 是 2026 年我们写过的最有基础设施气质的厂商，这一点没有悬念。如果你在构建跑几十轮的 coding agent，它卖的三个端点正是其他人仍留给你自己解决的栈。Compact 把二次方成本曲线拉成线性。Apply 用一次毫秒级合并替换了 100 秒、18 美分的文件重写。Search 给 agent 真正的代码库导航能力，且没有索引要维护。每一个都是真实的工程问题，配真实的解法，而没有一个是更大的上下文窗口能解决的。</p>
+
+<p>Relace 不是的是通用模型厂商，其托管的开放权重模型虽然在输入侧确实便宜，在输出侧并不普遍便宜。如果你的 agent 读多写少，Relace 是极佳默认；如果在 GLM 上生成大量 token，把流量路由到别处。</p>
+
+<p>然后在集成时读取价格，而不是信任何表格，包括我们的。GET <code>/v1/models</code> 是唯一不会骗你的来源，在一家像 Relace 这样频繁调价的厂商身上，这个区别值一个下午的工程。</p>
+
+<p><strong>来源：</strong> Relace 文档（introduction、chat completions、list models、compact、apply code、fast agentic search、MCP installation、repos overview）、Relace 定价页（价格标注 2026 年 10 月 29 日）、Relace 零数据保留政策（2026 年 9 月 21 日生效）、Relace 状态页、OpenRouter 模型与端点目录、Relace 博客文章《A Year of Fast Apply》。全部于 2026 年 11 月 2 日核实。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>
