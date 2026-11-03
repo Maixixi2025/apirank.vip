@@ -1,0 +1,251 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-6-1-terra-vs-claude-opus-5-5-2026';
+const zhTitle = 'GPT-6.1 Terra vs Claude Opus 5.5：成本账怎么算';
+const zhDescription = 'GPT-6.1 Terra（$1/$5）对比 Claude Opus 5.5（$4/$20）：真实 4 倍价差、effort 档位为何更关键，以及各自该用在什么场景。';
+const date = '2026-11-03';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "GPT-6.1 Terra 比 Claude Opus 5.5 贵还是便宜？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "GPT-6.1 Terra 在标准档位下每 100 万输入 token 1.00 美元、每 100 万输出 token 5.00 美元，缓存输入 0.05 美元。Claude Opus 5.5 每 100 万输入 token 4.00 美元、每 100 万输出 token 20.00 美元，缓存命中与刷新 0.20 美元。也就是说输入端和输出端都恰好是 4 倍差距。两个模型的 Batch 档位都便宜一半，OpenAI 另有同价的 Flex 档位，Anthropic 在 Opus 5.5 上提供 2 倍标准价的 Fast mode。以上数字均于 2026 年 11 月 3 日对照双方官方定价页核实。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "reasoning effort 和 output_config effort 有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "两者是同一个概念的两种命名与两种请求形态。OpenAI 在 Responses API 上通过 reasoning.effort 暴露推理强度，GPT-6.1 Terra 支持 none、low、medium、high、xhigh 和 max，默认 medium。Anthropic 在 Messages API 上通过 output_config.effort 暴露 effort，档位为 low、medium、high、xhigh 和 max，Claude Opus 5.5 默认 medium。由于两个模型默认档位相同，公开的价目表比较的是同一推理深度下的两个模型；把任一模型切到 max 都是主动提高支出的动作，而不是基准状态。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "长上下文下 Claude Opus 5.5 会不会比 GPT-6.1 Terra 更贵？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不会，而这正是多数对比文章算错的地方。OpenAI 对输入超过 272,000 token 的请求按整单计费，输入 2 倍、输出 1.5 倍，所以 GPT-6.1 Terra 会涨到每 100 万输入 2.00 美元、输出 7.50 美元。Anthropic 明确说明 Claude 4.6 及之后的模型（Claude Haiku 5.5 除外）以标准价包含完整 100 万 token 上下文窗口，90 万 token 的请求与 9 千 token 的请求按同一每 token 单价计费。Opus 5.5 的每 token 价格仍然更高，但差距从输入端 4 倍、输出端 4 倍，压缩到输入端 2 倍、输出端约 2.7 倍。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "GPT-6.1 Terra 和 Claude Opus 5.5 有免费额度吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "两个模型都没有长期免费额度。OpenAI 的定价文档未为 GPT-6 系列列出任何免费配额，试用需要单独的赠送额度或促销。Anthropic 说明新用户会获得少量免费额度用于测试 API，延长试用则需联系销售。实际做法是按付费模型来规划，并且把不需要同步返回的任务放到 Batch（OpenAI 侧还有同价的 Flex）档位上处理。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Agent 电脑操作和代码执行场景该选哪个模型？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "在两个模型真正可比的那类 agentic 工作负载上，证据指向 GPT-6.1 Terra。OpenAI 把 Terra 定位为面向视觉推理、精确电脑操作和清晰自然写作的快速高效模型，并支持在 Responses API 上调用工具。Anthropic 则把 Opus 5.5 定位为长时间运行的 agentic 编码与知识工作，且自适应思考不可关闭。如果你的工作负载依赖点击、执行代码并校验结果，在本文引用的独立评测中，Terra 以更低成本取得了持平或更高的分数；如果依赖超长上下文中的稳定综合，则应该在各自的默认 medium 档位上用自己的评测集先跑一轮再决定。"
+      }
+    }
+  ]
+};
+
+const zhBody = `
+<h1 id="top">GPT-6.1 Terra vs Claude Opus 5.5：成本账怎么算</h1>
+
+<p>OpenAI 在 2026 年 10 月 26 日发布了 GPT-6.1 Terra，Anthropic 在 2026 年 9 月 22 日发布了 Claude Opus 5.5。两个模型都按百万 token 计价，都提供 100 万 token 上下文窗口，也都暴露了一个可以主动用 token 换能力的 effort 控制项。价格上，Terra 是每百万输入 1 美元、输出 5 美元，Opus 5.5 是 4 美元和 20 美元。输入端和输出端都是干净的 4 倍差距。</p>
+
+<p>输入输出两端同时 4 倍，是这次对比里最不重要的一个数字，也是几乎所有摘要都放在最前面的那个数字。我们对照 OpenAI 官方定价与模型文档、Anthropic 官方定价与模型页，在 <strong>2026 年 11 月 3 日</strong>核实了本文的每一个数字。核实的结果是：这个头条比例真实存在但不完整；两家厂商实现长上下文定价的方式恰好相反；而真正值得做的决策，不是哪个模型更便宜，而是哪个模型能把任务跑完。下面是完整拆解。</p>
+
+<h2 id="headline-gap">把头条差距说精确</h2>
+
+<p>两个模型都足够新，公开的档位结构因此存在实质差异。OpenAI 把定价拆成 Standard、Batch、Flex、Fast 和 Ultrafast 五张表；Anthropic 则拆成基础价、Batch、Fast mode 以及一个数据驻留乘数。要横向比较，必须在两边选同一档位，而多数流传的对比正是在这一步悄悄算错了。</p>
+
+<table>
+<thead><tr><th>维度</th><th>GPT-6.1 Terra</th><th>Claude Opus 5.5</th></tr></thead>
+<tbody>
+<tr><td>模型 ID</td><td>gpt-6.1-terra</td><td>claude-opus-5-5</td></tr>
+<tr><td>发布时间</td><td>2026 年 10 月 26 日</td><td>2026 年 9 月 22 日</td></tr>
+<tr><td>输入，标准档</td><td>$1.00 / 百万</td><td>$4.00 / 百万</td></tr>
+<tr><td>输出，标准档</td><td>$5.00 / 百万</td><td>$20.00 / 百万</td></tr>
+<tr><td>缓存输入</td><td>$0.05 / 百万</td><td>$0.20 / 百万</td></tr>
+<tr><td>Batch 档</td><td>$0.50 / $2.50</td><td>$2.00 / $10.00</td></tr>
+<tr><td>溢价档</td><td>Fast $2.00 / $10.00</td><td>Fast mode $8.00 / $40.00</td></tr>
+<tr><td>上下文窗口</td><td>1,050,000</td><td>1,000,000</td></tr>
+<tr><td>最大输入 token</td><td>922,000</td><td>1,000,000</td></tr>
+<tr><td>最大输出 token</td><td>128,000</td><td>128,000</td></tr>
+<tr><td>知识截止</td><td>2026 年 6 月 1 日</td><td>2026 年 6 月</td></tr>
+<tr><td>默认 effort</td><td>medium</td><td>medium</td></tr>
+</tbody>
+</table>
+
+<p>这张表里有两点值得多看两眼。第一，Terra 的上下文窗口其实比 Opus 5.5 略大，1,050,000 对 1,000,000；但 Anthropic 说明按其当前分词器，100 万 token 约合 555k 个词，而更早的模型在 100 万 token 里能塞约 750k 个词。如果两个模型读的是同一份原始文本，Opus 5.5 的窗口能装更多词，尽管它的 token 数更低。第二，两个模型在同步请求下的最大输出上限完全相同，都是 128,000 token，也就是说长文本生成场景里，把它们区分开的并不是这个上限。</p>
+
+<p>缓存的机制差异和价格差异同样存在。Anthropic 的 5 分钟缓存写入按基础输入价的 1.25 倍计费，1 小时写入按 2 倍，读取按基础输入价的 0.1 倍，但 Opus 5.5 单独适用 0.05 倍。OpenAI 的缓存写入按 30 分钟保留为 1.25 倍、12 小时保留为 2.50 倍，读取按未缓存输入价的 5%。读取价接近，缓存不会改变排名；但写入乘数差得足够多，为一家厂商调好的缓存策略换到另一家并不会原样生效。</p>
+
+<h2 id="effort-axis">价格表藏起来的真正轴：effort</h2>
+
+<p>这里有一个事实，会改变你阅读这两个模型之间任何价格对比的方式。两个模型默认在同一个 effort 档位上，也都允许你远远越过它往上走。OpenAI 在 Responses API 上暴露推理强度，GPT-6.1 Terra 支持 none、low、medium、high、xhigh 和 max，默认 medium。Anthropic 在 Messages API 上用 output_config.effort 暴露 effort，档位为 low、medium、high、xhigh 和 max，Claude Opus 5.5 默认 medium。两家厂商各自独立收敛到了同一个控制面，只是名字不同、请求形态不同。</p>
+
+<table>
+<thead><tr><th>effort 档位</th><th>GPT-6.1 Terra</th><th>Claude Opus 5.5</th></tr></thead>
+<tbody>
+<tr><td>none</td><td>支持</td><td>不支持，思考始终开启</td></tr>
+<tr><td>low</td><td>支持</td><td>支持</td></tr>
+<tr><td>medium</td><td>默认</td><td>默认</td></tr>
+<tr><td>high</td><td>支持</td><td>支持</td></tr>
+<tr><td>xhigh</td><td>支持</td><td>支持</td></tr>
+<tr><td>max</td><td>支持</td><td>支持</td></tr>
+</tbody>
+</table>
+
+<p>结论很直接。公开的 $1/$5 与 $4/$20，描述的是两个模型处于各自默认深度时的价格，也就是常规生产请求的配置。一旦把任一模型设成 max，你比较的就是两个刻意昂贵的配置，而 Anthropic 的官方建议很明确：Opus 5.5 应该从默认的 medium 起步，更高档位留给测试确实显示有质量收益的工作负载。如果某篇文章把两个模型都放在 max，然后把这个成本比例当作头条结论，那个比例描述的并不是你大部分流量所处的场景。</p>
+
+<p>effort 对 Opus 5.5 还有第二层影响。Anthropic 文档说明该模型的思考无法关闭，并且工具调用之间的文本会以 thinking 块返回，在默认 display 设置下这些块的文本为空。一个把这些文本流式推给用户当进度提示的应用，会在两次工具调用之间突然安静下来，直到它显式设置 display 值。在 agent 循环里，这种沉默读起来像卡死，而不像进度。</p>
+
+<h2 id="long-context">两套方向相反的长上下文机制</h2>
+
+<p>这是两套定价系统之间最大的结构性差异，也是最可能在二手摘要里被说反的一个。OpenAI 的分界线在 272,000 输入 token。超过之后按整单计费，输入 2 倍、输出 1.5 倍，而不是只对超出部分加价；在 GPT-6.1 Terra 上，标准价 $1.00 和 $5.00 因此涨到 $2.00 和 $7.50。</p>
+
+<p>Anthropic 恰恰相反。定价文档写明，Claude 4.6 及之后的模型（Claude Haiku 5.5 除外）以标准价包含完整 100 万 token 上下文窗口，90 万 token 的请求与 9 千 token 的请求按同一每 token 单价计费，提示缓存和 batch 折扣也在整个窗口内按标准价适用。也就是说 Opus 5.5 根本没有长上下文附加费。</p>
+
+<p>把这件事换算成大上下文工作负载。272K token 以内，Opus 5.5 的输入是 Terra 的 4 倍，输出也是 4 倍。超过之后，Terra 输入翻倍、输出上浮五成，差距收敛到输入 2 倍、输出约 2.7 倍。Opus 5.5 始终不是更便宜的那个，但把工作负载留在 Terra 的廉价档而不是长上下文档，价值大约等于抹掉了一半的头条差距。如果你的负载常驻在 272K 输入 token 以上——很多 agent 轨迹都是——这就是一个真实决策，而不是四舍五入的误差。同一套 272K 阈值也适用于整个 GPT-6 家族，我们在 <a href="/tutorials/gpt-6-astra-api-pricing-2026/">GPT-6 Astra 定价拆解</a>里可以看到完全相同的结构。</p>
+
+<h2 id="benchmark">独立评测实际测出了什么</h2>
+
+<p>我们找到最有参考价值的独立对比，是 The New Stack 在 2026 年 10 月 31 日发布的三项测试评测，两个模型都跑在 max effort 上。我们连同作者自己的免责声明一起呈现，因为这些免责声明才是有意思的部分。</p>
+
+<p>在 OpenAI 自己的 Agents' Last Exam 上——一个多步电脑操作基准——Terra 得分 60.0%，每任务 1.01 美元；Opus 5.5 得分 63.2%，每任务 8.82 美元。3.2 个百分点的准确率差距，换来 8.73 比 1 的成本比。按每一点准确率折算，Terra 约 0.017 美元，Opus 5.5 约 0.140 美元。</p>
+
+<table>
+<thead><tr><th>测试项</th><th>GPT-6.1 Terra</th><th>Claude Opus 5.5</th></tr></thead>
+<tbody>
+<tr><td>发布分流，满分 50</td><td>50</td><td>50</td></tr>
+<tr><td>单元格谱系，满分 50</td><td>48</td><td>43.5</td></tr>
+<tr><td>CI 历史审计，满分 50</td><td>47</td><td>未完成</td></tr>
+<tr><td>输入与输出 token 合计</td><td>25,292,559 / 138,611</td><td>51,895,447 / 369,032</td></tr>
+<tr><td>估算未缓存成本</td><td>$25.99</td><td>$214.96</td></tr>
+<tr><td>估算含缓存成本</td><td>$2.51</td><td>$21.52</td></tr>
+<tr><td>总耗时</td><td>2,418 秒</td><td>3,962 秒</td></tr>
+</tbody>
+</table>
+
+<p>请先看完成度那一列，再看分数。在 CI 历史审计里，Opus 5.5 在触到每次响应 128,000 token 的输出上限之前没有给出最终答案，而 Terra 完成了同一任务。在无工具的大表任务里，Terra 给出 47 满分 50，Opus 5.5 则无答案可判。在单元格谱系测试中，Terra 以 48 比 43.5 获胜。三项终版测试合计，Terra 的估算未缓存 token 成本是 Opus 5.5 的 12.1%，比例 8.27 比 1，耗时少了 25.7 分钟。Opus 5.5 还多烧了大约五倍输出 token，输入了 102 个 URL，而 Terra 只输入 23 个且大多靠点击完成。</p>
+
+<p>作者诚实地标注了测试的边界，我们同样照搬：测试是在看过早期版本后修改的，每个终版只跑了一次，因此这些结果并不能证明可复现性，也不能代表跨工作负载的平均性能。作者还指出，Terra 在此前与 GPT-6 Astra 的对比中出现过数值未计算的情况，并建议对大表里的数字做二次核对。单次运行是一个信号，不是基准。</p>
+
+<p>但在这些免责声明之后仍然成立的是一个具体、可执行的结论，而不是一个排行榜名次。在 agentic 工作里，真正的约束不是 token 单价，而是模型能不能把任务跑完。Opus 5.5 写了五倍多的输出 token，在审计任务上跑了 129 轮、96 次代码执行、花了 36 分钟，最后什么都没返回。一个不给答案的模型，收走你全部溢价却不产出任何结果。如果你的负载存在完成率问题，任何价格谈判都修不好它。</p>
+
+<h2 id="api-surface">两边 API 表面并不相同</h2>
+
+<p>两个模型都能通过 OpenAI 兼容的 chat completions 调用，但对 agent 真正重要的路径存在实质差异。</p>
+
+<p>OpenAI 这一侧，GPT-6.1 Terra 的工具调用要求使用 Responses API。Chat completions 与 Batch 均受支持，Live、Realtime、Realtime 翻译、Realtime 转写、Assistants 与微调均不支持。模型接受文本与图像输入，输出文本，音频与视频不支持。max effort 下的请求长这样：</p>
+
+<pre><code class="language-bash">curl -sS https://api.openai.com/v1/responses \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer YOUR_OPENAI_API_KEY" \\
+  -d '{
+    "model": "gpt-6.1-terra",
+    "reasoning": { "effort": "max" },
+    "input": "Summarise this incident log and list the three highest-risk findings."
+  }'
+</code></pre>
+
+<p>Anthropic 这一侧，effort 放在 Messages API 的 output_config 对象里，模型 ID 是 claude-opus-5-5，请求形态是熟悉的那一套：</p>
+
+<pre><code class="language-bash">curl -sS https://api.anthropic.com/v1/messages \\
+  -H "Content-Type: application/json" \\
+  -H "x-api-key: YOUR_ANTHROPIC_API_KEY" \\
+  -H "anthropic-version: 2023-06-01" \\
+  -d '{
+    "model": "claude-opus-5-5",
+    "max_tokens": 4096,
+    "messages": [
+      { "role": "user", "content": "Summarise this incident log and list the three highest-risk findings." }
+    ],
+    "output_config": { "effort": "max" }
+  }'
+</code></pre>
+
+<p>下面这个成本计算器把两套定价机制都正确建模了，包括 OpenAI 侧的长上下文阈值和两边的缓存命中率：</p>
+
+<pre><code class="language-python">TERRA_SHORT = (1.00, 5.00)   # 每百万输入、输出，标准档
+TERRA_LONG = (2.00, 7.50)    # 输入超过 272K token
+OPUS = (4.00, 20.00)         # Opus 5.5 无长上下文附加费
+
+def estimate(tokens_in, tokens_out, cached_in=0, long_context=False):
+    terra_in, terra_out = TERRA_LONG if long_context else TERRA_SHORT
+    uncached_in = tokens_in - cached_in
+    terra = (uncached_in * terra_in + cached_in * 0.05 + tokens_out * terra_out) / 1_000_000
+    opus = (uncached_in * OPUS[0] + cached_in * 0.20 + tokens_out * OPUS[1]) / 1_000_000
+    return {"terra_usd": round(terra, 4), "opus_usd": round(opus, 4), "ratio": round(opus / terra, 2)}
+
+print(estimate(50_000, 15_000))
+print(estimate(300_000, 20_000, long_context=True))
+</code></pre>
+
+<p>把它跑在一个典型的 agent 轮次上——5 万输入、1.5 万输出——Terra 是 0.125 美元，Opus 5.5 是 0.50 美元。把同样的轮次推到 30 万输入 token，Terra 进入长上下文档，差距随之收窄。而第一种情况加上缓存后的版本才是真正花钱的地方：4 万 token 的缓存命中会把 Terra 打到一毛钱以下。如果你跑的 agent 需要反复读取不断增长的上下文，决定账单的是缓存写入乘数，而不是那个头条单价。</p>
+
+<p>还有一种值得考虑的路由模式。大部分流量用默认 medium 档跑 Terra，把准确率差距真正影响业务的那部分流量升级到 Opus 5.5 的 medium 档，并让两个模型共用一个网关，按 key 设置支出上限与路由规则。像 <a href="https://portkey.ai/?ref=apirank">Portkey</a>这样的网关是团队实现该模式的标准做法，因为它允许你为每个虚拟 key 设置硬性支出上限，并且能在不改动应用代码的情况下切换端点背后的模型。</p>
+
+<h2 id="where-to-route">各自分流到哪里</h2>
+
+<p>OpenAI 把 GPT-6.1 Terra 描述为面向视觉推理、精确电脑操作和清晰自然写作的快速高效模型，并推荐用于把商品照片匹配到目录条目、解读技术图纸、在应用界面上操作以及起草文本。Anthropic 则把 Claude Opus 5.5 定位为长时间运行的 agentic 编码与知识工作，其模型对比表建议大多数工作负载从 Opus 5.5 起步。这是两种不同的定位，价格差距并不是区分它们的关键因素。</p>
+
+<p>如果你的工作负载是在界面上点击、执行代码并校验结果，证据指向 Terra：成本更低，在独立评测中分数持平或更高，而且完成度记录在同一批任务上压过了对手。如果你的工作负载是很长的混合文档、需要可靠综合，Opus 5.5 的故事更干净，因为 Anthropic 对完整 100 万窗口按标准价计费、没有阈值要跨。如果你的负载是高并发的分类或抽取，Opus 5.5 大概率根本选错了模型，该比价的是 Claude Haiku 5.5 或者 GPT-6 Luna。</p>
+
+<p>还有一条分流注意事项。Anthropic 对通过 inference_geo 参数指定美国境内推理的请求，在所有 token 计费类别上施加 1.1 倍乘数，并说明更早的模型带上该参数会返回 400 错误。OpenAI 对 2026 年 3 月 5 日及之后发布的模型，其区域处理端点加收 10% 上浮，并从 2026 年 11 月 1 日起对 FedRAMP 端点同样加收 10%。如果你有数据驻留要求，必须把这个乘数加进来再比价，因为它会同时改变两边。</p>
+
+<h2 id="honest-gaps">两边真实的短板</h2>
+
+<p>Terra 有价格对比掩盖不了的真实局限。它的知识截止是 2026 年 6 月 1 日，之后发生的事情它一概不知。独立评测发现它在大表上会算错，包括状态计数偏差 1，以及有一道本该标记为无法回答的问题给出了具体答案；在此前与 GPT-6 Astra 的对比中，同类弱点也出现过。如果你的流水线依赖模型对大量行做算术而不是推理，就务必独立复核数字。我们的 <a href="/tutorials/claude-opus-5-api-pricing-2026/">Claude Opus 5 定价评测</a>覆盖了 Anthropic 同一直线的上一代，我们的 <a href="/tutorials/sonnet-5-vs-gpt-5-5-vs-opus-4-8-llm-api-2026/">四模型成本横评</a>则是本文延续的基线。</p>
+
+<p>Opus 5.5 有自己的一组迁移风险，而且它们在代码层面而不在价格层面。Anthropic 文档列出相对 Opus 5 的四处破坏性变更：思考无法关闭、强制工具使用会返回错误、思考块与产生它的模型和会话绑定，以及 Claude API 上不再接受更早的 computer_20251124 电脑操作工具。第五处变更不报错却改变了响应形态，也正是最难察觉、伤 agent 循环最深的那一处。如果你正从 Opus 5 升级，请先读迁移指南再跑基准，因为你可能归因于模型质量的很多行为，其实是 API 形态变化。</p>
+
+<p>而两个模型都不免费。Anthropic 给新用户少量免费额度用于测试 API，延长试用走销售流程。OpenAI 的定价文档未为 GPT-6 系列列出任何免费额度。请按付费模型来规划，并把不需要同步返回的任务放到便宜一半的 Batch，在 OpenAI 侧还有同价的 Flex 档位。</p>
+
+<h2 id="verdict">结论</h2>
+
+<p>GPT-6.1 Terra 是大多数 API 工作负载更好的默认选择，理由不只是 4 倍价差。更重要的是，在两个模型真正可比的那类 agentic 工作负载上，Terra 跑完了 Opus 5.5 没跑完的任务，墙钟时间更短，估算成本约为八分之一。而 Opus 5.5 在超长混合文档的持续推理上仍是更强的那一个，它没有长上下文附加费的计费方式在 272K 输入 token 以上是实打实的优势。</p>
+
+<p>但你真正该做的决策，不是把 Terra 和 Opus 5.5 放在固定 effort 上对比，而是哪个模型、哪个 effort、服务哪一段流量，并在你自己的评测集上量出来。两个厂商都默认 medium，也都提供 max，4 倍价差和 8 倍价差之间的差别，是你自己能控的配置选择。先让两个模型都跑在 medium 上，把准确率差距真正让你付出代价的那类负载单独跑一遍，用数据说话。然后在集成时读取价格，而不是信任何一张表，包括我们的。</p>
+
+<p><strong>来源：</strong> OpenAI API 定价文档（Standard、Batch、Flex 与 Fast 定价表）、OpenAI GPT-6.1 Terra 模型页、OpenAI 模型目录、Anthropic Claude Opus 5.5 模型总览、Anthropic API 定价页（模型定价、缓存乘数、Fast mode、Batch、数据驻留、工具调用 token）、Anthropic effort 文档、OpenAI 新闻源 2026 年 10 月 26 日的 GPT-6.1 Terra 发布公告，以及 The New Stack 于 2026 年 10 月 31 日发布的 Terra 对比 Opus 5.5 三项独立评测。全部于 2026 年 11 月 3 日核实。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>

@@ -1,0 +1,251 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'gpt-6-1-terra-vs-claude-opus-5-5-2026';
+const enTitle = 'GPT-6.1 Terra vs Claude Opus 5.5: The Cost Math';
+const enDescription = 'GPT-6.1 Terra ($1/$5) vs Claude Opus 5.5 ($4/$20): the real 4x price gap, why effort level matters more, and where each model wins.';
+const date = '2026-11-03';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does GPT-6.1 Terra cost compared with Claude Opus 5.5?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "GPT-6.1 Terra costs 1.00 dollars per 1M input tokens and 5.00 dollars per 1M output tokens at standard rates, with cached input at 0.05 dollars per 1M. Claude Opus 5.5 costs 4.00 dollars per 1M input and 20.00 dollars per 1M output, with cache hits and refreshes at 0.20 dollars per 1M. That is exactly a 4x difference on input and a 4x difference on output. Both models are 50 percent cheaper on the Batch API, and OpenAI additionally offers a Flex tier at the same halved rate while Anthropic offers Fast mode at 2x standard on Opus 5.5. All figures were verified against the official pricing pages on November 3, 2026."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between reasoning effort and output config effort?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "They are the same idea with different names and different defaults. OpenAI exposes reasoning effort on the Responses API as reasoning.effort, and for GPT-6.1 Terra it accepts none, low, medium, high, xhigh and max, with medium as the default. Anthropic exposes effort on the Messages API as output_config.effort, with the levels low, medium, high, xhigh and max, and medium is the default on Claude Opus 5.5. Because both models default to medium, the standard price tables compare two models running at the same default depth, and running either one at max is a deliberate increase in spend rather than a baseline."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Claude Opus 5.5 more expensive than GPT-6.1 Terra for long context?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, and this is the part most comparisons get wrong. OpenAI prices any request above 272,000 input tokens at 2x input and 1.5x output for the whole request, so GPT-6.1 Terra rises to 2.00 dollars per 1M input and 7.50 dollars per 1M output above that threshold. Anthropic states that Claude 4.6 and later models, excluding Haiku 5.5, include the full 1M token context window at standard pricing, so a 900,000 token request on Opus 5.5 is billed at the same per-token rate as a 9,000 token request. Opus 5.5 is still the more expensive model per token, but the gap narrows from 4x to 2x on input and from 4x to about 2.7x on output."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do GPT-6.1 Terra or Claude Opus 5.5 have a free tier?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Neither model ships a permanent free tier. The OpenAI pricing documentation lists no free allowance for the GPT-6 family, so trial access has to come from a separate credit or promotion. Anthropic states that new users receive a small amount of free credits to test the API and that extended trials are handled by contacting sales. In practice you should treat both as paid models and use the Batch and Flex tiers for anything that does not need a synchronous answer."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which model should I use for agentic computer use and code execution?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For the agentic workloads where both models are actually being compared, the evidence points at GPT-6.1 Terra. OpenAI describes Terra as a fast, efficient model for visual reasoning, precise computer use and clear natural writing, and it supports tool calling on the Responses API. Anthropic positions Opus 5.5 for long-running agentic coding and knowledge work with adaptive thinking that cannot be disabled. If your workload depends on clicking, running code and checking the result, Terra produced lower cost and equal or better scores in the independent testing we cite. If your workload depends on sustained reasoning over long contexts, run both at their default medium effort on your own evaluation set before deciding."
+      }
+    }
+  ]
+};
+
+const enBody = `
+<h1 id="top">GPT-6.1 Terra vs Claude Opus 5.5: The Cost Math</h1>
+
+<p>OpenAI released GPT-6.1 Terra on October 26, 2026. Anthropic released Claude Opus 5.5 on September 22, 2026. Both are priced per million tokens, both ship a one million token context window, and both expose a deliberate effort control that lets you trade tokens for capability. On price, Terra is 1 dollar per 1M input and 5 dollars per 1M output against Opus 5.5 at 4 and 20. That is a clean 4x gap on both sides of the meter.</p>
+
+<p>A 4x gap on both sides of the meter is the least interesting thing about this comparison, and it is the number almost every summary leads with. We verified every figure in this article against the official OpenAI pricing and model documentation and the official Anthropic pricing and model pages on <strong>November 3, 2026</strong>. What that verification turned up is that the headline ratio is real but incomplete, that the two vendors implement long-context pricing in opposite ways, and that the interesting decision is not which model is cheaper but which one finishes the task. Here is the full picture.</p>
+
+<h2 id="headline-gap">The headline gap, stated precisely</h2>
+
+<p>Both models are recent enough that their published tier structures differ in ways that matter. OpenAI splits its pricing into Standard, Batch, Flex, Fast and Ultrafast tables. Anthropic splits its pricing into base rates, Batch, Fast mode and a data residency multiplier. Comparing the two requires picking the same tier on both sides, which is where most published comparisons quietly go wrong.</p>
+
+<table>
+<thead><tr><th>Dimension</th><th>GPT-6.1 Terra</th><th>Claude Opus 5.5</th></tr></thead>
+<tbody>
+<tr><td>Model ID</td><td>gpt-6.1-terra</td><td>claude-opus-5-5</td></tr>
+<tr><td>Released</td><td>October 26, 2026</td><td>September 22, 2026</td></tr>
+<tr><td>Input, standard</td><td>$1.00 / 1M</td><td>$4.00 / 1M</td></tr>
+<tr><td>Output, standard</td><td>$5.00 / 1M</td><td>$20.00 / 1M</td></tr>
+<tr><td>Cached input</td><td>$0.05 / 1M</td><td>$0.20 / 1M</td></tr>
+<tr><td>Batch tier</td><td>$0.50 / $2.50</td><td>$2.00 / $10.00</td></tr>
+<tr><td>Premium tier</td><td>Fast $2.00 / $10.00</td><td>Fast mode $8.00 / $40.00</td></tr>
+<tr><td>Context window</td><td>1,050,000</td><td>1,000,000</td></tr>
+<tr><td>Max input tokens</td><td>922,000</td><td>1,000,000</td></tr>
+<tr><td>Max output tokens</td><td>128,000</td><td>128,000</td></tr>
+<tr><td>Knowledge cutoff</td><td>June 1, 2026</td><td>June 2026</td></tr>
+<tr><td>Default effort</td><td>medium</td><td>medium</td></tr>
+</tbody>
+</table>
+
+<p>Two details in that table deserve more attention than they get. First, Terra actually has a slightly larger context window than Opus 5.5, 1,050,000 tokens against 1,000,000, though Anthropic notes that on its current tokenizer 1M tokens is roughly 555k words, while models before it fit about 750k words in the same 1M tokens. If you are feeding both models the same raw text, Opus 5.5 fits more words in its window even though its token count is lower. Second, the two models have an identical 128,000 token output ceiling on synchronous requests, which means the ceiling is not what separates them on long generations.</p>
+
+<p>On caching, the mechanics differ as well as the prices. Anthropic charges a 5-minute cache write at 1.25x the base input rate and a 1-hour write at 2x, with reads at 0.1x base input for most models but 0.05x on Opus 5.5 specifically. OpenAI charges cache writes at 1.25x for 30-minute retention and 2.50x for 12-hour retention, with reads at 5% of the uncached input rate. The headline read prices are close, so cache reads do not change the ranking, but the write multipliers differ enough that a caching strategy tuned for one vendor will not transfer cleanly to the other.</p>
+
+<h2 id="effort-axis">Effort is the axis the price table hides</h2>
+
+<p>Here is the fact that changes how you should read every price comparison between these two models. Both default to the same effort level, and both let you push far past it. OpenAI exposes reasoning effort on the Responses API, and for GPT-6.1 Terra it accepts none, low, medium, high, xhigh and max, with medium as the default. Anthropic exposes effort on the Messages API as output_config.effort, with the levels low, medium, high, xhigh and max, and medium is the default on Claude Opus 5.5. The two vendors arrived at the same control surface independently, with different names and different request shapes.</p>
+
+<table>
+<thead><tr><th>Effort level</th><th>GPT-6.1 Terra</th><th>Claude Opus 5.5</th></tr></thead>
+<tbody>
+<tr><td>none</td><td>Supported</td><td>Not supported, thinking is always on</td></tr>
+<tr><td>low</td><td>Supported</td><td>Supported</td></tr>
+<tr><td>medium</td><td>Default</td><td>Default</td></tr>
+<tr><td>high</td><td>Supported</td><td>Supported</td></tr>
+<tr><td>xhigh</td><td>Supported</td><td>Supported</td></tr>
+<tr><td>max</td><td>Supported</td><td>Supported</td></tr>
+</tbody>
+</table>
+
+<p>The consequence is straightforward. The published $1/$5 and $4/$20 rates describe both models at their default depth, which is the configuration a normal production request uses. The moment you set either model to max, you are comparing two deliberately expensive configurations, and Anthropic guidance is explicit that Opus 5.5 should start at its default medium effort with higher settings reserved for workloads where testing shows a quality gain. If a comparison puts both models at max effort and reports the resulting cost ratio as a headline finding, that ratio describes a scenario most of your traffic will never be in.</p>
+
+<p>There is a second reason effort matters for Opus 5.5 specifically. Anthropic documents that thinking cannot be disabled on this model, and that text appearing between tool calls is returned in thinking blocks whose text is empty at the default display setting. An application that streams that text to users as progress updates goes quiet between tool calls until it sets a display value. That is a behavioural difference you will feel in an agent loop, where silence between tool calls reads as a hang rather than as progress.</p>
+
+<h2 id="long-context">Two opposite long-context regimes</h2>
+
+<p>This is the largest structural difference between the two pricing systems, and it is the one most likely to be reversed in a summary. OpenAI splits its rates at a 272,000 input token threshold. Any request above it is charged 2x input and 1.5x output for the entire request, not just for the tokens over the line, which on GPT-6.1 Terra moves standard rates of $1.00 and $5.00 up to $2.00 and $7.50.</p>
+
+<p>Anthropic does the opposite. The pricing documentation states that Claude 4.6 and later models, with the exception of Claude Haiku 5.5, include the full 1M token context window at standard pricing, and that a 900,000 token request is billed at the same per-token rate as a 9,000 token request. Prompt caching and batch discounts apply at standard rates across the whole window. Opus 5.5 therefore has no long-context surcharge at all.</p>
+
+<p>Do the arithmetic on what that means for a large-context workload. Below 272K tokens, Opus 5.5 input costs 4 times Terra input and output costs 4 times Terra output. Above it, Terra input doubles and output goes up by half, so the gap compresses to 2x on input and about 2.7x on output. Opus 5.5 never becomes the cheaper model, but the advantage of working inside Terra's cheap tier rather than its long tier is worth roughly half the headline gap. If your workload sits above 272K input tokens, and many agent trajectories do, that is a real decision and not a rounding error. You can see the same shape in our <a href="/tutorials/gpt-6-astra-api-pricing-2026/">GPT-6 Astra pricing breakdown</a>, where the identical 272K threshold applies across the whole GPT-6 family.</p>
+
+<h2 id="benchmark">What the independent testing actually showed</h2>
+
+<p>The most useful independent comparison we found is a three-test evaluation published by The New Stack on October 31, 2026, run at max effort on both models. We report it with its own caveats intact, because the caveats are the interesting part.</p>
+
+<p>On OpenAI's own Agents' Last Exam, a benchmark of multistep computer use tasks, Terra scored 60.0 percent at 1.01 dollars per task while Opus 5.5 scored 63.2 percent at 8.82 dollars per task. That is a 3.2 percentage point accuracy gap for an 8.73 to 1 cost ratio. Per point of accuracy, Terra costs about 0.017 dollars and Opus 5.5 about 0.140 dollars.</p>
+
+<table>
+<thead><tr><th>Test</th><th>GPT-6.1 Terra</th><th>Claude Opus 5.5</th></tr></thead>
+<tbody>
+<tr><td>Release triage, of 50</td><td>50</td><td>50</td></tr>
+<tr><td>Cell lineage, of 50</td><td>48</td><td>43.5</td></tr>
+<tr><td>CI history audit, of 50</td><td>47</td><td>Did not finish</td></tr>
+<tr><td>Total tokens in and out</td><td>25,292,559 / 138,611</td><td>51,895,447 / 369,032</td></tr>
+<tr><td>Estimated uncached cost</td><td>$25.99</td><td>$214.96</td></tr>
+<tr><td>Estimated cost with caching</td><td>$2.51</td><td>$21.52</td></tr>
+<tr><td>Total elapsed time</td><td>2,418 s</td><td>3,962 s</td></tr>
+</tbody>
+</table>
+
+<p>Read the completion column before the score column. In the CI history audit, Opus 5.5 produced no final answer before hitting its 128,000 token per response output limit, while Terra completed the same task. In the large table task without tools, Terra returned 47 of 50 and Opus 5.5 returned no answer to score. In the cell lineage test, Terra won 48 to 43.5. Across all three final runs Terra spent 12.1 percent of Opus 5.5 estimated uncached token cost, an 8.27 to 1 ratio, and finished in 25.7 minutes less elapsed time. Opus 5.5 also burned roughly five times as many output tokens and typed 102 URLs where Terra typed 23 and mostly clicked through the interface.</p>
+
+<p>The author flagged the limits of the test honestly, and so should we. The tests were changed after earlier versions were seen, each final version was run once per model, and the results therefore do not establish repeatability or average performance across workloads. The author also notes that Terra left some numerical totals uncalculated in an earlier comparison against GPT-6 Astra, and recommends double-checking numerical answers on large tables. A single run is a signal, not a benchmark.</p>
+
+<p>What survives those caveats is a specific and actionable claim rather than a leaderboard position. In agentic work, the binding constraint is not token price, it is whether the model finishes. Opus 5.5 wrote more than five times as many output tokens, ran 96 code executions across 129 turns and took 36 minutes on the audit task, and still returned nothing. A model that does not return an answer costs you the full premium and gives you no output. If your workload has a completion rate problem, no price negotiation fixes it.</p>
+
+<h2 id="api-surface">The API surfaces are not the same</h2>
+
+<p>Both models are reachable through OpenAI-compatible chat completions, but the paths that matter for agents differ in ways that affect your integration work.</p>
+
+<p>On the OpenAI side, tool calling for GPT-6.1 Terra requires the Responses API. Chat completions and Batch are both supported, while Live, Realtime, Realtime translation, Realtime transcription, Assistants and fine-tuning are not. The model takes text and image input and produces text output, with audio and video unsupported. A request at max effort looks like this:</p>
+
+<pre><code class="language-bash">curl -sS https://api.openai.com/v1/responses \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer YOUR_OPENAI_API_KEY" \\
+  -d '{
+    "model": "gpt-6.1-terra",
+    "reasoning": { "effort": "max" },
+    "input": "Summarise this incident log and list the three highest-risk findings."
+  }'
+</code></pre>
+
+<p>On the Anthropic side, effort goes in the output_config object on the Messages API, the model ID is claude-opus-5-5, and the request shape is the familiar one:</p>
+
+<pre><code class="language-bash">curl -sS https://api.anthropic.com/v1/messages \\
+  -H "Content-Type: application/json" \\
+  -H "x-api-key: YOUR_ANTHROPIC_API_KEY" \\
+  -H "anthropic-version: 2023-06-01" \\
+  -d '{
+    "model": "claude-opus-5-5",
+    "max_tokens": 4096,
+    "messages": [
+      { "role": "user", "content": "Summarise this incident log and list the three highest-risk findings." }
+    ],
+    "output_config": { "effort": "max" }
+  }'
+</code></pre>
+
+<p>And here is a small cost calculator that models the two pricing regimes properly, including the long-context threshold on the OpenAI side and the cache-hit rate on both:</p>
+
+<pre><code class="language-python">TERRA_SHORT = (1.00, 5.00)   # input, output per 1M, standard
+TERRA_LONG = (2.00, 7.50)    # above 272K input tokens
+OPUS = (4.00, 20.00)         # no long-context surcharge on Opus 5.5
+
+def estimate(tokens_in, tokens_out, cached_in=0, long_context=False):
+    terra_in, terra_out = TERRA_LONG if long_context else TERRA_SHORT
+    uncached_in = tokens_in - cached_in
+    terra = (uncached_in * terra_in + cached_in * 0.05 + tokens_out * terra_out) / 1_000_000
+    opus = (uncached_in * OPUS[0] + cached_in * 0.20 + tokens_out * OPUS[1]) / 1_000_000
+    return {"terra_usd": round(terra, 4), "opus_usd": round(opus, 4), "ratio": round(opus / terra, 2)}
+
+print(estimate(50_000, 15_000))
+print(estimate(300_000, 20_000, long_context=True))
+</code></pre>
+
+<p>Running it on a typical agent turn of 50,000 input and 15,000 output tokens gives 0.125 dollars on Terra against 0.50 dollars on Opus 5.5. Push the same turn to 300,000 input tokens and Terra moves into its long tier, the gap compresses, and the cached variant of the first case is where the real money is: a 40,000 token cache hit drops Terra to well under a tenth of a dollar. If you are running an agent that re-reads a growing context, the cache write multiplier is what decides your bill, not the headline rate.</p>
+
+<p>There is also a routing pattern worth considering. Run Terra at the default medium effort for the bulk of traffic, escalate to Opus 5.5 at medium for the subset of tasks where your own evaluation shows the accuracy gap matters, and let both models share one gateway with per-key spend limits and routing rules. A gateway like <a href="https://portkey.ai/?ref=apirank">Portkey</a> is the usual way teams implement that pattern, since it lets you set a hard spend ceiling per virtual key and switch the model behind an endpoint without touching application code.</p>
+
+<h2 id="where-to-route">Where to route what</h2>
+
+<p>OpenAI describes GPT-6.1 Terra as a fast, efficient model for visual reasoning, precise computer use and clear natural writing, and recommends it for matching product photos to catalog entries, interpreting technical drawings, acting on application screens and drafting text. Anthropic positions Claude Opus 5.5 for long-running agentic coding and knowledge work, and its own model comparison table recommends starting with Opus 5.5 for most workloads. Those are different pitches, and the price gap is not the deciding factor between them.</p>
+
+<p>If your workload is clicking through an interface, running code and checking the result, the evidence points at Terra: lower cost, equal or better scores in the independent testing, and a completion record that beat the alternative on the same tasks. If your workload is a very long context of mixed documents where you need reliable synthesis, Opus 5.5 has the cleaner story, because Anthropic bills the full 1M window at standard rates with no threshold to cross. If your workload is high-volume classification or extraction, Opus 5.5 is likely the wrong model entirely and Claude Haiku 5.5 or GPT-6 Luna are the right ones to price.</p>
+
+<p>One more routing caveat. Anthropic also applies a 1.1x multiplier to all token pricing categories when you request US-only inference through the inference_geo parameter, and states that earlier models reject that parameter with a 400 error. OpenAI charges a 10 percent uplift on regional processing endpoints for models released on or after March 5, 2026, and adds a 10 percent uplift for FedRAMP endpoints starting November 1, 2026. If you have data residency requirements, add that multiplier before you do the comparison, because it moves both sides.</p>
+
+<h2 id="honest-gaps">The honest gaps</h2>
+
+<p>Terra has real limitations that the price comparison obscures. Its knowledge cutoff is June 1, 2026, so it has no knowledge of anything after that. The independent testing found it making arithmetic errors on large tables, including status counts off by one and a question it should have flagged as unanswerable, and the same class of weakness showed up in an earlier comparison against GPT-6 Astra. If your pipeline depends on the model doing arithmetic over many rows rather than reasoning about them, verify the numbers independently. Our <a href="/tutorials/claude-opus-5-api-pricing-2026/">Claude Opus 5 pricing review</a> covers the previous generation in the same Anthropic line, and our <a href="/tutorials/sonnet-5-vs-gpt-5-5-vs-opus-4-8-llm-api-2026/">four-model cost comparison</a> sets up the baseline this one continues from.</p>
+
+<p>Opus 5.5 has its own set of migration hazards, and they are code-level rather than price-level. Anthropic documents four breaking changes relative to Opus 5: thinking cannot be disabled, forced tool use returns an error, thinking blocks are tied to the model and conversation that produced them, and the earlier computer_20251124 computer use tool is no longer accepted on the Claude API. A fifth change alters the response shape without failing any request, which is the quiet one that bites hardest in agent loops. If you are upgrading from Opus 5, read the migration guide before you benchmark, because a lot of the behaviour you would attribute to model quality is really an API shape change.</p>
+
+<p>And neither model is free. Anthropic gives new users a small amount of free credit to test the API and routes extended trials through sales. The OpenAI pricing documentation lists no free allowance for the GPT-6 family. Plan on paying, and use Batch at 50 percent off, or Flex on the OpenAI side at the same rate, for anything that does not need a synchronous answer.</p>
+
+<h2 id="verdict">Verdict</h2>
+
+<p>GPT-6.1 Terra is the better default for most API workloads, and the reason is not only the 4x price gap. It is that Terra finished the tasks Opus 5.5 did not, in less wall-clock time, at roughly an eighth of the estimated cost, on the specific agentic workloads where the two are genuinely comparable. Opus 5.5 is still the more capable model for sustained reasoning over long mixed documents, and its no-long-context-surcharge billing is a genuine advantage above 272K input tokens.</p>
+
+<p>But the decision you should actually make is not Terra versus Opus 5.5 at a fixed effort. It is which model at which effort, for which slice of traffic, measured on your own evaluation set. Both vendors default to medium, both expose max, and the difference between a 4x price gap and an 8x one is a configuration choice you control. Start both at medium, run the workloads where accuracy gaps have actually cost you something, and let the numbers decide. Then read the prices at integration time rather than trusting any table, ours included.</p>
+
+<p><strong>Sources:</strong> OpenAI API pricing documentation (Standard, Batch, Flex and Fast pricing tables), OpenAI GPT-6.1 Terra model page, OpenAI models catalog, Anthropic Claude Opus 5.5 model overview, Anthropic API pricing page (model pricing, cache multipliers, Fast mode, Batch, data residency, tool use tokens), Anthropic effort documentation, OpenAI news feed announcement of GPT-6.1 Terra dated October 26, 2026, and The New Stack independent three-test evaluation of Terra against Opus 5.5 published October 31, 2026. All verified November 3, 2026.</p>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={enBody} />
+</BaseLayout>
