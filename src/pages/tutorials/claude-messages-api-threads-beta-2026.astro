@@ -1,0 +1,219 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'claude-messages-api-threads-beta-2026';
+const enTitle = 'Claude Messages API Threads 2026: Faster TTFT';
+const enDescription = 'Anthropic Messages API message threads beta: keep conversations server-side, send only new messages, steadier TTFT. Beta header, pricing, gotchas.';
+const date = '2026-11-04';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are Claude Messages API message threads?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Message threads are a beta feature of the Anthropic Messages API that keeps a conversation on Anthropic's servers for a short time. You send the full conversation once with a thread create parameter, and on each later turn you send only the new messages plus the previous response id. The API rebuilds the conversation before calling the model, so requests stay small and time to first token stays lower and steadier as the conversation grows."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do message threads change Claude API pricing or rate limits?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Anthropic's documentation states explicitly that threads do not change pricing or rate limits. You are billed the same per-token rates as before: Claude Opus 5.5 at 4 dollars input and 20 dollars output per 1M tokens, Claude Sonnet 5.5 at 2 dollars and 10 dollars, and Claude Haiku 5.5 at 0.10 dollar and 0.50 dollar. Threads change how much data you upload per request, not what you pay per token."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the beta header for Claude message threads?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Every request in a thread must carry the beta header message-threads-2026-08-12. If you use the SDK thread helper, it adds this header for you. If you build thread requests yourself with cURL or the standard SDK create method, you must send the header on every request of the thread, including both create and continue calls."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When does a Claude message thread expire?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A thread is best-effort. It expires 5 minutes after its last request, and the API deletes it no more than 1 hour after its last use. Each stored response restarts the 5-minute clock. If a continue request returns a 404 with error code thread_not_found, the thread is gone and you must replay the full conversation in a new create request."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are Claude message threads eligible for zero data retention?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Message threads are not ZDR eligible and not HIPAA eligible. The API holds the thread in memory, encrypted under a server-managed key, never writes it to durable storage, and deletes it no more than 1 hour after its last use. Using threads does not affect the ZDR eligibility of your other features."
+      }
+    }
+  ]
+};
+
+const enBody = `
+<h1 id="top">Claude Messages API Threads 2026: The Beta That Cuts Your TTFT</h1>
+
+<p>Anthropic shipped a quiet but important change to the Messages API: <strong>message threads</strong>, now in beta on every Claude model. The pitch is simple — stop re-uploading your entire conversation on every turn. Send the full conversation once, then send only the new messages on each later request. The API keeps the conversation on its servers for a few minutes, rebuilds it before calling the model, and returns the usual response. The result, per Anthropic's own engineering reporting, is a time-to-first-token improvement of roughly 35% on long Claude Code sessions, with your token bill unchanged.</p>
+
+<p>We verified every claim in this article against Anthropic's platform documentation on <strong>November 4, 2026</strong>.</p>
+
+<h2 id="what-threads-do">What message threads actually do</h2>
+
+<p>The Messages API is stateless. Today, every turn re-sends the full message history — system prompt, tools, and every prior exchange — and the API validates and tokenizes all of it again. In a long agent loop that is a lot of redundant upload, and it is the dominant driver of rising TTFT as conversations grow.</p>
+
+<p>With a thread, you add one <code>thread</code> parameter to a Messages request. On the first turn you set <code>{"type": "create"}</code> and send everything as usual, plus your system prompt and tools. The API stores the conversation — including Claude's reply — under the response <code>id</code>. On later turns you set <code>{"type": "continue", "previous_message_id": "&lt;previous id&gt;"}</code> and send only the new messages, leaving <code>system</code> and <code>tools</code> out entirely. The thread keeps them. Requests get smaller, and TTFT stays lower and steadier the longer the conversation runs — which matters most in long-running agent loops, exactly the workload where Claude Code users were feeling the drag.</p>
+
+<p>The mental model is worth stating plainly: your application stays the source of truth. A thread is a server-side cache of a conversation the API already saw, held in memory for minutes, not a database. If you treat it as durable state, you will eventually lose data; if you treat it as a per-session optimization over your own copy, it is close to free money.</p>
+
+<h2 id="pricing-unchanged">Pricing and rate limits: unchanged</h2>
+
+<p>Anthropic is explicit on this point: <strong>threads do not change pricing or rate limits</strong>. You still pay the standard per-token rates — Claude Opus 5.5 at $4/M input and $20/M output, Claude Sonnet 5.5 at $2/M and $10/M, Claude Haiku 5.5 at $0.10/M and $0.50/M, with the usual prompt-caching discounts on top. What changes is how much data crosses the wire per request, and how much of the API's per-turn validation work gets skipped. If your workload is dominated by re-uploading large histories, you should see TTFT drop noticeably even though the invoice per token is identical.</p>
+
+<p>The arithmetic is straightforward. A 50-turn agent loop with a 30K-token system prompt, a 5K-token tool schema, and an average of 8K tokens of accumulated history per turn uploads roughly 2.1 million input tokens across the session without a thread. With a thread, turn 1 still uploads everything — about 43K tokens — but each of the 49 continue requests uploads only the new turn's messages, typically a few hundred tokens each. Total upload drops from 2.1M to well under 100K tokens. At Opus 5.5 input rates that is a real latency win on every turn and a meaningful reduction in billed uncached input, which is exactly where the 35% Claude Code TTFT improvement comes from.</p>
+
+<p>One nuance: the thread stores the full conversation server-side, so a continue request still reads the whole history through the model — the tokens are billed as input either way once caching is accounted for. The saving is in upload bandwidth, client-side serialization, and the API's per-turn validation and tokenization work, not in a hidden discount on the model's own compute.</p>
+
+<h2 id="quickstart">Getting started: the SDK helper</h2>
+
+<p>The easiest path is the SDK thread helper. You create it with the same fields as a normal Messages request, then feed it one turn at a time. It adds the required beta header, manages the create-then-continue flow, and keeps the full conversation in memory so it can replay when a thread dies.</p>
+
+<pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+thread = client.beta.messages.thread(
+    model="claude-opus-5-5",
+    max_tokens=1024,
+    cache_control={"type": "ephemeral"},
+    system="You are a support agent for Acme. Keep replies short.",
+)
+
+# Turn 1: the helper creates a thread and sends the full conversation
+thread.send({"role": "user", "content": "Hi! I have a question about an order."})
+
+# Turn 2: the helper continues the thread and sends only the new message
+second = thread.send({"role": "user", "content": "How long does standard shipping take?"})
+for block in second.content:
+    if block.type == "text":
+        print(block.text)</code></pre>
+
+<p>If you prefer to send the <code>thread</code> field yourself — with cURL, the CLI, or an SDK's regular <code>create</code> method — add the beta header <code>message-threads-2026-08-12</code> on every request of the thread:</p>
+
+<pre><code class="language-bash"># Turn 1: send the full conversation and create a thread
+curl https://api.anthropic.com/v1/messages \\
+  -H "Content-Type: application/json" \\
+  -H "x-api-key: $ANTHROPIC_API_KEY" \\
+  -H "anthropic-version: 2023-06-01" \\
+  -H "anthropic-beta: message-threads-2026-08-12" \\
+  -d '{
+    "model": "claude-opus-5-5",
+    "max_tokens": 1024,
+    "system": "You are a support agent for Acme.",
+    "messages": [{"role": "user", "content": "Hi! I have a question about an order."}],
+    "thread": {"type": "create"}
+  }'</code></pre>
+
+<pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+# Turn 2: send only the new message and the id of the turn 1 response
+second = client.beta.messages.create(
+    model="claude-opus-5-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "How long does shipping take?"}],
+    thread={"type": "continue", "previous_message_id": "msg_01XFDUDYJgAACzvnptvVoYEL"},
+    betas=["message-threads-2026-08-12"],
+)
+print(second.content[0].text)</code></pre>
+
+<h2 id="field-rules">What to send on each request</h2>
+
+<p>The API splits request fields into three groups. <strong>Create-only</strong> fields — <code>system</code>, <code>tools</code>, and any cache breakpoints on them — go on the create request only; sending either one on a continue request, even as <code>null</code>, returns a 400. <strong>Fixed</strong> fields — <code>model</code>, <code>tool_choice</code>, <code>thinking</code>, the top-level <code>cache_control</code>, and the set of <code>anthropic-beta</code> values — must be identical on every request of the thread; a mismatch returns a 400 with code <code>thread_fingerprint_mismatch</code> and names the offending fields. <strong>Free</strong> fields — <code>max_tokens</code>, <code>stop_sequences</code>, <code>stream</code>, <code>metadata</code>, <code>service_tier</code> — can change turn to turn. To change a create-only or fixed field, start a new thread.</p>
+
+<p>Two subtleties deserve attention. First, the API does not store MCP server URLs, MCP authorization tokens, or the container <code>id</code>, so you must send <code>mcp_servers</code> and <code>container</code> on every request that uses them — an MCP authorization token can legitimately change between requests. Second, on the Fable 5.1, Mythos 5.1, Opus 5.5, Sonnet 5.5, and Haiku 5.5 families, changing <code>system</code> or <code>tools</code> mid-conversation invalidates any <code>thinking</code> and <code>redacted_thinking</code> blocks already in the conversation, and a create request that carries them can return a 400. The safe pattern is to leave thinking blocks out of the conversation you send; the model then answers without surfacing that earlier reasoning.</p>
+
+<h2 id="caching-and-streaming">Prompt caching and streaming with threads</h2>
+
+<p>A thread does not cache your prompt for you — caching works as it does without a thread, and you choose where the breakpoints go. To cache each turn, send a top-level <code>cache_control</code> on every request of the thread; the API applies it to the last cacheable block of each request's messages. Note the limit: a thread request can carry at most 4 <code>cache_control</code> breakpoints, the top-level one counts as one, and breakpoints on <code>system</code> and <code>tools</code> count again on every continue request.</p>
+
+<p>If you place breakpoints on message blocks yourself rather than relying on the top-level field, the rules get sharper. Breakpoints sent on the create request keep working on later turns as long as they sit on <code>tools</code>, on <code>system</code>, or on a message block before the last one. A breakpoint on the last block of a request's messages writes the cache on that request — so to cache each new turn, you need one on every request. You cannot move or remove a breakpoint after sending it, because a continue request cannot re-send an earlier message. And when you replay a conversation in a new create request, strip the breakpoints from earlier messages before you send it, keeping one on the last block, so the request stays within the 4-breakpoint ceiling. Exceeding it returns a 400 with code <code>thread_unsupported_request</code>.</p>
+
+<p>The practical recipe most agent builders want is the simple one: a top-level <code>cache_control: {"type": "ephemeral"}</code> on every request of the thread. That caches each turn without you managing per-block breakpoints, at the cost of one breakpoint slot consumed per request. The only time you need finer control is when your system prompt and tool schema are enormous and you want them cached once and read repeatedly — in that case, put breakpoints on <code>system</code> and <code>tools</code> at create time and let them persist across turns, then use the top-level field for per-turn writes.</p>
+
+<p>Threads work with streaming. The response <code>id</code> arrives in the <code>message_start</code> event, but continue only after you receive <code>message_stop</code> — an earlier continue can return a 404. If a continue stream drops before <code>message_stop</code>, retry the same continue request; if it returns <code>thread_already_continued</code> or <code>thread_continue_in_flight</code>, replay the full conversation in a new create request. Replaying is always safe.</p>
+
+<h2 id="gotchas">The five gotchas that will bite you</h2>
+
+<p><strong>1. Threads are ephemeral.</strong> A thread expires 5 minutes after its last request and is deleted no more than 1 hour after last use. If your agent pauses for a coffee break, expect to replay.</p>
+
+<p><strong>2. Threads are best-effort.</strong> No response — create or continue — tells you whether the API actually stored that turn. You find out on the next continue. Keep your own copy of every message and build the replay path from day one. The SDK helper keeps its copy in memory and saves it nowhere else.</p>
+
+<p><strong>3. Append-only.</strong> A thread is append-only and each response id can be continued exactly once. Always continue from the latest response id. To edit or branch, start a new thread from a fork; to compact, start a new thread from a summary — on-demand compaction is not available on threads.</p>
+
+<p><strong>4. Ownership is strict.</strong> A thread belongs to the organization, workspace, and user or service account that created it. A request from a different key — including a workspace key that did not create the thread — returns <code>thread_not_found</code>. On Claude Platform on AWS, sign every request of a thread with the same IAM role or user.</p>
+
+<p><strong>5. Refusals and fallbacks break the chain.</strong> After a <code>stop_reason: "refusal"</code>, do not continue the thread — start a new one, leaving out or rephrasing the refused turn. With server-side fallback, the API does not store turns that a fallback model wrote, so you cannot continue from a fallback response's id; check <code>usage.iterations</code> for a <code>fallback_message</code> entry and replay the full conversation if you see one.</p>
+
+<h2 id="threads-vs-alternatives">Threads versus the alternatives</h2>
+
+<p>Message threads are not the only way to reduce per-turn upload. Three alternatives are worth pricing against before you commit.</p>
+
+<p><strong>Plain prompt caching</strong> is the status quo: mark cache breakpoints on your system prompt and tool definitions, and the API serves repeat prefixes from cache at a fraction of the list input price — $0.20/M on Opus 5.5 against the $4/M uncached rate. Caching is durable across requests, works with every feature, and requires no beta header. Its weakness is exactly what threads fix: cache reads still re-validate and re-tokenize the full prefix server-side, so TTFT degrades as the conversation grows even when the cache hit rate is perfect.</p>
+
+<p><strong>Client-side conversation summarization</strong> — compacting older turns into a rolling summary — reduces upload permanently and works with any provider. The cost is quality: you are asking a model to compress context it may need later, and agent loops are unforgiving about dropped tool outputs. Threads give you the latency benefit of a short upload without the information-loss risk, because the API keeps the full conversation.</p>
+
+<p><strong>Session threads in Claude Managed Agents</strong> are the closest sibling feature. They serve the same goal — avoid re-uploading history — but they live in the managed agent harness rather than the raw Messages API, persist differently, and are designed for asynchronous long-running tasks. If you have adopted Managed Agents, use its session threads; if you are building your own agent loop against the Messages API, message threads are the native primitive. The documentation is explicit that the two are different features.</p>
+
+<h2 id="errors">The error codes you will actually see</h2>
+
+<p>The documented thread errors all return before the model runs, so they consume no tokens and do not change the thread's expiry: <code>thread_not_found</code> (404 — replay the full conversation), <code>thread_fingerprint_mismatch</code> (400 — a fixed field differs), <code>thread_already_continued</code> (400 — each response id continues once), <code>thread_continue_in_flight</code> (400 — another continue from the same id is running), and <code>thread_unsupported_request</code> (400 — the request uses a feature threads do not support, named in <code>error.details.unsupported</code>). A request for a model that does not exist also returns a 404, so check <code>error.details.error_code</code> before you replay.</p>
+
+<p>Worth internalizing: the 404 cases are not all equal. A <code>thread_not_found</code> right after a replay usually means the API is struggling to store that particular conversation — for example, an unusually large one. The documented fallback is to send the request without <code>thread</code> entirely; the SDK helper does this automatically when created with <code>unsupported_request_behavior</code> set to <code>continue_unthreaded</code>, and a tool runner that creates its own thread uses that setting by default. Some 400 thread errors carry no <code>error_code</code> at all — a continue request without <code>previous_message_id</code>, or one that includes <code>system</code> or <code>tools</code>, fails that way. Those are programming errors, not runtime conditions, and they point straight at the fix.</p>
+
+<p>Design your error handling as a decision tree rather than a flat retry: on <code>thread_not_found</code> or <code>thread_already_continued</code>, replay once from your own copy; if the replayed continue returns <code>thread_not_found</code> again, drop the thread and continue unthreaded; on <code>thread_fingerprint_mismatch</code>, fix the offending field or fork a new thread; on <code>thread_continue_in_flight</code>, back off and let the in-flight request finish before retrying. Each branch has a distinct, correct response, and conflating them produces the retry loops that make threads feel unreliable in practice.</p>
+
+<h2 id="who-is-it-for">Who should turn threads on today</h2>
+
+<p>Message threads are the right default for long-running agent loops — coding agents, support agents, multi-step research workflows — anywhere the conversation history is large, turns are frequent, and TTFT compoundly dominates the user experience. Anthropic reports Claude Code sessions getting roughly 35% faster TTFT with the feature enabled, and the integration cost is one parameter plus one beta header.</p>
+
+<p>The availability picture is broad. Threads are in beta on every Claude model and available on the Claude API, Claude Platform on AWS, Claude Models on Google Cloud (Anthropic managed), and Microsoft Foundry. The only hard requirement is the <code>message-threads-2026-08-12</code> beta header on every request. If you are already running Claude Code, the feature is essentially a configuration change; if you are building custom agent infrastructure, the SDK helper removes most of the integration surface, leaving only the replay path and the refusal handling for you to own.</p>
+
+<p>You should skip threads, for now, if your workload requires zero data retention or HIPAA eligibility (threads are neither), if your turns are minutes apart (the 5-minute expiry will force constant replays), or if your conversation state must outlive the process (the helper's copy is in-memory only). For everything else, threads are a free latency win on the same bill — turn them on, keep your replay path tested, and let the API carry the history for a change.</p>
+
+<p><strong>Sources:</strong> Anthropic Claude Platform Docs — Message threads, Using the Messages API, Pricing (all verified November 4, 2026); The New Stack, "Anthropic speeds up Claude Code with message threads" (Nov 3, 2026).</p>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={enBody} />
+</BaseLayout>

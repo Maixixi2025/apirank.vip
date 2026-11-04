@@ -1,0 +1,219 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'claude-messages-api-threads-beta-2026';
+const zhTitle = 'Claude Messages API 消息线程 2026：TTFT 提速实测';
+const zhDescription = 'Anthropic Messages API 消息线程 beta：对话存于服务端，每轮只发新消息，TTFT 更稳更低。beta header、定价不变、五大坑与回退方案。';
+const date = '2026-11-04';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Claude Messages API 消息线程是什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "消息线程是 Anthropic Messages API 的 beta 功能，可将对话短暂保留在 Anthropic 服务端。首轮请求以 thread create 参数发送完整对话，之后每轮仅发送新增消息和上一轮响应的 id。API 在调用模型前重建完整对话，因此请求体积更小，且对话越长，首 token 延迟（TTFT）越稳越低。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "消息线程会改变 Claude API 定价或限速吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不会。Anthropic 文档明确说明线程不改变定价也不改变限速。你仍按标准 token 费率计费：Claude Opus 5.5 输入 4 美元/百万 token、输出 20 美元；Claude Sonnet 5.5 输入 2 美元、输出 10 美元；Claude Haiku 5.5 输入 0.10 美元、输出 0.50 美元。线程改变的是每轮请求上传的数据量，而不是每个 token 的价格。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude 消息线程的 beta header 是什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "线程中的每个请求都必须携带 beta header：message-threads-2026-08-12。如果使用 SDK 线程 helper，它会自动添加该 header。如果你用 cURL 或标准 SDK create 方法自行构造线程请求，则必须在线程的每个请求（包括 create 和 continue）上都发送该 header。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude 消息线程什么时候过期？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "线程是尽力而为的。它在最后一次请求后 5 分钟过期，并在最后一次使用后不超过 1 小时内被删除。每个被存储的响应都会重置 5 分钟计时器。如果 continue 请求返回 404 且错误码为 thread_not_found，说明线程已失效，必须重新发送完整对话并创建新线程。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Claude 消息线程符合零数据保留（ZDR）要求吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不符合。消息线程既不是 ZDR 合规，也不是 HIPAA 合规。API 将线程保存在内存中，使用服务端托管密钥加密，绝不写入持久化存储，并在最后一次使用后不超过 1 小时内删除。使用线程功能不影响你其他功能的 ZDR 合规资格。"
+      }
+    }
+  ]
+};
+
+const zhBody = `
+<h1 id="top">Claude Messages API 消息线程 2026：把 TTFT 砍下来的 Beta</h1>
+
+<p>Anthropic 给 Messages API 上线了一项安静但重要的改动：<strong>消息线程（message threads）</strong>，目前在所有 Claude 模型上处于 beta 阶段。卖点很简单——别再每轮都重传整个对话。第一轮发送完整对话，之后每轮只发新增消息。API 把对话在服务端保留几分钟，在调用模型前重建完整上下文，然后照常返回。按 Anthropic 自己的工程数据，在 Claude Code 的长会话中 TTFT 提升约 35%，而你的 token 账单分文不变。</p>
+
+<p>我们在<strong>2026 年 11 月 4 日</strong>对照 Anthropic 平台文档逐项核验了本文中的每一项事实。</p>
+
+<h2 id="what-threads-do">消息线程到底做了什么</h2>
+
+<p>Messages API 是无状态的。今天的做法是每轮都重发完整的消息历史——system 提示词、工具定义、以及此前的每一轮交换——API 再把它们全部重新校验、重新分词。在一个长 agent 循环里，这是大量的冗余上传，也是对话变长后 TTFT 持续恶化的主因。</p>
+
+<p>有了线程，你只需在 Messages 请求中加一个 <code>thread</code> 参数。第一轮设为 <code>{"type": "create"}</code>，像往常一样发送所有内容，外加 system 提示词和工具。API 会把对话（包括 Claude 的回复）存储在响应 <code>id</code> 之下。后续轮次设为 <code>{"type": "continue", "previous_message_id": "&lt;上一个 id&gt;"}</code>，只发送新增消息，<code>system</code> 和 <code>tools</code> 完全不用带——线程会替你记住。请求体积变小，对话越长 TTFT 越稳越低——这在长 agent 循环里价值最大，也正是 Claude Code 用户感受最明显的工作负载。</p>
+
+<p>有一个心智模型值得讲清楚：你的应用仍然是事实来源。线程是 API 已经见过的对话的服务端缓存，在内存里保留几分钟，不是数据库。把它当持久状态用，你迟早丢数据；把它当作自己副本之上的会话级优化，它几乎是免费的收益。</p>
+
+<h2 id="pricing-unchanged">定价与限速：不变</h2>
+
+<p>Anthropic 在这一点上说得很明确：<strong>线程不改变定价，也不改变限速</strong>。你仍按标准 token 费率付费——Claude Opus 5.5 输入 $4/百万 token、输出 $20/百万；Claude Sonnet 5.5 输入 $2/百万、输出 $10/百万；Claude Haiku 5.5 输入 $0.10/百万、输出 $0.50/百万——提示词缓存的常规折扣同样适用。改变的是每轮请求跨过网络的数据量，以及 API 每轮跳过的校验工作量。如果你的工作负载一直被重传大段历史所拖累，即使每个 token 的账单不变，TTFT 也会明显下降。</p>
+
+<p>算一笔账就清楚了。一个 50 轮的 agent 循环，带着 30K token 的 system 提示词、5K token 的工具 schema、平均每轮 8K token 的累计历史：不用线程，整个会话要上传约 210 万输入 token。用了线程，第 1 轮仍然全量上传——约 43K token——但后面 49 次 continue 请求每次只上传新增轮次的消息，通常只有几百个 token。总上传量从 210 万降到远低于 10 万。按 Opus 5.5 的输入费率，这就是每轮真实的延迟收益，也是未缓存输入账单的实质缩减——Claude Code 那 35% 的 TTFT 提升正来自这里。</p>
+
+<p>一个细节：线程在服务端存储完整对话，所以 continue 请求仍然会让模型读完整段历史——这些 token 一旦计入缓存，无论如何都要按输入计费。省下来的是上传带宽、客户端序列化、以及 API 每轮的校验和分词工作，而不是模型自身算力的隐藏折扣。</p>
+
+<h2 id="quickstart">快速上手：SDK helper</h2>
+
+<p>最简单的路径是 SDK 线程 helper。用与普通 Messages 请求相同的字段创建它，然后逐轮喂给它。它会自动添加必需的 beta header，管理 create-then-continue 流程，并在内存中保留完整对话以便线程失效时重放。</p>
+
+<pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+thread = client.beta.messages.thread(
+    model="claude-opus-5-5",
+    max_tokens=1024,
+    cache_control={"type": "ephemeral"},
+    system="You are a support agent for Acme. Keep replies short.",
+)
+
+# 第 1 轮：helper 创建线程并发送完整对话
+thread.send({"role": "user", "content": "Hi! I have a question about an order."})
+
+# 第 2 轮：helper 继续线程，只发送新消息
+second = thread.send({"role": "user", "content": "How long does standard shipping take?"})
+for block in second.content:
+    if block.type == "text":
+        print(block.text)</code></pre>
+
+<p>如果你希望自行发送 <code>thread</code> 字段——用 cURL、CLI 或 SDK 的常规 <code>create</code> 方法——在线程的每个请求上都要加 beta header <code>message-threads-2026-08-12</code>：</p>
+
+<pre><code class="language-bash"># 第 1 轮：发送完整对话并创建线程
+curl https://api.anthropic.com/v1/messages \\
+  -H "Content-Type: application/json" \\
+  -H "x-api-key: $ANTHROPIC_API_KEY" \\
+  -H "anthropic-version: 2023-06-01" \\
+  -H "anthropic-beta: message-threads-2026-08-12" \\
+  -d '{
+    "model": "claude-opus-5-5",
+    "max_tokens": 1024,
+    "system": "You are a support agent for Acme.",
+    "messages": [{"role": "user", "content": "Hi! I have a question about an order."}],
+    "thread": {"type": "create"}
+  }'</code></pre>
+
+<pre><code class="language-python">import anthropic
+
+client = anthropic.Anthropic()
+# 第 2 轮：只发送新消息和第 1 轮响应的 id
+second = client.beta.messages.create(
+    model="claude-opus-5-5",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "How long does shipping take?"}],
+    thread={"type": "continue", "previous_message_id": "msg_01XFDUDYJgAACzvnptvVoYEL"},
+    betas=["message-threads-2026-08-12"],
+)
+print(second.content[0].text)</code></pre>
+
+<h2 id="field-rules">每轮请求该发什么字段</h2>
+
+<p>API 把请求字段分为三组。<strong>仅创建时可发</strong>的字段——<code>system</code>、<code>tools</code>以及它们之上的缓存断点——只能在 create 请求上发送；在 continue 请求上发送其中任何一个（哪怕是 <code>null</code>）都会返回 400。<strong>固定字段</strong>——<code>model</code>、<code>tool_choice</code>、<code>thinking</code>、顶层 <code>cache_control</code>、以及 <code>anthropic-beta</code> 值集合——在线程的每个请求上必须完全一致；不一致会返回 400，错误码 <code>thread_fingerprint_mismatch</code>，并报出具体是哪个字段。<strong>自由字段</strong>——<code>max_tokens</code>、<code>stop_sequences</code>、<code>stream</code>、<code>metadata</code>、<code>service_tier</code>——可以逐轮改变。要修改仅创建字段或固定字段，就开一个新线程。</p>
+
+<p>两个细节值得注意。第一，API 不会存储 MCP 服务器 URL、MCP 授权 token 或 container <code>id</code>，所以使用它们时必须在每个请求上都发送 <code>mcp_servers</code> 和 <code>container</code>——MCP 授权 token 在请求之间完全可能合法地变化。第二，在 Fable 5.1、Mythos 5.1、Opus 5.5、Sonnet 5.5 和 Haiku 5.5 家族上，对话中途修改 <code>system</code> 或 <code>tools</code> 会使对话中已有的 <code>thinking</code> 和 <code>redacted_thinking</code> 块失效，携带这些块的 create 请求可能返回 400。安全的做法是发送的对话中不带 thinking 块；模型会在不暴露此前推理过程的情况下作答。</p>
+
+<h2 id="caching-and-streaming">线程上的提示词缓存与流式输出</h2>
+
+<p>线程不会替你缓存提示词——缓存机制与不用线程时完全相同，断点由你决定。要缓存每一轮，在线程的每个请求上发送顶层 <code>cache_control</code>；API 会把它应用到请求消息中最后一个可缓存的块上。注意上限：一个线程请求最多携带 4 个 <code>cache_control</code> 断点，顶层那个算一个，<code>system</code> 和 <code>tools</code> 上的断点在每次 continue 请求上都要重复计算。</p>
+
+<p>如果你不用顶层字段、而是在消息块上自行放置断点，规则会更细。create 请求上发送的断点，只要位于 <code>tools</code>、<code>system</code> 或最后一个之前的消息块上，在后续轮次就持续有效。位于请求消息最后一个块上的断点会在该请求上写入缓存——所以要缓存每个新轮次，每个请求都要放一个。断点一旦发送就无法移动或删除，因为 continue 请求无法重发更早的消息。而且在新 create 请求中重放对话时，要先把此前消息上的断点剥掉、只在最后一个块上保留一个，才能让请求保持在 4 个断点的上限内。超限会返回 400，错误码 <code>thread_unsupported_request</code>。</p>
+
+<p>大多数 agent 开发者想要的实用配方很简单：每个请求都带一个顶层 <code>cache_control: {"type": "ephemeral"}</code>。这样不用管理逐块断点就能缓存每一轮，代价是每个请求占用一个断点槽位。只有当你的 system 提示词和工具 schema 极其庞大、希望它们被缓存一次并被反复读取时，才需要更细的控制——这种情况下，在 create 时把断点放在 <code>system</code> 和 <code>tools</code> 上让它们跨轮持久，再用顶层字段做每轮写入。</p>
+
+<p>线程支持流式输出。响应 <code>id</code> 在 <code>message_start</code> 事件中到达，但要等收到 <code>message_stop</code> 事件后才能 continue——过早 continue 可能返回 404。如果 continue 的流在 <code>message_stop</code> 之前断开，重试同一个 continue 请求；如果返回 <code>thread_already_continued</code> 或 <code>thread_continue_in_flight</code>，在新 create 请求中重放完整对话。重放永远是安全的。</p>
+
+<h2 id="gotchas">五个会咬到你的坑</h2>
+
+<p><strong>1. 线程是短暂的。</strong> 线程在最后一次请求后 5 分钟过期，并在最后一次使用后不超过 1 小时内被删除。如果你的 agent 中途歇了杯咖啡，大概率就要重放。</p>
+
+<p><strong>2. 线程是尽力而为的。</strong> 没有任何响应——无论 create 还是 continue——会告诉你 API 是否真的存了那一轮。你要到下一次 continue 才知道。自己保留每一条消息的副本，并从第一天起就把重放路径写好。SDK helper 的副本存在内存里，不会存到任何其他地方。</p>
+
+<p><strong>3. 只增不改。</strong> 线程是 append-only 的，每个响应 id 只能被 continue 一次。永远从最新的响应 id 继续。要编辑或分叉，就从 fork 开新线程；要压缩上下文，就从摘要开新线程——线程不支持按需 compaction。</p>
+
+<p><strong>4. 所有权是严格的。</strong> 线程属于创建它的组织、工作区、用户或服务账号。来自不同密钥的请求——包括没有创建该线程的工作区密钥——会返回 <code>thread_not_found</code>。在 Claude Platform on AWS 上，线程中的每个请求都必须用同一个 IAM 角色或用户签名。</p>
+
+<p><strong>5. 拒绝和回退会打断链条。</strong> 遇到 <code>stop_reason: "refusal"</code> 后不要继续线程——开一个新线程，去掉或改写被拒绝的那一轮。使用服务端回退时，API 不会存储回退模型写的那一轮，所以你无法从回退响应的 id 继续；检查 <code>usage.iterations</code> 中是否有 <code>fallback_message</code> 条目，如果有就重放完整对话。</p>
+
+<h2 id="threads-vs-alternatives">线程与替代方案的对比</h2>
+
+<p>消息线程不是降低每轮上传量的唯一方式。在决定之前，有三个替代方案值得对比。</p>
+
+<p><strong>纯提示词缓存</strong>是现状：在 system 提示词和工具定义上标记缓存断点，API 以远低于列表输入价的费率提供重复前缀——Opus 5.5 上 $0.20/百万 token，对比未缓存的 $4/百万。缓存跨请求持久、兼容所有功能、不需要 beta header。它的弱点恰恰是线程要修的那个：缓存命中即使再完美，每次读取仍要在服务端重新校验、重新分词整个前缀，所以对话越长 TTFT 还是越差。</p>
+
+<p><strong>客户端对话摘要</strong>——把较早的轮次压缩成滚动摘要——可以永久降低上传量，且适用于任何提供商。代价是质量：你在让模型压缩它将来可能需要的上下文，而 agent 循环对丢失的工具输出是零容忍的。线程让你在不丢失信息的前提下获得短上传的延迟收益，因为 API 保留了完整对话。</p>
+
+<p><strong>Claude Managed Agents 中的会话线程</strong>是最接近的姊妹功能。目标相同——避免重传历史——但它位于托管 agent 框架而非原始 Messages API 中，持久化方式不同，为异步长时间任务而设计。如果你已经采用了 Managed Agents，用它的会话线程；如果你在基于 Messages API 构建自己的 agent 循环，消息线程是原生原语。文档明确指出这是两个不同的功能。</p>
+
+<h2 id="errors">你实际会遇到的错误码</h2>
+
+<p>所有已记录的线程错误都在模型运行前返回，不消耗 token，也不改变线程的过期时间：<code>thread_not_found</code>（404——重放完整对话）、<code>thread_fingerprint_mismatch</code>（400——固定字段不一致）、<code>thread_already_continued</code>（400——每个响应 id 只能 continue 一次）、<code>thread_continue_in_flight</code>（400——同一 id 的另一个 continue 正在运行）、以及 <code>thread_unsupported_request</code>（400——请求使用了线程不支持的功能，具体名称在 <code>error.details.unsupported</code> 中）。请求不存在的模型也会返回 404，所以重放之前先检查 <code>error.details.error_code</code>。</p>
+
+<p>有一点值得内化：404 的情况并不等同。重放之后立刻收到 <code>thread_not_found</code>，通常意味着 API 在努力存储那段特定的对话——比如过大的对话。文档给出的兜底方案是完全不带 <code>thread</code> 发送请求；当以 <code>unsupported_request_behavior</code> 设为 <code>continue_unthreaded</code> 创建 SDK helper 时，它会自动这样做，而自建线程的工具运行器默认就用这个设置。有些线程请求的 400 错误根本不携带 <code>error_code</code>——比如不带 <code>previous_message_id</code> 的 continue 请求，或携带 <code>system</code>、<code>tools</code> 的 continue 请求。这些是编程错误，不是运行时状况，修复方向一目了然。</p>
+
+<p>把错误处理设计成决策树，而不是扁平的重试：遇到 <code>thread_not_found</code> 或 <code>thread_already_continued</code>，从自己的副本重放一次；如果重放后的 continue 又返回 <code>thread_not_found</code>，放弃线程、不带线程继续；遇到 <code>thread_fingerprint_mismatch</code>，修正字段或 fork 新线程；遇到 <code>thread_continue_in_flight</code>，退后一步等正在运行的请求完成。每个分支都有各自正确的响应，混淆它们会产生让线程在实际使用中显得不可靠的重试循环。</p>
+
+<h2 id="who-is-it-for">谁今天就应该打开线程</h2>
+
+<p>消息线程是长 agent 循环的默认正确选择——编程 agent、客服 agent、多步研究工作流——凡是对话历史庞大、轮次频繁、TTFT 复利式主导用户体验的地方。Anthropic 报告启用该功能后 Claude Code 会话 TTFT 提升约 35%，而集成成本只是一个参数加一个 beta header。</p>
+
+<p>可用性也很广。线程在所有 Claude 模型上处于 beta，并在 Claude API、Claude Platform on AWS、Claude Models on Google Cloud（Anthropic 托管）和 Microsoft Foundry 上可用。唯一硬性要求是每个请求都带 <code>message-threads-2026-08-12</code> beta header。如果你已经在跑 Claude Code，这个功能基本就是一次配置变更；如果你在构建自定义 agent 基础设施，SDK helper 已经消掉了大部分集成面，你只需要拥有重放路径和拒绝处理。</p>
+
+<p>以下情况你应该暂时跳过线程：工作负载要求零数据保留或 HIPAA 合规（线程两者都不是）；轮次间隔以分钟计（5 分钟过期会迫使你不断重放）；或者对话状态必须比进程活得更久（helper 的副本只在内存中）。对其他所有场景，线程都是同一张账单上的免费延迟收益——打开它，保持重放路径经过测试，让 API 替你扛历史。</p>
+
+<p><strong>来源：</strong>Anthropic Claude Platform 文档——Message threads、Using the Messages API、Pricing（均核验于 2026 年 11 月 4 日）；The New Stack《Anthropic speeds up Claude Code with message threads》（2026 年 11 月 3 日）。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>
