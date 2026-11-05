@@ -1,0 +1,214 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'moonshot-ai-kimi-api-review-2026';
+const zhTitle = 'Kimi K3.1 Pro API 测评 2026：1M 上下文与官方定价';
+const zhDescription = '月之暗面 Kimi K3.1 Pro 实测：$2/$10 每百万 token、1M 上下文、缓存 1 折、Batch 6 折，官方价与 OpenRouter 价差及 K2 退役安排。';
+const date = '2026-11-04';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "月之暗面 Kimi API 每百万 token 怎么收费？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "在官方国际平台上，Kimi K3.1 Pro 每百万 token 输入 2 美元、输出 10 美元，缓存命中输入 0.20 美元；K3.1 Pro Highspeed 为输入 4 美元、输出 20 美元、缓存 0.20 美元；Kimi K3 为 3 美元、15 美元、缓存 0.30 美元；K2.7 Code 与 K2.6 为输入 0.95 美元、输出 4 美元，缓存分别为 0.19 和 0.16 美元。K3.1 Pro 与 K3 的批量推理按标准价 6 折计费。OpenRouter 对旗舰款与官方完全一致，但旧模型价格有明显差异。以上均不含税。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kimi API 兼容 OpenAI 格式吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "兼容。月之暗面同时提供 OpenAI 兼容的 Chat Completions 接口与 Anthropic 兼容的 Messages 接口。国际平台把 base url 换成 https://api.moonshot.ai/v1 后，大多数 OpenAI SDK 可直接接入，使用 Bearer token 鉴权。接口还支持带 reasoning_content 与 content 的流式输出、tool calls 与 tool_choice、动态工具加载、JSON Schema 结构化输出，以及通过 base64、公开 URL 或上传文件引用（ms://）的视觉输入。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kimi K3.1 Pro 的上下文窗口有多大？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "K3 系列全部支持 1,048,576 token（1M）上下文，K2 系列为 262,144 token（256K）。K3.1 Pro 的 max_completion_tokens 默认 131,072，最高可调到 1,048,576，因此单次回复理论上可以占满整个上下文窗口。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kimi K3.1 Pro 会一直开启推理吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "是的。K3 系列始终开启保留思考（Preserved Thinking），没有不思考模式。可通过顶层 reasoning_effort 字段控制推理强度，支持 low、high、max 三档，默认 max。temperature 固定为 1.0、top_p 为 0.95、n 为 1、两个 penalty 为 0，传入其他值会报错，因此应省略这些参数。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kimi K3.1 Pro 的 Batch API 折扣是多少？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "kimi-k3.1-pro 与 kimi-k3 的 Batch API 处理异步、非实时任务，按标准同步价 6 折计费，即优惠 40%。提交批处理任务、轮询完成状态并取回结果，折扣自动适用于已完成任务中消耗的每个 token。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "如何解锁并使用 Kimi K3.1 Pro？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "K3.1 Pro 是旗舰模型，账户成功充值至少 1 美元后解锁。累计充值金额决定账户等级及并发、RPM、TPM、TPD 等限速，从 1 美元的 Tier0 一直到 3,000 美元的 Tier5。充值后在控制台创建 API key，即可通过 OpenAI 兼容接口配合 Bearer token 调用。"
+      }
+    }
+  ]
+};
+
+const zhBody = `
+<h1>月之暗面 Kimi API 测评 2026：K3.1 Pro 与完整模型阵容</h1>
+
+<p>月之暗面（Moonshot AI）是总部位于北京的 AI 实验室，自 2024 年起以 Kimi 品牌持续推出前沿模型。随着 2026 年 10 月底 Kimi K3.1 Pro 发布，公司现在拥有一个 3 万亿级开源权重旗舰，具备 100 万 token 上下文、同时以美元和人民币公布的每百万 token 定价，以及同时兼容 OpenAI 与 Anthropic 报文格式的 API。本测评中的每个价格、限额与端点，都在 2026 年 11 月 4-5 日对照月之暗面国际文档、国内平台价格表与实时 OpenRouter 目录逐一核实。</p>
+
+<p>核心结论是：K3.1 Pro 以中国实验室的中档定价，提供了一个严肃的长上下文编码模型，并附带异常激进的缓存折扣。但细则比平时更重要：官方与 OpenRouter 价格表在旗舰款上分毫不差，在较旧的 K3 与 K2 模型上却明显分歧，而且整个 K2 世代正按公布的时间表退役。本测评将区分哪些是稳定的、哪些在变化，以及调用每个模型最便宜的方式究竟在哪。</p>
+
+<h2 id="what-it-sells">月之暗面到底卖什么</h2>
+
+<p>Kimi API 开放平台是按量付费的推理服务，没有订阅方案；月之暗面明确提示应与 Kimi 会员、Kimi Code 等产品区分。计费按消耗的百万 token 进行，对缓存写入、缓存命中输入、未命中输入和输出分别计量。重复的请求前缀会自动缓存，默认缓存存活时间（TTL）为 5 分钟，对于不那么频繁回看前缀的工作负载，还提供付费的 1 小时选项。</p>
+
+<p>目录横跨两代。当前 K3 系列包括 Kimi K3.1 Pro（新旗舰）、Kimi K3.1 Pro Highspeed（同模型、约 2-3 倍速度、token 价格翻倍）以及初代 Kimi K3，三者均支持 1,048,576 token 窗口。旧 K2 系列为 Kimi K2.7 Code（含 Highspeed）和 Kimi K2.6，各限 262,144 token。2026 年 10 月 31 日起，月之暗面不再向新注册用户开放 K2 模型，并计划于 12 月底退役全部 K2。老账户过渡期内仍可使用，但今天开工的项目应直接选 K3。</p>
+
+<h2 id="pricing">官方定价：美元与人民币</h2>
+
+<p>下表是官方国际（美元）价格表，按每百万 token 计，不含税。同一页面还为国内平台公布了人民币表；两者并非干净的汇率换算，因此我们两个都报告，而不是从一个推导另一个。</p>
+
+<table>
+<thead>
+<tr><th>模型</th><th>上下文</th><th>输入 / 百万</th><th>缓存输入 / 百万</th><th>输出 / 百万</th></tr>
+</thead>
+<tbody>
+<tr><td>Kimi K3.1 Pro</td><td>1M</td><td>$2.00</td><td>$0.20</td><td>$10.00</td></tr>
+<tr><td>Kimi K3.1 Pro Highspeed</td><td>1M</td><td>$4.00</td><td>$0.20</td><td>$20.00</td></tr>
+<tr><td>Kimi K3</td><td>1M</td><td>$3.00</td><td>$0.30</td><td>$15.00</td></tr>
+<tr><td>Kimi K2.7 Code</td><td>256K</td><td>$0.95</td><td>$0.19</td><td>$4.00</td></tr>
+<tr><td>Kimi K2.6</td><td>256K</td><td>$0.95</td><td>$0.16</td><td>$4.00</td></tr>
+</tbody>
+</table>
+
+<p>国内平台上同样的位置以人民币计价：K3.1 Pro 输入 13 元、输出 68 元，缓存命中 1.30 元；K3 为 20 元与 100 元，缓存 2.00 元；K2.7 Code 与 K2.6 为 6.50 元与 27 元。K3 系列的缓存写入按两档 TTL 单独计费，例如 K3.1 Pro 5 分钟写入 13 元、1 小时写入 26 元，因此长生命周期的前缀并非免费填充。</p>
+
+<p>有两个结构性亮点。第一，K3.1 Pro 的缓存命中折扣为 90%：相对于 2 美元的基础输入价，每百万仅 0.20 美元。对于携带庞大稳定系统提示或重复仓库前缀、跑很多轮的智能体，实际输入成本降低一个数量级。第二，kimi-k3.1-pro 与 kimi-k3 的 Batch API 把每个消耗 token 按同步价 6 折计费，可与离线评测和数据丰富流水线的缓存命中价叠加。</p>
+
+<h3 id="cache-worked-example">缓存成本算例</h3>
+
+<p>要理解为什么缓存才是关键杠杆而非标价，考虑一个编码智能体：每轮都发送固定的 20 万 token 仓库前缀，外加 5,000 token 新指令，共 100 轮。不缓存时，仅前缀在 K3.1 Pro 上的输入成本就是 100 × 200,000 / 1,000,000 × 2 美元 = 40 美元，变化的尾部可忽略。由于平台自动缓存重复前缀，第一轮付一次性缓存写入费，之后每轮以每百万 0.20 美元读取：约 99 × 0.2 × 0.20 = 约 3.96 美元加写入费，而不是 40 美元。节省随前缀大小与轮数线性放大，这正是请求排序如此重要的原因。</p>
+
+<p>月之暗面按精确前缀匹配，因此只有把稳定内容放前面、易变内容放后面，缓存才有效。把系统提示、工具定义、参考材料和代码库放最前；把用户最新问题、工具结果、时间戳或随机标识放最后。前缀中任何 token 一变，其后的全部内容都会失配。默认 5 分钟 TTL 每次命中都会续期，因此来回对话的智能体可免费保温；而每小时才回看前缀的定时任务应购买 1 小时写入档。缓存按组织隔离，无法手动清除，未使用的条目只会自然过期。</p>
+
+<h2 id="openrouter-divergence">官方价对 OpenRouter：务必看细则</h2>
+
+<p>由于 Kimi 也可通过 OpenRouter 调用，我们把中继目录与官方列表做了对比。结果是一个关于"不要假设只有一个价格"的有益提醒。旗舰款上两个来源完全一致：OpenRouter 上 moonshotai/kimi-k3.1-pro 为输入 2 美元、缓存 0.20 美元、输出 10 美元，与文档分毫不差。旧模型上两份列表差异明显：OpenRouter 显示 Kimi K3 约为输入 0.19 美元、输出 16 美元，而官方为 3 美元与 15 美元；K2.7 Code 约 0.60 与 3.50 美元，官方为 0.95 与 4 美元；K2.6 约 0.65 与 3.41 美元，官方为 0.95 与 4 美元。</p>
+
+<p>这里并不存在通过选一个数字来解决的矛盾。对于直接签约、国内人民币定价、限速阶梯和 Batch API，官方平台是权威计费面；OpenRouter 列表则是实时第三方市场费率，依模型不同，输入可能更便宜或输出略贵。直接集成时按官方表做预算，把任何中继报价当作购买时重新核实的独立条目，而不是永久折扣。</p>
+
+<h2 id="rate-limits">限速与充值阶梯</h2>
+
+<p>K3 系列模型需成功充值后才能调用，累计充值金额决定账户等级。平台提供少量新用户额度用于评估，但不能花在 K3 上，因此在任何生产工作负载前要先给账户充值。公布的阶梯从 Tier0 到 Tier5：</p>
+
+<table>
+<thead>
+<tr><th>等级</th><th>累计充值</th><th>并发</th><th>RPM</th><th>TPM</th><th>TPD</th></tr>
+</thead>
+<tbody>
+<tr><td>Tier0</td><td>$1</td><td>1</td><td>3</td><td>500,000</td><td>1,500,000</td></tr>
+<tr><td>Tier1</td><td>$10</td><td>15</td><td>100</td><td>2,000,000</td><td>无限</td></tr>
+<tr><td>Tier2</td><td>$20</td><td>40</td><td>100</td><td>3,000,000</td><td>无限</td></tr>
+<tr><td>Tier3</td><td>$100</td><td>50</td><td>200</td><td>3,000,000</td><td>无限</td></tr>
+<tr><td>Tier4</td><td>$1,000</td><td>60</td><td>200</td><td>4,000,000</td><td>无限</td></tr>
+<tr><td>Tier5</td><td>$3,000</td><td>100</td><td>300</td><td>5,000,000</td><td>无限</td></tr>
+</tbody>
+</table>
+
+<p>最大的跃升在最初的 10 美元：账户从 3 RPM、每日 150 万 token 上限，变为 100 RPM、每日 token 不限。联网搜索按每秒查询数单独计量，不占用这些限额。代金券和赠送额度明确不计入累计充值总额，月之暗面保留对异常流量施加风控限速的权利。</p>
+
+<h2 id="model-details">模型细节与请求参数</h2>
+
+<p>月之暗面把 K3.1 Pro 描述为其最强的 3 万亿级开源权重模型，从 Kimi K3 后训练而来，后训练算力大幅增加，在编码、3D 创作、金融研究与建模方面提升尤为明显。思考始终开启，通过顶层 reasoning_effort 字段设置推理深度，接受 low、high、max，默认 max；K3 系列无法关闭推理。模型支持通过 tool_choice（含 required）调用工具、把完整工具定义放进系统消息的动态工具加载、JSON Schema 结构化输出，以及 Responses、Chat Completions、Messages 三种 API。</p>
+
+<p>若干采样参数固定且必须省略：temperature 1.0、top_p 0.95、n 1、presence_penalty 0、frequency_penalty 0，传入其他值会报错。max_completion_tokens 默认 131,072，最高可到 1,048,576。视觉接受内容部件数组而非序列化字符串，图像或视频可作为内联 base64 数据、公开 URL，或通过平台文件 API 用 ms:// 引用协议提供；SVG 会被拒绝，应改为粘贴 XML 文本。</p>
+
+<p>Highspeed 变体是同一模型，参数约束完全一致，仅输出速度不同。对于交互式编码助手和延迟敏感的聊天，2 倍 token 溢价值得；对于批量文档处理则不划算，标准 K3.1 Pro 加 Batch 折扣价值更好。</p>
+
+<h2 id="batch-mechanics">Batch 机制与限制</h2>
+
+<p>Batch API 值得当作独立产品而非价格开关看待。批处理任务以请求文件形式提交，异步并发处理，因此不受限制交互流量的实时并发上限约束；这使其成为批量评测、离线标注和回填的实用路径，否则这些任务要排队数小时。已完成任务中消耗的每个 token（含输出）都按标准价 6 折计费。模型定价主页把 kimi-k3.1-pro 与 kimi-k3 标为支持批量的模型；专门的批量页面也列出了反正都要退役的 K2.7 Code 与 K2.6，因此新的批量流水线应以 K3 为目标。</p>
+
+<p>有三个操作注意事项。第一，K3.1 Pro 与 K3 的批量任务仍收缓存写入费，而 K2 模型不支持缓存写入；且由于任务并发处理，批量内缓存命中是尽力而为、不保证，因此预测时应按标价计算折扣。第二，每个任务都有完成窗口，窗口到期仍未完成的工作会丢失而非自动重试。第三，6 折费率不改变每请求 100 万 token 的上下文上限，因此特别大的请求仍需在提交前拆分。最有效的模式是先在少量样例上同步开发验证提示，再把整组通过 Batch 铺开、任务完成后取回结果。</p>
+
+<h2 id="how-it-compares">Kimi K3.1 Pro 的横向对比</h2>
+
+<p>在对本受众最关键、由厂方公布的 Terminal-Bench 4.0 基准上，月之暗面报告 K3.1 Pro 为 65.7%，领先 OpenAI GPT-6 Astra 的 58.2%，仅以微弱差距落后 Anthropic Claude Opus 5.5 的 66.4%。在其内部的 Kimi Code Bench 3.0 长程基准上，K3.1 Pro 为 61.2%，初代 K3 为 55.95%。这些都是厂方自报数字，应随榜单变化重新核实，但它们把 K3.1 Pro 定位在前沿编码智能体集群之内，而非预算边缘。</p>
+
+<p>价格上定位更清晰。GPT-6 Astra 在 OpenRouter 上每百万输入 10 美元、输出 50 美元，因此 2 美元与 10 美元的 K3.1 Pro 输出成本约为其五分之一，同时在月之暗面引用的基准上得分更高。Claude Opus 5.5 为 4 美元与 20 美元，两项都约为 K3.1 Pro 的两倍，Terminal-Bench 领先 0.7 个点。对比最便宜的开放 API 编码模型，权衡则反转：DeepSeek V4.1 Flash 也提供 1M 窗口，但每百万输入约 0.045 美元、输出 0.50 美元，只是 K3.1 Pro 价格的零头；其更旧的 V3.2 为 128K 上下文。客观的解读是：DeepSeek 仍是原始成本冠军，GPT-6 Astra 与 Opus 5.5 设定能力天花板，而 K3.1 Pro 占据长上下文智能体工作性价比的中段，尤其在 90% 缓存折扣生效后。</p>
+
+<h2 id="getting-started">快速上手</h2>
+
+<p>给账户充值，在控制台创建 API key，把任意 OpenAI 兼容 SDK 指向国际基础 URL。国内平台使用独立主机，因此应选择与账户和计费所在地匹配的端点。</p>
+
+<pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_KIMI_API_KEY",
+    base_url="https://api.moonshot.ai/v1"
+)
+
+completion = client.chat.completions.create(
+    model="kimi-k3.1-pro",
+    messages=[
+        {"role": "system", "content": "You are a helpful coding assistant."},
+        {"role": "user", "content": "Write a haiku about distributed systems."}
+    ],
+    reasoning_effort="high"
+)
+print(completion.choices[0].message.content)</code></pre>
+
+<p>切换到 Highspeed 时只改 model id，参数约束完全相同。从 K2 迁移的团队应移除旧的 K2 专用 thinking 配置，并在多轮调用中把完整的助手消息（含 reasoning_content）传回 messages，因为 K3 强制使用保留思考。</p>
+
+<h2 id="who-is-it-for">适合谁</h2>
+
+<p>Kimi K3.1 Pro 非常适合构建长上下文编码智能体、仓库级评审工具和金融研究流水线的团队，这些场景能以中档价格受益于 1M token 窗口。90% 缓存折扣、40% Batch 折扣与公布的限速经济学组合，让前缀稳定的持续智能体工作负载运营成本异常低；而 OpenAI/Anthropic 双重兼容使迁移摩擦很小。</p>
+
+<p>当你需要不思考的快速回复、想要不充值即可使用的免费层，或纯优化 token 成本（此时廉价开放 API 模型已足够好）时，它就不那么合适。国内团队应使用人民币计价的国内平台，而非国际美元端点。对其他人来说，K3.1 Pro 是运营透明度最高的长上下文模型之一：价格、等级、缓存条款，甚至旧世代的退役日期全部公布，这比大多数前沿实验室做得更多。</p>
+
+<p><strong>来源：</strong>月之暗面国际文档（模型推理定价、充值与限速、Kimi K3.1 Pro 快速开始、模型参数参考、视觉输入指南）、Kimi API 开放平台人民币定价表，以及实时 OpenRouter 模型目录。所有价格与限额于 2026 年 11 月 4-5 日核实；基准分数为厂方自报。</p>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>
