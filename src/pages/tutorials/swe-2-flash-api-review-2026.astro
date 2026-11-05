@@ -1,0 +1,210 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'swe-2-flash-api-review-2026';
+const enTitle = 'SWE-2 Flash 2026: Coding Model Price vs Limits';
+const enDescription = "Cognition's SWE-2 Flash is a 276B coding model at 1/5 SWE-2 price and 3x speed. Benchmarks, access limits, and where cheaper APIs win.";
+const date = '2026-11-05';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+const zhCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListItem": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How much does SWE-2 Flash cost per 1M tokens?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Cognition states that SWE-2 Flash runs at one-fifth the price of SWE-2, and that SWE-2 list price is 3.00 dollars per 1M input tokens, 15.00 dollars per 1M output tokens, and 0.30 dollars per 1M cache-input tokens. Cognition has not published a standalone per-token line item for SWE-2 Flash: the model does not appear anywhere in the Devin documentation index, the Devin models page, or the Devin API reference as of November 5, 2026. Treat the one-fifth figure as a vendor claim rather than a published rate. The launch post also advertises SWE-2 Flash as free through November 30, 2026."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can you call SWE-2 Flash through an API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not as a normal per-token API. Cognition's launch post says SWE-2 Flash is available in Devin Desktop and Devin CLI. The Devin v3 session API accepts a devin_mode parameter whose documented values are normal, fast, fusion, lite, ultra, swe-2-medium, swe-2-high, and swe-2-max, with no swe-2-flash value, and the Devin models page lists SWE-2, SWE-1.7, SWE-1.7 Lightning, SWE-1.6, SWE-1.6 Fast, SWE-1-mini, swe-grep, and swe-check, with no SWE-2 Flash entry. Access is therefore through Devin product surfaces rather than a standalone inference endpoint."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does SWE-2 Flash beat SWE-2 on coding benchmarks?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Only sometimes. Cognition's published comparison table shows SWE-2 Flash at 24.0 on FrontierCode 2.0 against SWE-2 at 23.8, and near-ties on SWE-Bench Pro v2 Hard at 89.9 versus 90.6. On the other measures the larger sibling wins: Terminal-Bench 4.0 at 27.3 versus 20.0, DeepSWE 1.1 at 73.0 versus 60.1, SWE-Atlas QA at 56.3 versus 50.0, and Terminal-Bench 2.1 at 92.8 versus 89.2. SWE-2 Flash is smaller and cheaper, not uniformly stronger."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is SWE-2 Flash cheaper than open API coding models?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "On the implied one-fifth-of-SWE-2 rate, no. SWE-2 list pricing is 3.00 dollars input and 15.00 dollars output per 1M tokens, so one fifth would be roughly 0.60 dollars input and 3.00 dollars output. OpenRouter route prices checked on November 5, 2026 list GLM 5.3 Flash at 0.15 dollars input and 0.50 dollars output, DeepSeek V4.1 Flash at 0.045 dollars input and 0.50 dollars output, GPT-6 Luna at 0.10 dollars and 0.50 dollars, and Claude Haiku 5.5 at 0.10 dollars and 0.50 dollars. On a 10K input and 40K output turn, the implied SWE-2 Flash rate costs roughly six times DeepSeek V4.1 Flash."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are the SWE-2 Flash model weights available?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not publicly. Cognition raised the model's ExploitBench score from 11.3 percent to 34.8 percent on purpose, to study and defend against cyber misuse, and states that the weights are not being shared publicly yet. The company says it is building a program to share them securely with trusted industry partners and research labs, with more detail promised in a few weeks from November 4, 2026."
+      }
+    }
+  ]
+};
+
+const enBody = `
+<h1 id="top">SWE-2 Flash 2026: The Coding Model Price vs Limits</h1>
+
+<p>Cognition launched SWE-2 Flash on November 4, 2026, and the launch numbers read like a straight upgrade: Terminal-Bench 4.0 jumps from 0.9% to 20.0%, FrontierCode 2.0 from 3.2% to 24.0%, at one-fifth the price and three times the speed of SWE-2. That comparison is real, but it is also a comparison against the wrong baseline. The 0.9% belongs to Inkling-Small, the open base model the flash variant was post-trained from, not to SWE-2. Measured against its own sibling on Cognition's own table, SWE-2 Flash scores 20.0 where SWE-2 scores 27.3, and 24.0 where SWE-2 scores 23.8. It wins one, loses four.</p>
+
+<p>The second problem is more awkward for a pricing site. SWE-2 Flash does not appear anywhere in Devin's documentation. Not in the model list, not in the API reference, not in the 3.5 MB full-text dump of the docs. The v3 session API exposes a <code>devin_mode</code> enum containing <code>swe-2-medium</code>, <code>swe-2-high</code> and <code>swe-2-max</code> but no <code>swe-2-flash</code> value. There is no per-token rate to compare, no standalone endpoint to call, and no way to bill it the way you bill everything else in this catalog.</p>
+
+<p>So the honest framing is narrower and more useful than the launch post. SWE-2 Flash is a product-surface release, not an API release. It is a fast, cheap option inside Devin Desktop and Devin CLI, aimed at developers who already pay a Devin subscription and want the mechanical part of a coding task done for less. For anyone choosing a coding model for a per-token API budget, the same benchmark table that made the launch look impressive actually argues for GLM 5.3 Flash or DeepSeek V4.1 Flash instead, and the arithmetic in the cost section below is not close.</p>
+
+<h2 id="what-it-is">What SWE-2 Flash actually is</h2>
+
+<p>The model is a post-train of <strong>Inkling-Small</strong>, a 276B-total, 12B-active mixture-of-experts model from Thinking Machines. The architecture is unchanged: SWE-2 Flash has the same 276B-A12B footprint as its base, and the same 1x size ratio in Cognition's table. Nothing here comes from a bigger network. The gains come entirely from post-training, and specifically from a stage Cognition says it had never run before.</p>
+
+<p>Before reinforcement learning, Cognition ran a large-scale mid-training stage. The dataset is described as a few trillion tokens of scientific articles, blogs, and code, trained in three stages so that the scarcest and highest-quality material lands last. Rather than guessing at data mixes, the team measured them with token-efficiency plots: for each candidate mix, how many tokens were needed to reach the same validation loss as the baseline. That gave a defensible curve to pick the final mixture from. RL followed, with audited instructions, environment setup, and verifiers, plus several new task types aimed at the general reasoning and problem-solving that real work inside Devin demands.</p>
+
+<p>The interesting engineering detail is the ordering. Mid-training before RL is unusual, and Cognition says it paid off: the RL recipe itself was barely changed from SWE-2, so most of the improvement came from the higher quality and diversity of the tasks. For a company that has spent a year shipping the same model architecture at different sizes, this is the first time the recipe itself changed rather than the parameter count.</p>
+
+<h2 id="benchmarks">The benchmark table, read carefully</h2>
+
+<p>Cognition published one table with SWE-2 Flash against nine alternatives. Here is every row, verbatim, because the framing changes depending on which column you read:</p>
+
+<table>
+<thead><tr><th>Benchmark</th><th>SWE-2 Flash</th><th>Inkling-Small</th><th>Beam 1.0</th><th>Muse Spark Open</th><th>GLM 5.3 Flash</th><th>DeepSeek V4.1 Flash</th><th>GPT-6 Luna</th><th>Claude Haiku 5.5</th><th>SWE-2</th></tr></thead>
+<tbody>
+<tr><td>FrontierCode 2.0</td><td>24.0</td><td>3.2</td><td>2.9</td><td>6.2</td><td>14.2</td><td>19.3</td><td>21.9</td><td>27.7</td><td>23.8</td></tr>
+<tr><td>FrontierCode 1.1 Main</td><td>45.5</td><td>21.5</td><td>22.8</td><td>24.5</td><td>31.8</td><td>43.9</td><td>42.4</td><td>46.4</td><td>50.0</td></tr>
+<tr><td>DeepSWE 1.1</td><td>60.1</td><td>17.4</td><td>43.3</td><td>60.0</td><td>63.4</td><td>77.0</td><td>66.6</td><td>59.3</td><td>73.0</td></tr>
+<tr><td>Terminal-Bench 4.0</td><td>20.0</td><td>0.9</td><td>4.0</td><td>8.0</td><td>41.8</td><td>42.3</td><td>16.4</td><td>39.2</td><td>27.3</td></tr>
+<tr><td>Terminal-Bench 2.1</td><td>89.2</td><td>64.7</td><td>80.1</td><td>76.4</td><td>84.3</td><td>91.0</td><td>82.0</td><td>94.4</td><td>92.8</td></tr>
+<tr><td>SWE-Atlas QA</td><td>50.0</td><td>27.4</td><td>33.9</td><td>54.0</td><td>56.5</td><td>71.0</td><td>45.2</td><td>56.5</td><td>56.3</td></tr>
+<tr><td>SWE-Bench Pro v2 Hard</td><td>89.9</td><td>56.5</td><td>76.5</td><td>82.4</td><td>88.2</td><td>86.3</td><td>80.4</td><td>90.2</td><td>90.6</td></tr>
+<tr><td>ExploitBench</td><td>34.8</td><td>11.3</td><td>19.5</td><td>&mdash;</td><td>36.0</td><td>31.1</td><td>44.7</td><td>38.0</td><td>36.1</td></tr>
+</tbody>
+</table>
+
+<p>Three readings matter, and they point in different directions.</p>
+
+<p><strong>Against the base model, the jump is enormous.</strong> Terminal-Bench 4.0 goes 0.9 to 20.0, FrontierCode 2.0 goes 3.2 to 24.0, and DeepSWE 1.1 goes 17.4 to 60.1. This is the comparison the launch post leads with, and it is a legitimate result: a 276B-A12B model trained for general use can be pushed a long way with the right mid-training mix. But Inkling-Small is not a model anyone was shipping for coding work, so this comparison tells you what post-training did, not what you should buy.</p>
+
+<p><strong>Against its own sibling, the picture is mixed.</strong> SWE-2 Flash takes FrontierCode 2.0 at 24.0 to SWE-2's 23.8, and nearly ties it on SWE-Bench Pro v2 Hard (89.9 against 90.6). Everywhere else the 2.8T-A104B flagship is ahead: Terminal-Bench 4.0 at 27.3 against 20.0, DeepSWE 1.1 at 73.0 against 60.1, SWE-Atlas QA at 56.3 against 50.0, Terminal-Bench 2.1 at 92.8 against 89.2. Flash is a cheaper substitute for the mechanical portion of a task, not a stronger model across the board. Cognition's own phrasing is more careful than the headline: Flash outperforms American open-weight models, even models several times larger. Muse Spark Open, at 3x the size, scores 8.0 on Terminal-Bench 4.0 and 6.2 on FrontierCode 2.0, and SWE-2, at 10.1x, scores 27.3. True, and not the same claim as beating the frontier.</p>
+
+<p><strong>Against the models you can actually call per token, it loses badly.</strong> Terminal-Bench 4.0 is the row that decides the API question. GLM 5.3 Flash scores 41.8. DeepSeek V4.1 Flash scores 42.3. Claude Haiku 5.5 scores 39.2. SWE-2 Flash scores 20.0. The only column below it is GPT-6 Luna at 16.4. DeepSWE 1.1 repeats the pattern: 60.1 for Flash against 63.4 for GLM 5.3 Flash and 77.0 for DeepSeek V4.1 Flash. Only on FrontierCode 2.0 and SWE-Atlas QA does Flash land in the same band as the cheap open routes. If your workload is terminal work scored on Terminal-Bench, two cheap open-API models outscore it by roughly double, and they come with published per-token prices you can budget against.</p>
+
+<h2 id="price">The price claim, decoded</h2>
+
+<p>Cognition says SWE-2 Flash runs at one-fifth the price of SWE-2. SWE-2's published list price is $3.00 per 1M input tokens, $15.00 per 1M output tokens, and $0.30 per 1M cache-input tokens. One fifth of that is roughly $0.60 input and $3.00 output, which would make SWE-2 Flash a strong number against most of the market. That arithmetic is arithmetic, though, not a published rate. Cognition did not publish a SWE-2 Flash price line, and Devin's own models page, which is the authoritative price list for the platform, has no entry for the model.</p>
+
+<p>Two promotions also blur the comparison in ways a headline number hides. SWE-2 itself is free for self-serve plans in Devin Desktop and Devin CLI through November 30, 2026, and 75% off list price through December 31, 2026, with list pricing applying afterward. SWE-2 Flash carries a free-through-November-30 badge on the launch post. So during the promotional window both models cost the same inside Devin, which is roughly nothing, and the one-fifth gap only becomes a real economic difference once the free period ends and an actual Flash rate exists to compare.</p>
+
+<p>There is also a metering mismatch worth understanding before you model anything. Devin does not sell SWE-2 Flash as raw tokens. Self-serve plans include a usage allowance measured by the work the agent does, with on-demand credits covering everything past it; enterprise contracts meter in Agent Compute Units. The docs are explicit that ACUs convert the tokens consumed by the selected model at that model's per-token rate, so the per-token number still exists underneath the session-based meter, but you are buying sessions, not tokens.</p>
+
+<h2 id="speed">Speed: 200 tok/s against 60 tok/s</h2>
+
+<p>Cognition's second headline is that SWE-2 Flash runs three times faster than SWE-2, and the accompanying chart shows 200 tokens per second against 60. The demo replays each model's run on the same Terminal-Bench 4.0 task, the gsea-proteomics environment, at the two simulated rates with transcripts shortened to equal length.</p>
+
+<p>For agentic coding work, generation speed matters in a way it does not for chat. An agent loop is mostly waiting on tokens: plan, edit, run tests, read the failure, edit again. A three-fold increase in tokens per second compresses that wall-clock loop meaningfully, and it is the kind of latency that changes whether a workflow feels interactive or feels like a job you kick off and come back to. Cognition has been aggressive on this axis generally, running SWE-1.7 Lightning on Cerebras hardware for the same reason.</p>
+
+<p>The caveat is that this is a replay on Cognition's chosen task at simulated rates, not a measurement on your repository. Your own wall-clock will be dominated by tool calls, test suites, and context assembly. Speed here means the model is less likely to be the bottleneck in the loop, not that the loop is fast.</p>
+
+<h2 id="access">How you actually access it</h2>
+
+<p>Today, through Devin Desktop and Devin CLI. Cognition's launch post says the model is available in both, and the Devin CLI docs confirm the product surfaces and the model-selection mechanics. Short family names resolve to the latest version, so <code>swe</code> points at the newest SWE release, and you can override it from the command line, a slash command, or the config file.</p>
+
+<pre><code># Run a session with the SWE family from the terminal
+devin --model swe -- "add regression tests for the retry path"
+
+# Switch models mid-session
+/model
+
+# Pin a default in the CLI config
+cat ~/.config/devin/config.json
+# {"agent": {"model": "swe-1-6-fast"}}</code></pre>
+
+<p>The session API is the programmatic route, and it is where the gap shows. Creating a session over the v3 API takes a service user key with the <code>UseDevinSessions</code> permission, plus an organization id, and the <code>devin_mode</code> field selects the agent mode:</p>
+
+<pre><code>curl -X POST "https://api.devin.ai/v3/organizations/$DEVIN_ORG_ID/sessions" \\
+  -H "Authorization: Bearer $DEVIN_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"prompt":"Fix the login bug in issue #42","devin_mode":"swe-2-medium"}'</code></pre>
+
+<p>The documented <code>devin_mode</code> values are <code>normal</code>, <code>fast</code>, <code>fusion</code>, <code>lite</code>, <code>ultra</code>, <code>swe-2-medium</code>, <code>swe-2-high</code>, and <code>swe-2-max</code>. There is no <code>swe-2-flash</code>. Until Devin adds one, a Flash session is not reachable through the API, and the List Models API that returns your account's prices will not return a Flash row either. The models page lists SWE-2, SWE-1.7, SWE-1.7 Lightning, SWE-1.6, SWE-1.6 Fast, SWE-1-mini, swe-grep, and swe-check, and free-tier users are limited to SWE-1.6.</p>
+
+<p>One thing worth borrowing regardless of Flash: Fusion. Cognition pairs a frontier lead model with a cheaper sidekick that executes the mechanical work, and the default pairing is Claude Opus 5.5 Medium as lead with SWE-2 Medium as sidekick. That is the same architecture idea as SWE-2 Flash, applied to a model you can already reach, and Devin bills each model in the pair at its own rate. Fusion requires a paid plan and is unavailable on free or trial tiers.</p>
+
+<h2 id="cost">Cost math against the models you can actually call</h2>
+
+<p>Here is the comparison that should drive the decision, using OpenRouter route prices checked on November 5, 2026, plus SWE-2 list pricing from the Devin models page. The final row is the implied SWE-2 Flash rate from Cognition's one-fifth claim, not a published price.</p>
+
+<table>
+<thead><tr><th>Model</th><th>Input /1M</th><th>Output /1M</th><th>Cache in /1M</th><th>Cost, 10K in + 40K out</th></tr></thead>
+<tbody>
+<tr><td>DeepSeek V4.1 Flash</td><td>$0.045</td><td>$0.50</td><td>$0.018</td><td>$0.021</td></tr>
+<tr><td>GPT-6 Luna</td><td>$0.10</td><td>$0.50</td><td>$0.01</td><td>$0.021</td></tr>
+<tr><td>Claude Haiku 5.5</td><td>$0.10</td><td>$0.50</td><td>$0.01</td><td>$0.021</td></tr>
+<tr><td>GLM 5.3 Flash</td><td>$0.15</td><td>$0.50</td><td>$0.03</td><td>$0.022</td></tr>
+<tr><td>SWE-2 (list)</td><td>$3.00</td><td>$15.00</td><td>$0.30</td><td>$0.63</td></tr>
+<tr><td>SWE-2 Flash (implied 1/5)</td><td>~$0.60</td><td>~$3.00</td><td>~$0.06</td><td>~$0.126</td></tr>
+</tbody>
+</table>
+
+<p>Read the last two rows against the first four. On a single 10K-input, 40K-output turn, the implied SWE-2 Flash rate costs roughly six times DeepSeek V4.1 Flash and about six times Claude Haiku 5.5 or GPT-6 Luna, while scoring less than half of DeepSeek V4.1 Flash on Terminal-Bench 4.0. That combination is hard to defend on a per-token budget.</p>
+
+<p>If you want to test the alternatives side by side on your own prompts rather than trusting a benchmark, <a href="https://freemodel.dev/invite/FRE-7a3b6220" target="_blank" rel="sponsored noopener">FreeModel</a> exposes an OpenAI-compatible endpoint in front of multiple providers, so a single integration can point at different model IDs and measure how each handles the same task. That is the fastest way to settle whether Flash-style routing is worth it for your workload, and it costs nothing to compare before you commit a plan.</p>
+
+<h2 id="weights">The weights question</h2>
+
+<p>SWE-2 Flash is not open. Cognition deliberately trained on cyber work, raising the model's ExploitBench score from 11.3% to 34.8%, and says plainly that the weights are not being shared publicly because the same capabilities can be used by attackers. The company is building a program to share the weights securely with trusted industry partners and research labs, with more detail promised a few weeks after the November 4 launch.</p>
+
+<p>This is a defensible position rather than a marketing convenience. A 276B-A12B model with deliberate vulnerability-finding capability is not something you publish to a public repository on launch day, and the partner program is the usual shape for how this gets resolved. But it does mean the deployment options are narrower than for an open-weight model, and it puts a ceiling on how long the pricing discount is likely to last: a weights-sharing program that brings more inference providers into the market eventually competes with Cognition's own hosted rate. If you are planning around the one-fifth price, plan for it to compress rather than persist.</p>
+
+<h2 id="verdict">Who should use it, and who should not</h2>
+
+<p><strong>Use SWE-2 Flash if</strong> you already pay for Devin and want cheap, fast execution of the mechanical part of a coding task inside Desktop or CLI. The three-fold speed increase is real for reducing loop latency, the model is free through November 30, and it comfortably handles automations, code review passes, feature work, and documentation updates, which is exactly where Cognition says the smaller-model tier should be aimed.</p>
+
+<p><strong>Skip it if</strong> you are picking a model for an API budget. Two cheap open routes outscore it by roughly double on Terminal-Bench 4.0 and DeepSWE 1.1 while costing about a sixth of the implied Flash rate, there is no published Flash price to plan against, and there is no API mode to call it from. If you need weights you can host and audit, they are not available today.</p>
+
+<p><strong>Wait on it if</strong> you build agent infrastructure on Devin and want Flash in your pipeline. Cognition has clearly committed to the model, and the Devin CLI is where models ship first, but the API surface is the part that matters for programmatic use and it has not caught up. Watch for two signals: a Flash entry on the Devin models page, and a <code>swe-2-flash</code> value in the <code>devin_mode</code> enum. When both land, the pricing question becomes answerable with real numbers instead of a ratio.</p>
+
+<p>The verdict is that SWE-2 Flash is a good product decision and a weak API decision. Cognition built something genuinely difficult, a mid-training stage that moves a small model into usable coding territory, and shipped it into the surfaces where they control the experience. Whether it is the right model for your stack is a budget question, and on today's published numbers the answer for most API-driven teams is no.</p>
+
+<p><strong>Sources:</strong> Cognition, "Introducing SWE-2 Flash" (Nov 4, 2026); Cognition, "Introducing SWE-2: Pushing the Pareto Frontier" (Sept 10, 2026); Devin Docs, AI Models, Models in Devin CLI, Self-serve plans, Usage, Fusion, Create Session, List Models API (all verified Nov 5, 2026); devin.ai/pricing (verified Nov 5, 2026); OpenRouter model catalog (verified Nov 5, 2026).</p>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={enBody} />
+</BaseLayout>
