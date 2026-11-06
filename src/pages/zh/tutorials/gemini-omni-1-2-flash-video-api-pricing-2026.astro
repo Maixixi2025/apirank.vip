@@ -1,0 +1,235 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'gemini-omni-1-2-flash-video-api-pricing-2026';
+const zhTitle = 'Gemini Omni 1.2 Flash 视频 API 评测 2026：$0.07/秒 定价拆解';
+const zhDescription = 'Google Gemini Omni 1.2 Flash 实测解析：720p 每秒 $0.07、token 计费规则、分辨率阶梯、免费额度缺失与 12 月 3 日迁移节点。';
+const date = '2026-11-06';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListItem": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Gemini Omni 1.2 Flash 生成视频多少钱？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Google 按 token 消耗量对视频输出计费，而不是按固定秒单价。视频输出单价为每 100 万 token 12.00 美元，720p 每秒视频消耗 5,792 个 token，折算下来约为每秒 0.07 美元。360p 为每秒 0.023 美元，1080p 为每秒 0.104 美元，4K 为每秒 0.209 美元。720p 下一段 10 秒视频约 0.70 美元，15 秒约 1.04 美元。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Gemini Omni 1.2 Flash 与 Omni 1.1 Flash 有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Omni 1.2 Flash 原生生成时长从 10 秒提升到 15 秒，新增跨完整 15 秒片段的多轮对话式编辑，参考图遵循度与首尾帧一致性都有改善，同时视频输出单价从每 100 万 token 17.50 美元降到 12.00 美元，降幅约 31%。自 2026 年 12 月 3 日起，所有发往 gemini-omni-1.1-flash 的请求将自动路由到 gemini-omni-1.2-flash，并按新费率计费。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Gemini Omni 1.2 Flash 有免费额度吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "没有。Gemini API 定价页把 gemini-omni-1.2-flash 的输入价格与输出价格在免费层都标注为不可用，该模型仅限付费层。速率限制从 Tier 1 开始：每分钟 8 次、每天 40 次；Tier 2 为每分钟 16 次、每天 200 次；Tier 3 为每分钟 40 次、每天 2,000 次。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Gemini Omni 1.2 Flash 替代了哪些模型？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Google 已于 2026 年 10 月 22 日关停 Gemini API 中的 Veo 3.1 预览系列。veo-3.1-generate-preview、veo-3.1-fast-generate-preview 与 veo-3.1-lite-generate-preview 三个模型 ID 均已下线，Google 官方的废弃表中把 gemini-omni-1.2-flash 列为推荐替代模型。更早的 gemini-omni-flash-preview 也已关停。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "通过第三方平台调用 Gemini Omni 1.2 Flash 是否比直连 Google API 更便宜？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不一定。OpenRouter 上 google/gemini-omni-1.2-flash 的报价为每 100 万输入 token 1.50 美元、每 100 万输出 token 9.00 美元，与 Google 直连一致；但 fal.ai 的 google/gemini-omni-flash 页面仍显示每 100 万 token 21.875 美元，折算约为 720p 每秒 0.125 美元，比直连价高出约 80%。请核对实际每秒价格，而不要只看模型名。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Gemini Omni 1.2 Flash 能扩展视频或做首尾帧插值吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "可以，但有明确限制。模型可按每轮 3 到 10 秒扩展自己生成或上传的视频，总时长上限 30 秒，扩展时只使用输入视频的最后 10 秒作为上下文，且只能在片段末尾追加内容。首尾帧插值仅支持 3 到 10 秒时长。此外，在欧洲经济区、瑞士和英国，上传视频的扩展功能暂不可用，扩展模型自身生成的视频则不受此限。"
+      }
+    }
+  ]
+};
+
+const zhBody = `
+<h1 id="top">Gemini Omni 1.2 Flash 视频 API 评测 2026：$0.07/秒 定价拆解</h1>
+
+<p>2026 年 11 月 5 日，Google 宣布 Gemini Omni 1.2 Flash 在 Gemini API 与 Google Cloud 上正式全面可用（GA）。这次发布对 API 采购方有三件事重要：原生片段长度从 10 秒提升到 15 秒，视频输出新增多轮对话式编辑，以及输出单价下调 30%，落到每 100 万视频 token 12.00 美元。折算下来约为 720p 每秒 0.07 美元——这是所有定价页面都在重复的那个头条数字。</p>
+
+<p>问题在于，头条数字省略了一件事。0.07 美元只是四级价格表里的一格，而这张表并不是线性的。同一个模型在 360p 是每秒 0.023 美元，在 1080p 是 0.104 美元，在 4K 是 0.209 美元。更麻烦的是，放大输出按各自的 token 费率单独计费，而这正是绝大多数人算错的地方——从 720p 草稿放大渲染出的 1080p 片段，和原生渲染的 1080p 片段并不是同一个价格。这个误差在批量生成一千条商品视频时会放大到数千美元。</p>
+
+<p>本文拆解真实计费机制、API 调用形态、硬性限制，以及这个模型在什么场景下不适用。所有数据均取自 Google 官方在线文档与定价页（核对于 2026 年 11 月 6 日），每秒价格由官方公布的 token 费率重新计算得出，而非照抄博客文章。</p>
+
+<h2 id="shipped">11 月 5 日这次发布到底发了什么</h2>
+
+<p>Omni 1.2 Flash 是正式 GA，不是预览版。模型代码为 <code>gemini-omni-1.2-flash</code>，在 Gemini API 付费层可用，Vertex AI 上以完全相同的费率提供：输入每 100 万 token 1.50 美元，文本输出每 100 万 token 9.00 美元，视频输出每 100 万 token 12.00 美元。需要预留容量的团队可以使用 Provisioned Throughput，输出带有肉眼难辨的 SynthID 水印。</p>
+
+<p>相比 1.1，差异不只是时长。参考图遵循度明显改善，人物面部、服装剪裁、包装文字与品牌配色能贯穿整段片段保持稳定，不会在最后一帧漂移。多轮对话式编辑覆盖完整 15 秒片段，这一项直接改变了你的搭建方式：换背景或改画幅是一次后续对话，而不是丢掉已经付过钱的那个重新生成。Google 同时补上了原生音频，唇形同步更清晰，并支持区分多说话人。</p>
+
+<p>片段时长通过 <code>response_format.duration</code> 设置，取 3 到 15 秒之间的整秒。默认值为 10 秒。显式设置时长会覆盖提示词文本里提到的长度，填写超过 15 秒会直接返回 invalid argument 错误，而不是悄悄截断。</p>
+
+<h2 id="ladder">价格阶梯，自己重算一遍</h2>
+
+<p>Google 对视频输出按总输出 token 消耗量计费。每秒价格只是换算出来的便利数字，不是你实际被收取的费率。底层算术依赖四个公开常数：360p 输出每秒 1,931 个 token，720p 每秒 5,792 个，1080p 每秒 8,688 个，4K 每秒 17,376 个。乘以秒数，再乘以每 100 万 token 12.00 美元，就得到实际费率。</p>
+
+<table>
+<thead><tr><th>输出分辨率</th><th>视频 token / 秒</th><th>折合每秒成本</th><th>10 秒片段</th><th>15 秒片段</th></tr></thead>
+<tbody>
+<tr><td>360p</td><td>1,931</td><td>$0.023</td><td>$0.23</td><td>$0.35</td></tr>
+<tr><td>720p</td><td>5,792</td><td>$0.070</td><td>$0.70</td><td>$1.04</td></tr>
+<tr><td>1080p</td><td>8,688</td><td>$0.104</td><td>$1.04</td><td>$1.56</td></tr>
+<tr><td>4K</td><td>17,376</td><td>$0.209</td><td>$2.09</td><td>$3.13</td></tr>
+</tbody>
+</table>
+
+<p>这组数字可以精确复现 Google 公布的数值，而这一致性正是关键校验：5,792 token 乘以 10 秒乘以每 100 万 12.00 美元，等于 $0.695，与 Google 所说的 10 秒 720p 约 $0.70 吻合；15 秒 720p 落在 $1.04，也与官方一致。如果某个来源给出的每秒价格无法由这四个常数和 12.00 美元费率推导出来，那个来源就是错的。</p>
+
+<p>30% 的降幅落点也符合预期。Omni 1.1 Flash 的视频输出单价是每 100 万 token 17.50 美元，折合 720p 每秒 0.101 美元。降到 12.00 美元意味着视频这条线降了 31.4%，Google 所说的「30%」在四舍五入范围内是准确的。注意输入费率和文本输出费率没有动：输入仍是每 100 万 1.50 美元，文本输出仍是 9.00 美元。如果你的负载以文本与思考 token 为主、视频只占小头，实际节省会小于头条数字。</p>
+
+<h2 id="upscale">放大计费这个坑</h2>
+
+<p>token 算术在这里就不再直观了。720p 以上的输出通过放大生成，而放大有自己的 token 费率，与同分辨率下的原生费率并不相同。Google 单独公布了这些数字：360p 放大到 720p 每秒 2,896 个 token，720p 放大到 1080p 同样是 2,896，360p 放大到 1080p 是 5,792，720p 放大到 4K 与 1080p 放大到 4K 都是 11,584。</p>
+
+<table>
+<thead><tr><th>渲染路径</th><th>合计 token / 秒</th><th>折合每秒成本</th><th>10 秒片段</th></tr></thead>
+<tbody>
+<tr><td>360p 原生</td><td>1,931</td><td>$0.023</td><td>$0.23</td></tr>
+<tr><td>360p 放大到 720p</td><td>4,827</td><td>$0.058</td><td>$0.58</td></tr>
+<tr><td>720p 原生</td><td>5,792</td><td>$0.070</td><td>$0.70</td></tr>
+<tr><td>720p 放大到 1080p</td><td>8,688</td><td>$0.104</td><td>$1.04</td></tr>
+<tr><td>1080p 原生</td><td>8,688</td><td>$0.104</td><td>$1.04</td></tr>
+<tr><td>720p 放大到 4K</td><td>17,376</td><td>$0.209</td><td>$2.09</td></tr>
+<tr><td>1080p 放大到 4K</td><td>20,272</td><td>$0.243</td><td>$2.43</td></tr>
+<tr><td>4K 原生</td><td>17,376</td><td>$0.209</td><td>$2.09</td></tr>
+</tbody>
+</table>
+
+<p>有两个结果值得多看一眼。第一，渲染 360p 再放大到 720p 合计每秒 4,827 个 token，比直接原生渲染 720p 低约 17%。这与「原生分辨率越高越贵」的直觉正好相反，原因是这一步的放大倍率每 token 比原生 720p 生成更便宜。第二，从 1080p 放大到 4K 每秒 20,272 个 token，比直接以 17,376 渲染 4K 高约 17%。也就是说，先渲 4K 再降采样，比放大路径更省钱。</p>
+
+<p>这两个观察都不是推荐，因为它们忽略了画质。360p 草稿放大到 720p 和原生 720p 渲染不是同一个素材，4K 对 4K 的路径也很可能比 1080p 放大到 4K 更干净。算术告诉你的只是：「先低分辨率打草稿再放大到高分辨率」并不自动是工作流暗示的省钱做法。真正划算的做法是挑选那两个放大恰好划算的分辨率，并在按预算投入之前，用你自己的素材验证画质差异。</p>
+
+<p>举一个批量的例子：三条 10 秒 360p 草稿加一条 10 秒 1080p 终稿，大约 $1.74；而三条 10 秒 1080p 终稿，大约 $3.13。如果你要投放同一支广告的一百个变体，这个差距大约是每百条 $140，恰好是决定这条流水线是否跑得通的量级。</p>
+
+<h2 id="api">API 调用：一个端点，不用轮询</h2>
+
+<p>视频生成走的是 Google 的 Interactions API，而不是旧的 <code>generateContent</code> 路径。它是一次同步请求，直接在响应体里返回 base64 编码的成片。没有任务队列要轮询，也不用接回调，这相比那些只返回 polling URL 的供应商是一次明显的简化。</p>
+
+<pre><code>curl -X POST "https://generativelanguage.googleapis.com/v1beta/interactions?key=$GEMINI_API_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "gemini-omni-1.2-flash",
+    "input": "A single unbroken tracking shot following a paper airplane through a library.",
+    "response_format": {
+      "type": "video",
+      "duration": "15s",
+      "resolution": "1080p",
+      "aspect_ratio": "9:16"
+    }
+  }'</code></pre>
+
+<p>SDK 形态是同一套结构，只是响应处理由 SDK 代劳：</p>
+
+<pre><code>import base64
+from google import genai
+
+client = genai.Client()
+interaction = client.interactions.create(
+    model="gemini-omni-1.2-flash",
+    input="A single unbroken tracking shot following a paper airplane through a library.",
+    response_format={
+        "type": "video",
+        "duration": "15s",
+        "resolution": "1080p",
+        "aspect_ratio": "9:16",
+    },
+)
+with open("clip.mp4", "wb") as f:
+    f.write(base64.b64decode(interaction.output_video.data))</code></pre>
+
+<p>有两个细节会让第一次接入的人栽跟头。<code>output_video</code> 这个便捷字段只在 SDK 里存在，直接走 REST 的调用方必须自己遍历 <code>steps</code> 数组，取出 <code>model_output</code> 条目，其 content 项里带着 <code>mime_type: video/mp4</code> 和 base64 的 <code>data</code> 字段。另外 <code>aspect_ratio</code> 只接受 <code>9:16</code> 和 <code>16:9</code>，默认是横屏。</p>
+
+<p>多轮编辑循环正是成本模型发生变化的地方。换背景或改光线这类后续轮次，是按又一次生成计费，而不是一次廉价的编辑操作。这让对话式工作流既是省时间的手段，也是成本倍增器，也正是「在 360p 打草稿」这一套法的最强论据：迭代阶段每秒只要 0.023 美元，等 take 满意了再提交 720p 或 1080p 终稿。</p>
+
+<h2 id="limits">你会撞到的限制</h2>
+
+<p>速率限制是第一道墙。完全不存在免费额度：定价页把这个模型的输入价格与输出价格在免费层都标为不可用，你无法像 Gemini 目录里其他模型那样用免信用卡账号做原型。付费层从 Tier 1 的每分钟 8 次、每天 40 次起步，Tier 2 为每分钟 16 次、每天 200 次，Tier 3 为每分钟 40 次、每天 2,000 次。Priority inference 的额度是标准限额的 0.3 倍。</p>
+
+<p>这些请求限制是按片段计的，不是按秒。一段 15 秒 720p 片段算一次请求，所以 Tier 1 账号每天最多生成 40 段、每分钟 8 段，按 720p 折算大约是每天 $28 的视频量。批量负载必须升到更高档位。</p>
+
+<p>时长限制更微妙。首尾帧插值只支持 3 到 10 秒，同时传入首帧和尾帧又要求时长超过 10 秒，会返回 invalid argument 错误，而不是退回到单图生成。扩展按每轮 3 到 10 秒进行，总视频时长上限 30 秒，扩展时只以输入视频的最后 10 秒作为上下文。如果某个角色或商品只出现在那 10 秒回看窗口之前，你必须在提示词里再提一次，或者作为参考图传进去。</p>
+
+<p>参考素材也有配额：所有时长合计最多 6 张参考图；11 到 15 秒的片段只接受 1 段最长 3 秒的参考视频，而 3 到 10 秒的片段最多接受 3 段。扩展只能在片段末尾追加，无法在开头前置，也无法在片段中间插入。在欧洲经济区、瑞士和英国，上传视频的扩展功能暂不可用，扩展模型自己生成的视频则不受此限。</p>
+
+<p>还有一条约束值得单独提醒要生成语音的人：你无法通过扩展一段有人在说话的上传视频来补充新台词。扩展角色保持沉默的片段、或提示词不新增台词的片段是可以的。通过多轮的 <code>previous_interaction_id</code> 为先前生成的片段补加对白则受支持。</p>
+
+<h2 id="ecosystem">OpenRouter、Vertex 与各路转售商</h2>
+
+<p>OpenRouter 上 <code>google/gemini-omni-1.2-flash</code> 的上下文长度是 131,072 token，输入每 100 万 1.50 美元、输出每 100 万 9.00 美元，与 Google 直连一致，目前只有 Google AI Studio 这一个可用端点。Vertex AI 列出的同样是 1.50、9.00 与 12.00 美元，token 常数完全相同，因此直连和 Vertex 当前是同一个价格。两者之上，裸模型名 <code>google/gemini-omni-flash</code> 预览版已经消失，只剩带版本号的 1.1 与 1.2 两个 ID。</p>
+
+<p>转售商这一层就不太整齐了。如果你希望用一个集成横向比较多个视频模型，生成媒体聚合平台是务实选择：<a href="https://fal.ai/?utm_source=apirank" target="_blank" rel="sponsored noopener">fal.ai</a> 把 Gemini Omni 与 Kling 3.0、Seedance 2.5、Wan 3.0、LTX 2.5、HeyGen 放在同一种请求形态后面，在模型选型阶段能省掉每家一个客户端。但请核对实际的每秒价格，而不是看模型名。截至 2026 年 11 月 6 日，fal.ai 上 <code>google/gemini-omni-flash</code> 的页面仍显示每 100 万 token 21.875 美元，折合 720p 每秒约 0.125 美元，比直连 Google 高出约 80%。这个页面还没有改到 1.2 的费率。</p>
+
+<p>对多数团队而言，直连 Gemini API 是更便宜的答案，同时功能也最新，因为多轮编辑与 15 秒上限都是 Google 侧的行为，转售平台可能跟进得慢。聚合平台的价值主要出现在你还在横向评估模型、希望一个集成统管所有候选的时候。</p>
+
+<h2 id="migration">12 月 3 日的迁移节点</h2>
+
+<p>当前有两个模型 ID 在场，其中一个已经悄悄没了。<code>gemini-omni-1.1-flash</code> 仍是 stable，但已安排在 2026 年 12 月 3 日路由到 <code>gemini-omni-1.2-flash</code>，从那天起按新费率计费。更早的 <code>gemini-omni-flash-preview</code> 已关停。同时，Gemini API 里的 Veo 3.1 预览系列已于 2026 年 10 月 22 日退役，<code>veo-3.1-generate-preview</code>、<code>veo-3.1-fast-generate-preview</code>、<code>veo-3.1-lite-generate-preview</code> 全部下线，Google 官方废弃表为每一个都指定了 <code>gemini-omni-1.2-flash</code> 作为推荐替代。</p>
+
+<p>Veo 的这次关停才是最需要动手的部分。如果你曾在 Gemini API 里接入 Veo 3.1，那么要么已经迁移，要么现在是坏的。如果你曾在规划文档里按 Veo 3.1 做过报价，那个数字已经过期：替代方案在 720p 是每秒 0.07 美元，而不是 Veo 曾经占据的每秒 0.10 至 0.40 区间。Google 也把 Veo 3.1 的 GA 版本移到了 Gemini Enterprise Agent Platform，那是与 AI Studio API 另一套计费关系。</p>
+
+<h2 id="verdict">谁该用，谁不该用</h2>
+
+<p><strong>该用 Omni 1.2 Flash：</strong>你要批量产出短商品视频或社交视频，并且希望只用一套 API。720p 每秒 0.07 美元确实有竞争力，原生音频省掉了单独接一个音频模型，多轮编辑让你不必每次修改都重新写一遍需求，15 秒上限也覆盖了大部分广告与产品讲解的时长。计费虽然是 token 制但完全可预测，因为每个分辨率的 token 常数是公布的而不是估算的。</p>
+
+<p><strong>要谨慎使用：</strong>你的产出需要 1080p 或 4K，因为成本曲线正是在这里变陡。一段 15 秒 4K 片段约 $3.13，而从 1080p 放大到 4K 约 $2.43。如果你很大比例的量都要 4K，规模化之前先把单条成本算清楚，并评估 1080p 交付在接近 4K 的码率下是否够用。多轮工作流在 4K 下也是倍增：每一次改稿又是 $3.13。</p>
+
+<p><strong>该跳过：</strong>你需要一个免费层来做原型，或者你需要超过 30 秒的片段，或者你主要靠扩展上传的口播素材来生成带对白的内容。这个模型没有免信用卡的入口路径，30 秒是即便用扩展也突破不了的硬上限，给上传的说话片段补台词也不支持。</p>
+
+<p><strong>要提前规划：</strong>你正处在 12 月 3 日迁移节点上。请显式锁定 <code>gemini-omni-1.2-flash</code>，不要依赖 <code>gemini-omni-1.1-flash</code>，因为旧 ID 会静默路由到新模型并开始按新费率计费。如果你之前锁定的是解析到预览版的别名，那个别名现在已经失效。模型 ID 锁定很便宜，依赖隐式解析则很贵。</p>
+
+<p>结论是：Omni 1.2 Flash 是 Google 至今最便宜的一档严肃原生视频价格，而围绕它的工程实现也写得异常清楚。计费模型透明到你只用一张表格就能算出每月的准确账单，这本不该如此常见。真正会让人意外的既不是头条费率，也不是文档质量，而是放大路径和速率限制——而这两者都是可以提前算清楚的。</p>
+
+<p><strong>资料来源：</strong>Google，《Gemini Omni 1.2 Flash: Fast and cost-effective with longer clips》（2026-11-05）；Google AI for Developers — Gemini API 定价、Gemini Omni Flash 模型参考、视频生成与 Gemini Omni 文档指南、速率限制与废弃列表（均于 2026-11-06 核对）；Google Cloud Vertex AI 生成式 AI 定价（2026-11-06 核对）；OpenRouter 模型目录与端点列表（2026-11-06 核对）；fal.ai 模型目录与 Gemini Omni Flash 页面（2026-11-06 核对）。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>
