@@ -1,0 +1,278 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'openrouter-october-2026-api-price-index-2026';
+const zhTitle = 'OpenRouter 2026 年 10 月价格指数：$1.21 跌到 $0.52';
+const zhDescription = 'OpenRouter 2026 年 10 月数据复盘：每 token 有效价较 1 月下跌 57%~70%，闭源 $1.21→$0.52、开源 $0.28→$0.084，价差反而扩大到 6.2 倍。';
+const date = '2026-11-08';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "2026 年 AI API 价格跌了多少？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "OpenRouter 2026 年 10 月的数据复盘显示，2026 年 1 月到 10 月之间，每 token 的有效价格下降了 57% 到 70%。闭源权重模型从每百万 token 1.21 美元降到 0.52 美元；开源权重模型从 0.28 美元降到 0.084 美元。两者价差从 4.3 倍扩大到 6.2 倍。10 月 OpenRouter 共服务了 790 万亿 token，是 1 月的 25 倍；其中 Agent 流量占到全部 token 的 76%，约 600 万亿。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么开源与闭源模型的价格差反而扩大了？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "因为开源跌得更快，而不是更慢。开源权重模型跌了 70%，闭源权重模型跌了 57%。当分母下降得更快时，比值自然变大，所以这是算术结果而不是悖论。Token 结构对这个比值本身没有影响，因为比值比较的是两个价格水平。开源权重的推理服务商远多于闭源，这也是各分类中流量最高的 25 个模型里，开源模型的价格中位差更大的原因。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "有效价格和目录标价是同一个东西吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不是。这个指数是按实际用量结算的有效价格，因此包含提示词缓存的影响，并不等于价格表的中间值。OpenRouter 2026 年 10 月 31 日的洞察文章列出的 token 加权标价为：开源权重每百万 token 输入 0.28 美元、输出 1.62 美元；闭源权重输入 1.27 美元、输出 6.36 美元。用 OpenRouter 的实时价格反推这个差额，需要闭源流量约 81%、开源流量约 79% 的缓存命中率，这与另��公布的「Agent 流量上服务商缓存命中率中位数从 6 月的 76.1% 升到 10 月的 90% 以上」互相印证。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "现在 API 流量里 Agent 占比多少？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "10 月 Agent 类型的 API Key 消耗了 OpenRouter 全部 token 的 76%，约 600 万亿 token，而一年前这个比例只有 8%。Agent 流量上的服务商缓存命中率中位数从 6 月的 76.1% 升到 10 月的 90% 以上。10 月总用量为 790 万亿 token，是 1 月的 25 倍。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "OpenRouter 的 Auto Router 要额外收费吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不额外收费。Auto Router、Auto Code 路由器和 Auto Beta 路由器都按实际服务该请求的模型的目录价收费，响应里的 model 字段会告诉你最终用的是哪个模型。它在一次调用中给请求的十一个维度打分，再结合实时价格、缓存状态和基准表现来选模型。OpenRouter 的线上测试显示路由环节 p90 快了 3 倍，0.65 秒对 1.96 秒。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "我该直接用 openrouter/auto，还是自己指定模型？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "如果你的流量类型比较混杂、或者希望成本平稳，就用自动路由；如果你已经非常确定哪个模型最合适，就锁定它。Auto Router 相比切换模型更倾向于只调整推理档位，以保住提示词缓存，在其测试阶段几乎有十分之九的 Agent 轮次都停留在同一个模型上。如果想要旧版更省的行为，把 cost_tier 设成 low，因为默认策略是刻意多花一点单任务成本，以便纳入更多模型一起比较。"
+      }
+    }
+  ]
+};
+
+const zhBody = `
+<h1 id="top">OpenRouter 2026 年 10 月：API 价格跌了 57%~70%，价差却扩大了</h1>
+
+<p>2026 年 11 月 6 日，OpenRouter 发布了 10 月用量复盘。头条数字是：每 token 的有效价格相比 1 月下跌了 57% 到 70%——闭源权重模型从每百万 token 1.21 美元降到 0.52 美元，开源权重模型从 0.28 美元降到 0.084 美元。真正引起注意的是后一条，因为两者的<em>价差反而拉大了</em>，从 4.3 倍扩大到 6.2 倍，而这恰恰发生在两个价格都在下跌的时候。</p>
+
+<p>多数解读把这当成一个悖论：价格都跌了，开源与闭源的差距怎么反而更糟？只要把标题里压缩成一个数字的三件事拆开，悖论就消失了：价格水平本身、下跌的<em>速度</em>，以及"有效"到底指什么。开源价格并不是跌得更慢，而是跌得更快——70% 对 57%。分母降得更快，比值自然变大，所以这个扩大是算术结果，不是异常。而 Token 结构对这个比值本身毫无影响，因为比值比较的是两个价格水平。</p>
+
+<p>还有一个不那么显眼、只有把底层数据拉出来才看得见的发现。开源模型之所以更便宜，<em>原因</em>是任何人都能提供推理服务，这意味着同��份权重有几十家服务商在竞争，价格差被拉到极大。按各分类流量最高的 25 个模型统计，服务商价格中位差开源是 4.2 倍、闭源是 3.6 倍，中位服务商数量则是 13 家对 8 家。仅 DeepSeek V4.1 Flash 一个模型，就有 39 个端点提供同一份权重，输入价从每百万 token 0.006 美元到 0.45 美元——75 倍价差。</p>
+
+<p>下文所有数据都来自 OpenRouter 的实时 API 与官方文档，核对于 2026 年 11 月 8 日。月度序列是从 OpenRouter 自己发布的图表里还原出来的，并且精确复现了他们公布的头条数字——在把论证建立在一个数字之上之前，这是最关键的一步验证。</p>
+
+<h2 id="numbers">定义 10 月的五个数字</h2>
+
+<p>这份复盘包含五点。合在一起看，描述的是一个一年里规模增长 25 倍、每 token 价格大幅下降、而流量结构变化比价格表变化更大的市场。</p>
+
+<table>
+<thead><tr><th>指标</th><th>数值</th><th>对比基准</th></tr></thead>
+<tbody>
+<tr><td>10 月总 token 量</td><td>790 万亿</td><td>1 月的 25 倍</td></tr>
+<tr><td>Agent 占全部 token 比例</td><td>76%（约 600 万亿 token）</td><td>一年前为 8%</td></tr>
+<tr><td>Agent 流量上的服务商缓存命中率中位数</td><td>76.1%（6 月）到 90% 以上（10 月）</td><td>Agent 每轮都要重发同一段长上下文</td></tr>
+<tr><td>闭源权重有效价格</td><td>每百万 token $1.21 → $0.52</td><td>较 1 月下跌 57%</td></tr>
+<tr><td>开源权重有效价格</td><td>每百万 token $0.28 → $0.084</td><td>下跌 70%；价差从 4.3 倍扩大到 6.2 倍</td></tr>
+</tbody>
+</table>
+
+<p>Agent 那个数字得到的关注远少于它应有的分量。Agent 类型的 API Key 不是一次聊天会话，而是一个每轮都要把累积上下文完整重发一遍的程序。正是这种流量形状，让缓存从"锦上添花"变成了第一等的成本杠杆，也解释了为什么有效价格的跌幅会快于任何一家服务商的目录价。如果你自己的负载是 Agent 形态的，那么你这边的缓存命中率，很可能是本季度最值得先测的一个数字。</p>
+
+<h2 id="series">还原完整月度序列</h2>
+
+<p>OpenRouter 把有效价格序列发布成了一张图表而不是一张表。把图表按它自己的坐标网格线做数字化，就能还原出月度序列，而且能精确复现公布的端点值：1 月闭源 $1.21、10 月闭源 $0.52、1 月开源 $0.28、10 月开源 $0.084，以及 4.3 倍和 6.2 倍两个比值。这一步复现就是验证环节。如果还原出来的序列落不到厂商自己公布的数字上，那就是你的标定错了，这样的序列不该发出去。</p>
+
+<table>
+<thead><tr><th>月份（2026 年）</th><th>闭源权重</th><th>开源权重</th><th>比值</th></tr></thead>
+<tbody>
+<tr><td>1 月</td><td>$1.21</td><td>$0.28</td><td>4.3 倍</td></tr>
+<tr><td>2 月</td><td>$1.14</td><td>$0.25</td><td>4.6 倍</td></tr>
+<tr><td>3 月</td><td>$0.99</td><td>$0.25</td><td>3.9 倍</td></tr>
+<tr><td>4 月</td><td>$1.02</td><td>$0.27</td><td>3.8 倍</td></tr>
+<tr><td>5 月</td><td>$1.15</td><td>$0.23</td><td>4.9 倍</td></tr>
+<tr><td>6 月</td><td>$1.20</td><td>$0.21</td><td>5.8 倍</td></tr>
+<tr><td>7 月</td><td>$1.17</td><td>$0.22</td><td>5.4 倍</td></tr>
+<tr><td>8 月</td><td>$0.63</td><td>$0.16</td><td>3.9 倍</td></tr>
+<tr><td>9 月</td><td>$0.61</td><td>$0.12</td><td>5.1 倍</td></tr>
+<tr><td>10 月</td><td>$0.52</td><td>$0.084</td><td>6.2 倍</td></tr>
+</tbody>
+</table>
+
+<p>这个序列里有两处特征比端点值更值得注意。</p>
+
+<p><strong>第一，这轮崩塌是断崖，不是滑坡。</strong>闭源价格从 1 月到 7 月一直在每百万 token 1.15 到 1.21 美元之间横盘，波动不超过 4%。然后在 7 月到 8 月的<strong>单月</strong>里跌了 46%，并在 9 月和 10 月又跌了 18%。开源的走法不同：从 1 月到 7 月是温和下移，7 月之后才真正加速，连续三个月分别下跌 27%、25% 和 30%。</p>
+
+<p>OpenRouter 自己的文章解释了闭源侧 8 月这个拐点。GPT-5.6 Sol 在 2026 年 8 月 22 日调整定价，标准输入价从 5.00 美元降到 4.00 美元、输出从 30.00 美元降到 20.00 美元，而 Sol 自己的 5 折折扣从 8 月 17 日开始。当最大的几个闭源模型在同一时间点降价时，一个按 token 加权的指数就像一根杠杆一样被撬动。</p>
+
+<p><strong>第二，价差扩大发生在最后三个月，而不是整个年度。</strong>从 1 月到 7 月，比值其实是<em>收窄</em>的，从 4.3 倍到 7 月的 5.4 倍，中间 4 月还一度探到 3.8 倍。真正的张开发生在 8 月及之后，而且是因为那段时间开源跌得更快，不是因为闭源涨了——闭源在同期同样在跌。两条线都在往下走，只是绿线走得更快。</p>
+
+<h2 id="effective">"有效价格"到底是什么</h2>
+
+<p>这个指数不是价格表，把两者混为一谈会得出错误的决策。OpenRouter 2026 年 10 月 31 日的洞察文章列出过去四周的 token 加权<em>标价</em>：开源权重每百万 token 输入 0.28 美元、输出 1.62 美元；闭源权重输入 1.27 美元、输出 6.36 美元。这组标价大约是开源有效指数的三倍，闭源则远高于其有效指数。</p>
+
+<p>标价与有效价之间的差额就是缓存，而且差额很大。用 OpenRouter 实时排行榜接口（统计窗口截至 2026 年 11 月 7 日）重算：这一周有 198.1 万亿 token 分布在 674 个模型变体上，其中开源权重占 76.8%、闭源占 21.6%、免费档占 1.7%。把实时标价按 token 加权，得到付费流量的混合有效价是每百万 token 0.535 美元。要落到公布的 10 月指数上——闭源 0.52 美元、开源 0.084 美元——在缓存读取按标价 0.1 倍计算的前提下，反推出的缓存命中率大约是闭源 81%、开源 79%。</p>
+
+<p>这个反推值与 OpenRouter 自己的说法一致：Agent 流量上的服务商缓存命中率中位数从 6 月的 76.1% 升到 10 月的 90% 以上。指数与缓存统计互相印证。实际含义是：<strong>你真正付出的有效价格，取决于缓存命中率的程度远高于取决于你选了哪个模型。</strong>一个目录价高 10 倍但缓存命中率 95% 的模型，可能比一个便宜但命中率只有 20% 的模型更省钱。</p>
+
+<table>
+<thead><tr><th>模型（OpenRouter 实时标价）</th><th>输入</th><th>输出</th><th>缓存读取</th></tr></thead>
+<tbody>
+<tr><td>deepseek/deepseek-v4.1-flash</td><td>$0.051</td><td>$0.567</td><td>$0.018</td></tr>
+<tr><td>z-ai/glm-5.3</td><td>$0.070</td><td>$1.400</td><td>$0.069</td></tr>
+<tr><td>openai/gpt-5.6-luna</td><td>$0.200</td><td>$1.200</td><td>$0.020</td></tr>
+<tr><td>xiaomi/mimo-v2.6-pro</td><td>$0.435</td><td>$0.870</td><td>$0.004</td></tr>
+<tr><td>google/gemini-3.8-flash</td><td>$0.825</td><td>$4.125</td><td>$0.083</td></tr>
+<tr><td>anthropic/claude-sonnet-5.5</td><td>$2.000</td><td>$10.000</td><td>$0.100</td></tr>
+<tr><td>anthropic/claude-opus-5.5</td><td>$4.000</td><td>$20.000</td><td>$0.200</td></tr>
+</tbody>
+</table>
+
+<p>注意缓存读取这一列。它并不是一律等于输入价的 10%。DeepSeek V4.1 Flash 的缓存读取是 0.018 美元，约占其输入价的 35%；而 MiMo V2.6 Pro 的缓存读取是 0.004 美元，只有输入价的 1% 左右。在 90% 命中缓存的负载下，后者的每个缓存 token 成本远低于前者，尽管它的标价高出 8.5 倍。如果你要优化的是缓存经济性，那么该排序的是这一列，而不是那个显眼的输入价。</p>
+
+<h2 id="why">开源为什么更便宜：服务商竞争</h2>
+
+<p>OpenRouter 10 月 31 日的洞察文章给出了标准解释，而且这个解释是对的：任何人都能提供开源权重，于是很多服务商竞争着提供同一个模型，竞争把价格压了下去。实时端点数据显示这种压缩有多夸张。</p>
+
+<table>
+<thead><tr><th>模型</th><th>服务商数</th><th>最低输入价</th><th>最高输入价</th><th>价差</th></tr></thead>
+<tbody>
+<tr><td>deepseek/deepseek-v4.1-flash</td><td>39</td><td>$0.006</td><td>$0.450</td><td>75 倍</td></tr>
+<tr><td>z-ai/glm-5.3</td><td>47</td><td>$0.070</td><td>$2.800</td><td>40 倍</td></tr>
+<tr><td>qwen/qwen3.8-27b</td><td>24</td><td>$0.034</td><td>$0.990</td><td>29 倍</td></tr>
+<tr><td>moonshotai/kimi-k3</td><td>30</td><td>$0.157</td><td>$4.500</td><td>29 倍</td></tr>
+<tr><td>anthropic/claude-opus-5.5</td><td>11</td><td>$4.00</td><td>$8.00</td><td>2 倍</td></tr>
+<tr><td>anthropic/claude-sonnet-5.5</td><td>10</td><td>$2.00</td><td>$2.20</td><td>1.1 倍</td></tr>
+<tr><td>google/gemini-3.8-flash</td><td>7</td><td>$0.375</td><td>$1.350</td><td>3.6 倍</td></tr>
+</tbody>
+</table>
+
+<p>按各分类流量最高的 25 个模型统计，服务商价格中位差开源是 4.2 倍、闭源是 3.6 倍，中位服务商数量是 13 家对 8 家。闭源的价差几乎全部来自第一方端点与转售云容量之间的落差：Claude Opus 5.5 在 Anthropic、Amazon Bedrock、Azure 和 Google Vertex 上都是每百万 token 4.00 美元，而其中一条 Anthropic 路线是 8.00 美元——在一个谁都没法再往下压的模型上，就是 2 倍的区间，因为它只有一份权重、只有一个卖家。</p>
+
+<p>开源那一侧则是另一种性质。DeepSeek V4.1 Flash 在最便宜的端点是每百万 token 0.006 美元，最贵的一端是 0.45 美元，同一份权重、39 家服务商。这个 75 倍的区间正是有效价格下跌的原因。当 39 家服务商能在同一份权重上互相压价时，边际服务商的报价就是一场逼近边际服务成本的竞赛，比厂商的目录价更接近成本。</p>
+
+<p>这一点直接改变采购决策。开源模型最便宜的服务商并不稳定，也不是默认路由会把你送到的那一家，还可能一周一变。锁定服务商是闭源模型根本给不了你的一个杠杆。如果你想在"锁定服务商 + 感知缓存的路由"之上再加一层控制，像 <a href="https://portkey.ai/?ref=apirank" target="_blank" rel="noopener">Portkey</a> 这样的网关可以把同一个 OpenAI 兼容请求发往多个上游，并在前面加上你自己的路由、日志和预算规则。</p>
+
+<h2 id="routers">路由器：OpenRouter Auto 与 Auto Code</h2>
+
+<p>就在数据复盘的同一天，11 月 6 日，OpenRouter 发布了重建后的 Auto Router，并同时推出面向编程场景的 Auto Code 路由器。这个时间点不是巧合：新路由器的存在就是为了承接有效价格的下跌，它的整套设计都是围绕"挑出能胜任这次请求的最便宜模型"来做的。</p>
+
+<p>新的 Auto Router 在一次快速的决策模型调用里给请求的十一个维度打分，包括任务类型、任务是否刚刚变化、难度如何、速度是否重要、是否需要视觉或代码库知识，以及换更大的模型、更多思考还是更便宜的模型更合适。这个评分再与实时价格、缓存状态和基准表现一起权衡，选出模型和推理档位。随后第二阶段的"服务商路由"再决定由哪一家服务商来服务这个模型，用的仍是偏好设置、可用性、延迟和缓存状态这些规则——和直连请求完全一致。</p>
+
+<p>有两个性能数字值得记住。在 OpenRouter 的线上测试中，路由环节的 p90 快了 3 倍，0.65 秒对 1.96 秒；新路由器在各项基准上最多比旧版好 4 倍。在五个编程基准上，Auto Code 的成绩与 Claude Opus 5.5 相当，而每个任务的成本低 74%。</p>
+
+<p>有意思的是成本这一项，因为它并不存在。你按实际服务该请求的模型的标准费率付费，响应里的 <code>model</code> 字段会告诉你那是哪一个。把 <code>openrouter/auto</code> 填进 model 字段，就是全部的集成工作。</p>
+
+<pre><code class="language-bash">curl https://openrouter.ai/api/v1/chat/completions \\
+  -H "Authorization: Bearer *** \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "model": "openrouter/auto-code",
+    "messages": [{"role": "user", "content": "Add a retry with backoff to fetchUser in api/users.ts"}]
+  }'</code></pre>
+
+<p>想知道路由器做了什么决定、为什么这么做，打开路由元数据即可。<code>jev-router</code> 这个阶段会列出解析出的模型、各候选模型及其推理档位与预估成本，以及最终选择的理由。</p>
+
+<pre><code class="language-python">import requests
+import json
+
+response = requests.post(
+  url="https://openrouter.ai/api/v1/chat/completions",
+  headers={
+    "Authorization": "Bearer $OPENR..._KEY",
+    "Content-Type": "application/json",
+    "X-OpenRouter-Metadata": "enabled",
+  },
+  data=json.dumps({
+    "model": "openrouter/auto",
+    "messages": [{"role": "user", "content": "Summarize this paragraph"}],
+    "plugins": [{"id": "auto-router", "cost_tier": "medium"}],
+  })
+)
+
+data = response.json()
+print("Model used:", data["model"])
+meta = data.get("openrouter_metadata", {}).get("pipeline", [])
+for stage in meta:
+    if stage.get("stage") == "jev-router":
+        print("Resolved:", stage.get("resolved_models"))
+        print("Reason:", stage.get("reason"))
+</code></pre>
+
+<p>有四个实际设置很关键。<code>cost_tier</code> 可取 <code>low</code>、<code>medium</code> 或 <code>high</code>；默认策略刻意让单任务花费高于上一代，以便把更多模型纳入比较，而 <code>low</code> 能复现旧版更省的行为。<code>allowed_models</code> 与 <code>excluded_models</code> 使用通配语法并作为硬约束生效，如果它们导致没有任何可用模型，请求会以 404 失败并指明该改哪个字段。工作区 Routing 页上的账户默认值会作用于全部三个路由器 slug，除非请求里显式覆盖。还有 <code>session_id</code>，它决定了 Agent 会话是像一段连续对话，还是像一串互不相关的回合。</p>
+
+<p>最后这一项在实践中不是可有可无的。切换模型是有代价的，因为新模型要重建提示词缓存，所以路由器对切换相当克制；当只调整推理档位就够用时，它会优先这么做，在其测试阶段几乎有十分之九的 Agent 回合都停留在同一个模型上。而如果没有 <code>session_id</code>，它可能在回合之间切换模型——做探索没问题，做别的事就很贵，因为每次前缀变化你都要重新付一次缓存写入费用。</p>
+
+<h2 id="concentration">市场同时在集中</h2>
+
+<p>价格只是 10 月的一半。另一半是，流量正在向极少数模型集中。从 OpenRouter 实时周排行榜（统计窗口截至 2026 年 11 月 7 日）看，用量最大的单一模型 DeepSeek V4.1 Flash 占了全部 token 的 35.5%，前五名占 53.8%，前二十名占 81.8%。</p>
+
+<p>这正是有效指数跌得这么猛的原因。当超过三分之一的 token 都路由到一个输入价 0.051 美元的模型上时，按 token 加权的平均值就是那个模型的价格，而不是市场的价格。一个"头名占三分之一流量"的目录上的混合指数，本质上是披着价格外衣的流量统计。</p>
+
+<p>这也意味着这个指数比看上去更脆弱。把头名模型的价格翻倍，混合付费有效价只动了大约 3%，因为它占了付费流量的约三分之一。指数之所以这么稳定，恰恰是因为领头的那个模型太便宜。如果头名价格涨十倍，混合价会移动大约 30%，而指数只能反映其中的十分之一。把它当作"人们实际买了什么"的描述来读，这反而是更有用的理解方式。</p>
+
+<h2 id="providers">对你实际采购意味着什么</h2>
+
+<p>数据推出三条结论，而且和常见的"价格降了，用路由器吧"这套说法不一样。</p>
+
+<p><strong>盯你的有效价格，而不是目录标价。</strong>模型页面上的标价，是你在某一家服务商上为一个未命中缓存的 token 付的钱。你真正该关心的是缓存之后的混合费率，在 90% 缓存命中率下，这个数字可能只有页面显示的四分之一。如果你上一个季度没测过自己的缓存命中率，那你是在盲优化。</p>
+
+<p><strong>开源模型要锁定服务商。</strong>同一份开源权重上，最便宜和最贵的服务商之间价差在最大的几个模型上达到 29 倍到 75 倍。默认路由通常会把你送到一个还算合理的位置，但 DeepSeek V4.1 Flash 最便宜的端点是 0.006 美元，上限是 0.45 美元——这 75 倍的差距，只要在请求里指定服务商就能拿到。</p>
+
+<p><strong>让路由器选模型，但不要把服务商策略也交出去。</strong>新 Auto Router 的十一因子打分确实比手写启发式更强，而且不额外收费，因为无论哪条路你都是按服务模型的目录价付费。但约束条件仍然归你：护栏、零数据保留、允许与排除的模型列表、服务商偏好，这些都是喂给路由器的输入，而不是它替你做的决定。</p>
+
+<p>最后一条是给要规划容量的人。11 月 8 日的实时目录有 460 条目、370 个唯一 slug、358 个付费模型、16 个免费模型，付费模型的标价中位数是每百万 token 输入 0.40 美元、输出 1.89 美元。这些中位数明显高于人们实际支付的有效价，原因正是前面说的那些。按中位数看很贵的模型，可能是你能拿到的最便宜选择；按中位数看很便宜的模型，如果你的缓存命中率很低，反而可能不划算。</p>
+
+<h2 id="verdict">结论</h2>
+
+<p>2026 年的价格战没有结束，只是换了形态。十个月里价格跌了 57% 到 70%，跌的原因是同一份权重被几十家互相压价的服务商出售，而闭源模型只有一家厂商加上一批没有动力压低目录价的转售方。价差扩大是算术，不是悖论：分母跌得更快，比值就变大，而两条线都是往下的。</p>
+
+<p>对 API 采购方来说，可执行的点其实很朴素也很具体。在重新谈任何价格之前，先把自己的缓存命中率测出来，因为在当前的缓存经济性下它压倒性地比选型更重要。开源模型上锁定服务商，那里的价差是 29 倍到 75 倍，默认路由会白白留下钱。而如果你的流量类型混杂，新 Auto Router 是一个货真价实的改进，且没有按请求计费——因为它现在会把实时价格和缓存状态，直接与对每次请求的十一因子判断放在一起权衡。</p>
+
+<p>接下来该盯什么：闭源这一侧能不能找到一个把自家目录价压下去的机制。截至 10 月还没有，而 6.2 倍这个价差就是 1 月要重新核对的那个数字。</p>
+
+<p><strong>资料来源：</strong>OpenRouter 2026 年 10 月数据复盘 X 线程（2026 年 11 月 6 日发布，含五点线程与"每百万 token 有效价"图表）；OpenRouter《Introducing the New Auto and Auto Code Routers》（2026 年 11 月 6 日）；OpenRouter《Open-Weight vs Closed-Weight Models: What's the Difference?》（2026 年 10 月 31 日）；OpenRouter 模型目录接口、端点列表与周模型排行榜（2026 年 11 月 8 日核对）；OpenRouter 关于 Auto Router、Auto Code、服务商选择与路由元数据的官方文档（2026 年 11 月 8 日核对）；OpenRouter《Model Router Benchmarks》（2026 年 10 月 2 日）；OpenAI GPT-5.6 Sol 于 2026 年 8 月 22 日降价，详见我们 9 月 3 日的分析。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>
