@@ -78,6 +78,27 @@ function isPlaceholder(s) {
   return /待确认|TBD|placeholder|model-dependent|Model-dependent/i.test(String(s));
 }
 
+// A "change" that contains no actual price number is not a change — it is the
+// extractor telling us the page had no pricing table (or was bot-blocked).
+// Such results must be skipped, not diffed, otherwise they pollute the report
+// and (if ever promoted to high confidence) overwrite good data with a sentence
+// like "页面未显示具体价格数字".
+function looksLikePrice(s) {
+  if (!s) return false;
+  const t = String(s);
+  if (/[¥$￥]\s*\d/.test(t)) return true;                                  // ¥0.8/M, $10/M
+  if (/\d\s*\/\s*(1\s*[mk]\b|million|百万|千)/i.test(t)) return true;      // 0.88/M
+  if (/\d+\s*credits?\b/i.test(t)) return true;                            // 1,000 credits
+  return false;
+}
+
+function hasNumericPricing(extracted) {
+  const p = extracted?.pricing || {};
+  const pe = extracted?.pricingEN || {};
+  return looksLikePrice(p.input) || looksLikePrice(p.output)
+    || looksLikePrice(pe.input) || looksLikePrice(pe.output);
+}
+
 function pricingChanged(a, b) {
   if (!a || !b) return true;
   const aS = JSON.stringify(a, Object.keys(a).sort());
@@ -136,6 +157,22 @@ async function updateOne(provider, opts) {
     || (!extracted.pricing && !extracted.pricingEN)
   );
 
+  // Providers with no registered extractor still need a fetch before the LLM
+  // fallback can run — otherwise `fetched` is null and the LLM branch is
+  // unreachable (this is why 94/109 providers were skipped every week).
+  if (needLlm && !fetched) {
+    const url = provider.website;
+    if (url) {
+      log(`  [${provider.id}] fetching ${url} for LLM fallback`);
+      try {
+        fetched = await fetchAndParse(url, { timeoutMs: 25000, retries: 1 });
+      } catch (e) {
+        log(`  [${provider.id}] fetch for LLM failed: ${e.message}`);
+        fetchError = `fetch failed: ${e.message}`;
+      }
+    }
+  }
+
   if (needLlm && fetched) {
     log(`  [${provider.id}] → LLM fallback`);
     try {
@@ -174,6 +211,21 @@ async function updateOne(provider, opts) {
     result.status = 'skipped';
     result.reason = fetchError || 'no extractor and no LLM result';
     result.finishedAt = now();
+    return result;
+  }
+
+  // 2b. Guard: a result with no price number in it means the page had no
+  // pricing table (or was bot-blocked). Treat it as "no data" instead of a
+  // diff — otherwise the report is polluted and a promotion to high
+  // confidence would overwrite good pricing with prose.
+  if (!hasNumericPricing(extracted)) {
+    result.status = 'skipped';
+    result.reason = 'no numeric pricing found on page';
+    result.confidence = extracted.confidence || 'low';
+    result.sourceUrl = extracted.sourceUrl;
+    result.notes = extracted.notes || '';
+    result.finishedAt = now();
+    log(`  → skipped: no numeric pricing found on page`);
     return result;
   }
 

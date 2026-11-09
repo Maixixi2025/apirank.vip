@@ -5,13 +5,42 @@
 // Reads MINIMAX_CN_API_KEY + MINIMAX_CN_BASE_URL env vars.
 // Falls back to OPENAI_API_KEY / OPENAI_BASE_URL for portability.
 
+const fs = require('fs');
+
 const DEFAULT_MODEL = 'MiniMax-M3';
+const HERMES_ENV = '/root/.hermes/.env';
+
+// The cron scheduler runs this script without the Hermes env loaded, so
+// MINIMAX_CN_API_KEY is missing and the LLM fallback silently no-ops
+// (every provider falls through to "no extractor and no LLM result").
+// Load the env file on demand for any key that is not already exported.
+function loadHermesEnv() {
+  try {
+    if (!fs.existsSync(HERMES_ENV)) return;
+    for (const line of fs.readFileSync(HERMES_ENV, 'utf8').split('\n')) {
+      const t = line.trim();
+      if (!t || t.startsWith('#') || !t.includes('=')) continue;
+      const i = t.indexOf('=');
+      const k = t.slice(0, i).trim();
+      const v = t.slice(i + 1).trim().replace(/^["']|["']$/g, '');
+      if (k && v && process.env[k] === undefined) process.env[k] = v;
+    }
+  } catch {
+    // best effort — caller falls back to "no API key set"
+  }
+}
 
 async function llmExtractPricing({ provider, rawText, rawTables, sourceUrl, log = () => {} }) {
+  if (!process.env.MINIMAX_CN_API_KEY && !process.env.OPENAI_API_KEY) {
+    loadHermesEnv();
+  }
   const apiKey = process.env.MINIMAX_CN_API_KEY || process.env.OPENAI_API_KEY;
+  // NB: the previous default was https://minimaxi.com/anthropic — missing the
+  // "api." subdomain, so it 307-redirected to a marketing page and every call
+  // returned non-JSON. Verified working base: https://api.minimaxi.com/anthropic
   const baseUrl = process.env.MINIMAX_CN_BASE_URL
     || process.env.OPENAI_BASE_URL
-    || 'https://minimaxi.com/anthropic';
+    || 'https://api.minimaxi.com/anthropic';
   const model = process.env.MINIMAX_CN_MODEL || DEFAULT_MODEL;
 
   if (!apiKey) {
