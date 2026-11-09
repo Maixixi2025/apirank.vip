@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'google-gemini-api-pricing-changes-dec-2026';
+const enTitle = 'Google Gemini API Pricing: Dec 2026 Changes';
+const enDescription = "Google's Gemini API has two scheduled price waves: Gemini 4 Argon doubles Dec 1, 2026, then 3.8/3.6 Flash doubles Jan 1, 2027. Every rate, both dates.";
+const date = '2026-11-09';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": enTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "When does Gemini 4 Argon get more expensive?",
+      "acceptedAnswer": { "@type": "Answer", "text": "December 1, 2026. On the standard tier the input price doubles from 2.00 to 4.00 dollars per 1M tokens and the output price doubles from 10.00 to 20.00 dollars per 1M tokens. The batch, flex, and priority tiers double on the same date, and the Argon context-caching read price doubles from 0.10 to 0.20 dollars per 1M tokens. Argon is not available on the free tier, and every token it processes is billed, including thinking tokens and grounding instructions. Through November 30 the introductory rate of 2.00 input and 10.00 output still applies." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the Gemini 3.8 Flash price go up?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes, on January 1, 2027, not December. The standard-tier input price doubles from 0.75 to 1.50 dollars per 1M tokens and the output price doubles from 3.75 to 7.50 dollars. The context-caching read price doubles from 0.075 to 0.15 dollars, and the separate context-caching storage price doubles from 0.50 to 1.00 dollars per 1M tokens per hour. The same schedule applies to Gemini 3.6 Flash. Until December 31, 2026 the 0.75 and 3.75 introductory rates still hold, and the free tier remains free of charge." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens to Gemini 2.5 Pro and 2.5 Flash API calls after December 1, 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "They stop serving the old model and silently return a different one. Effective December 1, 2026, every API request to gemini-2.5-pro automatically routes to gemini-3.8-flash and is billed at 3.8 Flash rates, and every request to gemini-2.5-flash automatically routes to gemini-3.5-flash-lite and is billed at 3.5 Flash-Lite rates. There is no outage and no error; the model string keeps working but the model behind it changes. Google recommends updating the model string before that date and reviewing the 3.8 Flash migration guide, because there are breaking changes including function calling, thought_signature validation, and thinking_level replacing thinking_budget." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the Gemini price increase the same for batch and priority tiers?",
+      "acceptedAnswer": { "@type": "Answer", "text": "The doubling ratio is the same but the base rates differ. For Gemini 4 Argon, the batch tier is half the standard rate and doubles from 1.00 to 2.00 dollars input on December 1, and the priority tier is 1.8 times the standard rate and doubles from 3.60 to 7.20 dollars input. On Vertex AI, Argon's batch tier is priced at the same half rate. So every Argon tier doubles on December 1, while every Flash-tier model doubles on January 1, 2027." }
+    },
+    {
+      "@type": "Question",
+      "name": "Will my existing Gemini 2.5 integration break on December 1, 2026?",
+      "acceptedAnswer": { "@type": "Answer", "text": "It will keep returning responses but not from the model you think. The gemini-2.5-pro endpoint auto-routes to gemini-3.8-flash effective December 1, 2026, so a prompt tuned for 2.5 Pro reasoning will run on a faster, cheaper flash-class model instead, and you will be billed at the flash rate rather than the 2.5 rate. Because the routing is silent, the only signal is a behavior or quality shift. The safe path is to pin the replacement model string explicitly and test against the migration guide before December 1." }
+    }
+  ]
+};
+
+const enBody = `
+<h1 id="top">Google Gemini API Pricing Changes: The December 2026 Rate Card, Every Model</h1>
+
+<p>Google has published two scheduled price waves for the Gemini API, and they land on two different dates. The first doubles the flagship <strong>Gemini 4 Argon</strong> on <strong>December 1, 2026</strong>. The second doubles the <strong>3.8 Flash and 3.6 Flash</strong> workhorse tier on <strong>January 1, 2027</strong>. On the same December date, the deprecated <code>gemini-2.5-pro</code> and <code>gemini-2.5-flash</code> endpoints stop serving their models entirely and silently route to replacements. Most coverage has covered only the Argon number. This is the full rate card, both dates, verified against Google's live pricing and deprecations pages on November 9, 2026.</p>
+
+<p>The headline is real: a 2x increase on the flagship is unusual for Google, which has spent two years cutting per-token prices. But the Argon doubling is only one cell of a larger schedule. Understanding the whole picture matters because the two waves hit different cost centers, and the December 1 auto-routing change affects any integration still sending traffic to a 2.5 model string.</p>
+
+<h2 id="argon-dec1">Wave one, December 1: Gemini 4 Argon doubles</h2>
+
+<p>Argon is Google's flagship reasoning model, currently billed at an introductory rate. That introductory rate expires November 30, 2026, and the standard-tier price doubles the next day. Argon is not available on the free tier at all; every token it processes is billed, including thinking tokens and internal tool system instructions and function declarations when using grounding.</p>
+
+<table>
+<thead><tr><th>Argon tier</th><th>Input, now (per 1M)</th><th>Input, from Dec 1</th><th>Output, now</th><th>Output, from Dec 1</th><th>Cache read, now</th><th>Cache read, Dec 1</th></tr></thead>
+<tbody>
+<tr><td>Standard</td><td>$2.00</td><td>$4.00</td><td>$10.00</td><td>$20.00</td><td>$0.10</td><td>$0.20</td></tr>
+<tr><td>Batch</td><td>$1.00</td><td>$2.00</td><td>$5.00</td><td>$10.00</td><td>$0.05</td><td>$0.10</td></tr>
+<tr><td>Priority</td><td>$3.60</td><td>$7.20</td><td>$18.00</td><td>$36.00</td><td>$0.18</td><td>$0.36</td></tr>
+</tbody>
+</table>
+
+<p>Two details are easy to miss. First, Argon uses <em>implicit</em> caching only; explicit caching is not supported, and the cache read rate doubles with everything else. Second, the batch tier sits at half the standard rate and doubles on the same date, so there is no discount path that escapes the increase. If you run Argon at volume, the last day to lock the introductory rate for a given workload is November 30, 2026.</p>
+
+<p>The most important thing about Argon is that every token is billed, including the reasoning tokens the model generates internally. A long agentic run that thinks for tens of thousands of tokens before answering can dominate cost through output tokens alone, so the doubling of the output rate from $10 to $20 has a larger real-world effect than the input doubling for reasoning-heavy workloads.</p>
+
+<h2 id="deprecation">Also December 1: the 2.5 endpoints silently switch models</h2>
+
+<p>The same date brings a change that is easy to miss because it produces no error. Google deprecated <code>gemini-2.5-pro</code> and <code>gemini-2.5-flash</code> on November 2, 2026 and removed both from model selection in Google AI Studio. Effective December 1, 2026, the API endpoints stop serving the 2.5 models entirely:</p>
+
+<ul>
+<li>Every request to <code>gemini-2.5-pro</code> automatically routes to <code>gemini-3.8-flash</code> and is billed at 3.8 Flash rates.</li>
+<li>Every request to <code>gemini-2.5-flash</code> automatically routes to <code>gemini-3.5-flash-lite</code> and is billed at 3.5 Flash-Lite rates.</li>
+</ul>
+
+<p>The routing is silent. Your code keeps working, the model string keeps resolving, but the model behind it changes from a frontier-class Pro to a faster flash-class model, and your bill changes with it. That matters for two reasons. A prompt chain tuned for 2.5 Pro reasoning depth will run on a different model after December 1, and because the switch is invisible in the response, the only signal is a shift in behavior or cost. Google recommends updating the model string before the deadline and reviewing the migration guide, because 3.8 Flash carries breaking changes including function calling behavior, <code>thought_signature</code> validation, and <code>thinking_level</code> replacing <code>thinking_budget</code>.</p>
+
+<p>If you run a gateway in front of multiple providers, now is the time to re-measure the same prompt against the post-change Gemini rates and the equivalent Claude, GPT, and open-weight options, because a 2x change on one flagship resets the comparison. FreeModel exposes an OpenAI-compatible endpoint in front of multiple providers so you can point one integration at different model IDs and measure the same prompts and reasoning settings side by side, and Portkey adds the observability and caching layer that makes the comparison reproducible rather than anecdotal.</p>
+
+<h2 id="flash-jan1">Wave two, January 1, 2027: the Flash tier doubles</h2>
+
+<p>The 3.8 Flash and 3.6 Flash introductory rates expire December 31, 2026, and the pay-as-you-go price doubles on January 1, 2027. These models remain free on the free tier; the change applies to paid-tier usage.</p>
+
+<table>
+<thead><tr><th>Model</th><th>Input, now</th><th>Input, from Jan 1 2027</th><th>Output, now</th><th>Output, from Jan 1</th><th>Cache read, now</th><th>Cache read, Jan 1</th><th>Storage, now (per 1M/hr)</th><th>Storage, Jan 1</th></tr></thead>
+<tbody>
+<tr><td>3.8 Flash</td><td>$0.75</td><td>$1.50</td><td>$3.75</td><td>$7.50</td><td>$0.075</td><td>$0.15</td><td>$0.50</td><td>$1.00</td></tr>
+<tr><td>3.6 Flash</td><td>$0.75</td><td>$1.50</td><td>$3.75</td><td>$7.50</td><td>$0.075</td><td>$0.15</td><td>$0.50</td><td>$1.00</td></tr>
+</tbody>
+</table>
+
+<p>Two separate cost lines double here, and it is worth separating them. The <em>cache read</em> price is what you pay when a prompt prefix is served from cache instead of being re-processed. The <em>storage</em> price, a distinct line item on the Gemini pricing page, is what you pay per hour to keep cached context warm, and it doubles from $0.50 to $1.00 per 1M tokens per hour. If you keep large contexts pinned in cache around the clock, the storage line can rival the token line at high volume, and it doubles on the same date.</p>
+
+<p>The Gemini 3.8 TTS and 3.8 Flash-Lite TTS models double on the same January date. For 3.8 TTS the text input rate goes from $0.50 to $1.00 and the audio output rate from $9.00 to $18.00 per 1M tokens; the Lite variant goes from $0.50 to $1.00 text input and $6.00 to $12.00 audio output.</p>
+
+<h2 id="unaffected">What does not change</h2>
+
+<p>Not every Gemini model is going up. The 3.5 Flash-Lite, 3.1 Flash-Lite, 3.1 Pro Preview, and the Gemini Embedding 2 rates are unchanged. The 2.5 Flash-Lite model is explicitly not deprecated and remains available through the API. The Gemini 2.0 Flash and 2.0 Flash-Lite legacy endpoints continue at their existing rates until their previously announced shutdowns. For teams that want to hold current pricing past the two wave dates, the 3.5 Flash-Lite at $0.30 input and $2.50 output is the cheapest unchanged general-purpose option on the paid tier.</p>
+
+<h2 id="what-to-do">What to do before each deadline</h2>
+
+<p>Before <strong>November 30, 2026</strong>, decide whether any Argon workload should be front-loaded at the introductory rate, and confirm no production traffic still depends on a 2.5 model string. Before <strong>December 31, 2026</strong>, re-run cost projections for any 3.8 Flash or 3.6 Flash workload that assumed the $0.75/$3.75 rate would hold, and factor the doubled cache storage line into any long-context caching budget. If a volume commitment or provisioned-throughput agreement is on the table, year-end is the natural time to negotiate it, because the list rate is the number that doubles.</p>
+
+<h2 id="verdict">The verdict</h2>
+
+<p>These are scheduled introductory expirations, not surprise hikes, and they apply to a small set of models. The Argon doubling is the visible one because it is the flagship, but the more operationally significant change is the silent December 1 auto-routing, because it changes what model actually serves production traffic without changing a single line of integration code. The teams that get hurt are the ones that do not know they were still on a 2.5 string. The teams that benefit are the ones that read the deprecations page, pin the replacement model, and re-measure their cost against the other providers before the new rates land.</p>
+
+<p><strong>Sources:</strong> Google AI for Developers, Gemini API pricing page (verified November 9, 2026); Gemini API deprecations page (verified November 9, 2026); Gemini API changelog (verified November 9, 2026); Gemini API model reference for Gemini 4 Argon, Gemini 3.8 Flash, and Gemini 3.5 Flash-Lite (verified November 9, 2026).</p>
+
+<p class="text-sm text-gray-500 mt-6"><strong>Disclosure:</strong> APIRank is an independent comparison site. Pricing data in this article was verified against Google's official Gemini API documentation on 2026-11-09. We may earn affiliate commission when you sign up through links on this page, at no extra cost to you.</p>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={enBody} />
+</BaseLayout>

@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'google-gemini-api-pricing-changes-dec-2026';
+const zhTitle = 'Google Gemini API 定价调整：2026 年 12 月每一档价格';
+const zhDescription = 'Google Gemini API 有两轮既定涨价：Gemini 4 Argon 于 2026 年 12 月 1 日翻倍，3.8/3.6 Flash 档于 2027 年 1 月 1 日翻倍。每一档价格、两个日期全部核对。';
+const date = '2026-11-09';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": zhTitle, "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Gemini 4 Argon 什么时候涨价？",
+      "acceptedAnswer": { "@type": "Answer", "text": "2026 年 12 月 1 日。标准档输入价从每百万 token 2.00 美元翻倍到 4.00 美元，输出价从 10.00 美元翻倍到 20.00 美元。Batch、Priority 各档同日翻倍，Argon 的上下文缓存读取价也从 0.10 美元翻倍到 0.20 美元。Argon 不提供免费档，它处理的每一个 token 都计费，包括思考 token 和接地（grounding）指令。11 月 30 日之前 introductory 价 2.00 输入 / 10.00 输出仍然有效。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Gemini 3.8 Flash 的价格会涨吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "会，但在 2027 年 1 月 1 日，而不是 12 月。标准档输入价从 0.75 美元翻倍到 1.50 美元每百万 token，输出价从 3.75 美元翻倍到 7.50 美元。上下文缓存读取价从 0.075 美元翻倍到 0.15 美元，独立的上下文缓存存储价从每小时每百万 token 0.50 美元翻倍到 1.00 美元。Gemini 3.6 Flash 同样适用。12 月 31 日之前 0.75 / 3.75 的 introductory 价仍有效，免费档继续免费。" }
+    },
+    {
+      "@type": "Question",
+      "name": "2026 年 12 月 1 日之后，Gemini 2.5 Pro 和 2.5 Flash 的 API 调用会怎样？",
+      "acceptedAnswer": { "@type": "Answer", "text": "它们不再服务原模型，而是静默返回另一个模型。自 2026 年 12 月 1 日起，发往 gemini-2.5-pro 的每个 API 请求都会自动路由到 gemini-3.8-flash，并按 3.8 Flash 价格计费；没有中断也没有报错；模型字符串仍然可用，但背后的模型已经换了。Google 建议在该日期之前更新模型字符串并查阅 3.8 Flash 迁移指南，因为存在不兼容变更，包括函数调用、thought_signature 校验，以及 thinking_level 取代 thinking_budget。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Batch 和 Priority 档的涨价幅度一样吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "翻倍比例相同，但基准价不同。以 Gemini 4 Argon 为例，Batch 档是标准档的一半，12 月 1 日输入价从 1.00 美元翻倍到 2.00 美元；Priority 档是标准档的 1.8 倍，输入价从 3.60 美元翻倍到 7.20 美元；在 Vertex AI 上，Argon 的 Batch 档同样按半价计费。所以 Argon 所有档都在 12 月 1 日翻倍，而 Flash 档所有模型都在 2027 年 1 月 1 日翻倍。" }
+    },
+    {
+      "@type": "Question",
+      "name": "我现有的 Gemini 2.5 集成在 2026 年 12 月 1 日会坏掉吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "它仍然能返回结果，但服务的已经不是你以为的那个模型。2.5-pro 和 2.5-flash 端点会自动路由到 3.8-flash 和 3.5-flash-lite，所以针对 2.5 Pro 推理深度调优的提示词，12 月 1 日之后会跑在一个更快、更便宜的 flash 级模型上，而账单也按 flash 档计而不是 2.5 档。由于路由是静默的，唯一的信号是行为或质量的变化。稳妥的做法是在 12 月 1 日之前显式锁定替换模型的字符串，并对照迁移指南做测试。" }
+    }
+  ]
+};
+
+const zhBody = `
+<h1 id="top">Google Gemini API 定价调整：2026 年 12 月完整价格表，每个模型</h1>
+
+<p>Google 为 Gemini API 公布了两轮既定涨价，落在两个不同的日期。第一轮把旗舰 <strong>Gemini 4 Argon</strong> 在 <strong>2026 年 12 月 1 日</strong>翻倍。第二轮把主力档 <strong>3.8 Flash 和 3.6 Flash</strong> 在 <strong>2027 年 1 月 1 日</strong>翻倍。在同一个 12 月日期，已弃用的 <code>gemini-2.5-pro</code> 和 <code>gemini-2.5-flash</code> 端点彻底停止服务原模型，并静默路由到替代品。多数报道只覆盖了 Argon 的数字。这是完整价格表、两个日期，全部于 2026 年 11 月 9 日对照 Google 实时定价与弃用页面核对。</p>
+
+<p>头条是真的：旗舰翻倍对 Google 来说不寻常，它过去两年一直在削减每 token 价格。但 Argon 的翻倍只是更大时间表里的一个格子。理解全貌之所以重要，是因为两轮涨价冲击的是不同的成本中心，而 12 月 1 日的自动路由变更，影响所有仍在向 2.5 模型字符串发送流量的集成。</p>
+
+<h2 id="argon-dec1">第一轮，12 月 1 日：Gemini 4 Argon 翻倍</h2>
+
+<p>Argon 是 Google 的旗舰推理模型，2026 年 10 月 13 日以 introductory 价格向开发者发布。该 introductory 价于 11 月 30 日到期，次日标准档价格翻倍。Argon 完全不提供免费档；它处理的每一个 token 都计费，包括思考 token，以及使用接地时的内部工具系统指令和函数声明。</p>
+
+<table>
+<thead><tr><th>Argon 档位</th><th>输入，现价（每 1M）</th><th>输入，12 月 1 日起</th><th>输出，现价</th><th>输出，12 月 1 日起</th><th>缓存读取，现价</th><th>缓存读取，12 月 1 日</th></tr></thead>
+<tbody>
+<tr><td>Standard</td><td>$2.00</td><td>$4.00</td><td>$10.00</td><td>$20.00</td><td>$0.10</td><td>$0.20</td></tr>
+<tr><td>Batch</td><td>$1.00</td><td>$2.00</td><td>$5.00</td><td>$10.00</td><td>$0.05</td><td>$0.10</td></tr>
+<tr><td>Priority</td><td>$3.60</td><td>$7.20</td><td>$18.00</td><td>$36.00</td><td>$0.18</td><td>$0.36</td></tr>
+</tbody>
+</table>
+
+<p>两个细节容易被忽略。第一，Argon 只用<em>隐式</em>缓存；不支持显式缓存，缓存读取价随其他项目一起翻倍。第二，Batch 档位于标准档的一半，并在同一日期翻倍，因此没有任何折扣路径能逃过这次涨价。如果你以较大流量运行 Argon，锁定 introductory 价的最后一个工作日是 2026 年 11 月 30 日。</p>
+
+<p>关于 Argon 最重要的一点是每个 token 都计费，包括模型内部生成的推理 token。一个长 agentic 任务在回答前可能思考数万 token，仅靠输出 token 就能主导成本。所以对推理密集型工作负载而言，输出价从 10 美元翻倍到 20 美元的实际影响大于输入翻倍。</p>
+
+<h2 id="deprecation">同样在 12 月 1 日：2.5 端点静默切换模型</h2>
+
+<p>同一个日期带来一个容易被忽略的变化，因为它不产生任何报错。Google 于 2026 年 11 月 2 日弃用了 <code>gemini-2.5-pro</code> 和 <code>gemini-2.5-flash</code>，并把两者从 Google AI Studio 的模型选择中移除。自 2026 年 12 月 1 日起，这些 API 端点完全停止服务 2.5 模型：</p>
+
+<ul>
+<li>发往 <code>gemini-2.5-pro</code> 的每个请求自动路由到 <code>gemini-3.8-flash</code>，并按 3.8 Flash 价格计费。</li>
+<li>发往 <code>gemini-2.5-flash</code> 的每个请求自动路由到 <code>gemini-3.5-flash-lite</code>，并按 3.5 Flash-Lite 价格计费。</li>
+</ul>
+
+<p>路由是静默的。你的代码继续工作，模型字符串继续解析，但背后的模型从前沿级 Pro 换成了更快的 flash 级模型，账单也随之改变。这有两点重要。针对 2.5 Pro 推理深度调优的提示词链，12 月 1 日之后会跑在一个不同的模型上；而且由于切换在响应中不可见，唯一的信号是行为或成本的变化。Google 建议在截止日期前更新模型字符串并查阅迁移指南，因为 3.8 Flash 带有不兼容变更，包括函数调用行为、<code>thought_signature</code> 校验，以及 <code>thinking_level</code> 取代 <code>thinking_budget</code>。</p>
+
+<p>如果你在多家提供商前挂了网关，现在是时候用变更后的 Gemini 价格重新测量同一提示词，并与同等的 Claude、GPT 和开源权重选项对比，因为旗舰一次 2 倍变动会重置整个比较。FreeModel 在多家提供商前暴露一个 OpenAI 兼容端点，让你可以把一个集成指向不同的模型 ID，并排测量相同的提示词和推理设置；Portkey 则加上可观测性和缓存层，让这种对比可复现而不是凭感觉。</p>
+
+<h2 id="flash-jan1">第二轮，2027 年 1 月 1 日：Flash 档翻倍</h2>
+
+<p>3.8 Flash 和 3.6 Flash 的 introductory 价于 2026 年 12 月 31 日到期，按量付费价格在 2027 年 1 月 1 日翻倍。这些模型在免费档仍然免费；变化只影响付费档使用。</p>
+
+<table>
+<thead><tr><th>模型</th><th>输入，现价</th><th>输入，2027 年 1 月 1 日起</th><th>输出，现价</th><th>输出，1 月 1 日起</th><th>缓存读取，现价</th><th>缓存读取，1 月 1 日</th><th>存储，现价（每 1M/小时）</th><th>存储，1 月 1 日</th></tr></thead>
+<tbody>
+<tr><td>3.8 Flash</td><td>$0.75</td><td>$1.50</td><td>$3.75</td><td>$7.50</td><td>$0.075</td><td>$0.15</td><td>$0.50</td><td>$1.00</td></tr>
+<tr><td>3.6 Flash</td><td>$0.75</td><td>$1.50</td><td>$3.75</td><td>$7.50</td><td>$0.075</td><td>$0.15</td><td>$0.50</td><td>$1.00</td></tr>
+</tbody>
+</table>
+
+<p>这里有两条独立的成本线翻倍，值得分开看。<em>缓存读取</em>价是当提示词前缀从缓存命中而不是被重新处理时你付的钱。<em>存储</em>价是 Gemini 定价页上一个独立的行项目，是你为让缓存上下文保持热乎而按小时付的钱，它从每小时每百万 token 0.50 美元翻倍到 1.00 美元。如果你让大上下文全天候钉在缓存里，在大流量下存储这一项可能和 token 项相当，而它也在同一日期翻倍。</p>
+
+<p>Gemini 3.8 TTS 和 3.8 Flash-Lite TTS 模型在同一 1 月日期翻倍。3.8 TTS 的文本输入价从 0.50 美元涨到 1.00 美元，音频输出价从 9.00 美元涨到 18.00 美元每百万 token；Lite 变体从 0.50 美元涨到 1.00 美元文本输入，6.00 美元涨到 12.00 美元音频输出。</p>
+
+<h2 id="unaffected">什么不变</h2>
+
+<p>不是每个 Gemini 模型都在涨。3.5 Flash-Lite、3.1 Flash-Lite、3.1 Pro Preview 和 Gemini Embedding 2 的价格不变。2.5 Flash-Lite 模型明确未弃用，仍通过 API 提供。Gemini 2.0 Flash 和 2.0 Flash-Lite 旧端点按现有费率继续，直到它们先前公布的关停日期。对于想在两个涨价日期之后维持现价的团队，3.5 Flash-Lite 以 0.30 美元输入和 2.50 美元输出，是付费档最便宜的未变动通用选项。</p>
+
+<h2 id="what-to-do">每个截止日期之前该做什么</h2>
+
+<p>在 <strong>2026 年 11 月 30 日</strong>之前，决定是否要在 introductory 价下前置任何 Argon 工作负载，并确认没有任何生产流量仍依赖 2.5 模型字符串。在 <strong>2026 年 12 月 31 日</strong>之前，为任何假设 0.75/3.75 费率会持续的 3.8 Flash 或 3.6 Flash 工作负载重新做成本测算，并把翻倍的缓存存储线计入任何长上下文缓存预算。如果量承或预留吞吐协议在谈，年末是谈判的自然时点，因为翻倍的是目录价。</p>
+
+<h2 id="verdict">结论</h2>
+
+<p>这些是既定的 introductory 到期，不是突发涨价，且只适用于一小撮模型。Argon 的翻倍是最显眼的，因为它是旗舰，但运行上更重大的变化是 12 月 1 日的静默自动路由，因为它在不动一行集成代码的情况下，改变了实际服务生产流量的模型。受伤害的团队是那些不知道自己还挂在 2.5 字符串上的；获益的团队是那些读了弃用页面、锁定替换模型、并在新费率生效前对照其他提供商重新测算成本的。</p>
+
+<p><strong>资料来源：</strong>Google AI for Developers，Gemini API 定价页（2026 年 11 月 9 日核对）；Gemini API 弃用页（2026 年 11 月 9 日核对）；Gemini API 更新日志（2026 年 11 月 9 日核对）；Gemini API 模型参考文档，含 Gemini 4 Argon、Gemini 3.8 Flash、Gemini 3.5 Flash-Lite（2026 年 11 月 9 日核对）。</p>
+
+<p class="text-sm text-gray-500 mt-6"><strong>披露：</strong>APIRank 是独立的比较网站。本文定价数据已于 2026-11-09 对照 Google 官方 Gemini API 文档核对。你通过本页链接注册时我们可能获得联盟佣金，不会额外增加你的费用。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>
