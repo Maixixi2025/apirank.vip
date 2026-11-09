@@ -1,10 +1,17 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import providers from '../../../data/providers.json';
+import freeTokens from '../../../data/free-tokens.json';
 import { t } from '../../../i18n/utils';
 
 const locale = 'zh';
 const sortedProviders = [...providers].sort((a, b) => a.overallRank - b.overallRank);
+
+// How many of the providers listed on this page also hand out free API credit.
+const freeCreditProviderIds = new Set(
+  freeTokens.programs.map((p) => p.providerId).filter((id): id is string => Boolean(id))
+);
+const freeCredits = providers.filter((p) => freeCreditProviderIds.has(p.id));
 ---
 
 <BaseLayout
@@ -26,6 +33,23 @@ const sortedProviders = [...providers].sort((a, b) => a.overallRank - b.overallR
       <h1 class="text-3xl font-bold text-gray-900 mb-3">{t(locale, 'providers.title')}</h1>
       <p class="text-gray-600">{t(locale, 'providers.subtitle')}</p>
     </div>
+
+    <!-- 免费额度 cross-link -->
+    <a
+      href="/zh/free-tokens"
+      class="block mb-10 bg-emerald-50 border border-emerald-200 rounded-xl p-5 hover:border-emerald-400 hover:shadow-sm transition-all"
+    >
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-semibold text-gray-900">🎁 还在找免费额度？</h2>
+          <p class="text-sm text-gray-600 mt-1">
+            上面 {freeCredits.length} 家厂商都提供能直接花在 API 调用上的免费额度——每天给的、每月给的、新人一次性
+            送的都有，每条都对着厂商自己的页面核过。
+          </p>
+        </div>
+        <span class="btn-primary shrink-0">看免费额度 →</span>
+      </div>
+    </a>
 
     <!-- Full Comparison Table -->
     <div class="mb-12 overflow-x-auto">

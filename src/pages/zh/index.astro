@@ -1,9 +1,16 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import providers from '../../data/providers.json';
+import freeTokens from '../../data/free-tokens.json';
 import { t } from '../../i18n/utils';
 
 const locale = 'zh';
+
+// Three headline free-credit programs for the homepage section.
+const freeCredits = freeTokens.programs
+  .filter((p) => p.valueCny != null)
+  .sort((a, b) => (b.valueCny ?? 0) - (a.valueCny ?? 0))
+  .slice(0, 3);
 
 // Sort by overall rank
 const sortedProviders = [...providers].sort((a, b) => a.overallRank - b.overallRank);
@@ -66,6 +73,9 @@ const faqJsonLd = {
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
           <a href="#providers" class="btn-primary text-lg py-3 px-8">
             {t(locale, 'home.hero.ctaCompare')}
+          </a>
+          <a href="/zh/free-tokens" class="btn-secondary text-lg py-3 px-8">
+            免费额度
           </a>
           <a href="/zh/tutorials" class="btn-secondary text-lg py-3 px-8">
             {t(locale, 'home.hero.ctaTutorials')}
@@ -331,6 +341,37 @@ const faqJsonLd = {
           <p class="mt-3 text-gray-600 leading-relaxed" set:html={t(locale, 'home.faq.a4')} />
         </details>
       </div>
+    </div>
+  </section>
+
+  <!-- 免费额度 Section -->
+  <section class="py-12 bg-emerald-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">🎁 免费 API 额度</h2>
+          <p class="text-gray-600 mt-1">
+            {freeCredits.length} 个能真正花在 API 调用上的免费额度，每条都对着厂商官方页面核过
+          </p>
+        </div>
+        <a href="/zh/free-tokens" class="text-blue-600 hover:text-blue-700 font-medium hidden sm:inline">查看全部 →</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {freeCredits.map((p) => (
+          <a
+            href="/zh/free-tokens"
+            class="block bg-white rounded-xl border border-gray-200 p-5 hover:border-emerald-300 hover:shadow-md transition-all"
+          >
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="font-semibold text-gray-900">{p.providerCn}</span>
+              <span class="badge badge-success shrink-0">{p.cadence === 'daily' ? '每天' : p.cadence === 'monthly' ? '每月' : '一次性'}</span>
+            </div>
+            <p class="text-sm text-blue-700 font-medium mb-2">{p.amountCn}</p>
+            <p class="text-xs text-gray-500 leading-relaxed">{p.validityCn}</p>
+          </a>
+        ))}
+      </div>
+      <a href="/zh/free-tokens" class="btn-secondary inline-block mt-6 sm:hidden">查看全部免费额度 →</a>
     </div>
   </section>
 

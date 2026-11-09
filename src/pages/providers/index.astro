@@ -1,8 +1,15 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import providers from '../../data/providers.json';
+import freeTokens from '../../data/free-tokens.json';
 
 const sortedProviders = [...providers].sort((a, b) => a.overallRank - b.overallRank);
+
+// How many of the providers listed on this page also hand out free API credit.
+const freeCreditProviderIds = new Set(
+  freeTokens.programs.map((p) => p.providerId).filter((id): id is string => Boolean(id))
+);
+const freeCredits = providers.filter((p) => freeCreditProviderIds.has(p.id));
 ---
 
 <BaseLayout
@@ -24,6 +31,23 @@ const sortedProviders = [...providers].sort((a, b) => a.overallRank - b.overallR
       <h1 class="text-3xl font-bold text-gray-900 mb-3">AI API Providers</h1>
       <p class="text-gray-600">Compare pricing, models, and features across all major AI API providers</p>
     </div>
+
+    <!-- Free credits cross-link -->
+    <a
+      href="/free-tokens"
+      class="block mb-10 bg-emerald-50 border border-emerald-200 rounded-xl p-5 hover:border-emerald-400 hover:shadow-sm transition-all"
+    >
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-semibold text-gray-900">🎁 Looking for free API credits first?</h2>
+          <p class="text-sm text-gray-600 mt-1">
+            {freeCredits.length} providers above hand out free credit you can spend on real API calls — daily
+            allowances, monthly grants and one-time signup bonuses, each verified against the vendor's own page.
+          </p>
+        </div>
+        <span class="btn-primary shrink-0">See free credits →</span>
+      </div>
+    </a>
 
     <div class="mb-12 overflow-x-auto">
       <table class="table-token bg-white rounded-xl overflow-hidden shadow-sm">

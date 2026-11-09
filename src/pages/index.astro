@@ -1,8 +1,15 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import providers from '../data/providers.json';
+import freeTokens from '../data/free-tokens.json';
 
 const locale = 'en';
+
+// Three headline free-credit programs for the homepage section.
+const freeCredits = freeTokens.programs
+  .filter((p) => p.valueCny != null)
+  .sort((a, b) => (b.valueCny ?? 0) - (a.valueCny ?? 0))
+  .slice(0, 3);
 
 // Categorize providers by China-access status for global-first ordering.
 // audience: primarily GLOBAL users (Jazfox 2026-08-01).
@@ -91,6 +98,7 @@ const faqJsonLd = {
         </p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
           <a href="#providers" data-track="home_hero_compare" class="btn-primary text-lg py-3 px-8">View Price Comparison →</a>
+          <a href="/free-tokens" data-track="home_hero_free_tokens" class="btn-secondary text-lg py-3 px-8">Free API Credits →</a>
           <a href="/tutorials" data-track="home_hero_tutorials" class="btn-secondary text-lg py-3 px-8">Getting Started →</a>
         </div>
       </div>
@@ -399,6 +407,38 @@ const faqJsonLd = {
           <p class="mt-3 text-gray-600 leading-relaxed">Google AI (Gemini 2.0 / 2.5 Flash) offers the most generous free quota. OpenAI Playground gives small credits for evaluation. DeepSeek historically gives a signup bonus for new users. For local/private use, Ollama and Chroma run entirely on your own hardware with no API cost.</p>
         </details>
       </div>
+    </div>
+  </section>
+
+  <!-- Free API Credits Section -->
+  <section class="py-12 bg-emerald-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900">🎁 Free API Credits</h2>
+          <p class="text-gray-600 mt-1">
+            {freeCredits.length} free-credit programs you can spend on real API calls — each verified against the
+            provider's own page
+          </p>
+        </div>
+        <a href="/free-tokens" class="text-blue-600 hover:text-blue-700 font-medium hidden sm:inline">See all →</a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {freeCredits.map((p) => (
+          <a
+            href="/free-tokens"
+            class="block bg-white rounded-xl border border-gray-200 p-5 hover:border-emerald-300 hover:shadow-md transition-all"
+          >
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <span class="font-semibold text-gray-900">{p.provider}</span>
+              <span class="badge badge-success shrink-0">{p.cadence === 'daily' ? 'Daily' : p.cadence === 'monthly' ? 'Monthly' : 'One-time'}</span>
+            </div>
+            <p class="text-sm text-blue-700 font-medium mb-2">{p.amount}</p>
+            <p class="text-xs text-gray-500 leading-relaxed">{p.validity}</p>
+          </a>
+        ))}
+      </div>
+      <a href="/free-tokens" class="btn-secondary inline-block mt-6 sm:hidden">See all free credits →</a>
     </div>
   </section>
 

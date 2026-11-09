@@ -1,0 +1,365 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import freeTokens from '../../data/free-tokens.json';
+import providers from '../../data/providers.json';
+
+const locale = 'zh';
+
+const CADENCE_ORDER = ['daily', 'monthly', 'one-time', 'limited', 'ongoing'] as const;
+
+const CADENCE_LABEL: Record<string, string> = {
+  daily: '每天都能领',
+  monthly: '每月都能领',
+  'one-time': '新人一次性',
+  limited: '限时免费',
+  ongoing: '长期免费',
+};
+
+const CADENCE_BADGE: Record<string, string> = {
+  daily: 'badge-success',
+  monthly: 'badge-success',
+  'one-time': 'badge-warning',
+  limited: 'badge-danger',
+  ongoing: 'bg-blue-100 text-blue-800',
+};
+
+const programs = freeTokens.programs;
+
+const grouped = CADENCE_ORDER
+  .map((cadence) => ({
+    cadence,
+    label: CADENCE_LABEL[cadence],
+    badge: CADENCE_BADGE[cadence],
+    items: programs
+      .filter((p) => p.cadence === cadence)
+      .sort((a, b) => (b.valueCny ?? 0) - (a.valueCny ?? 0)),
+  }))
+  .filter((g) => g.items.length > 0);
+
+// Lookup apirank provider pages so each card can link into our own review.
+const providerById = new Map(providers.map((p) => [p.id, p]));
+
+// Highest single monthly credit, for the summary stat.
+const biggestMonthly = programs
+  .filter((p) => p.cadence === 'monthly')
+  .sort((a, b) => (b.valueCny ?? 0) - (a.valueCny ?? 0))[0];
+
+const studentProgram = programs.find((p) => p.id === 'aliyun-student-300');
+const dailyProgram = programs.find((p) => p.id === 'cloudflare-workers-ai-free');
+
+const title = '免费 AI API 额度：22 个可真实调用的免费额度 | APIRank';
+const description =
+  '所有能找到的免费 AI API 额度，每一条都对着厂商官方页面核过。额度多少、有效期多久、有什么门槛、折合多少钱，全部写清楚，并附上原始出处。';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: '免费 AI API 额度与 Token 补贴',
+  description,
+  numberOfItems: programs.length,
+  dateModified: freeTokens.lastVerified,
+  itemListElement: programs.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: `${p.providerCn} — ${p.amountCn}`,
+    url: `https://apirank.vip/zh/free-tokens#${p.id}`,
+  })),
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: 'https://apirank.vip/zh' },
+    { '@type': 'ListItem', position: 2, name: '免费 API 额度', item: 'https://apirank.vip/zh/free-tokens' },
+  ],
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: '哪家 AI API 给的免费额度最多？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Rime 每月送 50 美元语音模型额度（约合 ¥334），是我们找到的最大的按月额度。一次性额度里，阿里云百炼的在读学生计划给认证学生和教师 300 元抵扣金。Cloudflare Workers AI 每天给 10,000 Neurons，如果你要的是可以反复领取的日常额度，这个最合适。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '这些免费额度能直接调 API 吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '能。这个页面上的每一条额度，都是花在 HTTP API 调用上的，不是网页版聊天的次数。我们特意排除了那些只能在桌面客户端或网页 UI 里消耗的额度，所以不存在"领了却用不掉"的情况。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '这些免费额度的数据是怎么核实的？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '每一条都对着厂商自己的定价页、额度说明页或活动页核过，每张卡片都链回那个原始页面。厂商没公开具体数字的，我们就把金额留空，不猜。按 Token 发放的额度，折算成人民币时用的是厂商自己公布的模型官方价。',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: '免费 API 额度会过期吗？',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: '基本都会。多数是从领取那一刻起算的固定窗口——超算互联网 30 天、阿里云百炼 90 天、硅基流动 180 天、腾讯云 TokenHub 一年。按天发放的额度是重置而不是累积，过一天不领就没了。',
+      },
+    },
+  ],
+};
+---
+
+<BaseLayout title={title} description={description} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <!-- Breadcrumb -->
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/zh" class="hover:text-blue-600">首页</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">免费 API 额度</span>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-emerald-50 via-white to-blue-50 py-12 sm:py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+        免费 AI API 额度，逐条对着厂商官方页面核过
+      </h1>
+      <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+        {programs.length} 个能真正花在 API 调用上的免费额度——不含只能在客户端里用的那种，也不含只能玩网页
+        试用的那种。额度多少、有效期多久、有什么门槛，都来自厂商自己的定价页或额度说明页，每张卡片都链回
+        原始出处。
+      </p>
+      <div class="flex flex-wrap justify-center gap-3 mb-6">
+        <a href="#programs" class="btn-primary">查看全部 {programs.length} 个额度</a>
+        <a href="/zh/calculator" class="btn-secondary">算算真实用量要多少钱 →</a>
+      </div>
+      <p class="text-sm text-gray-500">
+        最后核实于 {freeTokens.lastVerifiedZh}。美元按 {freeTokens.fx.usdCny.toFixed(4)} 人民币汇率折算（汇率日期
+        {freeTokens.fx.rateDate}）。
+      </p>
+    </div>
+  </section>
+
+  <!-- Quick stats -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="card p-5">
+        <div class="text-2xl font-bold text-gray-900 mb-1">{programs.length}</div>
+        <div class="text-sm text-gray-600">个能直接调 API 的免费额度</div>
+      </div>
+      <div class="card p-5">
+        <div class="text-2xl font-bold text-gray-900 mb-1">
+          {biggestMonthly ? `¥${Math.round(biggestMonthly.valueCny ?? 0)}` : '—'}
+        </div>
+        <div class="text-sm text-gray-600">最大的按月额度</div>
+      </div>
+      <div class="card p-5">
+        <div class="text-2xl font-bold text-gray-900 mb-1">
+          {studentProgram ? `¥${studentProgram.valueCny}` : '—'}
+        </div>
+        <div class="text-sm text-gray-600">最大一次性额度（学生）</div>
+      </div>
+      <div class="card p-5">
+        <div class="text-2xl font-bold text-gray-900 mb-1">
+          {dailyProgram ? '10,000' : '—'}
+        </div>
+        <div class="text-sm text-gray-600">最好的每日额度（Neurons）</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Methodology -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+    <div class="card p-6 bg-blue-50 border-blue-200">
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">我们的核实方式</h2>
+      <ul class="space-y-2 text-sm text-gray-700 list-disc pl-5">
+        <li>每一条都对着厂商自己的定价页、额度说明页或活动页确认过，卡片上直接链回那个页面。</li>
+        <li>
+          额度<strong>只能在桌面客户端或网页聊天界面里消耗</strong>的项目一律不收录——这里的每一条都能花在 API
+          调用上。
+        </li>
+        <li>厂商没有公开具体数字的，金额一律留空，不做估算。</li>
+        <li>{freeTokens.basis.note}</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Programs -->
+  <div id="programs" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+    {grouped.map((group) => (
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">{group.label}</h2>
+        <p class="text-gray-600 mb-5 text-sm">
+          共 {group.items.length} 个
+        </p>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {group.items.map((p) => {
+            const linked = p.providerId ? providerById.get(p.providerId) : undefined;
+            return (
+              <article id={p.id} class="card p-6 flex flex-col gap-3 scroll-mt-20">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 class="text-lg font-semibold text-gray-900">{p.providerCn}</h3>
+                    <p class="text-sm font-medium text-blue-700 mt-0.5">{p.amountCn}</p>
+                  </div>
+                  <span class={`badge ${group.badge} shrink-0`}>{group.label}</span>
+                </div>
+
+                <p class="text-sm text-gray-600 leading-relaxed">{p.summaryCn}</p>
+
+                <dl class="text-sm space-y-2">
+                  <div class="flex gap-2">
+                    <dt class="text-gray-500 shrink-0 w-20">有效期</dt>
+                    <dd class="text-gray-700">{p.validityCn}</dd>
+                  </div>
+                  {p.valueCny != null && (
+                    <div class="flex gap-2">
+                      <dt class="text-gray-500 shrink-0 w-20">折合</dt>
+                      <dd class="text-gray-700 font-medium">
+                        ≈¥{p.valueCny}
+                        {p.valueUsd != null && <span class="text-gray-500 font-normal">（${p.valueUsd}）</span>}
+                      </dd>
+                    </div>
+                  )}
+                  {p.models.length > 0 && (
+                    <div class="flex gap-2">
+                      <dt class="text-gray-500 shrink-0 w-20">适用模型</dt>
+                      <dd class="text-gray-700">{p.models.join('、')}</dd>
+                    </div>
+                  )}
+                </dl>
+
+                {p.conditionsCn.length > 0 && (
+                  <div class="flex flex-wrap gap-1.5">
+                    {p.conditionsCn.map((c) => (
+                      <span class="badge bg-gray-100 text-gray-700">{c}</span>
+                    ))}
+                  </div>
+                )}
+
+                <div class="mt-auto pt-2 flex flex-wrap items-center gap-3 border-t border-gray-100">
+                  <a
+                    href={p.sourceUrl}
+                    target="_blank"
+                    rel="noopener"
+                    class="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    官方出处 ↗
+                  </a>
+                  {linked && (
+                    <a href={`/zh/providers/${linked.id}`} class="text-sm text-gray-500 hover:text-gray-700">
+                      看我们的 {linked.nameCn} 评测 →
+                    </a>
+                  )}
+                  <span class="text-xs text-gray-400 ml-auto">核实于 {p.verifiedOn}</span>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <!-- Comparison table -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-16">
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">全部额度一览</h2>
+    <p class="text-gray-600 mb-5 text-sm">
+      按发放节奏排序，同类按人民币金额排序。显示为「—」表示厂商没有公开固定额度。
+    </p>
+    <div class="overflow-x-auto">
+      <table class="table-token bg-white rounded-xl overflow-hidden shadow-sm">
+        <thead>
+          <tr class="bg-gray-50">
+            <th>厂商</th>
+            <th>节奏</th>
+            <th>额度</th>
+            <th>折合</th>
+            <th>有效期</th>
+            <th>核实</th>
+          </tr>
+        </thead>
+        <tbody>
+          {grouped.flatMap((g) => g.items).map((p) => (
+            <tr>
+              <td class="font-semibold text-gray-900">
+                <a href={`#${p.id}`} class="hover:text-blue-600">{p.providerCn}</a>
+              </td>
+              <td>
+                <span class={`badge ${CADENCE_BADGE[p.cadence]}`}>{CADENCE_LABEL[p.cadence]}</span>
+              </td>
+              <td class="text-gray-700">{p.amountCn}</td>
+              <td class="font-mono">{p.valueCny != null ? `¥${p.valueCny}` : '—'}</td>
+              <td class="text-gray-600 text-xs">{p.validityCn}</td>
+              <td class="text-gray-500 text-xs whitespace-nowrap">{p.verifiedOn}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">常见问题</h2>
+    <div class="space-y-6">
+      <div>
+        <h3 class="font-semibold text-gray-900 mb-2">哪家 AI API 给的免费额度最多？</h3>
+        <p class="text-gray-700">
+          Rime 每月送 50 美元语音模型额度（约合 ¥334），是我们找到的最大的按月额度。一次性额度里，阿里云百炼的在读
+          学生计划给认证学生和教师 300 元抵扣金。Cloudflare Workers AI 每天给 10,000 Neurons，如果你要的是可以反复
+          领取的日常额度，这个最合适。
+        </p>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-900 mb-2">这些免费额度能直接调 API 吗？</h3>
+        <p class="text-gray-700">
+          能。这个页面上的每一条额度，都是花在 HTTP API 调用上的，不是网页版聊天的次数。我们特意排除了那些只能在桌面
+          客户端或网页 UI 里消耗的额度，所以不存在「领了却用不掉」的情况。
+        </p>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-900 mb-2">这些免费额度的数据是怎么核实的？</h3>
+        <p class="text-gray-700">
+          每一条都对着厂商自己的定价页、额度说明页或活动页核过，每张卡片都链回那个原始页面。厂商没公开具体数字的，
+          我们就把金额留空，不猜。按 Token 发放的额度，折算成人民币时用的是厂商自己公布的模型官方价。
+        </p>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-900 mb-2">免费 API 额度会过期吗？</h3>
+        <p class="text-gray-700">
+          基本都会。多数是从领取那一刻起算的固定窗口——超算互联网 30 天、阿里云百炼 90 天、硅基流动 180 天、腾讯云
+          TokenHub 一年。按天发放的额度是重置而不是累积，过一天不领就没了。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="card p-8 text-center bg-gray-50">
+      <h2 class="text-2xl font-bold text-gray-900 mb-3">免费额度只够试水</h2>
+      <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+        知道一笔额度值多少钱之后，再算算真实用量要花多少。我们的成本计算器按 Token 单价横向对比所有厂商，
+        你能看到免费余额到底能跑多少次调用。
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/zh/calculator" class="btn-primary">打开成本计算器</a>
+        <a href="/zh/providers" class="btn-secondary">浏览全部厂商</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

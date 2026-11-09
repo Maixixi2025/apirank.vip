@@ -1,0 +1,377 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import freeTokens from '../data/free-tokens.json';
+import providers from '../data/providers.json';
+
+const locale = 'en';
+
+const CADENCE_ORDER = ['daily', 'monthly', 'one-time', 'limited', 'ongoing'] as const;
+
+const CADENCE_LABEL: Record<string, string> = {
+  daily: 'Every day',
+  monthly: 'Every month',
+  'one-time': 'One-time signup',
+  limited: 'Limited time',
+  ongoing: 'Ongoing',
+};
+
+const CADENCE_BADGE: Record<string, string> = {
+  daily: 'badge-success',
+  monthly: 'badge-success',
+  'one-time': 'badge-warning',
+  limited: 'badge-danger',
+  ongoing: 'bg-blue-100 text-blue-800',
+};
+
+const programs = freeTokens.programs;
+
+const grouped = CADENCE_ORDER
+  .map((cadence) => ({
+    cadence,
+    label: CADENCE_LABEL[cadence],
+    badge: CADENCE_BADGE[cadence],
+    items: programs
+      .filter((p) => p.cadence === cadence)
+      .sort((a, b) => (b.valueCny ?? 0) - (a.valueCny ?? 0)),
+  }))
+  .filter((g) => g.items.length > 0);
+
+// Lookup apirank provider pages so each row can link into our own review.
+const providerById = new Map(providers.map((p) => [p.id, p]));
+
+// Highest single monthly credit, for the summary stat.
+const biggestMonthly = programs
+  .filter((p) => p.cadence === 'monthly')
+  .sort((a, b) => (b.valueCny ?? 0) - (a.valueCny ?? 0))[0];
+
+const studentProgram = programs.find((p) => p.id === 'aliyun-student-300');
+const dailyProgram = programs.find((p) => p.id === 'cloudflare-workers-ai-free');
+
+const title = 'Free AI API Credits & Free Token Grants — 22 Programs Verified | APIRank';
+const description =
+  'Every free AI API credit program we could verify, checked directly against the vendor\'s own page. Amounts, validity windows, eligibility rules and RMB values, with the source link for each.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Free AI API credits and token grants',
+  description,
+  numberOfItems: programs.length,
+  dateModified: freeTokens.lastVerified,
+  itemListElement: programs.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: `${p.provider} — ${p.amount}`,
+    url: `https://apirank.vip/free-tokens#${p.id}`,
+  })),
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://apirank.vip' },
+    { '@type': 'ListItem', position: 2, name: 'Free API Credits', item: 'https://apirank.vip/free-tokens' },
+  ],
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'Which AI API gives the most free credits?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: `Rime gives $50 of speech-model usage every month (about ¥334), the largest recurring credit we found. For a one-time grant, Alibaba Cloud Bailian's student program gives ¥300 to verified students and teachers. Cloudflare Workers AI gives 10,000 Neurons per day, which is the best free option if you want a recurring allowance rather than a signup bonus.`,
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Are these free credits usable through a real API?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Yes. Every program on this page hands out credit you spend on HTTP API calls, not on a web chat interface. We deliberately excluded programs that are only usable inside a desktop app or website UI, so nothing here requires you to click through a product to use the credit.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'How were these free credit amounts verified?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Each entry was checked against the provider\'s own pricing, quota or campaign page, and every card links to that exact source. Where the provider does not publish a fixed number, we left the value blank instead of guessing. Token-denominated grants are converted to RMB using the provider\'s own list price for the models the credit covers.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do free API credits expire?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Almost always. Most are valid for a window measured from the moment of claiming — 30 days for SCNet, 90 days for Alibaba Cloud Bailian, 180 days for SiliconFlow, one year for Tencent Cloud TokenHub. Daily allowances reset rather than accumulate, so a missed day is simply gone.',
+      },
+    },
+  ],
+};
+---
+
+<BaseLayout title={title} description={description} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+
+  <!-- Breadcrumb -->
+  <div class="bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="/" class="hover:text-blue-600">Home</a>
+        <span>›</span>
+        <span class="text-gray-900 font-medium">Free API Credits</span>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-emerald-50 via-white to-blue-50 py-12 sm:py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+        Free AI API Credits, Checked Against the Vendor's Own Page
+      </h1>
+      <p class="text-lg text-gray-600 mb-6 leading-relaxed">
+        {programs.length} free-credit programs you can spend on real API calls — no app-only allowances, no
+        playground-only tokens. Amount, validity and eligibility come from the provider's own pricing or quota
+        page, and every card links straight to that source.
+      </p>
+      <div class="flex flex-wrap justify-center gap-3 mb-6">
+        <a href="#programs" class="btn-primary">See all {programs.length} programs</a>
+        <a href="/calculator" class="btn-secondary">Price your actual usage →</a>
+      </div>
+      <p class="text-sm text-gray-500">
+        Last checked {freeTokens.lastVerifiedDisplay}. USD converted at {freeTokens.fx.usdCny.toFixed(4)} CNY
+        (rate dated {freeTokens.fx.rateDate}).
+      </p>
+    </div>
+  </section>
+
+  <!-- Quick stats -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="card p-5">
+        <div class="text-2xl font-bold text-gray-900 mb-1">{programs.length}</div>
+        <div class="text-sm text-gray-600">API-usable free credit programs</div>
+      </div>
+      <div class="card p-5">
+        <div class="text-2xl font-bold text-gray-900 mb-1">
+          {biggestMonthly ? `¥${Math.round(biggestMonthly.valueCny ?? 0)}` : '—'}
+        </div>
+        <div class="text-sm text-gray-600">Largest recurring monthly grant</div>
+      </div>
+      <div class="card p-5">
+        <div class="text-2xl font-bold text-gray-900 mb-1">
+          {studentProgram ? `¥${studentProgram.valueCny}` : '—'}
+        </div>
+        <div class="text-sm text-gray-600">Biggest one-time grant (students)</div>
+      </div>
+      <div class="card p-5">
+        <div class="text-2xl font-bold text-gray-900 mb-1">
+          {dailyProgram ? '10,000' : '—'}
+        </div>
+        <div class="text-sm text-gray-600">Best daily allowance (Neurons)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Methodology -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+    <div class="card p-6 bg-blue-50 border-blue-200">
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">How we verified these</h2>
+      <ul class="space-y-2 text-sm text-gray-700 list-disc pl-5">
+        <li>
+          Every entry was confirmed by reading the provider's own pricing, quota or campaign page. We link to that
+          exact page on every card.
+        </li>
+        <li>
+          Programs whose credit can only be spent inside a desktop app or a website chat UI are
+          <strong>excluded</strong>. Everything here is spendable on API calls.
+        </li>
+        <li>
+          Where a provider does not publish a fixed amount, the RMB figure is left blank rather than estimated.
+        </li>
+        <li>
+          {freeTokens.basis.note}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Programs -->
+  <div id="programs" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+    {grouped.map((group) => (
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">{group.label}</h2>
+        <p class="text-gray-600 mb-5 text-sm">
+          {group.items.length} {group.items.length === 1 ? 'program' : 'programs'}
+        </p>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {group.items.map((p) => {
+            const linked = p.providerId ? providerById.get(p.providerId) : undefined;
+            return (
+              <article id={p.id} class="card p-6 flex flex-col gap-3 scroll-mt-20">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 class="text-lg font-semibold text-gray-900">{p.provider}</h3>
+                    <p class="text-sm font-medium text-blue-700 mt-0.5">{p.amount}</p>
+                  </div>
+                  <span class={`badge ${group.badge} shrink-0`}>{group.label}</span>
+                </div>
+
+                <p class="text-sm text-gray-600 leading-relaxed">{p.summary}</p>
+
+                <dl class="text-sm space-y-2">
+                  <div class="flex gap-2">
+                    <dt class="text-gray-500 shrink-0 w-24">Validity</dt>
+                    <dd class="text-gray-700">{p.validity}</dd>
+                  </div>
+                  {p.valueCny != null && (
+                    <div class="flex gap-2">
+                      <dt class="text-gray-500 shrink-0 w-24">Worth</dt>
+                      <dd class="text-gray-700 font-medium">
+                        ≈¥{p.valueCny}
+                        {p.valueUsd != null && <span class="text-gray-500 font-normal"> (${p.valueUsd})</span>}
+                      </dd>
+                    </div>
+                  )}
+                  {p.models.length > 0 && (
+                    <div class="flex gap-2">
+                      <dt class="text-gray-500 shrink-0 w-24">Models</dt>
+                      <dd class="text-gray-700">{p.models.join(', ')}</dd>
+                    </div>
+                  )}
+                </dl>
+
+                {p.conditions.length > 0 && (
+                  <div class="flex flex-wrap gap-1.5">
+                    {p.conditions.map((c) => (
+                      <span class="badge bg-gray-100 text-gray-700">{c}</span>
+                    ))}
+                  </div>
+                )}
+
+                <div class="mt-auto pt-2 flex flex-wrap items-center gap-3 border-t border-gray-100">
+                  <a
+                    href={p.sourceUrl}
+                    target="_blank"
+                    rel="noopener"
+                    class="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                  >
+                    Official source ↗
+                  </a>
+                  {linked && (
+                    <a href={`/providers/${linked.id}`} class="text-sm text-gray-500 hover:text-gray-700">
+                      Our {linked.name} review →
+                    </a>
+                  )}
+                  <span class="text-xs text-gray-400 ml-auto">Checked {p.verifiedOn}</span>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <!-- Comparison table -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-16">
+    <h2 class="text-2xl font-bold text-gray-900 mb-2">All programs at a glance</h2>
+    <p class="text-gray-600 mb-5 text-sm">
+      Sorted by cadence, then by RMB value. A dash means the provider does not publish a fixed amount.
+    </p>
+    <div class="overflow-x-auto">
+      <table class="table-token bg-white rounded-xl overflow-hidden shadow-sm">
+        <thead>
+          <tr class="bg-gray-50">
+            <th>Provider</th>
+            <th>Cadence</th>
+            <th>Amount</th>
+            <th>≈ RMB</th>
+            <th>Validity</th>
+            <th>Verified</th>
+          </tr>
+        </thead>
+        <tbody>
+          {grouped.flatMap((g) => g.items).map((p) => (
+            <tr>
+              <td class="font-semibold text-gray-900">
+                <a href={`#${p.id}`} class="hover:text-blue-600">{p.provider}</a>
+              </td>
+              <td>
+                <span class={`badge ${CADENCE_BADGE[p.cadence]}`}>{CADENCE_LABEL[p.cadence]}</span>
+              </td>
+              <td class="text-gray-700">{p.amount}</td>
+              <td class="font-mono">{p.valueCny != null ? `¥${p.valueCny}` : '—'}</td>
+              <td class="text-gray-600 text-xs">{p.validity}</td>
+              <td class="text-gray-500 text-xs whitespace-nowrap">{p.verifiedOn}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Questions</h2>
+    <div class="space-y-6">
+      <div>
+        <h3 class="font-semibold text-gray-900 mb-2">Which AI API gives the most free credits?</h3>
+        <p class="text-gray-700">
+          Rime gives $50 of speech-model usage every month (about ¥334), the largest recurring credit we found.
+          For a one-time grant, Alibaba Cloud Bailian's student program gives ¥300 to verified students and
+          teachers. Cloudflare Workers AI gives 10,000 Neurons per day, which is the best free option if you
+          want a recurring allowance rather than a signup bonus.
+        </p>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-900 mb-2">Are these free credits usable through a real API?</h3>
+        <p class="text-gray-700">
+          Yes. Every program on this page hands out credit you spend on HTTP API calls, not on a web chat
+          interface. We deliberately excluded programs that are only usable inside a desktop app or website UI,
+          so nothing here requires you to click through a product to use the credit.
+        </p>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-900 mb-2">How were these free credit amounts verified?</h3>
+        <p class="text-gray-700">
+          Each entry was checked against the provider's own pricing, quota or campaign page, and every card links
+          to that exact source. Where the provider does not publish a fixed number, we left the value blank
+          instead of guessing. Token-denominated grants are converted to RMB using the provider's own list price
+          for the models the credit covers.
+        </p>
+      </div>
+      <div>
+        <h3 class="font-semibold text-gray-900 mb-2">Do free API credits expire?</h3>
+        <p class="text-gray-700">
+          Almost always. Most are valid for a window measured from the moment of claiming — 30 days for SCNet,
+          90 days for Alibaba Cloud Bailian, 180 days for SiliconFlow, one year for Tencent Cloud TokenHub. Daily
+          allowances reset rather than accumulate, so a missed day is simply gone.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom CTA -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="card p-8 text-center bg-gray-50">
+      <h2 class="text-2xl font-bold text-gray-900 mb-3">Free credits only go so far</h2>
+      <p class="text-gray-600 mb-6 max-w-2xl mx-auto">
+        Once you know what a credit is worth, model what your actual workload costs. Our calculator compares
+        every provider on per-token pricing, so you can see how many API calls your free balance actually buys.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="/calculator" class="btn-primary">Open the cost calculator</a>
+        <a href="/providers" class="btn-secondary">Browse all providers</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
