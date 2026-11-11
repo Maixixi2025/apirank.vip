@@ -17263,7 +17263,277 @@
       "Storage and compute are coupled — cannot be optimized independently (vs self-hosted Milvus separation)"
     ],
     "bestFor": "需要托管向量数据库的 RAG 应用,不愿运维 Milvus 集群的中大型团队,SLA 与合规要求高的企业 RAG 场景",
-    "bestForEN": "RAG apps needing managed vector DB; mid-large teams avoiding Milvus cluster ops; enterprise RAG with SLA/compliance requirements"
+    "bestForEN": "RAG apps needing managed vector DB; mid-large teams avoiding Milvus cluster ops; enterprise RAG with SLA/compliance requirements",
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": [
+          "Plan / Dimension",
+          "Price",
+          "Included Limits",
+          "Best For"
+        ],
+        "headersZh": [
+          "套餐 / 计费维度",
+          "价格",
+          "包含额度",
+          "最佳用途"
+        ],
+        "rows": [
+          [
+            "Starter (free forever)",
+            "$0 /mo, no credit card",
+            "1 project; up to 5 indexes; 100 namespaces per index; 2 GB storage; 1M read units/mo; 2M write units/mo; 5M embedding tokens/mo per model; 1 GB egress/mo; us-east-1 (AWS) only",
+            "Learning Pinecone, hobby RAG, and evaluation before you commit to a paid plan"
+          ],
+          [
+            "Builder (NEW)",
+            "$20 /mo flat, usage above the cap is blocked rather than billed",
+            "Everything in Starter; up to 5 projects; 10 indexes per project; 1,000 namespaces per index; 10 GB storage; 2M read units/mo; 5M write units/mo; 10M embedding tokens/mo; 10 GB egress/mo; AWS, Azure and GCP regions",
+            "Solo developers and small teams who need a real region and multi-project layout"
+          ],
+          [
+            "Standard",
+            "$50 /mo minimum usage, then pay-as-you-go",
+            "20 projects; 20 indexes per project; 100,000 namespaces per index; unlimited storage; unlimited read/write units and embedding tokens; $0.33/GB/mo storage; $0.10/GB egress with 100 GB/mo included; RBAC, SSO (SAML 2.0), backups, import from object storage",
+            "Production RAG at any scale - the plan most teams land on"
+          ],
+          [
+            "Enterprise",
+            "$500 /mo minimum usage, then pay-as-you-go",
+            "100 projects; 200 indexes per project; 1,000,000 namespaces per index; unlimited everything; 99.95% uptime SLA; BYOC, private endpoints, CMEK, audit logs, service accounts, SCIM; HIPAA included",
+            "Mission-critical production with data sovereignty and compliance requirements"
+          ],
+          [
+            "Read units (serverless)",
+            "Standard $16-$18 per 1M (varies by cloud and region), Enterprise $24-$27 per 1M",
+            "1 RU per 1 GB of namespace size per query with a 0.25 RU floor; 1 RU per 10 records fetched; 1 RU per list request",
+            "The main metered cost driver - read cost scales with index size, not result count"
+          ],
+          [
+            "Write units (serverless)",
+            "Standard $4-$4.50 per 1M, Enterprise $6-$6.75 per 1M",
+            "1 WU per 1 KB of the request with a 5 WU floor; updates also charge 1 WU per 1 KB of the existing record",
+            "Bulk ingestion cost - a 1,000-record batch of 1,536-dim vectors costs roughly 7,140 WU"
+          ],
+          [
+            "Storage and egress",
+            "Storage $0.33 / GB / mo; egress $0.10 / GB (100 GB/mo included on Standard and Enterprise)",
+            "Index size counts ID + metadata + full-text-search field bytes + dense dims x 4 bytes + sparse non-zero values x 8 bytes",
+            "Grows with corpus size; add $0.25/GB to import from object storage and $0.10/GB/mo for backups"
+          ],
+          [
+            "Dedicated Read Nodes (DRN)",
+            "Fixed hourly node rate - $336.42 / mo for a b1 node on aws-us-east-1 ($0.46/hour); t1 costs roughly 3x b1",
+            "250 GB per shard; shards x replicas = node count; read costs become fixed instead of per-RU; no per-second read limits",
+            "Sustained high-QPS reads on large indexes where per-request billing is unpredictable"
+          ],
+          [
+            "Pinecone Inference - embedding",
+            "text-embedding-3-small / -3-large $0.16 per 1M tokens; multilingual-e5-large $0.08 per 1M; pinecone-sparse-english-v0 $0.08 per 1M",
+            "Standalone /embed endpoint or integrated embedding on a document index; token counts are returned on every response",
+            "Zero third-party embedding API keys for a Pinecone-native RAG pipeline"
+          ],
+          [
+            "Pinecone Inference - reranking",
+            "$2 per 1,000 requests / rerank units",
+            "bge-reranker-v2-m3, pinecone-rerank-v0 (deprecated) and cohere-rerank-4-fast; 60 requests/min on Starter and Builder, 300/min on Standard and Enterprise",
+            "Cheap second-stage reranking on top of hybrid search candidates"
+          ],
+          [
+            "Pinecone Assistant",
+            "Input tokens $8 per 1M; output tokens $15 per 1M; context processed tokens $5 per 1M; evaluation $8/$15 per 1M; storage $3 / GB / mo; ingestion units $0.0005 each ($0.001 for multi-modal)",
+            "Starter includes 500K input / 300K output / 500K context tokens plus 1 GB storage and 1,000 ingestion units/mo; Builder includes 2M / 1M / 2M plus 3 GB and 10k units",
+            "Managed chat/RAG over uploaded files without building your own retrieval pipeline"
+          ],
+          [
+            "Bring Your Own Cloud (BYOC)",
+            "Flat platform fee per environment plus a monthly node rate (od1 pool and b1/t1 nodes); contact sales",
+            "Pinecone data plane in your own AWS/GCP/Azure VPC; no SSH, VPN or inbound access needed; up to 2 BYOC environments per org",
+            "Data sovereignty, network isolation and regional data residency requirements"
+          ],
+          [
+            "pg_pinecone (open source)",
+            "$0 for the extension, Apache 2.0; you pay only for your own Postgres",
+            "Postgres extension for filtered vector search with native, pgvector or remote engines; switch engines with one pinecone.set_engine() call",
+            "Keeping vector search inside Postgres with no second system to operate"
+          ],
+          [
+            "HIPAA add-on (Standard only)",
+            "$190 /mo, 6-month minimum",
+            "HIPAA-ready infrastructure, encrypted storage, audit logging, enhanced controls and BAA support; included free on Enterprise",
+            "Regulated US workloads that need HIPAA on the Standard plan"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "Starter（永久免费）",
+            "每月 $0，无需信用卡",
+            "1 个项目；最多 5 个索引；每个索引 100 个命名空间；2 GB 存储；每月 100 万读单元；每月 200 万写单元；每个模型每月 500 万 embedding token；每月 1 GB 出网流量；仅限 us-east-1（AWS）",
+            "学习 Pinecone、个人 RAG、正式付费前的评估验证"
+          ],
+          [
+            "Builder（新上线）",
+            "每月固定 $20，超出额度的用量直接被拦截而非计费",
+            "Starter 全部权益；最多 5 个项目；每个项目 10 个索引；每个索引 1,000 个命名空间；10 GB 存储；每月 200 万读单元；500 万写单元；1,000 万 embedding token；每月 10 GB 出网流量；支持 AWS、Azure、GCP 区域",
+            "个人开发者与小团队，需要真实区域与多项目结构的场景"
+          ],
+          [
+            "Standard",
+            "每月最低消费 $50，超出后按量计费",
+            "20 个项目；每个项目 20 个索引；每个索引 10 万个命名空间；存储与用量不限；读写单元与 embedding token 不限；存储 $0.33/GB/月；出网 $0.10/GB（每月含 100 GB）；含 RBAC、SSO（SAML 2.0）、备份、从对象存储导入",
+            "任意规模的生产级 RAG——大多数团队最终落脚的档位"
+          ],
+          [
+            "Enterprise",
+            "每月最低消费 $500，超出后按量计费",
+            "100 个项目；每个项目 200 个索引；每个索引 100 万个命名空间；全部不限；99.95% 可用性 SLA；支持 BYOC、私有端点、CMEK、审计日志、服务账号、SCIM；含 HIPAA",
+            "关键任务级生产，且有数据主权与合规要求的企业"
+          ],
+          [
+            "读单元（Serverless）",
+            "Standard 每百万 $16-$18（随云与区域浮动），Enterprise 每百万 $24-$27",
+            "每次查询按 1 GB 命名空间体积计 1 RU，最低 0.25 RU；每取回 10 条记录 1 RU；每次 list 请求 1 RU",
+            "最主要的按量成本项——读取成本随索引体积增长，而非随返回条数增长"
+          ],
+          [
+            "写单元（Serverless）",
+            "Standard 每百万 $4-$4.50，Enterprise 每百万 $6-$6.75",
+            "每 1 KB 请求计 1 WU，最低 5 WU；更新操作还会对既有记录的每 1 KB 再计 1 WU",
+            "批量灌数据的成本——1000 条 1536 维向量的一批约消耗 7,140 WU"
+          ],
+          [
+            "存储与出网",
+            "存储 $0.33 / GB / 月；出网 $0.10 / GB（Standard 与 Enterprise 每月含 100 GB）",
+            "索引体积 = ID + 元数据 + 全文检索字段字节 + 稠密维度 x 4 字节 + 稀疏非零值 x 8 字节",
+            "随语料库体积增长；另有从对象存储导入 $0.25/GB、备份 $0.10/GB/月"
+          ],
+          [
+            "专属读节点（DRN）",
+            "固定小时费率——aws-us-east-1 的 b1 节点每月 $336.42（$0.46/小时）；t1 约为 b1 的 3 倍",
+            "每个分片 250 GB；分片数 x 副本数 = 节点数；读取成本由按次转为固定；不受每秒读取限流约束",
+            "大索引上的持续高 QPS 读取，按请求计费难以预测时更合适"
+          ],
+          [
+            "Pinecone Inference - 向量化",
+            "text-embedding-3-small / -3-large 每百万 token $0.16；multilingual-e5-large 每百万 $0.08；pinecone-sparse-english-v0 每百万 $0.08",
+            "可用独立 /embed 端点，也可在 document index 上做内建向量化；每次响应都会返回 token 数",
+            "让整条 RAG 流水线彻底摆脱第三方 embedding API key"
+          ],
+          [
+            "Pinecone Inference - 重排",
+            "每 1,000 次请求 / 重排单元 $2",
+            "支持 bge-reranker-v2-m3、pinecone-rerank-v0（已弃用）与 cohere-rerank-4-fast；Starter 与 Builder 每分钟 60 次，Standard 与 Enterprise 每分钟 300 次",
+            "在混合检索候选集之上做低成本的第二阶段重排"
+          ],
+          [
+            "Pinecone Assistant",
+            "输入 token 每百万 $8；输出 token 每百万 $15；上下文处理 token 每百万 $5；评测 $8/$15 每百万；存储 $3 / GB / 月；摄入单元每个 $0.0005（多模态 $0.001）",
+            "Starter 含 50 万输入 / 30 万输出 / 50 万上下文 token，另有 1 GB 存储与 1,000 摄入单元/月；Builder 含 200 万 / 100 万 / 200 万，另有 3 GB 与 1 万单元",
+            "上传文件即可做托管式聊天/RAG，无需自建检索流水线"
+          ],
+          [
+            "自带云（BYOC）",
+            "每个环境收固定平台费 + 每月节点费率（od1 池与 b1/t1 节点）；需联系销售",
+            "Pinecone 数据平面部署在你自己的 AWS/GCP/Azure VPC 内；无需 SSH、VPN 或入站网络；每组织最多 2 个 BYOC 环境",
+            "数据主权、网络隔离与区域数据驻留要求"
+          ],
+          [
+            "pg_pinecone（开源）",
+            "扩展本身 $0，Apache 2.0；你只付自己的 Postgres 成本",
+            "面向 Postgres 的过滤式向量检索扩展，支持 native、pgvector 或 remote 三种引擎；切换引擎只需一次 pinecone.set_engine()",
+            "把向量检索留在 Postgres 里，不额外维护第二套系统"
+          ],
+          [
+            "HIPAA 加购（仅 Standard）",
+            "每月 $190，至少 6 个月",
+            "含 HIPAA 就绪基础设施、加密存储、审计日志、增强安全控制与 BAA 支持；Enterprise 套餐已免费包含",
+            "Standard 套餐上需要 HIPAA 的美国受监管负载"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "Four official SDKs pinned to dated API versions",
+            "value": "Python, Node.js, Java and Go SDKs are each pinned to an API version - the current 2026-07 API maps to Python v10.x, Node v9.x, Java (2026-04, coming soon) and Go v7.x. Python needs 3.10+, and the Node client is @pinecone-database/pinecone 9.2.0."
+          },
+          {
+            "label": "One API for database, inference and admin",
+            "value": "The Database API stores and queries records, the Inference API serves /embed and /rerank, and the Admin API handles organizations, projects and keys - all under one project-scoped API key. Every response echoes back the read units it consumed so you can meter cost inline."
+          },
+          {
+            "label": "Document indexes unify dense, sparse and full-text",
+            "value": "A document index declares string fields with full_text_search, a dense vector and a sparse vector in one schema, so hybrid search that filters by text match and then ranks by vector similarity is billed as a single read request instead of two."
+          },
+          {
+            "label": "Integrated embedding with a processing-location switch",
+            "value": "Set embed.model on a string field and Pinecone embeds on upsert and on query - no external embedding provider. With API version 2026-07 you can pin processing_location to us so both stored text and queries stay inside US regions, which is required for regulated workloads."
+          },
+          {
+            "label": "MCP server plus editor plugins",
+            "value": "Run npx -y @pinecone-database/mcp to expose search-docs, list-indexes, describe-index, create-index-for-model, upsert-records, search-records, cascading-search and rerank-documents to Claude Code, Claude Desktop, Cursor or Antigravity. There is also a Claude Code plugin bundling 8 skills, plus Codex, Cursor and Agent Skills integrations."
+          },
+          {
+            "label": "Clear rate limits that name the culprit",
+            "value": "100 query requests per second per namespace, 2,000 read units per second, 100 upserts/s, 50 MB upserted per second, and 100 inference requests/s per project. Every 429 names the limit, its scope and its value, and most limits can be raised by contacting Support."
+          },
+          {
+            "label": "Open-source escape hatch: pg_pinecone",
+            "value": "pg_pinecone is an Apache 2.0 Postgres extension that indexes the vector columns you already have. It stores RaBitQ-quantized IVF clusters instead of a graph, applies filters during the search rather than after, and switches between native, pgvector and remote Pinecone engines with one call - so you can leave the managed service without a rewrite."
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "四套官方 SDK，按 API 版本对齐",
+            "value": "Python、Node.js、Java 与 Go SDK 各自绑定到具体 API 版本——当前的 2026-07 API 对应 Python v10.x、Node v9.x、Java（2026-04，即将发布）与 Go v7.x。Python 需要 3.10+，Node 客户端为 @pinecone-database/pinecone 9.2.0。"
+          },
+          {
+            "label": "一套 API 覆盖数据库、推理与管理",
+            "value": "Database API 负责存取记录，Inference API 提供 /embed 与 /rerank，Admin API 管理组织、项目与密钥——全部共用同一个项目级 API key。每次响应都会回传本次消耗的读单元，方便把成本埋进调用链里直接核算。"
+          },
+          {
+            "label": "Document index 统一稠密、稀疏与全文检索",
+            "value": "一个 document index 可以在同一套 schema 里声明开启 full_text_search 的 string 字段、稠密向量与稀疏向量，因此「先用文本匹配过滤、再用向量相似度排序」的混合检索只算一次读请求，而不是两次。"
+          },
+          {
+            "label": "内建向量化 + 处理地域开关",
+            "value": "在 string 字段上设置 embed.model，Pinecone 会在 upsert 与查询时自动向量化，无需外部 embedding 供应商。用 2026-07 版 API 还能把 processing_location 固定为 us，让存储文本与查询都留在美国境内——受监管负载的硬性要求。"
+          },
+          {
+            "label": "MCP 服务器与编辑器插件",
+            "value": "运行 npx -y @pinecone-database/mcp 即可把 search-docs、list-indexes、describe-index、create-index-for-model、upsert-records、search-records、cascading-search 与 rerank-documents 暴露给 Claude Code、Claude Desktop、Cursor 或 Antigravity。另有一个打包 8 个 skill 的 Claude Code 插件，以及 Codex、Cursor 与 Agent Skills 集成。"
+          },
+          {
+            "label": "限流规则清晰，报错直接点名",
+            "value": "每个命名空间每秒 100 次查询请求、每秒 2,000 读单元、每秒 100 次 upsert、每秒 50 MB 写入量、每个项目每秒 100 次推理请求。每个 429 都会写明触发的限流项、作用域与具体数值，且大部分限额都可以联系 Support 上调。"
+          },
+          {
+            "label": "开源逃生舱：pg_pinecone",
+            "value": "pg_pinecone 是 Apache 2.0 的 Postgres 扩展，直接索引你已有的向量列。它用 RaBitQ 量化后的 IVF 聚簇代替图索引，在检索过程中而非检索之后应用过滤条件，并用一次调用在 native、pgvector 与远程 Pinecone 三种引擎之间切换——可以离开托管服务而不必重写代码。"
+          }
+        ]
+      },
+      {
+        "title": "🧠 From Vector Database to Agent Knowledge Engine",
+        "titleZh": "🧠 从向量数据库到智能体知识引擎",
+        "type": "text",
+        "text": "Pinecone has moved well past being a vector store. Three layers now sit on one serverless substrate. Pinecone Database indexes dense, sparse and full-text representations in a single schema, so hybrid search is one billable read rather than two queries merged client-side. Pinecone Assistant turns uploaded files into a managed RAG service, handling chunking, embedding, storage and citation grounding. Pinecone Nexus is the newest layer: a knowledge engine that compiles your sources into typed artifacts once, at curation time, then serves a single grounded, cited answer per call. That moves the expensive part of agentic RAG - the retrieve, evaluate and re-retrieve loop - upstream, out of the agent's token budget. Dedicated Read Nodes complete the picture by trading per-request billing for provisioned capacity on sustained high-QPS reads.",
+        "textZh": "Pinecone 早已不只是向量存储。同一套 serverless 底座上现在叠了三层。Pinecone Database 在单一 schema 里同时索引稠密、稀疏与全文表征，让混合检索成为一次可计费的读请求，而不是客户端合并的两次查询。Pinecone Assistant 把上传的文件变成托管式 RAG 服务，分块、向量化、存储与引用锚定全部代劳。Pinecone Nexus 是最新的一层：知识引擎在「策展时」把你的资料一次性编译成带类型的产物，之后每次调用只返回一个有据可依、带引用的答案。这就把 agentic RAG 中最贵的部分——检索、评估、再检索的循环——挪到了智能体的 token 预算之外。专属读节点（Dedicated Read Nodes）则补齐最后一块拼图：在持续高 QPS 读取场景下，用预置容量换取可预测的账单。"
+      },
+      {
+        "title": "🌐 China Access & Latency",
+        "titleZh": "🌐 中国访问与延迟",
+        "type": "text",
+        "text": "Pinecone has no mainland-China region. The closest serverless index locations are aws ap-southeast-1 in Singapore, aws eu-central-1 in Frankfurt and azure eastus2 in Virginia, and the cloud and region of an index cannot be changed after creation. Measured from an Alibaba Cloud Malaysia host, api.pinecone.io answers in roughly 80-90ms TTFB behind Google Cloud load balancers, docs.pinecone.io returns in about 110ms via a Vercel edge, www.pinecone.io in about 100ms, and app.pinecone.io in 34-700ms on a Netlify edge that resolves to Singapore - so the console is reachable but the data path always crosses an international border. For production inside mainland China, Pinecone gives you two honest routes. The first is Bring Your Own Cloud: the data plane runs as a FoundationDB-backed Kubernetes cluster inside your own AWS, GCP or Azure VPC with no SSH, VPN or inbound access required, so a China-region cloud account keeps vectors, metadata and queries on domestic infrastructure - at the cost of losing integrated embedding, since those models run outside your account. The second is pg_pinecone, the Apache 2.0 Postgres extension, which keeps vector search inside your own database on a domestic cloud. Otherwise, budget a stable cross-border proxy and pick the Singapore region to minimise the round trip.",
+        "textZh": "Pinecone 没有中国大陆区域。最接近的 serverless 索引地域是 AWS 新加坡 ap-southeast-1、法兰克福 eu-central-1 与 Azure 弗吉尼亚 eastus2，而且索引的云与区域在创建后不可更改。从阿里云马来西亚主机实测，api.pinecone.io 走 Google Cloud 负载均衡约 80-90 毫秒返回首字节，docs.pinecone.io 经 Vercel 边缘节点约 110 毫秒，www.pinecone.io 约 100 毫秒，app.pinecone.io 落在解析到新加坡的 Netlify 边缘节点上、耗时 34-700 毫秒——控制台可以访问，但数据链路总要跨越一次国际边界。要在大陆做生产，Pinecone 给了两条诚实的路线。第一条是自带云（BYOC）：数据平面以 FoundationDB 为元数据底座、跑在你自己的 AWS/GCP/Azure VPC 内的 Kubernetes 集群里，不需要 SSH、VPN 或入站网络，因此选择中国地域的云账号即可让向量、元数据与查询都留在境内基础设施上——代价是失去内建向量化，因为那些模型运行在你的账号之外。第二条是 pg_pinecone 这个 Apache 2.0 的 Postgres 扩展，把向量检索留在你自己的数据库与境内云上。否则，就准备好一条稳定的跨境代理线路，并优先选新加坡区域以压缩往返。"
+      }
+    ]
   },
   {
     "id": "mem0",
