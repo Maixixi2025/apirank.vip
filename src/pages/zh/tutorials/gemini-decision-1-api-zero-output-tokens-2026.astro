@@ -1,0 +1,302 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const slug = 'gemini-decision-1-api-zero-output-tokens-2026';
+const zhTitle = "Gemini Decision 1：输入 $0.10 每百万，输出 token 恒为 0";
+const zhDescription = "Gemini Decision 1 输入价每百万 token $0.10，输出 token 恒为 0。完整费率、限速分档，以及与 Cloudflare Clef 的价格对比。";
+const date = '2026-11-12';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": zhTitle,
+  "description": zhDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "zh-CN",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "首页", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "教程", "item": "https://apirank.vip/zh/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": "Gemini Decision 1：输入 $0.10 每百万，输出 token 恒为 0", "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Gemini Decision 1 每次请求怎么计费？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Gemini Decision 1 的定价是每百万输入 token 0.10 美元，输出 token 按设计恒为 0。一次请求里所有问题共享的那份输入只按请求计费一次，无论你问多少道题，上限为 1,000 道；每加一道题只增加它自己的指令与评分标准。输出侧不收钱，因为模型返回的是校准概率而非生成文本。它没有 Batch、Flex、Priority 档位，也不同于 Gemini 4 Carbon 和 Argon 的发布，不存在 2026 年 12 月 1 日的价格悬崖。" }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么 Gemini Decision 1 的输出 token 是 0？",
+      "acceptedAnswer": { "@type": "Answer", "text": "因为 Decisions API 不生成文本。你把一份共享输入和一组类型化问题（是否题为 noul、选择题为 choice、量表评分为 score）交给模型，它会为每个问题返回答案、一组概率分布和一个置信度值。没有 token 被生成，输出侧自然没有可计费的对象——这正是同样输入下它比一次生成式调用便宜得多的原因。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Gemini Decision 1 和 Cloudflare 的 Clef 模型相比如何？",
+      "acceptedAnswer": { "@type": "Answer", "text": "Cloudflare 几个月前就在 Workers AI 上架了同一套架构。Clef 27B 为每百万输入 token 0.240 美元，clef-omni 30B-MoE 为 0.150 美元，clef-flash 9B 为 0.038 美元，三者输出 token 均不计费。Google 的 $0.10 比 Clef 27B 便宜约 2.4 倍，但 $0.038 的 Clef-flash 比 Google 的 $0.10 便宜约 2.6 倍，价格排序在不同档位间发生了反转。此外 Cloudflare 公开了确定的媒体 token 化公式，并把模型标注为零数据保留，这两点是 Google 没有公布的。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Decisions API 的限速和模型上限是多少？",
+      "acceptedAnswer": { "@type": "Answer", "text": "免费层为 200 RPM、50,000 TPM、每日 10,000 次请求；Tier 1 提升到 1,500 RPM、1M TPM、50,000 RPD；Tier 2 为 5,000 RPM、4M TPM、RPD 不限；Tier 3 为 15,000 RPM、10M TPM、RPD 不限。模型侧共享输入最长 262,144 token，每次请求最多 1,000 道题，每题选项或评分档位数为 2 到 255。" }
+    },
+    {
+      "@type": "Question",
+      "name": "Gemini Decision 1 能在 OpenRouter 或网关上用到吗？",
+      "acceptedAnswer": { "@type": "Answer", "text": "目前没有任何聚合器上架 gemini-decision-1：OpenRouter 和 FreeModel 都没有，所以这个模型今天实际上是 Gemini Developer API v1beta 的第一方专属。能路由决策模型这一类别的网关包括 Portkey，其 /v1/decisions 端点支持 TypeSafe Jev、OpenRouter、Cloudflare Workers AI、OpenAI 以及 Azure AI Foundry 上的 Microsoft Decision 1。注意 /v1/decisions 网关形态不支持流式输出。" }
+    }
+  ]
+};
+
+const zhBody = `<h1 id="top">Gemini Decision 1 API：输入 $0.10，输出 token 恒为 0</h1>
+
+<p>2026 年 <strong>11 月 11 日</strong>，Google 发布 <code>gemini-decision-1</code> 与 <strong>Decisions API</strong>。这是一个与所有通用模型端点都不同的新端点：它不再返回文本，而是用<strong>校准过的概率</strong>回答类型化问题，并且<strong>输出 token 计费恒为 0</strong>。</p>
+
+<p>它的定位非常窄，也非常具体。与其让模型「把这张工单分类为账单、技术或物流，并解释原因」，你直接把工单和一组类型化问题交给它。它为每个问题返回答案、一组概率和一个置信度值，你的代码直接对数值分支。没有任何文本要生成，没有 JSON 要解析，没有脆弱的正则要维护，而且每个问题的成本只是同样输入下一次生成式调用的一小部分。</p>
+
+<p>最后这一点应该会让每一个买 API 的人停下来看一眼：<strong>在每百万输入 token $0.10 且不收输出费的定价下，Gemini Decision 的价格处在整个 Gemini 文本模型序列的最低位</strong>，比 Gemini 3.1 Flash-Lite 的 $0.25 还低。对于纯分类负载，这个数字足以改变整套架构的经济性。</p>
+
+<p>还有一个没有任何发布公告提到的关键点，这也是这个故事并不简单的原因：<strong>Google 并不是唯一提供这套架构的公司，而且更便宜的那一版并不属于 Google。</strong>Cloudflare 几个月前就已经在 Workers AI 上运行着一模一样的决策模型家族，27B 旗舰版为每百万输入 token $0.24，9B 的 flash 版为 $0.038。看完 Google 发布了什么之后，更值得看的是它<em>对标</em>了什么。</p>
+
+<h2 id="what-it-is">Decisions API 到底做了什么</h2>
+
+<p>每次调用发送一份共享输入加上一组问题映射。共享输入可以是文本、图片、音频、视频或 PDF 文档，沿用 Interactions API 的同一套内容块 schema。所有问题在同一次前向传播中并行跑在共享输入上，而且——这是最关键的设计决定——<strong>问题之间互相看不见</strong>。增删一个问题不会改变其他问题的答案。</p>
+
+<p>这种隔离正是这个端点能被安全用于策略检查的原因：如果你在一次调用里同时问「这是退款请求吗？」和「该交给哪个部门？」，第二个答案不会受第一个影响，因此每个答案都能被独立审计。问题类型有三种，每种返回的结构不同：</p>
+
+<ul>
+<li><strong>是否题（<code>noul</code>）</strong>返回「是」的校准概率，取值被限制在 <strong>0.01 到 0.99</strong> 之间，外加一个置信度分数。0.01 这个下限不是四舍五入的产物：API 永远不会返回 0 或 1，所以「大于 0.99 才通过」这种阈值判断永远不会触发。</li>
+<li><strong>选择题（<code>choice</code>）</strong>对 2 到 255 个固定选项打分，返回最优选项以及每个选项的校准概率（总和为 1）。即使没有任何选项匹配，概率也会分配到全部选项上。</li>
+<li><strong>评分题（<code>score</code>）</strong>按 2 到 255 个有序评分档位对输入评级，返回<strong>各档位下标的概率加权平均值</strong>。因为是下标求平均，结果可能落在两个档位之间：两档量表可以返回 1.12。</li>
+</ul>
+
+<p>有两个细节如果不注意就会踩坑。第一，<strong>选择题的选项 key 在评估前会按 UTF-8 字节序做字母排序</strong>，所以你在 JSON 里调整 key 顺序并不会改变选项位置，完全相同的概率平局会判给字母序最靠前的 key。像 <code>none_of_the_above</code> 这种带位置含义的兜底项会排在 <code>shipping</code> 前面而不是最后，这也是 Google 建议改用 <code>other</code> 这种非位置性 key 的原因。第二，评分题的结果是下标平均值，所以<strong>1、10、100、1000 这类指数刻度会扭曲期望值</strong>，评分刻度应保持线性。</p>
+
+<p>置信度是与答案分开的一个字段：它表示「最优答案正确」的概率，等于最优结果的概率，对是否题则是 <code>max(noul, 1 - noul)</code>。答案用来决定采取什么动作，置信度用来决定是自动执行还是升级给人工处理。这一对组合，正是使用这个端点而不是让模型「输出 JSON」的根本理由。</p>
+
+<h2 id="pricing">定价：每百万输入 token $0.10，输出恒为 0</h2>
+
+<p>Gemini Decision 的定价页短到可以整页读完，这在业内并不常见：</p>
+
+<table>
+<thead>
+<tr><th>项目</th><th>免费层</th><th>付费层（每百万 token）</th></tr>
+</thead>
+<tbody>
+<tr><td>输入价格（文本、图片、视频、音频、PDF）</td><td>免费</td><td>$0.10</td></tr>
+<tr><td>输出价格</td><td>不适用（0 输出 token）</td><td>不适用（0 输出 token）</td></tr>
+<tr><td>上下文缓存价格</td><td>不提供</td><td>不提供</td></tr>
+<tr><td>是否用于改进产品</td><td>是</td><td>否</td></tr>
+</tbody>
+</table>
+
+<p>有三点值得注意。<strong>输出 token 不是「免费」，而是结构上不可能存在</strong>——该模型的输出 token 上限按设计就是 0，整个产品的价值就在于答案是一个数字而不是一段字符串。<strong>没有 Batch、Flex、Priority 档位</strong>，也没有上下文缓存，因此重复输入每次都全额计费。<strong>没有 12 月 1 日价格悬崖</strong>——不同于 Gemini 4 Carbon 和 Argon 会全线涨价，Gemini Decision 的 $0.10 是没有推广窗口、没有到期日的固定标价。</p>
+
+<p>正是这个固定价格让这个端点值得被放进预算表里。下面是同一份输入 token 在 Gemini 家族中的价格对照，对象是这个端点真正擅长的纯分类负载：</p>
+
+<table>
+<thead>
+<tr><th>Gemini 模型</th><th>输入 $/百万</th><th>输出 $/百万</th><th>说明</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Gemini Decision 1</strong></td><td><strong>$0.10</strong></td><td><strong>$0（设计如此）</strong></td><td>仅分类，不生成文本</td></tr>
+<tr><td>Gemini 2.5 Flash-Lite</td><td>$0.10</td><td>$0.40</td><td>文本生成，Gemini 最便宜的文本模型</td></tr>
+<tr><td>Gemini 3.1 Flash-Lite</td><td>$0.25</td><td>$1.50</td><td>文本生成，1M 上下文</td></tr>
+<tr><td>Gemini 3.8 Flash</td><td>$0.75，2026-12-31 后 $1.50</td><td>$3.75，之后 $7.50</td><td>2027-01-01 价格悬崖</td></tr>
+<tr><td>Gemini 4 Carbon</td><td>$2，2026-11-30 后 $4</td><td>$10，之后 $20</td><td>前沿档，2026-12-01 价格悬崖</td></tr>
+</tbody>
+</table>
+
+<p>对纯分类器来说，Gemini Decision 1 在输入价上与最便宜的 Gemini 文本模型持平，而<strong>整次调用便宜 2.4 倍</strong>——因为文本模型必须先生成一个你随后要解析并丢弃的答案。如果你的分类器每次调用要花 200 个输出 token 只为了吐出一个 <code>{"category": "billing"}</code>，那你是在为一次 $0.30 的输出调用付费，只为得到六个可能字符串中的一个。</p>
+
+<p>诚实的补充是：这只在你原本就在用文本模型做分类的前提下成立。如果你需要的是推理过程，这个分类模型不能替代。它替代的是文本生成工作中很窄的一块，而不是一个更便宜的通用模型。</p>
+
+<h2 id="rate-limits">限速：一个真的能用的 200 RPM 免费层</h2>
+
+<p>Gemini Decision 的限速自成一张表，与标准的交互式限速分开，而且对免费层来说异常宽松：</p>
+
+<table>
+<thead>
+<tr><th>用量档位</th><th>每分钟请求数</th><th>每分钟 token 数</th><th>每天请求数</th></tr>
+</thead>
+<tbody>
+<tr><td>免费</td><td>200</td><td>50,000</td><td>10,000</td></tr>
+<tr><td>Tier 1</td><td>1,500</td><td>1,000,000</td><td>50,000</td></tr>
+<tr><td>Tier 2</td><td>5,000</td><td>4,000,000</td><td>不限</td></tr>
+<tr><td>Tier 3</td><td>15,000</td><td>10,000,000</td><td>不限</td></tr>
+</tbody>
+</table>
+
+<p>对比同一页上的 Gemini Omni Flash 限速——免费层完全不支持，Tier 1 只有 8 RPM。一个免费层项目在 Gemini Decision 上每分钟可以发 200 次分类请求、每天 1 万次，而且不需要绑定计费账户。档位升级沿用标准阶梯：Tier 1 需要绑定有效计费账户，Tier 2 需要累计付费 $100 加 3 天，Tier 3 需要 $1,000 加 30 天。</p>
+
+<p>有一点要提前规划：<strong>免费层按每百万输入 token $0.10 计费，免费额度作用在价格上而不是请求数上</strong>，所以免费项目在大文档上很容易撞到 50,000 TPM 的上限，即便完全没付钱。这里的「免费」是指可以免费使用这个端点，不是指可以免费无限用。</p>
+
+<h2 id="limits">硬性上限，以及不支持的能力</h2>
+
+<p>Limits 表写得很明确，触犯任何一条都会返回 HTTP 400，并在错误信息里点名你违反的规则：</p>
+
+<table>
+<thead>
+<tr><th>限制项</th><th>数值</th></tr>
+</thead>
+<tbody>
+<tr><td>每次请求的问题数</td><td>1 到 1,000，且受 262,144 token 上下文窗口约束</td></tr>
+<tr><td>每道选择题的选项数</td><td>2 到 255</td></tr>
+<tr><td>每道评分题的档位数</td><td>2 到 255 个非空字符串，推荐 2 到 10</td></tr>
+<tr><td>上下文窗口</td><td>262,144 token，共享输入与全部问题合计</td></tr>
+<tr><td>内联媒体</td><td>每次请求 100 MB，PDF 为 50 MB</td></tr>
+<tr><td>外部 URL 输入</td><td>每个 URL 15 MB</td></tr>
+<tr><td>问题 key</td><td>1 到 64 个 ASCII 字符，字母、数字、下划线、连字符</td></tr>
+</tbody>
+</table>
+
+<p><strong>每次请求 1,000 道题</strong>是核心卖点，而且它的工作方式正如定价页所说的：无论你问多少道题，共享输入每次只计费一次。十道题问同一份文档，输入成本不会是一道题的十倍。这就是这个端点提供的批处理机制，也正因为如此，缺少 Batch API 档位对多规则策略检查来说并没有听起来那么要紧。</p>
+
+<p>能力清单是限制最严的地方。Gemini Decision 1 <strong>以下能力全部不支持</strong>：文本生成、结构化输出、函数调用、思考、代码执行、文件检索、搜索接地、URL 上下文、计算机操作、图像生成、音频生成、Live API、上下文缓存、Batch API、Flex 推理、Priority 推理，以及 Agents API。它是一个单用途模型。</p>
+
+<p>还有两条约束需要记住。<strong>对话历史、thought 块和工具调用块都不能作为输入块</strong>——多轮上下文要自己序列化成文本。<strong>问题指令只接受纯文本</strong>；媒体只能放在共享输入里，不能塞进问题内部。YouTube URL 和 <code>gs://</code> URI 会被拒绝；媒体需要通过 Files API URI、签名后的 HTTPS URL 或内联 base64 传入。当输入安全过滤拦截请求时，你拿到的是 HTTP 400 加一个错误码（例如 <code>safety</code> 或 <code>blocklist</code>），而不是一个拒答答案。</p>
+
+<p>最后，模型卡注明该端点<strong>仅在 Gemini Developer API (v1beta) 上提供，且仅支持 Gemini Decision 1</strong>。它没有 GA 标注，也没有列出 Vertex AI 可用性。</p>
+
+<h2 id="code">怎么调用：REST、Python 与 JavaScript</h2>
+
+<p>REST 形态很直接——向 <code>/v1beta/decisions</code> 端点 POST，body 里带上模型、共享输入和问题映射：</p>
+
+<pre><code is:raw>curl -X POST "https://generativelanguage.googleapis.com/v1beta/decisions" \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gemini-decision-1",
+    "input": "The blue mug I ordered on Monday arrived cracked on Wednesday.",
+    "questions": {
+      "is_damaged": {
+        "type": "noul",
+        "instructions": "Did the item arrive damaged?"
+      },
+      "queue": {
+        "type": "choice",
+        "instructions": "Which support queue should handle this message?",
+        "criteria": {
+          "billing": "Payment, invoice, or refund questions.",
+          "replacements": "Damaged, missing, or wrong items.",
+          "general": "Product questions and account updates."
+        }
+      }
+    }
+  }'
+</code></pre>
+
+<p>Python SDK 走 <code>client.decisions.create</code>，需要 SDK 3.2 或更高版本——<code>pip install -U google-genai</code> 或 <code>npm install @google/genai@latest</code>：</p>
+
+<pre><code is:raw>from google import genai
+
+client = genai.Client(http_options={"api_version": "v1beta"})
+
+result = client.decisions.create(
+    model="gemini-decision-1",
+    input="The blue mug I ordered on Monday arrived cracked on Wednesday.",
+    questions={
+        "is_damaged": {
+            "type": "noul",
+            "instructions": "Did the item arrive damaged?",
+        },
+        "queue": {
+            "type": "choice",
+            "instructions": "Which support queue should handle this message?",
+            "criteria": {
+                "billing": "Payment, invoice, or refund questions.",
+                "replacements": "Damaged, missing, or wrong items.",
+                "general": "Product questions and account updates.",
+            },
+        },
+    },
+)
+
+damaged = result.answers["is_damaged"]
+queue = result.answers["queue"]
+print(f"P(damaged)={damaged.noul:.2f} queue={queue.choice}")
+</code></pre>
+
+<p>有一个细节会让第一次调用的人栽跟头：<strong>客户端必须显式锁定 v1beta API 版本</strong>，因为 Decisions API 并不在稳定的 v1 接口面上。上面那段 <code>http_options={"api_version": "v1beta"}</code> 在这个端点不是可省的样板代码，JavaScript 等价写法是 <code>new GoogleGenAI({ apiVersion: "v1beta" })</code>。</p>
+
+<h2 id="clef">发布公告里没写的竞争者：Cloudflare Clef</h2>
+
+<p>这才是这篇文章真正值得读的部分。Cloudflare 几个月前就在 Workers AI 上跑着一族决策模型，而且它的 API 契约<strong>在形态上与 Google 完全一致</strong>——一份共享 <code>state</code> 加上一组 <code>noul</code>、<code>choice</code>、<code>score</code> 类型的问题，返回每个可选项的概率。Google 自己的文档里都承认了这层对应关系：网关文档中的「Jev shape」用 <code>state</code>，而 Google 用 <code>input</code>。</p>
+
+<p>Cloudflare 的模型家族是：</p>
+
+<table>
+<thead>
+<tr><th>模型</th><th>规模</th><th>上下文窗口</th><th>输入 $/百万</th><th>输出</th></tr>
+</thead>
+<tbody>
+<tr><td><code>@cf/cloudflare/clef</code></td><td>27B 多模态</td><td>65,536</td><td>$0.240</td><td>不计费</td></tr>
+<tr><td><code>@cf/cloudflare/clef-omni</code></td><td>30B MoE，激活 3B</td><td>64,000</td><td>$0.150</td><td>不计费</td></tr>
+<tr><td><code>@cf/cloudflare/clef-flash</code></td><td>9B 多模态</td><td>24,576</td><td>$0.038</td><td>不计费</td></tr>
+</tbody>
+</table>
+
+<p>现在做发布公告没做的那道算术。Google 的每百万输入 token $0.10 在 27B 档位上<strong>比 Clef 便宜 2.4 倍</strong>——Google 的头条价格确实赢了。但<strong>$0.038 的 Clef-flash 比 Google 的 $0.10 便宜 2.6 倍</strong>，而且 Clef 每天免费额度有 10,000 个 neuron，超出部分按每 1,000 个 neuron $0.011 计费。对于分类负载里跑量最大的那一档——输入短、数量多、判错代价低——两家的价格次序会在选型时<strong>发生反转</strong>。</p>
+
+<p>还有两点差异决定了大部分团队的选择，而且都偏向 Cloudflare。第一，<strong>媒体 token 化规则是公开且确定的</strong>：图片先按 32 像素倍数缩放，再按 32x32 像素块计数，前后各加 3 个标记 token，每张图上限 1,024 个 token，音频大约每分钟 780 个 token。也就是说，你可以在调用之前就算出一段视频分类请求要花多少钱。Google 的 Decisions API 文档里没有可比的媒体 token 计算公式。第二，<strong>Cloudflare 的模型在模型卡上标注了零数据保留</strong>，而 Google 定价页只写了付费层「不用于改进产品」、免费层「会用于改进产品」——对于要在免费层跑评估数据的团队，这是强度明显更弱的承诺。</p>
+
+<p>Google 赢在规模和上下文。262,144 的上下文窗口是 Clef 65,536 的 4 倍，大约是 Clef-flash 24,576 的 10 倍，当共享输入是一份长文档或一段长视频时这很关键。而每次请求 1,000 道题、共享输入只计费一次，是这套架构赖以存在的多规则策略检查最干净的实现。Cloudflare 的决策模型在构造上也要小得多——9B 到 30B，对比 Google 未公开的前沿模型——所以在真正困难的输入上，两边的校准质量未必可比，而且两家都没有发布可对照的校准基准。没有人能只凭一手资料告诉你哪一边校准得更好；唯一诚实的答案是你必须用自己的流量去校准，而这正是这个 API 的置信度字段被设计出来干的事。</p>
+
+<p>还有第三个选项，这让这其实是一场三方比较。<strong>微软在 Azure AI Foundry 上提供 Decision 1</strong>，而 Portkey 网关暴露了统一的 <code>/v1/decisions</code> 端点，其支持的供应商包括 TypeSafe Jev、OpenRouter、Cloudflare Workers AI、OpenAI 以及 <strong>Microsoft Decision 1</strong>。OpenRouter 上也挂着 <code>typesafe/jev-router</code>。一次网关调用就能把同一组问题路由到多个决策后端，而且 Portkey 专门为决策请求提供了 guardrail 能力。</p>
+
+<p>对于想试多家后端又不想重写集成代码的团队，<a href="https://portkey.ai/?ref=apirank" class="text-blue-600 hover:underline">Portkey</a> 这样暴露统一决策端点的网关，以及 <a href="https://openrouter.ai/affiliates" class="text-blue-600 hover:underline">OpenRouter</a> 这样可与第一方价格对照的聚合平台都值得纳入。注意<strong>两者目前都没有上架 <code>gemini-decision-1</code></strong>：OpenRouter 的实时模型目录里有 45 个 Google 模型，但没有一个决策模型，所以 Gemini Decision 目前只能走第一方。</p>
+
+<h2 id="how-to-use">什么时候该用，什么时候不该用</h2>
+
+<p>Google 自己的指引把适用场景说得很准，而且它们比「分类」更窄：把请求路由到某个模型、队列、智能体或工具；一次性对大量策略规则做输入输出检查；决定智能体该用哪些工具，或者该压缩、升级还是停止；按评分标准过滤、打分或排序候选结果；以及对 UI 状态、音频或视频帧做实时反应。</p>
+
+<p>它与结构化输出的区别不在于结构化输出不好——当你需要按自己 JSON schema 提取字段值时，结构化输出才是对的工具。区别在于结构化输出仍然产出你要解析的文本，而 Decisions API 产出的是可以直接做阈值判断的校准概率。如果你要问的是「这个过不过？」，答案是一个带置信度的数字，Decisions API 更合适；如果要问「把发票号抽出来」，它就不合适。</p>
+
+<p>官方指南里的四条最佳实践，值得在实现时当成硬性要求：</p>
+
+<ul>
+<li><strong>优先用正向措辞。</strong>问「这层是不是 Gold？」然后在代码里用 1 减去 yes 概率，而不是问「这层是不是<em>不是</em> Gold？」。</li>
+<li><strong>只发送问题真正需要的字段。</strong>无关内容会拉低准确率。</li>
+<li><strong>把输入当作不可信内容。</strong>用户提供的文本会替自己争取分类结果。要写明确的 criteria，用对抗性样本测试，并在赔付这类高风险动作上保留人工或二次检查。</li>
+<li><strong>数字、日期和时长的比较放在代码里做</strong>，然后把结果或一个命名好的分桶传进输入。不要让模型去比较两个日期。</li>
+</ul>
+
+<p>第三条对于任何要在上面搭内容审核或支付闸门的人都值得强调。一个会被自己输入反驳的分类器，是一个你得向风控团队解释清楚的分类器。问题之间的隔离保证，并不延伸到与输入之间的隔离。</p>
+
+<h2 id="verdict">结论</h2>
+
+<p>Gemini Decision 1 是一次真实的架构补充，而不是把结构化输出换个名字，而让它有说服力的部分，恰恰是文本模型复制不了的：输出 token 恒为 0、$0.10 的固定输入价且没有推广窗口、262,144 的上下文、每次请求 1,000 道题且共享输入只计费一次，以及不需要计费账户就能每分钟 200 次请求的免费层。对于正在花钱让文本模型吐出自己立刻解析掉再丢弃的 JSON 的团队，这个端点应该立刻进入评估队列。</p>
+
+<p>但发布叙事漏掉了真正决定选型的那组对比。<strong>Cloudflare 的 Clef 家族已经跑了几个月完全相同的架构</strong>，价格公开、媒体 token 化规则公开、还有零数据保留承诺——而且它的 flash 档每百万输入 token $0.038，比 Google 头条的 $0.10 便宜 2.6 倍，同时 Cloudflare 每天还有 10,000 个 neuron 的免费额度。Google 赢在上下文长度和 1,000 道题共享输入设计的优雅；Cloudflare 赢在跑量档的单价、媒体成本的可预测性和数据处理。微软在 Azure AI Foundry 上的 Decision 1 是第三个选项。</p>
+
+<p>务实的建议是把这当成一次针对你自己标注流量的三方实测，而不是一个厂商选择题，并且在上线前先校准阈值。这个端点类别没有跨厂商的校准基准，所以置信度字段不能替代测量——它只是你做测量的抓手。如果需要一个起点，两家的免费层都非常宽松，这让评估本身很便宜。</p>
+
+<h2 id="sources">资料来源</h2>
+
+<p>2026 年 11 月 12 日核对：Google Gemini API 定价页（Gemini Decision 费率卡，以及对照模型的输入与输出费率）；Google Decisions API 指南（问题类型、概率与置信度语义、选择题 key 的字母排序规则、评分题下标平均行为、最佳实践清单与 Limits 表）；Google Gemini Decision 1 模型页（token 上限、1,000 道题上限、不支持能力清单）；Google 限速页（Gemini Decision 的 RPM、TPM、RPD 表与用量档位阶梯）；Google 2026 年 11 月 11 日发布说明；Cloudflare Workers AI 的 <code>clef</code>、<code>clef-omni</code>、<code>clef-flash</code> 模型页（上下文窗口、媒体 token 化规则、零数据保留标记）与 Workers AI 定价页（各模型费率与免费额度）；Portkey AI Gateway Decisions API 文档；以及 OpenRouter 实时模型目录。</p>
+
+<p class="text-sm text-gray-500 mt-6"><strong>披露：</strong>APIRank 是独立的比较网站。本文定价数据已于 2026-11-12 对照 Google 官方 Gemini API 文档与 Cloudflare Workers AI 文档核对。你通过本页链接注册时我们可能获得联盟佣金，不会额外增加你的费用。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={{zhBody}} />
+</BaseLayout>

@@ -1,0 +1,302 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const slug = 'gemini-decision-1-api-zero-output-tokens-2026';
+const enTitle = "Gemini Decision 1: $0.10 Input, Zero Output Tokens";
+const enDescription = "Gemini Decision 1 prices input at $0.10 per 1M tokens with zero output tokens. Full rate card, rate limits, and how Cloudflare's Clef compares.";
+const date = '2026-11-12';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/${slug}/`;
+const enCanonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": enTitle,
+  "description": enDescription,
+  "datePublished": date,
+  "dateModified": date,
+  "inLanguage": "en-US",
+  "author": { "@type": "Organization", "name": "APIRank", "url": "https://apirank.vip" },
+  "publisher": { "@type": "Organization", "name": "APIRank", "logo": { "@type": "ImageObject", "url": "https://apirank.vip/favicon.svg" } },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://apirank.vip" },
+    { "@type": "ListItem", "position": 2, "name": "Tutorials", "item": "https://apirank.vip/tutorials" },
+    { "@type": "ListItem", "position": 3, "name": "Gemini Decision 1: $0.10 Input, Zero Output Tokens", "item": canonicalUrl }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does Gemini Decision 1 cost per request?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Gemini Decision 1 is priced at $0.10 per million input tokens with zero output tokens by design. The shared input that all questions in a request see is billed once per request regardless of how many questions you ask, up to 1,000 questions. Each additional question adds only its own instructions and criteria. There is no output charge because the model returns calibrated probabilities rather than generated text. There is no Batch, Flex, or Priority tier, and unlike the Gemini 4 Carbon and Argon launch, there is no December 1, 2026 price cliff for this model." }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does Gemini Decision 1 bill zero output tokens?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Because the Decisions API does not generate text. You hand the model a shared input plus a map of typed questions (yes/no as noul, multiple choice as choice, or rubric as score) and it returns, for each question, an answer, a probability distribution, and a confidence value. With no tokens generated there is nothing to bill on the output side, which is what makes a $0.10 per million input token call so much cheaper than a generative call on the same input." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Gemini Decision 1 compare to Cloudflare's Clef models?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Cloudflare shipped the same architecture on Workers AI months earlier. Clef 27B costs $0.240 per million input tokens, clef-omni 30B-MoE costs $0.150, and clef-flash 9B costs $0.038, with output tokens not billed on any of them. Google's headline $0.10 beats the Clef 27B by about 2.4x, but Clef-flash at $0.038 beats Google's $0.10 by about 2.6x, so the price ordering inverts between tiers. Cloudflare also publishes a deterministic media tokenisation formula and marks its models zero data retention, two things Google does not publish." }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the rate limits and model limits for the Decisions API?",
+      "acceptedAnswer": { "@type": "Answer", "text": "On the free tier the Decisions API allows 200 RPM, 50,000 TPM, and 10,000 requests per day. Tier 1 raises that to 1,500 RPM, 1M TPM, and 50,000 RPD; Tier 2 to 5,000 RPM and 4M TPM with unlimited RPD; Tier 3 to 15,000 RPM and 10M TPM with unlimited RPD. The model itself accepts a shared input up to 262,144 tokens, up to 1,000 questions per request, and 2 to 255 options or rubric levels per question." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Gemini Decision 1 available on OpenRouter or through a gateway?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No aggregator currently lists gemini-decision-1: neither OpenRouter nor FreeModel carries it, so the model is effectively first-party-only on the Gemini Developer API v1beta today. Gateways that route the decision-model category include Portkey, whose /v1/decisions endpoint supports TypeSafe Jev, OpenRouter, Cloudflare Workers AI, OpenAI, and Microsoft Decision 1 on Azure AI Foundry. Note that the /v1/decisions gateway shape does not support streaming." }
+    }
+  ]
+};
+
+const enBody = `<h1 id="top">Gemini Decision 1 API: $0.10 Input, Zero Output Tokens</h1>
+
+<p>On <strong>November 11, 2026</strong>, Google released <code>gemini-decision-1</code> and the <strong>Decisions API</strong>, a Gemini endpoint that does something no general-purpose model endpoint does: it answers typed questions with <strong>calibrated probabilities</strong> instead of text, and bills <strong>zero output tokens</strong>.</p>
+
+<p>The pitch is narrow and specific. Instead of asking a model to "classify this support ticket as billing, technical, or shipping and explain why," you hand it the ticket and a map of typed questions. It returns, for each, an answer, probabilities, and a confidence value, and your code branches on the numbers. No text to generate, no JSON to parse, no brittle regex to maintain, and the cost per question is a fraction of a generative call on the same input.</p>
+
+<p>That last part should make every API buyer stop and read: <strong>at $0.10 per million input tokens with no output charge, Gemini Decision is priced at or below every Gemini text model on the platform</strong>, including Gemini 3.1 Flash-Lite at $0.25. For a workload that is pure classification, that changes the economics of an entire architecture.</p>
+
+<p>There is also a catch no launch post mentioned: <strong>Google is not the only company shipping this architecture, and the cheaper implementation is not Google's.</strong> Cloudflare has run an identical decision-model family on Workers AI for months, at $0.24 per million input tokens for its 27B flagship and $0.038 for its 9B flash variant.</p>
+
+<h2 id="what-it-is">What the Decisions API actually does</h2>
+
+<p>Every call sends a shared input plus a map of questions. The shared input can be text, images, audio, video, or PDF documents, using the same content block schema as the Interactions API. Questions run in parallel against that input in a single forward pass, and — this is the design decision that matters — <strong>questions cannot see each other</strong>. Adding or removing one does not change the other answers.</p>
+
+<p>That isolation makes the endpoint safe for policy checks: if you ask "is this a refund request?" and "which department should handle it?" in one call, the second answer is not influenced by the first, so you can audit each independently. There are three question types, each returning a different shape:</p>
+
+<ul>
+<li><strong>Yes/no (<code>noul</code>)</strong> returns the calibrated probability that the answer is yes, bounded between <strong>0.01 and 0.99</strong>, plus a confidence score. The 0.01 floor is not a rounding artifact: the API never returns 0 or 1, so a threshold check against "above 0.99" can never fire.</li>
+<li><strong>Choice (<code>choice</code>)</strong> scores 2 to 255 options and returns the top option plus the calibrated probability of every option, summing to 1. Choices are always distributed across all options even when none fits.</li>
+<li><strong>Score (<code>score</code>)</strong> rates the input across 2 to 255 ordered rubric levels and returns the <strong>probability-weighted average of the level indices</strong>. Because it averages indices, the result can land between levels: a two-level rubric can return 1.12.</li>
+</ul>
+
+<p>Two details will bite you if you skip them. First, <strong>choice option keys are sorted alphabetically in UTF-8 byte order before evaluation</strong>, so reordering keys in your JSON does not change option positions, and exact probability ties break to the alphabetically first key. A positional catch-all like <code>none_of_the_above</code> lands ahead of <code>shipping</code> rather than last, which is why Google tells you to use a non-positional key such as <code>other</code>. Second, because a score averages array indices, <strong>exponential scales like 1, 10, 100, 1000 skew the expected value</strong>.</p>
+
+<p>Confidence is a separate field: the estimated probability that the top answer is right, equal to the top outcome's probability, or <code>max(noul, 1 - noul)</code> for yes/no questions. The answer picks the action; confidence decides whether to run it automatically or escalate to a human. That pairing is the reason to use this endpoint instead of prompting for JSON.</p>
+
+<h2 id="pricing">Pricing: $0.10 per million input tokens, zero output</h2>
+
+<p>The Gemini Decision pricing page is short enough to read in full, which is unusual:</p>
+
+<table>
+<thead>
+<tr><th>Feature</th><th>Free tier</th><th>Paid tier (per 1M tokens)</th></tr>
+</thead>
+<tbody>
+<tr><td>Input price (text, image, video, audio, PDF)</td><td>Free of charge</td><td>$0.10</td></tr>
+<tr><td>Output price</td><td>Not applicable (0 output tokens)</td><td>Not applicable (0 output tokens)</td></tr>
+<tr><td>Context caching price</td><td>Not available</td><td>Not available</td></tr>
+<tr><td>Used to improve our products</td><td>Yes</td><td>No</td></tr>
+</tbody>
+</table>
+
+<p>Three things stand out. <strong>Output tokens are not merely free, they are structurally impossible</strong> — the model's output token limit is 0 by design, and the whole product is that the answer is a number rather than a string. <strong>There is no Batch, Flex, or Priority tier</strong> and no context caching, so repeated input counts in full every time. <strong>There is no December 1 price cliff</strong>: unlike Gemini 4 Carbon and Argon, Gemini Decision's $0.10 is a flat list price with no expiry date.</p>
+
+<p>Here is the same input token priced across the Gemini family for the raw classification workload that is the endpoint's actual purpose:</p>
+
+<table>
+<thead>
+<tr><th>Gemini model</th><th>Input $/1M</th><th>Output $/1M</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Gemini Decision 1</strong></td><td><strong>$0.10</strong></td><td><strong>$0 (by design)</strong></td><td>Classification only, no text generation</td></tr>
+<tr><td>Gemini 2.5 Flash-Lite</td><td>$0.10</td><td>$0.40</td><td>Text generation, cheapest Gemini text model</td></tr>
+<tr><td>Gemini 3.1 Flash-Lite</td><td>$0.25</td><td>$1.50</td><td>Text generation, 1M context</td></tr>
+<tr><td>Gemini 3.8 Flash</td><td>$0.75 to Dec 31, 2026, then $1.50</td><td>$3.75, then $7.50</td><td>Price cliff January 1, 2027</td></tr>
+<tr><td>Gemini 4 Carbon</td><td>$2 to Nov 30, 2026, then $4</td><td>$10, then $20</td><td>Frontier tier, price cliff December 1, 2026</td></tr>
+</tbody>
+</table>
+
+<p>For a pure classifier, Gemini Decision 1 ties the cheapest Gemini text model on input and is <strong>2.4x cheaper on a complete call</strong>, because the text models must generate an answer you are going to parse and throw away. If your classifier spends 200 output tokens per call to emit <code>{"category": "billing"}</code>, you are paying for a $0.30 output call to learn one of six possible strings.</p>
+
+<p>The honest caveat: this holds only if you were using a text model for classification in the first place. If you needed the reasoning, this is not a substitute. It replaces a narrow slice of text-generation work, not a general model.</p>
+
+<h2 id="rate-limits">Rate limits: a 200 RPM free tier that actually works</h2>
+
+<p>The Gemini Decision rate limits sit on their own table, separate from the standard interactive limits, and are unusually generous:</p>
+
+<table>
+<thead>
+<tr><th>Usage tier</th><th>Requests per minute</th><th>Tokens per minute</th><th>Requests per day</th></tr>
+</thead>
+<tbody>
+<tr><td>Free</td><td>200</td><td>50,000</td><td>10,000</td></tr>
+<tr><td>Tier 1</td><td>1,500</td><td>1,000,000</td><td>50,000</td></tr>
+<tr><td>Tier 2</td><td>5,000</td><td>4,000,000</td><td>Unlimited</td></tr>
+<tr><td>Tier 3</td><td>15,000</td><td>10,000,000</td><td>Unlimited</td></tr>
+</tbody>
+</table>
+
+<p>Compare that to the Gemini Omni Flash limits on the same page — Free tier is not supported at all, and Tier 1 is 8 RPM. A free-tier project on Gemini Decision can make 200 classification requests a minute, and 10,000 a day, with no billing account attached. Tier upgrades follow the standard ladder: Tier 1 needs a billing account, Tier 2 needs $100 paid plus 3 days, Tier 3 needs $1,000 plus 30 days.</p>
+
+<p>One constraint: the <strong>free tier is billed at $0.10 per million input tokens, and the free allocation applies to the price, not the request count</strong>, so a free project can hit the 50,000 TPM cap quickly on large documents without paying anything. Free access to the endpoint is not unlimited volume.</p>
+
+<h2 id="limits">Hard limits and what is not supported</h2>
+
+<p>The Limits table is explicit; exceeding any of them returns HTTP 400 with an error naming the rule:</p>
+
+<table>
+<thead>
+<tr><th>Limit</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Questions per request</td><td>1 to 1,000, bounded by the 262,144-token context window</td></tr>
+<tr><td>Options per choice question</td><td>2 to 255</td></tr>
+<tr><td>Levels per score question</td><td>2 to 255 non-empty strings, 2 to 10 recommended</td></tr>
+<tr><td>Context window</td><td>262,144 tokens across shared input and all questions</td></tr>
+<tr><td>Inline media</td><td>100 MB per request, or 50 MB for PDFs</td></tr>
+<tr><td>External URL input</td><td>15 MB per URL</td></tr>
+<tr><td>Question key</td><td>1 to 64 ASCII characters, letters, digits, underscore, hyphen</td></tr>
+</tbody>
+</table>
+
+<p>The <strong>1,000 questions per request</strong> figure is the headline capability, and it works the way the pricing says: shared input counts once per request regardless of how many questions you ask. Ten questions over one document do not cost ten times the input of one question over the same document. That is the batching mechanism this endpoint provides, and it is why the missing Batch API tier matters less than it sounds.</p>
+
+<p>The capability list is where it gets restrictive. Gemini Decision 1 supports <strong>none</strong> of the following: text generation, structured outputs, function calling, thinking, code execution, file search, search grounding, URL context, computer use, image generation, audio generation, the Live API, context caching, Batch API, Flex inference, Priority inference, or the Agents API. It is a single-purpose model.</p>
+
+<p>Two more constraints. <strong>Conversation history, thought, and tool-call blocks are not supported as input blocks</strong> — serialise multi-turn context as text. And <strong>question instructions accept text only</strong>; media goes in the shared input, never inside a question. YouTube URLs and <code>gs://</code> URIs are rejected; pass media as a Files API URI, a signed HTTPS URL, or inline base64. When safety filters block a request you get HTTP 400 with a code such as <code>safety</code> or <code>blocklist</code> — not a refusal answer, an error.</p>
+
+<p>Finally, the endpoint is on the <strong>Gemini Developer API (v1beta)</strong> only, with Gemini Decision 1 only. There is no GA designation and no Vertex AI availability.</p>
+
+<h2 id="code">Calling it: REST, Python, and JavaScript</h2>
+
+<p>The REST shape is straightforward — a POST to the <code>/v1beta/decisions</code> endpoint with your model, shared input, and question map:</p>
+
+<pre><code is:raw>curl -X POST "https://generativelanguage.googleapis.com/v1beta/decisions" \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gemini-decision-1",
+    "input": "The blue mug I ordered on Monday arrived cracked on Wednesday.",
+    "questions": {
+      "is_damaged": {
+        "type": "noul",
+        "instructions": "Did the item arrive damaged?"
+      },
+      "queue": {
+        "type": "choice",
+        "instructions": "Which support queue should handle this message?",
+        "criteria": {
+          "billing": "Payment, invoice, or refund questions.",
+          "replacements": "Damaged, missing, or wrong items.",
+          "general": "Product questions and account updates."
+        }
+      }
+    }
+  }'
+</code></pre>
+
+<p>The Python SDK path uses <code>client.decisions.create</code>, and it requires SDK 3.2 or later — <code>pip install -U google-genai</code> or <code>npm install @google/genai@latest</code>:</p>
+
+<pre><code is:raw>from google import genai
+
+client = genai.Client(http_options={"api_version": "v1beta"})
+
+result = client.decisions.create(
+    model="gemini-decision-1",
+    input="The blue mug I ordered on Monday arrived cracked on Wednesday.",
+    questions={
+        "is_damaged": {
+            "type": "noul",
+            "instructions": "Did the item arrive damaged?",
+        },
+        "queue": {
+            "type": "choice",
+            "instructions": "Which support queue should handle this message?",
+            "criteria": {
+                "billing": "Payment, invoice, or refund questions.",
+                "replacements": "Damaged, missing, or wrong items.",
+                "general": "Product questions and account updates.",
+            },
+        },
+    },
+)
+
+damaged = result.answers["is_damaged"]
+queue = result.answers["queue"]
+print(f"P(damaged)={damaged.noul:.2f} queue={queue.choice}")
+</code></pre>
+
+<p>One detail trips people up on the first call: <strong>the client must be pinned to the v1beta API version</strong>, because the Decisions API is not in the stable v1 surface. The <code>http_options={"api_version": "v1beta"}</code> argument above is not optional boilerplate here, and the JavaScript equivalent is <code>new GoogleGenAI({ apiVersion: "v1beta" })</code>.</p>
+
+<h2 id="clef">The competition you did not see in the launch post: Cloudflare Clef</h2>
+
+<p>Here is the part worth the rest of the article. Cloudflare has run a decision-model family on Workers AI for months, and its API contract is <strong>identical in shape to Google's</strong> — a shared <code>state</code> plus typed questions in <code>noul</code>, <code>choice</code>, and <code>score</code> form, returning a probability per allowed option. Google even documented the parallel: the "Jev shape" in gateway docs uses <code>state</code> where Google's uses <code>input</code>.</p>
+
+<p>The Cloudflare family:</p>
+
+<table>
+<thead>
+<tr><th>Model</th><th>Size</th><th>Context window</th><th>Input $/1M</th><th>Output</th></tr>
+</thead>
+<tbody>
+<tr><td><code>@cf/cloudflare/clef</code></td><td>27B multimodal</td><td>65,536</td><td>$0.240</td><td>None billed</td></tr>
+<tr><td><code>@cf/cloudflare/clef-omni</code></td><td>30B MoE, 3B active</td><td>64,000</td><td>$0.150</td><td>None billed</td></tr>
+<tr><td><code>@cf/cloudflare/clef-flash</code></td><td>9B multimodal</td><td>24,576</td><td>$0.038</td><td>None billed</td></tr>
+</tbody>
+</table>
+
+<p>Now do the arithmetic the launch post did not. Google's $0.10 per million input tokens is <strong>2.4x cheaper than Clef</strong> at the 27B tier — Google's headline rate wins. But <strong>Clef-flash at $0.038 is 2.6x cheaper than Google's $0.10</strong>, and Clef's free allocation is 10,000 neurons per day at no charge, billed at $0.011 per 1,000 beyond that. For the high-volume tier of a classification workload — short inputs, many of them, cheap errors — the price ordering <strong>inverts</strong>.</p>
+
+<p>Two more differences decide this for most teams, and both favour Cloudflare. First, <strong>media tokenisation is published and deterministic</strong>: images are resized to a multiple of 32 pixels, counted as 32x32-pixel patches, marked with 3 tokens, and capped at 1,024 tokens per image, with audio at roughly 780 tokens per minute. You can compute the cost of a video classification call before you make it. Google's Decisions API publishes no comparable per-media token formula. Second, <strong>Cloudflare's models are marked zero data retention</strong> on the model card; Google's pricing page states only the standard "used to improve our products: No" on the paid tier and "Yes" on the free tier — a materially weaker guarantee for free-tier evaluation data.</p>
+
+<p>Where Google wins is scale and context. The 262,144-token context window is 4x Clef's 65,536 and roughly 10x Clef-flash's 24,576, which matters when the shared input is a long document or video. Google's 1,000-question ceiling with shared input counted once is the cleanest implementation of the multi-rule policy check this architecture exists for. Cloudflare's models are smaller by construction — 9B to 30B versus an unstated frontier model — so on genuinely hard inputs calibration quality is not obviously comparable, and neither vendor publishes a shared calibration benchmark. Nobody can tell you from primary sources which is better calibrated; the honest answer is that you calibrate against your own traffic, which is what the confidence field is designed for.</p>
+
+<p>There is a third option that makes this a three-way comparison. <strong>Microsoft ships Decision 1 on Azure AI Foundry</strong>, and Portkey's gateway exposes a unified <code>/v1/decisions</code> endpoint whose supported providers include TypeSafe Jev, OpenRouter, Cloudflare Workers AI, OpenAI, and <strong>Microsoft Decision 1</strong>. OpenRouter also lists <code>typesafe/jev-router</code>. One gateway call can route the same question set across several decision backends, and Portkey documents guardrails for decision requests specifically.</p>
+
+<p>For teams wanting to try more than one backend without rewriting integration code, a gateway such as <a href="https://portkey.ai/?ref=apirank" class="text-blue-600 hover:underline">Portkey</a> exposes that unified decisions endpoint, and an aggregator such as <a href="https://openrouter.ai/affiliates" class="text-blue-600 hover:underline">OpenRouter</a> lists decision-shaped routing models to compare against first-party rates. Note that <strong>neither currently lists <code>gemini-decision-1</code></strong>: OpenRouter's live catalog carries 45 Google models but no decision model, so Gemini Decision is first-party-only.</p>
+
+<h2 id="how-to-use">When to use it, and when not to</h2>
+
+<p>Google's guidance names the use cases precisely, and they are narrower than "classification": routing a request to a model, queue, agent, or tool; checking inputs and outputs against many policy rules at once; deciding which tools an agent needs or whether to compact, escalate, or stop; filtering, scoring, or ranking candidates against a rubric; and reacting to UI state, audio, or video frames in real time.</p>
+
+<p>The differentiator against structured outputs is not that structured outputs are bad — they are right when you need extracted values following your own JSON schema. The difference is that structured outputs still produce text you parse, while the Decisions API produces a calibrated probability you can threshold. If the answer you need is a number with confidence attached, the Decisions API fits. If you need "extract the invoice number", it does not.</p>
+
+<p>Four best practices from the official guide are worth making non-negotiable:</p>
+
+<ul>
+<li><strong>Prefer positive phrasing.</strong> Ask "Is the tier Gold?" and subtract the yes probability from 1 in code, rather than asking "Is the tier NOT Gold?".</li>
+<li><strong>Send only the fields the questions need.</strong> Unrelated content lowers accuracy.</li>
+<li><strong>Treat input as untrusted.</strong> User-supplied text can argue for its own classification. Write explicit criteria, test with adversarial examples, and keep a human or a second check on high-stakes actions such as payouts.</li>
+<li><strong>Compare numbers, dates, and durations in code</strong>, then pass the result or a named bucket in the input. Do not ask the model to compare two dates.</li>
+</ul>
+
+<p>That third point matters for anyone building a moderation or payment gate on this. A classifier argued with by its own input is one you will have to defend to a risk team. The isolation guarantee across questions does not extend to isolation from the input.</p>
+
+<h2 id="verdict">Verdict</h2>
+
+<p>Gemini Decision 1 is a real architectural addition, not a rebranding of structured outputs, and the compelling parts are the ones a text model cannot copy: zero output tokens, a flat $0.10 input rate with no promotional window, a 262,144-token context, 1,000 questions per request with shared input counted once, and a free tier allowing 200 requests per minute without a billing account. For a team paying a text model to emit JSON it immediately parses and discards, this belongs in the evaluation queue.</p>
+
+<p>But the launch framing missed the comparison that actually determines the decision. <strong>Cloudflare's Clef family has run this exact architecture for months</strong>, at published prices, with published media tokenisation and a zero-data-retention guarantee — and its flash tier at $0.038 undercuts Google's headline $0.10 by 2.6x, while Cloudflare's free daily allocation gives you 10,000 neurons a day before you pay anything. Google wins on context length and the elegance of the 1,000-question shared-input design. Cloudflare wins on unit price at the volume tier, cost predictability for media, and data handling. Microsoft Decision 1 on Azure AI Foundry is the third option.</p>
+
+<p>Treat this as a three-way bake-off against your own labelled traffic, and calibrate thresholds before shipping. Nobody publishes a cross-vendor calibration benchmark for this endpoint category, so the confidence field is not a substitute for measurement — it is the hook you use to run it. The free tier is forgiving on both vendors, which makes the evaluation cheap.</p>
+
+<h2 id="sources">Sources</h2>
+
+<p>Verified on November 12, 2026: Google's Gemini API pricing page (the Gemini Decision rate card and comparison models' rates); Google's Decisions API guide (question types, probability and confidence semantics, the alphabetical choice-key ordering rule, score index-averaging behaviour, the best-practice list, and the Limits table); Google's Gemini Decision 1 model page (token limits, the 1,000-question ceiling, the not-supported capability list); Google's rate limits page (the Gemini Decision RPM, TPM, and RPD table and the usage-tier ladder); Google's release notes for November 11, 2026; Cloudflare's Workers AI model pages for <code>clef</code>, <code>clef-omni</code>, and <code>clef-flash</code> (context windows, media tokenisation, zero-data-retention flags) and the Workers AI pricing page (per-model rates, free allocation); Portkey's AI Gateway Decisions API docs; and the live OpenRouter model catalog.</p>
+
+<p class="text-sm text-gray-500 mt-6"><strong>Disclosure:</strong> APIRank is an independent comparison site. Pricing data in this article was verified against Google's official Gemini API documentation and Cloudflare's Workers AI documentation on 2026-11-12. We may earn affiliate commission when you sign up through links on this page, at no extra cost to you.</p>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={{enBody}} />
+</BaseLayout>
