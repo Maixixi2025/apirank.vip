@@ -565,7 +565,7 @@ async function main() {
       try {
         execSync(`git add src/data/providers.json`, { cwd: REPO });
         execSync(
-          `git commit -m "chore(pricing): update from official sources [skip ci]\\n\\nApplied ${highConf.length} high-confidence changes (${lowConf.length} queued for manual review)\\nReport: ${REPORT_DIR}/report.json"`,
+          `git commit -m "chore(pricing): update from official sources\\n\\nApplied ${highConf.length} high-confidence changes (${lowConf.length} queued for manual review)\\nReport: ${REPORT_DIR}/report.json"`,
           { cwd: REPO, stdio: 'inherit' },
         );
         log('Committed.');
