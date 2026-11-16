@@ -106,6 +106,80 @@ function pricingChanged(a, b) {
   return aS !== bS;
 }
 
+// ---------------------------------------------------------------------------
+// Coverage-preservation guard.
+//
+// The extractors (and the LLM fallback) summarise a pricing PAGE, they do not
+// re-derive the catalog. The LLM prompt caps every field at 200 chars and the
+// page slice is only 6KB of text, so a summary legitimately covers fewer
+// models than the curated entry it replaces.
+//
+// "high confidence" from an extractor means "these NUMBERS are right", not
+// "this is the complete picture". Applying it verbatim therefore deletes
+// curated coverage (model families, cache rates, free-tier notes, GPU hours)
+// that the page slice simply did not mention.
+//
+// Rule: an extraction that would DROP information relative to the current
+// curated entry is not auto-appliable. Demote it to the review queue and let
+// a human merge the new numbers into the existing entry.
+const COVERAGE_MIN_RATIO = 0.75;
+
+const PRICING_NOISE = new Set(`api apis llm llms ai usd cny eur gbp jpy rmb gpu gpus cpu vram faq cta http https json html xml dom pdf url uri id ids ip os ok yes no na gb mb kb tb ms hr mo yr vs and or the mcp saas tee oss mit agpl bsd cc nc pd py js ts css seo mvp ocr rag rl hf nlp sla eula sdk cli ui ux pr qps rps ttl ot cr dr sr fr it es jp kr us uk eu ag sg hk tw my tokens token input output cache cached per million model models price pricing free paid serverless standard batch flex fast long context note rate rates details page full breakdown see also visit site official intro deduction includes including only from this that with and for not all new old latest current about more less than then some`.split(/\s+/));
+
+function normalizeKey(s) {
+  return String(s || '').toLowerCase().replace(/[^a-z0-9.]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+// Extract a comparable set of model identifiers from a pricing string.
+function modelTokens(text) {
+  const out = new Set();
+  if (!text) return out;
+  const s = String(text);
+  for (const m of s.matchAll(/\b([A-Za-z][A-Za-z0-9]{1,14})[\s-]?(\d[\w.]*[A-Za-z][\w.]*|\d[\d.]*)\b/g)) {
+    out.add(normalizeKey(`${m[1]} ${m[2]}`));
+  }
+  for (const m of s.matchAll(/\b([A-Za-z][A-Za-z0-9]*(?:[.\-][A-Za-z0-9]+)+)\b/g)) {
+    out.add(normalizeKey(m[1]));
+  }
+  for (const m of s.matchAll(/\b([A-Z]{2,6}\d{0,3}[A-Z]*|[A-Z]\d[\w.\-]*)\b/g)) {
+    if (!PRICING_NOISE.has(m[1].toUpperCase())) out.add(normalizeKey(m[1]));
+  }
+  for (const m of s.matchAll(/\b([A-Z][a-z]{2,}(?: [A-Z][a-z]{2,}){0,2})\b/g)) {
+    out.add(normalizeKey(m[1]));
+  }
+  return out;
+}
+
+// Returns an array of human-readable reasons why `after` would lose coverage
+// relative to `before`. Empty array = safe to apply.
+function coverageLossReasons(before, after) {
+  const reasons = [];
+  for (const obj of ['pricing', 'pricingEN']) {
+    const b = before?.[obj] || {};
+    const a = after?.[obj] || {};
+    for (const k of Object.keys(b)) {
+      if (!String(b[k] ?? '').trim()) continue;
+      if (!(k in a)) reasons.push(`${obj}.${k} dropped`);
+    }
+    for (const k of ['input', 'output']) {
+      const bt = b[k];
+      const at = a[k];
+      if (!bt || !at) continue;
+      const bl = String(bt).length;
+      const al = String(at).length;
+      if (al < bl * COVERAGE_MIN_RATIO) {
+        reasons.push(`${obj}.${k} shrank ${bl}->${al} chars`);
+      }
+      const bm = modelTokens(bt);
+      const am = modelTokens(at);
+      if (bm.size && am.size && !([...bm].some(t => am.has(t)))) {
+        reasons.push(`${obj}.${k} covers a disjoint model set`);
+      }
+    }
+  }
+  return reasons;
+}
+
 async function fetchAndParse(url, httpCfg) {
   const res = await fetchText(url, httpCfg);
   const text = stripHtml(res.text);
@@ -257,6 +331,20 @@ async function updateOne(provider, opts) {
     result.wouldChange = true;
   }
 
+  // 3b. Coverage guard — an extraction that would drop curated information is
+  // not auto-appliable, regardless of what the extractor called its confidence.
+  // Demote it to the review queue instead of silently deleting coverage.
+  if (result.wouldChange) {
+    const losses = coverageLossReasons(result.before, result.after);
+    if (losses.length) {
+      result.coverageLoss = losses;
+      result.demoted = true;
+      result.confidence = 'low';
+      result.notes = `${result.notes ? result.notes + ' | ' : ''}demoted to review: would lose coverage (${losses.join('; ')})`;
+      log(`  → demoted to review (would lose coverage): ${losses.join('; ')}`);
+    }
+  }
+
   // Flag placeholders
   if (isPlaceholder(beforePricing.input) || isPlaceholder(beforePricing.output)) {
     result.hadPlaceholder = true;
@@ -316,6 +404,8 @@ async function main() {
       wouldChange: results.filter(r => r.wouldChange).length,
       skipped: results.filter(r => r.status === 'skipped').length,
       errors: results.filter(r => r.status === 'error').length,
+      demoted: results.filter(r => r.demoted).length,
+      autoApplicable: results.filter(r => r.wouldChange && r.confidence === 'high').length,
     },
     results,
   };
@@ -336,6 +426,8 @@ async function main() {
         before: r.before,
         after: r.after,
         notes: r.notes,
+        demoted: !!r.demoted,
+        coverageLoss: r.coverageLoss || null,
       })),
   };
   fs.writeFileSync(path.join(REPORT_DIR, 'proposed-diff.json'), JSON.stringify(proposedDiff, null, 2));
@@ -351,12 +443,14 @@ async function main() {
 
     const reviewQueue = {
       generatedAt: now(),
-      note: 'These entries have low/medium extractor confidence. Review the raw excerpts in report.json before manually merging into providers.json.',
+      note: 'These entries have low/medium extractor confidence, or were demoted because applying them would drop curated coverage. Review the raw excerpts in report.json before manually merging into providers.json.',
       entries: results
         .filter(r => r.wouldChange && r.confidence !== 'high')
         .map(r => ({
           id: r.id, name: r.name, confidence: r.confidence,
           sourceUrl: r.sourceUrl,
+          demoted: !!r.demoted,
+          coverageLoss: r.coverageLoss || null,
           before: r.before, after: r.after, notes: r.notes,
         })),
     };
@@ -373,11 +467,15 @@ async function main() {
         const change = highConf.find(e => e.id === p.id);
         if (!change) return p;
         const next = { ...p };
-        if (change.after.pricing && Object.keys(change.after.pricing).length) {
-          next.pricing = change.after.pricing;
-        }
-        if (change.after.pricingEN && Object.keys(change.after.pricingEN).length) {
-          next.pricingEN = change.after.pricingEN;
+        // Merge sub-keys instead of replacing the whole object: an extraction
+        // that only produced `input`/`output` must not delete curated
+        // `cacheRead` / `freeTier` / `unit` siblings.
+        for (const objKey of ['pricing', 'pricingEN']) {
+          const after = change.after?.[objKey];
+          if (!after || !Object.keys(after).length) continue;
+          const before = p[objKey] || {};
+          const merged = { ...before, ...after };
+          next[objKey] = merged;
         }
         return next;
       });
@@ -419,12 +517,14 @@ async function main() {
   console.log(`Total: ${report.summary.total}`);
   console.log(`OK: ${report.summary.ok}`);
   console.log(`Would change: ${report.summary.wouldChange}`);
+  console.log(`  - auto-applicable (high confidence): ${report.summary.autoApplicable}`);
+  console.log(`  - demoted to review (coverage loss): ${report.summary.demoted}`);
   console.log(`Skipped: ${report.summary.skipped}`);
   console.log(`Errors: ${report.summary.errors}`);
   console.log('');
   console.log('Per-provider results:');
   for (const r of results) {
-    const tag = r.wouldChange ? '✏' : (r.status === 'ok' ? '✓' : (r.status === 'skipped' ? '–' : '✖'));
+    const tag = r.demoted ? '⚠' : (r.wouldChange ? '✏' : (r.status === 'ok' ? '✓' : (r.status === 'skipped' ? '–' : '✖')));
     console.log(`  ${tag} ${r.id.padEnd(22)} ${r.status.padEnd(8)} ${r.confidence || ''} ${r.notes || ''}`);
   }
 }
