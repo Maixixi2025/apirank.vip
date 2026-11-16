@@ -180,6 +180,62 @@ function coverageLossReasons(before, after) {
   return reasons;
 }
 
+// ---------------------------------------------------------------------------
+// Magnitude guard.
+//
+// The coverage guard catches information LOSS. It cannot catch a UNIT error —
+// where the extraction has the right prices but the wrong unit, and every
+// number is 1000x too large.
+//
+// Verified 2026-11-16: the deepgram LLM extraction read "$0.0065 / min" as
+// "$6.50 / min" (and "$0.0078" as "$7.80", "$0.0048" as "$4.80"), because the
+// price table renders per-1,000-token rates in the JSON-LD Offer block while
+// the visible table renders per-minute rates. The extractor mixed the two and
+// produced a high-confidence diff with numbers 1000x too big. The coverage
+// guard passed it (nothing was dropped) and it was written to the catalog.
+//
+// Rule: if the largest price in a field jumps by >= MAGNITUDE_JUMP_FACTOR
+// relative to the largest price currently in that field, the extraction is
+// almost certainly a unit error, not a real price change. Demote to review.
+const MAGNITUDE_JUMP_FACTOR = 100;
+
+// Largest number attached to each currency symbol in a pricing string.
+function maxPriceByCurrency(text) {
+  const out = {};
+  if (typeof text !== 'string') return out;
+  for (const [sym, key] of [['$', 'usd'], ['¥', 'cny'], ['￥', 'cny']]) {
+    const vals = [];
+    for (const m of text.matchAll(new RegExp('\\' + sym + '\\s*(\\d+(?:\\.\\d+)?)', 'g'))) {
+      const v = Number(m[1]);
+      if (Number.isFinite(v)) vals.push(v);
+    }
+    if (vals.length) out[key] = Math.max(...vals);
+  }
+  return out;
+}
+
+// Returns reasons why the magnitude of the extracted prices is implausible
+// relative to the current entry. Empty array = no magnitude anomaly.
+function magnitudeJumpReasons(before, after) {
+  const reasons = [];
+  for (const obj of ['pricing', 'pricingEN']) {
+    const b = before?.[obj] || {};
+    const a = after?.[obj] || {};
+    for (const k of ['input', 'output']) {
+      const bmax = maxPriceByCurrency(b[k]);
+      const amax = maxPriceByCurrency(a[k]);
+      for (const cur of Object.keys(amax)) {
+        const prev = bmax[cur];
+        if (!prev || prev <= 0) continue;
+        if (amax[cur] >= prev * MAGNITUDE_JUMP_FACTOR) {
+          reasons.push(`${obj}.${k} ${cur} price jumped ${prev} -> ${amax[cur]} (>= ${MAGNITUDE_JUMP_FACTOR}x, likely a unit error)`);
+        }
+      }
+    }
+  }
+  return reasons;
+}
+
 async function fetchAndParse(url, httpCfg) {
   const res = await fetchText(url, httpCfg);
   const text = stripHtml(res.text);
@@ -345,6 +401,21 @@ async function updateOne(provider, opts) {
     }
   }
 
+  // 3c. Magnitude guard — a >=100x jump in the largest price in a field is
+  // almost always a unit error (per-1,000-token rate read as per-minute), not
+  // a real price change. The coverage guard cannot see this: nothing was
+  // dropped, the numbers are just wrong by a factor of 1000.
+  if (result.wouldChange && !result.demoted) {
+    const jumps = magnitudeJumpReasons(result.before, result.after);
+    if (jumps.length) {
+      result.magnitudeJump = jumps;
+      result.demoted = true;
+      result.confidence = 'low';
+      result.notes = `${result.notes ? result.notes + ' | ' : ''}demoted to review: implausible price magnitude (${jumps.join('; ')})`;
+      log(`  → demoted to review (implausible magnitude): ${jumps.join('; ')}`);
+    }
+  }
+
   // Flag placeholders
   if (isPlaceholder(beforePricing.input) || isPlaceholder(beforePricing.output)) {
     result.hadPlaceholder = true;
@@ -428,6 +499,7 @@ async function main() {
         notes: r.notes,
         demoted: !!r.demoted,
         coverageLoss: r.coverageLoss || null,
+        magnitudeJump: r.magnitudeJump || null,
       })),
   };
   fs.writeFileSync(path.join(REPORT_DIR, 'proposed-diff.json'), JSON.stringify(proposedDiff, null, 2));
@@ -451,6 +523,7 @@ async function main() {
           sourceUrl: r.sourceUrl,
           demoted: !!r.demoted,
           coverageLoss: r.coverageLoss || null,
+          magnitudeJump: r.magnitudeJump || null,
           before: r.before, after: r.after, notes: r.notes,
         })),
     };
