@@ -28996,7 +28996,253 @@
     "bestForEN": "Teams that need EU data residency; anyone keeping OpenAI as a second supplier to avoid a single point of failure; bulk offline work (re-embedding, classification sweeps, evaluation runs) that can use the 50% Batches rate; and compliance cases where a fixed location is worth a per-GPU-hour bill",
     "status": "active",
     "addedDate": "2026-10-30",
-    "source": "apirank-cron-74aa76f6b770"
+    "source": "apirank-cron-74aa76f6b770",
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": [
+          "Plan / Dimension",
+          "Price",
+          "What's included",
+          "Best For"
+        ],
+        "headersZh": [
+          "套餐 / 计费维度",
+          "价格",
+          "包含内容",
+          "最佳用途"
+        ],
+        "rows": [
+          [
+            "Serverless, entry tier",
+            "€0.15/M input, €0.35/M output (mistral-small-3.2-24b-instruct-2506); €0.15/M and €0.60/M (gpt-oss-120b)",
+            "Chat and vision / chat at 128K context. Pure pay-per-token, no subscription and no minimum commitment",
+            "High-volume classification, extraction and routing where a 24B model is enough"
+          ],
+          [
+            "Serverless, mid tier",
+            "€0.25/M input, €0.50/M output (gemma-4-26b-a4b-it); €0.25/M and €1.50/M (qwen3.6-35b-a3b)",
+            "Chat, code and vision at 256K context. Both support structured output and parallel tool calling",
+            "Multimodal document work and agentic pipelines on a 256K window"
+          ],
+          [
+            "Serverless, DeepSeek tier",
+            "€0.40/M and €0.80/M (deepseek-v4-flash-0731, cached input €0.08/M); €0.60/M and €1.80/M (deepseek-v4.1-flash-1017, cached input €0.12/M)",
+            "Chat, code and vision at 256K. Cached input is exactly one fifth of standard input on both models, the cheapest repeated-prompt path in this catalogue",
+            "Long agentic loops that resend the same system prompt or tool schema every turn"
+          ],
+          [
+            "Serverless, Qwen frontier tier",
+            "€0.60/M and €3.60/M (qwen3.5-397b-a17b, 256K); €0.60/M and €3.30/M (qwen3.8-27b, cached input €0.12/M); €0.75/M and €2.25/M (qwen3-235b-a22b-instruct-2507, 250K)",
+            "Frontier-scale open-weight models behind one OpenAI-shaped endpoint, with qwen3.8-27b also exposing reasoning-effort controls",
+            "Hard reasoning and agentic tasks where a 397B MoE is worth the output rate"
+          ],
+          [
+            "Serverless, premium tier",
+            "€1.50/M and €7.50/M (mistral-medium-3.5-128b, 180K); €1.80/M and €5.50/M (glm-5.3, 256K)",
+            "Vision-capable medium models. glm-5.2 is listed at the same rates but was deprecated on 2026-10-16 with EOL on 2026-11-16, and its traffic now routes to glm-5.3",
+            "Multi-step reasoning where output tokens dominate the bill and quality matters more than price"
+          ],
+          [
+            "Embeddings and OCR",
+            "€0.10/M input for qwen3-embedding-8b and bge-multilingual-gemma2 with output free; €2.20/M for lightonocr-3-0.8b with output free",
+            "8K context for the Gemma-based embedding, PDF-only OCR in a 0.8B model. Neither charges for output",
+            "Retrieval pipelines and scanned-document ingestion that must stay on a European-hosted stack"
+          ],
+          [
+            "Audio transcription",
+            "€0.003 per audio minute on whisper-large-v3, output free",
+            "Roughly USD 1.80 per hour. The free tier covers 60 minutes of transcription",
+            "Call-centre and meeting transcription that has to stay inside the EU"
+          ],
+          [
+            "Free tier, Serverless only",
+            "1,000,000 tokens free plus 60 minutes of audio transcription; billing starts at token 1,000,001",
+            "The allowance is consumed by the most expensive tokens first and the minimum billing unit is 1,000 tokens. Across several projects it is split proportionally to each project's consumption",
+            "Evaluating the entire 17-model catalogue before paying anything"
+          ],
+          [
+            "Batches API",
+            "-50% on every request, and no rate limit at all",
+            "Request bodies live in Object Storage over the S3 protocol. Scaleway targets completion within 24 hours and processes batches in creation order, so splitting one 10,000-request batch into ten 1,000-request batches returns the first results an hour later instead of ten hours later",
+            "Bulk re-embedding, offline evaluation sweeps and any workload that does not need a live answer"
+          ],
+          [
+            "Dedicated Deployment",
+            "€0.93/hour L4-1-24G (€678.90/month), €1.72 L40S-1-48G (€1,255.31), €3.40 H100-1-80G (€2,481.71), €6.68 H100-2-80G, €7.95 H100-SXM-2-80G, €15.22 H100-SXM-4-80G, €30.06 H100-SXM-8-80G (€21,943.80)",
+            "Billed per GPU hour rather than per token, and only once the deployment is running. Billing cannot be paused while a deployment is up, so schedule creation and deletion from the API, Terraform or the Scaleway SDKs to match working hours",
+            "Predictable throughput, a guaranteed single-region footprint, or a peak burst that must not queue"
+          ],
+          [
+            "Serverless vs Dedicated crossover, from Scaleway's own calculator",
+            "At 100 users x 100 queries/day with 10K input and 1K output tokens on mistral-small-3.2: €1,655/month dedicated (2x H100) against €2,775/month serverless",
+            "The calculator reports 56.1 output tokens/sec per request, 17.83 seconds average query duration and 53,856 output tokens/min per GPU, and prices the footprint too: 17.64 kg CO2e for dedicated against 74.60 kg for serverless",
+            "Deciding when to leave per-token billing behind for reserved capacity"
+          ],
+          [
+            "Availability SLA",
+            "99.9% monthly availability rate on Generative APIs Serverless",
+            "Credits are 10% of the monthly invoice at 99.0-99.9%, 25% at 95.0-99.0% and 50% below 95.0%, capped at half of that month's invoice, and must be claimed within 30 days with request logs. Dedicated Deployment has no SLA defined yet",
+            "Contracts where availability is measured, and anyone still weighing dedicated capacity"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "无服务器 · 入门档",
+            "mistral-small-3.2-24b-instruct-2506 输入 €0.15/M、输出 €0.35/M；gpt-oss-120b 输入 €0.15/M、输出 €0.60/M",
+            "对话与视觉 / 对话，128K 上下文。纯按量付费，无订阅、无最低消费承诺",
+            "分类、抽取、路由等高并发场景，24B 够用即可"
+          ],
+          [
+            "无服务器 · 中间档",
+            "gemma-4-26b-a4b-it 输入 €0.25/M、输出 €0.50/M；qwen3.6-35b-a3b 输入 €0.25/M、输出 €1.50/M",
+            "对话、代码与视觉，256K 上下文。两者都支持结构化输出与并行工具调用",
+            "多模态文档处理与智能体流水线，256K 窗口装得下"
+          ],
+          [
+            "无服务器 · DeepSeek 档",
+            "deepseek-v4-flash-0731 为 €0.40/M 与 €0.80/M（缓存输入 €0.08/M）；deepseek-v4.1-flash-1017 为 €0.60/M 与 €1.80/M（缓存输入 €0.12/M）",
+            "对话、代码与视觉，256K。两者缓存输入价都恰好是标准输入价的五分之一，是目录里最省的重复提示词路径",
+            "每一轮都要重发系统提示或工具 schema 的长程智能体循环"
+          ],
+          [
+            "无服务器 · Qwen 前沿档",
+            "qwen3.5-397b-a17b €0.60/M 与 €3.60/M（256K）；qwen3.8-27b €0.60/M 与 €3.30/M（缓存输入 €0.12/M）；qwen3-235b-a22b-instruct-2507 €0.75/M 与 €2.25/M（250K）",
+            "前沿规模的开源权重模型共用同一个 OpenAI 形状端点，qwen3.8-27b 还额外暴露推理强度控制",
+            "硬核推理与智能体任务，397B MoE 值这个输出价"
+          ],
+          [
+            "无服务器 · 高端档",
+            "mistral-medium-3.5-128b €1.50/M 与 €7.50/M（180K）；glm-5.3 €1.80/M 与 €5.50/M（256K）",
+            "带视觉能力的中型模型。glm-5.2 价目相同，但已于 2026-10-16 弃用、2026-11-16 停止服务，流量改路由到 glm-5.3",
+            "多步推理任务，输出 token 主导账单、看重质量甚于价格"
+          ],
+          [
+            "嵌入与 OCR",
+            "qwen3-embedding-8b 与 bge-multilingual-gemma2 输入均 €0.10/M、输出免费；lightonocr-3-0.8b €2.20/M、输出免费",
+            "Gemma 系嵌入 8K 上下文；0.8B 的 PDF 专用 OCR。两者输出均不计费",
+            "检索流水线与扫描件入库，且要留在欧洲托管"
+          ],
+          [
+            "音频转写",
+            "whisper-large-v3 每音频分钟 €0.003，输出免费",
+            "约合每小时 1.80 美元。免费额度含 60 分钟转写",
+            "必须留在欧盟境内的客服与会议转写"
+          ],
+          [
+            "免费额度（仅无服务器）",
+            "100 万 token 免费 + 60 分钟音频转写；从第 1,000,001 个 token 起计费",
+            "免费额度优先抵扣最贵的 token，最低计费单位为 1,000 token。多项目之间按各自消费额按比例分摊",
+            "先零成本把 17 个模型的整个目录试一遍"
+          ],
+          [
+            "Batches 批处理接口",
+            "所有请求五折，且完全不受速率限制",
+            "请求体放在通过 S3 协议访问的 Object Storage 里。官方目标是 24 小时内处理完，按创建顺序处理；把一个 1 万请求的批次拆成 10 个 1 千请求的批次，第一个结果一小时后就到，而不是十小时后",
+            "批量重嵌入、离线评测扫描，以及任何不需要实时答复的工作负载"
+          ],
+          [
+            "专属部署（Dedicated Deployment）",
+            "L4-1-24G €0.93/小时（€678.90/月）、L40S-1-48G €1.72（€1,255.31）、H100-1-80G €3.40（€2,481.71）、H100-2-80G €6.68、H100-SXM-2-80G €7.95、H100-SXM-4-80G €15.22、H100-SXM-8-80G €30.06（€21,943.80）",
+            "按 GPU 小时而非按 token 计费，且仅在部署运行后才开始计费。部署运行期间账单无法暂停，可用 API、Terraform 或 Scaleway SDK 定时创建与删除以配合工作时段",
+            "要求可预期吞吐、必须单区域落地的合规场景，或峰值突发不能排队"
+          ],
+          [
+            "无服务器 vs 专属部署的交叉点（官方计算器）",
+            "100 用户 × 每天 100 次查询、每次 1 万输入 + 1 千输出 token，在 mistral-small-3.2 上：专属部署（2×H100）€1,655/月，无服务器 €2,775/月",
+            "计算器给出每个请求 56.1 输出 token/秒、平均查询 17.83 秒、每 GPU 每分钟 53,856 输出 token，并同时给出碳足迹：专属部署 17.64 kg CO2e 对无服务器 74.60 kg",
+            "判断何时该从按 token 计费转向预留算力"
+          ],
+          [
+            "可用性 SLA",
+            "Generative APIs 无服务器端承诺 99.9% 月度可用率",
+            "可用率落在 99.0–99.9% 赔付月度账单的 10%，95.0–99.0% 赔付 25%，低于 95.0% 赔付 50%，上限为该月账单的一半，且需在 30 天内凭请求日志提出。专属部署目前尚未定义 SLA",
+            "可用性会被计量的合同，以及正在评估专属算力的团队"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "One OpenAI-shaped base URL and seven endpoints",
+            "value": "Everything sits under https://api.scaleway.ai/v1. The published endpoint list is /v1/responses, /v1/chat/completions, /v1/audio/transcriptions, /v1/embeddings, /v1/rerank, /v1/batches and /v1/models, and the region path parameter is fr-par. /v1/chat/completions supports structured outputs in JSON response format, function tool calling (with MCP-server workflows), image input and audio input. /v1/rerank is not an OpenAI surface at all: it targets JinaAI and Cohere request formats."
+          },
+          {
+            "label": "The official OpenAI SDK works unchanged",
+            "value": "pip install openai, then point base_url at https://api.scaleway.ai/v1 and pass the SCW_SECRET_KEY as api_key. The same base URL also drops into LangChain, LlamaIndex, Continue Dev, Zed AI, Cursor, GitHub Copilot, OpenCode, Claude Code, Qwen Code, Bolt.diy, Chatbox AI, LiteLLM, n8n and Openclaw. Keys are IAM API keys, issued and revoked from the console, and a project-scoped URL form api.scaleway.ai/{project_id}/v1/... keeps traffic inside one project."
+          },
+          {
+            "label": "The Responses API exists but is stateless, and the gaps are documented",
+            "value": "Scaleway publishes both surfaces and tells you which OpenAI parameters it drops. On /v1/chat/completions the unsupported parameters are audio, metadata, modalities, prediction, prompt_cache_key, user, safety_identifier, service_tier, store, system_fingerprint and web_search_options. On /v1/responses the unsupported set is larger still: no conversation, no previous_response_id, no instructions, no background, no include and no server-side built-in tools, so web search and file search must be run by your own code. Only function tools are supported; custom tool types are not."
+          },
+          {
+            "label": "Dedicated deployments get their own base URL and accept your own weights",
+            "value": "A dedicated endpoint is https://{deployment-uuid}.ifr.fr-par.scaleway.com/v1/chat/completions (embeddings and audio/transcriptions follow the same shape), and the official Python snippet shows the OpenAI client pointed straight at it with model strings like meta/llama-3.1-8b-instruct:fp8. Custom models are in beta: you point at a Hugging Face repository, optionally a 4-bit quantisation, and Scaleway builds the deployment for you. Provisioning is scriptable through the Generative APIs - Dedicated Deployment API, Terraform and the Scaleway SDKs."
+          },
+          {
+            "label": "Three-layer quota model: organization quota, project rate limit, user budget",
+            "value": "Organization quotas are set by Scaleway and measured in tokens per minute, requests per minute and concurrent sessions; project rate limits are yours but cannot exceed the org quota; user budgets cap daily or monthly spend per key or end user in euros or tokens. Registering a payment method gives a 200k tokens/min base on most models, and verifying your identity raises it to 1,000k for glm-5.2 and mistral-medium-3.5-128b or 2,000k for gemma-4-26b-a4b-it and mistral-small-3.2-24b-instruct-2506. The console has a per-model Rate limit tab where you set the project limit and the daily and monthly budgets."
+          },
+          {
+            "label": "Batches API: half price, no rate limit, JSONL out of Object Storage",
+            "value": "Non-real-time work goes to /v1/batches, where every request is billed at 50% off and carries no rate limit at all. Inputs are files in Object Storage accessed over the Amazon S3 protocol, the metadata parameter is the only one not supported, and Scaleway aims to finish any batch within 24 hours, after which processing stops and unprocessed queries are not billed. Batches are processed in creation order, so a 10,000-request batch split into ten 1,000-request batches delivers its first results an hour sooner."
+          },
+          {
+            "label": "Published model lifecycle with automatic traffic rerouting",
+            "value": "Active models carry a support guarantee of at least eight months from regional launch and get a three-month notice before EOL; Preview models get one month of support and one month of notice. Retired strings are not simply deleted: glm-5.2 (deprecated 2026-10-16, EOL 2026-11-16) routes to glm-5.3, pixtral-12b-2409 and mistral-small-3.1-24b-instruct-2503 route to mistral-small-3.2-24b-instruct-2506, devstral-2-123b-instruct-2512 routes to qwen3.5-397b-a17b, voxtral-small-24b-2507 routes to whisper-large-v3 and holo2-30b-a3b routes to qwen3.6-35b-a3b. Dedicated deployments pin the model version in the deployment parameters, so a pinned deployment keeps working after EOL."
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "一个 OpenAI 形状的 base URL，七个端点",
+            "value": "全部服务位于 https://api.scaleway.ai/v1 之下。官方公布的端点清单是 /v1/responses、/v1/chat/completions、/v1/audio/transcriptions、/v1/embeddings、/v1/rerank、/v1/batches 与 /v1/models，区域路径参数为 fr-par。/v1/chat/completions 支持 JSON response format 结构化输出、函数工具调用（含 MCP 服务器工作流）、图片输入与音频输入。/v1/rerank 根本不是 OpenAI 面：它对齐 JinaAI 与 Cohere 的请求格式。"
+          },
+          {
+            "label": "官方 OpenAI SDK 原样可用",
+            "value": "pip install openai，把 base_url 指到 https://api.scaleway.ai/v1，api_key 传 SCW_SECRET_KEY 即可。同一个 base_url 也能直接接进 LangChain、LlamaIndex、Continue Dev、Zed AI、Cursor、GitHub Copilot、OpenCode、Claude Code、Qwen Code、Bolt.diy、Chatbox AI、LiteLLM、n8n 与 Openclaw。密钥是 IAM API key，在控制台签发与吊销；项目级 URL 形式 api.scaleway.ai/{project_id}/v1/... 可以把流量锁在单个项目内。"
+          },
+          {
+            "label": "Responses API 存在但是无状态的，缺口官方都写明",
+            "value": "Scaleway 同时公布两套接口，并明确列出哪些 OpenAI 参数不支持。/v1/chat/completions 不支持 audio、metadata、modalities、prediction、prompt_cache_key、user、safety_identifier、service_tier、store、system_fingerprint、web_search_options。/v1/responses 的缺口更大：没有 conversation、没有 previous_response_id、没有 instructions、没有 background、没有 include，也不执行服务端内置工具，所以网页搜索与文件搜索必须由你自己的代码来跑。只支持 function 工具，custom 工具类型不支持。"
+          },
+          {
+            "label": "专属部署拥有独立 base URL，也能跑你自己的权重",
+            "value": "专属端点是 https://{deployment-uuid}.ifr.fr-par.scaleway.com/v1/chat/completions（embeddings 与 audio/transcriptions 同形），官方 Python 示例直接把 OpenAI client 指过去，模型串形如 meta/llama-3.1-8b-instruct:fp8。自定义模型处于 beta：指向一个 Hugging Face 仓库（可选 4-bit 量化），Scaleway 帮你把部署建起来。开通流程可通过 Generative APIs - Dedicated Deployment API、Terraform 与 Scaleway SDK 脚本化。"
+          },
+          {
+            "label": "三层配额模型：组织配额、项目限速、用户预算",
+            "value": "组织配额由 Scaleway 设定，按每分钟 token 数、每分钟请求数与并发会话数计量；项目限速由你自己设定，但不能超过组织配额；用户预算按 key 或终端用户限制每日或每月的花费额度，可用欧元或 token 表示。登记支付方式后多数模型基线为每分钟 20 万 token；完成身份验证后，glm-5.2 与 mistral-medium-3.5-128b 提升到 100 万，gemma-4-26b-a4b-it 与 mistral-small-3.2-24b-instruct-2506 提升到 200 万。控制台的 Rate limit 标签页可以逐模型设置项目限速与每日/每月预算。"
+          },
+          {
+            "label": "Batches API：半价、不限速、输入放 Object Storage",
+            "value": "非实时工作走 /v1/batches：所有请求按五折计费，且完全不受速率限制。输入是以 Amazon S3 协议访问的 Object Storage 文件，唯一不支持的参数是 metadata。官方目标是任何批次在 24 小时内处理完，超时即停止处理，未处理的请求不计费。批次按创建顺序处理，因此把 1 万请求的批次拆成 10 个 1 千请求的批次，首批结果会早一小时到手。"
+          },
+          {
+            "label": "公开的模型生命周期与自动流量改路由",
+            "value": "Active 模型自区域上线起至少保障 8 个月支持，进入 EOL 前提前 3 个月通知；Preview 模型保障 1 个月支持与 1 个月通知。退场的模型串不会直接消失：glm-5.2（2026-10-16 弃用、2026-11-16 停止服务）改路由到 glm-5.3，pixtral-12b-2409 与 mistral-small-3.1-24b-instruct-2503 改路由到 mistral-small-3.2-24b-instruct-2506，devstral-2-123b-instruct-2512 改路由到 qwen3.5-397b-a17b，voxtral-small-24b-2507 改路由到 whisper-large-v3，holo2-30b-a3b 改路由到 qwen3.6-35b-a3b。专属部署把模型版本固定在部署参数里，因此 EOL 之后固定部署仍可继续运行。"
+          }
+        ]
+      },
+      {
+        "title": "🇪🇺 Paris-Only Sovereign Inference with a Serverless-to-Dedicated Crossover",
+        "titleZh": "🇪🇺 只落巴黎的主权推理，以及无服务器与专属部署的交叉点",
+        "type": "text",
+        "text": "Scaleway's distinguishing feature is that the whole serverless catalogue runs in one place: a single data centre in Paris operated by OPCORE, with the vendor committing that serverless models reachable through api.scaleway.ai remain hosted in Europe. That commitment is enforced rather than merely claimed, because Dedicated Deployment is Paris-only too, so a strict single-region residency requirement is satisfiable instead of aspirational. The second capability is the crossover: one OpenAI-compatible API fronts both a pay-per-token pool and dedicated H100 capacity. Scaleway's own calculator shows where the switch lands. At 100 users making 100 daily queries with 10K input and 1K output tokens, mistral-small-3.2 on two dedicated H100s costs €1,655 a month against €2,775 serverless, and burns less than a quarter of the energy.",
+        "textZh": "Scaleway 的辨识度在于整个无服务器目录只落在一个地方：巴黎由 OPCORE 运营的单一数据中心，官方承诺经 api.scaleway.ai 访问的无服务器模型持续留在欧洲境内。这份承诺是被强制的，而不只是写在宣传里——专属部署同样只提供巴黎，因此「严格单区域驻留」是可以真正满足的，而不是一句愿望。第二个能力是交叉点：同一个 OpenAI 兼容接口同时挡在按 token 计费的资源池与专属 H100 算力之前。官方计算器给出了切换位置：100 用户、每天 100 次查询、每次 1 万输入 + 1 千输出 token 时，mistral-small-3.2 跑在两块专属 H100 上是每月 €1,655，无服务器是 €2,775，而能耗不到四分之一。"
+      },
+      {
+        "title": "🌐 China Access & Latency",
+        "titleZh": "🌐 中国大陆访问与延迟",
+        "type": "text",
+        "text": "Scaleway has no mainland-China region and no ICP filing, and the answer for China is not a domestic endpoint but a European one with a long hop. api.scaleway.ai resolves to a single French origin load balancer, 51.159.86.116 (51-159-86-116.lb.fr-par.scw.cloud, AS12876 Scaleway SAS, Paris, Ile-de-France), with no Cloudflare anycast in front and no IPv6 record at all. Measured from an Alibaba Cloud Malaysia host (47.250.95.173, AS45102), ICMP round-trip to that address is 155.7-156.2 ms with zero loss across six probes, GET /v1/models returns HTTP 401 in 476-690 ms TTFB (median 506 ms), an unauthenticated POST /v1/chat/completions returns 401 in 317-338 ms (median 323 ms), console.scaleway.com returns HTTP 200 with a 642 ms median TTFB, and the marketing page returns 200 at roughly 500 ms. API responses carry server: envoy plus a UUID x-request-id, so the gateway itself is an Envoy deployment in France rather than an Asian edge. Treat mainland latency as 200-400 ms with cross-border jitter on top, route user-facing traffic through an EU-exit proxy when the content of the response matters, and move non-real-time work to the Batches API where latency stops mattering. Dedicated Deployment does not change the geography: it is Paris-only and not offered in Amsterdam, Warsaw or Milan.",
+        "textZh": "Scaleway 没有中国大陆区域，也没有 ICP 备案；对中国大陆而言答案不是「境内端点」，而是「一个绕远路的欧洲端点」。api.scaleway.ai 解析到单一的法国源站负载均衡器 51.159.86.116（51-159-86-116.lb.fr-par.scw.cloud，AS12876 Scaleway SAS，巴黎法兰西岛大区），前面没有任何 Cloudflare anycast，也完全没有 IPv6 记录。从阿里云马来西亚主机（47.250.95.173，AS45102）实测：ICMP 往返 155.7-156.2 毫秒，6 次探测零丢包；GET /v1/models 返回 HTTP 401，TTFB 476-690 毫秒（中位数 506 毫秒）；未带密钥的 POST /v1/chat/completions 返回 401，317-338 毫秒（中位数 323 毫秒）；console.scaleway.com 返回 HTTP 200，TTFB 中位数 642 毫秒；官网营销页约 500 毫秒。API 响应头带 server: envoy 与 UUID 形式的 x-request-id，说明网关本身是部署在法国的 Envoy，而不是亚洲边缘节点。请把大陆延迟按 200-400 毫秒估算，再叠加跨境抖动；若关心响应内容本身，让面向用户的流量走欧盟出口代理；非实时任务改用 Batches 接口，延迟就不重要了。专属部署并不改变地理事实：它同样只在巴黎，Amsterdam、Warsaw 与 Milan 都不提供。"
+      }
+    ]
   },
   {
     "id": "xiaomi-mimo",
