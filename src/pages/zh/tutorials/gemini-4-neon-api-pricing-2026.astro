@@ -1,0 +1,345 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+
+const slug = 'gemini-4-neon-api-pricing-2026';
+const zhTitle = "Gemini 4 Neon API 定价：$3/$15，12 月 1 日起比 Carbon 便宜";
+const zhDescription = "Gemini 4 Neon API 评测：每 100 万 token 输入 3 美元、输出 15 美元，统一 1M 上下文与四档思考级别；2026 年 12 月 1 日起比 Gemini 4 Carbon 便宜 25%。";
+const date = '2026-11-19';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/gemini-4-neon-api-pricing-2026/`;
+const zhCanonicalUrl = `https://apirank.vip/tutorials/gemini-4-neon-api-pricing-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Gemini 4 Neon API 定价：$3/$15，12 月 1 日起比 Carbon 便宜",
+  "description": "Gemini 4 Neon API 评测：每 100 万 token 输入 3 美元、输出 15 美元，统一 1M 上下文与四档思考级别；2026 年 12 月 1 日起比 Gemini 4 Carbon 便宜 25%。",
+  "datePublished": "2026-11-19",
+  "dateModified": "2026-11-19",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/zh/gemini-4-neon-api-pricing-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/zh/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Gemini 4 Neon API 定价：$3/$15，12 月 1 日起比 Carbon 便宜",
+      "item": "https://apirank.vip/zh/gemini-4-neon-api-pricing-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does Gemini 4 Neon cost per 1M tokens?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "On the Gemini API Standard tier, Gemini 4 Neon costs $3.00 per million input tokens and $15.00 per million output tokens, with cached input at $0.15 per million (a 95% discount on the input rate). Output pricing includes thinking tokens. Batch and Flex both charge half of Standard at $1.50 input and $7.50 output, and Priority charges 1.8x Standard at $5.40 and $27.00. There is no introductory price and no expiry date attached to Neon's rate, unlike Gemini 4 Carbon and Gemini 4 Argon, which both double from $2/$10 to $4/$20 on December 1, 2026."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Gemini 4 Neon cheaper than Gemini 4 Carbon?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It depends on the date. Neon's $3/$15 is 50% more expensive than Carbon's promotional $2/$10, which runs through November 30, 2026. From December 1, 2026 Carbon's list price becomes $4/$20, and Neon at $3/$15 is then 25% cheaper on input, on output, and on cached input ($0.15 versus $0.20). A request with one million input and one million output tokens costs $18.00 on Neon, $12.00 on Carbon today, and $24.00 on Carbon from December 1. The rank order of Google's own frontier models inverts twelve days after Neon launched."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Gemini 4 Neon have a free tier?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Google's model tier table states that Hydrogen and Flash-Lite are available on the free tier while Carbon and Neon are not, and there is no rate-limited free allowance or trial credit for Neon specifically. Gemini 4 Hydrogen, which has the same unified 1M-token context window, costs half as much and does have a free tier, so it is the model to prototype on. Pricing for Neon is also flat across the whole 1M context window, with no end date."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What thinking levels does Gemini 4 Neon support?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Four: low, medium, high, and xhigh, with high as the default. Neon and Hydrogen are the only Gemini 4 models that offer xhigh; Carbon and Argon default to medium and cap at high. Neon rejects the minimal thinking level with an error rather than ignoring it. Thinking tokens are billed at the output rate, so the level materially affects both cost and latency, which is why Google's own migration guidance says to evaluate every level with max_output_tokens set to at least 65,536 and then pick the lowest level that passes your quality bar."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What changed when migrating to Gemini 4 Neon?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Moving from another Gemini 4 model is a model-ID swap. Moving from Gemini 3 or earlier requires seven changes. The context budget is unified: Gemini 3.8 Flash separated a 1M input window from a 64K output window, while Neon shares one 1,048,576-token pool across input, thinking, and output, so hardcoded max_output_tokens below 65,536 must be raised. Explicit caching is not supported, so cached_content fields must be removed and implicit caching takes over at a 4,096-token minimum. temperature, top_p, and top_k are ignored by the server, with out-of-range values returning a 400 error. Tools must be declared natively or the call can return MALFORMED_FUNCTION_CALL. Thought signatures must be preserved across turns. Client timeouts need to be at least 15 minutes. And the default thinking level moved from medium to high, so a migration that does not set thinking_level explicitly gets slower and more expensive."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I generate more than 64K output tokens?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Set background to true and set max_output_tokens above 65,536, up to 1,048,576 minus your input tokens, and the server continues in 64K-token hops that you join from the interaction steps. The sharp edge is that if you set background to true without setting max_output_tokens, the server stops after 65,536 tokens and returns a silently truncated answer that looks complete. Client-side continuation in the Interactions API is the alternative when you need custom retry control or unstored interactions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Gemini 4 Neon compare to GPT-6.2 Astra and Claude Fable 5.2?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "On third-party measurements, Artificial Analysis's November 18, 2026 analysis puts Gemini 4 Neon (xhigh) at 61 on the Intelligence Index, one point ahead of Gemini 4 Carbon (high) at 60, and third overall behind GPT-6.2 Astra (max) and Claude Fable 5.2 (max). On its coding agent index, Neon (xhigh) in Antigravity scores 59 against Carbon's 55, in line with Claude Code running Claude Fable 5.2 (58) and Claude Opus 5.5 (58), at $6.86 cost per task versus $12.61 and $15.47. On price, GPT-6.2 Astra costs $8/$40 per million tokens, so Neon is roughly 2.7 times cheaper on input than OpenAI's frontier offering."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I call Gemini 4 Neon through an aggregator?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. OpenRouter's live catalog lists google/gemini-4-neon at $3 per million input and $15 per million output with a $0.15 cached-input read, matching Google's first-party rate exactly, plus a :batch variant at half price that mirrors Google's Batch tier. A gateway such as Portkey can put Neon, Carbon, Argon, and non-Google models behind one routing and caching layer, which matters specifically during a price change because it lets you move traffic between tiers without changing application code."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When is Gemini 4 Neon not the right choice?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Three cases. For high-volume classification, routing, and summarization, Gemini 3.5 Flash-Lite at $0.30 input and $2.50 output is far cheaper, and Gemini Decision 1 returns calibrated answers with zero output tokens. For system architecture, multi-file debugging against tests, formal proofs, and security audits, Gemini 4 Carbon spends more thinking tokens per turn to verify hypotheses and check fixes. And for everyday coding and interactive applications, Gemini 4 Hydrogen is half the price, has a free tier, and also supports xhigh. Neon also cannot generate images or audio, does not support the Live API, and has no explicit context caching."
+      }
+    }
+  ]
+};
+
+const zhBody = `<h1 id="top">Gemini 4 Neon API 价格 2026：$3/$15，12 月 1 日起比 Carbon 更便宜</h1>
+
+<p>Google 已发布 <strong>Gemini 4 Neon</strong>（<code>gemini-4-neon</code>），价格为<strong>每 100 万输入 token 3.00 美元</strong>、<strong>每 100 万输出 token 15.00 美元</strong>，统一 1,048,576 token 上下文窗口，四档思考级别，最长可解码到 100 万输出 token。这是七周内发布的第四个 Gemini 4 模型。</p>
+
+<p>这个价格里埋着一个坑，而几乎所有关于 Neon 的报道都站在了坑的另一边。</p>
+
+<p>$3/$15 的 Neon 比 Gemini 4 Carbon 的促销价 $2/$10 <strong>贵 50%</strong>——而这项促销在 <strong>2026 年 11 月 30 日</strong>结束。从 <strong>12 月 1 日</strong>起，Carbon 的标准价变成 $4/$20，届时 <strong>Neon 在输入、输出和缓存读取上都比 Carbon 便宜 25%</strong>。Google 自家三款前沿模型的排名顺序，在发布十二天后就会翻转。你今天读到的任何成本对比，都即将过期。</p>
+
+<p>本文按每个可购买档位给 Neon 定价，从头重算 12 月 1 日那天的算术，并讲清楚请求契约到底改了什么——因为按 Gemini 3 写的代码迁移到 Neon，有几处假设会直接失效。</p>
+
+<h2 id="pricing">价格：每个档位，以及它的两个价格</h2>
+
+<p>Neon 的公布费率在整个 1M 上下文窗口内保持不变。它没有 introductory 档位，费率上也没有标注截止日期，这一点立刻把它和同门区分开来。</p>
+
+<table>
+<thead><tr><th>档位</th><th>输入 / 1M</th><th>输出 / 1M</th><th>缓存输入 / 1M</th></tr></thead>
+<tbody>
+<tr><td>Standard</td><td>$3.00</td><td>$15.00</td><td>$0.15</td></tr>
+<tr><td>Batch</td><td>$1.50</td><td>$7.50</td><td>$0.075</td></tr>
+<tr><td>Flex</td><td>$1.50</td><td>$7.50</td><td>$0.075</td></tr>
+<tr><td>Priority</td><td>$5.40</td><td>$27.00</td><td>$0.27</td></tr>
+</tbody>
+</table>
+
+<p>输出价格包含思考 token。Google 明确说明，模型处理的<em>每一个</em> token 都会计费，包括思考 token，以及 grounding 时的内部系统指令和函数声明。</p>
+
+<p>缓存只有<strong>隐式缓存</strong>——Neon、Carbon、Argon、Hydrogen 都不支持显式缓存（<code>cachedContents</code>、<code>caches.create</code>）。隐式缓存对不少于 4,096 token 的提示自动生效，缓存输入打 95% 折扣。</p>
+
+<p>Google Search grounding 与 token 分开计费：每月 5,000 次免费搜索请求（Gemini 3 及更新模型共享），之后每 1,000 次请求 14 美元，每天上限 1,500 次请求。Google Maps grounding 规则相同。</p>
+
+<h2 id="inversion">12 月 1 日的翻转：Neon 会变得比 Carbon 便宜</h2>
+
+<p>这部分值得提前规划，所以算术我们明确写出来，而不是直接下结论。</p>
+
+<table>
+<thead><tr><th>模型</th><th>输入</th><th>输出</th><th>缓存输入</th><th>1M 输入 + 1M 输出</th></tr></thead>
+<tbody>
+<tr><td>Gemini 4 Neon</td><td>$3.00</td><td>$15.00</td><td>$0.15</td><td><strong>$18.00</strong></td></tr>
+<tr><td>Gemini 4 Carbon（促销价，至 11/30）</td><td>$2.00</td><td>$10.00</td><td>$0.10</td><td><strong>$12.00</strong></td></tr>
+<tr><td>Gemini 4 Carbon（标准价，12/1 起）</td><td>$4.00</td><td>$20.00</td><td>$0.20</td><td><strong>$24.00</strong></td></tr>
+<tr><td>Gemini 4 Argon（标准价，12/1 起）</td><td>$4.00</td><td>$20.00</td><td>$0.20</td><td><strong>$24.00</strong></td></tr>
+<tr><td>Gemini 4 Hydrogen</td><td>$1.50</td><td>$7.50</td><td>$0.075</td><td><strong>$9.00</strong></td></tr>
+</tbody>
+</table>
+
+<p>重算比率，而不是直接沿用别人公布的倍数：$3 ÷ $2 = 1.50，也就是 Neon 比 Carbon 的促销价<strong>贵 50%</strong>；$3 ÷ $4 = 0.75，也就是 Neon 比 Carbon 的标准价<strong>便宜 25%</strong>。输出端同理（$15 ÷ $10 = 1.50；$15 ÷ $20 = 0.75），缓存输入也一致（$0.15 ÷ $0.20 = 0.75）。</p>
+
+<p>交叉验证同样重要。一次 100 万输入加 100 万输出的请求，在 Neon 上是 18.00 美元，在今天的 Carbon 上是 12.00 美元，在 12 月 1 日之后的 Carbon 上是 24.00 美元。18.00 落在两者之间，与上面的比率完全吻合。</p>
+
+<p>Artificial Analysis 在 11 月 18 日关于 Neon 的报道里恰好讲到了这一点，值得说清楚它讲了什么、没讲什么。它给出的数字是 Neon 每个任务成本 <strong>6.44 美元</strong>、Carbon <strong>7.76 美元</strong>，大约便宜 17%——但同时指出 Carbon 的 7.76 是按<em>非折扣</em>价格算的。而在同一天的促销价下，Neon 才是贵的那一个。</p>
+
+<p>也就是说，两种说法在当下同时成立，取决于你读的是哪一天。那句“Neon 便宜 17%”的基准，是在一个十一天后就要到期的费率上测出来的。</p>
+
+<p>还有一个二阶效应值得指出。Artificial Analysis 发现 Neon 每个任务用的输出 token 比 Carbon 多约 <strong>15%</strong>，也就是说它的成本优势完全来自便宜 25% 的 token 价格，而不是更高的 token 效率。这是价格效应，不是效率效应——而价格效应只会朝一个方向被逆转。如果你今天拿 Neon 和 Carbon 做比较，结论同时取决于 token 效率比和价格比，而这两个数字里只有一个即将发生变化。</p>
+
+<h2 id="capabilities">能力边界，以及这个模型到底该用在哪</h2>
+
+<p>Google 把 Neon 明确放在 Hydrogen 和 Carbon <em>之间</em>：推理深度强于 Hydrogen，任务完成速度快于 Carbon。在 Google 自己的档位表上，速度分别是 Carbon 的 Deliberate、<strong>Neon 的 Moderate</strong>、Hydrogen 的 Fast、Flash-Lite 的 Fastest。</p>
+
+<p>Neon 接受文本、图像、视频、音频和 PDF 输入，输出文本。支持：代码执行、计算机操作、文件搜索、函数调用、Google Search grounding、Google Maps grounding、结构化输出、URL context，以及智能体视频理解（默认取静态帧）。不支持：图像生成、音频生成、Live API，以及显式上下文缓存。</p>
+
+<p>思考级别为 <code>low</code>、<code>medium</code>、<code>high</code>（默认）和 <code>xhigh</code>。这是它与 Carbon、Argon 的结构性差异：后两者默认 <code>medium</code> 且最高只到 <code>high</code>，所以 Neon 和 Hydrogen 是仅有的两款能继续往深里走的 Gemini 4 模型。Neon 还会对 <code>minimal</code> 级别<strong>直接报错</strong>，而不是静默忽略。</p>
+
+<p>Artificial Analysis 的智能指数把 Neon（xhigh）记为 <strong>61</strong> 分，比 Gemini 4 Carbon（high）的 60 分高一分，总榜第三，排在 GPT-6.2 Astra 和 Claude Fable 5.2 之后。在它的编程智能体指数上，Antigravity 中的 Neon（xhigh）得 59 分，Carbon（high）55 分，与运行 Claude Fable 5.2（xhigh，58 分）和 Claude Opus 5.5（max，58 分）的 Claude Code 持平——而每任务成本是 6.86 美元，对比后两者的 12.61 美元和 15.47 美元。这些是第三方测量结果，应当按第三方结果看待，但它们指向的方向与厂商自己的定位一致。</p>
+
+<p>其中有一个数字值得单独拎出来：Neon 的输出速度约 <strong>110 token/秒</strong>，Carbon 约 57，这是每个任务 21 分钟对 36 分钟差距的来源。对于交互式场景，这个速度差的实际影响可能比价格差更大。</p>
+
+<h2 id="migration">迁移：你的代码会在哪里坏掉</h2>
+
+<p>从其他 Gemini 4 模型迁过来，改个模型 ID 就行。从 Gemini 3 及更早版本迁过来则不是，下面的清单值得在改名字之前完整读一遍。</p>
+
+<ul>
+<li><strong>上下文统一。</strong>Gemini 3.8 Flash 把 100 万输入预算和 64K 输出预算分开，Neon 则是输入、思考、输出共用一个 1,048,576 token 的池子。硬编码在 65,536 以下的 <code>max_output_tokens</code> 必须删掉或调高。</li>
+<li><strong>没有显式缓存。</strong>删掉 <code>cached_content</code> 字段，改由隐式缓存自动接管。</li>
+<li><strong>采样参数没了。</strong>删掉 <code>temperature</code>、<code>top_p</code>、<code>top_k</code>。区间内的值会被静默忽略，超出区间的值会返回 400 校验错误。</li>
+<li><strong>工具必须原生声明。</strong>用系统指令让模型自己吐裸文本 JSON 工具调用，可能返回 <code>MALFORMED_FUNCTION_CALL</code>。请改用函数调用或结构化输出。</li>
+<li><strong>保留思维签名。</strong>在 Interactions API 里用 <code>previous_interaction_id</code>；或者在自管历史的 <code>generateContent</code> 里原样返回此前的模型轮次和思维签名。不要把同一个签名复制到并行的函数调用片段上。</li>
+<li><strong>调大客户端超时。</strong>复杂的提示可能要跑好几分钟，请用后台执行，或把 HTTP 客户端超时设到至少 15 分钟。</li>
+</ul>
+
+<p>长输出还有一个特别容易踩的坑。要生成超过 64K token，必须同时设置 <code>background: true</code> <em>并且</em>把 <code>max_output_tokens</code> 提到 65,536 以上。只设 <code>background</code> 而不设 <code>max_output_tokens</code>，服务器会在 65,536 token 处停下，静默返回一个看起来完整、实际被截断的回答。</p>
+
+<h2 id="code">调用方式</h2>
+
+<p>下面是一个最小的 REST 调用，用 Interactions API 调新模型并指定 <code>xhigh</code> 思考级别：</p>
+
+<pre><code is:raw>curl "https://generativelanguage.googleapis.com/v1beta/interactions" \
+  -H "x-goog-api-key: YOUR_GEMINI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST \
+  -d '{
+    "model": "gemini-4-neon",
+    "input": "Audit this payment retry queue for race conditions and rewrite the lock acquisition logic.",
+    "generation_config": {
+      "thinking_level": "xhigh"
+    }
+  }'</code></pre>
+
+<p>同一个请求用当前 SDK 写成 Python：</p>
+
+<pre><code is:raw>from google import genai
+
+client = genai.Client()
+
+interaction = client.interactions.create(
+    model="gemini-4-neon",
+    input="Audit this payment retry queue for race conditions and rewrite the lock acquisition logic.",
+    generation_config={
+        "thinking_level": "xhigh",
+    },
+)
+
+print(interaction.output_text)</code></pre>
+
+<p>要输出超过 64K，推荐走后台执行——服务器按 64K token 一跳一跳继续生成，你把各段拼接起来：</p>
+
+<pre><code is:raw>import time
+from google import genai
+
+client = genai.Client()
+
+interaction = client.interactions.create(
+    model="gemini-4-neon",
+    input="Generate a complete multi-module migration specification and test suite for this service.",
+    background=True,
+    generation_config={
+        "max_output_tokens": 262144,
+        "thinking_level": "high",
+    },
+)
+
+while interaction.status in ("in_progress", "queued"):
+    time.sleep(5)
+    interaction = client.interactions.get(id=interaction.id)
+
+text = "".join(
+    content.text
+    for step in interaction.steps
+    if step.type == "model_output"
+    for content in step.content
+    if content.type == "text"
+)
+print(text)</code></pre>
+
+<h2 id="free-tier">免费额度：没有</h2>
+
+<p>Neon 不在 Gemini API 的免费档位上。Google 的档位表说得很明确：Hydrogen 和 Flash-Lite 有免费档位，Carbon 和 Neon 没有。Neon 也没有限速的免费额度，更没有专属试用金。</p>
+
+<p>这一点和 Hydrogen 的差距是实质性的——Hydrogen 同样是 100 万统一上下文，价格只有一半，<em>而且</em>有免费档位。如果你在做原型，只需要一个能跑起来的智能体循环，Hydrogen 零成本起步；如果需要的是 Neon 的推理深度，那付费档位是唯一的入口。</p>
+
+<p>在聚合渠道上，OpenRouter 的实时目录列出 <code>google/gemini-4-neon</code>，每 100 万输入 3 美元、每 100 万输出 15 美元，缓存读取 0.15 美元——与 Google 第一方费率完全一致——另有一个 <code>:batch</code> 半价变体，对应 Google 的 Batch 档位。</p>
+
+<h2 id="limits">限额与其他需要知道的事</h2>
+
+<p>Neon 的 Batch API 排队 token 上限与 Carbon、Argon 相同，Tier 1 为 5,000,000，Tier 2 为 500,000,000。Batch 作业上限 100 个并发，单个输入文件不超过 2GB，文件存储上限 20GB。</p>
+
+<p>Priority 推理按 Standard 的 1.8 倍计费，但它有自己独立的限额——默认是该模型各 tier 标准限额的 0.3 倍，同时仍然计入整体交互流量。</p>
+
+<p>有两点运营上要注意。第一，Neon 对它处理的每一个 token 计费，包括 grounding 时输出的内部函数声明——也就是说，工具调用密集的智能体循环，每次轮次都要为自己的 schema 付钱。第二，Neon 的默认思考级别是 <code>high</code>，而 Carbon 是 <code>medium</code>，所以把一个 Carbon 负载迁到 Neon 而不显式设置 <code>thinking_level</code>，账单和延迟会同时改变。要公平对比 Neon 和 Carbon，请在两边都显式指定级别。</p>
+
+<p>如果你在同一个 key 后面跑着好几款前沿模型，像 <a href="https://openrouter.ai/affiliates" class="text-blue-600 hover:underline">OpenRouter</a> 这样的聚合渠道会以与 Google 第一方完全一致的费率列出 <code>google/gemini-4-neon</code>，并提供半价的 batch 变体；而像 <a href="https://portkey.ai/?ref=apirank" class="text-blue-600 hover:underline">Portkey</a> 这样的网关可以把 Neon、Carbon、Argon 和非 Google 的模型统一放在一层路由与缓存之后——在价格变动期间，这一点尤其值得，因为它让你不用改应用代码就能把流量在档位之间挪走。</p>
+
+<h2 id="use-cases">该选哪个模型、哪个档位、怎么算预算</h2>
+
+<p><strong>选 Neon</strong>：复杂的软件工程、密集的知识工作、科学工作流——Hydrogen 不够用，但你又不需要 Carbon 那套额外的假设检验深度。它是高频复杂任务的性价比之选：Neon 这一档的存在意义，就是用大约 Carbon 标准价三分之二的成本、快接近两倍的输出速度，拿到 Carbon 的推理能力。</p>
+
+<p><strong>留在 Carbon</strong>：如果你需要系统架构设计、对测试的多文件调试、形式化证明或安全审计，Carbon 会花更多思考 token 去验证假设、检查修复。Carbon 最高只到 <code>high</code>，所以想要 Gemini 4 里最深的推理，只能用 Neon 或 Hydrogen 的 <code>xhigh</code>。</p>
+
+<p><strong>用 Hydrogen</strong>：日常编码、交互式应用、工具调用型智能体、多模态文档流水线。它的价格是 Neon 的一半，有免费档位，同样支持 <code>xhigh</code>。如果你把 Neon 放进了候选名单，那么真正该拿来对比的基准模型是 Hydrogen——因为它是那个价格没有变的模型。</p>
+
+<p><strong>用 Flash-Lite</strong>：抽取、翻译、摘要，以及有亚秒级延迟要求的场景，价格 $0.30/$2.50；分类路由则交给 Gemini Decision 1，它返回带校准的答案且输出 token 为零。</p>
+
+<p>预算方面，如果你的负载能容忍延迟，那么拿到 Neon 能力的最便宜路径并不是 Standard 档位：Batch 和 Flex 都是 $1.50/$7.50，是 Standard 的一半。对于大规模文档流水线，这是同一个模型、质量不变的 50% 节省。12 月 1 日<em>翻倍</em>的是 Carbon 的价格，而 Neon 的价格一动不动。</p>
+
+<h2 id="verdict">结论</h2>
+
+<p>Gemini 4 Neon 确实是一款一线水准的模型，但它最重要的属性不是任何一项跑分——而是<strong>它的价格固定，而它同门的不是</strong>。</p>
+
+<p>现在到 11 月 30 日之间，Neon 是贵的那个：比 Carbon 贵 50%，比 Hydrogen 贵 33%。12 月 1 日起，这个关系翻转。Neon 比 Carbon 便宜 25%，并且永远比 Hydrogen 贵一倍。如果你今天在 Carbon 上跑一个长周期的智能体负载，经济上正确的做法是现在就用自己真实流量搭的基准评测一下 Neon，把切换准备好，等促销结束那天生效——因为一个原本比 Neon 便宜 50% 的负载，会在十二天里变成比它贵 25%。</p>
+
+<p>成本也是真实存在的，值得点明：没有免费档位；默认思考级别比 Carbon 更高（所以没调参的迁移会更慢也更贵）；不支持显式缓存；以及一整套请求契约变更，会以静默截断而不是报错的方式弄坏 Gemini 3 时代的代码。改模型字符串之前，请先读完迁移清单。</p>
+
+<p>Neon 值得迁，但这次请自己算一遍账，而不是相信一个在即将过期的价格下得出的比率。</p>
+
+<h2 id="sources">来源</h2>
+
+<ul>
+<li><a href="https://aistudio.google.com/docs/models/gemini-4-neon" class="text-blue-600 hover:underline">Gemini 4 Neon 模型卡</a>——token 上限、能力矩阵、支持的特性</li>
+<li><a href="https://aistudio.google.com/docs/whats-new-gemini-4-neon" class="text-blue-600 hover:underline">Gemini 4 Neon 更新说明</a>——思考级别、长解码、迁移清单、价格</li>
+<li><a href="https://aistudio.google.com/docs/pricing" class="text-blue-600 hover:underline">Gemini API 价格</a>——Standard、Batch、Flex、Priority 档位，grounding 费率</li>
+<li><a href="https://aistudio.google.com/docs/choosing-a-model" class="text-blue-600 hover:underline">模型选择</a>——Gemini 4 档位表、12 月 1 日调价、免费档位可用性</li>
+<li><a href="https://aistudio.google.com/docs/rate-limits" class="text-blue-600 hover:underline">速率限制</a>——Batch 排队 token 上限</li>
+<li><a href="https://artificialanalysis.ai/articles/gemini-4-neon-intelligence-gain" class="text-blue-600 hover:underline">Artificial Analysis，2026 年 11 月 18 日</a>——智能指数、每任务成本与耗时、输出速度、编程智能体得分</li>
+<li><a href="https://openrouter.ai/api/v1/models" class="text-blue-600 hover:underline">OpenRouter 模型目录</a>——<code>google/gemini-4-neon</code> 实时端点定价</li>
+</ul>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} zhCanonicalUrl={zhCanonicalUrl} locale={zh} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={{zhBody}} />
+</BaseLayout>
