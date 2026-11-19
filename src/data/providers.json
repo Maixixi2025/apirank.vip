@@ -18404,7 +18404,217 @@
     "bestForEN": "Teams needing front-tier inference API or dedicated GPU endpoints, especially Asia-based",
     "status": "active",
     "affiliateUrl": "",
-    "affiliateAvailable": false
+    "affiliateAvailable": false,
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": [
+          "Plan / Dimension",
+          "Price",
+          "What's included",
+          "Best For"
+        ],
+        "headersZh": [
+          "套餐 / 计费维度",
+          "价格",
+          "包含内容",
+          "最佳用途"
+        ],
+        "rows": [
+          [
+            "Model APIs — zai-org/GLM-5.3 (flagship, list price after the current 10% discount)",
+            "$1.26 in / $3.96 out per 1M tokens; cached input $0.234",
+            "Pay-per-token with no subscription and no minimum spend. Cached reads are billed at roughly 0.19x the input rate, which makes long agent loops with a stable system prompt noticeably cheaper. The live /serverless/v1/models endpoint reports the discounted $1.26/$3.96 while /serverless/v1/openrouter/models reports the undiscounted $1.40/$4.40 with a discount_to_user field of 0.1",
+            "Frontier reasoning and long-horizon coding agents that need a million-token context and reasoning_effort low/high/max"
+          ],
+          [
+            "Model APIs — zai-org/GLM-5.3-Flash",
+            "$0.15 in / $0.50 out per 1M tokens; cached input $0.03",
+            "The cheapest reasoning-capable tier Friendli offers, and the only serverless model with native image and video input alongside text. It carries the same 1,048,576-token context and the same reasoning_effort control as GLM-5.3, so it is the default pick for high-volume agent traffic",
+            "Long-horizon agent tasks and multimodal understanding where cost per token dominates the bill"
+          ],
+          [
+            "Model APIs — zai-org/GLM-5.2 and zai-org/GLM-5.1",
+            "$1.40 in / $4.40 out per 1M tokens; cached input $0.26",
+            "GLM-5.2 keeps the full 1,048,576-token context with reasoning_effort high and max; GLM-5.1 is the same price but a 202,752-token context and a deprecation_date of 2026-11-20 in the live catalog, so it retires within days of this review",
+            "GLM-5.2 for large-context agent workflows; GLM-5.1 only if you have already pinned it and accept the retirement"
+          ],
+          [
+            "Model APIs — google/gemma-4-31B-it",
+            "$0.14 in / $0.40 out per 1M tokens, no cached-input tier",
+            "The floor price of the whole catalogue, with a 262,144-token context and text plus image input. Prompt caching discounts are not published for this model, so repeat reads are billed at the full input rate",
+            "Self-hosted-style open chat and reasoning work at the lowest possible per-token cost"
+          ],
+          [
+            "Dedicated Endpoints — NVIDIA A100 80GB",
+            "$4.0 per GPU-hour, metered per second, no start-up charge",
+            "A dedicated instance running only your model. Billing starts when the replica finishes initializing, so provisioning, model download and engine warm-up are free; it then accrues for every second the replica stays up, including idle seconds",
+            "Steady production traffic on a single 80GB card where predictable latency matters more than spot pricing"
+          ],
+          [
+            "Dedicated Endpoints — NVIDIA H100 80GB / H200 141GB",
+            "$5.0 per GPU-hour (H100) and $7.0 per GPU-hour (H200), metered per second",
+            "Higher-VRAM instances for models that do not fit on A100 or that need the extra memory for long KV caches. Each replica is metered independently, so running two replicas doubles the GPU cost",
+            "Serving large MoE checkpoints and long-context workloads that need more than 80GB of VRAM"
+          ],
+          [
+            "Dedicated Endpoints — NVIDIA B200 180GB and B300 288GB",
+            "$9.0 per GPU-hour (B200) and $12.0 per GPU-hour (B300), metered per second",
+            "The newest generation in the catalogue. B300 at 288GB is the only instance that fits the largest frontier open-weight checkpoints in a single card without sharding",
+            "Running the newest frontier open-weight models on one card, or consolidating a multi-GPU deployment"
+          ],
+          [
+            "Credits, reserved GPUs and BYOG",
+            "Prepaid credits from a $10 minimum, promotional credits on top; reserved GPUs at a flat upfront fee for a committed period; BYOG (your own GPUs) is quoted case by case",
+            "Promotional credits are always consumed before prepaid ones, and prepaid credits never expire. Reserved GPU capacity is a flat fee for the GPU type, count and period, with any usage beyond the reservation billed per second at the on-demand rate. BYOG runs the Friendli inference stack on hardware you already own. Auto Recharge tops the balance up before it runs out",
+            "Production teams that want a spend floor, guaranteed capacity for peak windows, or to reuse GPUs they already own"
+          ],
+          [
+            "Enterprise (contract-based, not a fixed bundle)",
+            "Custom quote — scale, control and commercial terms are enabled by contract",
+            "Custom Model APIs rate limits, priority access to high-demand GPU types, reserved capacity, custom region deployments, VPC or on-prem deployment, dedicated support channels and a named Customer Success owner",
+            "Regulated workloads that need a custom region, private networking, or contractual SLA and rate limits"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "Model APIs —— zai-org/GLM-5.3（旗舰，当前 10% 折扣后价格）",
+            "输入 $1.26 / 输出 $3.96 每百万 tokens；缓存输入 $0.234",
+            "按 token 付费，无订阅、无最低消费门槛。缓存读取约为输入价的 0.19 倍，对系统提示词固定的长时间 agent 循环能明显省钱。线上 /serverless/v1/models 返回折扣价 $1.26/$3.96，而 /serverless/v1/openrouter/models 返回未折扣价 $1.40/$4.40，并带 discount_to_user = 0.1 字段",
+            "需要百万 token 上下文、支持 reasoning_effort low/high/max 的前沿推理与长周期编码 agent"
+          ],
+          [
+            "Model APIs —— zai-org/GLM-5.3-Flash",
+            "输入 $0.15 / 输出 $0.50 每百万 tokens；缓存输入 $0.03",
+            "Friendli 最便宜的带推理能力档位，也是 serverless 里唯一同时支持图像与视频输入（外加文本）的模型。上下文同样是 1,048,576 tokens，推理控制与 GLM-5.3 完全一致，因此是高流量 agent 场景的默认选择",
+            "以 token 成本为主导的长周期 agent 任务与多模态理解"
+          ],
+          [
+            "Model APIs —— zai-org/GLM-5.2 与 zai-org/GLM-5.1",
+            "输入 $1.40 / 输出 $4.40 每百万 tokens；缓存输入 $0.26",
+            "GLM-5.2 保留完整的 1,048,576 token 上下文，支持 reasoning_effort high 与 max；GLM-5.1 价格相同但上下文只有 202,752 tokens，且线上目录里已带 deprecation_date 2026-11-20，即本次评测后数日内下线",
+            "GLM-5.2 用于大上下文 agent 工作流；GLM-5.1 仅适合已固定版本并接受其退役的存量业务"
+          ],
+          [
+            "Model APIs —— google/gemma-4-31B-it",
+            "输入 $0.14 / 输出 $0.40 每百万 tokens，无缓存输入档",
+            "整个目录的最低价，上下文 262,144 tokens，支持文本加图像输入。该模型未公布 prompt caching 折扣，重复读取按完整输入价计费",
+            "自建式开放对话与推理需求，追求最低的每 token 成本"
+          ],
+          [
+            "Dedicated Endpoints —— NVIDIA A100 80GB",
+            "每 GPU 小时 $4.0，按秒计费，不收启动费",
+            "独占实例只跑你自己的模型。计费从副本初始化完成那一刻开始，实例创建、模型下载与引擎预热全部免费；随后副本在线的每一秒都计费，空闲时同样计费",
+            "单张 80GB 卡的稳定生产流量，延迟可预测性比价格更重要时"
+          ],
+          [
+            "Dedicated Endpoints —— NVIDIA H100 80GB / H200 141GB",
+            "H100 每 GPU 小时 $5.0，H200 每 GPU 小时 $7.0，均按秒计费",
+            "更高显存的实例，适合放不下 A100 的模型或需要大显存承载长 KV cache 的场景。每个副本独立计费，跑两个副本 GPU 成本直接翻倍",
+            "需要超过 80GB 显存的超大 MoE 权重与长上下文负载"
+          ],
+          [
+            "Dedicated Endpoints —— NVIDIA B200 180GB 与 B300 288GB",
+            "B200 每 GPU 小时 $9.0，B300 每 GPU 小时 $12.0，均按秒计费",
+            "目录里的最新一代。B300 的 288GB 是唯一能在单卡上不切分就装下最新前沿开放权重大模型的实例",
+            "在单卡上跑最新前沿开放权重模型，或把多卡部署收敛成一张卡"
+          ],
+          [
+            "积分、预留 GPU 与 BYOG",
+            "预付积分 $10 起充，另有促销积分；预留 GPU 按承诺周期一次性预付；BYOG（自带 GPU）按方案单独报价",
+            "促销积分优先于预付积分消耗，预付积分永不过期。预留 GPU 容量按 GPU 型号、数量与周期收固定费用，超出预留部分按秒回落到按需费率。BYOG 让你在自有的 GPU 上跑 Friendli 推理栈。Auto Recharge 能在余额耗尽前自动充值",
+            "希望设定消费下限、锁定高峰窗口容量，或复用已有 GPU 的生产团队"
+          ],
+          [
+            "Enterprise（按合同逐项开启，非固定套餐）",
+            "定制报价 —— 规模、控制与商务条款由合同逐项启用",
+            "定制 Model APIs 速率限制、高需求 GPU 型号优先权、预留容量、自定义区域部署、VPC 或本地化部署、专属支持渠道与指定 Customer Success 负责人",
+            "需要自定义区域、私有网络或合同化 SLA 与速率限制的合规场景"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "Two base URLs, four API dialects",
+            "value": "Model APIs live at https://api.friendli.ai/serverless/v1 and Dedicated Endpoints at https://api.friendli.ai/dedicated/v1. On top of the OpenAI Chat Completions route there is an Anthropic-compatible /messages endpoint, an OpenAI Responses endpoint, a /completions route, /tokenize and /detokenize, plus /serverless/tools/v1/chat/completions for built-in tools. Swapping the base URL in an existing OpenAI SDK is the whole migration."
+          },
+          {
+            "label": "A live, self-documenting model catalog",
+            "value": "GET /serverless/v1/models needs no key and returns the current five serverless models with per-token pricing, context length, input and output modalities, reasoning options and supported sampling parameters. GET /serverless/v1/openrouter/models returns the same catalog in OpenRouter shape, including a discount_to_user field, so you can read the price you will actually be charged without an account."
+          },
+          {
+            "label": "Built-in tools for serverless chat",
+            "value": "The /serverless/tools/v1/chat/completions route lets the model call hosted tools such as a calculator and Linkup web search directly, streaming tool_status events with the tool name, parameters and result. It is a separate surface from your own function tools, so you can mix vendor-hosted retrieval with client-side function calling in the same agent."
+          },
+          {
+            "label": "Reasoning controls that match the model",
+            "value": "Models declare their own reasoning_options in the catalog: GLM-5.3 and GLM-5.3-Flash expose reasoning_effort low, high and max plus a budget_tokens range up to the full context; GLM-5.2 and GLM-5.1 use a toggle; Gemma 4 31B uses a toggle. parse_reasoning and include_reasoning split the chain of thought out of the answer, and the interleaved field reports reasoning_content as its own stream."
+          },
+          {
+            "label": "Dedicated Endpoints bring the serving stack, not just the GPU",
+            "value": "On a dedicated endpoint you get online quantization to 4-bit or 8-bit at deploy time, speculative decoding with either a draft model or N-gram prediction, multi-LoRA serving including FLUX adapters, host KV cache to extend capacity beyond VRAM, request queueing with a threshold and an optional timeout that returns 429, and endpoint versioning for zero-downtime updates and one-click rollback."
+          },
+          {
+            "label": "Autoscale, then sleep",
+            "value": "Set minimum replicas to 0 and the endpoint sleeps after the cooldown period and wakes on the next request, so an intermittent workload stops paying for an idle GPU. Minimum and maximum replica counts scale with traffic, and FriendliAI recommends the Default autoscaling policy over the request-count policy unless you have already characterised your workload."
+          },
+          {
+            "label": "Billing that never surprises you",
+            "value": "Model APIs are pay-per-token with no minimum; Dedicated Endpoints are metered per GPU-second and startup is not billed, but idle replicas still are. Model API rate limits are tied to lifetime spend and go up automatically as you spend more, and topping up prepaid credits unlocks higher tiers. Payment is prepaid by default with a $10 minimum, and AWS Marketplace is supported."
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "两个 base URL、四种 API 方言",
+            "value": "Model APIs 在 https://api.friendli.ai/serverless/v1，Dedicated Endpoints 在 https://api.friendli.ai/dedicated/v1。除 OpenAI Chat Completions 外，还有兼容 Anthropic 的 /messages、OpenAI Responses、/completions、/tokenize 与 /detokenize，以及提供内置工具的 /serverless/tools/v1/chat/completions。把现有 OpenAI SDK 的 base URL 换掉就是完整的迁移步骤。"
+          },
+          {
+            "label": "可当接口文档用的实时模型目录",
+            "value": "GET /serverless/v1/models 无需密钥即可访问，返回当前 5 个 serverless 模型的每 token 价格、上下文长度、输入输出模态、推理选项与支持的采样参数。GET /serverless/v1/openrouter/models 返回 OpenRouter 结构，同一份目录里带 discount_to_user 字段，因此不注册账号也能读到实际计费价。"
+          },
+          {
+            "label": "serverless 对话的内置工具",
+            "value": "/serverless/tools/v1/chat/completions 允许模型直接调用托管工具，例如计算器与 Linkup 网页搜索，并以 tool_status 事件流式返回工具名、参数与结果。它与你自己实现的 function tools 是独立接口，因此可以在同一个 agent 里混用厂商托管检索与客户端函数调用。"
+          },
+          {
+            "label": "随模型而定的推理控制",
+            "value": "模型在目录里各自声明 reasoning_options：GLM-5.3 与 GLM-5.3-Flash 提供 reasoning_effort 的 low、high、max 以及最高到满上下文的 budget_tokens；GLM-5.2 与 GLM-5.1 使用 toggle；Gemma 4 31B 也是 toggle。parse_reasoning 与 include_reasoning 可把思维链从正文中拆出，interleaved 字段则标明 reasoning_content 是独立流。"
+          },
+          {
+            "label": "Dedicated Endpoints 给的不只是显卡，还有服务栈",
+            "value": "专属端点上你还能拿到部署时在线量化到 4-bit 或 8-bit、基于草稿模型或 N-gram 的推测解码、包含 FLUX 适配器在内的多 LoRA 服务、突破显存上限的主机 KV cache、带阈值与可选超时（超时返回 429）的请求排队，以及支持零停机更新与一键回滚的端点版本管理。"
+          },
+          {
+            "label": "先自动扩缩，再休眠",
+            "value": "把最小副本数设为 0，端点在冷却期后进入休眠、下一个请求到来时自动唤醒，间歇性负载就不再为闲置显卡付费。最小与最大副本数随流量伸缩，除已充分了解自身负载特征外，FriendliAI 建议使用默认自动扩缩策略而非请求数策略。"
+          },
+          {
+            "label": "不会突然变贵的计费",
+            "value": "Model APIs 按 token 付费、无最低消费；Dedicated Endpoints 按 GPU 秒计费且启动不计费，但空闲副本照样计费。Model API 的速率限制与累计消费挂钩，消费增长会自动提升额度，充值预付积分还能解锁更高档位。默认采用预付费、最低 $10，也支持通过 AWS Marketplace 支付。"
+          }
+        ]
+      },
+      {
+        "title": "🧠 One Engine, Two Ways to Buy It",
+        "titleZh": "🧠 同一套推理引擎，两种付费方式",
+        "type": "text",
+        "text": "FriendliAI is unusual among open-model hosts: one Friendli Engine serves both a serverless per-token product and a dedicated per-GPU-second product. Serverless is the front door - five curated models, one call, no deployment, billed on processed tokens, cached reads at roughly a fifth of input. Dedicated Endpoints hand that same engine a dedicated card, and there it exposes what serverless abstracts away: online 4-bit and 8-bit quantization at deploy time, speculative decoding via draft-model or N-gram speculation, multi-LoRA serving, host KV cache beyond VRAM limits, request queueing with a 429 timeout, and endpoint versioning with one-click rollback. The scheduling and cluster-control work underneath traces to Orca and Garen, published with Seoul National University. The catch is catalog size: five serverless models, one already retired, against the 644,132 the marketing numbers advertise.",
+        "textZh": "FriendliAI 在开放模型托管商里比较少见的一点是：同一套 Friendli Engine 同时支撑「按 token 付费」的 serverless 产品和「按 GPU 秒付费」的专属端点产品。Serverless 是入口——5 个精选模型、一次调用、无需部署，按实际处理 token 计费，缓存读取约为输入价的五分之一。Dedicated Endpoints 则是同一套引擎分配独享显卡，在那里暴露出 serverless 所抽象掉的底层能力：部署时在线量化到 4-bit 与 8-bit、基于草稿模型或 N-gram 的推测解码、多 LoRA 服务、突破显存上限的主机 KV cache、带 429 超时的请求排队，以及支持一键回滚的端点版本管理。底层的调度与集群控制能力源自与首尔国立大学合作发表的 Orca 与 Garen。代价是目录规模：serverless 只有 5 个模型，其中一个已进入退役流程，与营销数字所宣称的 644,132 个 Hugging Face 模型相去甚远。"
+      },
+      {
+        "title": "🌐 China Access & Latency",
+        "titleZh": "🌐 中国大陆访问与延迟",
+        "type": "text",
+        "text": "There is no mainland-China region and no ICP filing: FriendliAI Corp is registered in Redwood City, California with a hub in Seoul, and its own privacy policy states that visitors outside the United States connect through and to servers located in the US. Every endpoint resolves to AWS infrastructure: api.friendli.ai sits behind AWS Global Accelerator (15.197.205.95 and 3.33.246.183, both anycast, AS16509) and the site and docs on 216.150.1.1 and 216.150.1.129. Measured from Alibaba Cloud Malaysia (47.250.95.173, AS45102), friendli.ai answers in 57-211ms with a median of 80ms, the /serverless/v1/models catalog in 413-437ms with a median of 428ms, and an unauthenticated POST to /serverless/v1/chat/completions returns 401 in 143-150ms, median 147ms, which proves the API path is reachable rather than blocked. TLS handshake is the expensive part at roughly 145ms while edge RTT is only 1.3-2.1ms, so the overhead sits on the path to the accelerator, not in the last hop. Budget about 300-500ms for a first token from mainland China plus a stable cross-border proxy, and treat the 1,048,576-token context as impractical at that latency. Two compliance points matter more than the latency: the terms of service bind customers to US, EU, UK, UN and Australian export and sanctions rules, and Model APIs are prepaid in USD with no RMB billing. If either blocks you, the dedicated path is the escape hatch - Enterprise can contract for custom region deployments, VPC or on-prem placement, and BYOG runs the stack on GPUs you already own.",
+        "textZh": "没有中国大陆区域，也没有 ICP 备案：FriendliAI Corp 注册在美国加州 Redwood City，在首尔设有研发枢纽，其隐私政策明确写明美国以外的访客「连接并指向位于美国的服务器」。所有域名都解析到 AWS 基础设施：api.friendli.ai 位于 AWS Global Accelerator 之后（15.197.205.95 与 3.33.246.183，均为 anycast，AS16509），官网与文档站位于 216.150.1.1 与 216.150.1.129。在阿里云马来西亚（47.250.95.173，AS45102）实测：friendli.ai 首页 57–211ms、中位数 80ms；/serverless/v1/models 模型目录 413–437ms、中位数 428ms；未带密钥 POST /serverless/v1/chat/completions 返回 401，耗时 143–150ms、中位数 147ms，证明 API 链路可达而非被封。其中 TLS 握手是最贵的一段，约 145ms；边缘 RTT 仅 1.3–2.1ms，开销在于通往加速器的主路径而非最后一跳。从中国大陆访问应按首 token 约 300–500ms 预估，并配一条稳定的跨境代理；在这个延迟下，1,048,576 的上下文长度实际上不可用。有两点合规问题比延迟更关键：服务条款要求客户遵守美国、欧盟、英国、联合国与澳大利亚的出口管制和制裁法规，且 Model APIs 仅支持美元预付费、不提供人民币结算。若任一条构成阻碍，专属端点是出路——Enterprise 可按合同约定自定义区域部署、VPC 或本地化部署，BYOG 则让你在自有司法辖区内的自有 GPU 上跑同一套推理栈。"
+      }
+    ]
   },
   {
     "id": "weaviate",
