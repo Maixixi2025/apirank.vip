@@ -1,0 +1,285 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+
+const slug = 'brave-search-api-review-2026';
+const zhTitle = "Brave Search API 2026 评测：$5/1K 起的独立索引";
+const zhDescription = "Brave Search API 评测：每 1000 次请求 5 美元，自有搜索索引，提供 LLM Context 与 Goggles 重排序；必应搜索 API 已于 2025 年 8 月退役，Google CSE 将于 2027 年 1 月停服。";
+const date = '2026-11-14';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/${slug}/`;
+const zhCanonicalUrl = `https://apirank.vip/tutorials/brave-search-api-review-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Brave Search API 2026 评测：$5/1K 起的独立索引",
+  "description": "Brave Search API 评测：每 1000 次请求 5 美元，自有搜索索引，提供 LLM Context 与 Goggles 重排序；必应搜索 API 已于 2025 年 8 月退役，Google CSE 将于 2027 年 1 月停服。",
+  "datePublished": "2026-11-14",
+  "dateModified": "2026-11-14",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/zh/brave-search-api-review-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "首页",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "教程",
+      "item": "https://apirank.vip/zh/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Brave Search API 2026 评测：$5/1K 起的独立索引",
+      "item": "https://apirank.vip/zh/tutorials/brave-search-api-review-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Brave Search API 怎么收费？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Brave Search API 有三个自助产品，按不同的计价轴收费。Search 档是每 1,000 次请求 5 美元，容量上限每秒 50 次查询。Answers 档是每 1,000 次请求 4 美元，外加每百万输入输出 token 5 美元，容量上限每秒 2 次查询。Enterprise 走合同制，条款自定义。每个付费档位都包含每月 5 美元免费额度，自动抵扣到账户，可覆盖一千次 Search 查询。Brave 卖的是预付额度而不是订阅，所以自助档位没有月费；同时也接受 Base 上的 USDC x402 微支付，作为无卡片的替代方案。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Google 和 Bing 的搜索 API 现在什么状态？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "两个第一方替代品都已经关闭或正在关闭。微软自己的开发者文档写明：“Public Bing Search and Bing Custom Search APIs were retired on 11th August 2025.”Bing Web Search 概览页现在带归档与退役标记。Google 则把 Custom Search JSON API 对新客户关闭，并声明定价“applies only to existing Custom Search JSON API customers until the service discontinuation on January 1, 2027”，即老客户每天 100 次免费查询，超出后每 1,000 次 5 美元，每天上限 1 万次。这就是为什么市场收窄到只剩一家仍在运营自己索引的厂商。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "LLM Context 端点是什么，怎么调用？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "LLM Context 是 Brave 面向 agent 的端点，地址是 GET 或 POST https://api.search.brave.com/res/v1/llm/context，与面向人类的网页搜索端点 /res/v1/web/search 是两个不同产品。它不返回标题和摘要，而是返回为模型消费做过优化、排序过的预抽取片段，覆盖文本、表格、代码、JSON、论坛帖和视频字幕。鉴权用 X-Subscription-Token 头而不是 Authorization: Bearer，所以通用 OpenAI 兼容客户端需要一个改写头。你用 maximum_number_of_tokens 控制返回体量（1,024 到 32,768，默认 8,192），用 maximum_number_of_tokens_per_url 控制单 URL 上限（512 到 8,192，默认 4,096），用 context_threshold_mode 过滤相关性（strict、balanced、lenient 或 disabled），再用 enable_source_metadata 追加来源元数据，包括 fetched_content_timestamp。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "能用 Brave Search API 的结果训练模型或存储结果吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "默认条款下不可以。服务条款第 (i) 条禁止存储或缓存搜索结果，只有运行客户应用所必需的临时存储除外；第 (xiii) 条禁止“use the Search Results to create, evaluate, train, re-train, fine-tune, benchmark or otherwise improve artificial intelligence models or services offered by Customer or third parties”。所以你可以拿结果给模型做 grounding，但不能用它们构建数据集、微调，甚至拿来做模型基准。Brave 的 FAQ 给出出口：“Can I store results or use them to train models? Yes, with a custom plan.”也就是说这需要单独谈一份带存储权的合同。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Brave Search API 真的隐私吗？Zero Data Retention 覆盖什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "要分两层看。查询路径上是结构性的：每个查询都在 Brave 自己运营的端到端基础设施上完成，没有第三方可以留存。Brave 把这叫“架构级”ZDR，而不是合同补丁。但计费日志不是这样。隐私声明（2026 年 11 月 3 日更新）写明，通过客户账户提交的搜索查询记录“is retained for a maximum of 90 days for the purpose of billing Search API account holders and for troubleshooting”。完整的 Zero Data Retention 是可选项，隐私声明自己的数据表把它标为 Enterprise 客户专属，且“subject to Brave's legal obligations”。如果你的要求是包括 Brave 在内任何地方都不存在查询日志，你需要的是 Enterprise 档位。另外所有档位都必须提供支付信息，Brave 说这是“to help us safeguard against misuse of the service”；x402 微支付是替代路径，但交易会公开、永久地记录在 Base 链上。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "和 Exa、Tavily、Google CSE 相比，Brave Search API 是什么水平？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "按每 1,000 次请求算：Search 档 5 美元，Answers 档 4 美元加每百万 token 5 美元；Exa 的基础价是 Lite 4 美元、Search 7 美元、Auto 12 美元每 1,000 次请求，超出 10 条结果后每条再加 1 美元；Tavily 是 1 credit 一次、每 credit 0.008 美元、每月免费 1,000 credits；Google CSE 每天 100 次免费，之后每 1,000 次 5 美元、每天上限 1 万次，但 2027 年 1 月 1 日停用。功能面上 Brave 有别的家没有的东西：LLM Context（1,024 到 32,768 token，含表格、代码、JSON 和字幕）、Goggles 按自定义域名集合重排序、MCP server 以及 x402 支付。检索质量上，Brave 自己的 FreshQA 基准是 85.3% 准确率、每 1,000 题全含成本 18 美元，对照 Parallel Advanced 79.0% / 49 美元、Exa 78.0% / 84 美元、Tavily 78.0% / 89 美元——这是厂商自跑基准，读的时候要记得这一点。"
+      }
+    }
+  ]
+};
+
+const zhBody = `<h1 id="top">Brave Search API 测评：Bing 退场之后，剩下一套独立索引</h1>
+
+<p><strong>2026 年 11 月 14 日</strong>——今天在公网上买“第一方网页搜索 API”的路，只剩两条还开着，另一条已经关掉或正在关。微软在 <strong>2025 年 8 月 11 日</strong>正式退役了 Bing Search API，Google 则把 Custom Search JSON API 对新客户关闭，并定下 <strong>2027 年 1 月 1 日</strong>的停用日期。对要读实时网页的 agent 来说，剩下的市场只有聚合器、爬取代理，以及一家仍然自己跑爬虫、自己建索引的厂商。</p>
+
+<p>就是 Brave Search API。它起价<strong>每 1,000 次请求 5 美元</strong>、无订阅制，每个查询都由自有索引作答、不回落到 Google 或 Bing，另外提供按 token 计费的 <strong>Answers</strong> 档位——每 1,000 次请求 4 美元，外加每百万输入输出 token 5 美元。这篇测评拆开每一档到底买到什么、agent 负载的成本会在哪里塌掉，以及两条会直接决定你的架构能不能成立的合同条款。</p>
+
+<h2 id="price-card">逐档价格卡</h2>
+
+<p>Brave 在同一个页面上卖三个产品，而它们的价格轴完全不同。下表是完整的公开定价，转录自 Brave 官方 API 页。第一档按请求计费，第二档请求和 token 双重计费，第三档是合同。</p>
+
+<table>
+<thead>
+<tr><th>档位</th><th>价格</th><th>速率上限</th><th>你拿到什么</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Search</strong></td><td>$5 / 1,000 次请求</td><td>50 次/秒</td><td>URL、文本、新闻、图片；Goggles 重排序；额外备选摘要；schema 增强结果与附加元数据</td></tr>
+<tr><td><strong>Answers</strong></td><td>$4 / 1,000 次请求 + $5 / 1M 输入输出 token</td><td>2 次/秒</td><td>基于单次或多次检索的总结式答案，带引用、流式输出、OpenAI SDK 兼容</td></tr>
+<tr><td><strong>Enterprise</strong></td><td>自定义条款</td><td>自定义</td><td>定制容量、自定义端点、NDA、发票结算、企业级支持、全链路 Zero Data Retention</td></tr>
+</tbody>
+</table>
+
+<p>表里有两件事决定了大部分部署。第一，<strong>每个付费档位都自带每月 5 美元免费额度，自动抵扣到账户里</strong>，也就是先有一千次 Search 查询不用掏钱——而注册时要求的信用卡纯粹是反滥用身份核验，免费用量下不会被扣费。第二，Brave 卖的是<strong>预付额度而不是订阅</strong>：充值、消耗，没有月费，也没有档位锁定。此外还有一条不走卡的路：Brave 现在接受 <strong>Base 上的 USDC x402 微支付</strong>，用签名支付代替 API key 充当凭证。</p>
+
+<p>换算下来是每次 Search 查询 5 美分。每月 10 万次查询的流水线花 500 美元。每天 1 万次调用的 agent 循环约每月 1,500 美元——而到这个量级，你多半已经进入 Enterprise 区间了，因为 Search 档 50 次/秒的上限才是真正的瓶颈，不是价格。</p>
+
+<p>作为对照，Google 自己给 Custom Search JSON API 定的价（在它消失之前）是：每天 100 次免费额度之外，<strong>每 1,000 次查询 5 美元</strong>，每天上限 1 万次查询。每千次的价格和 Brave 一模一样。不一样的是时间线：Google 的有到期日，Brave 的没有。</p>
+
+<h2 id="why-now">两个退场如何改变了这场比赛</h2>
+
+<p>在这之前，Brave 的卖点是一套隐私论证，而隐私论证打不赢习惯。这里的习惯是 <code>googleapis.com/customsearch/v1</code> 和 <code>api.bing.microsoft.com</code>：免费或近乎免费，返回真实引擎的真实排序，三行代码就能接上。</p>
+
+<p>微软自己的开发者文档说得很干脆：“Public Bing Search and Bing Custom Search APIs were retired on 11th August 2025.”Bing Web Search 概览页现在带着 <code>is_archived</code> 和 <code>is_retired</code> 标记，归在 <code>/previous-versions/</code> 路径下。当年挂着每千次费率的定价页已经没了——那个 URL 现在返回微软的“很抱歉，您请求的页面无法找到”。</p>
+
+<p>Google 的文档同样不含糊，而且明确区分了两类客户：“This API is not available for new customers.”定价“applies only to existing Custom Search JSON API customers until the service discontinuation on January 1, 2027.”新客户这条路已经关了，老客户拿到了一个日期。</p>
+
+<p>于是决策从“要不要为了隐私换过去”变成了“换到<em>什么</em>上去”。Brave 不是唯一的独立选项——你可以在 Serper 上自己抓，或走一个前置某家搜索引擎的美欧 provider。但 Brave 是唯一一家在同一个页面上同时公开单次请求价、独立索引和按 token 计价答案端点的厂商，并且它还提供了一个专供 agent 做 grounding 的、按 token 预算平衡的上下文端点。</p>
+
+<p>也要说清楚 Brave 的索引到底是什么。它<strong>不是</strong> Bing 或 Google 结果的重新打包。Brave 跑自己的爬虫、自己的排序模型、自己的索引，公司明确表示“no fallback to another search engine for any query”。Brave 自己的说法还要更进一步，也正是这一点值得打问号：“Google and Bing have shut down their services; needle tests prove all other services scrape.”</p>
+
+<h2 id="llm-context">真正有用的其实是 LLM Context 端点</h2>
+
+<p>如果你在搭 agent 而不是做搜索框，这一段才是重点。Brave 的论点是：结果页给你的是标题和摘要，而 agent 需要的是解析好、预格式化、预过滤过的材料。<code>/res/v1/llm/context</code> 端点一次调用就返回排名后的最佳页面片段——而且覆盖普通网页搜索不处理的多种内容类型：文本、表格、代码、JSON、论坛帖和视频字幕。</p>
+
+<pre><code is:raw>curl -s --compressed "https://api.search.brave.com/res/v1/llm/context?q=EU+AI+Act+enforcement+timeline" \
+  -H "Accept: application/json" \
+  -H "X-Subscription-Token: &lt;YOUR_API_KEY&gt;" \
+  --data-urlencode "maximum_number_of_tokens=4096" \
+  --data-urlencode "context_threshold_mode=strict"
+</code></pre>
+
+<pre><code is:raw>import requests
+
+r = requests.post(
+    "https://api.search.brave.com/res/v1/llm/context",
+    headers={
+        "accept": "application/json",
+        "X-Subscription-Token": "YOUR_API_KEY",
+    },
+    json={"q": "what changed in EU AI Act enforcement this quarter"},
+    timeout=30,
+)
+r.raise_for_status()
+payload = r.json()
+
+for src in payload.get("sources", []):
+    print(src["url"], src.get("fetched_content_timestamp"))
+</code></pre>
+
+<p>真正起决定作用的是 token 预算。你可以设 <code>maximum_number_of_tokens</code>（1,024 到 32,768，默认 8,192），也可以单独限制 <code>maximum_number_of_tokens_per_url</code>（512 到 8,192，默认 4,096）。Brave 官方建议是：<code>count</code> 和单 URL 上限保持不动，只调总预算——简单事实型问题 2,048，常规查询 8,192，复杂调研 16,384。预算越大信息越多，但你这边推理成本也越高。</p>
+
+<p>相关性过滤是另一个独立的旋钮。<code>context_threshold_mode</code> 有 <code>strict</code>（更少但更相关）、<code>balanced</code>、<code>lenient</code>（更多结果，可能包含不太相关的内容）和 <code>disabled</code>（不过滤）四档。不设置时 Brave 用它自己标定的默认值。还有一个 <code>enable_source_metadata</code>，打开后每条来源都会带上 <code>site_name</code>、<code>favicon</code>、<code>thumbnail</code>、<code>description</code> 和 <code>fetched_content_timestamp</code>——时间戳正是让下游模型能把“事实”和“碰巧命中关键词的两年前论坛帖”区分开的东西。</p>
+
+<p>这里有三个细节值得记住。第一，端点是 <code>/res/v1/llm/context</code>，不是 <code>/res/v1/web/search</code>——它们是两个不同的产品，形态也不同。第二，鉴权头是 <code>X-Subscription-Token</code>，不是 <code>Authorization: Bearer</code>，所以通用 OpenAI 兼容客户端不做改写是接不上的。第三，Brave 自己的定位说法毫不客气：“Search results are for people. Brave's LLM Context endpoint is for machines.”</p>
+
+<h2 id="goggles">Goggles：别家 API 都没有的功能</h2>
+
+<p>Goggles 让你定义自定义域名集合，并按这个集合重新排序结果。你指定哪些站点有资格给你的模型做 grounding，Brave 在其中重排。此外还有额外摘要——每条结果最多再多五条——以及任意格式的 schema 增强结果。</p>
+
+<p>这个功能在 Tavily、Exa、Serper 上都没有直接对应物。如果你的 agent 只回答某一组文档、某套法规语料、或某批你审核过的厂商页面的问题，Goggles 把“带域名过滤的网页搜索”变成了受控的 grounding 来源。它是“模型引用到什么”和“模型只引用你批准过什么”之间的差别。</p>
+
+<h2 id="answers-cost">Answers 档位在哪里变贵</h2>
+
+<p>Answers 看起来很便宜，每 1,000 次请求 4 美元。真正吃预算的是 token 那行：每百万输入输出 token 5 美元。由于带 grounding 的答案同时消耗检索到的上下文和生成的回复，单次答案的实际计费会明显高于请求费给人的直觉。</p>
+
+<p>Brave 自己发布的基准框定了整个品类，这段值得读，但要对厂商自跑基准保持惯常的怀疑。在 FreshQA 上，Brave 报告 85.3% 准确率、每 1,000 题全含成本 18 美元；对照 Parallel Advanced 79.0% / 49 美元、Exa 78.0% / 84 美元、Tavily 78.0% / 89 美元。Brave 公开了方法论，而且坦诚地写明了口径：每 1,000 题的全含成本，包含检索加模型 token，而不只是 API 价格。</p>
+
+<p>这正是该比对的轴，也是多数厂商对比会绕开的轴。一个单次请求便宜、但返回冗长噪声上下文的搜索 API，每个正确答案的成本可能高于一个更贵但返回紧凑片段的 API。而这恰恰是 Brave 声称 LLM Context 端点做到的事——只返回你的模型真正需要的内容。</p>
+
+<p>诚实的补充是：85.3% 配 18 美元，是 Brave 在测 Brave。准确率差距确实存在，但比价格差距小得多（18 对 49–89），所以如果约束是准确率而不是成本，排名未必会动。如果约束是每个正确答案的成本，这个差距就大到足以影响决策。</p>
+
+<h2 id="comparison">横向对比</h2>
+
+<table>
+<thead>
+<tr><th>API</th><th>计费模式</th><th>索引</th><th>面向 agent 的能力</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Brave Search</strong></td><td>$5/1k 请求；Answers $4/1k + $5/M token</td><td>自有独立索引</td><td>LLM Context（1k–32k token，表格/代码/JSON/字幕）、Goggles 重排、MCP server、x402 支付</td></tr>
+<tr><td>Exa</td><td>Lite $4/1k、Search $7/1k、Auto $12/1k 基础价；超出 10 条结果每条 $1/1k；摘要 $1/1k 页</td><td>自有索引，语义/神经检索</td><td>Answer 端点、Agent 端点、Monitors</td></tr>
+<tr><td>Tavily</td><td>1 credit/次，$0.008/credit 按量；免费 1,000 credits/月</td><td>聚合网页来源</td><td>Extract、Crawl、Map、Research、MCP server</td></tr>
+<tr><td>Google CSE</td><td>每天 100 次免费，之后 $5/1k，每天上限 1 万次——<strong>2027 年 1 月 1 日停用</strong></td><td>Google 自有</td><td>无；已对新客户关闭</td></tr>
+<tr><td>Bing Search</td><td>—</td><td>Bing 自有</td><td><strong>2025 年 8 月 11 日已退役</strong></td></tr>
+</tbody>
+</table>
+
+<p>Brave 自己的 FAQ 用销售口径描述这个品类：它可以替代那些“索引更小（Tavily 或 Exa）、延迟更高（SerpAPI 或 Serper）、访问更受限（Google 和 Bing）”的选项，也可以与百度、Naver、雅虎、Yandex 这类本地化选项互补。这是销售页在说销售话——但底下的独立索引是结构事实，而两个退场现在也都是有日期的事实。</p>
+
+<p>这里有一个很实际的推论：搜索调用很少只停留在搜索调用这一步。一旦你用 Brave 做 grounding、又因为覆盖缺口接入第二个引擎、两边都在付费，运营问题就从“用哪家 API”变成“谁能看到我花了多少钱”。像 <a href="https://portkey.ai/?ref=apirank" class="text-blue-600 hover:underline">Portkey</a> 这样的网关就是放这件事的合理位置：它的 AI Gateway 用一套 OpenAI 兼容接口覆盖 200 多个模型，它的“Gateway to Other APIs”可以把搜索供应商当成自定义 provider 接进来并拿到完整的日志与监控，虚拟密钥还能给每个 provider 单独设预算上限和速率限制，而不是所有调用共用一把密钥。要说明的是，Portkey 和 OpenRouter 自家的目录里目前都没有 Brave——这里说的是把你自己的 Brave 密钥放到一层控制面之后，不是说网关打包了 Brave 方案。</p>
+
+<h2 id="compliance">两条会决定你架构的合同条款</h2>
+
+<p>这一类目里的隐私营销大多是噪音，但 Brave 的隐私声明和服务条款里有两条真正影响你能做什么的条款。两条都很容易被漏掉，晚期发现代价很高。</p>
+
+<p><strong>第一：你不许拿结果去训练。</strong>Brave Search API 服务条款第 (xiii) 条写明，客户不得“use the Search Results to create, evaluate, train, re-train, fine-tune, benchmark or otherwise improve artificial intelligence models or services offered by Customer or third parties.”如果你的计划是从 Brave 的结果里构建数据集、微调，甚至拿它做模型基准，默认条款直接禁止。存储被同一条逻辑管住：第 (i) 条禁止存储或缓存搜索结果，除“transient storage required for operation of Customer Applications”之外。</p>
+
+<p>这不是特例，而是索引即资产的商业逻辑：API 授权的是 grounding，不是数据抽取。Brave 的 FAQ 给出的出口是合同层面的——“Can I store results or use them to train models? Yes, with a custom plan.”带存储权的档位授予的是通用服务条款不覆盖的特殊权限。这场对话要在你需要之前谈好，而不是等到需要时才补。</p>
+
+<p><strong>第二：“Zero Data Retention”不是默认项，而且有适用范围。</strong>Brave 的隐私声明（2026 年 11 月 3 日更新）写明，通过客户账户提交的搜索查询记录“is retained for a maximum of 90 days for the purpose of billing Search API account holders and for troubleshooting”。ZDR 是一个选项，隐私声明自己的数据表把它标为面向 Enterprise 客户、“subject to Brave's legal obligations”。自助档位拿到的是查询路径上的结构性 ZDR——Brave 的说法是“every query ends on infrastructure we operate end to end, so there's no third party to retain it”——但那 90 天的计费日志不包括在内。</p>
+
+<p>Brave 把这称作“架构级”而非合同级 ZDR，这个区分是真实存在的，审计也是真的：<strong>通过 SOC 2 Type II 认证</strong>，由第三方独立核验并定期复审。但如果你的合规要求是“包括我们自己在内，任何地方都不存在查询日志”，那你需要的是 Enterprise 选项，不是自助档。</p>
+
+<p>隐私声明还明确了一件小事：所有档位都需要支付信息，Brave 说这是“to help us safeguard against misuse of the service”。对银行卡来说它确实只是反滥用核验，免费用量不会扣费。x402 是给需要按请求付费、且不想建立持卡关系的 agent 的替代路径——不过隐私声明也提到，由此产生的交易会公开、永久地记录在 Base 链上。</p>
+
+<h2 id="limits">动手之前需要知道的限制</h2>
+
+<ul>
+<li><strong>两档速率上限差距很大。</strong>Search 允许每秒 50 次查询，Answers 只允许 2 次。如果你的 agent 会扇出成大量子查询，Answers 就是瓶颈，充多少额度都改变不了。</li>
+<li><strong>超额返回 HTTP 429，不是账单。</strong>只有成功的请求才计入配额并计费。Brave 在每个响应上都返回 <code>X-RateLimit-Limit</code>、<code>X-RateLimit-Policy</code>、<code>X-RateLimit-Remaining</code> 和 <code>X-RateLimit-Reset</code> 头，按 1 秒滑动窗口执行，月度配额用秒表示（<code>15000;w=2592000</code> 即 30 天内 15,000 次请求）。正确的做法是读 <code>X-RateLimit-Reset</code> 然后退避，而不是写死 sleep。</li>
+<li><strong>预付额度，不是订阅。</strong>自助档位没有月付方案，你充值、扣余额。对尖峰型 agent 负载是好事，对想要固定账单项的团队是坏事。</li>
+<li><strong>鉴权头是 <code>X-Subscription-Token</code>。</strong>不是 Bearer。用通用客户端就得自己写一层改写。Answers 端点是例外：它在 <code>/res/v1/chat/completions</code> 上讲 OpenAI chat-completions 的形状、模型名为 <code>brave</code>，所以 OpenAI SDK 在那里只需要改一个 base URL。</li>
+<li><strong>训练和存储结果需要定制档位。</strong>见上一节。这是最容易砸掉一条路线图的条款。</li>
+<li><strong>CN 延迟未实测。</strong>API 托管在美国，没有中国节点，跨境延迟与 Tavily 同量级；在意的话走 Cloudflare Worker 或腾讯云 Edge Function 中转。</li>
+</ul>
+
+<h2 id="verdict">结论</h2>
+
+<p>Brave Search API 是对一个刚刚才变紧迫的问题的最有力回答：随着 Bing 搜索 API 在 2025 年 8 月退役、Google 的 Custom Search JSON API 在 2027 年 1 月前对新客户关闭，第一方搜索 API 市场已经收窄到只剩一家仍然自建索引的厂商。理由不在价格——每 1,000 次请求 5 美元，和 Google 当年的定价完全一样，Tavily 和 Exa 也差不了多少。真正的理由是，在这一品类里，Brave 是唯一把<strong>独立索引</strong>、<strong>面向 agent 的上下文端点</strong>和<strong>架构级 ZDR</strong>放在一起卖的厂商，而且它自己没有到期日。</p>
+
+<p>如果你要把 agent grounding 在一批审核过的域名上，如果你想按每个正确答案而不是按每次请求来算钱，或者你正在替换一个 1 月就要到期的 Google CSE 集成——选它。如果你需要可预测的月度账单、需要超过每秒两次的答案、打算拿结果去训练，或者你的准确率门槛卡在某个 Brave 并不领先的基准上——跳过它。</p>
+
+<p>有两点值得盯着。第一点是合同层面而不是技术层面的：现行服务条款禁止把结果用于训练或评测 AI 模型，也就是说索引的授权范围是 grounding，不是数据抽取——如果你的路线图需要抽取，那是一场销售对话，而不是一次代码改动。第二点是厂商自己的说法：“all other services scrape”，Brave 声称自己用 needle test 证明了这一点。把它当厂商主张来看：独立索引可验证，“无回落”的说法也能从 FAQ 核对，但对其他厂商的竞争性概括不能照单全收。</p>
+
+<p>最后补一条实操提醒：Brave 没有为自己的 API 发布任何正式的生命周期终止日期，也没有发布任何调价历史。今天你能验证到期的那个悬崖，属于别人——如果你正在迁离 Google CSE，就用你手上确实有的那个迁移窗口，而不是你以为的那个。</p>
+
+<h2 id="sources">来源</h2>
+
+<ul>
+<li>Brave Search API 产品与定价页（brave.com/search/api/）——档位价格、速率上限、免费额度、Goggles、x402 支付与 FAQ</li>
+<li>Brave Search API 文档（api-dashboard.search.brave.com/documentation/services/llm-context）——LLM Context 端点、token 预算、阈值模式、来源元数据</li>
+<li>Brave Search API 文档（api-dashboard.search.brave.com/documentation/guides/rate-limiting）——限速响应头、滑动窗口、429 行为</li>
+<li>Brave Search API 隐私声明，2026 年 11 月 3 日更新（api-dashboard.search.brave.com/documentation/resources/privacy-notice）——90 天查询留存、ZDR 适用范围、x402 结算</li>
+<li>Brave Search API 服务条款（api-dashboard.search.brave.com/terms-of-service）——第 (i) 条存储限制与第 (xiii) 条禁止训练与评测</li>
+<li>Microsoft Learn，Bing Search Services 开发者文档（learn.microsoft.com/en-us/bing/search-apis/）——“Public Bing Search and Bing Custom Search APIs were retired on 11th August 2025”</li>
+<li>Microsoft Learn，Bing Web Search API 概览（learn.microsoft.com/en-us/bing/search-apis/bing-web-search/overview）——归档与退役页面标记</li>
+<li>Google Custom Search JSON API 概览（developers.google.com/custom-search/v1/overview）——2027 年 1 月 1 日停用、新客户关闭、每天 100 次免费与每 1,000 次 5 美元</li>
+<li>Exa 定价页（exa.ai/pricing）与 Tavily 定价页（tavily.com/pricing）——对比数据</li>
+</ul>
+
+<p class="text-sm text-gray-500 mt-6"><strong>披露说明：</strong>APIRank 是独立对比站。本文涉及的价格、合同条款与退役日期，均于 2026-11-14 依据各厂商官方文档核验。通过本页链接注册，我们可能获得联盟佣金，您无需额外付费。</p>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} zhCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>

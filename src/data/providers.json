@@ -30098,5 +30098,286 @@
         "textZh": "Aion Labs 没有中国大陆端点，也没有 ICP 备案。服务由华沙的 Deep Forge sp. z o.o. 运营（KRS 0001036658），服务条款版本为 2026-10-17，并提供英文与波兰文两个版本。全部主机名——api、www 以及裸域——都解析到同样两个 Cloudflare anycast 地址 104.21.3.125 与 172.67.130.179（AS13335），另有 2606:4700:3031 与 2606:4700:3032 上的 IPv6 记录。从阿里云马来西亚主机（47.250.95.173，AS45102）实测：GET /v1/models 返回 HTTP 200，TTFB 234-274 毫秒（中位数约 244 毫秒），官网 TTFB 258-294 毫秒，未带密钥的 POST /v1/chat/completions 在 23-34 毫秒内返回 401。这些响应的 cf-ray 头显示 SIN，说明 Cloudflare 边缘落在新加坡；源站头 x-render-origin-server gunicorn 说明 API 本身是边缘之后的 gunicorn 应用，而官方没有披露模型究竟跑在哪个国家——边缘 POP 不等于推理区域。从我们的主机测试，IPv6 直接失败。官方也没有公布数据驻留承诺：隐私政策称经 API 发送的提示只做处理不做存储，仅保留请求元数据（时间、模型、token 数、成本、状态、IP），商务客户可按需申请数据处理协议（DPA），但没有任何条款把推理锁定在欧盟境内。实际预估：边缘延迟约四分之一秒；若关心响应内容本身，请让大陆流量走一个欧盟出口代理；长文本生成请用流式，而不是挂着一个非流式调用干等。"
       }
     ]
+  },
+  {
+    "id": "brave-search",
+    "name": "Brave Search API",
+    "nameCn": "Brave Search API",
+    "category": "search",
+    "website": "https://brave.com/search/api/",
+    "apiDocs": "https://api-dashboard.search.brave.com/documentation",
+    "affiliateUrl": "",
+    "affiliateAvailable": false,
+    "overallRank": 46,
+    "speedRank": 5,
+    "priceRank": 5,
+    "models": [
+      "Search (/res/v1/web/search) — web results from Brave's own crawler and index; $5 per 1,000 requests; up to 50 queries per second; no fallback to any other search engine",
+      "LLM Context (/res/v1/llm/context) — ranked, pre-extracted passages optimized for model consumption (text, tables, code, JSON, forum threads, video captions); 1,024-32,768 token budget, default 8,192",
+      "Answers (/res/v1/answers) — synthesized answers with citations; $4 per 1,000 requests plus $5 per million input/output tokens; up to 2 queries per second",
+      "Goggles — custom domain sets that re-rank results against your own site lists; no direct equivalent at Tavily, Exa, or Serper",
+      "Suggest (/res/v1/suggest) — query autocomplete",
+      "Spellcheck (/res/v1/spellcheck) — spell correction for query strings",
+      "MCP Server — official Model Context Protocol server exposing Search and LLM Context to MCP clients",
+      "x402 agentic payments — prepaid credits settle in USDC on Base, no card required"
+    ],
+    "modelCount": 8,
+    "pricing": {
+      "input": "Search 档 $5 / 1,000 次请求（每秒 50 次查询上限）；Answers 档 $4 / 1,000 次请求 + 每百万输入输出 token $5（每秒 2 次查询上限）；Enterprise 走合同制。自助档位按预付额度计费，无订阅、无月费。每个付费档位每月自动发放 $5 免费额度，可覆盖 1,000 次 Search 查询。另接受 Base 上的 USDC x402 微支付。",
+      "output": "Answers 档的 token 按输入与输出合并计 $5 / 1M；Search 与 LLM Context 档不按 token 计费，只按请求数计费。",
+      "freeTier": "每个付费档位每月 $5 免费额度（自动抵扣，约 1,000 次 Search 查询）；首次使用需绑定支付方式，Brave 称为反滥用措施；无永久免费层",
+      "freeTierEN": "$5 in free credits every month on every paid plan, applied automatically (about 1,000 Search queries); payment details are required as an anti-fraud measure; no permanent free tier",
+      "searchCost": "$5 / 1,000 Search requests（Answers $4 / 1,000 + $5 / 1M tokens）",
+      "mcpCost": "免费（MCP server 与直接 API 同价，无 MCP 加价）"
+    },
+    "pricingEN": {
+      "input": "Search plan: $5 per 1,000 requests (capacity 50 queries per second). Answers plan: $4 per 1,000 requests plus $5 per million input and output tokens (capacity 2 queries per second). Enterprise is contract-based. Self-serve tiers sell prepaid credits — no subscription and no monthly fee. Every paid plan includes $5 in free credits every month, and x402 micropayments in USDC on Base are accepted as an alternative to card billing.",
+      "output": "On the Answers plan input and output tokens are billed together at $5 per 1M. The Search and LLM Context plans bill per request only, with no token metering.",
+      "freeTier": "$5 in free credits every month on every paid plan, applied automatically (about 1,000 Search queries); payment details are required as an anti-fraud measure; no permanent free tier",
+      "freeTierEN": "$5 in free credits every month on every paid plan, applied automatically (about 1,000 Search queries); payment details are required as an anti-fraud measure; no permanent free tier",
+      "searchCost": "$5 per 1,000 Search requests (Answers: $4 per 1,000 + $5 per 1M tokens)",
+      "mcpCost": "Free (the MCP server is priced identically to the direct API, with no MCP markup)"
+    },
+    "freeTier": "每个付费档位每月自动 $5 免费额度（约 1,000 次 Search 查询），无需手动领取；无永久免费层；所有档位需绑定支付方式（Brave 称用于反滥用），x402 USDC 微支付为替代路径",
+    "freeTierEN": "$5 in free credits every month on every paid plan, applied automatically (about 1,000 Search queries); no permanent free tier; all plans require payment details (Brave cites anti-fraud), with x402 USDC micropayments as an alternative",
+    "paidModel": "预付额度制（prepaid credits），自助档无月费、无最低消费；Search $5/1k 为主力费率；Answers $4/1k + $5/M 适合需要带引用答案的 agent；Enterprise 合同制提供自定义配额、SLA 与完整 Zero Data Retention",
+    "paidModelEN": "Prepaid credits — no monthly fee and no minimum spend on the self-serve tiers; Search at $5/1k is the workhorse rate; Answers at $4/1k plus $5/M tokens suits agents that need cited answers; Enterprise contracts add custom quotas, an SLA, and full Zero Data Retention",
+    "availabilityCN": "⚠️ API 与索引全部托管在美国，无中国节点；国内直连需自备合规网络出口，跨境延迟未公开实测；Brave 隐私声明（2026-11-03 更新）说明通过客户账户提交的查询记录最多保留 90 天用于计费与排障，完整 ZDR 为 Enterprise 专属",
+    "availabilityEN": "⚠️ The API and index are hosted entirely in the US with no China node; mainland-China access requires your own compliant network egress and cross-border latency is not publicly measured. Brave's privacy notice (updated 2026-11-03) states that query records submitted through a customer account are retained for up to 90 days for billing and troubleshooting; full Zero Data Retention is Enterprise-only",
+    "highlights": [
+      "自有爬虫与自有索引：官方 FAQ 明确说明不会对任何查询回退到其他搜索引擎，是仅存的第一方独立索引（必应搜索 API 2025-08-11 已退役，Google CSE 2027-01-01 停用）",
+      "LLM Context 端点面向 agent 而非人：返回排序好的预抽取片段（文本、表格、代码、JSON、论坛帖、视频字幕），而非标题和摘要",
+      "Goggles 自定义域名集重排序：可指定可信站点集合并据此重排结果，在 Tavily / Exa / Serper 上都没有直接等价功能",
+      "Search $5 / 1,000 次请求（每秒 50 次），Answers $4 / 1,000 次 + 每百万 token $5（每秒 2 次）；每个付费档位每月 $5 免费额度",
+      "官方 MCP server，可直接接入 Claude、Cursor 等 MCP 客户端",
+      "支持 x402 协议用 Base 上的 USDC 微支付，无需信用卡",
+      "条款明确禁止训练与存储结果（第 (i) 与第 (xiii) 条），授权范围是 grounding 而非数据抽取"
+    ],
+    "highlightsEN": [
+      "Own crawler and own index: the official FAQ states there is no fallback to another search engine for any query — the only remaining first-party independent index (Bing's search APIs retired 2025-08-11, Google CSE shuts down 2027-01-01)",
+      "The LLM Context endpoint is built for agents, not humans: it returns ranked, pre-extracted passages (text, tables, code, JSON, forum threads, video captions) instead of titles and snippets",
+      "Goggles custom re-ranking over your own domain sets — no direct equivalent at Tavily, Exa, or Serper",
+      "Search $5 per 1,000 requests at 50 QPS; Answers $4 per 1,000 plus $5 per million tokens at 2 QPS; $5 in monthly free credits on every paid plan",
+      "Official MCP server, pluggable straight into Claude, Cursor, and other MCP clients",
+      "Accepts x402 micropayments in USDC on Base, so no credit card is required",
+      "Terms explicitly prohibit training on and storing results (clauses (i) and (xiii)) — the licence is for grounding, not data extraction"
+    ],
+    "cons": [
+      "必应搜索 API 已于 2025-08-11 退役，Google CSE 将于 2027-01-01 停用 —— 第一方搜索 API 市场只剩 Brave 一家仍在运营自己的索引，没有同量级备选",
+      "Answers 档每秒仅 2 次查询，Search 档 50 次 —— 高并发 agent 必须自己做限流或排队",
+      "条款禁止用结果训练模型、禁止存储结果（超过运行应用所需的临时存储）——需要数据集或微调就必须单独谈带存储权的合同",
+      "Zero Data Retention 不是自助档默认项：完整 ZDR 属 Enterprise 专属，自助档按隐私声明仍会为计费保留最多 90 天的查询记录",
+      "自助档要求绑定支付方式（Brave 称反滥用），无纯额度免费层；没有可预期的月费账单，只有预付余额",
+      "API 与索引全部在美国托管，无中国节点；跨境延迟未公开实测",
+      "所有价格都是厂商自行发布的，FreshQA 基准由 Brave 自己跑（85.3% @ $18 对照 Parallel 79.0% @ $49、Exa 78.0% @ $84、Tavily 78.0% @ $89），读的时候要记得这一点"
+    ],
+    "consEN": [
+      "Bing's search APIs were retired on 2025-08-11 and Google CSE shuts down on 2027-01-01 — first-party web search is now a single-vendor market with no equivalent-scale alternative",
+      "The Answers plan allows only 2 queries per second and Search 50 — high-concurrency agents must implement their own throttling or queueing",
+      "The terms bar training on results and bar storing results beyond the transient storage needed to run your app; a dataset or fine-tune requires a separate contract with storage rights",
+      "Zero Data Retention is not the default on self-serve tiers: full ZDR is Enterprise-only, and the privacy notice still allows up to 90 days of query retention for billing",
+      "Self-serve plans require payment details (Brave cites anti-fraud) with no credit-only free tier, and billing is prepaid balance rather than a predictable monthly invoice",
+      "The API and index are hosted entirely in the US with no China node, and cross-border latency is not publicly measured",
+      "Every price is vendor-published and the FreshQA benchmark is Brave-run (85.3% at $18 against Parallel 79.0% at $49, Exa 78.0% at $84, Tavily 78.0% at $89) — read it with that in mind"
+    ],
+    "bestFor": "需要在自有索引上做 agent grounding 的团队；正在替换 2027 年 1 月到期的 Google CSE 集成的团队；只要 Tavily / Exa 之外还能自选第一方引擎的合规团队；需要按正确答案成本而不是按请求成本比价的工作负载",
+    "bestForEN": "Teams grounding agents on their own index; teams replacing a Google CSE integration that expires in January 2027; compliance-driven teams who want a first-party engine beyond Tavily and Exa; workloads compared on cost per correct answer rather than cost per request",
+    "reviewSections": [
+      {
+        "title": "💰 Pricing & Plans",
+        "titleZh": "💰 价格与方案",
+        "type": "table",
+        "headers": [
+          "Plan / Dimension",
+          "Price",
+          "What's included",
+          "Best For"
+        ],
+        "headersZh": [
+          "套餐 / 计费维度",
+          "价格",
+          "包含内容",
+          "最佳用途"
+        ],
+        "rows": [
+          [
+            "Search plan",
+            "$5 per 1,000 requests ($0.005 per query)",
+            "Full web results from Brave's own index, up to 50 queries per second. No fallback to any other engine",
+            "High-volume grounding where you want an independent index and don't need per-token answers"
+          ],
+          [
+            "Answers plan",
+            "$4 per 1,000 requests plus $5 per million input and output tokens",
+            "Synthesized answers with citations, up to 2 queries per second",
+            "Agents that want a cited answer per call rather than raw passages to feed a model yourself"
+          ],
+          [
+            "LLM Context",
+            "Included in the per-request price of the plan you call it under",
+            "Ranked, pre-extracted passages for model consumption — text, tables, code, JSON, forum threads, video captions. Token budget 1,024-32,768, default 8,192",
+            "RAG pipelines where raw snippets waste tokens and you want structured extracts"
+          ],
+          [
+            "Goggles",
+            "No extra charge",
+            "Custom domain sets that re-rank results against your own site lists",
+            "Answering questions about a specific corpus, or steering an agent away from low-quality domains"
+          ],
+          [
+            "Free credits",
+            "$5 per month on every paid plan",
+            "Applied automatically to the account — about 1,000 Search queries. No card needed for the credits themselves",
+            "Evaluating the API before committing to a prepaid balance"
+          ],
+          [
+            "Enterprise",
+            "Custom contract",
+            "Custom quotas, SLA, and full Zero Data Retention. Storing results or training on them needs a custom plan with storage rights",
+            "Regulated teams that cannot accept a 90-day billing-retention window"
+          ],
+          [
+            "x402 payments",
+            "Same rates, settled in USDC on Base",
+            "Prepaid credits settle on-chain instead of through a card. Transactions are public and permanent on Base",
+            "Card-free billing, at the cost of an on-chain audit trail"
+          ]
+        ],
+        "rowsZh": [
+          [
+            "Search 档",
+            "每 1,000 次请求 5 美元（单次 0.005 美元）",
+            "来自 Brave 自有索引的完整网页结果，每秒 50 次查询上限，不会回退到任何其他搜索引擎",
+            "高并发 grounding，只需要独立索引、不需要按 token 计价答案的场景"
+          ],
+          [
+            "Answers 档",
+            "每 1,000 次请求 4 美元 + 每百万输入输出 token 5 美元",
+            "带引用的合成答案，每秒 2 次查询上限",
+            "每次调用都要一个带引用答案的 agent，而不是自己喂给模型的原始片段"
+          ],
+          [
+            "LLM Context",
+            "含在所调用档位的按请求价里",
+            "为模型消费做过优化、排序过的预抽取片段——文本、表格、代码、JSON、论坛帖、视频字幕。token 预算 1,024 到 32,768，默认 8,192",
+            "原始摘要会浪费 token、需要结构化抽取结果的 RAG 流水线"
+          ],
+          [
+            "Goggles",
+            "不额外收费",
+            "自定义域名集，按你指定的站点清单重排序结果",
+            "回答特定语料库的问题，或把 agent 从低质量域名上引开"
+          ],
+          [
+            "免费额度",
+            "每个付费档位每月 5 美元",
+            "自动抵扣到账户，约 1,000 次 Search 查询；额度本身不需要信用卡",
+            "在决定预付余额之前先评估 API"
+          ],
+          [
+            "Enterprise",
+            "合同制",
+            "自定义配额、SLA 与完整的 Zero Data Retention；存储结果或用其训练需要单独谈带存储权的计划",
+            "无法接受 90 天计费留存窗口的合规团队"
+          ],
+          [
+            "x402 支付",
+            "费率相同，以 Base 上的 USDC 结算",
+            "预付额度走链上结算而不是银行卡。交易在 Base 上公开且永久留痕",
+            "无卡支付，代价是链上审计痕迹"
+          ]
+        ]
+      },
+      {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "Auth",
+            "value": "X-Subscription-Token header — not Authorization: Bearer. A generic OpenAI-compatible client needs a header shim"
+          },
+          {
+            "label": "LLM Context controls",
+            "value": "maximum_number_of_tokens (1,024-32,768, default 8,192) and maximum_number_of_tokens_per_url (512-8,192, default 4,096)"
+          },
+          {
+            "label": "Relevance filter",
+            "value": "context_threshold_mode takes strict, balanced, lenient, or disabled"
+          },
+          {
+            "label": "Source metadata",
+            "value": "enable_source_metadata adds provenance including a fetched_content_timestamp"
+          },
+          {
+            "label": "Rate limits",
+            "value": "Search 50 QPS, Answers 2 QPS. Overages return HTTP 429, not a bill — only successful requests are billed"
+          },
+          {
+            "label": "Billing model",
+            "value": "Prepaid credits, not subscriptions. There is no monthly plan on the self-serve tiers"
+          },
+          {
+            "label": "Official MCP server",
+            "value": "Search and LLM Context exposed as MCP tools"
+          },
+          {
+            "label": "x402 agentic payments",
+            "value": "Same rates, settled in USDC on Base — no card required"
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "鉴权",
+            "value": "X-Subscription-Token 头，不是 Authorization: Bearer。通用 OpenAI 兼容客户端需要改写头"
+          },
+          {
+            "label": "LLM Context 控制项",
+            "value": "maximum_number_of_tokens（1,024 到 32,768，默认 8,192）与 maximum_number_of_tokens_per_url（512 到 8,192，默认 4,096）"
+          },
+          {
+            "label": "相关性过滤",
+            "value": "context_threshold_mode 可取 strict、balanced、lenient 或 disabled"
+          },
+          {
+            "label": "来源元数据",
+            "value": "enable_source_metadata 会追加来源信息，包括 fetched_content_timestamp"
+          },
+          {
+            "label": "限速",
+            "value": "Search 50 QPS，Answers 2 QPS。超限返回 HTTP 429 而不是账单——只有成功的请求才计费"
+          },
+          {
+            "label": "计费方式",
+            "value": "预付额度，不是订阅。自助档位没有月度套餐"
+          },
+          {
+            "label": "官方 MCP server",
+            "value": "把 Search 与 LLM Context 暴露为 MCP 工具"
+          },
+          {
+            "label": "x402 agentic payments",
+            "value": "费率相同，以 Base 上的 USDC 结算——无需信用卡"
+          }
+        ]
+      },
+      {
+        "title": "🔒 Contract Terms That Decide Your Architecture",
+        "titleZh": "🔒 决定架构的合同条款",
+        "type": "text",
+        "text": "Two clauses in Brave's terms of service are the ones that shape an architecture rather than a price line. Clause (xiii) prohibits using the Search Results to create, evaluate, train, re-train, fine-tune, benchmark, or otherwise improve AI models offered by you or third parties. Clause (i) prohibits storing or caching results beyond the transient storage required to operate your applications. Brave's FAQ confirms the escape hatch is contractual: storing results or using them to train models requires a custom plan with storage rights. The practical reading is that the API is licensed for grounding, not for data extraction — if your roadmap needs a corpus, that is a sales conversation, not a code change. The second term is data retention. Brave describes its Zero Data Retention as architectural rather than contractual, and holds SOC 2 Type II attestation with regular independent audits. But the privacy notice, updated 3 November 2026, states that a record of search queries submitted through a customer account is retained for a maximum of 90 days for billing and troubleshooting, and marks full Zero Data Retention as available to Enterprise clients and subject to Brave's legal obligations. If your compliance requirement is that no query log exists anywhere, including at Brave, the self-serve plan does not meet it.",
+        "textZh": "Brave 服务条款里有两条真正决定架构的条款，而不是价格行。第 (xiii) 条禁止使用搜索结果来创建、评估、训练、再训练、微调、基准测试或以其他方式改进你或第三方提供的 AI 模型；第 (i) 条禁止存储或缓存结果，只有运行客户应用所必需的临时存储除外。Brave 的 FAQ 确认出口是合同性的：存储结果或用它们训练模型需要单独谈一份带存储权的计划。实际读法就是——这个 API 授权给你做 grounding，不是给你做数据抽取；如果你的路线图需要一份语料库，那是一次销售对话，而不是一次代码改动。第二条是数据留存。Brave 把自己的 Zero Data Retention 描述为架构级而非合同级，并持有 SOC 2 Type II 认证与定期独立审计。但隐私声明（2026 年 11 月 3 日更新）写明，通过客户账户提交的搜索查询记录最多保留 90 天用于计费与排障，并把完整 ZDR 标为 Enterprise 客户专属且受 Brave 法律义务约束。如果你的合规要求是包括 Brave 在内任何地方都不存在查询日志，自助档并不满足。"
+      },
+      {
+        "title": "🌐 China Access & Latency",
+        "titleZh": "🌐 国内访问与延迟",
+        "type": "text",
+        "text": "The API and the index are hosted entirely in the United States, and Brave publishes no China node and no cross-border latency measurement. Mainland-China access therefore depends on your own network egress, and the latency you get is the latency of that path rather than a property of the API. Two related points matter for a China-facing team. First, the privacy posture described above is not region-specific — the 90-day billing retention and the Enterprise-only full Zero Data Retention apply regardless of where the query originates, so a China-hosted agent still sends queries to a US-operated service and back. Second, the two exits that made Brave the only first-party option are dated facts you can verify today: Microsoft states that public Bing Search and Bing Custom Search APIs were retired on 11th August 2025, and Google states that Custom Search JSON API pricing applies only to existing customers until the service discontinuation on January 1, 2027. Neither vendor has published a successor with a comparable first-party index, so the practical planning assumption is that Brave remains the default first-party choice through 2027 rather than a transitional stopgap.",
+        "textZh": "API 与索引全部托管在美国，Brave 没有发布中国节点，也没有公开跨境延迟实测。所以国内访问取决于你自己的网络出口，你拿到的延迟是那条路径的延迟，而不是 API 的属性。对面向国内的团队来说有两点相关。第一，上面说的隐私口径不分区域——90 天计费留存与仅限 Enterprise 的完整 ZDR 与查询从哪发起无关，所以跑在中国的 agent 依然要把查询发到美国运营的服务再拿回来。第二，让 Brave 成为唯一第一方选项的那两个退场，是今天就能核实的有日期事实：微软写明公共 Bing Search 与 Bing Custom Search API 已于 2025 年 8 月 11 日退役，Google 写明 Custom Search JSON API 的定价只适用于现有客户，直到 2027 年 1 月 1 日服务停用。两家都没有发布具备同等第一方索引的继任者，所以务实的规划假设是：到 2027 年之前 Brave 仍是默认的第一方选择，而不是一个过渡性的临时方案。"
+      }
+    ],
+    "status": "active",
+    "addedDate": "2026-11-17",
+    "source": "apirank-cron-aa24405635c9"
   }
 ]
