@@ -1,0 +1,360 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+const slug = 'openrouter-zdr-minimax-prompt-leak-2026';
+const enTitle = "OpenRouter Removed ZDR From MiniMax: What Changed";
+const enDescription = "OpenRouter pulled zero-data-retention labels from MiniMax after a prompt leak. What leaked, what ZDR misses, and how to enforce it.";
+const date = '2026-11-22';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/openrouter-zdr-minimax-prompt-leak-2026/`;
+const enCanonicalUrl = `https://apirank.vip/zh/tutorials/openrouter-zdr-minimax-prompt-leak-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "OpenRouter Removed ZDR From MiniMax: What Changed",
+  "description": "OpenRouter pulled zero-data-retention labels from MiniMax after a prompt leak. What leaked, what ZDR misses, and how to enforce it.",
+  "datePublished": "2026-11-22",
+  "dateModified": "2026-11-22",
+  "inLanguage": "en-US",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/tutorials/openrouter-zdr-minimax-prompt-leak-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "OpenRouter Removed ZDR From MiniMax: What Changed",
+      "item": "https://apirank.vip/tutorials/openrouter-zdr-minimax-prompt-leak-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+  {
+    "@type": "Question",
+    "name": "Did MiniMax read my prompts, or was it the providers that forwarded to it?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "OpenRouter's disclosure says the issue sits with MiniMax and the providers that forwarded to it — MiniMax, Novita, AtlasCloud and StreamLake. It does not attribute the loss to OpenRouter. What it cannot tell you is whether your specific prompts were among the ones fetched, so treat any request you sent to a MiniMax model between July and October 2026 as potentially read."
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Did OpenRouter leak my data?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "There is no evidence of that, and OpenRouter states the issue does not sit with OpenRouter. It also states that it does not store prompt or response content unless you opt in, while still retaining request metadata such as token counts, latency, model and cost."
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Does ZDR mean my prompts are never read?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No. ZDR governs whether the prompt is stored after the response returns. Your request still travels to the provider and the model still processes it. It is a retention guarantee, not an anonymity guarantee, and it does not control your own logs, error trackers or database rows."
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Is MiniMax still usable through OpenRouter?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Yes, and the models remain routable. The ZDR guarantee was withdrawn from MiniMax's own endpoint and from StreamLake's, because OpenRouter could not confirm the policy there. Third-party endpoints serving the same models still carry the ZDR label. Requiring provider.zdr routes your request to the endpoints that still qualify."
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "My provider says it does not train on my data. Is that as good as ZDR?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No. A no-training policy governs whether your inputs improve the provider's models. ZDR governs whether the provider stores the input at all. The relationship is asymmetric: ZDR implies no-training, but no-training does not imply ZDR. If you need both, enforce both with provider.zdr set to true and provider.data_collection set to deny."
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "Is the per-request ZDR flag safe to add everywhere?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Yes. The request-level flag composes as an OR with account-wide and guardrail settings: if any of the three turns ZDR on, enforcement applies. It can only ensure ZDR is on, never loosen an account-wide or guardrail rule."
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "What should I rotate after the MiniMax disclosure?",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Any credential that travelled in a prompt you sent to a MiniMax model between July and October 2026. The Dragos research is the reason to be thorough: canary credentials harvested from prompt samples were actively tested against other services. Phala's guidance for its own incident is the same template: treat request contents as exposed and rotate anything that travelled in them."
+    }
+  }
+]
+};
+
+const enBody = `<h1 id="top">OpenRouter Removed ZDR From MiniMax: What Changed</h1>
+
+<p>On <strong>November 21, 2026</strong>, every OpenRouter user who had sent requests to MiniMax models received an email titled <em>Requests you sent to MiniMax models may have been read</em>. No blog post followed — the email was the disclosure.</p>
+
+<p>A security researcher had embedded unique test URLs in prompts sent to MiniMax models between <strong>July and October 2026</strong>. A third party fetched those URLs <strong>40 to 130 hours</strong> after the requests were sent: a tripwire set months earlier, walked into by a stranger. OpenRouter then <strong>removed the Zero Data Retention label from the affected MiniMax endpoints</strong>.</p>
+
+<h2 id="what-leaked">What Actually Leaked</h2>
+
+<p>The disclosure email is unusually precise:</p>
+
+<ul>
+<li>Unique test URLs were placed in prompts sent to MiniMax models from <strong>July to October 2026</strong>.</li>
+<li>A third party accessed them <strong>40 to 130 hours</strong> after the requests were sent — <strong>whether MiniMax served the request directly or another provider forwarded it</strong>.</li>
+<li>With one exception, the same tests on other models at those providers were <strong>not</strong> accessed, and <strong>none of the AWS test keys were used</strong>.</li>
+<li>Your account sent requests through <strong>MiniMax and Novita</strong>; <strong>AtlasCloud, Novita and StreamLake</strong> confirmed they forwarded those requests to MiniMax.</li>
+<li>The issue sits with MiniMax and the providers that forwarded to it, <strong>not with OpenRouter</strong>.</li>
+<li>MiniMax told StreamLake that <strong>content moderation was enabled</strong> on its endpoints <strong>before October 22</strong>, and that it has since enabled Zero Data Retention. OpenRouter asked MiniMax for its own account and <strong>never received one</strong>.</li>
+<li>OpenRouter <strong>removed the ZDR label</strong> from these endpoints while investigating.</li>
+</ul>
+
+<p><strong>The delay is the finding.</strong> Forty to 130 hours is one to five and a half days. Nobody fetched the URLs while a request was in flight — they were read from storage, days later. Had the prompt been discarded after inference, there would have been nothing to fetch.</p>
+
+<p><strong>The forwarding layer matters.</strong> The disclosure names <strong>MiniMax, Novita, AtlasCloud and StreamLake</strong> as the parties that touched your traffic. You did not call MiniMax directly — you called OpenRouter, but your prompt crossed at least four organizations before a model produced a token, and <strong>every hop can see the whole prompt and response.</strong></p>
+
+<h2 id="the-dragos-study">The Bigger Finding: Two Million Canary Prompts</h2>
+
+<p>That incident was one case found by one researcher. The same team's larger project shows it was not an outlier.</p>
+
+<p><strong>Dragos</strong> ran a five-month campaign from <strong>July through November 2026</strong>, submitting <strong>approximately two million prompts</strong> containing unique URLs and canary token credentials to widely used AI services, then monitoring where those secrets surfaced. Any access to a canary proves somebody saw the original prompt.</p>
+
+<ol>
+<li><strong>Data from at least three AI providers was exposed.</strong> The seeded prompts were used in attempts to access the researcher's test systems and canary AWS accounts. The earliest incident dates to <strong>mid-July 2026</strong>, and <strong>none of the three providers knew about their breach until notified</strong>.</li>
+<li><strong>Inference marketplace providers accessed customer prompts without exploiting any vulnerability.</strong> Several resellers were able to view and retain customer prompts <strong>using standard logging capabilities</strong> — no exploit, no bypass of platform controls.</li>
+<li><strong>Privacy settings and published policies were not honoured.</strong> The team saw prompts submitted to U.S.-based providers transmitted to Chinese AI organizations, unique URLs accessed months after a single inference request, and one seeded link surface in an internal company chat in China.</li>
+</ol>
+
+<p>That third finding should change your architecture. A U.S.-based provider <strong>transmitted prompts to a Chinese AI organization</strong>. That may be a subcontracted inference provider disclosed in fine print rather than a dramatic breach — but if your threat model says our data stays in the US, it was wrong, and no ZDR label would have told you.</p>
+
+<p>The writeup also explains the economics of the second finding: on an open inference marketplace, a seller can list popular models at the lowest price, route the traffic, and collect the prompts from platform logs — because prompts and replies are often worth more than the GPUs that produced them.</p>
+
+<h2 id="two-more-incidents">Two More Incidents in the Same Week</h2>
+
+<p>Two other vendors published incidents in the same days.</p>
+
+<h3 id="together-incident">Together AI: a credential in a public Git repo</h3>
+
+<p>On <strong>November 20, 2026</strong>, Together AI notified customers of a security incident involving a subset of prompts submitted to its serverless inference service in <strong>June and July 2026</strong>.</p>
+
+<p>The mechanism was mundane: during development of the public GitHub repository <code>xorl</code>, an AI coding agent committed a credential granting access to a private Hugging Face repository holding prompt samples. Automated scanning detected it and Together reverted the commit, but an unauthorized party had already obtained the credential and searched the downloaded samples for credentials to other services. <strong>Five of the credentials tested were canary credentials associated with the Dragos security experiment.</strong></p>
+
+<p>The affected samples came from requests to the <strong>MiniMax M3, GLM-5.2 and Kimi K2.6</strong> models, primarily on <strong>June 24, July 4, July 8 and July 14, 2026</strong>. The prompts were authorized for testing use — the failure was that the store was reachable at all.</p>
+
+<p>Together's remediation list doubles as a checklist for any team running prompts through a hosted inference provider: use <strong>scoped or short-lived credentials</strong>; <strong>check all pull requests for credentials</strong>; <strong>make zero data retention the default for new accounts</strong>; and update development processes governing AI coding agents. Their guidance to customers was blunt: <strong>enable ZDR in your account settings</strong> if you handle sensitive prompt data.</p>
+
+<p>Note what Together did <em>not</em> claim. They did not say no customer data was exposed, and they did not say the revert contained the incident.</p>
+
+<h3 id="phala-incident">Phala: an inference VM taken over</h3>
+
+<p><strong>Phala</strong> published a preliminary incident report covering a different failure mode. For requests sent between <strong>October 21, 2026 00:00 UTC and November 8, 2026 05:35 UTC</strong>, treat request contents as exposed.</p>
+
+<p>On <strong>November 5</strong>, Phala detected unauthorized activity on one server. The attacker chained a legacy internet-facing service whose management interfaces relied on loopback access for trust and did not authenticate callers, creating unauthorized confidential VMs and obtaining application credentials. On <strong>November 6</strong>, Phala rotated the KMS root key. On <strong>November 8</strong>, a third-party researcher provided evidence that request data sent to <strong>DeepSeek V4 Flash 0731</strong> had been exposed — traced to an inference deployment serving production traffic <strong>without full production security hardening</strong>.</p>
+
+<p>Phala's guidance is unambiguous: <strong>rotate any API keys, tokens, passwords, or other secrets included in those requests.</strong> Two details are worth flagging. The attacker's activity continued <strong>after</strong> the KMS root key rotation, so key rotation alone did not close the hole. And Phala treated the two intrusions as <strong>one incident</strong>.</p>
+
+<h2 id="zdr-boundary">What ZDR Actually Covers — and What It Does Not</h2>
+
+<p>OpenRouter published a detailed ZDR explainer on <strong>September 11, 2026</strong>, last modified <strong>October 27, 2026</strong> — nine days before the MiniMax email. The failure mode that document warns about is what happened.</p>
+
+<p>The definition is narrow and correct: <strong>Zero Data Retention means an AI provider processes your prompt and returns a response without persisting either one afterward.</strong></p>
+
+<table>
+<thead>
+<tr><th>Control</th><th>What it governs</th><th>What it does NOT cover</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Zero Data Retention</strong></td><td>Whether the provider stores your prompt and response after the response returns</td><td>Whether your request reaches the provider at all; where it is processed; your own logs and error trackers</td></tr>
+<tr><td><strong>No training</strong></td><td>Whether your inputs are used to improve the provider's models</td><td>Retention for abuse detection or legal obligations — a no-training endpoint may still hold data briefly</td></tr>
+<tr><td><strong>Data residency</strong></td><td>Where the request is processed and pinned</td><td>Whether the data is kept afterward</td></tr>
+<tr><td><strong>Safety Retention tier</strong></td><td>Endpoints that may retain prompts solely to prevent abuse, without training on them</td><td>These are <strong>not</strong> ZDR endpoints, and you can allow or exclude them separately</td></tr>
+</tbody>
+</table>
+
+<p>One asymmetry is worth internalising. A provider that declines to train on your data may still retain it briefly for abuse checks. The reverse is stronger: <strong>an endpoint that does not retain your data cannot later use it for training.</strong></p>
+
+<p>OpenRouter also draws a boundary that matters for anyone who thinks ZDR makes a request anonymous: <em>your application remains another retention layer</em>. A ZDR request can still leave a complete prompt in your error tracker or application logs.</p>
+
+<p>And there is a subtle one specific to caching. <strong>Provider-side in-memory prompt caching is compatible with ZDR</strong>, because the prompt is never written to persistent storage. But <strong>response caching</strong> behaves differently, since it temporarily stores generated responses — and only account-level ZDR disables it.</p>
+
+<h2 id="live-audit">Auditing Your Own Gateway in 60 Seconds</h2>
+
+<p>The most useful thing you can do today is check whether the ZDR labels you trust are still accurate. We read the endpoint-level <code>is_zdr</code> flag from OpenRouter's live model pages on <strong>November 22, 2026</strong> for every MiniMax model.</p>
+
+<table>
+<thead>
+<tr><th>Model</th><th>Endpoints</th><th>ZDR revoked</th><th>Note</th></tr>
+</thead>
+<tbody>
+<tr><td><code>minimax/minimax-m3</code></td><td>Venice, Parasail ×2, Featherless, DeepInfra ×2, CoreWeave, <strong>Minimax</strong></td><td><strong>Minimax (first party)</strong></td><td>7 of 8 endpoints still ZDR</td></tr>
+<tr><td><code>minimax/minimax-m3.1-flash</code></td><td>DigitalOcean, Parasail, ModelRun, Inferact vLLM, Wafer, Makora, Nebius, Together, Fireworks, SambaNova, InferenceNet ×2, <strong>Minimax</strong>, <strong>StreamLake</strong></td><td><strong>Minimax + StreamLake</strong></td><td>12 of 14 endpoints still ZDR</td></tr>
+<tr><td><code>minimax/minimax-m3:batch</code></td><td>DeepInfra</td><td><strong>DeepInfra</strong></td><td>The only endpoint, and it is not ZDR</td></tr>
+<tr><td><code>minimax/minimax-m2.5</code></td><td>DigitalOcean, Venice</td><td>none</td><td>Both endpoints ZDR</td></tr>
+</tbody>
+</table>
+
+<p>Three things stand out.</p>
+
+<p><strong>The revocation is surgical, not blanket.</strong> OpenRouter did not delist MiniMax. It removed the ZDR <em>label</em> from the endpoints that cannot currently honour the guarantee — MiniMax's own first-party endpoint, and StreamLake's, which the disclosure names as a forwarder. Third-party endpoints still hold the label, because the guarantee is a property of the endpoint, not the model.</p>
+
+<p><strong>This is the correct behaviour.</strong> OpenRouter's documentation states that it evaluates data policies at the endpoint level, and that when it cannot confirm an endpoint's policy it takes the conservative position and classifies it as retaining and training on data.</p>
+
+<p><strong>Batch endpoints are a blind spot.</strong> The single DeepInfra endpoint for <code>minimax-m3:batch</code> is not ZDR. If your workload runs on a batch variant and you assumed the non-batch model's label carried over, that assumption is wrong.</p>
+
+<p>For contrast, the same audit on <code>anthropic/claude-haiku-5.5</code> shows a mixed picture unrelated to any incident: Azure, Anthropic direct and Claude Platform on AWS report <code>is_zdr: false</code>, while Amazon Bedrock and Google report <code>true</code>. <strong>The same model carries different retention guarantees depending on which host serves it.</strong> That holds whether or not you ever touch MiniMax.</p>
+
+<h2 id="enforcement">Enforcing ZDR Instead of Hoping For It</h2>
+
+<p>Treat ZDR as an <strong>enforceable routing requirement</strong>, not a label you read once. Three layers, and they compose.</p>
+
+<h3 id="layer-request">1. Per-request enforcement</h3>
+
+<p>The most precise lever is the <code>provider</code> routing object. Setting <code>provider.zdr</code> to <code>true</code> restricts the request to endpoints that satisfy the zero-retention definition:</p>
+
+<pre><code>{
+  "model": "minimax/minimax-m3",
+  "messages": [{"role": "user", "content": "Summarize this ticket"}],
+  "provider": {
+    "zdr": true,
+    "data_collection": "deny"
+  }
+}</code></pre>
+
+<p>Add <code>data_collection: deny</code> and you are enforcing both controls explicitly in one request. The two answer different questions, so asking both is correct.</p>
+
+<p>One behavioural detail trips people up: the request-level flag <strong>composes as an OR</strong> with your account-wide and guardrail settings. If any one of the three turns ZDR on, enforcement applies — and the request-level flag can only <em>ensure</em> ZDR is on, never <strong>loosen</strong> a stricter rule. Per-request ZDR is safe to add everywhere.</p>
+
+<h3 id="layer-account">2. Account-level and guardrail enforcement</h3>
+
+<p>You can enforce ZDR across every request without touching your code, from your account's privacy settings or from guardrails. Guardrails can require ZDR <strong>per model group</strong> — Anthropic, OpenAI, Google, SpaceXSI and non-frontier endpoints — so you can require it where it matters.</p>
+
+<h3 id="layer-verify">3. Verify the endpoint, not the model</h3>
+
+<p>Because the guarantee lives on the endpoint, your verification has to live there too. Two checks to automate:</p>
+
+<pre><code># 1. Which providers currently serve this model?
+curl -s https://openrouter.ai/api/v1/models/minimax/minimax-m3/endpoints \
+  | jq -r '.data.endpoints[].provider_name'
+
+# 2. Re-check ZDR status for the endpoints you depend on.
+#    The per-endpoint flag lives in the model page's embedded data.
+curl -s https://openrouter.ai/minimax/minimax-m3 \
+  | grep -o '"is_zdr":[a-z]*' | sort | uniq -c</code></pre>
+
+<p>Run the second check on a schedule, not on a release day. The MiniMax revocation happened because the label was <em>withdrawn</em> — a control only ever read at integration time is not a control.</p>
+
+<h2 id="checklist">The Hardening Checklist</h2>
+
+<p>What actually changes your exposure, roughly in order of importance:</p>
+
+<ol>
+<li><strong>Require ZDR in the request.</strong> Add <code>provider.zdr: true</code> and <code>provider.data_collection: deny</code> to every request touching source code, customer data, credentials or legal material.</li>
+<li><strong>Turn on account-level ZDR and guardrails</strong> for model groups where you have no per-request code path — background jobs, agents, SDK integrations you did not write.</li>
+<li><strong>Treat every prompt as a potential secret carrier.</strong> The Dragos research proves credentials pasted into prompts get tested. If a secret must cross a model boundary, use a scoped, short-lived, single-use credential.</li>
+<li><strong>Do not send secrets in prompts at all.</strong> Redact at the edge. No retention policy substitutes for not putting a production key in a prompt.</li>
+<li><strong>Audit your own logs.</strong> Provider-side ZDR does nothing about your error tracker, analytics events or application logs. If you have never checked whether prompts land there, that is your largest single exposure — and it is entirely in your control.</li>
+<li><strong>Prefer direct providers for sensitive workloads.</strong> The routing table above is a mitigation, not a cure: enforcement reduces the blast radius, but it cannot make a third-party marketplace a trustworthy place for secrets.</li>
+<li><strong>Check batch and variant endpoints separately.</strong> Variants do not inherit guarantees.</li>
+<li><strong>Re-verify ZDR labels on a schedule.</strong> Labels are withdrawn. Automate the check.</li>
+<li><strong>Rotate secrets sent during a known exposure window.</strong> Phala's guidance is the template: treat the request contents as exposed and rotate anything that travelled in them.</li>
+</ol>
+
+<h2 id="verdict">Verdict</h2>
+
+<p>OpenRouter handled this well. It investigated, removed the label from endpoints that could not honour the guarantee, left labels on endpoints that could, and kept the models routable with an accurate privacy flag. No blog post followed, which is a communication miss — but a precise email beats a vague blog post when the question is whether your prompts were read.</p>
+
+<p>MiniMax's disclosure is thinner. The email says content moderation was enabled before <strong>October 22</strong> and that ZDR has been enabled since, and that OpenRouter's request for MiniMax's own account went unanswered. The distinction matters: <strong>content moderation is not retention.</strong> A moderation pipeline reads prompts and can retain what it examines. Only a genuine no-retention claim satisfies ZDR, and until MiniMax provides its own account, the conservative reading applies.</p>
+
+<p>The durable lesson is not about MiniMax. It is that <strong>on a gateway, the privacy guarantee you get is the guarantee of the cheapest endpoint that happened to win the route.</strong> The same model served by Azure and by Bedrock can carry opposite retention labels, and a label you read once at integration time is a snapshot of a policy that gets withdrawn without notice.</p>
+
+<p>Turn ZDR into a routing requirement you enforce on every request, verify per endpoint on a schedule, and stop putting secrets in prompts. The rest is vendor risk you cannot engineer away — but you can at least know whose hands your prompts are in.</p>
+
+<h2 id="faq">Frequently Asked Questions</h2>
+
+<h3 id="faq-1">Did MiniMax read my prompts, or was it the providers that forwarded to it?</h3>
+
+<p>The disclosure says the issue <strong>sits with MiniMax and the providers that forwarded to it</strong> — MiniMax, Novita, AtlasCloud and StreamLake — not with OpenRouter. It cannot tell you whether your specific prompts were among the ones fetched, so treat any request you sent to a MiniMax model between July and October 2026 as potentially read.</p>
+
+<h3 id="faq-2">Did OpenRouter leak my data?</h3>
+
+<p>There is no evidence of that, and OpenRouter states the issue does not sit with it. It also states that it does not store prompt or response content unless you opt in, while retaining metadata such as token counts, latency, model and cost.</p>
+
+<h3 id="faq-3">Does ZDR mean my prompts are never read?</h3>
+
+<p>No. ZDR governs whether the prompt is <em>stored</em> after the response returns. Your request still travels to the provider and the model still processes it. It is a retention guarantee, not an anonymity guarantee, and it does not control your own logs.</p>
+
+<h3 id="faq-4">Is MiniMax still usable through OpenRouter?</h3>
+
+<p>Yes. The ZDR guarantee was withdrawn from MiniMax's own endpoint and StreamLake's because OpenRouter could not confirm the policy there; third-party endpoints serving the same models still carry the label. Requiring <code>provider.zdr</code> routes you to the endpoints that still qualify.</p>
+
+<h3 id="faq-5">My provider says it does not train on my data. Is that as good as ZDR?</h3>
+
+<p>No. A no-training policy governs whether your inputs improve the provider's models; ZDR governs whether the provider stores the input at all. The relationship is asymmetric — ZDR implies no-training, not the reverse. If you need both, enforce both.</p>
+
+<h3 id="faq-6">Is the per-request ZDR flag safe to add everywhere?</h3>
+
+<p>Yes. The flag composes as an OR with account-wide and guardrail settings, so it can only ensure ZDR is on — never loosen a stricter rule you already have.</p>
+
+<h3 id="faq-7">What should I rotate after the MiniMax disclosure?</h3>
+
+<p>Any credential that travelled in a prompt you sent to a MiniMax model between July and October 2026. The Dragos research is the reason to be thorough: canary credentials harvested from prompt samples were actively tested against other services.</p>
+
+<h2 id="sources">Sources</h2>
+
+<ul>
+<li><a href="https://news.ycombinator.com/item?id=50585962">OpenRouter user disclosure: Requests sent to MiniMax may have been read</a></li>
+<li><a href="https://www.dragos.com/blog/ai-supply-chain-security-canary-tokens">Dragos: Three breaches, endless leaks</a></li>
+<li><a href="https://www.together.ai/blog/security-event-prompt-leakage-for-requests-in-june-and-july-of-2026">Together AI: Security event — prompt leakage</a></li>
+<li><a href="https://phala.com/posts/phala-november-preliminary-incident-report">Phala: November preliminary incident report</a></li>
+<li><a href="https://openrouter.ai/blog/insights/zero-data-retention/">OpenRouter: Zero Data Retention (ZDR)</a></li>
+<li><a href="https://news.ycombinator.com/item?id=50582794">Ars Technica: Leaky AI supply chain exposing secret user data</a></li>
+</ul>
+`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  </Fragment>
+
+  <article class="prose prose-lg max-w-none">
+    <Fragment set:html={enBody} />
+  </article>
+</BaseLayout>

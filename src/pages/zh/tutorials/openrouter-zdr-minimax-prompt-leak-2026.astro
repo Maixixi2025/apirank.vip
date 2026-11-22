@@ -1,0 +1,365 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+
+const slug = 'openrouter-zdr-minimax-prompt-leak-2026';
+const zhTitle = "OpenRouter 撤销 MiniMax 的 ZDR 标签：提示词泄露之后";
+const zhDescription = "OpenRouter 因提示词泄露事件撤销了 MiniMax 端点的零数据保留标签。到底泄露了什么、ZDR 管不到什么，以及如何在路由层强制执行。";
+const date = '2026-11-22';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/openrouter-zdr-minimax-prompt-leak-2026/`;
+const zhCanonicalUrl = `https://apirank.vip/tutorials/openrouter-zdr-minimax-prompt-leak-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "OpenRouter 撤销 MiniMax 的 ZDR 标签：提示词泄露之后",
+  "description": "OpenRouter 因提示词泄露事件撤销了 MiniMax 端点的零数据保留标签。到底泄露了什么、ZDR 管不到什么，以及如何在路由层强制执行。",
+  "datePublished": "2026-11-22",
+  "dateModified": "2026-11-22",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/zh/tutorials/openrouter-zdr-minimax-prompt-leak-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/zh/tutorials/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "OpenRouter 撤销 MiniMax 的 ZDR 标签：提示词泄露之后",
+      "item": "https://apirank.vip/zh/tutorials/openrouter-zdr-minimax-prompt-leak-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+  {
+    "@type": "Question",
+    "name": "是 MiniMax 读了我的提示词，还是转发给它的那些 provider 读的？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "OpenRouter 的通报说问题出在 MiniMax 以及转发给它的那些 provider，具体是 MiniMax、Novita、AtlasCloud 和 StreamLake，并没有归因于 OpenRouter。但这封通报无法告诉你你的具体提示词是否在被取走的那批里，所以应把 2026 年 7 月到 10 月间发给 MiniMax 模型的任何请求都视为可能被读取。"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "OpenRouter 泄露我的数据了吗？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "没有相关证据，OpenRouter 也表示问题不在自己这里。它同时说明，除非你主动选择加入，否则不存储提示词或回复内容，但仍会保留请求元数据，如 token 数、延迟、模型和成本。还要注意，这次检测方法本身就需要 OpenRouter 交出受影响请求的元数据。"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "ZDR 意味着我的提示词从未被读取过吗？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "不是。ZDR 管的是提示词在回复返回之后是否被存储。请求仍然会到达 provider，模型仍然会处理它。ZDR 是留存保证，不是匿名保证，而且它不控制你自己的日志、错误追踪器、分析事件或数据库行。"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "MiniMax 还能通过 OpenRouter 用吗？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "可以，模型仍然可路由。变的是标签：因为 OpenRouter 无法在 MiniMax 自有端点和 StreamLake 端点上确认政策，ZDR 承诺在那里被撤下。服务同一批模型的第三方端点仍带 ZDR 标签。要求 provider.zdr 即可路由到仍然合格的端点。"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "厂商说我们不用你的数据训练，这和 ZDR 一样吗？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "不一样。不训练管的是你的输入是否被用来改进 provider 的模型；ZDR 管的是 provider 根本不存不存。二者的关系是不对称的：ZDR 蕴含不训练，但不训练不蕴含 ZDR。两个都需要就同时强制 provider.zdr 为 true 和 provider.data_collection 为 deny。"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "每请求的 ZDR 标志到处加安全吗？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "安全。每请求标志与账号级、guardrail 设置之间是 OR 组合：三者中任何一个开启 ZDR 就生效。每请求标志只能确保 ZDR 被开启，永远不会放宽账号级或 guardrail 规则。加上它不可能降低你的保护级别。"
+    }
+  },
+  {
+    "@type": "Question",
+    "name": "MiniMax 通报之后我应该轮换什么？",
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "任何在 2026 年 7 月到 10 月间发给 MiniMax 模型的提示词里携带过的凭据。Dragos 的研究正是要求你彻底排查的理由：从提示词样本里 harvest 到的金丝雀凭据真的被拿去测试其他服务了。Phala 给自己事件开的处方是同一个模板——把请求内容视为已暴露，轮换其中携带过的一切。"
+    }
+  }
+]
+};
+
+const zhBody = `<h1 id="top">OpenRouter 撤销 MiniMax 的 ZDR 标签：提示词泄露之后</h1>
+
+<p><strong>2026 年 11 月 21 日</strong>，所有在 OpenRouter 上调用过 MiniMax 模型的开发者都收到了一封主题为 Requests you sent to MiniMax models may have been read 的邮件。OpenRouter 没有发博客，这封邮件本身就是通报。</p>
+
+<p>一名安全研究员在 7 月至 10 月发给 MiniMax 模型的提示词里埋了唯一的测试 URL，第三方在请求发出后 <strong>40 到 130 小时</strong>访问了这些 URL——几个月前布下的绊线被陌生人踩中了。调查期间，OpenRouter 从受影响的 MiniMax 端点上<strong>撤掉了零数据保留（Zero Data Retention）标签</strong>。</p>
+
+<p>这不只是某一个厂商犯错的故事。它暴露的是：在聚合网关上，一个 ZDR 标签到底值多少钱。这也是一封需要重新配置 API 选型的邮件。</p>
+
+<h2 id="what-leaked">到底泄露了什么</h2>
+
+<p>这封通报邮件异常精确，因此也异常有用：</p>
+
+<ul>
+<li>唯一测试 URL 被放进 <strong>2026 年 7 月到 10 月</strong>发给 MiniMax 模型的提示词里。</li>
+<li>第三方在请求发出后 <strong>40 到 130 小时</strong>访问了这些 URL。</li>
+<li>无论请求是 <strong>MiniMax 直接服务，还是其他 provider 转发给 MiniMax</strong>，都发生了同样的事。</li>
+<li>除一个例外外，在这些 provider 的其他模型上做同样测试<strong>没有</strong>被访问，<strong>AWS 测试密钥也没有一个被使用</strong>。</li>
+<li>你的账号通过 <strong>MiniMax 和 Novita</strong> 向 MiniMax 模型发过请求。</li>
+<li><strong>AtlasCloud、Novita 和 StreamLake</strong> 已确认把 OpenRouter 的 MiniMax 请求转发给了 MiniMax。</li>
+<li>问题出在 <strong>MiniMax 以及转发给它的那些 provider</strong>，<strong>不在 OpenRouter</strong>。</li>
+<li>MiniMax 告诉 StreamLake，其端点<strong>在 10 月 22 日之前开启了内容审核</strong>，此后<strong>启用了零数据保留</strong>。OpenRouter 向 MiniMax 索要它自己的说明，<strong>但没有收到</strong>。</li>
+<li>调查期间，OpenRouter <strong>移除了这些 MiniMax 模型端点的 ZDR 标签</strong>。</li>
+</ul>
+
+<p><strong>延迟本身就是发现。</strong>40 到 130 小时是一天到五天半。没人在请求还在传输时去抓这些 URL——它们是几天之后被从存储里读出来的。如果提示词真的在推理后被丢弃，就根本没有什么可抓。这个时间差就是留存确实发生过的证据。</p>
+
+<p><strong>转发层才是关键。</strong>通报点名了 <strong>MiniMax、Novita、AtlasCloud 和 StreamLake</strong>。这恰恰是大多数团队的直觉模型坏掉的地方。你并没有直连 MiniMax——你调的是 OpenRouter。但你的提示词在模型吐出第一个 token 之前，至少穿过了四个组织。<strong>这条链上的每一跳都能看到完整的提示词和回复。</strong></p>
+
+<h2 id="the-dragos-study">更大的发现：两百万条金丝雀提示词</h2>
+
+<p>这起事件是单个研究员发现的个案，但同一团队规模更大的项目表明它不是异常值。</p>
+
+<p><strong>Dragos</strong> 在 <strong>2026 年 7 月到 11 月</strong>的五个月里，向广泛使用的 AI 服务提交了<strong>约两百万条</strong>含唯一 URL 和金丝雀 token 凭据的提示词，然后持续监控这些秘密在哪里冒头。任何一次对金丝雀的访问，都证明生态里某个地方有人看到了原始提示词。结果有三个发现。</p>
+
+<ol>
+<li><strong>至少三家 AI 厂商的数据被暴露。</strong>被植入的测试提示词被用于尝试访问研究员的受控测试系统和金丝雀 AWS 账号。最早的事件可追溯到 <strong>2026 年 7 月中旬</strong>，而且<strong>三家厂商在研究员通知之前都不知道自己被入侵了</strong>。</li>
+<li><strong>推理市场商在没有利用任何漏洞的前提下访问了客户提示词。</strong>多个通过 AI 推理市场运营的转售商，<strong>仅凭标准日志能力</strong>就能查看并保留客户提示词——没有漏洞利用，也没有绕过平台管控。</li>
+<li><strong>隐私设置和公开政策没有得到遵守。</strong>他们观察到提交给<strong>美国</strong>厂商的提示词被<strong>传输给中国的 AI 机构</strong>，唯一 URL 在一次推理请求后几个月仍被访问，以及一条被植入的链接最终出现在中国某公司的内部聊天里。</li>
+</ol>
+
+<p>第三条发现才真正该改变你的架构。一家美国厂商<strong>把提示词传给了中国的 AI 机构</strong>。这很可能只是细则里披露过的分包推理商，而非戏剧性的入侵——但如果你的威胁模型写着数据留在美国，那它就是错的，而网关上的任何 ZDR 标签都不会告诉你这件事。</p>
+
+<p>Dragos 那篇文章还解释了第二个发现的成因，这让问题变成长期的而非一周的痛点：在开放推理市场上，卖家可以把热门模型挂在最低价上、导流，再从平台日志里捞走提示词——因为提示词和回复往往比生产它们的 GPU 更值钱。</p>
+
+<h2 id="two-more-incidents">同一周的另外两起事件</h2>
+
+<p>另外两家厂商在同样几天内公布了自己的事件，都跟 API 采购方直接相关。</p>
+
+<h3 id="together-incident">Together AI：公网 Git 仓库里的一个凭据</h3>
+
+<p><strong>2026 年 11 月 20 日</strong>，Together AI 通知客户，其 serverless 推理服务在 <strong>2026 年 6 月和 7 月</strong>提交的部分提示词发生了一起安全事件。</p>
+
+<p>机制很朴素也很尴尬：在公开 GitHub 仓库 <code>xorl</code> 的开发过程中，一个 AI 编码 agent 把能访问私有 Hugging Face 仓库的凭据提交了进去。自动化扫描发现后 Together 回滚了提交，但那时未经授权的一方已经拿到凭据并下载了存放的提示词样本，随后在样本里搜索其他服务的凭据并测试是否有效。<strong>被测试的凭据里有五个是 Dragos 安全实验的金丝雀凭据。</strong></p>
+
+<p>受影响的样本来自发往 <strong>MiniMax M3、GLM-5.2 和 Kimi K2.6</strong> 模型的请求，主要集中在 <strong>6 月 24 日、7 月 4 日、7 月 8 日和 7 月 14 日</strong>。这些提示词是常规软件测试中收集的，本就获得了该用途的授权——真正的失败在于这个存储本身可达，且被一个 AI 编码 agent 的误提交暴露了。</p>
+
+<p>Together 的整改清单值得当作任何把提示词送进托管推理厂商的团队的检查表：使用<strong>限定权限或短时效的凭据</strong>并在支持时走免密钥访问；<strong>对所有 PR 做凭据检查</strong>；<strong>把零数据保留设为新账号的默认设置</strong>；更新涉及 AI 编码 agent 使用的开发流程。给客户的建议很直接：<strong>处理敏感提示词数据的客户应当在账号设置里启用 ZDR。</strong></p>
+
+<p>注意 Together <em>没有</em>说什么。他们没说没有客户数据外泄，也没说回滚就阻断了泄露。他们对受影响提示词内容的审查仍在进行，并表示会直接联系受影响的客户。</p>
+
+<h3 id="phala-incident">Phala：推理 VM 被拿下</h3>
+
+<p><strong>Phala</strong> 发布的初步事件报告覆盖的是完全不同的失效模式。对于 <strong>2026 年 10 月 21 日 00:00 UTC 至 11 月 8 日 05:35 UTC</strong> 之间发出的请求，请把请求内容视为已暴露。</p>
+
+<p><strong>11 月 5 日</strong>，Phala 检测到一台服务器上的未授权活动。攻击者串联了一个遗留的、对公网暴露的服务，其管理接口依赖 loopback 访问来建立信任，且不独立认证调用方，从而创建了未授权的机密虚拟机并获取应用凭据。<strong>11 月 6 日</strong>，Phala 轮换了 KMS 根密钥。<strong>11 月 8 日</strong>，一名第三方安全研究员提供证据，表明发往 <strong>DeepSeek V4 Flash 0731</strong> 的请求数据已被暴露。Phala 追查到一台新 GPU 服务器上的推理部署，它<strong>在没有完整生产安全加固的情况下承载生产流量</strong>。</p>
+
+<p>Phala 的处置建议毫不含糊：<strong>轮换那些请求里携带过的任何 API key、token、密码或其他机密。</strong>有两个细节值得标出来：攻击者的活动在 <strong>11 月 6 日 KMS 根密钥轮换之后仍在继续</strong>，只轮换密钥并不足以堵住漏洞；以及 Phala 指出两起入侵的攻击链和基础设施存在重叠，正把它们<strong>作为同一起事件</strong>处理。provider 完全可能在自身数据处理没问题的情况下被攻破，而你路由过去的那个模型也可能变成入侵路径。</p>
+
+<h2 id="zdr-boundary">ZDR 到底覆盖什么、不覆盖什么</h2>
+
+<p>OpenRouter 在 <strong>2026 年 9 月 11 日</strong>发布过一份 ZDR 详解，最后修改于 <strong>10 月 27 日</strong>——比 MiniMax 邮件早九天。那份文档警告的失效模式恰好就是这次发生的事，所以它是该持有的正确心智模型。</p>
+
+<p>定义很窄也很准确：<strong>零数据保留意味着 AI provider 处理完你的提示词并返回回复之后，不再持久化保存其中任何一个。</strong>这是一条留存保证。</p>
+
+<table>
+<thead>
+<tr><th>控制项</th><th>管什么</th><th>不管什么</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>零数据保留（ZDR）</strong></td><td>provider 在回复返回后是否留存你的提示词和回复</td><td>请求是否真的到达了 provider；处理在哪里进行；你自己的日志与错误追踪</td></tr>
+<tr><td><strong>不用于训练</strong></td><td>你的输入是否被用来改进 provider 的模型</td><td>出于滥用检测或法律义务的短期留存——不训练不等于不留存</td></tr>
+<tr><td><strong>数据驻留</strong></td><td>请求在哪里处理与固定</td><td>数据之后是否被保留</td></tr>
+<tr><td><strong>Safety Retention 层级</strong></td><td>可能仅为防滥用而留存、且不用于训练的端点</td><td>这些<strong>不是</strong> ZDR 端点，可单独允许或排除</td></tr>
+</tbody>
+</table>
+
+<p>有一个不对称值得记住：声明不训练你的数据的 provider，仍可能出于滥用检测短暂保留。而反过来的推论更强：<strong>一个不留存数据的端点，之后也不可能拿它去训练。</strong>所以 ZDR 蕴含不训练，但不训练不蕴含 ZDR。</p>
+
+<p>OpenRouter 还划了一条对认为 ZDR 能让请求匿名的人很关键的边界：<em>你的应用本身仍然是另一层留存</em>。A 次 ZDR 请求依然可能把完整提示词留在错误追踪器、分析事件、数据库行或应用日志里。provider 侧的 ZDR 不会删除这些副本。</p>
+
+<p>还有一条和缓存相关的细节。<strong>provider 侧内存中的提示词缓存与 ZDR 兼容</strong>，因为提示词从不落盘。但<strong>回复缓存</strong>行为不同，因为它会临时存储生成的回复。账号级 ZDR 会禁用回复缓存，而每请求字段不影响回复缓存的可用性。一个要求每一层都零存储的系统，必须把回复缓存当作独立控制项。</p>
+
+<h2 id="live-audit">60 秒审计你自己的网关</h2>
+
+<p>今天最有价值的一件事，是检查你所信任的 ZDR 标签是否仍然准确。我们在 <strong>2026 年 11 月 22 日</strong>读取了 OpenRouter 各模型页内嵌数据中端点级的 <code>is_zdr</code> 标志，审计了 OpenRouter 上全部 MiniMax 模型。结果并不均匀，而且规律很精确。</p>
+
+<table>
+<thead>
+<tr><th>模型</th><th>端点</th><th>ZDR 被撤销</th><th>备注</th></tr>
+</thead>
+<tbody>
+<tr><td><code>minimax/minimax-m3</code></td><td>Venice、Parasail ×2、Featherless、DeepInfra ×2、CoreWeave、<strong>Minimax</strong></td><td><strong>Minimax（第一方）</strong></td><td>8 个端点中 7 个仍是 ZDR</td></tr>
+<tr><td><code>minimax/minimax-m3.1-flash</code></td><td>DigitalOcean、Parasail、ModelRun、Inferact vLLM、Wafer、Makora、Nebius、Together、Fireworks、SambaNova、InferenceNet ×2、<strong>Minimax</strong>、<strong>StreamLake</strong></td><td><strong>Minimax + StreamLake</strong></td><td>14 个端点中 12 个仍是 ZDR</td></tr>
+<tr><td><code>minimax/minimax-m3:batch</code></td><td>DeepInfra</td><td><strong>DeepInfra</strong></td><td>唯一端点，且不是 ZDR</td></tr>
+<tr><td><code>minimax/minimax-m2.5</code></td><td>DigitalOcean、Venice</td><td>无</td><td>两个端点都是 ZDR</td></tr>
+</tbody>
+</table>
+
+<p>三点尤其值得注意。</p>
+
+<p><strong>撤销是精准的，不是全面下架。</strong>OpenRouter 没有把 MiniMax 下架。它只从<em>无法</em>保证该承诺的特定端点上摘掉了 ZDR <em>标签</em>——MiniMax 自己的第一方端点，以及通报中被点名作为转发方的 StreamLake。服务同一批模型的第三方端点仍然保留标签，因为承诺是端点的属性，不是模型的属性。</p>
+
+<p><strong>这是正确行为。</strong>OpenRouter 自己的文档写明，它在端点层面评估数据政策，因为厂商的总体政策可能与某个特定端点绑定的政策不同；无法确认端点政策时，它采取保守立场，将其归类为留存且用于训练。MiniMax 的这次撤销正是这套策略在按设计运转。</p>
+
+<p><strong>批处理端点是个盲区。</strong><code>minimax-m3:batch</code> 唯一的 DeepInfra 端点不是 ZDR。如果你的负载跑在 batch 变体上，却假设非 batch 模型的标签会继承，这个假设就是错的。同样的陷阱适用于任何你只查过一个变体、就默认其余变体都一样的模型家族。</p>
+
+<p>作为对照，对 <code>anthropic/claude-haiku-5.5</code> 做同样的审计会看到一个与事故无关的混合结果：Azure、Anthropic 官方和 AWS 上的 Claude Platform 全部是 <code>is_zdr: false</code>，而 Amazon Bedrock 和 Google 是 <code>true</code>。<strong>同一个模型会因托管方不同而携带相反的留存承诺。</strong>这是本文最有可操作性的一条发现，与你是否用过 MiniMax 无关。</p>
+
+<h2 id="enforcement">把 ZDR 从希望变成强制</h2>
+
+<p>OpenRouter 给出的思路是对的：把 ZDR 当作一条<strong>可强制执行的路由约束</strong>，而不是你只读一次的标签。一共三层，而且可以叠加。</p>
+
+<h3 id="layer-request">1. 每请求强制</h3>
+
+<p>最精确的杠杆是 <code>provider</code> 路由对象。把 <code>provider.zdr</code> 设为 <code>true</code>，请求就只会落到满足零保留定义的端点上：</p>
+
+<pre><code>{
+  "model": "minimax/minimax-m3",
+  "messages": [{"role": "user", "content": "Summarize this ticket"}],
+  "provider": {
+    "zdr": true,
+    "data_collection": "deny"
+  }
+}</code></pre>
+
+<p>再加上 <code>data_collection: deny</code>，你就在一个请求里同时显式强制了两项控制。它们回答的是不同问题，所以两个都问是对的。</p>
+
+<p>有一个容易踩坑的行为细节：每请求标志与账号级、guardrail 设置之间是 <strong>OR 组合</strong>。三者中任何一个开启 ZDR，强制就生效。每请求标志<strong>只能</strong>确保 ZDR 被开启，<strong>不能放宽</strong>账号级或 guardrail 规则。因此每请求 ZDR 可以放心加到所有地方。</p>
+
+<h3 id="layer-account">2. 账号级与 guardrail 强制</h3>
+
+<p>你可以不动任何代码，就在账号隐私设置或 guardrail 里对所有请求强制 ZDR。Guardrail 可以<strong>按模型组</strong>要求 ZDR——Anthropic、OpenAI、Google、SpaceXSI 以及非前沿端点——所以你可以在真正重要的组上强制，而不必一刀切。</p>
+
+<h3 id="layer-verify">3. 验证端点，而不是验证模型</h3>
+
+<p>因为承诺落在端点上，你的验证也必须落在端点上。有两项检查值得自动化：</p>
+
+<pre><code># 1. 当前有哪些 provider 在服务这个模型？
+curl -s https://openrouter.ai/api/v1/models/minimax/minimax-m3/endpoints \
+  | jq -r '.data.endpoints[].provider_name'
+
+# 2. 复查你依赖的那些端点的 ZDR 状态。
+#    每端点标志位于模型页内嵌数据中。
+curl -s https://openrouter.ai/minimax/minimax-m3 \
+  | grep -o '"is_zdr":[a-z]*' | sort | uniq -c</code></pre>
+
+<p>第二项检查要<strong>按周期跑</strong>，而不是只在发版那天跑。MiniMax 的撤销之所以发生，正是因为标签是被<em>收回</em>的——一个只在集成时读一次的控件不算控件。OpenRouter 的端点策略可以在你的代码、SDK 和模型 ID 都不变的情况下被改掉。</p>
+
+<h2 id="checklist">加固清单</h2>
+
+<p>真正能改变暴露面的大致按重要程度排序如下：</p>
+
+<ol>
+<li><strong>在请求里强制 ZDR。</strong>凡是涉及源代码、客户数据、凭据或法律材料的请求，都加上 <code>provider.zdr: true</code> 和 <code>provider.data_collection: deny</code>。两行改动，且与账号级规则安全叠加。</li>
+<li><strong>对那些没有每请求代码路径的模型组启用账号级 ZDR 和 guardrail</strong>——后台任务、agent、不是你写的 SDK 集成。</li>
+<li><strong>把每条提示词都当成可能携带机密的东西。</strong>Dragos 的研究证明，从提示词样本里捞出来的凭据真的会被拿去测试。如果某个机密必须跨越模型边界，就用限定权限、短时效、一次性的凭据——被读到也毫无价值。</li>
+<li><strong>干脆不要把机密放进提示词。</strong>在边缘做脱敏。任何留存策略都替代不了不要把生产密钥写进提示词这件事。</li>
+<li><strong>审计你自己的日志。</strong>provider 侧 ZDR 对你的错误追踪器、分析事件、数据库行和应用日志毫无作用。如果你从没检查过提示词会不会落到那里，那才是你最大的单点暴露，而且它完全在你手里。</li>
+<li><strong>批处理和变体端点要单独查。</strong><code>minimax-m3:batch</code> 不是 ZDR，而 <code>minimax-m3</code> 大部分是。变体不继承承诺。</li>
+<li><strong>按周期复查 ZDR 标签。</strong>标签会被收回。把这项检查自动化。</li>
+<li><strong>已知暴露窗口内发过的机密，轮换掉。</strong>Phala 的建议是标准模板：把请求内容视为已暴露，轮换其中携带过的一切。</li>
+</ol>
+
+<h2 id="verdict">结论</h2>
+
+<p>OpenRouter 这次处理得不错。它做了调查，从无法兑现承诺的端点上摘掉标签，保留了那些可以兑现的端点标签，也保留了模型可路由性——这样需要 MiniMax 的人依然能用，只是带着一个准确的隐私标记。它没有发博客，这是沟通上的疏漏，但当问题是我的提示词是否被读过时，一封精确的邮件胜过一篇含糊的博客。</p>
+
+<p>MiniMax 的说明要单薄得多。邮件说 10 月 22 日之前开启了内容审核、此后启用了 ZDR，也说 OpenRouter 索要它自己的说明没有得到回应。这个区别很关键：<strong>内容审核不是留存。</strong>审核流程会读取提示词，并且可能留存它检查过的内容。我们审核了你的数据和我们没有留存你的数据不是同一个主张，只有后者才满足 ZDR。在 MiniMax 给出自己的事件说明之前，保守的解读成立——而 OpenRouter 摘掉标签做的正是这件事。</p>
+
+<p>Together AI 的通报是三家里最完整的，而它的补救措施——把 ZDR 设为新账号默认——是本月任何厂商做的最高杠杆的改动。Phala 的报告技术细节最详尽，而它的建议也最让人不安：你路由过去的模型可能变成入侵路径，而只做密钥轮换可能不够。</p>
+
+<p>真正持久的教训与 MiniMax 无关。它是：<strong>在网关上，你拿到的隐私承诺，取决于恰好赢得路由的那个最便宜端点的承诺。</strong>同一个模型由 Azure 和 Bedrock 服务，可能携带相反的留存标签。市场可以不用任何漏洞就把你的提示词交给转售商的日志。而一个你只在集成时读过的标签，只是某条会被无通知收回的策略的一张快照。</p>
+
+<p>把 ZDR 变成每个请求都在强制执行、每个端点按周期复查的路由约束，并停止把机密放进提示词。剩下的就是工程手段消除不了的厂商风险——但你至少可以知道提示词在谁手里。</p>
+
+<h2 id="faq">常见问题</h2>
+
+<h3 id="faq-1">是 MiniMax 读了我的提示词，还是转发给它的那些 provider 读的？</h3>
+
+<p>OpenRouter 的通报说问题<strong>出在 MiniMax 以及转发给它的那些 provider</strong>——具体是 MiniMax、Novita、AtlasCloud 和 StreamLake，并没有归因于 OpenRouter。但这封通报无法告诉你你的具体提示词是否在被取走的那批里，所以应把 2026 年 7 月到 10 月间发给 MiniMax 模型的任何请求都视为可能被读取。</p>
+
+<h3 id="faq-2">OpenRouter 泄露我的数据了吗？</h3>
+
+<p>没有相关证据，OpenRouter 也表示问题不在自己这里。它同时说明，除非你主动选择加入，否则不存储提示词或回复内容，但仍会保留请求元数据，如 token 数、延迟、模型和成本。还要注意，这次检测方法本身就需要 OpenRouter 交出受影响请求的元数据。</p>
+
+<h3 id="faq-3">ZDR 意味着我的提示词从未被读取过吗？</h3>
+
+<p>不是。ZDR 管的是提示词在回复返回之后是否被<em>存储</em>。请求仍然会到达 provider，模型仍然会处理它。ZDR 是留存保证，不是匿名保证，而且它不控制你自己的日志、错误追踪器、分析事件或数据库行。</p>
+
+<h3 id="faq-4">MiniMax 还能通过 OpenRouter 用吗？</h3>
+
+<p>可以，模型仍然可路由。变的是标签：因为 OpenRouter 无法在 MiniMax 自有端点和 StreamLake 端点上确认政策，ZDR 承诺在那里被撤下。服务同一批模型的第三方端点仍带 ZDR 标签。要求 <code>provider.zdr</code> 即可路由到仍然合格的端点。</p>
+
+<h3 id="faq-5">厂商说我们不用你的数据训练，这和 ZDR 一样吗？</h3>
+
+<p>不一样。不训练管的是你的输入是否被用来改进 provider 的模型；ZDR 管的是 provider 根本不存不存。二者的关系是不对称的：ZDR 蕴含不训练，但不训练不蕴含 ZDR。两个都需要就同时强制 <code>provider.zdr</code> 为 true 和 <code>provider.data_collection</code> 为 deny。</p>
+
+<h3 id="faq-6">每请求的 ZDR 标志到处加安全吗？</h3>
+
+<p>安全。每请求标志与账号级、guardrail 设置之间是 OR 组合：三者中任何一个开启 ZDR 就生效。每请求标志只能确保 ZDR 被开启，永远不会放宽账号级或 guardrail 规则。加上它不可能降低你的保护级别。</p>
+
+<h3 id="faq-7">MiniMax 通报之后我应该轮换什么？</h3>
+
+<p>任何在 2026 年 7 月到 10 月间发给 MiniMax 模型的提示词里携带过的凭据。Dragos 的研究正是要求你彻底排查的理由：从提示词样本里 harvest 到的金丝雀凭据真的被拿去测试其他服务了。Phala 给自己事件开的处方是同一个模板——把请求内容视为已暴露，轮换其中携带过的一切。</p>
+
+<h2 id="sources">资料来源</h2>
+
+<ul>
+<li><a href="https://news.ycombinator.com/item?id=50585962">OpenRouter 用户通报：Requests you sent to MiniMax models may have been read</a>（2026 年 11 月 21 日）</li>
+<li><a href="https://www.dragos.com/blog/ai-supply-chain-security-canary-tokens">Dragos：Three breaches, endless leaks — Your AI supply chain needs canaries</a>（约 200 万条金丝雀提示词，2026 年 7 月–11 月）</li>
+<li><a href="https://www.together.ai/blog/security-event-prompt-leakage-for-requests-in-june-and-july-of-2026">Together AI：Security event — prompt leakage for requests in June and July of 2026</a></li>
+<li><a href="https://phala.com/posts/phala-november-preliminary-incident-report">Phala：November preliminary incident report</a></li>
+<li><a href="https://openrouter.ai/blog/insights/zero-data-retention/">OpenRouter：Zero Data Retention (ZDR): What It Means for AI APIs</a>（2026 年 9 月 11 日发布，10 月 27 日修改）</li>
+<li><a href="https://news.ycombinator.com/item?id=50582794">Ars Technica：Leaky AI supply chain is exposing secret user data at an alarming rate</a>（2026 年 11 月 20 日）</li>
+</ul>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} zhCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  </Fragment>
+
+  <article class="prose prose-lg max-w-none">
+    <Fragment set:html={zhBody} />
+  </article>
+</BaseLayout>
