@@ -31340,6 +31340,78 @@
         ]
       },
       {
+        "title": "🔧 API & Developer Experience",
+        "titleZh": "🔧 API 与开发者体验",
+        "type": "list",
+        "items": [
+          {
+            "label": "Two-Line Migration From OpenAI",
+            "value": "Swap the base URL to https://router.requesty.ai/v1 and pass a Requesty key as api_key; every OpenAI SDK feature then works unchanged — chat completions, streaming, function calling, structured outputs, embeddings, image generation. LangChain, Vercel AI SDK, LlamaIndex, Haystack and Pydantic AI all speak to it out of the box."
+          },
+          {
+            "label": "The Anthropic SDK Works Too",
+            "value": "Set base_url to https://router.requesty.ai without the /v1 suffix and the Anthropic SDK talks to /v1/messages. Claude Code and the Claude Agent SDK are wired through ANTHROPIC_BASE_URL plus ANTHROPIC_AUTH_TOKEN, and managed policy names such as claude-fable-5 or gpt-6-sol let the gateway pick the provider and fail over on its own."
+          },
+          {
+            "label": "The Model Catalog Is The Source Of Truth",
+            "value": "GET /v1/models returns 787 entries and GET /v1/models/managed returns 182 managed policy names, each with input, cached and output prices, context window and capability flags. Every entry also carries data_used_for_training, data_retention_days, privacy_comments, geolocation, open_weights and model_lab, so retention behaviour is readable per model instead of per vendor."
+          },
+          {
+            "label": "Rate Limits Are In-Flight Concurrency, Not RPM",
+            "value": "Requesty caps how many requests are in flight at once rather than how many you send per minute. The ceiling is your balance multiplied by a tier multiplier of 5, 10 or 15 based on lifetime spend. Exceeding it returns HTTP 429, and nothing is queued or retried for you, so a 429 is safe to retry once a request finishes."
+          },
+          {
+            "label": "Routing Policies Replace Provider Error Handling",
+            "value": "Fallback policies chain models across providers, weighted load balancing spreads traffic, and latency routing picks the fastest live model per request. An upstream 429 is handled by failing over rather than by your code. Auto Routing sends the first user message to a decision model that scores every route label and pins one for the session, so prompt caches keep hitting."
+          },
+          {
+            "label": "Spend Caps Per Key Plus A Management API",
+            "value": "Every API key and service account carries its own monthly spend cap, which is how you hand keys to users who never touch the Requesty console. A management API exposes usage programmatically, alerts fire as a cap is approached, and service accounts cover CI/CD and automation without sharing a personal key."
+          },
+          {
+            "label": "MCP Gateway And Nine Fixed Egress IPs",
+            "value": "The MCP Gateway connects Claude Code, Cursor, Roo Code and other MCP clients to the same catalogue, and Requesty publishes nine static egress IPs — three per region across Frankfurt, N. Virginia and Singapore — so you can allowlist it on provider accounts, MCP servers and webhook endpoints that restrict source addresses."
+          }
+        ],
+        "itemsZh": [
+          {
+            "label": "从 OpenAI 两行迁移",
+            "value": "把 base URL 换成 https://router.requesty.ai/v1，再把 Requesty 的 key 填进 api_key 即可；OpenAI SDK 的全部能力照常可用——chat completions、streaming、function calling、结构化输出、embeddings、图像生成。LangChain、Vercel AI SDK、LlamaIndex、Haystack、Pydantic AI 开箱即用。"
+          },
+          {
+            "label": "Anthropic SDK 同样能用",
+            "value": "base_url 设为不带 /v1 的 https://router.requesty.ai，Anthropic SDK 走 /v1/messages。Claude Code 与 Claude Agent SDK 通过 ANTHROPIC_BASE_URL 加 ANTHROPIC_AUTH_TOKEN 接入；托管策略名（如 claude-fable-5、gpt-6-sol）由网关自行选 provider 并自动故障转移。"
+          },
+          {
+            "label": "模型目录即事实来源",
+            "value": "GET /v1/models 返回 787 条记录，GET /v1/models/managed 返回 182 个托管策略名，每条都带输入、缓存、输出价格与上下文长度、能力标志位。还逐条附有 data_used_for_training、data_retention_days、privacy_comments、geolocation、open_weights 与 model_lab——留存策略可以逐模型读取，不必逐厂商去查。"
+          },
+          {
+            "label": "限流按在途并发，不是 RPM",
+            "value": "Requesty 限制的是同一时刻在途的请求数，而非每分钟发多少条。上限 = 账户余额 × 档位倍率（5 / 10 / 15，按累计消费档位）。超出返回 HTTP 429，且不排队也不代你重试，因此等一个请求结束再重试是安全的。"
+          },
+          {
+            "label": "用路由策略替代上游错误处理",
+            "value": "Fallback 策略跨 provider 串联模型，加权负载均衡分摊流量，延迟路由为每次请求挑选最快的在线模型。上游 429 由故障转移消化，不必写进你的业务代码。Auto Routing 会把首条用户消息交给决策模型，为每个路由标签打分并在会话内锁定，因此 prompt 缓存仍能命中。"
+          },
+          {
+            "label": "逐 Key 消费上限 + 管理 API",
+            "value": "每个 API key 与服务账号都能单独设置月度消费上限，适合把 key 发给不进控制台的用户。管理 API 可程序化查询用量，额度接近时会告警，服务账号则覆盖 CI/CD 与自动化，无需共用个人 key。"
+          },
+          {
+            "label": "MCP Gateway 与 9 个固定出口 IP",
+            "value": "MCP Gateway 让 Claude Code、Cursor、Roo Code 等 MCP 客户端接入同一模型目录；Requesty 公开 9 个静态出口 IP（法兰克福、美国弗吉尼亚、新加坡各 3 个），便于在按来源 IP 限制的 provider 账号、MCP Server 与 webhook 端点上做白名单。"
+          }
+        ]
+      },
+      {
+        "title": "⚙️ Routing, Caching & Auto Routing",
+        "titleZh": "⚙️ 路由、缓存与 Auto Routing",
+        "type": "text",
+        "text": "Auto Routing (beta) sends the first user message of a conversation to a decision model, which scores every route label and picks the winner, with a fallback route when no label clears the confidence threshold or the classifier errors. The choice is pinned for the session, so prompt caches keep working and the model never changes mid-task. The classifier runs once per conversation. Requesty reports up to 43% lower cost and up to 30% lower latency on coding tasks, and the documentation attributes both to early internal Requesty benchmarks — treat them as vendor-reported; no third-party benchmark was found. Auto caching is provider-level prompt caching: the router adds explicit cache breakpoints for providers that need them (Anthropic) and does nothing for providers that cache automatically. You still send the full message history every time — the payload does not shrink; the saving is that the provider bills the cached prefix at a fraction of the normal input rate. Spend limits are per API key and per service account, with a management API for programmatic checks. Rate limits are expressed as in-flight concurrency rather than requests per minute, and an upstream 429 is handled by routing policies that fail over to another provider.",
+        "textZh": "Auto Routing（beta）把对话的首条用户消息交给决策模型，由它给每个路由标签打分并选出胜者；当没有标签达到置信度阈值或分类器报错时走 fallback 路由。选中的模型在会话内固定，因此 prompt 缓存能继续命中，任务中途也不会换模型；分类器每次对话只跑一次。Requesty 宣称编码任务最高省 43% 成本、最高降 30% 延迟，文档注明这是「早期内部基准」，应按厂商自述看待，未找到第三方基准。自动缓存是 provider 层 prompt 缓存：路由器为需要显式缓存断点的 provider（如 Anthropic）自动添加断点，本来就自动缓存的则不干预。你每次仍然要发送完整消息历史，payload 不会变小；省下的是 provider 对已缓存前缀按折扣价计费。消费上限按 API key 与服务账号设置，并提供管理 API；限流用「在途并发数」表达而非每分钟请求数，上游 429 由路由策略切换 provider 处理。"
+      },
+      {
         "title": "🔐 Privacy & Data Handling",
         "titleZh": "🔐 隐私与数据处理",
         "type": "table",
@@ -31407,13 +31479,6 @@
             "EU 路由文档;实时目录价格"
           ]
         ]
-      },
-      {
-        "title": "⚙️ Routing, Caching & Auto Routing",
-        "titleZh": "⚙️ 路由、缓存与 Auto Routing",
-        "type": "text",
-        "text": "Auto Routing (beta) sends the first user message of a conversation to a decision model, which scores every route label and picks the winner, with a fallback route when no label clears the confidence threshold or the classifier errors. The choice is pinned for the session, so prompt caches keep working and the model never changes mid-task. The classifier runs once per conversation. Requesty reports up to 43% lower cost and up to 30% lower latency on coding tasks, and the documentation attributes both to early internal Requesty benchmarks — treat them as vendor-reported; no third-party benchmark was found. Auto caching is provider-level prompt caching: the router adds explicit cache breakpoints for providers that need them (Anthropic) and does nothing for providers that cache automatically. You still send the full message history every time — the payload does not shrink; the saving is that the provider bills the cached prefix at a fraction of the normal input rate. Spend limits are per API key and per service account, with a management API for programmatic checks. Rate limits are expressed as in-flight concurrency rather than requests per minute, and an upstream 429 is handled by routing policies that fail over to another provider.",
-        "textZh": "Auto Routing（beta）把对话的首条用户消息交给决策模型，由它给每个路由标签打分并选出胜者；当没有标签达到置信度阈值或分类器报错时走 fallback 路由。选中的模型在会话内固定，因此 prompt 缓存能继续命中，任务中途也不会换模型；分类器每次对话只跑一次。Requesty 宣称编码任务最高省 43% 成本、最高降 30% 延迟，文档注明这是「早期内部基准」，应按厂商自述看待，未找到第三方基准。自动缓存是 provider 层 prompt 缓存：路由器为需要显式缓存断点的 provider（如 Anthropic）自动添加断点，本来就自动缓存的则不干预。你每次仍然要发送完整消息历史，payload 不会变小；省下的是 provider 对已缓存前缀按折扣价计费。消费上限按 API key 与服务账号设置，并提供管理 API；限流用「在途并发数」表达而非每分钟请求数，上游 429 由路由策略切换 provider 处理。"
       },
       {
         "title": "⚖️ Requesty vs OpenRouter vs Helicone",
@@ -31493,6 +31558,13 @@
             "未建模"
           ]
         ]
+      },
+      {
+        "title": "🌐 China Access & Latency",
+        "titleZh": "🌐 中国访问与延迟",
+        "type": "text",
+        "text": "Requesty has no mainland China region, no China endpoint and no ICP filing — its entire footprint is three AWS regions: Frankfurt (eu-central-1), N. Virginia (us-east-1) and Singapore (ap-southeast-1). The default router.requesty.ai host resolves to the same Singapore pool as router.ap.requesty.ai, verified across five public resolvers, which makes it the closest gateway for mainland traffic: from an Alibaba Cloud Malaysia node its time-to-first-byte was 52-87 ms, against 873-921 ms for Frankfurt and about 1.25 s for the US endpoint. Real cross-border congestion adds latency on top of those figures. The upstream provider is not your problem, though — Requesty egresses from its own fixed Singapore IPs, so Anthropic, OpenAI and Google never see your mainland address — but your own client still has to reach the router. Card top-ups accept CNY alongside USD, GBP, EUR and JPY, and the balance is always held in USD credits.",
+        "textZh": "Requesty 没有中国大陆节点、没有中国端点，也没有 ICP 备案——全部基础设施只有三个 AWS 区域：法兰克福（eu-central-1）、美国弗吉尼亚（us-east-1）和新加坡（ap-southeast-1）。默认域名 router.requesty.ai 与 router.ap.requesty.ai 解析到同一组新加坡 IP（经 5 个公共 DNS 交叉验证），因此它是离大陆最近的一跳：从阿里云马来西亚节点实测首字节时间 52–87 毫秒，而法兰克福端点为 873–921 毫秒、美国端点约 1.25 秒。真实跨境链路还会在此之上叠加拥塞延迟。好消息是上游厂商不是你的问题——Requesty 用自有固定新加坡 IP 出网，Anthropic、OpenAI、Google 看到的是新加坡 IP 而非你的大陆 IP；但你自己的客户端仍需能连通 router。信用卡充值支持人民币（另有美元、英镑、欧元、日元），账户余额以美元 credits 计价。"
       }
     ]
   }
