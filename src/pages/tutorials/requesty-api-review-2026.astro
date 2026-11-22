@@ -1,0 +1,252 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+const slug = 'requesty-api-review-2026';
+const enTitle = "Requesty API Review: 787 Models, 5% Markup";
+const enDescription = "Requesty LLM gateway review: 787 models, 5% markup, 41 providers, EU residency. The only gateway exposing per-model training flags.";
+const date = '2026-11-20';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/requesty-api-review-2026/`;
+const enCanonicalUrl = `https://apirank.vip/zh/tutorials/requesty-api-review-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Requesty API Review: 787 Models, 5% Markup",
+  "description": "Requesty LLM gateway review: 787 models, 5% markup, 41 providers, EU residency. The only gateway exposing per-model training flags.",
+  "datePublished": "2026-11-20",
+  "dateModified": "2026-11-20",
+  "inLanguage": "en-US",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/tutorials/requesty-api-review-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Requesty API Review: 787 Models, 5% Markup",
+      "item": "https://apirank.vip/tutorials/requesty-api-review-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does Requesty charge on top of model prices?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Requesty adds a flat 5% to the base model provider cost. Its pricing page states: \"We add 5% to the base model provider cost. For example, if a model costs $10/1M tokens, you pay $10.50/1M tokens. No hidden fees.\" There is no per-seat pricing and no minimum commitment. OpenRouter, by contrast, charges 5.5% on Standard and 8% on Business when you buy credits, and exempts the first $25,000 per month of list-price inference routed through bring-your-own-keys."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many models does Requesty actually offer?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The live catalog at GET https://router.requesty.ai/v1/models returned 787 model entries across 41 provider prefixes when this review was written, including Vertex, Azure, Bedrock, DeepInfra, Novita, Nebius, Anthropic, Fireworks, Together, Mistral, xAI, NVIDIA, Groq, Scaleway, Zhipu, Alibaba, TypeSafe, Perplexity and Cloudflare. A separate endpoint, GET /v1/models/managed, lists 182 managed policy names that let Requesty pick the provider and fail over automatically. Requesty's own marketing uses the rounded figures of 600+ models and 30+ providers, and additionally claims 70,000+ developers and 90+ billion tokens daily."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Requesty train on my data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Requesty's terms of service state that on any paid plan it is absolute that Requesty never trains on your data, for any model in the catalogue, in any configuration. Requesty's own training use is limited to free plan accounts, and administrators can exclude the affected models org-wide with Approved Models. Where a model provider itself trains on prompts, Requesty labels that model a Training Permitted Model, and every model labeled that way is offered free of charge. Five models in the live catalog carry the data_used_for_training flag, all NVIDIA models priced at zero."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between a free model and a Training Permitted Model?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "They are different categories, and the catalog keeps them separate. Eight models are priced at zero in the live catalog. Five of them, all NVIDIA models, are also flagged data_used_for_training, meaning their provider may train on your prompts under NVIDIA's API trial terms. The other three, google/gemma-4-31b-it, mistral/leanstral-1-5 and novita/ling-3.1-flash, are free but are not flagged for training. The flag is therefore independent of price, and the rule worth remembering is that free plus training-permitted is its own category, not a synonym for free."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is EU data residency really free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not quite. Requesty's gateway runs in Frankfurt on AWS eu-central-1, and the EU base URL keeps Requesty's own routing, logging, caching and analytics inside the EU. But the docs are explicit that the EU endpoint alone only guarantees Requesty's processing stays in the EU; to keep data from leaving the EU you must also route to an EU-hosted model such as the managed policy claude-sonnet-5-5@eu. That second layer is not free: of the 18 models that have both a global and an @eu id, 17 price the EU version at exactly 1.10 times the global rate, for example vertex/gemini-4-neon at $3/$15 per 1M tokens globally versus $3.30/$16.50 at @eu."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Requesty support decision models, and why is the output price zero?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Requesty exposes decision models through POST https://router.requesty.ai/v1/systemone, which returns typed answers with probability distributions instead of prose. The catalog carries typesafe/jev-1.14.0 at $0.042 per 1M input tokens, azure/decision-1 at $0.042, perplexity/pplx-decider-v1-27b at $0.04, cloudflare/clef-flash at $0.09 and cloudflare/clef at $0.24. All of them have an output price of $0 because they are classifiers: the answer is a typed label plus a confidence distribution, so there is no generated text to bill for. For a classification pipeline, the input rate is the entire cost."
+      }
+    }
+  ]
+};
+
+const enBody = `<h1>Requesty API Review: 787 Models, 5% Markup: the Only Gateway That Tells You Which Models Train on Your Data</h1>
+
+<p class="text-lg text-gray-700 mb-6">Requesty is an LLM gateway that fronts 787 model endpoints from 41 providers behind one OpenAI-compatible URL, charges a flat 5% on top of model cost, and routes from Frankfurt when you need EU residency. What makes it worth a dedicated review is not the model count. It is that Requesty's public model catalog carries a per-model <code>data_used_for_training</code> flag, and the catalog is honest about the difference between a free model and a model whose provider trains on your prompts.</p>
+
+<p>That distinction matters more than another 10% discount, and it is the reason this review leads with what the catalog actually contains rather than with the vendor's headline numbers.</p>
+
+<h2 id="what-requesty-is">What Requesty actually is</h2>
+
+<p>Requesty is a routing layer, not a model host. You send an OpenAI-shaped request to <code>https://router.requesty.ai/v1</code>, Requesty picks a provider, forwards the request, bills you the provider's list price plus a markup, and logs the result for observability. There is a second base URL, <code>https://router.eu.requesty.ai/v1</code>, that keeps Requesty's own processing inside the EU.</p>
+
+<p>The switch is genuinely two lines in an existing OpenAI SDK integration:</p>
+
+<pre><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key="REQUESTY_API_KEY",
+    base_url="https://router.requesty.ai/v1",
+)</code></pre>
+
+<p>Two model-naming schemes matter. A bare managed policy name such as <code>gemini-4-neon</code> or <code>gpt-6.2-astra</code> lets Requesty choose the provider and fail over automatically; there are 182 such names in <code>GET /v1/models/managed</code>. A <code>provider/model</code> id such as <code>anthropic/claude-fable-5.2</code> pins one provider and one region. The full catalog at <code>GET /v1/models</code> returned 787 entries on the day of this review, spread across 41 provider prefixes including Vertex, Azure, Bedrock, DeepInfra, Novita, Nebius, Anthropic, Fireworks, Together, Mistral, xAI, NVIDIA, Groq, Scaleway, Zhipu, Alibaba, TypeSafe, Perplexity and Cloudflare.</p>
+
+<p>The Anthropic SDK also works, against <code>https://router.requesty.ai</code> with <code>ANTHROPIC_BASE_URL</code> set, and the docs show Claude Code configured the same way. If you are running an agent that fans out across several vendors, the fallback chain and the policy pinning are the parts you will actually use day to day.</p>
+
+<h2 id="pricing">Pricing: 5% on model cost, and how it compares</h2>
+
+<p>The pricing page states the model in one line: "We add 5% to the base model provider cost. For example, if a model costs $10/1M tokens, you pay $10.50/1M tokens. No hidden fees." There is no per-seat pricing and no minimum commitment. The free plan is $0 with access to the free models, 200 requests per day, and no credit card requirement; the pay-as-you-go plan is the 5% markup with every model, bring-your-own-keys, routing policies, the MCP Gateway and observability included; enterprise adds SSO, full RBAC, audit logs, an approved-models whitelist, guardrails and PII detection.</p>
+
+<p>Live per-1M-token rates pulled from the catalog make the arithmetic concrete:</p>
+
+<table class="w-full my-6 text-sm">
+  <thead><tr class="border-b border-gray-300"><th class="text-left py-2 pr-3">Model id</th><th class="text-left py-2 pr-3">Input</th><th class="text-left py-2 pr-3">Output</th><th class="text-left py-2 pr-3">Cached in</th><th class="text-left py-2">Context</th></tr></thead>
+  <tbody>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>anthropic/claude-fable-5.2</code></td><td class="py-2 pr-3">$8</td><td class="py-2 pr-3">$40</td><td class="py-2 pr-3">$0.20</td><td class="py-2">1,000,000</td></tr>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>azure/gpt-6.2-astra@eastus</code></td><td class="py-2 pr-3">$8</td><td class="py-2 pr-3">$40</td><td class="py-2 pr-3">$0.40</td><td class="py-2">1,050,000</td></tr>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>vertex/gemini-4-neon</code></td><td class="py-2 pr-3">$3</td><td class="py-2 pr-3">$15</td><td class="py-2 pr-3">$0.15</td><td class="py-2">1,048,576</td></tr>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>vertex/gemini-4-carbon</code></td><td class="py-2 pr-3">$2</td><td class="py-2 pr-3">$10</td><td class="py-2 pr-3">$0.10</td><td class="py-2">1,048,576</td></tr>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>vertex/gemini-4-hydrogen</code></td><td class="py-2 pr-3">$1.50</td><td class="py-2 pr-3">$7.50</td><td class="py-2 pr-3">$0.075</td><td class="py-2">1,048,576</td></tr>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>azure/gpt-6-luna@eastus2</code></td><td class="py-2 pr-3">$0.10</td><td class="py-2 pr-3">$0.50</td><td class="py-2 pr-3">$0.01</td><td class="py-2">1,050,000</td></tr>
+  </tbody>
+</table>
+
+<p>These are the provider list prices. Requesty's 5% lands on top, so a request that costs $18 at list on Gemini 4 Neon bills $18.90. On a $1,000 monthly bill the markup is $50. Whether that is worth the routing layer is a workload question, not a pricing question.</p>
+
+<h3>Where OpenRouter is actually cheaper</h3>
+
+<p>Comparing the two head-to-head needs care, because the fee mechanics differ rather than just the rate. OpenRouter bills inference at the provider's list price on every plan, and charges its fee when you buy credits: 5.5% on Standard, 8% on Business. Its own pricing page also states that the first $25,000 of list-price inference per month runs through BYOK with no OpenRouter fee at all. So for a team routing its own keys with a modest monthly spend, OpenRouter's effective fee is 0%, not 5.5%. For a team buying credits for inference, it is 5.5% against Requesty's 5%.</p>
+
+<p>Requesty does not publish a comparable fee-free allowance, and its documentation does not state that BYOK bypasses the markup. Read strictly, the published model is that the 5% applies. If you plan to bring your own keys, that is a question worth asking before you commit, and it is the one number in this review that Requesty leaves ambiguous.</p>
+
+<p>Helicone and Vercel AI Gateway sit on the other side of the trade: Helicone charges a subscription ($79 and $799 per month) rather than a markup, and Vercel charges zero markup on tokens but requires you to use its credits product. Neither publishes a comparable public per-model catalog with pricing and privacy fields.</p>
+
+<h2 id="training-flags">The training flag: what the catalog tells you before you send data</h2>
+
+<p>This is the part no competitor does in machine-readable form. Each entry in <code>GET /v1/models</code> carries:</p>
+
+<pre><code>{
+  "id": "nvidia/muse-glimmer-30b",
+  "data_retention": true,
+  "data_retention_days": 30,
+  "data_used_for_training": true,
+  "privacy_comments": "NVIDIA API Trial Terms of Service apply."
+}</code></pre>
+
+<p>Across 787 models the flags split into three groups: 678 models are marked as neither retaining nor training on your data, 104 retain data without training on it, and 5 train on it. Those 5 are all NVIDIA models, all priced at $0 input and $0 output, and all carry the same privacy comment pointing at NVIDIA's API trial terms.</p>
+
+<p>That pattern is not a coincidence. Requesty's terms of service, last updated 14 August 2026, define the concept directly: where a model provider trains on prompts, Requesty labels that model a "Training Permitted Model", and every model labeled that way is offered free of charge. The terms also state the blunt version of the commitment: "On any paid plan this is absolute: Requesty never trains on your data, for any model in the catalogue, in any configuration." Requesty's own training use is limited to free-plan accounts, and an administrator can exclude those models org-wide with Approved Models.</p>
+
+<p>Eight models are priced at zero in the live catalog. Five of them are the training-permitted NVIDIA models. The other three, <code>google/gemma-4-31b-it</code>, <code>mistral/leanstral-1-5</code> and <code>novita/ling-3.1-flash</code>, are free but are not flagged for training. So the flag is orthogonal to price, and a reader can build the rule they actually need: free and training-permitted is a category of its own, not a synonym for free.</p>
+
+<p>For contrast, OpenRouter's public model endpoint returns 477 models with pricing, context length and supported parameters, and no retention or training field at all. You cannot answer "does this endpoint train on my prompts" from OpenRouter's API. You would have to read each provider's terms, one provider at a time, for each of the endpoints in your routing table. Requesty does that lookup once and publishes it.</p>
+
+<h2 id="eu-residency">EU residency is three layers, and the docs say which one you are buying</h2>
+
+<p>Requesty's EU story is the strongest part of the product and the easiest to get wrong. The gateway runs in Frankfurt on AWS <code>eu-central-1</code>, and the EU base URL keeps Requesty's routing, logging, caching and analytics inside the EU. Prompt and output logging is enabled by default on self-serve plans, retained encrypted in the EU for up to 30 days, and toggleable per API key.</p>
+
+<p>But the EU endpoint governs only Requesty's own layer. The docs are explicit: "Using the EU endpoint alone only guarantees that Requesty's processing stays in the EU. To ensure your data never leaves the EU, you must also use an EU model." So full residency needs both the EU base URL and an EU-hosted model id, such as the managed policy <code>claude-sonnet-5-5@eu</code> or a pinned id like <code>bedrock/claude-sonnet-5-5@eu-central-1</code>. The catalog carries 105 models tagged <code>@eu</code> and 83 tagged <code>@us</code>, with concrete infrastructure regions such as eastus2, swedencentral, francecentral, germanywestcentral, westeurope and eu-central-1.</p>
+
+<p>Here is the cost of that second layer. Where a model has both a global and an <code>@eu</code> id, 17 of 18 pairs price the EU version at exactly 1.10 times the global rate. Gemini 4 Neon goes from $3/$15 to $3.30/$16.50, Gemini 4 Carbon from $2/$10 to $2.20/$11, Gemini 4 Hydrogen from $1.50/$7.50 to $1.65/$8.25. One model, <code>vertex/gemini-3.1-flash-image</code>, is unchanged. Residency costs 10%, not nothing and not the same thing.</p>
+
+<p>Zero Data Retention is the third layer, and it is the one with a catch. Organisation-wide ZDR is enabled by Requesty on written request, enforced server side, and disables Requesty-side caching as well as logging. The privacy policy spells out what it does not do: ZDR "stops us logging or caching your inputs; it does not stop a model provider retaining or training on them, because that depends on the model you choose." Requesty's gateway can guarantee its own layer. It cannot guarantee a provider's.</p>
+
+<h2 id="decisions-endpoint">The decisions endpoint, and why the price is $0 output</h2>
+
+<p>Requesty exposes decision models through a dedicated endpoint, <code>POST https://router.requesty.ai/v1/systemone</code>, which returns typed answers with probability distributions instead of prose. The catalog carries the same decision-model family that has been arriving across the industry: <code>typesafe/jev-1.14.0</code> at $0.042 per 1M input, <code>azure/decision-1</code> at $0.042, <code>perplexity/pplx-decider-v1-27b</code> at $0.04, <code>cloudflare/clef-flash</code> at $0.09 and <code>cloudflare/clef</code> at $0.24.</p>
+
+<p>Every one of them has an output price of $0, and that is not a pricing mistake. These are classifiers: the answer is a typed label plus a confidence distribution, so there is no generated text to bill for. The output of a decision model is metadata. If you are pricing a classification pipeline, the input rate is the whole cost.</p>
+
+<p>The docs recommend the decisions endpoint for new integrations because it is the only API that supports every decision model. <code>openai/gpt-6-luna</code> and <code>azure/decision-1</code> answer only there.</p>
+
+<h2 id="auto-routing">Auto Routing, and what the 43% figure actually measures</h2>
+
+<p>Auto Routing is Requesty's beta feature and the most interesting idea in the product. You attach models to plain-language routes, and a decision model reads the first user message of a conversation and picks the matching route. Easy requests go to a cheap fast model; hard ones go to your strongest. The classifier runs once per conversation, and the choice is pinned for the session, which means prompt caches keep working and the model never changes mid-task. If no label clears the confidence threshold, or the classifier errors, a fallback route takes it.</p>
+
+<p>Requesty advertises "up to 43% lower cost" and "up to 30% lower latency" on coding tasks, and the docs are careful to attribute both to "early internal Requesty benchmarks". Treat them as vendor-reported. No third-party benchmark was found. The mechanism is verifiable even if the numbers are not: the screenshot in the documentation shows <code>typesafe/jev-1.14.0</code> acting as the classifier with a 50% confidence fallback threshold, and a decision model costs $0.042 per 1M input tokens, so the classifier overhead on a short first message is close to nothing.</p>
+
+<h2 id="features">The rest of the feature set</h2>
+
+<p><strong>Auto caching</strong> is provider-level prompt caching, not server-side response storage. The router adds explicit cache breakpoints for providers that require them, such as Anthropic, while providers that cache automatically need nothing. The docs are careful to note that you still send the full message history every time; the payload does not shrink. The saving is that the provider charges a fraction of the normal input rate for the cached prefix, up to 90%.</p>
+
+<p><strong>Spend controls</strong> are per API key and per service account, with monthly caps, and Requesty publishes a management API for programmatic checks. Rate limiting is expressed as in-flight concurrency limits rather than requests per minute, and a provider 429 is handled by routing policies that fail over to another provider.</p>
+
+<p><strong>Bring your own keys</strong> currently covers OpenAI, Anthropic, Google AI Studio, Vertex AI service accounts, Mistral AI and xAI, one key per provider, usable inside fallback policies. OpenAI regional endpoints such as <code>https://eu.api.openai.com/v1</code> can be set per key.</p>
+
+<p><strong>MCP Gateway</strong> connects AI coding tools to MCP servers with per-user key management and analytics, and service accounts are there for CI/CD. Across the catalog, 756 of 787 models support tool calling, 721 support reasoning, 631 support vision and 648 support structured outputs, which is the practical measure of how much of the catalog is actually usable for agent workloads.</p>
+
+<h2 id="verdict">Verdict: who should use Requesty</h2>
+
+<p>Requesty earns its place if you need EU data residency with an auditable model table, you route across enough providers that per-model privacy metadata saves you real diligence work, or you want a decision-model family behind one endpoint. The 5% markup is the price of that, and for the workloads where it applies it is not the expensive part of the stack.</p>
+
+<p>Choose OpenRouter instead if you are buying credits for inference at scale and want the lower 5.5% rate, or if the $25,000 monthly BYOK allowance matters to you, since that allowance alone can beat Requesty's flat rate. Choose Helicone if you are buying observability rather than routing, and LiteLLM if you need to self-host, because Requesty has no open-source edition and is a hosted service only.</p>
+
+<p>Two things to settle before you commit. First, ask whether BYOK traffic is exempt from the 5% markup, because the public pricing page does not say and it changes the answer for any team bringing its own keys. Second, note that the free-models documentation page is stale: it lists 13 free models including <code>poolside/laguna-m.1</code> and <code>nvidia/nemotron-3.5-content-safety</code>, and five of those are absent from the live catalog. Treat the API as the source of truth for what exists and what it costs, because that is what your code will actually hit.</p>
+
+<h2 id="sources">Sources</h2>
+
+<ul class="list-disc pl-6 mt-4 space-y-2">
+<li><a href="https://router.requesty.ai/v1/models" class="text-blue-600 hover:underline">Requesty model catalog</a> — live endpoint: 787 models with pricing, context, capability and privacy flags</li>
+<li><a href="https://router.requesty.ai/v1/models/managed" class="text-blue-600 hover:underline">Requesty managed policies</a> — 182 managed model names</li>
+<li><a href="https://www.requesty.ai/pricing" class="text-blue-600 hover:underline">Requesty pricing</a> — plans, 5% markup, free tier limits</li>
+<li><a href="https://docs.requesty.ai/features/eu-routing" class="text-blue-600 hover:underline">Requesty EU routing docs</a> — Frankfurt gateway, region model ids</li>
+<li><a href="https://docs.requesty.ai/features/decisions" class="text-blue-600 hover:underline">Requesty decisions docs</a> — supported decision models and endpoint</li>
+<li><a href="https://www.requesty.ai/terms" class="text-blue-600 hover:underline">Requesty terms of service</a> — Training Permitted Model, sections 5.9 and 6.2(a)</li>
+<li><a href="https://www.requesty.ai/privacy" class="text-blue-600 hover:underline">Requesty privacy notice</a> — ZDR scope and 30-day retention</li>
+<li><a href="https://openrouter.ai/pricing" class="text-blue-600 hover:underline">OpenRouter pricing</a> — 5.5% and 8% credit-purchase fees, BYOK allowance</li>
+<li><a href="https://openrouter.ai/api/v1/models" class="text-blue-600 hover:underline">OpenRouter model catalog</a> — 477 models, no training or retention fields</li>
+</ul>
+`;
+---
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={enBody} />
+</BaseLayout>

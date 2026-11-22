@@ -1,0 +1,252 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+
+const slug = 'requesty-api-review-2026';
+const zhTitle = "Requesty API 评测：787 个模型、5% 加价与训练标志位";
+const zhDescription = "Requesty 中转站评测：787 个模型、41 家 provider、5% 加价、欧盟数据驻留，以及唯一公开逐模型训练标志位的 API 网关。";
+const date = '2026-11-20';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/requesty-api-review-2026/`;
+const zhCanonicalUrl = `https://apirank.vip/tutorials/requesty-api-review-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Requesty API 评测：787 个模型、5% 加价与训练标志位",
+  "description": "Requesty 中转站评测：787 个模型、41 家 provider、5% 加价、欧盟数据驻留，以及唯一公开逐模型训练标志位的 API 网关。",
+  "datePublished": "2026-11-20",
+  "dateModified": "2026-11-20",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/zh/tutorials/requesty-api-review-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Requesty API 评测：787 个模型、5% 加价与训练标志位",
+      "item": "https://apirank.vip/zh/tutorials/requesty-api-review-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Requesty 在模型价格之上收多少费用？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Requesty 在基础模型 provider 成本上统一加 5%。价格页原话是：「我们在基础模型 provider 成本上加 5%。例如某模型每百万 token 10 美元，你付每百万 10.50 美元。没有隐藏费用。」不按人头收费，也没有最低消费承诺。OpenRouter 则是买 credits 时收费，Standard 5.5%、Business 8%，且每月前 25,000 美元官价推理通过自带密钥走时完全不收 OpenRouter 费用。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Requesty 到底提供多少模型？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "本次评测当天，实时目录 GET https://router.requesty.ai/v1/models 返回 787 条记录，分布在 41 个 provider 前缀下，涵盖 Vertex、Azure、Bedrock、DeepInfra、Novita、Nebius、Anthropic、Fireworks、Together、Mistral、xAI、NVIDIA、Groq、Scaleway、智谱、阿里、TypeSafe、Perplexity、Cloudflare 等。另一个端点 GET /v1/models/managed 列出 182 个托管策略名，由 Requesty 自行挑选 provider 并自动故障转移。厂商宣传用的是「600+ 模型、30+ provider」的整数说法，另外还宣称 70,000+ 开发者、日均 90B+ token。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Requesty 会拿我的数据去训练吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不会。Requesty 服务条款明确写着：在任何付费套餐下，Requesty 无论目录中的任何模型、任何配置，都不会拿你的数据训练。Requesty 自身的训练用途仅限于免费套餐账户，管理员可用 Approved Models 在组织范围内排除相关模型。当模型厂商本身会在 prompt 上训练时，Requesty 会把该模型标记为「Training Permitted Model（允许训练模型）」，并且所有这样标记的模型一律免费提供。实时目录中有 5 个模型带 data_used_for_training 标志，全部是价格为零的 NVIDIA 模型。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "免费模型和允许训练的模型有什么区别？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "这是两类不同的东西，目录把它们分得很清楚。实时目录里价格为 0 的模型有 8 个，其中 5 个是 NVIDIA 模型，同时被标记 data_used_for_training，意味着其厂商可能依据 NVIDIA API 试用条款拿你的 prompt 训练；另外 3 个——google/gemma-4-31b-it、mistral/leanstral-1-5、novita/ling-3.1-flash——免费但没有被标记为允许训练。可见标志位与价格是正交的，真正的规则是：免费且允许训练本身就是单独的一类，而不是「免费」的同义词。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "欧盟数据驻留要额外付费吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "基本是的。Requesty 网关跑在法兰克福（AWS eu-central-1），EU 基础地址让 Requesty 自身的路由、日志、缓存与分析留在欧盟。但文档说得很清楚：只用 EU 端点只能保证 Requesty 的处理留在欧盟；要确保数据绝不离开欧盟，还必须路由到 EU 托管的模型，例如托管策略 claude-sonnet-5-5@eu。而这第二层并不免费：同时存在全局 ID 与 @eu ID 的 18 个模型中，有 17 个的 EU 版本价格恰好是全局价的 1.10 倍，例如 vertex/gemini-4-neon 全局 $3/$15，@eu 版本 $3.30/$16.50。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Requesty 支持决策模型吗？为什么输出价是 0？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "支持。Requesty 用 POST https://router.requesty.ai/v1/systemone 暴露决策模型，返回带概率分布的结构化答案而不是散文。目录收录 typesafe/jev-1.14.0（每百万输入 0.042 美元）、azure/decision-1（0.042 美元）、perplexity/pplx-decider-v1-27b（0.04 美元）、cloudflare/clef-flash（0.09 美元）、cloudflare/clef（0.24 美元）。它们的输出价全是 $0，因为这些是分类器：产出是类型化标签加置信度分布，没有生成文本可计费。决策模型的「输出」是元数据，所以给分类流水线做预算时，输入费率就是全部成本。"
+      }
+    }
+  ]
+};
+
+const zhBody = `<h1>Requesty API 评测：787 个模型、5% 加价与训练标志位，以及唯一会告诉你哪些模型会拿你的数据去训练的中转站</h1>
+
+<p class="text-lg text-gray-700 mb-6">Requesty 是一层路由网关：把 41 家 provider 的 787 个模型端点收在一个 OpenAI 兼容 URL 后面，在模型官价上统一加 5%，需要欧盟数据驻留时则把路由放到法兰克福。但它值得单独写一篇评测，原因不在模型数量，而在于 Requesty 的公开模型目录里带着一个逐模型的 <code>data_used_for_training</code> 标志位，并且它愿意把「免费」和「厂商会拿你的数据训练」这两件事分开讲。</p>
+
+<p>这个区别比再便宜 10% 更重要。所以这篇评测先写目录里到底有什么，而不是先复述厂商的宣传数字。</p>
+
+<h2 id="what-requesty-is">Requesty 到底是什么</h2>
+
+<p>Requesty 是路由层，不是模型托管方。你把 OpenAI 格式的请求发到 <code>https://router.requesty.ai/v1</code>，Requesty 挑一个 provider 转发出去，按模型官价加价计费，同时记录日志供可观测性使用。另一个基础地址 <code>https://router.eu.requesty.ai/v1</code> 让 Requesty 自身的处理留在欧盟境内。</p>
+
+<p>接入改动确实只有两行：</p>
+
+<pre><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key="REQUESTY_API_KEY",
+    base_url="https://router.requesty.ai/v1",
+)</code></pre>
+
+<p>模型命名有两种方式，对日常使用影响很大。像 <code>gemini-4-neon</code>、<code>gpt-6.2-astra</code> 这样的托管策略名，让 Requesty 自己选 provider 并自动故障转移，<code>GET /v1/models/managed</code> 目前有 182 个这样的名字；而 <code>anthropic/claude-fable-5.2</code> 这种 <code>provider/model</code> 写法则锁定单一 provider 与区域。本次评测当天，完整目录 <code>GET /v1/models</code> 返回 787 条记录，分布在 41 个 provider 前缀下，涵盖 Vertex、Azure、Bedrock、DeepInfra、Novita、Nebius、Anthropic、Fireworks、Together、Mistral、xAI、NVIDIA、Groq、Scaleway、智谱、阿里、TypeSafe、Perplexity、Cloudflare 等。</p>
+
+<p>Anthropic SDK 同样可用，把 <code>ANTHROPIC_BASE_URL</code> 指向 <code>https://router.requesty.ai</code> 即可，文档里也给了 Claude Code 的配置示例。如果你跑的是跨厂商的 agent，日常真正会用到的其实是 fallback 链路和策略锁定这两块。</p>
+
+<h2 id="pricing">价格：模型成本加 5%，以及和 OpenRouter 的真实差别</h2>
+
+<p>价格页把规则写得很直白：「我们在基础模型 provider 成本上加 5%。例如某模型每百万 token 10 美元，你付每百万 10.50 美元。没有隐藏费用。」不按人头收费，也没有最低消费承诺。免费版 0 美元，可访问免费模型，每天 200 次请求，不需要信用卡；按量付费版就是这 5% 加价，包含全部模型、自带密钥（BYOK）、路由策略、MCP Gateway 和可观测性；企业版再加 SSO、完整 RBAC、审计日志、可用模型白名单、Guardrails 与 PII 检测。</p>
+
+<p>从目录里拉到的每百万 token 实价如下：</p>
+
+<table class="w-full my-6 text-sm">
+  <thead><tr class="border-b border-gray-300"><th class="text-left py-2 pr-3">模型 ID</th><th class="text-left py-2 pr-3">输入</th><th class="text-left py-2 pr-3">输出</th><th class="text-left py-2 pr-3">缓存输入</th><th class="text-left py-2">上下文</th></tr></thead>
+  <tbody>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>anthropic/claude-fable-5.2</code></td><td class="py-2 pr-3">$8</td><td class="py-2 pr-3">$40</td><td class="py-2 pr-3">$0.20</td><td class="py-2">1,000,000</td></tr>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>azure/gpt-6.2-astra@eastus</code></td><td class="py-2 pr-3">$8</td><td class="py-2 pr-3">$40</td><td class="py-2 pr-3">$0.40</td><td class="py-2">1,050,000</td></tr>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>vertex/gemini-4-neon</code></td><td class="py-2 pr-3">$3</td><td class="py-2 pr-3">$15</td><td class="py-2 pr-3">$0.15</td><td class="py-2">1,048,576</td></tr>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>vertex/gemini-4-carbon</code></td><td class="py-2 pr-3">$2</td><td class="py-2 pr-3">$10</td><td class="py-2 pr-3">$0.10</td><td class="py-2">1,048,576</td></tr>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>vertex/gemini-4-hydrogen</code></td><td class="py-2 pr-3">$1.50</td><td class="py-2 pr-3">$7.50</td><td class="py-2 pr-3">$0.075</td><td class="py-2">1,048,576</td></tr>
+    <tr class="border-b border-gray-100"><td class="py-2 pr-3"><code>azure/gpt-6-luna@eastus2</code></td><td class="py-2 pr-3">$0.10</td><td class="py-2 pr-3">$0.50</td><td class="py-2 pr-3">$0.01</td><td class="py-2">1,050,000</td></tr>
+  </tbody>
+</table>
+
+<p>这些是 provider 官价，Requesty 的 5% 叠加在上面：Gemini 4 Neon 上官价 18 美元的一次请求，实收 18.90 美元；一个月 1,000 美元的账单，加价 50 美元。这层加价值不值，取决于你的工作负载，而不是价格表本身。</p>
+
+<h3>OpenRouter 到底在哪里更便宜</h3>
+
+<p>两者对比要小心，因为计费机制不同，不是费率高低的问题。OpenRouter 在所有套餐上都按 provider 官价计推理费，但它收的是买 credits 时的费用：Standard 5.5%，Business 8%。它自己的价格页还写明，每月前 25,000 美元官价推理通过 BYOK 走时完全不收 OpenRouter 费用。所以对自带密钥、月度金额不大的团队，OpenRouter 的实际费率是 0%，不是 5.5%；对买 credits 跑推理的团队，则是 5.5% 对 Requesty 的 5%。</p>
+
+<p>Requesty 没有公布类似的免费额度，文档也没有说 BYOK 可以免加价。严格按公开信息读，5% 就是适用规则。如果你的计划是自带密钥，这一点值得在落地前问清楚，它会直接改变结论。</p>
+
+<p>Helicone 和 Vercel AI Gateway 则属于另一种权衡：Helicone 收订阅费（每月 79 美元与 799 美元）而非加价；Vercel 的 token 零加价，但要求使用它的 credits 产品。两者都没有公开可比的、带价格与隐私字段的逐模型目录。</p>
+
+<h2 id="training-flags">训练标志位：在你发数据之前就知道会不会被拿去训练</h2>
+
+<p>这是竞品没有做成机器可读格式的部分。<code>GET /v1/models</code> 的每条记录都带这些字段：</p>
+
+<pre><code>{
+  "id": "nvidia/muse-glimmer-30b",
+  "data_retention": true,
+  "data_retention_days": 30,
+  "data_used_for_training": true,
+  "privacy_comments": "NVIDIA API Trial Terms of Service apply."
+}</code></pre>
+
+<p>787 个模型分成三组：678 个既不留存也不训练，104 个留存但不训练，5 个会训练。那 5 个全部是 NVIDIA 模型，输入输出价格均为 $0，隐私备注统一指向 NVIDIA API 试用条款。</p>
+
+<p>这不是巧合。Requesty 的服务条款（最后更新于 2026 年 8 月 14 日）直接定义了这个概念：当模型厂商会在 prompt 上做训练时，Requesty 把该模型标记为「Training Permitted Model（允许训练模型）」，并且所有这样标记的模型一律免费提供。条款同时给出更干脆的承诺：「在任何付费套餐下这一点都是绝对的：无论目录中的任何模型、任何配置，Requesty 都不会拿你的数据训练。」Requesty 自身的训练用途仅限于免费套餐账户，管理员还可以用 Approved Models 在整个组织范围内排除这些模型。</p>
+
+<p>实时目录里有 8 个模型价格为 0，其中 5 个正是允许训练的 NVIDIA 模型；另外 3 个——<code>google/gemma-4-31b-it</code>、<code>mistral/leanstral-1-5</code>、<code>novita/ling-3.1-flash</code>——免费但没有被标记为允许训练。可见标志位与价格是正交的，读者真正需要的规则是：免费且允许训练，本身就是单独的一类，而不是「免费」的同义词。</p>
+
+<p>作为对照，OpenRouter 的公开模型端点返回 477 个模型，含价格、上下文长度与支持参数，但完全没有留存或训练字段。你没法通过 OpenRouter 的 API 回答「这个端点会不会拿我的 prompt 去训练」，只能对路由表里的每个 provider 逐个去读条款。Requesty 把这次查证做了一遍并公开出来。</p>
+
+<h2 id="eu-residency">欧盟驻留是三层，文档讲清了你在买哪一层</h2>
+
+<p>Requesty 的欧盟能力是产品最强的部分，也最容易理解错。网关跑在法兰克福（AWS <code>eu-central-1</code>），EU 基础地址让 Requesty 的路由、日志、缓存与分析都留在欧盟。自助套餐默认开启 prompt 与输出日志，加密存储在欧盟最长保留 30 天，可按 API key 开关。</p>
+
+<p>但 EU 端点只管 Requesty 自己这一层。文档说得很明确：「只用 EU 端点只能保证 Requesty 的处理留在欧盟。要确保数据绝不离开欧盟，你还必须使用 EU 模型。」所以完整的驻留需要同时满足 EU 基础地址和 EU 托管的模型 ID，例如托管策略 <code>claude-sonnet-5-5@eu</code> 或固定写法 <code>bedrock/claude-sonnet-5-5@eu-central-1</code>。目录中有 105 个模型带 <code>@eu</code> 标记、83 个带 <code>@us</code> 标记，具体基础设施区域包括 eastus2、swedencentral、francecentral、germanywestcentral、westeurope 与 eu-central-1。</p>
+
+<p>这就是第二层的成本。凡是同时存在全局 ID 与 <code>@eu</code> ID 的模型，18 对里有 17 对的 EU 版本价格恰好是全局价的 1.10 倍：Gemini 4 Neon 从 $3/$15 变成 $3.30/$16.50，Gemini 4 Carbon 从 $2/$10 变成 $2.20/$11，Gemini 4 Hydrogen 从 $1.50/$7.50 变成 $1.65/$8.25。只有 <code>vertex/gemini-3.1-flash-image</code> 一个模型价格不变。驻留的成本是 10%，既不是零，也不是原价。</p>
+
+<p>零数据保留（ZDR）是第三层，也是唯一有附带条件的一层。组织级 ZDR 需要书面申请，由 Requesty 在服务端强制开启，同时禁用 Requesty 侧的缓存。隐私政策明确写出它不覆盖什么：ZDR「只阻止我们记录或缓存你的输入；它无法阻止模型厂商留存或训练这些数据，因为这取决于你选择的模型」。Requesty 的网关能保证自己这一层，保证不了 provider 那一层。</p>
+
+<h2 id="decisions-endpoint">决策模型端点，以及为什么输出价是 0</h2>
+
+<p>Requesty 用一个专用端点 <code>POST https://router.requesty.ai/v1/systemone</code> 暴露决策模型，返回带概率分布的结构化答案而不是散文。目录里收录的正是这一轮陆续出现的那批决策模型：<code>typesafe/jev-1.14.0</code> 每百万输入 0.042 美元、<code>azure/decision-1</code> 0.042 美元、<code>perplexity/pplx-decider-v1-27b</code> 0.04 美元、<code>cloudflare/clef-flash</code> 0.09 美元、<code>cloudflare/clef</code> 0.24 美元。</p>
+
+<p>它们的输出价格全是 $0，这不是定价错误。这些是分类器：产出是类型化标签加置信度分布，没有生成文本可计费。决策模型的「输出」是元数据。如果你在给一条分类流水线做预算，输入费率就是全部成本。</p>
+
+<p>文档建议新接入优先用决策端点，因为它是唯一支持全部决策模型的 API——<code>openai/gpt-6-luna</code> 与 <code>azure/decision-1</code> 只在该端点上有响应。</p>
+
+<h2 id="auto-routing">Auto Routing，以及 43% 这个数字到底在量什么</h2>
+
+<p>Auto Routing 是 Requesty 的 beta 功能，也是产品里最有意思的机制。你给每类路由配一个模型，决策模型读取对话的第一条用户消息并选择匹配的路由：简单请求走便宜快的模型，复杂的走最强的模型。分类器每次对话只跑一次，选中的模型在整段会话中固定，因此 prompt 缓存能继续命中，任务中途也不会换模型。如果没有任何标签达到置信度阈值，或者分类器报错，就走 fallback 路由。</p>
+
+<p>Requesty 宣传编码任务「最高降低 43% 成本」与「最高降低 30% 延迟」，文档也谨慎地注明这是「Requesty 早期内部基准」的结果，应当按厂商自述看待，没有找到第三方基准。机制本身是可验证的：文档截图显示 <code>typesafe/jev-1.14.0</code> 担任分类器、置信度 fallback 阈值为 50%，而决策模型每百万输入 0.042 美元，分类器在一条简短首消息上的开销几乎可以忽略。</p>
+
+<h2 id="features">其余功能面</h2>
+
+<p><strong>自动缓存</strong>是 provider 层的 prompt 缓存，不是服务端响应存储。路由器会为需要显式缓存断点的 provider（如 Anthropic）自动添加断点，本来就自动缓存的 provider 则什么都不用做。文档特意说明，你每次仍然要发送完整消息历史，payload 不会变小；省下的是 provider 对已缓存前缀按折扣价计费，最高 90%。</p>
+
+<p><strong>成本管控</strong>按 API key 和服务账号设置月度上限，Requesty 提供了管理 API 供程序化查询。限流用的是在途并发数而不是每分钟请求数，provider 返回 429 时由路由策略切换到另一家 provider。</p>
+
+<p><strong>自带密钥</strong>目前支持 OpenAI、Anthropic、Google AI Studio、Vertex AI 服务账号、Mistral AI 与 xAI，每个 provider 只能加一把密钥，可放进 fallback 策略里；OpenAI 的区域端点（例如 <code>https://eu.api.openai.com/v1</code>）可按密钥单独设置。</p>
+
+<p><strong>MCP Gateway</strong> 把 AI 编程工具接到 MCP 服务器上，带按用户的密钥管理与分析，服务账号面向 CI/CD。整个目录中，787 个模型里有 756 个支持工具调用、721 个支持推理、631 个支持视觉、648 个支持结构化输出——这才是「目录里有多少模型真能用于 agent 工作负载」的实用度量。</p>
+
+<h2 id="verdict">结论：谁该用 Requesty</h2>
+
+<p>如果你需要带可审计模型表的欧盟数据驻留，路由的 provider 多到逐模型隐私元数据能省下大量合规尽调工作，或者你想把一整族决策模型收在一个端点后面，Requesty 是值得的。这 5% 加价就是代价，而在真正适用的工作负载里，它通常不是技术栈里最贵的那部分。</p>
+
+<p>如果你是大规模买 credits 跑推理、想要更低的 5.5% 费率，就选 OpenRouter；如果每月 25,000 美元的 BYOK 免额对你重要，那笔额度本身就足以压过 Requesty 的统一费率。如果你买的是可观测性而不是路由，选 Helicone；需要自托管就选 LiteLLM，因为 Requesty 没有开源自部署版本，是纯托管服务。</p>
+
+<p>落地前有两件事需要确认。第一，BYOK 流量是否豁免 5% 加价——公开价格页没有写，而这会改变所有自带密钥团队的计算结果。第二，免费模型文档页已经过期：它列出 13 个免费模型，包括 <code>poolside/laguna-m.1</code> 与 <code>nvidia/nemotron-3.5-content-safety</code>，其中 5 个在实时目录里根本不存在。请把 API 当作「有什么、多少钱」的唯一真相来源，因为你的代码最终打到的是它。</p>
+
+<h2 id="sources">资料来源</h2>
+
+<ul class="list-disc pl-6 mt-4 space-y-2">
+<li><a href="https://router.requesty.ai/v1/models" class="text-blue-600 hover:underline">Requesty 模型目录</a>——实时端点，787 个模型，含价格、上下文、能力与隐私标志</li>
+<li><a href="https://router.requesty.ai/v1/models/managed" class="text-blue-600 hover:underline">Requesty 托管策略</a>——182 个托管模型名</li>
+<li><a href="https://www.requesty.ai/pricing" class="text-blue-600 hover:underline">Requesty 价格页</a>——套餐、5% 加价、免费额度</li>
+<li><a href="https://docs.requesty.ai/features/eu-routing" class="text-blue-600 hover:underline">Requesty EU 路由文档</a>——法兰克福网关与区域模型 ID</li>
+<li><a href="https://docs.requesty.ai/features/decisions" class="text-blue-600 hover:underline">Requesty 决策模型文档</a>——支持的决策模型与端点</li>
+<li><a href="https://www.requesty.ai/terms" class="text-blue-600 hover:underline">Requesty 服务条款</a>——Training Permitted Model 与 5.9、6.2(a) 条</li>
+<li><a href="https://www.requesty.ai/privacy" class="text-blue-600 hover:underline">Requesty 隐私政策</a>——ZDR 范围与 30 天留存</li>
+<li><a href="https://openrouter.ai/pricing" class="text-blue-600 hover:underline">OpenRouter 价格页</a>——5.5%/8% credits 费用与 BYOK 免额</li>
+<li><a href="https://openrouter.ai/api/v1/models" class="text-blue-600 hover:underline">OpenRouter 模型目录</a>——477 个模型，无训练与留存字段</li>
+</ul>
+`;
+---
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} zhCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  <div set:html={zhBody} />
+</BaseLayout>
