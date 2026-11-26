@@ -31567,5 +31567,93 @@
         "textZh": "Requesty 没有中国大陆节点、没有中国端点，也没有 ICP 备案——全部基础设施只有三个 AWS 区域：法兰克福（eu-central-1）、美国弗吉尼亚（us-east-1）和新加坡（ap-southeast-1）。默认域名 router.requesty.ai 与 router.ap.requesty.ai 解析到同一组新加坡 IP（经 5 个公共 DNS 交叉验证），因此它是离大陆最近的一跳：从阿里云马来西亚节点实测首字节时间 52–87 毫秒，而法兰克福端点为 873–921 毫秒、美国端点约 1.25 秒。真实跨境链路还会在此之上叠加拥塞延迟。好消息是上游厂商不是你的问题——Requesty 用自有固定新加坡 IP 出网，Anthropic、OpenAI、Google 看到的是新加坡 IP 而非你的大陆 IP；但你自己的客户端仍需能连通 router。信用卡充值支持人民币（另有美元、英镑、欧元、日元），账户余额以美元 credits 计价。"
       }
     ]
+  },
+  {
+    "id": "oci-generative-ai",
+    "name": "Oracle OCI Generative AI",
+    "nameCn": "Oracle OCI 生成式 AI",
+    "category": "international",
+    "website": "https://www.oracle.com/cloud/ai/",
+    "apiDocs": "https://docs.oracle.com/en-us/iaas/Content/generative-ai/overview.htm",
+    "affiliateUrl": "",
+    "affiliateAvailable": false,
+    "models": [
+      "Cohere Command A / Command A Vision / Command A Reasoning",
+      "Cohere Embed 4, Cohere Rerank 4 (Pro / Fast)",
+      "Google Gemini 2.5 Pro / Flash / Flash-Lite",
+      "Meta Llama 4 Maverick / Scout, Llama 3.3 70B",
+      "OpenAI gpt-oss-120b / gpt-oss-20b (open-weight only)",
+      "xAI Grok 4.7 / 4.6 / 4.3 / 4.20, Grok TTS, Grok Imagine",
+      "Enterprise AI Agents + Responses API (OpenAI-compatible)"
+    ],
+    "modelCount": 18,
+    "pricing": {
+      "input": "两套计费单位:Cohere/Llama 按字符(1 transaction = 1 character),Gemini/Grok/gpt-oss 按 token;Large Cohere $0.0156/万字符(≈$1.56/百万字符),Meta Llama 4 Maverick $0.0018/万字符(≈$0.18/百万字符),gpt-oss-20b $0.07/M token 输入,Gemini 2.5 Flash-Lite $0.10/M",
+      "output": "按 token 的模型输入输出分开计价(Gemini 2.5 Pro $1.25→$10/M;Grok 4.7 短上下文 $2→$6/M);按字符的模型整个调用一个价,不区分输入输出;缓存输入一律比未缓存便宜 75%;优先处理档位精确翻倍",
+      "characterUnit": "1 transaction = 1 character,每单位 10,000 characters;Oracle 官方换算:每 token 约 4 字符",
+      "dedicated": "专用集群按 AI 单元/小时:Large Cohere $24、Large Meta $12、Small Cohere $6.50、Embed Cohere $10.90;模型托管费另加 $1/AI 单元/小时;Rerank 专用 $10/集群小时",
+      "commitment": "托管集群最低承诺 744 单元小时(Rerank 集群 $7,440、Large Cohere $17,856);微调集群仅 1 单元小时/任务;导入自有模型无此下限",
+      "freeTier": "无免费层;OCI 按通用额度(Universal Credits)计费,生成式 AI SKU 消耗额度;不含在 Cloud Free Tier 永久免费额度内"
+    },
+    "pricingEN": {
+      "input": "Two billing units: Cohere/Llama are billed per character (1 transaction = 1 character), Gemini/Grok/gpt-oss per token. Large Cohere $0.0156 per 10k characters (≈$1.56/1M chars), Meta Llama 4 Maverick $0.0018 per 10k chars (≈$0.18/1M chars), gpt-oss-20b $0.07/M tokens in, Gemini 2.5 Flash-Lite $0.10/M",
+      "output": "Token-priced models bill input and output separately (Gemini 2.5 Pro $1.25→$10/M; Grok 4.7 short context $2→$6/M); character-priced models apply one rate to the whole call; cached input is always 75% cheaper than uncached; priority processing exactly doubles every line",
+      "characterUnit": "1 transaction = 1 character, sold in units of 10,000 characters; Oracle's own conversion estimate is 4 characters per token",
+      "dedicated": "Dedicated clusters bill per AI unit-hour: Large Cohere $24, Large Meta $12, Small Cohere $6.50, Embed Cohere $10.90; a $1/AI-unit-hour model hosting fee applies on top; Rerank dedicated $10/cluster hour",
+      "commitment": "744 unit-hour minimum per hosting cluster ($7,440 for a Rerank cluster, $17,856 for Large Cohere); fine-tuning clusters need only 1 unit-hour per job; imported models carry no such floor",
+      "freeTier": "No free tier; OCI is credit-metered via Universal Credits and Generative AI SKUs draw down those credits; not part of the always-free Cloud Free Tier allowance"
+    },
+    "freeTier": "无免费层;OCI 按通用额度计费,生成式 AI 消耗额度,不含在永久免费额度内",
+    "freeTierEN": "No free tier; OCI is credit-metered via Universal Credits and Generative AI draws down those credits; not in the always-free allowance",
+    "paidModel": "按量付费($0.03-2.67/百万字符 或 $0.07-24/M token)+ 专用集群 744 单元小时起",
+    "paidModelEN": "Pay-as-you-go ($0.03-2.67 per 1M characters, or $0.07-24 per 1M tokens) + dedicated clusters from a 744 unit-hour commitment",
+    "availabilityCN": "⚠️ 无中国大陆区域;具备本地模型处理的 OC1 区域为圣保罗/法兰克福/海得拉巴/大阪/利雅得/阿布扎比/迪拜/伦敦/亚利桑那/芝加哥/凤凰城,须跨境调用;建议前置香港或境内中继,或把国内流量交给亚洲本地模型厂商",
+    "availabilityEN": "⚠️ No mainland-China region; OC1 regions with local model processing are Sao Paulo, Frankfurt, Hyderabad, Osaka, Riyadh, Abu Dhabi, Dubai, London, Ashburn, Chicago and Phoenix — calls are cross-border; front it with a Hong Kong or mainland relay, or serve China-facing traffic from an Asia-local provider",
+    "speedRank": 8,
+    "priceRank": 7,
+    "overallRank": 44,
+    "highlights": [
+      "☁️ 同一份价目表里并存两套计费单位:Cohere/Llama 按字符、Gemini/Grok/gpt-oss 按 token,没有文档页解释,必须自己比对价目表与模型列表",
+      "☁️ 12 个模型家族:Cohere Command A 三档 + Embed/Rerank 4、Gemini 2.5 三档、Llama 4 与 3.3、gpt-oss 120b/20b、Grok 4.7/4.6/4.3/4.20,外加 TTS 与 Imagine 图像",
+      "☁️ 99 个生成式 AI SKU 全部可从机器可读价格 API 直接取数(更新于 2026-11-02),不必解析 HTML",
+      "⚠️ 限流值没有文档:Oracle 明确写明动态限流,会根据模型需求、剩余容量与租户历史吞吐自动调整,官方建议自行实现退避策略",
+      "💰 专用集群有硬门槛:托管集群最低 744 单元小时(Rerank $7,440 / Large Cohere $17,856),微调集群仅 1 单元小时,导入自有模型则无此下限",
+      "🔐 企业治理层是差异化卖点:IAM 策略、私有端点、OAuth 2.1 + PKCE、Zero Trust Packet Routing、输入输出双向 Guardrails",
+      "🧩 模型发现 API 可按区域/能力/服务模式/弃用状态过滤,并标注模型是托管在 OCI 还是代理到厂商,还能筛出是否支持 OpenAI 兼容端点",
+      "🔊 OpenAI 只有开放权重:gpt-oss-120b 与 gpt-oss-20b,不提供任何闭源前沿模型"
+    ],
+    "highlightsEN": [
+      "☁️ Two billing units coexist in one price list: Cohere/Llama per character, Gemini/Grok/gpt-oss per token — no doc page explains it, you have to diff the price list against the model list",
+      "☁️ Twelve model families: three Cohere Command A tiers plus Embed/Rerank 4, three Gemini 2.5 tiers, Llama 4 and 3.3, gpt-oss 120b/20b, Grok 4.7/4.6/4.3/4.20, plus TTS and Imagine image",
+      "☁️ All 99 Generative AI SKUs are readable from the machine-readable price API (updated 2026-11-02) — no HTML parsing required",
+      "⚠️ Rate limits are undocumented: Oracle states throttling is dynamic and adjusts to model demand, spare capacity and your tenancy's history; the vendor advises implementing your own back-off",
+      "💰 Dedicated clusters have a hard floor: 744 unit-hours per hosting cluster ($7,440 for Rerank, $17,856 for Large Cohere), 1 unit-hour per fine-tuning job, and no floor at all for imported models",
+      "🔐 The governance layer is the differentiator: IAM policies, private endpoints, OAuth 2.1 with PKCE, Zero Trust Packet Routing, and guardrails on both inputs and outputs",
+      "🧩 Model discovery filters by region, capability, serving mode and deprecation status, flags whether a model is hosted in OCI or proxied to the vendor, and marks OpenAI-compatible support",
+      "🔊 OpenAI is open-weight only: gpt-oss-120b and gpt-oss-20b, never a closed frontier model"
+    ],
+    "cons": [
+      "按字符计费的模型折算成 token 并不便宜:按官方每 token 四字符,Large Cohere $1.56/百万字符 ≈ $6.24/M token,是 Gemini 2.5 Pro 输入价的 5 倍",
+      "专用集群 744 单元小时的最低承诺在流量没起来时就是纯亏损,单集群最低 $7,440",
+      "限流值不公开且会随系统负载浮动,无法据以做容量规划,只能靠退避重试",
+      "中国大陆无区域,全部调用跨境,交互式对话延迟不可控",
+      "无免费层且需先开 OCI 账号与通用额度,接入门槛高于纯 API 厂商",
+      "OpenAI 只有开放权重模型,想用闭源前沿模型必须直接找原厂",
+      "价目表按 SKU 拆分极细(短/长上下文、缓存、优先、推理与非推理各自一行),手工比价极易取错数字"
+    ],
+    "consEN": [
+      "Character-priced models are not cheap per token: at Oracle's own four-characters-per-token estimate, Large Cohere at $1.56/1M characters ≈ $6.24/M tokens, 5× Gemini 2.5 Pro input",
+      "The 744 unit-hour dedicated commitment is a pure loss if traffic never arrives — $7,440 for a single cluster",
+      "Rate limits are unpublished and float with system load, so they cannot be planned against — only retried against",
+      "No China region means every call is cross-border, with unpredictable interactive latency",
+      "No free tier, and you need an OCI account with Universal Credits before you can make a single request",
+      "OpenAI is open-weight only — closed frontier models require going to the vendor directly",
+      "The price list is split into very fine SKUs (short/long context, cached, priority, reasoning and non-reasoning each on their own row), so hand comparison easily picks the wrong number"
+    ],
+    "bestFor": "已签 Oracle 企业合同、需要私有端点与治理合规的团队;以及想要同一供应商同时提供 Gemini 2.5、Grok 4.7、gpt-oss 与 Cohere 的一站式采购方",
+    "bestForEN": "Teams with an existing Oracle enterprise contract that need private endpoints and governance controls; and buyers who want Gemini 2.5, Grok 4.7, gpt-oss and Cohere from one vendor on one contract",
+    "status": "active",
+    "addedDate": "2026-11-22",
+    "source": "verified via https://docs.oracle.com/en-us/iaas/Content/generative-ai/overview.htm and the OCI price-list API https://apexapps.oracle.com/api/v1/products (99 generative-AI SKUs, retrieved 2026-11-22)"
   }
 ]

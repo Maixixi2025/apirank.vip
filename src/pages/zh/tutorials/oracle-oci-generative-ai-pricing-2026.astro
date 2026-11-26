@@ -1,0 +1,336 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+
+const slug = 'oracle-oci-generative-ai-pricing-2026';
+const zhTitle = "Oracle OCI 生成式 AI 定价：同一份价目表里的两套计费单位";
+const zhDescription = "Oracle 对 Cohere 和 Llama 按字符计费，对 Gemini、Grok 和 gpt-oss 按 token 计费。实际成本是多少，各档位底线又在哪里。";
+const date = '2026-11-22';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/oracle-oci-generative-ai-pricing-2026/`;
+const zhCanonicalUrl = `https://apirank.vip/tutorials/oracle-oci-generative-ai-pricing-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Oracle OCI 生成式 AI 定价：同一份价目表里的两套计费单位",
+  "description": "Oracle 对 Cohere 和 Llama 按字符计费，对 Gemini、Grok 和 gpt-oss 按 token 计费。实际成本是多少，各档位底线又在哪里。",
+  "datePublished": "2026-11-22",
+  "dateModified": "2026-11-22",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/zh/tutorials/oracle-oci-generative-ai-pricing-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Oracle OCI 生成式 AI 定价：同一份价目表里的两套计费单位",
+      "item": "https://apirank.vip/zh/tutorials/oracle-oci-generative-ai-pricing-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "OCI 生成式 AI 比 OpenAI 或 Anthropic 便宜吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "按 token 计价的模型，大体相当：Gemini 2.5 Flash-Lite 的 $0.10/M 输入贴着市场地板，gpt-oss-20b 的 $0.07/M 输入 / $0.30/M 输出比大多数托管开放权重端点便宜。但按字符计价的模型，低价撑不过单位换算——Llama 4 Maverick 每百万字符 $0.18，换算过来是每百万 token $0.72，比 Flash-Lite 和 Flash 都贵。另外你根本无法通过 OCI 买到 OpenAI 或 Anthropic 的闭源模型，这里只提供开放权重的 gpt-oss。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "「一个 transaction 等于一个字符」，对我的账单到底意味着什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "在 Cohere 和 Meta 的按需行项目里，价目表单位是 10,000 transactions，而 Oracle 定义一个 transaction 就是一次推理调用的一个字符。于是 40,000 字符的提示词按 4 个单位（每单位 10,000 字符）计，乘上该 SKU 的单价。这是一个按发送和生成的字符数计的单一费率，不涉及分词器，也没有单独的输出价——按 token 计费时输入输出分开计价，字符计费则整个调用一个价。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "OCI 生成式 AI 能拿到具体的限流数字吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "拿不到，而且 Oracle 明确这么说。该服务会依据模型需求、当时未使用的系统容量以及你租户的历史吞吐，为每个租户动态调整限流阈值，文档写明限流值没有文档说明且会变化。各模型确实存在具名的限额配额，可以通过服务限额申请提额，但没有公开的默认值。Oracle 自己的建议是实现退避策略，在被拒绝后延迟重试。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "用这个 API 必须先有 Oracle Cloud 账号额度吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "OCI 是按云额度计费的云，不是按卡计费的 API。你需要开一个 OCI 账号并购买通用额度（Universal Credits），生成式 AI 的 SKU 消耗这些额度。没有免费层，也没有脱离云账号单独出售的预付 API key。最接近「免费路径」的是 Oracle Cloud 免费层，但生成式 AI 是付费服务，不在永久免费额度内。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "OCI 在中国大陆有生成式 AI 区域吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "没有。Oracle 生成式 AI 的本地模型处理区域是圣保罗、法兰克福、海得拉巴、大阪、利雅得、阿布扎比、迪拜、伦敦、亚利桑那、芝加哥和凤凰城，另有美国政府、美国国防、英国主权和欧盟主权区域。列表里没有中国商业区域，模型发现也不暴露该服务的 cn-* 区域标识。国内负载需要中继或亚洲本地模型厂商。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "拿到专用容量的最低花费是多少？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "对 OCI 自有的预训练和微调模型，每个托管集群 744 单元小时：按 Cohere Rerank 的 $10/集群小时算是 $7,440，按 Large Cohere 的 $24/AI 单元小时算是 $17,856。微调集群每个任务只需 1 单元小时。导入模型——你自己从对象存储或 Hugging Face 带来的权重——没有 744 单元小时的托管下限，这让自托管一个开放模型成为拿到专用容量最便宜的路子。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "OCI 支持 OpenAI 兼容的 API 调用吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "支持，但只对部分模型支持，而且模型发现把这个属性暴露为可过滤字段，而不是一刀切的保证。OCI 原生的生成式 AI 推理 API 也存在，Responses API 则为 agentic 工作流提供 OpenAI 兼容接口，支持编排、推理、对话状态和工具调用。请针对具体模型查询模型发现——OpenAI 兼容标志是按模型给的，而代理到厂商的模型和托管在 OCI 内部的行为并不一样。"
+      }
+    }
+  ]
+};
+
+const zhBody = `<h1 id="top">Oracle OCI 生成式 AI 定价：同一份价目表里的两套计费单位</h1>
+
+<p>Oracle 云基础设施（OCI）提供来自 <strong>十二个模型家族</strong>的推理服务——Cohere Command A、Google Gemini 2.5、Meta Llama 4、OpenAI gpt-oss、xAI Grok 4.x——再加上专用 AI 集群、重排序、向量嵌入、语音和图像。这是一份成熟的企业级目录。而且有一点，它和本站收录的其它所有 API 网关都不一样。</p>
+
+<p>把 Oracle 自己的价目表拉下来，你会看到同一个服务<strong>同时按两种完全不同的单位</strong>计费，取决于你调用哪个模型。Cohere 和 Llama 系列按<strong>字符</strong>计费，Gemini、Grok 和 gpt-oss 按 <strong>token</strong>计费。两套价格来自同一个厂商、同一个 OCI Generative AI 标题、同一个页面。Oracle 没有写任何一篇文档页解释这件事，因为它并不契合他们的文档结构——你得自己把价目表和模型列表对拆才能发现。</p>
+
+<p>这篇文章就做这次对拆，并告诉你实际成本是多少。</p>
+
+<h2 id="the-catalog">Oracle 实际在卖什么</h2>
+
+<p>Oracle 的<a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/pretrained-models.htm">预训练模型页</a>列出了当前阵容，而 Oracle 的<a href="https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/">机器可读价格 API</a>（更新于 2026-11-02）带有 <strong>99 个生成式 AI SKU</strong>。交叉比对后，目录的真实形状是这样的：</p>
+
+<table>
+<thead><tr><th>厂商</th><th>模型</th><th>OCI 模型 ID</th><th>上下文</th></tr></thead>
+<tbody>
+<tr><td>Cohere</td><td>Command A、Command A Vision、Command A Reasoning、Embed 4、Rerank 4</td><td><code>cohere.command-a-03-2025</code>、<code>cohere.rerank-v4.0-pro</code>、<code>cohere.embed-v4.0</code></td><td>256,000 token</td></tr>
+<tr><td>Google</td><td>Gemini 2.5 Pro / Flash / Flash-Lite</td><td><code>google.gemini-2.5-pro</code></td><td>输入 128,000 token</td></tr>
+<tr><td>Meta</td><td>Llama 4 Maverick、Llama 4 Scout、Llama 3.3 70B</td><td><code>meta.llama-4-maverick-17b-128e-instruct-fp8</code></td><td>512,000 token</td></tr>
+<tr><td>OpenAI</td><td>gpt-oss-120b、gpt-oss-20b</td><td><code>openai.gpt-oss-120b</code></td><td>128,000 token</td></tr>
+<tr><td>xAI</td><td>Grok 4.7 / 4.6 / 4.3 / 4.20</td><td><code>xai.grok-4.7</code>、<code>xai.grok-4.20-0309-reasoning</code></td><td>500,000 – 1,000,000 token</td></tr>
+</tbody>
+</table>
+
+<p>两点立刻跳出来。<strong>OpenAI 在这里只有开放权重模型</strong>——gpt-oss-120b 和 gpt-oss-20b，从不提供闭源前沿模型。<strong>xAI 的定价粒度极细</strong>：短上下文、长上下文、缓存输入、优先处理、以及推理与非推理版本，全都是独立的 SKU。</p>
+
+<h2 id="two-units">两套计费单位</h2>
+
+<p>这就是最容易把人绕晕的地方。Oracle 自己的<a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/calculate-cost.htm">成本计算页</a>写得很直白：<strong>"One transaction equals to one character."</strong> 在 Cohere 和 Meta 的行项目里，价目表上的「单位」是 <strong>10,000 transactions</strong>——也就是一次推理调用的 10,000 个字符。而在 Google、OpenAI 和 xAI 的行项目里，单位是 <strong>1,000,000 tokens</strong>。</p>
+
+<table>
+<thead><tr><th>SKU</th><th>单位</th><th>标价</th><th>换算后</th></tr></thead>
+<tbody>
+<tr><td>Large Cohere</td><td>10,000 字符</td><td>$0.0156</td><td>$1.56 / 百万字符</td></tr>
+<tr><td>Small Cohere</td><td>10,000 字符</td><td>$0.0009</td><td>$0.09 / 百万字符</td></tr>
+<tr><td>Embed Cohere</td><td>10,000 字符</td><td>$0.0010</td><td>$0.10 / 百万字符</td></tr>
+<tr><td>Meta Llama 4 Maverick</td><td>10,000 字符</td><td>$0.0018</td><td>$0.18 / 百万字符</td></tr>
+<tr><td>Meta Llama 3.1 405B</td><td>10,000 字符</td><td>$0.0267</td><td>$2.67 / 百万字符</td></tr>
+<tr><td>Gemini 2.5 Flash-Lite</td><td>1,000,000 token</td><td>输入 $0.10 / 输出 $0.40</td><td>按 token</td></tr>
+<tr><td>gpt-oss-20b</td><td>1,000,000 token</td><td>输入 $0.07 / 输出 $0.30</td><td>按 token</td></tr>
+<tr><td>Grok 4.7（短上下文）</td><td>1,000,000 token</td><td>输入 $2.00 / 输出 $6.00</td><td>按 token</td></tr>
+</tbody>
+</table>
+
+<p>现在做算术，因为这一步决定了字符单位到底是便宜货还是陷阱，取决于你对「每 token 多少字符」的假设。</p>
+
+<p>Oracle 自己的文档，在 gpt-oss 模型页上给出了换算系数：<strong>"Estimate four characters per token."</strong> 按每 token 四个字符，1,000,000 字符等于 250,000 token。所以：</p>
+
+<ul>
+<li><strong>Large Cohere</strong> 每百万字符 $1.56，折合 <strong>每百万 token $6.24</strong>——是 Gemini 2.5 Pro 输入价 $1.25 的 5 倍。</li>
+<li><strong>Small Cohere</strong> 每百万字符 $0.09，折合 <strong>每百万 token $0.36</strong>——仍是 Gemini 2.5 Flash-Lite 输入价 $0.10 的 3.6 倍，但比 Gemini 2.5 Flash 的 $0.30 便宜。</li>
+<li><strong>Llama 4 Maverick</strong> 每百万字符 $0.18，折合 <strong>每百万 token $0.72</strong>——比 Flash-Lite 贵，比 Flash 便宜。</li>
+</ul>
+
+<p>再读一遍：<strong>按字符计价的模型，折算到 token 并不比按 token 计价的模型便宜</strong>，尽管标题数字看起来小了 100 倍。字符价格是一个单位，不是一份折扣。任何看到「每 10,000 字符 $0.0018」就断定 Llama 4 相对 $0.30/百万 token 的模型几乎免费的人，都是在拿两种货币作比较。</p>
+
+<p>确实存在一个例外，值得说明，因为这才是选字符计费模型的真实理由：<strong>它按你实际发送的量收费，没有分词器的模糊性，也没有单独的输出价</strong>。如果你的负载主要由一段每次都要重发的超长系统提示词构成，字符计费意味着这段提示词每次调用只付一次，没有别的——按 token 计费的缓存读取经济学不适用，但缓存命中的折扣同样不适用。一段稳定的 40,000 字符提示词调用 10,000 次，按 Large Cohere 费率是 $1.56 × 400 = <strong>$624</strong>；而在按 token 计费的模型上，同一段提示词在缓存未命中时按全价计费。</p>
+
+<h2 id="cached">缓存输入的折扣并不统一</h2>
+
+<p>Oracle 对缓存输入 token 单独定价，折扣深度因模型和档位而异。以 Grok 4.7 为例：</p>
+
+<table>
+<thead><tr><th>Grok 4.7 SKU</th><th>输入</th><th>缓存输入</th><th>输出</th></tr></thead>
+<tbody>
+<tr><td>标准，短上下文</td><td>$2.00</td><td>$0.50</td><td>$6.00</td></tr>
+<tr><td>优先，短上下文</td><td>$4.00</td><td>$1.00</td><td>$12.00</td></tr>
+<tr><td>标准，长上下文</td><td>$4.00</td><td>$1.00</td><td>$12.00</td></tr>
+<tr><td>优先，长上下文</td><td>$8.00</td><td>$2.00</td><td>$24.00</td></tr>
+</tbody>
+</table>
+
+<p>每一行都是同一个形状：<strong>缓存输入比未缓存输入便宜 75%</strong>，而<strong>优先处理让每一行精确翻倍</strong>，长上下文相对短上下文也精确翻倍。所以最坏情况——优先、长上下文、未缓存输入——是输入 $8/M、输出 $24/M，正好是最优情况的四倍。</p>
+
+<p>拿这个跟同一个模型在 xAI 官方 API 或网关上的价格比一比。假如通过 OCI 使用 Grok 4.7，标准档输出是 $6/M，那么<strong>一次优先长上下文请求的输出成本，大约等于在别处跑一次完整的模型调用</strong>。Oracle 不是 xAI 的廉价转售商，它是一个在转售之上加装了企业档位的供应商，而钱的分界线就在这个档位边界上。</p>
+
+<p>Gemini 定价里有个陷阱：<strong>音频输入单独计价，而且贵得多</strong>。Gemini 2.5 Flash 的文本、图片、视频输入是 $0.30/M，但<strong>音频是 $1.00/M</strong>——同一个模型贵 3.3 倍。Gemini 2.5 Pro 一旦越过 200K token 门槛，输入从 $1.25/M 涨到 $2.50/M，输出从 $10/M 涨到 $15/M。两者在价目表里都是独立 SKU，所以只取第一个匹配项的抓取脚本会拿到错的数字。</p>
+
+<h2 id="dedicated">专用集群的承诺门槛</h2>
+
+<p>按需推理是简单路径：按次付费，没有集群，没有承诺。一旦你要专用容量，计费模型完全改变，价格也随之改变。</p>
+
+<ul>
+<li><strong>Large Cohere 专用</strong>——每个 AI 单元每小时 $24.00</li>
+<li><strong>Small Cohere 专用</strong>——每个 AI 单元每小时 $6.50</li>
+<li><strong>Large Meta 专用</strong>——每个 AI 单元每小时 $12.00</li>
+<li><strong>Embed Cohere 专用</strong>——每个 AI 单元每小时 $10.90</li>
+<li><strong>Cohere Rerank 专用</strong>——每集群小时 $10.00</li>
+<li><strong>模型托管费</strong>——在模型单元之外，每个 AI 单元每小时 $1.00</li>
+</ul>
+
+<p>而且这个门槛并不低。Oracle 的<a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/modes.htm">模式文档</a>明确写道：为 OCI 自有预训练和微调模型创建托管集群，<strong>每个托管集群最低承诺 744 单元小时</strong>。微调集群每个任务只需 1 单元小时。而导入模型——你自己从对象存储或 Hugging Face 搬进来的权重——<strong>完全没有 744 单元小时的托管下限</strong>。</p>
+
+<p>算一下这个底线：744 单元小时，按 Cohere Rerank 专用档的 $10/集群小时算是<strong>单个托管集群 $7,440</strong>；按 Large Cohere 的 $24/AI 单元小时算是 <strong>$17,856</strong>。这是确定性的价格——有保障的吞吐、GPU 上没有邻居、没有动态限流。这同时也是一个非常昂贵的错误的价格，如果你的流量始终没起来的话。</p>
+
+<p>端点和容量是两个概念。一个托管集群默认可以承载<strong>最多 50 个模型端点</strong>，而新增端点不会增加模型副本、也不会提高吞吐，只是给同一份算力多加几个命名访问点。想要更多吞吐就得加副本，也就是加 AI 单元，也就是加钱。</p>
+
+<h2 id="throttle">没人能报给你的限流数字</h2>
+
+<p>这是最可能搞崩一次生产迁移的发现，而它就写在同一页模式文档的一个段落里：</p>
+
+<blockquote>
+<p>OCI 生成式 AI 会根据模型需求和系统容量，为每个活跃租户动态调整请求限流阈值……<strong>由于动态限流，限流值没有文档说明，并且可能为满足全系统需求而改变。</strong></p>
+</blockquote>
+
+<p>本站收录的其它每个厂商都会公布一个数字。Fireworks 公布每分钟 token 数和每分钟请求数，Groq 公布并发档位，OpenRouter 公布 provider 级吞吐。Oracle <strong>什么都不公布</strong>——而且明确告诉你这个数字会随你的租户历史、模型当前的最大吞吐、以及当时未使用的系统容量而变化。</p>
+
+<p>Oracle 自己的建议紧随其后：实现退避策略，在被拒绝后延迟重试。各模型页仍然记录了具名的限额配额（Grok 4.7 有一个 <code>grok-4-7-tokens-per-minute-count</code>，可以申请提额），所以下限是存在的，上限不是。</p>
+
+<p>如果你要把现有负载迁到 OCI，这就是那条把「做个表格」变成「一次线上事故」的开销。一个随系统负载浮动的限流，不是你能据以做容量规划的数——它是一个你只能靠重试去对抗的数。</p>
+
+<h2 id="api">API 接口面</h2>
+
+<p>Oracle 除了自己的生成式 AI 推理 API，还提供 <strong>OpenAI 兼容端点选项</strong>，可通过模型发现按模型选择。模型发现 API 才是有用的部分：它返回模型标识、厂商、能力（对话、嵌入、重排序、微调）、支持的输入输出类型、区域可用性、按需还是专用服务，以及该模型是否支持 OpenAI 兼容接口。你可以按区域、能力、服务模式、弃用状态，以及模型是托管在 OCI 还是代理到外部厂商来过滤。</p>
+
+<p>最后这个区别值得留意。模型发现区分<strong>托管模型</strong>（运行在 OCI 内部）和<strong>代理模型</strong>（运行在厂商侧、通过 OCI 区域调用）。对代理模型来说，请求发往厂商的所在地——数据路径不同，合规叙事也不同。</p>
+
+<p>模型 ID 按厂商加命名空间，规律很好预测：<code>cohere.command-a-03-2025</code>、<code>google.gemini-2.5-flash</code>、<code>meta.llama-4-maverick-17b-128e-instruct-fp8</code>、<code>openai.gpt-oss-120b</code>、<code>xai.grok-4.7</code>。Llama 的 ID 带上了完整的量化方式和专家配置——这类细节你希望在日志里看得见，而不是从一个 400 响应里去猜。</p>
+
+<p>如果你打算发送长提示词，有一点必须知道：<strong>好几个模型的按需响应上限远小于上下文窗口</strong>。Llama 4 Maverick 有 512,000 token 上下文，但按需响应被截在 4,000 token。Cohere Command A Reasoning 窗口 256,000 token、专用模式下最多输出 32,000 token，但按需只有 4,000。Grok 4.3 保留 1,000,000 token 上下文，playground 响应上限 131,000。gpt-oss 上限 16,000 token，而窗口是 128,000。你能装下多少和你能拿到多少，是分别定价、分别设定的。</p>
+
+<h2 id="enterprise">Enterprise AI Agents 补上了什么</h2>
+
+<p>除了裸模型服务，Oracle 现在还打包了一层 agents 能力，有自己的 SKU——而这正是字符单位真正有意思的地方：</p>
+
+<ul>
+<li><strong>OCI Generative AI Agents</strong>——每 10,000 transactions $0.003（每百万字符 $0.30）</li>
+<li><strong>Agents 数据摄取</strong>——每 10,000 transactions $0.0003</li>
+<li><strong>Agents 知识库存储</strong>——每 GB 每小时 $0.0084</li>
+<li><strong>文件检索存储</strong>与<strong>向量库存储</strong>——每 GB 每小时 $0.0042</li>
+<li><strong>向量库检索</strong>——每 1,000 次请求 $0.20</li>
+<li><strong>记忆摄取</strong>——每 1,000 个事件 $0.20</li>
+</ul>
+
+<p>agents 平台和对话模型用的是同一个字符单位，所以可以直接和它包裹的模型开销做对比。Responses API 是 Oracle 的 OpenAI 兼容 agentic 接口，支持编排、推理、对话状态和工具调用，另有 NL2SQL 供需要结构化企业数据访问的工作流使用。</p>
+
+<p>治理能力并行存在：IAM 策略、私有端点、API 密钥、面向托管应用的 OAuth 2.1 + PKCE、用于身份化网络强制执行的 Zero Trust Packet Routing，以及对输入输出同时施加运行时控制的 guardrails。这是 Oracle 这套供给中任何网关都无法复刻的部分，因为它必须和你整套 Oracle 资产集成。</p>
+
+<h2 id="china">中国大陆访问</h2>
+
+<p>直说：<strong>OCI 的生成式 AI 在中国大陆没有区域</strong>。Oracle 具备本地模型处理能力的商业区域包括巴西、法兰克福、海得拉巴、大阪、利雅得、阿布扎比、迪拜、伦敦和美国，另有政府区域与主权区域。生成式 AI 区域列表里没有中国商业区域，模型发现也针对该服务不返回任何 <code>cn-*</code> 区域标识。</p>
+
+<p>对国内团队来说，这意味着推理调用必须跨境打到法兰克福、大阪或海得拉巴，走的是你控制不了的链路。做批量分类和向量嵌入可行，做交互式对话就很痛苦。现实中的模式和用任何一家海外推理厂商一样：前面架一个香港或境内中继，或者把面向国内用户的流量交给亚洲本地模型厂商，OCI 只承担那些必须落在企业 Oracle 合同里的负载。</p>
+
+<p>专用模式才是能改变这笔账的地方。如果你需要内网访问和可预期的容量，私有端点加专用 AI 集群这条路才是 OCI 企业故事真正成立的地方——VCN 把流量关在你的网络边界里，而 744 单元小时的承诺买到的是任何共享网关都卖不了的隔离性。</p>
+
+<h2 id="verdict">结论</h2>
+
+<p>OCI 的生成式 AI 服务是一份成熟的企业目录，有一套真正有差异化的企业层，但它不是买便宜 token 的地方。按 token 计价的模型是有竞争力的——gpt-oss-20b 的 $0.07/M 输入是全网最便宜的前沿级选项之一，Gemini 2.5 Flash-Lite 的 $0.10/M 也贴着市场地板。但按字符计价的模型只有在你比错了单位时才显得便宜，而专用档在你服务任何一个请求之前，就有 $7,440 到 $17,856 的地板价。</p>
+
+<p>带走三件事。<strong>比较 OCI 按字符计价的模型时，要换算成 token 而不是字符</strong>——Oracle 自己的「每 token 四字符」换算，把 Llama 4 Maverick 的每 10,000 字符 $0.0018 变成每百万 token $0.72。<strong>迁移之前先写好退避策略</strong>，因为限流值没有文档、且随系统需求浮动。<strong>把模型发现当作唯一可信来源</strong>，而不是模型列表页——两者互相矛盾，价目表又和两者都矛盾，只有发现 API 会告诉你哪些模型在你的区域真正可达、且支持 OpenAI 兼容端点。</p>
+
+<h2 id="faq">常见问题</h2>
+
+<h3 id="faq-1">OCI 生成式 AI 比 OpenAI 或 Anthropic 便宜吗？</h3>
+
+<p>按 token 计价的模型，大体相当：Gemini 2.5 Flash-Lite 的 $0.10/M 输入贴着市场地板，gpt-oss-20b 的 $0.07/M 输入 / $0.30/M 输出比大多数托管开放权重端点便宜。但按字符计价的模型，低价撑不过单位换算——Llama 4 Maverick 每百万字符 $0.18，换算过来是每百万 token $0.72，比 Flash-Lite 和 Flash 都贵。另外你根本无法通过 OCI 买到 OpenAI 或 Anthropic 的闭源模型，这里只提供开放权重的 gpt-oss。</p>
+
+<h3 id="faq-2">「一个 transaction 等于一个字符」，对我的账单到底意味着什么？</h3>
+
+<p>在 Cohere 和 Meta 的按需行项目里，价目表单位是 10,000 transactions，而 Oracle 定义一个 transaction 就是一次推理调用的一个字符。于是 40,000 字符的提示词按 4 个单位（每单位 10,000 字符）计，乘上该 SKU 的单价。这是一个按发送和生成的字符数计的单一费率，不涉及分词器，也没有单独的输出价——按 token 计费时输入输出分开计价，字符计费则整个调用一个价。</p>
+
+<h3 id="faq-3">OCI 生成式 AI 能拿到具体的限流数字吗？</h3>
+
+<p>拿不到，而且 Oracle 明确这么说。该服务会依据模型需求、当时未使用的系统容量以及你租户的历史吞吐，为每个租户动态调整限流阈值，文档写明限流值没有文档说明且会变化。各模型确实存在具名的限额配额，可以通过服务限额申请提额，但没有公开的默认值。Oracle 自己的建议是实现退避策略，在被拒绝后延迟重试。</p>
+
+<h3 id="faq-4">用这个 API 必须先有 Oracle Cloud 账号额度吗？</h3>
+
+<p>OCI 是按云额度计费的云，不是按卡计费的 API。你需要开一个 OCI 账号并购买通用额度（Universal Credits），生成式 AI 的 SKU 消耗这些额度。没有免费层，也没有脱离云账号单独出售的预付 API key。最接近「免费路径」的是 Oracle Cloud 免费层，但生成式 AI 是付费服务，不在永久免费额度内。</p>
+
+<h3 id="faq-5">OCI 在中国大陆有生成式 AI 区域吗？</h3>
+
+<p>没有。Oracle 生成式 AI 的本地模型处理区域是圣保罗、法兰克福、海得拉巴、大阪、利雅得、阿布扎比、迪拜、伦敦、亚利桑那、芝加哥和凤凰城，另有美国政府、美国国防、英国主权和欧盟主权区域。列表里没有中国商业区域，模型发现也不暴露该服务的 cn-* 区域标识。国内负载需要中继或亚洲本地模型厂商。</p>
+
+<h3 id="faq-6">拿到专用容量的最低花费是多少？</h3>
+
+<p>对 OCI 自有的预训练和微调模型，每个托管集群 744 单元小时：按 Cohere Rerank 的 $10/集群小时算是 $7,440，按 Large Cohere 的 $24/AI 单元小时算是 $17,856。微调集群每个任务只需 1 单元小时。导入模型——你自己从对象存储或 Hugging Face 带来的权重——没有 744 单元小时的托管下限，这让自托管一个开放模型成为拿到专用容量最便宜的路子。</p>
+
+<h3 id="faq-7">OCI 支持 OpenAI 兼容的 API 调用吗？</h3>
+
+<p>支持，但只对部分模型支持，而且模型发现把这个属性暴露为可过滤字段，而不是一刀切的保证。OCI 原生的生成式 AI 推理 API 也存在，Responses API 则为 agentic 工作流提供 OpenAI 兼容接口，支持编排、推理、对话状态和工具调用。请针对具体模型查询模型发现——OpenAI 兼容标志是按模型给的，而代理到厂商的模型和托管在 OCI 内部的行为并不一样。</p>
+
+<h2 id="sources">来源</h2>
+
+<ul>
+<li><a href="https://www.oracle.com/cloud/price-list/#genai">Oracle 云基础设施价目表——OCI Generative AI 章节</a></li>
+<li><a href="https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/">Oracle 价目表 API（机器可读，更新于 2026-11-02）</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/calculate-cost.htm">Calculating Cost in Generative AI</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/modes.htm">On-Demand and Dedicated Modes for OCI Generative AI Models</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/pretrained-models.htm">Offered Pretrained Foundation Models in Generative AI</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/model-discovery.htm">Model Discovery</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/endpoint.htm">Managing Model Endpoints</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/regions.htm">Generative AI Local Model Processing Regions</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/governance.htm">Enterprise AI Governance for OCI Generative AI</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/x-ai-grok-4-7.htm">xAI Grok 4.7 模型页</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/openai-gpt-oss-120b.htm">OpenAI gpt-oss-120b 模型页</a></li>
+</ul>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  </Fragment>
+
+  <article class="prose prose-lg max-w-none">
+    <Fragment set:html={zhBody} />
+  </article>
+</BaseLayout>

@@ -1,0 +1,336 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+const slug = 'oracle-oci-generative-ai-pricing-2026';
+const enTitle = "Oracle OCI Pricing: Two Billing Units Explained";
+const enDescription = "Oracle bills Cohere and Llama per character but Gemini, Grok and gpt-oss per token. What that actually costs, and where the floors are.";
+const date = '2026-11-22';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/oracle-oci-generative-ai-pricing-2026/`;
+const enCanonicalUrl = `https://apirank.vip/zh/tutorials/oracle-oci-generative-ai-pricing-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Oracle OCI Pricing: Two Billing Units Explained",
+  "description": "Oracle bills Cohere and Llama per character but Gemini, Grok and gpt-oss per token. What that actually costs, and where the floors are.",
+  "datePublished": "2026-11-22",
+  "dateModified": "2026-11-22",
+  "inLanguage": "en-US",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/tutorials/oracle-oci-generative-ai-pricing-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Oracle OCI Pricing: Two Billing Units Explained",
+      "item": "https://apirank.vip/tutorials/oracle-oci-generative-ai-pricing-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is OCI Generative AI cheaper than OpenAI or Anthropic?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For token-priced models, roughly comparable: Gemini 2.5 Flash-Lite input at $0.10/M sits at the market floor, and gpt-oss-20b at $0.07/M in / $0.30/M out is cheaper than most hosted open-weight endpoints. For character-priced models the apparent low price does not survive conversion to tokens — Llama 4 Maverick at $0.18 per 1M characters is $0.72 per 1M tokens, above both Flash-Lite and Flash. You also cannot buy OpenAI or Anthropic closed models through OCI at all; only open-weight gpt-oss is offered."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does \"one transaction equals one character\" actually mean for my bill?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For the Cohere and Meta on-demand line items the price list unit is 10,000 transactions, and Oracle defines one transaction as one character of inference call. So a 40,000-character prompt costs 4 units of 10,000 characters, times that SKU's unit price. One metered rate on characters sent and generated, with no tokenizer involved and no separate output rate — unlike token pricing, character pricing applies a single rate to the whole call."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I get a rate limit number for OCI Generative AI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, and Oracle says so explicitly. The service dynamically adjusts throttling per tenancy based on model demand, unused system capacity and your tenancy's historical throughput, and the documentation states that rate limits are undocumented and can change. Named limit quotas exist per model and can be increased via a service limit request, but there is no published default. Oracle's own guidance is to implement a back-off strategy that delays requests after a rejection."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need Oracle Cloud account credits to use the API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "OCI is a credit-metered cloud, not a card-metered API. You pay for an OCI account and its Universal Credits, and Generative AI SKUs consume those credits. There is no free tier and no standalone prepaid API key sold outside the cloud account. The closest thing to a free path is the Oracle Cloud Free Tier, but Generative AI is a paid service and is not part of the always-free allowance."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is there a mainland China OCI region for generative AI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Oracle's generative AI local model processing regions are Sao Paulo, Frankfurt, Hyderabad, Osaka, Riyadh, Abu Dhabi, Dubai, London, Ashburn, Chicago and Phoenix, plus US Government, US Defense, UK Sovereign and EU Sovereign regions. No Chinese commercial region appears in that list and model discovery exposes no cn-* region identifiers for the service. China-facing workloads need a relay or an Asia-local model provider."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the minimum spend to get dedicated capacity?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "744 unit-hours per hosting cluster for OCI's own pretrained and fine-tuned models: $7,440 for a Cohere Rerank cluster at $10 per cluster hour, or $17,856 for Large Cohere at $24 per AI unit per hour. Fine-tuning clusters need only 1 unit-hour per job, and imported models — your own weights from Object Storage or Hugging Face — carry no 744-unit-hour hosting minimum, which makes self-hosting an open model the cheapest route to dedicated capacity."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does OCI support OpenAI-compatible API calls?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, for models that support it, and model discovery exposes that as a filterable attribute rather than a blanket guarantee. The OCI-native generative AI inference API also exists, and the Responses API provides an OpenAI-compatible surface for agentic workflows with orchestration, reasoning, conversation state and tool use. Check model discovery for the specific model — the OpenAI-compatible flag is per model, and proxy models hosted at the vendor behave differently from models hosted inside OCI."
+      }
+    }
+  ]
+};
+
+const enBody = `<h1 id="top">Oracle OCI Pricing: Two Billing Units Explained</h1>
+
+<p>Oracle Cloud Infrastructure sells inference from <strong>twelve model families</strong> — Cohere Command A, Google Gemini 2.5, Meta Llama 4, OpenAI gpt-oss, xAI Grok 4.x — plus dedicated AI clusters, rerank, embeddings, voice and image. It is a serious enterprise catalog, and in one respect unlike every other API gateway on this site.</p>
+
+<p>Pull Oracle's own price list and you will find that a single service bills <strong>two completely different units</strong> depending on which model you call. Cohere and Llama models are billed <strong>per character</strong>. Gemini, Grok and gpt-oss are billed <strong>per token</strong>. Both sit under the same OCI Generative AI heading, on the same page. No doc page explains this — you have to diff the price list against the model list yourself.</p>
+
+<p>This article does that diff.</p>
+
+<h2 id="the-catalog">What Oracle Actually Sells</h2>
+
+<p>Oracle's <a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/pretrained-models.htm">pretrained models page</a> lists the current lineup, and Oracle's <a href="https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/">machine-readable price API</a> (updated 2026-11-02) carries <strong>99 Generative AI SKUs</strong>. Cross-referencing them gives the real shape:</p>
+
+<table>
+<thead><tr><th>Vendor</th><th>Models</th><th>OCI model IDs</th><th>Context</th></tr></thead>
+<tbody>
+<tr><td>Cohere</td><td>Command A, Command A Vision, Command A Reasoning, Embed 4, Rerank 4</td><td><code>cohere.command-a-03-2025</code>, <code>cohere.rerank-v4.0-pro</code>, <code>cohere.embed-v4.0</code></td><td>256,000 tokens</td></tr>
+<tr><td>Google</td><td>Gemini 2.5 Pro / Flash / Flash-Lite</td><td><code>google.gemini-2.5-pro</code></td><td>128,000 tokens input</td></tr>
+<tr><td>Meta</td><td>Llama 4 Maverick, Llama 4 Scout, Llama 3.3 70B</td><td><code>meta.llama-4-maverick-17b-128e-instruct-fp8</code></td><td>512,000 tokens</td></tr>
+<tr><td>OpenAI</td><td>gpt-oss-120b, gpt-oss-20b</td><td><code>openai.gpt-oss-120b</code></td><td>128,000 tokens</td></tr>
+<tr><td>xAI</td><td>Grok 4.7 / 4.6 / 4.3 / 4.20</td><td><code>xai.grok-4.7</code>, <code>xai.grok-4.20-0309-reasoning</code></td><td>500,000 – 1,000,000 tokens</td></tr>
+</tbody>
+</table>
+
+<p>Two things stand out. <strong>OpenAI's presence is open-weight only</strong> — gpt-oss-120b and gpt-oss-20b, never a closed frontier model. And <strong>xAI is priced in fine detail</strong>: separate SKUs for short and long context, cached input, priority processing, and reasoning versus non-reasoning.</p>
+
+<h2 id="two-units">The Two Billing Units</h2>
+
+<p>Here is the part that trips people up. Oracle's own <a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/calculate-cost.htm">cost calculation page</a> states it plainly: <strong>"One transaction equals to one character."</strong> For Cohere and Meta line items the price list unit is <strong>10,000 transactions</strong> — 10,000 characters of inference call. For Google, OpenAI and xAI it is <strong>1,000,000 tokens</strong>.</p>
+
+<table>
+<thead><tr><th>SKU</th><th>Unit</th><th>List price</th><th>Normalised</th></tr></thead>
+<tbody>
+<tr><td>Large Cohere</td><td>10,000 characters</td><td>$0.0156</td><td>$1.56 / 1M characters</td></tr>
+<tr><td>Small Cohere</td><td>10,000 characters</td><td>$0.0009</td><td>$0.09 / 1M characters</td></tr>
+<tr><td>Embed Cohere</td><td>10,000 characters</td><td>$0.0010</td><td>$0.10 / 1M characters</td></tr>
+<tr><td>Meta Llama 4 Maverick</td><td>10,000 characters</td><td>$0.0018</td><td>$0.18 / 1M characters</td></tr>
+<tr><td>Meta Llama 3.1 405B</td><td>10,000 characters</td><td>$0.0267</td><td>$2.67 / 1M characters</td></tr>
+<tr><td>Gemini 2.5 Flash-Lite</td><td>1,000,000 tokens</td><td>$0.10 in / $0.40 out</td><td>per token</td></tr>
+<tr><td>gpt-oss-20b</td><td>1,000,000 tokens</td><td>$0.07 in / $0.30 out</td><td>per token</td></tr>
+<tr><td>Grok 4.7 (short ctx)</td><td>1,000,000 tokens</td><td>$2.00 in / $6.00 out</td><td>per token</td></tr>
+</tbody>
+</table>
+
+<p>Now the arithmetic, because this is where the character unit either looks like a bargain or a trap depending on your characters-per-token assumption.</p>
+
+<p>Oracle's docs, on the gpt-oss model page, give the conversion factor: <strong>"Estimate four characters per token."</strong> So 1,000,000 characters is 250,000 tokens:</p>
+
+<ul>
+<li><strong>Large Cohere</strong> at $1.56 per 1M characters works out to <strong>$6.24 per 1M tokens</strong> — 10× the price of Gemini 2.5 Pro input at $1.25.</li>
+<li><strong>Small Cohere</strong> at $0.09 per 1M characters works out to <strong>$0.36 per 1M tokens</strong> — still 3.6× Gemini 2.5 Flash-Lite input at $0.10, but cheaper than Gemini 2.5 Flash at $0.30.</li>
+<li><strong>Llama 4 Maverick</strong> at $0.18 per 1M characters is <strong>$0.72 per 1M tokens</strong> — more than Gemini 2.5 Flash-Lite, less than Flash.</li>
+</ul>
+
+<p>Read that again: <strong>the character-priced models are not cheaper per token</strong>, despite headline numbers looking 100× smaller. The per-character price is a unit, not a discount. Anyone who saw "$0.0018 per 10,000" and concluded Llama 4 was nearly free against a $0.30/M-token model has compared two currencies.</p>
+
+<p>There is one genuine exception, and it is the actual reason to pick a character-billed model: <strong>it charges you for exactly what you send, with no tokenizer ambiguity and no separate output rate.</strong> For a workload dominated by a long system prompt re-sent on every call, character billing prices that prompt once per call and nothing more — no cache-hit discount, but no cache-miss penalty either. A stable 40,000-character prompt called 10,000 times is $1.56 × 400 = <strong>$624</strong> at Large Cohere rates, versus a token-billed model where the same prompt is charged at full rate on a cache miss.</p>
+
+<h2 id="cached">Cached Input Pricing Is Not Uniform</h2>
+
+<p>Oracle prices cached input tokens separately, and the discount depth varies by tier. For Grok 4.7:</p>
+
+<table>
+<thead><tr><th>Grok 4.7 SKU</th><th>Input</th><th>Cached input</th><th>Output</th></tr></thead>
+<tbody>
+<tr><td>Standard, short context</td><td>$2.00</td><td>$0.50</td><td>$6.00</td></tr>
+<tr><td>Priority, short context</td><td>$4.00</td><td>$1.00</td><td>$12.00</td></tr>
+<tr><td>Standard, long context</td><td>$4.00</td><td>$1.00</td><td>$12.00</td></tr>
+<tr><td>Priority, long context</td><td>$8.00</td><td>$2.00</td><td>$24.00</td></tr>
+</tbody>
+</table>
+
+<p>Every row has the same shape: <strong>cached input is 75% cheaper than uncached input</strong>, and <strong>priority processing exactly doubles every line</strong>, as does long context over short. The worst case — priority, long context, uncached — is $8/M input and $24/M output, four times the best case.</p>
+
+<p>Compare that with the same model on xAI's own API. If Grok 4.7 through OCI costs $6/M output in the standard tier, then <strong>a priority long-context request's output cost is roughly a full model call elsewhere</strong>. Oracle is not a cheap reseller of xAI; it is a reseller with an enterprise tier bolted on, and the tier boundary is where the money is.</p>
+
+<p>One trap: <strong>audio input is priced separately and much higher</strong>. Gemini 2.5 Flash is $0.30/M for text, image and video input, but <strong>$1.00/M for audio</strong> — 3.3× more for the same model. Gemini 2.5 Pro jumps from $1.25/M to $2.50/M input and $10/M to $15/M output past 200K tokens. Both are separate SKUs, so a scraper taking the first match gets the wrong number.</p>
+
+<h2 id="dedicated">The Dedicated Cluster Commitment</h2>
+
+<p>On-demand inference is the simple path: pay per call, no cluster, no commitment. The moment you want dedicated capacity, the model changes completely — and so does the price.</p>
+
+<ul>
+<li><strong>Large Cohere dedicated</strong> — $24.00 per AI unit per hour</li>
+<li><strong>Small Cohere dedicated</strong> — $6.50 per AI unit per hour</li>
+<li><strong>Large Meta dedicated</strong> — $12.00 per AI unit per hour</li>
+<li><strong>Embed Cohere dedicated</strong> — $10.90 per AI unit per hour</li>
+<li><strong>Cohere Rerank dedicated</strong> — $10.00 per cluster hour</li>
+<li><strong>Model hosting fee</strong> — $1.00 per AI unit per hour, on top of the model unit</li>
+</ul>
+
+<p>And the commitment is not small. Oracle's <a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/modes.htm">modes documentation</a> states that hosting clusters for OCI's own pretrained and fine-tuned models require a <strong>minimum commitment of 744 unit-hours per hosting cluster</strong>. Fine-tuning clusters need only 1 unit-hour per job. Imported models — your own weights brought in from Object Storage or Hugging Face — carry <strong>no 744-unit-hour minimum at all</strong>.</p>
+
+<p>Do the math on that floor: 744 unit-hours at the Cohere Rerank rate of $10/cluster-hour is <strong>$7,440 for a single hosting cluster</strong>. At Large Cohere's $24/AI-unit-hour it is <strong>$17,856</strong>. That is the price of certainty — guaranteed throughput, no neighbour on your GPU, no dynamic throttling — and of a very expensive mistake if traffic never materialises.</p>
+
+<p>Endpoints are separate from capacity. A hosting cluster carries <strong>up to 50 model endpoints by default</strong>, and extra endpoints add no replicas and no throughput — only more named access points to the same compute. More throughput means more replicas, which means more AI units, which means more money.</p>
+
+<h2 id="throttle">The Rate Limit Nobody Can Quote You</h2>
+
+<p>This is the finding most likely to break a production deployment, and it is documented in a single paragraph on the same modes page:</p>
+
+<blockquote>
+<p>OCI Generative AI dynamically adjusts the request throttling limit for each active tenancy based on model demand and system capacity... <strong>Because of dynamic throttling, rate limits are undocumented and can change to meet system-wide demand.</strong></p>
+</blockquote>
+
+<p>Every other provider on this site publishes a number: Fireworks publishes tokens and requests per minute, Groq a concurrency tier, OpenRouter provider-level throughput. Oracle publishes <strong>nothing</strong> — and says the number changes with your tenancy's history, the model's maximum throughput, and unused system capacity at that moment.</p>
+
+<p>Oracle's recommendation follows: implement a back-off strategy that delays requests after a rejection. The per-model pages do document named limit quotas (Grok 4.7 has a <code>grok-4-7-tokens-per-minute-count</code> limit you can request an increase for), so a floor exists even if a ceiling does not.</p>
+
+<p>If you are migrating an existing workload to OCI, this is the line item that turns a spreadsheet exercise into an incident. A rate limit that moves with system load is not a limit you can size against — it is a limit you retry against.</p>
+
+<h2 id="api">The API Surface</h2>
+
+<p>Oracle documents OCI's own inference API plus an <strong>OpenAI-compatible endpoint option</strong>, selectable per model through model discovery. Discovery is the useful part: it returns model identifiers, vendors, capabilities (chat, embedding, rerank, fine-tuning), input and output types, regional availability, on-demand versus dedicated serving, and whether the model supports the OpenAI-compatible surface. You can filter by region, capability, serving mode, deprecation status, and whether a model is hosted by OCI or proxied externally.</p>
+
+<p>That last distinction matters. Model discovery separates <strong>hosted models</strong>, which run inside OCI, from <strong>proxy models</strong>, which run at the vendor and are called through an OCI region. For a proxy model the request goes to the provider's location — a different data path, and a different compliance story.</p>
+
+<p>The model IDs are namespaced by vendor and follow a predictable pattern: <code>cohere.command-a-03-2025</code>, <code>google.gemini-2.5-flash</code>, <code>meta.llama-4-maverick-17b-128e-instruct-fp8</code>, <code>openai.gpt-oss-120b</code>, <code>xai.grok-4.7</code>. The Llama ID carries the full quantisation and expert configuration, which is the sort of detail you want visible in your logs rather than discovered in a 400 response.</p>
+
+<p>One detail if you plan to send long prompts: <strong>the on-demand response cap is far tighter than the context window for several models</strong>. Llama 4 Maverick has 512,000 tokens of context but caps on-demand responses at 4,000. Cohere Command A Reasoning has a 256,000 window and up to 32,000 output in dedicated mode, but 4,000 on-demand. Grok 4.3 holds 1,000,000 tokens and caps playground responses at 131,000. gpt-oss caps at 16,000 against a 128,000 window. What you can hold and what you can get are shaped separately.</p>
+
+<h2 id="enterprise">What Enterprise AI Agents Adds</h2>
+
+<p>Beyond raw model serving, Oracle now packages an agents layer with its own SKUs, and this is where the per-character unit becomes genuinely interesting:</p>
+
+<ul>
+<li><strong>OCI Generative AI Agents</strong> — $0.003 per 10,000 transactions ($0.30 / 1M characters)</li>
+<li><strong>Agents data ingestion</strong> — $0.0003 per 10,000 transactions</li>
+<li><strong>Agents knowledge base storage</strong> — $0.0084 per GB per hour</li>
+<li><strong>File search storage</strong> and <strong>vector store storage</strong> — $0.0042 per GB per hour</li>
+<li><strong>Vector store retrieval</strong> — $0.20 per 1,000 requests</li>
+<li><strong>Memory ingestion</strong> — $0.20 per 1,000 events</li>
+</ul>
+
+<p>The agents platform is billed on the same character unit as the chat models, making it directly comparable to the model spend it wraps. The Responses API is Oracle's OpenAI-compatible agentic surface, supporting orchestration, reasoning, conversation state and tool use, with NL2SQL for structured enterprise data access.</p>
+
+<p>Governance sits alongside: IAM policies, private endpoints, API keys, OAuth 2.1 with PKCE for hosted applications, Zero Trust Packet Routing, and guardrails applying runtime controls to inputs and outputs. This is the part of Oracle's offering no gateway replicates, because it must integrate with the rest of your Oracle estate.</p>
+
+<h2 id="china">China Access</h2>
+
+<p>Let us be direct: <strong>OCI has no Generative AI region in mainland China.</strong> Oracle operates commercial regions in Brazil, Germany, India, Japan, Saudi Arabia, the UAE, the UK and the US with local model processing, plus government and sovereign regions. There is no Chinese commercial region in the generative AI region list, and model discovery reports no <code>cn-*</code> region identifiers for this service.</p>
+
+<p>For a China-based team that means a cross-border inference call to Frankfurt, Osaka or Hyderabad, on a path you do not control — workable for batch classification and embedding, painful for interactive chat. The realistic pattern is the same as with any overseas inference vendor: front the endpoint with a Hong Kong or mainland relay, or serve China-facing traffic from an Asia-local provider and use OCI for workloads that must live inside an enterprise Oracle contract.</p>
+
+<p>Dedicated mode is what changes this calculus. If you need private-network access and predictable capacity, the private endpoint and dedicated cluster route is where OCI's enterprise story is real — the VCN keeps traffic inside your network boundary, and the 744-unit-hour commitment buys isolation no shared gateway can sell.</p>
+
+<h2 id="verdict">Verdict</h2>
+
+<p>OCI's generative AI service is a serious enterprise catalogue with a genuinely differentiated enterprise layer, and it is not the place to go for cheap tokens. The token-priced models are competitive: gpt-oss-20b at $0.07/M input is among the cheapest frontier-adjacent options anywhere, and Gemini 2.5 Flash-Lite at $0.10/M matches the market floor. But the character-priced models look cheap only if you compare them to the wrong unit, and the dedicated tier has a $7,440 to $17,856 floor before you serve a request.</p>
+
+<p>Three things to carry away. <strong>Compare OCI's character-priced models in tokens, not characters</strong> — Oracle's own four-characters-per-token estimate turns $0.0018 per 10,000 characters into $0.72 per million tokens for Llama 4 Maverick. <strong>Build a back-off strategy before you migrate</strong>, because rate limits are undocumented and move with system demand. And <strong>use model discovery as the source of truth</strong> rather than the model list page — the two disagree, the price list disagrees with both, and only discovery tells you which models are reachable from your region with an OpenAI-compatible endpoint.</p>
+
+<h2 id="faq">FAQ</h2>
+
+<h3 id="faq-1">Is OCI Generative AI cheaper than OpenAI or Anthropic?</h3>
+
+<p>For token-priced models, roughly comparable: Gemini 2.5 Flash-Lite input at $0.10/M sits at the market floor, and gpt-oss-20b at $0.07/M in / $0.30/M out is cheaper than most hosted open-weight endpoints. For character-priced models the apparent low price does not survive conversion to tokens — Llama 4 Maverick at $0.18 per 1M characters is $0.72 per 1M tokens, above both Flash-Lite and Flash. You also cannot buy OpenAI or Anthropic closed models through OCI at all; only open-weight gpt-oss is offered.</p>
+
+<h3 id="faq-2">What does "one transaction equals one character" actually mean for my bill?</h3>
+
+<p>For the Cohere and Meta on-demand line items the price list unit is 10,000 transactions, and Oracle defines one transaction as one character of inference call. So a 40,000-character prompt costs 4 units of 10,000 characters, times that SKU's unit price. One metered rate on characters sent and generated, with no tokenizer involved and no separate output rate — unlike token pricing, character pricing applies a single rate to the whole call.</p>
+
+<h3 id="faq-3">Can I get a rate limit number for OCI Generative AI?</h3>
+
+<p>No, and Oracle says so explicitly. The service dynamically adjusts throttling per tenancy based on model demand, unused system capacity and your tenancy's historical throughput, and the documentation states that rate limits are undocumented and can change. Named limit quotas exist per model and can be increased via a service limit request, but there is no published default. Oracle's own guidance is to implement a back-off strategy that delays requests after a rejection.</p>
+
+<h3 id="faq-4">Do I need Oracle Cloud account credits to use the API?</h3>
+
+<p>OCI is a credit-metered cloud, not a card-metered API. You pay for an OCI account and its Universal Credits, and Generative AI SKUs consume those credits. There is no free tier and no standalone prepaid API key sold outside the cloud account. The closest thing to a free path is the Oracle Cloud Free Tier, but Generative AI is a paid service and is not part of the always-free allowance.</p>
+
+<h3 id="faq-5">Is there a mainland China OCI region for generative AI?</h3>
+
+<p>No. Oracle's generative AI local model processing regions are Sao Paulo, Frankfurt, Hyderabad, Osaka, Riyadh, Abu Dhabi, Dubai, London, Ashburn, Chicago and Phoenix, plus US Government, US Defense, UK Sovereign and EU Sovereign regions. No Chinese commercial region appears in that list and model discovery exposes no cn-* region identifiers for the service. China-facing workloads need a relay or an Asia-local model provider.</p>
+
+<h3 id="faq-6">What is the minimum spend to get dedicated capacity?</h3>
+
+<p>744 unit-hours per hosting cluster for OCI's own pretrained and fine-tuned models: $7,440 for a Cohere Rerank cluster at $10 per cluster hour, or $17,856 for Large Cohere at $24 per AI unit per hour. Fine-tuning clusters need only 1 unit-hour per job, and imported models — your own weights from Object Storage or Hugging Face — carry no 744-unit-hour hosting minimum, which makes self-hosting an open model the cheapest route to dedicated capacity.</p>
+
+<h3 id="faq-7">Does OCI support OpenAI-compatible API calls?</h3>
+
+<p>Yes, for models that support it, and model discovery exposes that as a filterable attribute rather than a blanket guarantee. The OCI-native generative AI inference API also exists, and the Responses API provides an OpenAI-compatible surface for agentic workflows with orchestration, reasoning, conversation state and tool use. Check model discovery for the specific model — the OpenAI-compatible flag is per model, and proxy models hosted at the vendor behave differently from models hosted inside OCI.</p>
+
+<h2 id="sources">Sources</h2>
+
+<ul>
+<li><a href="https://www.oracle.com/cloud/price-list/#genai">Oracle Cloud Infrastructure price list — OCI Generative AI section</a></li>
+<li><a href="https://apexapps.oracle.com/pls/apex/cetools/api/v1/products/">Oracle price list API (machine-readable, updated 2026-11-02)</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/calculate-cost.htm">Calculating Cost in Generative AI</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/modes.htm">On-Demand and Dedicated Modes for OCI Generative AI Models</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/pretrained-models.htm">Offered Pretrained Foundation Models in Generative AI</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/model-discovery.htm">Model Discovery</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/endpoint.htm">Managing Model Endpoints</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/regions.htm">Generative AI Local Model Processing Regions</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/governance.htm">Enterprise AI Governance for OCI Generative AI</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/x-ai-grok-4-7.htm">xAI Grok 4.7 model page</a></li>
+<li><a href="https://docs.oracle.com/en-us/iaas/Content/generative-ai/openai-gpt-oss-120b.htm">OpenAI gpt-oss-120b model page</a></li>
+</ul>
+`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  </Fragment>
+
+  <article class="prose prose-lg max-w-none">
+    <Fragment set:html={enBody} />
+  </article>
+</BaseLayout>
