@@ -1,0 +1,269 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+
+const slug = 'vertex-ai-pricing-free-tier-2026';
+const zhTitle = "Vertex AI 定价：同样的模型，没有免费额度";
+const zhDescription = "Vertex AI 没有生成式 AI 免费额度，non-global 端点加价 10%，Claude 按区域定价。逐档拆解真实成本与选型依据。";
+const date = '2026-11-26';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/vertex-ai-pricing-free-tier-2026/`;
+const zhCanonicalUrl = `https://apirank.vip/tutorials/vertex-ai-pricing-free-tier-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Vertex AI 定价：同样的模型，没有免费额度",
+  "description": "Vertex AI 没有生成式 AI 免费额度，non-global 端点加价 10%，Claude 按区域定价。逐档拆解真实成本与选型依据。",
+  "datePublished": "2026-11-26",
+  "dateModified": "2026-11-26",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/zh/tutorials/vertex-ai-pricing-free-tier-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Vertex AI 定价：同样的模型，没有免费额度",
+      "item": "https://apirank.vip/zh/tutorials/vertex-ai-pricing-free-tier-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Vertex AI 有免费额度吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "没有。Vertex AI 的生成式 AI 定价里从头到尾没有免费额度这一列。Google Cloud 的 Free Program 给你 $300 赠送额度和一批免费产品，而 Vertex 上的生成式 AI 推理不在其中。Gemini Developer API 确实按模型列出免费额度，想不花钱先试 Gemini 就用那个接入面。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Vertex AI 比 Gemini Developer API 贵吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "同一个模型、global 端点、Standard 档，两边的 token 价格是一样的。差别在于 Gemini 3 及更新家族在 non-global 端点有 10% 加价、Priority 是独立产品，以及 Vertex 没有免费额度。所以诚实的答案是：在最便宜的 Vertex 路径上价格相同，在区域端点上更贵，而在你还没到需要付费的那部分工作上，永远比 Developer API 的免费额度贵。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "在 Vertex 上规模化跑 Gemini 最便宜的方式是什么？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Batch，用 Google 定价页写明的 Gemini 模型 5 折。请读你自己模型的 batch 行，而不是把标准档乘以 0.5，因为缓存输入列和促销价行并不会整齐地减半。用 global 端点还会更便宜：调优模型端点在 non-global 区域是基础模型的 1.5 倍，在 global 区域则与基础模型同价。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "可以通过 Vertex AI 调用 Claude 模型吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "可以。Anthropic 的 Claude 模型以完全托管 API 的形式在 Vertex 上提供，价格列在 partner models 页面：Sonnet 5.5 每百万输入 $2.00、输出 $10.00，Opus 5.5 $4.00 和 $20.00，Haiku 5.5 $0.10 和 $0.50，并在 10 万输入 token 以上设有长上下文档。batch 行单独列出，缓存价格拆成 5 分钟与 1 小时写入加上按次命中读取，而且 Claude 在 Vertex 上是分区域定价的——Global、US 多区域、EU 多区域和亚洲多区域各成一列。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Vertex 上 grounding 怎么计费？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Google Search grounding 在所有 Gemini 3 和 Gemini 4 模型之间合并计算，每月 5,000 次 Grounding Query 免费，之后每 1,000 次查询 $14。Google Maps grounding 同样是每月 5,000 次免费，之后每 1,000 次查询 $14。Grounding with your data 是每 1,000 次 prompt $2.50，没有免费额度。计费单位是模型发出的查询次数而非 prompt，所以一个 prompt 触发多次搜索就会被计多次。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Vertex AI 在中国大陆能用吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "不能直连。Google Cloud 没有中国大陆区域。最近的亚太区域是香港（asia-east2）、大阪、首尔、新加坡和东京。大陆部署要路由到其中之一，在网络路径之上再叠一层跨境延迟；而且因为这些是区域端点，non-global 那 10% 加价同样适用。请为端点前面预留代理或加速器的预算，而不是假设区域列表覆盖了大陆。"
+      }
+    }
+  ]
+};
+
+const zhBody = `<h1>Vertex AI 定价：同样的模型，没有免费额度</h1>
+
+<p>Google 把同一批 Gemini 模型卖了两遍。一遍通过 Gemini Developer API，一个 API key 就够，而且有免费额度；一遍通过 Vertex AI，你需要 Google Cloud 项目、结算账号和区域端点——而且完全没有免费额度。</p>
+
+<p>对多数开发者来说，第二个选项看起来没必要，通常也确实没必要。但 Vertex AI 不是 Developer API 的劣化版。它是另一个产品：计费单位不同、区域价格不同，还带着一个 Developer API 完全没有的合作伙伴模型目录。</p>
+
+<p>本文用 Google 自己的定价页来给 Vertex AI 定价。下面每一个模型行都直接引自那个页面，你可以逐条对照自己的结算控制台核验。</p>
+
+<h2>Vertex AI 没有生成式 AI 免费额度</h2>
+
+<p>这一条决定了大多数选型结论，也是多数对比文章搞错的地方。</p>
+
+<p>Gemini Developer API 在每个付费档旁边都列出免费额度。以 Gemini 4 Hydrogen 为例，Standard 标签页的 Free Tier 一列写着输入与输出「Free of charge」，而 Paid 一列是 $1.50 和 $7.50。Vertex AI 的定价页从头到尾没有这样一列。</p>
+
+<p>Google Cloud 给出的是另一套东西：<strong>Free Program</strong>，$300 赠送额度加一批免费产品。Vertex 上的生成式 AI 推理不在这些免费产品之列。</p>
+
+<table>
+<thead><tr><th>接入面</th><th>Gemini 3.5 Flash-Lite 输入 / 每百万</th><th>免费额度</th><th>鉴权方式</th></tr></thead>
+<tbody>
+<tr><td>Gemini Developer API（AI Studio）</td><td>$0.30</td><td>有——输入输出均 Free of charge</td><td>API key</td></tr>
+<tr><td>Vertex AI（global 端点）</td><td>$0.30</td><td>无</td><td>Google Cloud IAM</td></tr>
+<tr><td>Vertex AI（non-global 端点）</td><td>$0.33</td><td>无</td><td>Google Cloud IAM</td></tr>
+</tbody>
+</table>
+
+<p>所以免费额度不是一个你放弃掉的小折扣，而是 Developer API 的全部入门成本。如果你的负载还在原型阶段，或者产品能承受一次刷卡但不想折腾 Google Cloud 账号开通，那么 Developer API 便宜掉的正好是第一个月的量。</p>
+
+<p>Vertex 不免费，但也不贵——而且它是通往下面几个模型的唯一入口。</p>
+
+<h2>Global 与 non-global 端点：一笔不小心就交掉的 10% 税</h2>
+
+<p>Vertex 对同一个模型按端点类型定价不同。global 端点是低价，non-global 端点——也就是 <code>us-central1-aiplatform.googleapis.com</code> 这类区域端点——要贵 10%。</p>
+
+<p>Gemini 3.5 Flash 在 global 端点是每百万输入 $1.50，在 non-global 是 $1.65，输出 $9.00 对 $9.90。Gemini 3.5 Flash-Lite 是 $0.30 对 $0.33，输出 $2.50 对 $2.75。Gemini 4 Neon 是输入 $3.00、输出 $15.00 对 $3.30、$16.50。</p>
+
+<p>有两点让这不只是「10% 的行」那么简单。第一，这 10% 也加在<em>缓存输入</em>价上：Gemini 3.5 Flash 缓存 token 是 global $0.15、regional $0.165，Gemini 4 Neon 的 cache read 是 $0.15 对 $0.165。第二，Google 写明了生效日期——GA 状态的 Gemini 3 及更新家族，non-global 定价自 2026 年 7 月 1 日起生效，在此之前 non-global 端点也按 global 价计。这 10% 的差价是稳态，不是临时状态。</p>
+
+<p>真正要问的问题是你自己连的是哪个端点。如果你为了数据驻留而指定了区域，那你就在 non-global 价上；如果你用的是 global 端点，那你不在——而 global 端点是一个路由决策，不是合规决策。</p>
+
+<h2>Batch 与 Flex：5 折优惠，但每个模型有各自的算法</h2>
+
+<p>Google 在定价页上写得很直白：Gemini 模型提供 batch 模式，折扣 50%。折扣是真的：Gemini 2.5 Pro 标准档 $1.25、batch 档 $0.625，输出 $10.00 对 $5.00。Gemini 2.5 Flash 标准档 $0.30、batch 档 $0.15，输出 $2.50 对 $1.25。</p>
+
+<p>但它不是每一行每个数字都整齐地砍半，这正是「乘以 0.5」做出来的成本模型会算错的地方。Gemini 3.5 Flash 的 Flex/Batch 行输入是 global $0.75，对标准档 $1.50——正好一半——但同一行的缓存输入列仍是 $0.075，输出 $4.50 对标准 $9.00，也是正好一半。Gemini 3.1 Pro 的 Flex/Batch 行是输入 $1.00 对标准 $2.00、输出 $6.00 对 $12.00。Gemini 3.8 Flash Cyber 的 Flex/Batch 行是输入 $0.75、输出 $3.75，看起来正好是标准行 $1.50 和 $7.50 的一半——但那只是因为该模型的标准行当前享有促销价，到 2026 年 12 月 31 日之后会变回 $1.50 和 $7.50。</p>
+
+<p>请去读你自己那个模型的 batch 行，不要套乘数。</p>
+
+<p>Flex 是另一半。Batch 很直白：提交一个任务，等结果，付更少的钱。Flex 则处在与 Google Cloud 签订的弹性容量承诺安排之下，所以应当把它当成一次采购谈判，而不是一行价格。</p>
+
+<h2>Priority：是一个独立的产品档位，不是一个开关</h2>
+
+<p>Vertex 把 Standard、Priority、Flex、Batch 做成四个独立的标签页，价格各不相同。Priority 是贵的那个，基本是翻倍：Gemini 3.5 Flash 从 Standard 的输入 $1.50、输出 $9.00 变成 Priority 的 $2.70 和 $16.20；Gemini 3.1 Pro 从 $2.00 和 $12.00 变成 $3.60 和 $21.60。在 Gemini 2.5 家族上，Priority 是输入 $2.25、输出 $18.00，对标准档 $1.25 和 $10.00。</p>
+
+<p>Priority 换来的是容量保障和更低延迟，价格也如实反映了这一点。</p>
+
+<p>不要把 Vertex 页面上的 Priority 数字与 Gemini Developer API 自己定价页上的 Priority 档混为一谈。两者是不同产品，对同一个底层模型给出的价格也不同。要比较两个接入面，就拿 Standard 对 Standard。</p>
+
+<h2>Grounding：到限额之前免费，之后就不是了</h2>
+
+<p>Vertex 对 Google Search grounding 单独计费，结构是一道悬崖而不是一条渐变线。Grounding with Google Search 每月包含 5,000 次 Grounding Query 免费额度，在所有 Gemini 3 和 Gemini 4 模型之间合并计算。超出之后是每 1,000 次 $14。Grounding with Google Maps 形状相同：每月 5,000 次查询免费，之后每 1,000 次 $14。</p>
+
+<p>Grounding with your data 是每 1,000 次 prompt 固定 $2.50，没有免费额度。</p>
+
+<p>有两个细节容易踩坑。计费单位是<em>查询</em>而不是 prompt——页面明确写着「you will be charged for each individual Grounding Query performed」，所以一个 prompt 触发三次搜索就要付三次的钱。另外 grounding 返回的输入 token 不计费，所以规模化之后 $14/1,000 就是 grounding 的全部成本。如果你的 agent 会循环，grounding 账单会跟着循环一起放大。</p>
+
+<p>有一个值得做的对比：Gemini 2.5 时代 Developer API 上的 grounding 是按 grounding <em>prompt</em> 计费——超出每日免费额度后每 1,000 次 prompt $35，Flash 每日免费 1,500 次，Pro 免费 10,000 次。而 Vertex 上 Gemini 3 与 4 的 grounding 改成按<em>查询</em>计费，每月免费 5,000 次，之后每 1,000 次 $14。单位不同、数字不同、页面也不同，不要混用。</p>
+
+<h2>合作伙伴模型：选 Vertex 的真正理由</h2>
+
+<p>Vertex 在这里不再是「更贵的 Gemini Developer API」，而是换成了另一个目录。</p>
+
+<p>Vertex 以完全托管 API 的形式提供 Anthropic 的 Claude 模型，价格列在 partner models 页面上。Claude Sonnet 5.5 是每百万输入 $2.00、输出 $10.00，batch 行是 $1.00 和 $5.00。Claude Opus 5.5 是输入 $4.00、输出 $20.00，batch $2.50 和 $12.50。Claude Haiku 5.5 是输入 $0.10、输出 $0.50，而它的长上下文行会改变形状：10 万输入 token 以内 $0.10，超过 10 万 $0.50，输出从 $0.50 涨到 $2.50。</p>
+
+<p>Vertex 上的缓存按缓存生存期定价，这个细节会实质性地改变成本：Claude Sonnet 5.5 的 5 分钟缓存写入 $2.50，1 小时缓存写入 $4.00，缓存命中 $0.10。Batch 缓存写入更便宜——5 分钟 $1.25，1 小时 $2.00，每次命中 $0.05。</p>
+
+<table>
+<thead><tr><th>Vertex 上的合作伙伴模型</th><th>输入 / 每百万</th><th>输出 / 每百万</th><th>Batch 输入</th></tr></thead>
+<tbody>
+<tr><td>Claude Sonnet 5.5</td><td>$2.00</td><td>$10.00</td><td>$1.00</td></tr>
+<tr><td>Claude Opus 5.5</td><td>$4.00</td><td>$20.00</td><td>$2.50</td></tr>
+<tr><td>Claude Haiku 5.5</td><td>$0.10</td><td>$0.50</td><td>$0.05</td></tr>
+<tr><td>Llama 4 Maverick</td><td>$0.35</td><td>$1.15</td><td>$0.175</td></tr>
+<tr><td>Llama 4 Scout</td><td>$0.25</td><td>$0.70</td><td>$0.125</td></tr>
+<tr><td>Llama 3.3 70B</td><td>$0.72</td><td>$0.72</td><td>$0.36</td></tr>
+<tr><td>Mistral Medium 3</td><td>$0.40</td><td>$2.00</td><td>—</td></tr>
+<tr><td>Mistral Small 3.1</td><td>$0.10</td><td>$0.30</td><td>—</td></tr>
+<tr><td>Codestral 2</td><td>$0.30</td><td>$0.90</td><td>—</td></tr>
+</tbody>
+</table>
+
+<p>Meta 的开放权重模型也在同一个页面上：Llama 4 Maverick 输入 $0.35、输出 $1.15，Llama 4 Scout $0.25 和 $0.70，Llama 3.3 70B 输入输出都是 $0.72。Mistral 家族同样在列——Mistral Medium 3 $0.40 和 $2.00，Mistral Small 3.1 $0.10 和 $0.30，Codestral 2 $0.30 和 $0.90，以及 Mistral OCR 每百万 token 或每页 $0.0005。</p>
+
+<p>注意 Claude 在 Vertex 上的价格是分区域的，页面把 Global、US Multi-Region（us-east5）、EU Multi-Region（europe-west4）、亚洲多区域（asia-southeast1）和 asia-east1 列成独立的列。Claude 模型在 Vertex 上按区域定价，而 Gemini 模型不是——这是合作伙伴目录各地价格并不一致的第二个原因。</p>
+
+<p>如果你的技术栈需要在同一份 Google Cloud 合同、同一套 IAM 管控下同时用 Claude 和 Gemini，这就是选 Vertex 的理由。如果只需要一个模型并且想低成本试验，那它不是。</p>
+
+<h2>Vertex 实际部署在哪里</h2>
+
+<p>Vertex AI 覆盖相当广的 Google Cloud 区域——美国 9 个、加拿大 2 个、南美 2 个、约翰内斯堡 1 个、欧洲 12 个（含法兰克福、伦敦、苏黎世）、亚太 14 个（含香港、大阪、首尔、新加坡、悉尼、东京）。</p>
+
+<p>关于中国有两点。香港（asia-east2）是离大陆最近的亚太区域，而 Google Cloud 没有中国大陆区域。所以大陆部署要么用香港端点并在跨境链路上再叠一层大陆延迟，要么在前面架代理——两种情况都适用 non-global 价格。</p>
+
+<p>触发 non-global 定价的正是区域端点，所以驻留决策本身也有成本的一面。</p>
+
+<h2>怎么选</h2>
+
+<p>如果你在做原型、想要免费额度、想用 API key 而不是 IAM，或者只调 Gemini 且不关心与 Google Cloud 结算打通，就用 Gemini Developer API。</p>
+
+<p>如果你需要在同一份 Google Cloud 合同下用 Claude、Mistral 或 Llama；需要区域端点做数据驻留并已接受 10% 的 non-global 加价；需要按文档 5 折的 batch 批处理；架构里 grounding 用量很大、希望把每月 5,000 次免费额度和之后每 1,000 次 $14 变成一条已知成本项；或者合规要求 IAM、审计日志与 VPC Service Controls，就用 Vertex AI。</p>
+
+<p>迁移前提醒一句：Vertex 页面上的价格与 Developer API 页面上的价格不可互换，即使模型相同、档位相同也不行。Vertex 多出 global/non-global 拆分、独立的 Priority 产品，以及分区域的合作伙伴定价。如果你按 AI Studio 的价格做了成本模型，然后把同样的流量搬到 Vertex，你现在就是在多付钱，而定价页正是你会找到原因的地方。</p>
+
+<h2>常见问题</h2>
+
+<h3>Vertex AI 有免费额度吗？</h3>
+
+<p>没有。Vertex AI 的生成式 AI 定价里从头到尾没有免费额度这一列。Google Cloud 的 Free Program 给你 $300 赠送额度和一批免费产品，而 Vertex 上的生成式 AI 推理不在其中。Gemini Developer API 确实按模型列出免费额度，想不花钱先试 Gemini 就用那个接入面。</p>
+
+<h3>Vertex AI 比 Gemini Developer API 贵吗？</h3>
+
+<p>同一个模型、global 端点、Standard 档，两边的 token 价格是一样的。差别在于 Gemini 3 及更新家族在 non-global 端点有 10% 加价、Priority 是独立产品，以及 Vertex 没有免费额度。所以诚实的答案是：在最便宜的 Vertex 路径上价格相同，在区域端点上更贵，而在你还没到需要付费的那部分工作上，永远比 Developer API 的免费额度贵。</p>
+
+<h3>在 Vertex 上规模化跑 Gemini 最便宜的方式是什么？</h3>
+
+<p>Batch，用 Google 定价页写明的 Gemini 模型 5 折。请读你自己模型的 batch 行，而不是把标准档乘以 0.5，因为缓存输入列和促销价行并不会整齐地减半。用 global 端点还会更便宜：调优模型端点在 non-global 区域是基础模型的 1.5 倍，在 global 区域则与基础模型同价。</p>
+
+<h3>可以通过 Vertex AI 调用 Claude 模型吗？</h3>
+
+<p>可以。Anthropic 的 Claude 模型以完全托管 API 的形式在 Vertex 上提供，价格列在 partner models 页面：Sonnet 5.5 每百万输入 $2.00、输出 $10.00，Opus 5.5 $4.00 和 $20.00，Haiku 5.5 $0.10 和 $0.50，并在 10 万输入 token 以上设有长上下文档。batch 行单独列出，缓存价格拆成 5 分钟与 1 小时写入加上按次命中读取，而且 Claude 在 Vertex 上是分区域定价的——Global、US 多区域、EU 多区域和亚洲多区域各成一列。如果你想要 Claude 加上 Google Cloud IAM 和一份合同，走这条路。</p>
+
+<h3>Vertex 上 grounding 怎么计费？</h3>
+
+<p>Google Search grounding 在所有 Gemini 3 和 Gemini 4 模型之间合并计算，每月 5,000 次 Grounding Query 免费，之后每 1,000 次查询 $14。Google Maps grounding 同样是每月 5,000 次免费，之后每 1,000 次查询 $14。Grounding with your data 是每 1,000 次 prompt $2.50，没有免费额度。计费单位是模型发出的查询次数而非 prompt，所以一个 prompt 触发多次搜索就会被计多次。</p>
+
+<h3>Vertex AI 在中国大陆能用吗？</h3>
+
+<p>不能直连。Google Cloud 没有中国大陆区域。最近的亚太区域是香港（asia-east2）、大阪、首尔、新加坡和东京。大陆部署要路由到其中之一，在网络路径之上再叠一层跨境延迟；而且因为这些是区域端点，non-global 那 10% 加价同样适用。请为端点前面预留代理或加速器的预算，而不是假设区域列表覆盖了大陆。</p>
+`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  </Fragment>
+
+  <article class="prose prose-lg max-w-none">
+    <Fragment set:html={zhBody} />
+  </article>
+</BaseLayout>

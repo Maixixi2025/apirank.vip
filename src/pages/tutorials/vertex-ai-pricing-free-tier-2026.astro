@@ -1,0 +1,269 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+const slug = 'vertex-ai-pricing-free-tier-2026';
+const enTitle = "Vertex AI Pricing: Same Models, No Free Tier";
+const enDescription = "Vertex AI has no generative AI free tier, a 10% non-global endpoint premium, and Claude on regional pricing. What each tier actually costs.";
+const date = '2026-11-26';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/vertex-ai-pricing-free-tier-2026/`;
+const enCanonicalUrl = `https://apirank.vip/zh/tutorials/vertex-ai-pricing-free-tier-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Vertex AI Pricing: Same Models, No Free Tier",
+  "description": "Vertex AI has no generative AI free tier, a 10% non-global endpoint premium, and Claude on regional pricing. What each tier actually costs.",
+  "datePublished": "2026-11-26",
+  "dateModified": "2026-11-26",
+  "inLanguage": "en-US",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url": "https://apirank.vip"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://apirank.vip/tutorials/vertex-ai-pricing-free-tier-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://apirank.vip"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item": "https://apirank.vip/tutorials/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Vertex AI Pricing: Same Models, No Free Tier",
+      "item": "https://apirank.vip/tutorials/vertex-ai-pricing-free-tier-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Does Vertex AI have a free tier?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Vertex AI's generative AI pricing has no free tier column anywhere. Google Cloud's Free Program gives you $300 in credits and a set of free products, and generative AI inference on Vertex is not among them. The Gemini Developer API does publish a per-model free tier, which is the surface to use if you want to try Gemini without paying."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Vertex AI more expensive than the Gemini Developer API?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For the same model on a global endpoint with Standard pricing, the token prices match. The differences are the non-global endpoint premium of 10% on Gemini 3 and later families, the separate Priority tier, and the absence of a free tier. So the honest answer is: the same on the cheapest Vertex path, more expensive on a regional endpoint, and always more expensive than a Developer API free tier for the work you do before you need to pay at all."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the cheapest way to run Gemini at scale on Vertex?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Batch, at the 50% discount Google's pricing page documents for Gemini models. Read the batch row for your specific model rather than multiplying standard by 0.5, because the cached-input column and the promotional-price rows do not halve cleanly. On a global endpoint it is cheaper still: a tuned model endpoint costs 1.5 times the base model in non-global regions but the same as the base model globally."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I call Claude models through Vertex AI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Anthropic's Claude models are offered on Vertex as fully managed APIs, priced on the partner models page: Sonnet 5.5 at $2.00 input and $10.00 output per 1M tokens, Opus 5.5 at $4.00 and $20.00, Haiku 5.5 at $0.10 and $0.50 with a long-context tier above 100K input tokens. Batch rows are listed separately, cache pricing is split into 5-minute and 1-hour writes plus per-hit reads, and Claude pricing on Vertex is regional — Global, US multi-region, EU multi-region and Asia multi-region are separate columns."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is grounding billed on Vertex?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Google Search grounding includes 5,000 Grounding Queries per month free across Gemini 3 and Gemini 4 models, then $14 per 1,000 queries. Google Maps grounding has the same 5,000 free, then $14 per 1,000 queries. Grounding with your own data is $2.50 per 1,000 prompts with no free allowance. The charge is per query your model issues, not per prompt, so a prompt that triggers several searches is billed several times."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Vertex AI work from mainland China?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Not directly. Google Cloud has no mainland China region. The nearest Asia-Pacific regions are Hong Kong (asia-east2), Osaka, Seoul, Singapore and Tokyo. A mainland deployment routes to one of those, adding cross-border latency on top of the network path, and because these are regional endpoints, the non-global 10% premium applies. Budget for a proxy or an accelerator in front of the endpoint rather than assuming the region list covers the mainland."
+      }
+    }
+  ]
+};
+
+const enBody = `<h1>Vertex AI Pricing: The Same Gemini Costs More Than the Free Tier</h1>
+
+<p>Google sells you the same Gemini models twice. Once through the Gemini Developer API, where an API key is enough and a free tier exists. Once through Vertex AI, where you need a Google Cloud project, a billing account and a regional endpoint — and where there is no free tier at all.</p>
+
+<p>For most developers the second option looks unnecessary, and it usually is. But Vertex AI is not a worse version of the Developer API. It is a different product with different billing units, different regional prices and a catalogue of partner models the Developer API does not carry at all.</p>
+
+<p>This article prices Vertex AI as it actually is today, using Google's own pricing page as the source. Every model row below is quoted from that page, so you can check each number against your own billing console.</p>
+
+<h2>Vertex AI has no generative AI free tier</h2>
+
+<p>This is the fact that decides most evaluations, and it is the one most comparisons get wrong.</p>
+
+<p>The Gemini Developer API publishes a free tier alongside every paid tier. On Gemini 4 Hydrogen, for example, the Standard tab lists input price and output price as "Free of charge" in the Free Tier column, with the paid column at $1.50 and $7.50. The Vertex AI pricing page has no such column anywhere.</p>
+
+<p>What Google Cloud offers instead is the <strong>Free Program</strong>: $300 in credits and a set of free products. Generative AI inference on Vertex is not one of those free products.</p>
+
+<table>
+<thead><tr><th>Surface</th><th>Gemini 3.5 Flash-Lite input / 1M</th><th>Free tier</th><th>Auth</th></tr></thead>
+<tbody>
+<tr><td>Gemini Developer API (AI Studio)</td><td>$0.30</td><td>Yes — input and output free of charge</td><td>API key</td></tr>
+<tr><td>Vertex AI (global endpoint)</td><td>$0.30</td><td>No</td><td>Google Cloud IAM</td></tr>
+<tr><td>Vertex AI (non-global endpoint)</td><td>$0.33</td><td>No</td><td>Google Cloud IAM</td></tr>
+</tbody>
+</table>
+
+<p>So the free tier is not a small discount you trade away. It is the entire entry cost of the Developer API. If your workload is prototyping, or if you are running a product that can absorb a card charge but not a Google Cloud account setup, the Developer API is the cheaper surface by exactly the amount of your first month.</p>
+
+<p>Vertex is not free, but it is not expensive either — and it is the only way to reach several of the models below.</p>
+
+<h2>Global and non-global endpoints: a 10% tax you opt into by accident</h2>
+
+<p>Vertex prices the same model differently depending on which endpoint you call. Global endpoints carry the lower price. Non-global endpoints — a regional endpoint like <code>us-central1-aiplatform.googleapis.com</code> — carry a 10% premium.</p>
+
+<p>Gemini 3.5 Flash is $1.50 per 1M input tokens on a global endpoint and $1.65 on a non-global one, with output at $9.00 versus $9.90. Gemini 3.5 Flash-Lite is $0.30 versus $0.33, with output $2.50 versus $2.75. Gemini 4 Neon is $3.00 input and $15.00 output globally, $3.30 and $16.50 regionally.</p>
+
+<p>Two details make this sharper than a simple 10% line item. First, the premium applies to the <em>cached input</em> price too: Gemini 3.5 Flash cache tokens are $0.15 globally and $0.165 regionally, and Gemini 4 Neon's cache read is $0.15 against $0.165. Second, Google documents a transition date — for generally available Gemini 3 and later families, non-global pricing takes effect from July 1, 2026, and before that date global pricing applies to non-global endpoints as well. The 10% gap is the steady state, not a temporary state.</p>
+
+<p>The practical question is which endpoint you are on. If you set a region because your data must stay in a particular geography, you are on the non-global price. If you are on a global endpoint, you are not — and the global endpoint is a routing decision, not a compliance one.</p>
+
+<h2>Batch and Flex: a 50% discount with a per-model wrinkle</h2>
+
+<p>Google states plainly on the pricing page that Gemini models are available in batch mode at a 50% discount. The discount is real: Gemini 2.5 Pro is $1.25 standard and $0.625 in batch, output $10.00 versus $5.00. Gemini 2.5 Flash is $0.30 standard and $0.15 in batch, with output $2.50 versus $1.25.</p>
+
+<p>But the discount is not a uniform halving of every number on every row, and this is where a cost model built by multiplying by 0.5 breaks. Gemini 3.5 Flash's Flex/Batch row lists input at $0.75 globally against $1.50 standard — exactly half — but the cached-input column in that same row stays at $0.075, and output is $4.50 against $9.00 standard, also exactly half. For Gemini 3.1 Pro the Flex/Batch row lists input at $1.00 against $2.00 standard and output at $6.00 against $12.00. For Gemini 3.8 Flash Cyber the Flex/Batch row lists $0.75 input and $3.75 output, which is half of the $1.50 and $7.50 standard row — but only because the standard row for that model has a promotional price through December 31, 2026, after which it becomes $1.50 and $7.50 again.</p>
+
+<p>Read your own model's batch row. Do not apply a multiplier.</p>
+
+<p>Flex is the other half of the story. Batch is straightforward: you submit a job, you wait, you pay less. Flex sits under a flexible, capacity-committed arrangement with Google Cloud, so treat it as a procurement conversation rather than a pricing row.</p>
+
+<h2>Priority: a separate product tier, not a toggle</h2>
+
+<p>Vertex exposes Standard, Priority, Flex and Batch as distinct tabs with distinct prices. Priority is the expensive one, and it roughly doubles: Gemini 3.5 Flash goes from $1.50 input and $9.00 output on Standard to $2.70 and $16.20 on Priority, and Gemini 3.1 Pro goes from $2.00 and $12.00 to $3.60 and $21.60. On the Gemini 2.5 family, Priority is $2.25 input and $18.00 output against $1.25 and $10.00 standard.</p>
+
+<p>Priority buys capacity guarantee and lower latency, and it is priced accordingly.</p>
+
+<p>Do not mix up the Priority numbers on the Vertex page with the Priority tier on the Gemini Developer API's own pricing page. They are different products with different prices for the same underlying model. If you are comparing the two surfaces, compare Standard to Standard.</p>
+
+<h2>Grounding is free up to a limit, then it is not</h2>
+
+<p>Vertex bills Google Search grounding separately, and the structure is a cliff rather than a taper. Grounding with Google Search includes 5,000 Grounding Queries per month at no charge, aggregated across all Gemini 3 and Gemini 4 models. Above that, $14 per 1,000 Grounding Queries. Grounding with Google Maps has the same shape: 5,000 search queries per month free, then $14 per 1,000 queries.</p>
+
+<p>Grounding with your own data is a flat $2.50 per 1,000 prompts, with no free allowance attached.</p>
+
+<p>Two details catch people out. The charge is per <em>query</em>, not per prompt — the page is explicit that "you will be charged for each individual Grounding Query performed," so a single prompt that triggers three searches pays three times. And the input tokens that grounding returns are not charged, so the $14 per 1,000 is the whole of the grounding cost at scale. If your agent loops, the grounding bill scales with the loop.</p>
+
+<p>One comparison worth making: the Gemini 2.5-era grounding on the Developer API was billed per grounding <em>prompt</em> — $35 per 1,000 prompts beyond the daily free allowance, with 1,500 free per day on Flash and 10,000 on Pro. The Vertex Gemini 3 and 4 grounding is billed per <em>query</em>, with 5,000 free per month and $14 per 1,000 after that. Different unit, different number, different page. Do not mix them.</p>
+
+<h2>Partner models: the real reason to pick Vertex</h2>
+
+<p>Here is where Vertex stops being a more expensive Gemini Developer API and starts being a different catalogue.</p>
+
+<p>Vertex serves Anthropic's Claude models as fully managed APIs, priced on the partner models page. Claude Sonnet 5.5 is $2.00 input and $10.00 output per 1M tokens, with a batch row at $1.00 and $5.00. Claude Opus 5.5 is $4.00 input and $20.00 output, batch $2.50 and $12.50. Claude Haiku 5.5 is $0.10 input and $0.50 output, and its long-context row changes the shape: $0.10 for 100K input tokens or less, $0.50 above 100K, with output rising from $0.50 to $2.50.</p>
+
+<p>Caching on Vertex is priced by cache lifetime, which changes cost materially: Claude Sonnet 5.5 charges $2.50 for a 5-minute cache write, $4.00 for a 1-hour cache write, and $0.10 for a cache hit. Batch cache writes are cheaper again — $1.25 for 5 minutes, $2.00 for 1 hour, and $0.05 per hit.</p>
+
+<table>
+<thead><tr><th>Partner model on Vertex</th><th>Input / 1M</th><th>Output / 1M</th><th>Batch input</th></tr></thead>
+<tbody>
+<tr><td>Claude Sonnet 5.5</td><td>$2.00</td><td>$10.00</td><td>$1.00</td></tr>
+<tr><td>Claude Opus 5.5</td><td>$4.00</td><td>$20.00</td><td>$2.50</td></tr>
+<tr><td>Claude Haiku 5.5</td><td>$0.10</td><td>$0.50</td><td>$0.05</td></tr>
+<tr><td>Llama 4 Maverick</td><td>$0.35</td><td>$1.15</td><td>$0.175</td></tr>
+<tr><td>Llama 4 Scout</td><td>$0.25</td><td>$0.70</td><td>$0.125</td></tr>
+<tr><td>Llama 3.3 70B</td><td>$0.72</td><td>$0.72</td><td>$0.36</td></tr>
+<tr><td>Mistral Medium 3</td><td>$0.40</td><td>$2.00</td><td>—</td></tr>
+<tr><td>Mistral Small 3.1</td><td>$0.10</td><td>$0.30</td><td>—</td></tr>
+<tr><td>Codestral 2</td><td>$0.30</td><td>$0.90</td><td>—</td></tr>
+</tbody>
+</table>
+
+<p>Meta's open-weight models are on the same page: Llama 4 Maverick at $0.35 input and $1.15 output, Llama 4 Scout at $0.25 and $0.70, Llama 3.3 70B at $0.72 for both input and output. Mistral's family is there too — Mistral Medium 3 at $0.40 and $2.00, Mistral Small 3.1 at $0.10 and $0.30, Codestral 2 at $0.30 and $0.90, and Mistral OCR at $0.0005 per 1M tokens or per page.</p>
+
+<p>Note that Claude's Vertex price is regional, with the page listing separate columns for Global, US Multi-Region (us-east5), EU Multi-Region (europe-west4), Asia multi-region (asia-southeast1) and asia-east1. Claude models on Vertex are priced by region in a way Gemini models are not, which is a second reason the partner catalogue does not price the same everywhere.</p>
+
+<p>If your stack needs Claude and Gemini behind one Google Cloud contract with one set of IAM controls, this is the argument for Vertex. If it needs one model and cheap prototyping, it is not.</p>
+
+<h2>Where Vertex actually runs</h2>
+
+<p>Vertex AI is available across a wide set of Google Cloud regions — 9 in the United States, 2 in Canada, 2 in South America, Johannesburg, 12 across Europe including Frankfurt, London and Zürich, and 14 in Asia Pacific including Hong Kong, Osaka, Seoul, Singapore, Sydney and Tokyo.</p>
+
+<p>Two China notes. Hong Kong (asia-east2) is the closest Asia-Pacific region to the mainland, and Google Cloud does not operate a mainland China region. So a mainland deployment means either a Hong Kong endpoint with mainland latency on top of the cross-border link, or a proxy in front — and the non-global price applies either way.</p>
+
+<p>Regional endpoints are what trigger the non-global pricing, so there is a cost side to the residency decision too.</p>
+
+<h2>How to decide</h2>
+
+<p>Use the Gemini Developer API if you are prototyping, if you want a free tier, if you want an API key instead of IAM, or if you are calling only Gemini and do not care about Google Cloud billing integration.</p>
+
+<p>Use Vertex AI if you need Claude, Mistral or Llama behind one Google Cloud contract; if you need regional endpoints for data residency and you have accepted the 10% non-global premium; if you need batch processing at the documented 50% discount; if grounding at volume is part of your architecture and you need the 5,000-query free allowance and the $14 per 1,000 beyond it to be a known line item; or if your compliance story requires IAM, audit logs and VPC Service Controls.</p>
+
+<p>One warning before you migrate anything: the prices on the Vertex page and the prices on the Developer API page are not interchangeable, even for the same model and the same tier. Vertex adds a global/non-global split, a separate Priority product and per-region partner pricing. If you modelled your costs on AI Studio pricing and moved the same traffic to Vertex, you are now paying more, and the pricing page is where you will find out why.</p>
+
+<h2>Frequently asked questions</h2>
+
+<h3>Does Vertex AI have a free tier?</h3>
+
+<p>No. Vertex AI's generative AI pricing has no free tier column anywhere. Google Cloud's Free Program gives you $300 in credits and a set of free products, and generative AI inference on Vertex is not among them. The Gemini Developer API does publish a per-model free tier, which is the surface to use if you want to try Gemini without paying.</p>
+
+<h3>Is Vertex AI more expensive than the Gemini Developer API?</h3>
+
+<p>For the same model on a global endpoint with Standard pricing, the token prices match. The differences are the non-global endpoint premium of 10% on Gemini 3 and later families, the separate Priority tier, and the absence of a free tier. So the honest answer is: the same on the cheapest Vertex path, more expensive on a regional endpoint, and always more expensive than a Developer API free tier for the work you do before you need to pay at all.</p>
+
+<h3>What is the cheapest way to run Gemini at scale on Vertex?</h3>
+
+<p>Batch, at the 50% discount Google's pricing page documents for Gemini models. Read the batch row for your specific model rather than multiplying standard by 0.5, because the cached-input column and the promotional-price rows do not halve cleanly. On a global endpoint it is cheaper still: a tuned model endpoint costs 1.5 times the base model in non-global regions but the same as the base model globally.</p>
+
+<h3>Can I call Claude models through Vertex AI?</h3>
+
+<p>Yes. Anthropic's Claude models are offered on Vertex as fully managed APIs, priced on the partner models page: Sonnet 5.5 at $2.00 input and $10.00 output per 1M tokens, Opus 5.5 at $4.00 and $20.00, Haiku 5.5 at $0.10 and $0.50 with a long-context tier above 100K input tokens. Batch rows are listed separately, cache pricing is split into 5-minute and 1-hour writes plus per-hit reads, and Claude pricing on Vertex is regional — Global, US multi-region, EU multi-region and Asia multi-region are separate columns. If you want Claude with Google Cloud IAM and one contract, this is the route.</p>
+
+<h3>How is grounding billed on Vertex?</h3>
+
+<p>Google Search grounding includes 5,000 Grounding Queries per month free across Gemini 3 and Gemini 4 models, then $14 per 1,000 queries. Google Maps grounding has the same 5,000 free, then $14 per 1,000 queries. Grounding with your own data is $2.50 per 1,000 prompts with no free allowance. The charge is per query your model issues, not per prompt, so a prompt that triggers several searches is billed several times.</p>
+
+<h3>Does Vertex AI work from mainland China?</h3>
+
+<p>Not directly. Google Cloud has no mainland China region. The nearest Asia-Pacific regions are Hong Kong (asia-east2), Osaka, Seoul, Singapore and Tokyo. A mainland deployment routes to one of those, adding cross-border latency on top of the network path, and because these are regional endpoints, the non-global 10% premium applies. Budget for a proxy or an accelerator in front of the endpoint rather than assuming the region list covers the mainland.</p>
+`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  </Fragment>
+
+  <article class="prose prose-lg max-w-none">
+    <Fragment set:html={enBody} />
+  </article>
+</BaseLayout>
