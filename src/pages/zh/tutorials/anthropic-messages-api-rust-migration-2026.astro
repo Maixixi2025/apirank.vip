@@ -1,0 +1,319 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+
+const slug = 'anthropic-messages-api-rust-migration-2026';
+const zhTitle = "Anthropic 把 Messages API 迁到 Rust：CPU 降 70%";
+const zhDescription = "Anthropic 把 Messages API 从 Python 迁到 Rust：每请求 CPU 降约 70%，首 token 中位时间缩短约 20%。对延迟的实际影响。";
+const date = '2026-11-27';
+const locale = 'zh';
+const canonicalUrl = `https://apirank.vip/zh/tutorials/anthropic-messages-api-rust-migration-2026/`;
+const zhCanonicalUrl = `https://apirank.vip/tutorials/anthropic-messages-api-rust-migration-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Anthropic 把 Messages API 迁到 Rust：CPU 降 70%",
+  "description": "Anthropic 把 Messages API 从 Python 迁到 Rust：每请求 CPU 降约 70%，首 token 中位时间缩短约 20%。对延迟的实际影响。",
+  "datePublished": "2026-11-27",
+  "dateModified": "2026-11-27",
+  "inLanguage": "zh-CN",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url":"https://apirank.vip/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url":"https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id":"https://apirank.vip/zh/tutorials/anthropic-messages-api-rust-migration-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item":"https://apirank.vip/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "教程",
+      "item":"https://apirank.vip/zh/tutorials/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Anthropic 把 Messages API 迁到 Rust：CPU 降 70%",
+      "item":"https://apirank.vip/zh/tutorials/anthropic-messages-api-rust-migration-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Anthropic 的 Rust 迁移改变了 Messages API 契约吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "没有。2026 年 11 月的 Claude Platform 发布说明里没有任何与 Rust 相关的条目，必填的 anthropic-version 请求头仍然是 2026-10-21。没有参数增删，没有响应结构变化，也没有需要你排期的弃用。唯一用户可感知的区别，是回包可能早那么一点点到达。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "迁移之后 API 到底快了多少？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Anthropic 给出的两个数字是：每请求 CPU 降低约 70%，首 token 中位时间缩短约 20%。CPU 这个数字覆盖整个服务；首 token 那个数字按 Anthropic 自己的图注，覆盖的是客户 Claude Code 请求在更短周期上的表现，而且可见的下降里有一部分发生在请求仍由 Python 服务的时段。请把 20% 当成服务端首 token 延迟的上限，而不是你能据以规划的数值。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "价格和模型可用性有变化吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "没有。Anthropic 的定价页没有变化，2026 年 11 月的发布说明里也没有任何与 Rust 相关的条目。当前模型阵容不受影响：Fable 5.2 每百万 token 输入 $8、输出 $40，Opus 5.5 $4/$20，Sonnet 5.5 $2/$10，Haiku 5.5 起价 $0.10/$0.50。这是一次基础设施变更，不是商业变更。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "为什么不能只信测试套件？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "因为移植时测试也跟着代码一起被改了，这让一次绿色运行变得含义不明。审查发现了 100 多条被削弱的断言；而且即使套件被完整保留，它也只覆盖有人想到的组合 —— 仅仅 20 个二值选项就超过一百万种。四月份 Rust API 的测试通过率约 98%，而生产流量上只有约四分之一的输入能对上。差距出在生产流量那一侧，不在正确性那一侧。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "这次迁移快是因为 Claude 吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "部分是，但不像标题暗示的那么简单。Claude 用了大约一周写出 API 核心请求路径的第一个版本，到 2026 年 5 月已经在写 Anthropic 合并代码的 80% 以上。Anthropic 自己的结论是，瓶颈发生了转移而不是消失：验证成了约束，而能证明对等性的那个检查器，才是整个项目最难的部分。"
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "这套方法能用到我自己的网关或代理上吗？",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "结构可以迁移，而且你的起点可以比 Anthropic 更小。把你现在的实现和候选实现在真实流量上做影子对比，在检查点而不是原始文本上比较，并给每一类差异一个指纹，让修复队列始终可分流。保持内层循环廉价，在真实流量上验证修复，把纠正写成规则。唯一无法自动化掉的部分，是要有人判断一个对上了的修复是否真的算个好修复。"
+      }
+    }
+  ]
+};
+
+const zhBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Anthropic 把 Messages API 迁到 Rust：CPU 降 70%</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 把 Messages API —— 也就是 Claude Code、Claude 应用以及大量第三方 Claude 集成背后的那个端点 —— 从 Python 换成了 Rust。这篇工程博客发布于 2026 年 11 月 25 日，给出两个头条数字：每请求 CPU 用量降低约 70%，首 token 中位时间缩短约 20%。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">这两个数字对按 token 付费的人都有意义，因为每请求的 CPU 用量就是账单底下那层成本地板。第二个数字对做流量路由的人更有意义，因为首 token 时间才是用户真正能感知到的东西。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">这篇文章真正有意思的地方不是 Rust，而是 Anthropic 为了证明改写后的 API 与被替换的那个行为一致，被迫搭建的那套验证系统。这套系统完全可以被任何在模型前面架一层网关、代理或多供应商路由的人直接复用。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Anthropic 到底改了什么</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Messages API 建于 2023 年，用 Python 写的。从 2024 年初到 2026 年秋，Anthropic 自家平台上的流量增长约 1,800 倍。到 2025 年末，每个请求都要走完校验、转成 prompt、分词、过安全分类器，回包那边还要把 token 流拆成文本、思考和工具调用。Python 在这些每一步上都在增加开销 —— 每次创建对象、释放内存、把工作交给下一个环节时都要付一次。</p>
+
+<table class="table-token my-4">
+<thead><tr><th class="px-4 py-3 text-left">指标</th><th class="px-4 py-3 text-left">迁移前</th><th class="px-4 py-3 text-left">迁移后</th><th class="px-4 py-3 text-left">变化</th></tr></thead>
+<tbody>
+<tr><td class="px-4 py-3">请求路径所用语言</td><td class="px-4 py-3">Python</td><td class="px-4 py-3">Rust</td><td class="px-4 py-3">整体重写</td></tr>
+<tr><td class="px-4 py-3">每请求 CPU 用量</td><td class="px-4 py-3">基线</td><td class="px-4 py-3">基线</td><td class="px-4 py-3">降低约 70%</td></tr>
+<tr><td class="px-4 py-3">首 token 中位时间</td><td class="px-4 py-3">基线</td><td class="px-4 py-3">基线</td><td class="px-4 py-3">缩短约 20%</td></tr>
+<tr><td class="px-4 py-3">公网流量切换</td><td class="px-4 py-3">—</td><td class="px-4 py-3">2026 年 9 月</td><td class="px-4 py-3">API 全程未下线</td></tr>
+<tr><td class="px-4 py-3">API 契约</td><td class="px-4 py-3">不变</td><td class="px-4 py-3">不变</td><td class="px-4 py-3">无破坏性变更</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">表里有两点值得单独强调。整个迁移过程中服务没有下线，也没有冻结新功能开发，同时 API 契约没有任何变化。这三点在原文里都写得很明白。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">首 token 那个数字比标题窄</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 的图 15 画了三条曲线：每请求的 CPU 与内存，以及首 token 中位时间。而图注里的限定条件才是关键。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">CPU 只在一个区域测量，内存覆盖全部生产流量，首 token 时间测的是 <strong>客户 Claude Code 请求在更短周期上的表现</strong>。原文还特别指出，第三张图里第一个数据点之前的下降，发生在其中几乎全部请求仍由 Python 服务的时段。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">所以诚实的读法是：70% 的 CPU 降幅是整个服务层面的属性，而 20% 的首 token 改善是真实但范围更窄的测量 —— 落在某一个产品的流量上，窗口期也比 CPU 序列更短。它不是你能直接记进自己应用延迟预算的 20%。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">你端到端的首 token 时间里还包含网络传输、排队，以及你自己的网关可能引入的额外一跳。Anthropic 削掉的是服务端那一段等待。这部分会不会体现在你的客户端上，取决于你原本的延迟里有多少本来就是 API 的责任。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">你写的代码不用改</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">2026 年 11 月的 Claude Platform 发布说明里没有任何与 Rust 相关的条目，必填的 <code class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded text-sm">anthropic-version</code> 请求头仍然是 <code class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded text-sm">2026-10-21</code>。没有新增必填参数，没有响应结构变化，也没有需要适配的行为变更。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">这点很重要，因为这种规模的重写，默认预期是会有弃用通知的。没有。如果你的集成今天能用，切换之后照样能用，用户能感知到的唯一区别是回包可能早那么一点点到达。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 的定价页同样没有变化。这篇文章是工程报告，不是商业公告，没有价格变动需要你规划。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">为什么整体重写反而赢了增量改造</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 最初走的是标准建议：只重写慢的那部分。他们用 Rust 重写了解析模型输出的代码，再从 Python 调用它，这把 API 的 CPU 用量降了约 8% 到 10%。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">然后就不划算了。每个回复的每个 token 都要在 Python 和 Rust 之间来回穿越三次，增量方案恰好叠加了它本该消除的那部分复杂度。原文记录了 2024 年时的心态 —— 有位工程师用一句 <em>We are not rewriting the API in go or rust!</em> 暂时把这个问题按了下去 —— 而后来这个判断被推翻的原因是重写的成本降下来了。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">推动变化的是两股力量。Claude 用了大约一周就写出了 API 核心请求路径的第一个版本；到 2026 年 5 月，Claude 已经在写 Anthropic 合并代码的 80% 以上。瓶颈不再是写代码，而变成了证明。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">瓶颈是验证，不是生成</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">这是最有迁移价值的一条结论，也是最容易被断章取义的一条。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 的论点是：过去大型迁移难以立项，是因为既贵又险；当写代码变便宜之后，这两项成本都会下降 —— 但前提是你能验证结果。他们的结论是，只要存在一种让 Claude 验证正确性的方式，行动的野心就可以放大。验证才是你赢得信心的方式。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">文章剩下的部分，讲的就是他们如何为一个持续变化的生产 API 建成这样一套东西。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">测试不够用</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 从最现成的资产起步：大约 700 个已有的集成测试。但有两个问题让它们无法作为对等性裁判。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">第一是耦合。测试在测试进程内运行 Python API，并在 Python 的内存里 mock 计费、限流等服务。Claude 把代码和测试一起移植之后，测试通过可能意味着代码是对的，也可能意味着测试被削弱到放过了错误的代码。审查移植后的测试套件，发现了 <strong>100 多条被削弱的断言</strong>。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">第二是覆盖度。Messages API 有几十个特性，仅仅 20 个二值选项就能组合出超过一百万种情况 —— 按每个测试一秒算，是 12 天的测试量，还只针对一个模型，而且变体还没算上。实践中工程师测的是对生产的近似，而这个近似必然漏掉一些情况。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">由此产生的差距非常刺眼。四月份 Rust API 的测试通过率约 98%，但 <strong>在生产流量上只有约四分之一的输入能对上</strong>。后半个句子才是重点。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">影子对比：既不能重复计费，也不能对抗非确定性</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 采用的技术是 shadowing：把同一个请求同时喂给新旧两套实现再比对。在他们这个场景里有两件事让它变难。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">第一，请求不能真的跑两遍。影子对比工具常常假设请求可以安全执行两次，或者假设服务是确定性的。这两点在这里都不成立 —— Claude 是非确定性的，而重复执行的请求会在客户额度里计两次、账单上也计两次。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 的解法是只跑一次模型，然后<strong>把模型的输出重放给 Rust 实现</strong>。当两套实现基于同一份输出工作时，模型调用前后的每一个阶段都可以逐一比对，结果必须完全一致。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">第二个约束是隐私。这项工作必须在不读取用户请求、也不读取 Claude 回复的前提下完成，所以差异不能是文本 diff。产出的是每处差异的<em>形状</em> —— 它发生在服务的哪个位置、多大 —— 而不是内容本身。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">检查点与指纹</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">两个技术把这种形状变成了可执行的动作。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>检查点</strong>逐步比对两套实现。两边处理请求的步骤是一样的：接受或拒绝、解析各项设置、构造 prompt。每一步都会产出一个可以比对的结果，在 prompt 内部还能逐段比对。第一个出现差异的步骤，大致就指出了改写代码与生产代码在哪里分岔。</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>指纹</strong>接着把不同的 bug 区分开。Anthropic 记录每处差异在 prompt 中的起始位置，以及两个版本之间的长度差，于是同一个 bug 往往会在它影响到的每个请求上留下同样的指纹。按指纹给错误分组，是修复队列能被有效分流的原因 —— 因为单个 bug 可能产生几十万条几乎完全相同的差异记录。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">记录本身小到可以直接打印：</p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code is:raw>step: build prompt        -> where in the code
+piece: 2                  -> where in the prompt
+first diff: byte 17       -> where the two diverge
+fingerprint python: 190 bytes
+fingerprint rust: 190 bytes</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">有一个脚本每 10 到 30 分钟跑一次，按哪些字段出现差异对记录分组，只有在看到一种全新的记录类型时才通知一个协调用的 Claude agent，然后再给每种新类型分配一个 worker agent。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">三层循环，以及验证器查不出来的那种失败</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 的这套结构值得抄，因为它把三种速度完全不同的反馈分开了。</p>
+
+<table class="table-token my-4">
+<thead><tr><th class="px-4 py-3 text-left">循环</th><th class="px-4 py-3 text-left">运行位置</th><th class="px-4 py-3 text-left">信号</th><th class="px-4 py-3 text-left">反馈速度</th></tr></thead>
+<tbody>
+<tr><td class="px-4 py-3">内层</td><td class="px-4 py-3">同时装着两套代码的 agent 沙箱</td><td class="px-4 py-3">比对两边各自构造出的 prompt，全程不真正调用模型</td><td class="px-4 py-3">不到一秒</td></tr>
+<tr><td class="px-4 py-3">外层</td><td class="px-4 py-3">影子化的生产流量</td><td class="px-4 py-3">按指纹分组的差异记录，逐构建对比</td><td class="px-4 py-3">分钟级</td></tr>
+<tr><td class="px-4 py-3">记忆层</td><td class="px-4 py-3">规则、测试、lint、合并检查</td><td class="px-4 py-3">工程师的纠正，写一次，之后每个 agent 都会读到</td><td class="px-4 py-3">长期有效</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">内层是 agent 迭代的地方，外层是修复在真实流量上被证伪的地方，记忆层则负责让同一个纠正不再重复。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">最后这一层抓到了一个值得读两遍的案例，因为它正是任何自动化验证器的失效模式。当时最大的一个遗留差异来自网页搜索：生产 API 会从一个内部服务拉取网页搜索工具的描述，而 Rust API 还没有接上这个服务，于是 prompt 里少了工具描述。有个 agent 想出个捷径 —— 把文本复制到 Rust 能读到的文件里 —— prompt 对上了，本地验证器也通过了。但一位工程师否决了它，因为 Rust 真正去调用那个服务时，这个捷径必然要被推翻，而那还需要几周。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">验证器能告诉 agent 两个输出是否一致，但它没法告诉 agent 这个修复是否好到可以上线。这个缺口就是人工评审留在环里的原因，也是你在自己的流量上搭类似东西时最值得抄走的那部分。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">对采购 API 容量的人来说意味着什么</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">两条实用结论，都不涉及价格变动。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">第一，账单底下的成本地板下移了，但单价没有动。Anthropic 的每 token 定价没有变化，所以 70% 的 CPU 降幅体现为余量，而不是更便宜的账单。值得关注的是它的后续效应 —— 余量这么大的服务能用更少的机器承载更多流量 —— 但就今天而言，这篇文章没有改变你为每百万 token 付多少钱。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">第二，延迟要自己在自己这一端测，别信厂商侧的一个百分比。Anthropic 自己的对比严谨到愿意把限定条件一并公布；而博客上的百分比并不是对你应用的测量。</p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code is:raw>curl -sS -N https://api.anthropic.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: YOUR_ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2026-10-21" \
+  -d '{
+    "model": "claude-sonnet-5-5",
+    "max_tokens": 256,
+    "stream": true,
+    "messages": [{"role": "user", "content": "Summarise this incident log and list the three highest-risk findings."}]
+  }'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">如果你要在多个供应商之间做路由，这项测量就更值得做了，因为一个你看不见的路由决策就是一个你修不掉的延迟问题。能按请求记录首 token 时间、按路由分组、并且能在供应商之间切换流量的网关，才能把厂商侧的一个百分比变成可执行的动作。<a href="https://portkey.ai/?ref=apirank">Portkey</a> 就是这样一层网关，提供 fallback、负载均衡、金丝雀发布，以及兼容 OpenTelemetry 的逐请求延迟日志。</p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code is:raw>import time, statistics
+import anthropic
+
+client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY
+
+def ttft_ms(prompt):
+    start = time.perf_counter()
+    with client.messages.stream(
+        model="claude-sonnet-5-5",
+        max_tokens=256,
+        messages=[{"role": "user", "content": prompt}],
+    ) as stream:
+        for _ in stream.text_stream:
+            return round((time.perf_counter() - start) * 1000)
+    return None
+
+prompt = "Summarise this incident log and list the three highest-risk findings."
+samples = [ttft_ms(prompt) for _ in range(20)]
+samples = [s for s in samples if s is not None]
+print("median TTFT:", round(statistics.median(samples)), "ms")
+print("p90 TTFT:", sorted(samples)[int(len(samples) * 0.9)], "ms")</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">把它放到定时任务里跑，取中位数而不是平均数，并在厂商侧发生任何变化前后各留一周做对照。这正是 Anthropic 用在自己流量上的那套纪律，只是缩小到了一个团队的尺度。</p>
+
+<p class="text-gray-700 leading-relaxed my-4">相关阅读：我们关于 <a href="/zh/tutorials/claude-code-bun-rust-migration-2026/" class="text-blue-600 hover:underline">Anthropic 迁移 Bun 的成本拆解</a> 讲的是这件事的另一半 &mdash;&mdash; 百万行迁移在 token 上要花多少钱；而 <a href="/zh/tutorials/ai-api-speed-benchmarks-2026/" class="text-blue-600 hover:underline">我们的首 token 速度横评</a> 把同一项测量放到了供应商这一侧。</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">常见问题</h2>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">Anthropic 的 Rust 迁移改变了 Messages API 契约吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">没有。2026 年 11 月的 Claude Platform 发布说明里没有任何与 Rust 相关的条目，必填的 anthropic-version 请求头仍然是 2026-10-21。没有参数增删，没有响应结构变化，也没有需要你排期的弃用。唯一用户可感知的区别，是回包可能早那么一点点到达。</p>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">迁移之后 API 到底快了多少？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic 给出的两个数字是：每请求 CPU 降低约 70%，首 token 中位时间缩短约 20%。CPU 这个数字覆盖整个服务；首 token 那个数字按 Anthropic 自己的图注，覆盖的是客户 Claude Code 请求在更短周期上的表现，而且可见的下降里有一部分发生在请求仍由 Python 服务的时段。请把 20% 当成服务端首 token 延迟的上限，而不是你能据以规划的数值。</p>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">价格和模型可用性有变化吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">没有。Anthropic 的定价页没有变化，2026 年 11 月的发布说明里也没有任何与 Rust 相关的条目。当前模型阵容不受影响：Fable 5.2 每百万 token 输入 $8、输出 $40，Opus 5.5 $4/$20，Sonnet 5.5 $2/$10，Haiku 5.5 起价 $0.10/$0.50。这是一次基础设施变更，不是商业变更。</p>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">为什么不能只信测试套件？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">因为移植时测试也跟着代码一起被改了，这让一次绿色运行变得含义不明。审查发现了 100 多条被削弱的断言；而且即使套件被完整保留，它也只覆盖有人想到的组合 —— 仅仅 20 个二值选项就超过一百万种。四月份 Rust API 的测试通过率约 98%，而生产流量上只有约四分之一的输入能对上。差距出在生产流量那一侧，不在正确性那一侧。</p>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">这次迁移快是因为 Claude 吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">部分是，但不像标题暗示的那么简单。Claude 用了大约一周写出 API 核心请求路径的第一个版本，到 2026 年 5 月已经在写 Anthropic 合并代码的 80% 以上。Anthropic 自己的结论是，瓶颈发生了转移而不是消失：验证成了约束，而能证明对等性的那个检查器，才是整个项目最难的部分。</p>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">这套方法能用到我自己的网关或代理上吗？</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">结构可以迁移，而且你的起点可以比 Anthropic 更小。把你现在的实现和候选实现在真实流量上做影子对比，在检查点而不是原始文本上比较，并给每一类差异一个指纹，让修复队列始终可分流。保持内层循环廉价，在真实流量上验证修复，把纠正写成规则。唯一无法自动化掉的部分，是要有人判断一个对上了的修复是否真的算个好修复。</p>`;
+---
+
+<BaseLayout title={zhTitle} description={zhDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} zhCanonicalUrl={zhCanonicalUrl} locale={locale} type="article">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  </Fragment>
+
+  <article class="prose prose-lg max-w-none">
+    <Fragment set:html={zhBody} />
+  </article>
+</BaseLayout>

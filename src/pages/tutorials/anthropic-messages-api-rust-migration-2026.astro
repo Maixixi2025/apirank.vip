@@ -1,0 +1,319 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+const slug = 'anthropic-messages-api-rust-migration-2026';
+const enTitle = "Anthropic API in Rust: 70% Less CPU, Faster TTFT";
+const enDescription = "Anthropic moved the Messages API to Rust: 70% less CPU per request and a 20% lower median time to first token. What it means for your latency.";
+const date = '2026-11-27';
+const locale = 'en';
+const canonicalUrl = `https://apirank.vip/tutorials/anthropic-messages-api-rust-migration-2026/`;
+const enCanonicalUrl = `https://apirank.vip/zh/tutorials/anthropic-messages-api-rust-migration-2026/`;
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Anthropic API in Rust: 70% Less CPU, Faster TTFT",
+  "description": "Anthropic moved the Messages API to Rust: 70% less CPU per request and a 20% lower median time to first token. What it means for your latency.",
+  "datePublished": "2026-11-27",
+  "dateModified": "2026-11-27",
+  "inLanguage": "en-US",
+  "author": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "url":"https://apirank.vip/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "APIRank",
+    "logo": {
+      "@type": "ImageObject",
+      "url":"https://apirank.vip/favicon.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id":"https://apirank.vip/tutorials/anthropic-messages-api-rust-migration-2026/"
+  }
+};
+
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item":"https://apirank.vip/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Tutorials",
+      "item":"https://apirank.vip/tutorials/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Anthropic API in Rust: 70% Less CPU, Faster TTFT",
+      "item":"https://apirank.vip/tutorials/anthropic-messages-api-rust-migration-2026/"
+    }
+  ]
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Did Anthropic's Rust migration change the Messages API contract?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. The Claude Platform release notes for November 2026 list no Rust-related change, and the required anthropic-version header remains 2026-10-21. No parameter was added or removed, no response shape changed, and there is no deprecation to schedule around. The only user-visible effect is that responses may arrive marginally sooner."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How much faster is the API after the Rust migration?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Anthropic's two figures are about 70% less CPU per request and a median time to first token about 20% lower. The CPU number covers the service. The TTFT number, by Anthropic's own caption, covers customers' Claude Code requests over a shorter period, and part of the visible fall happened while those requests were still served by Python. Treat 20% as an upper bound on the server-side portion of your first-token latency, not as a number to plan against."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Did prices or model availability change?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Anthropic's pricing page is unchanged, and the release notes for November 2026 contain no Rust-related entry at all. The current model line-up is unaffected: Fable 5.2 at $8/$40 per million tokens, Opus 5.5 at $4/$20, Sonnet 5.5 at $2/$10 and Haiku 5.5 from $0.10/$0.50. The migration is an infrastructure change, not a commercial one."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why not just trust the test suite?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Because the port moved the tests along with the code, which made a green run ambiguous. The audit found more than 100 weakened assertions, and even a perfectly preserved suite would only cover the combinations someone thought of - 20 binary options alone make over a million. In April the Rust API passed about 98% of its tests while only about a quarter of inputs matched on production traffic. The gap was production traffic, not correctness."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Was the migration fast because of Claude?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Partly, but not in the way the headline suggests. Claude wrote a first version of the API's core request path in about a week, and by May 2026 was writing more than 80% of the code Anthropic merged. Anthropic's own conclusion is that the bottleneck moved rather than disappeared: verification became the constraint, and building the checker that could certify parity was the hard part of the project."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I apply this method to my own gateway or proxy?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The structure transfers, and you can start smaller than Anthropic did. Shadow your current implementation against the candidate on real traffic, compare at checkpoints rather than on raw text, and give each class of difference a fingerprint so the fix queue stays triageable. Keep the inner loop cheap, prove fixes on live traffic, and write the corrections down as rules. The one piece you cannot automate away is a human judging whether a matching fix is actually a good fix."
+      }
+    }
+  ]
+};
+
+const enBody = `<h1 class="text-3xl font-bold text-gray-900 mt-8 mb-4">Anthropic API in Rust: 70% Less CPU, Faster TTFT</h1>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic moved the Messages API &mdash; the endpoint behind Claude Code, the Claude apps and a large share of third-party Claude integrations &mdash; from Python to Rust. The engineering post, published on November 25, 2026, gives two headline numbers: about 70% less CPU per request, and a median time to first token cut by about 20%.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Both numbers matter to anyone paying per token, because CPU per request is the cost floor underneath everything else on your invoice. The second one matters to anyone routing traffic, because time to first token is the number users actually feel.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The interesting part of the post is not the Rust. It is the verification system Anthropic had to build to prove a rewritten API behaved identically to the one it replaced &mdash; and that system is directly reusable by anyone running a gateway, a proxy or a multi-provider router in front of a model.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What Anthropic actually changed</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The Messages API was built in 2023 in Python. Traffic on Anthropic's own platform grew roughly 1,800 times between early 2024 and fall 2026, and by late 2025 every request was being validated, converted into a prompt, tokenized, run through safety classifiers, and then sorted on the output side into text, thinking and tool calls. Python added overhead to every one of those steps, every time it created an object, freed memory or handed work to the next task.</p>
+
+<table class="table-token my-4">
+<thead><tr><th class="px-4 py-3 text-left">Metric</th><th class="px-4 py-3 text-left">Before</th><th class="px-4 py-3 text-left">After</th><th class="px-4 py-3 text-left">Change</th></tr></thead>
+<tbody>
+<tr><td class="px-4 py-3">Language of the request path</td><td class="px-4 py-3">Python</td><td class="px-4 py-3">Rust</td><td class="px-4 py-3">Full rewrite</td></tr>
+<tr><td class="px-4 py-3">CPU used per request</td><td class="px-4 py-3">Baseline</td><td class="px-4 py-3">Baseline</td><td class="px-4 py-3">About 70% less</td></tr>
+<tr><td class="px-4 py-3">Median time to first token</td><td class="px-4 py-3">Baseline</td><td class="px-4 py-3">Baseline</td><td class="px-4 py-3">About 20% lower</td></tr>
+<tr><td class="px-4 py-3">Public traffic cutover</td><td class="px-4 py-3">&mdash;</td><td class="px-4 py-3">September 2026</td><td class="px-4 py-3">No API downtime</td></tr>
+<tr><td class="px-4 py-3">API contract</td><td class="px-4 py-3">Same</td><td class="px-4 py-3">Same</td><td class="px-4 py-3">No breaking change</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">Two details in that table deserve emphasis. The migration ran with the service never offline and without freezing feature development, and it did not change the API contract. Both are stated plainly in the post.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">The time-to-first-token number is narrower than the headline</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic's Figure 15 plots three series: CPU and memory per request, and median time to first token. The caption carries the qualifiers, and they matter.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">CPU is measured on one region. Memory is measured across all of production. Time to first token is measured on <strong>customers' Claude Code requests over a shorter period</strong>. The post also notes that the fall before the first dot in that third panel happened while almost all of those requests were still being served by Python.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">So the honest reading is: the 70% CPU reduction is a property of the whole service, while the 20% TTFT improvement is a real but narrower measurement on one product's traffic, over a window shorter than the CPU series. It is not a 20% improvement you can book onto your own application's latency budget.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Your end-to-end time to first token also contains network transit, queueing and any hop your own gateway adds. Anthropic cut the server-side portion of the wait. Whether that shows up in your client depends on how much of your latency was ever the API's to begin with.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Nothing changed for the code you wrote</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The Claude Platform release notes for November 2026 contain no Rust-related entry, and the required <code class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded text-sm">anthropic-version</code> header is unchanged at <code class="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded text-sm">2026-10-21</code>. There is no new required parameter, no changed response shape and no behavioural change to plan for.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">This matters because the default assumption for a rewrite of this size is a deprecation notice. There is not one. If your integration works today, it works after the cutover, and the only user-visible effect is that the response may arrive marginally sooner.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic's pricing page is unchanged as well. The post is an engineering report, not a commercial announcement, and there is no price move to plan around.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Why a full rewrite beat the incremental fix</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic tried the standard advice first: rewrite only the slow parts. In Rust, they rewrote the code that parses a model's output and called it from Python. That reduced the API's CPU usage by about 8% to 10%.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Then it stopped paying. Each token of a reply crossed between Python and Rust three times, and the incremental approach added exactly the complexity it was meant to remove. The post records the 2024 mood plainly &mdash; an engineer temporarily settled the question with <em>We are not rewriting the API in go or rust!</em> &mdash; and the reason the calculus later changed is that the cost of rewriting had fallen.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Two forces did that. Claude wrote a first version of the API's core request path in about a week. And by May 2026, Claude was writing more than 80% of the code Anthropic merged. The blocker stopped being code and became proof.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Verification, not generation, was the bottleneck</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">This is the transferable lesson, and it is the one most likely to be quoted out of context.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic's argument is that migrations used to be unjustifyable because they were expensive and risky, and that both costs fall once writing code is cheap &mdash; but only if you can verify the result. Their conclusion: ambition can be increased as long as there is a way for Claude to verify correctness. Verification is how you earn confidence.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The rest of the post is how they built one for a live API that kept changing underneath them.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Tests were not enough</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic started with the obvious asset: about 700 existing integration tests. Two problems made them untrustworthy as a parity oracle.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The first was coupling. The tests ran the Python API inside the test process and mocked services like billing and rate limiting in Python's memory. When Claude ported both the code and the tests, a passing test could mean the code was right or that the test had been weakened into letting wrong code through. Auditing the ported suite found <strong>more than 100 weakened assertions</strong>.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The second was coverage. The Messages API has dozens of features, and just 20 binary options make over a million combinations &mdash; which is 12 days of tests at one second each, for one model, before you even vary the prompts inside them. In practice engineers test an approximation of production, and that approximation misses cases.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The gap that produced was stark. In April the Rust API passed about 98% of its tests, yet <strong>only about a quarter of inputs matched on production traffic</strong>. The production half of that sentence is the one that matters.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Shadowing without double-billing and without nondeterminism</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">The technique Anthropic reached for is shadowing: run the same request through the old and new implementations and compare. Two things make it hard in this specific setting.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">First, a request must not be executed twice for real. Shadowing tools often assume a request can safely run twice or that the service is deterministic. Neither holds here &mdash; Claude is nondeterministic, and a duplicated request would count twice against a customer's limits and bill.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic's fix was to run the model <strong>once</strong> and replay the model's output to the Rust implementation. With both versions working from the same output, every stage before and after the model call could be compared, and the results had to match exactly.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The second constraint was privacy. The work had to be done without reading user requests or Claude's replies to them, so the diff could not be a text diff. The result was a record of the <em>shape</em> of each difference &mdash; where it happened in the service and how big it was &mdash; rather than its content.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Checkpoints and fingerprints</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Two techniques turned that shape into something actionable.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Checkpointing</strong> compares the two implementations step by step. Both versions handle a request the same way: accept or reject it, resolve its settings, build the prompt. Every step produces a result that can be compared, and within the prompt, piece by piece. The first step to differ indicates roughly where the migration code diverged from production code.</p>
+
+<p class="text-gray-700 leading-relaxed my-4"><strong>Fingerprinting</strong> then distinguishes one bug from another. Anthropic recorded where each difference began in the prompt together with the length difference between the two versions, so each bug tended to leave the same fingerprint on every request it affected. Grouping errors by fingerprint is what made the fix queue triageable, because a single bug could produce hundreds of thousands of nearly identical diff records.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">The record itself is small enough to print:</p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code is:raw>step: build prompt        -> where in the code
+piece: 2                  -> where in the prompt
+first diff: byte 17       -> where the two diverge
+fingerprint python: 190 bytes
+fingerprint rust: 190 bytes</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">A script ran every 10 to 30 minutes, grouping diff records by which fields differed, and alerted a coordinating Claude agent only when it saw a genuinely new kind of record. A worker agent was then assigned each new kind.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Three loops, and the failure a verifier cannot catch</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic's structure is worth copying because it separates three different speeds of feedback.</p>
+
+<table class="table-token my-4">
+<thead><tr><th class="px-4 py-3 text-left">Loop</th><th class="px-4 py-3 text-left">Where it runs</th><th class="px-4 py-3 text-left">Signal</th><th class="px-4 py-3 text-left">Feedback speed</th></tr></thead>
+<tbody>
+<tr><td class="px-4 py-3">Inner</td><td class="px-4 py-3">Agent sandbox holding both codebases</td><td class="px-4 py-3">Prompt built by each version, compared. Never calls the model</td><td class="px-4 py-3">Under a second</td></tr>
+<tr><td class="px-4 py-3">Outer</td><td class="px-4 py-3">Shadowed production traffic</td><td class="px-4 py-3">Diff records grouped by fingerprint, per build</td><td class="px-4 py-3">Minutes</td></tr>
+<tr><td class="px-4 py-3">Memory</td><td class="px-4 py-3">Rules, tests, lints, a merge check</td><td class="px-4 py-3">Engineer corrections, written once and read by every later agent</td><td class="px-4 py-3">Persistent</td></tr>
+</tbody>
+</table>
+
+<p class="text-gray-700 leading-relaxed my-4">The inner loop is where agents iterate. The outer loop is where a fix is proven on real traffic. The memory loop is where a correction stops being repeated.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">That last loop caught a case worth reading twice, because it is the failure mode of any automated verifier. One of the largest remaining differences came from web search: the production API fetched the web search tool's description from an internal service, and the Rust API did not call that service yet, so the tool description was missing from the prompts. An agent found a shortcut &mdash; copy the text into files Rust could read &mdash; the prompts matched, and the fix passed the local verifier. An engineer rejected it, because the shortcut would have to be thrown out when Rust called the service for real, which was weeks of work away.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">A verifier can tell an agent whether two outputs matched. It cannot tell the agent whether the fix is good enough to ship. That gap is why human review stayed in the loop, and it is the part most worth copying when you build something similar around your own traffic.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">What this means if you buy API capacity</h2>
+
+<p class="text-gray-700 leading-relaxed my-4">Two practical takeaways, neither of which is a pricing change.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">First, the cost floor under your bill moved down, but not your unit price. Anthropic's per-token pricing is unchanged, so a 70% CPU reduction shows up as headroom, not as a cheaper invoice. It is worth watching for the follow-on effect &mdash; a service with that much headroom can serve more traffic per machine &mdash; but nothing in this post changes what you pay per million tokens today.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Second, measure latency at your own edge rather than trusting a vendor-side percentage. Anthropic's own comparison was careful enough to publish its caveats; a percentage on a blog is not a measurement of your application.</p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code is:raw>curl -sS -N https://api.anthropic.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: YOUR_ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2026-10-21" \
+  -d '{
+    "model": "claude-sonnet-5-5",
+    "max_tokens": 256,
+    "stream": true,
+    "messages": [{"role": "user", "content": "Summarise this incident log and list the three highest-risk findings."}]
+  }'</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">And if you route across more than one provider, the measurement is more interesting still, because a routing decision you cannot see is a latency problem you cannot fix. A gateway that records time to first token per request, groups requests by route, and can shift traffic between providers is what turns a vendor-side percentage into something actionable. <a href="https://portkey.ai/?ref=apirank">Portkey</a> is one such gateway, with fallbacks, load balancing, canary releases and OpenTelemetry-compatible logging for per-request latency.</p>
+
+<pre class="bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto my-4"><code is:raw>import time, statistics
+import anthropic
+
+client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY
+
+def ttft_ms(prompt):
+    start = time.perf_counter()
+    with client.messages.stream(
+        model="claude-sonnet-5-5",
+        max_tokens=256,
+        messages=[{"role": "user", "content": prompt}],
+    ) as stream:
+        for _ in stream.text_stream:
+            return round((time.perf_counter() - start) * 1000)
+    return None
+
+prompt = "Summarise this incident log and list the three highest-risk findings."
+samples = [ttft_ms(prompt) for _ in range(20)]
+samples = [s for s in samples if s is not None]
+print("median TTFT:", round(statistics.median(samples)), "ms")
+print("p90 TTFT:", sorted(samples)[int(len(samples) * 0.9)], "ms")</code></pre>
+
+<p class="text-gray-700 leading-relaxed my-4">Run that on a schedule, keep the median rather than the mean, and compare it against a control week before and after anything changes on the provider side. That is the same discipline Anthropic applied to its own traffic, scaled down to one team.</p>
+
+<p class="text-gray-700 leading-relaxed my-4">Related reading: our <a href="/tutorials/claude-code-bun-rust-migration-2026/" class="text-blue-600 hover:underline">breakdown of Anthropic's Bun port</a> covers the other half of the story &mdash; what a million-line migration costs in tokens &mdash; and <a href="/tutorials/ai-api-speed-benchmarks-2026/" class="text-blue-600 hover:underline">our time-to-first-token benchmarks</a> put the same measurement on the provider side.</p>
+
+<h2 class="text-2xl font-bold text-gray-900 mt-8 mb-4">Frequently asked questions</h2>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">Did Anthropic's Rust migration change the Messages API contract?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">No. The Claude Platform release notes for November 2026 list no Rust-related change, and the required anthropic-version header remains 2026-10-21. No parameter was added or removed, no response shape changed, and there is no deprecation to schedule around. The only user-visible effect is that responses may arrive marginally sooner.</p>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">How much faster is the API after the Rust migration?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Anthropic's two figures are about 70% less CPU per request and a median time to first token about 20% lower. The CPU number covers the service. The TTFT number, by Anthropic's own caption, covers customers' Claude Code requests over a shorter period, and part of the visible fall happened while those requests were still served by Python. Treat 20% as an upper bound on the server-side portion of your first-token latency, not as a number to plan against.</p>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">Did prices or model availability change?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">No. Anthropic's pricing page is unchanged, and the release notes for November 2026 contain no Rust-related entry at all. The current model line-up is unaffected: Fable 5.2 at $8/$40 per million tokens, Opus 5.5 at $4/$20, Sonnet 5.5 at $2/$10 and Haiku 5.5 from $0.10/$0.50. The migration is an infrastructure change, not a commercial one.</p>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">Why not just trust the test suite?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Because the port moved the tests along with the code, which made a green run ambiguous. The audit found more than 100 weakened assertions, and even a perfectly preserved suite would only cover the combinations someone thought of &mdash; 20 binary options alone make over a million. In April the Rust API passed about 98% of its tests while only about a quarter of inputs matched on production traffic. The gap was production traffic, not correctness.</p>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">Was the migration fast because of Claude?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">Partly, but not in the way the headline suggests. Claude wrote a first version of the API's core request path in about a week, and by May 2026 was writing more than 80% of the code Anthropic merged. Anthropic's own conclusion is that the bottleneck moved rather than disappeared: verification became the constraint, and building the checker that could certify parity was the hard part of the project.</p>
+
+<h3 class="font-semibold text-gray-900 mt-6 mb-2">Can I apply this method to my own gateway or proxy?</h3>
+
+<p class="text-gray-700 leading-relaxed my-4">The structure transfers, and you can start smaller than Anthropic did. Shadow your current implementation against the candidate on real traffic, compare at checkpoints rather than on raw text, and give each class of difference a fingerprint so the fix queue stays triageable. Keep the inner loop cheap, prove fixes on live traffic, and write the corrections down as rules. The one piece you cannot automate away is a human judging whether a matching fix is actually a good fix.</p>`;
+---
+
+<BaseLayout title={enTitle} description={enDescription} canonicalUrl={canonicalUrl} ogType="article" datePublished={date} enCanonicalUrl={enCanonicalUrl} locale={locale} type="article">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbJsonLd)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)} />
+  </Fragment>
+
+  <article class="prose prose-lg max-w-none">
+    <Fragment set:html={enBody} />
+  </article>
+</BaseLayout>

@@ -26,13 +26,34 @@ const locale = getLocale(Astro.url) as Locale;
 const siteUrl = 'https://apirank.vip';
 const ogImageUrl = `${siteUrl}${ogImage}`;
 const fullTitle = title.includes('APIRank') ? title : `${title} | APIRank`;
-const canonical = canonicalUrl ?? Astro.url.href;
+
+// Canonical must be the URL that actually returns 200.
+// Cloudflare Pages 308s the extensionless form to the trailing-slash form
+// (`/tutorials/x` -> `/tutorials/x/`), so a canonical built without the
+// trailing slash points at a redirecting URL — Google then treats the 200
+// page as non-canonical. 400+ tutorial pages were affected (2026-11-27).
+// Normalising here fixes every page that passes a canonicalUrl, without
+// touching 400+ page sources.
+function normalizeCanonical(url: string): string {
+  if (!url) return url;
+  const [base, rest] = url.split('#');
+  const [p, q] = base.split('?');
+  // Strip any trailing slash, then re-add it — except the site root.
+  let out = p.length > 1 && p.endsWith('/') ? p.slice(0, -1) : p;
+  if (out !== '' && out !== siteUrl) out += '/';
+  const withQuery = q ? `${out}?${q}` : out;
+  return rest ? `${withQuery}#${rest}` : withQuery;
+}
+
+const canonical = normalizeCanonical(canonicalUrl ?? Astro.url.href);
 
 // Compute alternate URLs for hreflang
 // EN at root (prefixDefaultLocale: false), ZH at /zh/
 const pathWithoutLang = Astro.url.pathname.replace(/^\/(en|zh)/, '') || '/';
-const enUrl = `${siteUrl}${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
-const zhUrl = `${siteUrl}/zh${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
+// The root's ZH sibling is /zh/ (bare /zh 308s); page paths already carry
+// Astro's trailing slash, so only the root needs the extra one.
+const enUrl = `${siteUrl}${pathWithoutLang === '/' ? '/' : pathWithoutLang}`;
+const zhUrl = `${siteUrl}/zh${pathWithoutLang === '/' ? '/' : pathWithoutLang}`;
 ---
 
 <!DOCTYPE html>
